@@ -1,11 +1,11 @@
 package com.pj.magic;
 
-import java.awt.AWTException;
-import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JTextField;
+
+import com.pj.magic.util.KeyUtil;
 
 public class ProductCodeFieldKeyListener implements KeyListener {
 
@@ -21,16 +21,16 @@ public class ProductCodeFieldKeyListener implements KeyListener {
 			return;
 		}
 		
-		JTextField textField = (JTextField)event.getComponent();
-		if (textField.getText().length() == PRODUCT_CODE_MAXIMUM_LENGTH) {
-			try {
-				new Robot().keyPress(KeyEvent.VK_TAB);
-			} catch (AWTException e) {
-				e.printStackTrace();
-			}
+		if (isMaximumProductCodeLengthReached(event)) {
+			KeyUtil.simulateTabKey();
 		}
 	}
 
+	private static boolean isMaximumProductCodeLengthReached(KeyEvent event) {
+		JTextField textField = (JTextField)event.getComponent();
+		return textField.getText().length() == PRODUCT_CODE_MAXIMUM_LENGTH;
+	}
+	
 	private static boolean isAlphaNumericKeyCode(int keyCode) {
 		return (keyCode >= KeyEvent.VK_0 && keyCode <= KeyEvent.VK_9)
 				|| (keyCode >= KeyEvent.VK_A && keyCode <= KeyEvent.VK_Z);

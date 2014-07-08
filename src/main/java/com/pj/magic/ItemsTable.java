@@ -45,13 +45,15 @@ public class ItemsTable extends JTable {
 		getEditorComponent().requestFocusInWindow();
 		
 		// TODO: Handle also shift+tab
+		// TODO: Review tab
 		
-		getActionMap().put("itemsTableTabAction", new ItemsTableTabAction(this));
-		getActionMap().put("itemsTableDownAction", 
-				new ItemsTableDownAction(this, getAction(KeyEvent.VK_DOWN)));
+		getActionMap().put("tab", new ItemsTableTabAction(this));
+		getActionMap().put("down", new ItemsTableDownAction(this, getAction(KeyEvent.VK_DOWN)));
+		getActionMap().put("showSelectProductDialog", new ShowSelectProductDialogAction(this));
 				
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "itemsTableTabAction");
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "itemsTableDownAction");
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "tab");
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "down");
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), "showSelectProductDialog");
 	}
 	
 	private Action getAction(int keyEvent) {
