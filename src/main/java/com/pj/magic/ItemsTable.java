@@ -19,6 +19,10 @@ public class ItemsTable extends JTable {
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int UNIT_COLUMN_INDEX = 2;
 	public static final int QUANTITY_COLUMN_INDEX = 3;
+	private static final String TAB_ACTION_NAME = "tab";
+	private static final String DOWN_ACTION_NAME = "down";
+	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
+	
 	
 	private UppercaseDocumentFilter uppercaseDocumentFilter = new UppercaseDocumentFilter(); // TODO: Replace with dependency injection
 	
@@ -47,13 +51,16 @@ public class ItemsTable extends JTable {
 		// TODO: Handle also shift+tab
 		// TODO: Review tab
 		
-		getActionMap().put("tab", new ItemsTableTabAction(this));
-		getActionMap().put("down", new ItemsTableDownAction(this, getAction(KeyEvent.VK_DOWN)));
-		getActionMap().put("showSelectProductDialog", new ShowSelectProductDialogAction(this));
+		getActionMap().put(TAB_ACTION_NAME, new ItemsTableTabAction(this));
+		getActionMap().put(DOWN_ACTION_NAME, new ItemsTableDownAction(this, getAction(KeyEvent.VK_DOWN)));
+		getActionMap().put(SHOW_SELECTION_DIALOG_ACTION_NAME, new ShowSelectionDialogAction(this));
 				
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "tab");
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "down");
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), "showSelectProductDialog");
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
 	}
 	
 	private Action getAction(int keyEvent) {
@@ -74,6 +81,14 @@ public class ItemsTable extends JTable {
 	
 	public boolean isQuantityFieldSelected() {
 		return getSelectedColumn() == QUANTITY_COLUMN_INDEX;
+	}
+	
+	public boolean isProductCodeFieldSelected() {
+		return getSelectedColumn() == PRODUCT_CODE_COLUMN_INDEX;
+	}
+
+	public boolean isUnitFieldSelected() {
+		return getSelectedColumn() == UNIT_COLUMN_INDEX;
 	}
 	
 	public boolean isLastRowSelected() {
