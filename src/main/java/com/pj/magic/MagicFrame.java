@@ -1,5 +1,7 @@
 package com.pj.magic;
 
+import java.util.ResourceBundle;
+
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
@@ -12,7 +14,7 @@ public class MagicFrame extends JFrame {
 		this.setSize(500, 200);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE); // TODO: Clean up resources
-		setTitle("Magic");
+		setTitle(ResourceBundle.getBundle("application").getString("application.title"));
 		addContents();
 	}
 

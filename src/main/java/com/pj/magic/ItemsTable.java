@@ -2,20 +2,29 @@ package com.pj.magic;
 
 import java.awt.event.KeyEvent;
 
+import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.table.TableModel;
 import javax.swing.text.AbstractDocument;
 
+import org.apache.commons.lang.StringUtils;
+
 public class ItemsTable extends JTable {
 	
 	private static final long serialVersionUID = -8416737029470549899L;
-
-	public ItemsTable(TableModel dm) {
-		super(dm);
+	
+	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
+	public static final int UNIT_COLUMN_INDEX = 2;
+	public static final int QUANTITY_COLUMN_INDEX = 3;
+	
+	private UppercaseDocumentFilter uppercaseDocumentFilter = new UppercaseDocumentFilter(); // TODO: Replace with dependency injection
+	
+	public ItemsTable(TableModel model) {
+		super(model);
+		setSurrendersFocusOnKeystroke(true);
 	}
 
 	public void switchToBlankItems() {
@@ -23,30 +32,66 @@ public class ItemsTable extends JTable {
 		
 		JTextField productCodeTextField = new JTextField();
 		productCodeTextField.addKeyListener(new ProductCodeFieldKeyListener());
-		((AbstractDocument)productCodeTextField.getDocument()).setDocumentFilter(new UppercaseDocumentFilter());
+		((AbstractDocument)productCodeTextField.getDocument()).setDocumentFilter(uppercaseDocumentFilter);
 		getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(productCodeTextField));
 		
-		JComboBox<String> comboBox = new JComboBox<>();
-		comboBox.addItem("");
-		comboBox.addItem("CSE");
-		comboBox.addItem("CTN");
-		comboBox.addItem("DOZ");
-		comboBox.addItem("PCS");
-		getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(comboBox));
+		JTextField unitTextField = new JTextField();
+		unitTextField.addKeyListener(new UnitFieldKeyListener());
+		((AbstractDocument)unitTextField.getDocument()).setDocumentFilter(uppercaseDocumentFilter);
+		getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(unitTextField));
 		
 		changeSelection(0, 0, false, false);
 		editCellAt(0, 0);
-		setSurrendersFocusOnKeystroke(true);
 		getEditorComponent().requestFocusInWindow();
 		
-		getInputMap().clear();
-		getActionMap().clear();
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "itemsTableTabAction");
-//		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.VK_SHIFT), "shiftTabInsideTableAction");
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "itemsTableDownAction");
+		// TODO: Handle also shift+tab
+		
 		getActionMap().put("itemsTableTabAction", new ItemsTableTabAction(this));
-//		getActionMap().put("shiftTabInsideTableAction", new ItemsTableTabAction(this));
-		getActionMap().put("itemsTableDownAction", new ItemsTableTabAction(this));
+		getActionMap().put("itemsTableDownAction", 
+				new ItemsTableDownAction(this, getAction(KeyEvent.VK_DOWN)));
+				
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "itemsTableTabAction");
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "itemsTableDownAction");
+	}
+	
+	private Action getAction(int keyEvent) {
+		String actionName = (String)getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(KeyStroke.getKeyStroke(keyEvent, 0));
+		return getActionMap().get(actionName);
+	}
+
+	public void addNewRow() {
+		int newRowIndex = getSelectedRow() + 1;
+		
+		BlankItemsTableModel model = (BlankItemsTableModel)getModel();
+		model.addBlankRow();
+		
+		changeSelection(newRowIndex, 0, false, false);
+		editCellAt(newRowIndex, 0);
+		getEditorComponent().requestFocusInWindow();
+	}
+	
+	public boolean isQuantityFieldSelected() {
+		return getSelectedColumn() == QUANTITY_COLUMN_INDEX;
+	}
+	
+	public boolean isLastRowSelected() {
+		return getSelectedRow() + 1 == getModel().getRowCount();
+	}
+
+	public boolean isCurrentRowValid() {
+		if (isEditing()) {
+			getCellEditor().stopCellEditing();
+		}
+		
+		TableModel model = getModel();
+		int rowIndex = getSelectedRow();
+		String productCode = (String)model.getValueAt(rowIndex, PRODUCT_CODE_COLUMN_INDEX);
+		String unit = (String)model.getValueAt(rowIndex, UNIT_COLUMN_INDEX);
+		String quantity = (String)model.getValueAt(rowIndex, QUANTITY_COLUMN_INDEX);
+		
+		return !StringUtils.isEmpty(productCode) 
+				&& !StringUtils.isEmpty(unit) 
+				&& !StringUtils.isEmpty(quantity);
 	}
 	
 }
