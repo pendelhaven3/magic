@@ -4,7 +4,6 @@ import java.util.ResourceBundle;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
 
 public class MagicFrame extends JFrame {
 
@@ -22,9 +21,6 @@ public class MagicFrame extends JFrame {
 		ItemsTable table = new ItemsTable(new ItemsTableModel());
 		table.setRowSelectionInterval(0, 0);
 		// TODO: disable multiple row selection, shift+click and ctrl+click
-		
-		table.getInputMap().put(KeyStroke.getKeyStroke("F2"), "addNewItem");
-		table.getActionMap().put("addNewItem", new AddNewItemAction(table));
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane);

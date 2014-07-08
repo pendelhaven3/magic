@@ -11,6 +11,10 @@ public class MagicDialog extends JDialog {
 	
 	private Map<String, String> returnValuesMap = new HashMap<>();
 	
+	public MagicDialog() {
+		setModal(true);
+	}
+	
 	public void setReturnValue(String name, String value) {
 		returnValuesMap.put(name, value);
 	}

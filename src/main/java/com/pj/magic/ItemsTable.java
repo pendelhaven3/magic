@@ -22,13 +22,14 @@ public class ItemsTable extends JTable {
 	private static final String TAB_ACTION_NAME = "tab";
 	private static final String DOWN_ACTION_NAME = "down";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
-	
+	private static final String SHOW_SELECT_ACTION_DIALOG_ACTION_NAME = "showSelectActionDialog";
 	
 	private UppercaseDocumentFilter uppercaseDocumentFilter = new UppercaseDocumentFilter(); // TODO: Replace with dependency injection
 	
 	public ItemsTable(TableModel model) {
 		super(model);
 		setSurrendersFocusOnKeystroke(true);
+		initialize();
 	}
 
 	public void switchToBlankItems() {
@@ -109,6 +110,12 @@ public class ItemsTable extends JTable {
 		return !StringUtils.isEmpty(productCode) 
 				&& !StringUtils.isEmpty(unit) 
 				&& !StringUtils.isEmpty(quantity);
+	}
+	
+	protected void initialize() {
+		getActionMap().put(SHOW_SELECT_ACTION_DIALOG_ACTION_NAME, new ShowSelectActionDialogAction(this));
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), SHOW_SELECT_ACTION_DIALOG_ACTION_NAME);
 	}
 	
 }

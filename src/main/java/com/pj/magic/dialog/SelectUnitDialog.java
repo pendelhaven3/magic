@@ -15,9 +15,7 @@ public class SelectUnitDialog extends MagicDialog {
 	public static final String UNIT_RETURN_VALUE_NAME = "unit";
 	
 	public SelectUnitDialog() {
-		setModal(true);
-		setSize(500, 200);
-		setLocationRelativeTo(null);
+		setSize(180, 150);
 		setTitle("Select Unit");
 		addContents();
 	}
