@@ -22,7 +22,6 @@ public class ItemsTableTabAction extends AbstractAction {
 		
 		switch (selectedColumn) {
 		case 0:
-			table.getModel().setValueAt("SAMPLE PRODUCT DESCRIPTION", selectedRow, 1);
 			table.changeSelection(selectedRow, 2, false, false);
 			table.editCellAt(selectedRow, 2);
 			table.getEditorComponent().requestFocusInWindow();

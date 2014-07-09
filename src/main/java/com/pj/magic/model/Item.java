@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 public class Item {
 
 	private String productCode;
-	private String productDescription;
 	private String unit;
 	private String quantity;
 
@@ -37,14 +36,6 @@ public class Item {
 
 	public void setQuantity(String quantity) {
 		this.quantity = quantity;
-	}
-
-	public String getProductDescription() {
-		return productDescription;
-	}
-
-	public void setProductDescription(String productDescription) {
-		this.productDescription = productDescription;
 	}
 
 }

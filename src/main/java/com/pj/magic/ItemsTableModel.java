@@ -12,7 +12,16 @@ public class ItemsTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 3175876080507017536L;
 	
 	private String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
-	private List<Item> items = new ArrayList<>();
+	private List<Item> items;
+	private boolean editMode;
+	
+	public ItemsTableModel() {
+		items = new ArrayList<>();
+	}
+	
+	public ItemsTableModel(List<Item> items) {
+		this.items = items;
+	}
 	
 	@Override
 	public int getColumnCount() {
@@ -50,7 +59,6 @@ public class ItemsTableModel extends AbstractTableModel {
 		return columnNames[columnIndex];
 	}
 
-	// TODO: Combine ItemsTableModel and BlankItemsTableModel
 	public List<Item> getItems() {
 		List<Item> items = new ArrayList<>();
 		for (int i = 0; i < getRowCount(); i++) {
@@ -69,6 +77,50 @@ public class ItemsTableModel extends AbstractTableModel {
 		this.items.clear();
 		this.items.addAll(items);
 		fireTableDataChanged();
+	}
+	
+	public void addBlankRow() {
+		items.add(new Item());
+		fireTableDataChanged();
+	}
+	
+	@Override
+	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		Item item = items.get(rowIndex);
+		String val = (String)value;
+		switch (columnIndex) {
+		case ItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+			item.setProductCode(val);
+			break;
+		case ItemsTable.UNIT_COLUMN_INDEX:
+			item.setUnit(val);
+			break;
+		case ItemsTable.QUANTITY_COLUMN_INDEX:
+			item.setQuantity(val);
+			break;
+		default:
+			throw new RuntimeException("Setting invalid column index: " + columnIndex);
+		}
+		fireTableCellUpdated(rowIndex, columnIndex);
+	}
+	
+	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		if (editMode) {
+			return columnIndex == ItemsTable.PRODUCT_CODE_COLUMN_INDEX
+					|| columnIndex == ItemsTable.QUANTITY_COLUMN_INDEX
+					|| columnIndex == ItemsTable.UNIT_COLUMN_INDEX;
+		} else {
+			return false;
+		}
+	}
+	
+	public void setEditMode(boolean editMode) {
+		this.editMode = editMode;
+	}
+	
+	public boolean isEditing() {
+		return editMode;
 	}
 	
 }

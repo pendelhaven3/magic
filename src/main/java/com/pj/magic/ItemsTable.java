@@ -50,7 +50,7 @@ public class ItemsTable extends JTable {
 
 	public void switchToAddMode() {
 		addMode = true;
-		setModel(new BlankItemsTableModel());
+		setModel(generateModelWithBlankRowForEditing());
 		
 		JTextField productCodeTextField = new JTextField();
 		productCodeTextField.addKeyListener(new ProductCodeFieldKeyListener());
@@ -100,10 +100,7 @@ public class ItemsTable extends JTable {
 
 	public void addNewRow() {
 		int newRowIndex = getSelectedRow() + 1;
-		
-		BlankItemsTableModel model = (BlankItemsTableModel)getModel();
-		model.addBlankRow();
-		
+		getModel().addBlankRow();
 		changeSelection(newRowIndex, 0, false, false);
 		editCellAt(newRowIndex, 0);
 		getEditorComponent().requestFocusInWindow();
@@ -153,11 +150,9 @@ public class ItemsTable extends JTable {
 	}
 	
 	public void switchToViewMode() {
-		items.addAll(((BlankItemsTableModel)getModel()).getItems());
-		ItemsTableModel model = new ItemsTableModel();
-		model.setItems(items);
-		setModel(model);
-		if (model.getRowCount() > 0) {
+		items.addAll(getModel().getItems());
+		setModel(new ItemsTableModel(items));
+		if (items.size() > 0) {
 			setRowSelectionInterval(0, 0);
 		}
 		unregisterKeyBindingsInAddMode();
@@ -180,6 +175,21 @@ public class ItemsTable extends JTable {
 		KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, modifier);
 		String actionName = keyBindingsBackup.get(keyStroke);
 		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keyStroke, actionName);
+	}
+	
+	@Override
+	public ItemsTableModel getModel() {
+		return (ItemsTableModel)super.getModel();
+	}
+	
+	private ItemsTableModel generateModelWithBlankRowForEditing() {
+		List<Item> items = new ArrayList<>();
+		items.add(new Item());
+		
+		ItemsTableModel model = new ItemsTableModel(items);
+		model.setEditMode(true);
+		
+		return model;
 	}
 }
 

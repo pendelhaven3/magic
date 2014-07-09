@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JTable;
-import javax.swing.table.TableModel;
 
 import com.pj.magic.MagicDialog;
 
