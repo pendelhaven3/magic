@@ -19,7 +19,7 @@ public class MagicFrame extends JFrame {
 
 	private void addContents() {
 		ItemsTable table = new ItemsTable(new ItemsTableModel());
-		table.setRowSelectionInterval(0, 0);
+//		table.setRowSelectionInterval(0, 0);
 		// TODO: disable multiple row selection, shift+click and ctrl+click
 		
 		JScrollPane scrollPane = new JScrollPane(table);

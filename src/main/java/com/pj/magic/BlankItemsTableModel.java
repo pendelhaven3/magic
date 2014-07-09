@@ -1,8 +1,11 @@
 package com.pj.magic;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
+
+import com.pj.magic.model.Item;
 
 public class BlankItemsTableModel extends AbstractTableModel {
 
@@ -50,6 +53,20 @@ public class BlankItemsTableModel extends AbstractTableModel {
 	public void addBlankRow() {
 		data2.add(new String[] {"", "", "", "", "", ""});
 		fireTableDataChanged();
+	}
+	
+	public List<Item> getItems() {
+		List<Item> items = new ArrayList<>();
+		for (int i = 0; i < getRowCount(); i++) {
+			Item item = new Item();
+			item.setProductCode((String)getValueAt(i, ItemsTable.PRODUCT_CODE_COLUMN_INDEX));
+			item.setUnit((String)getValueAt(i, ItemsTable.UNIT_COLUMN_INDEX));
+			item.setQuantity((String)getValueAt(i, ItemsTable.QUANTITY_COLUMN_INDEX));
+			if (item.isValid()) {
+				items.add(item);
+			}
+		}
+		return items;
 	}
 	
 }

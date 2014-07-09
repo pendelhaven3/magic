@@ -1,7 +1,13 @@
 package com.pj.magic;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTable;
@@ -12,27 +18,38 @@ import javax.swing.text.AbstractDocument;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.pj.magic.model.Item;
+
 public class ItemsTable extends JTable {
 	
 	private static final long serialVersionUID = -8416737029470549899L;
 	
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
+	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
 	public static final int UNIT_COLUMN_INDEX = 2;
 	public static final int QUANTITY_COLUMN_INDEX = 3;
+	public static final int UNIT_PRICE_COLUMN_INDEX = 4;
+	public static final int AMOUNT_COLUMN_INDEX = 5;
 	private static final String TAB_ACTION_NAME = "tab";
 	private static final String DOWN_ACTION_NAME = "down";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String SHOW_SELECT_ACTION_DIALOG_ACTION_NAME = "showSelectActionDialog";
+	private static final String CANCEL_ADD_MODE_ACTION_NAME = "cancelAddMode";
 	
 	private UppercaseDocumentFilter uppercaseDocumentFilter = new UppercaseDocumentFilter(); // TODO: Replace with dependency injection
+	private boolean addMode;
+	private List<Item> items = new ArrayList<>();
+	private Map<KeyStroke, String> keyBindingsBackup = new HashMap<>();
 	
-	public ItemsTable(TableModel model) {
+	public ItemsTable(ItemsTableModel model) {
 		super(model);
+		items.addAll(model.getItems());
 		setSurrendersFocusOnKeystroke(true);
-		initialize();
+		registerKeyBindings();
 	}
 
-	public void switchToBlankItems() {
+	public void switchToAddMode() {
+		addMode = true;
 		setModel(new BlankItemsTableModel());
 		
 		JTextField productCodeTextField = new JTextField();
@@ -52,9 +69,19 @@ public class ItemsTable extends JTable {
 		// TODO: Handle also shift+tab
 		// TODO: Review tab
 		
+		registerKeyBindingsInAddMode();
+	}
+	
+	private void registerKeyBindingsInAddMode() {
+		saveOriginalKeyBinding(KeyEvent.VK_TAB, 0);
+		saveOriginalKeyBinding(KeyEvent.VK_DOWN, 0);
+		saveOriginalKeyBinding(KeyEvent.VK_F5, 0);
+		saveOriginalKeyBinding(KeyEvent.VK_ESCAPE, 0);
+		
 		getActionMap().put(TAB_ACTION_NAME, new ItemsTableTabAction(this));
 		getActionMap().put(DOWN_ACTION_NAME, new ItemsTableDownAction(this, getAction(KeyEvent.VK_DOWN)));
 		getActionMap().put(SHOW_SELECTION_DIALOG_ACTION_NAME, new ShowSelectionDialogAction(this));
+		getActionMap().put(CANCEL_ADD_MODE_ACTION_NAME, new CancelAddModeAction(this));
 				
 		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 			.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
@@ -62,6 +89,8 @@ public class ItemsTable extends JTable {
 			.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
 		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ADD_MODE_ACTION_NAME);
 	}
 	
 	private Action getAction(int keyEvent) {
@@ -112,10 +141,63 @@ public class ItemsTable extends JTable {
 				&& !StringUtils.isEmpty(quantity);
 	}
 	
-	protected void initialize() {
-		getActionMap().put(SHOW_SELECT_ACTION_DIALOG_ACTION_NAME, new ShowSelectActionDialogAction(this));
+	protected void registerKeyBindings() {
 		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), SHOW_SELECT_ACTION_DIALOG_ACTION_NAME);
+		
+		getActionMap().put(SHOW_SELECT_ACTION_DIALOG_ACTION_NAME, new ShowSelectActionDialogAction(this));
+	}
+	
+	public boolean isAdding() {
+		return addMode;
+	}
+	
+	public void switchToViewMode() {
+		items.addAll(((BlankItemsTableModel)getModel()).getItems());
+		ItemsTableModel model = new ItemsTableModel();
+		model.setItems(items);
+		setModel(model);
+		if (model.getRowCount() > 0) {
+			setRowSelectionInterval(0, 0);
+		}
+		unregisterKeyBindingsInAddMode();
+	}
+	
+	private void saveOriginalKeyBinding(int keyCode, int modifier) {
+		KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, modifier);
+		keyBindingsBackup.put(keyStroke, 
+				(String)getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(keyStroke));
+	}
+
+	private void unregisterKeyBindingsInAddMode() {
+		restoreOriginalKeyBinding(KeyEvent.VK_TAB, 0);
+		restoreOriginalKeyBinding(KeyEvent.VK_DOWN, 0);
+		restoreOriginalKeyBinding(KeyEvent.VK_F5, 0);
+		restoreOriginalKeyBinding(KeyEvent.VK_ESCAPE, 0);
+	}
+	
+	private void restoreOriginalKeyBinding(int keyCode, int modifier) {
+		KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, modifier);
+		String actionName = keyBindingsBackup.get(keyStroke);
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(keyStroke, actionName);
+	}
+}
+
+class CancelAddModeAction extends AbstractAction {
+	
+	private static final long serialVersionUID = 5886216309561534450L;
+
+	private ItemsTable table;
+	
+	public CancelAddModeAction(ItemsTable table) {
+		this.table = table;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (table.isAdding()) {
+			table.switchToViewMode();
+		}
 	}
 	
 }

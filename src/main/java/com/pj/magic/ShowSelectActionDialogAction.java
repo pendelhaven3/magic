@@ -24,7 +24,7 @@ public class ShowSelectActionDialogAction extends AbstractAction {
 		
 		String action = dialog.getSelectedAction();
 		if (ActionsTableModel.CREATE_ACTION.equals(action)) {
-			table.switchToBlankItems();
+			table.switchToAddMode();
 		} else if (ActionsTableModel.MODIFY_ACTION.equals(action)) {
 			// TODO: Add implementation
 		}
