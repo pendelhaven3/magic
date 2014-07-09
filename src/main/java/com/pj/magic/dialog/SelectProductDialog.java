@@ -1,21 +1,23 @@
 package com.pj.magic.dialog;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-
-import com.pj.magic.MagicDialog;
 
 public class SelectProductDialog extends MagicDialog {
 
 	private static final long serialVersionUID = -1155384453472953071L;
 	private static final String SELECT_PRODUCT_ACTION_NAME = "selectProduct";
-	public static final String PRODUCT_CODE_RETURN_VALUE_NAME = "productCode";
+	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
+
+	private String selectedProductCode;
 	
 	public SelectProductDialog() {
-		setModal(true);
 		setSize(500, 200);
 		setLocationRelativeTo(null);
 		setTitle("Select Product");
@@ -23,18 +25,28 @@ public class SelectProductDialog extends MagicDialog {
 	}
 
 	private void addContents() {
-		JTable table = new JTable(new ProductsTableModel());
+		final JDialog dialog = this;
+		final JTable table = new JTable(new ProductsTableModel());
 		table.setRowSelectionInterval(0, 0);
 		
 		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_PRODUCT_ACTION_NAME);
-		table.getActionMap().put(SELECT_PRODUCT_ACTION_NAME, new SelectProductAction(table, this));
+		table.getActionMap().put(SELECT_PRODUCT_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectedProductCode = (String)table.getValueAt(table.getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
+				dialog.setVisible(false);
+			}
+		});
+		
+		registerCloseOnEscapeKeyBinding(table);
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane);	
 	}
 
 	public String getSelectedProductCode() {
-		return getReturnValue(PRODUCT_CODE_RETURN_VALUE_NAME);
+		return selectedProductCode;
 	}
 	
 }

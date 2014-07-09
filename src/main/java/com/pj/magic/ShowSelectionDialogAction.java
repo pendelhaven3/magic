@@ -25,21 +25,25 @@ public class ShowSelectionDialogAction extends AbstractAction {
 			dialog.setVisible(true);
 			
 			String productCode = dialog.getSelectedProductCode();
-			if (table.isEditing()) {
-				table.getCellEditor().cancelCellEditing();
+			if (productCode != null) {
+				if (table.isEditing()) {
+					table.getCellEditor().cancelCellEditing();
+				}
+				table.setValueAt(productCode, table.getSelectedRow(), table.getSelectedColumn());
+				KeyUtil.simulateTabKey();
 			}
-			table.setValueAt(productCode, table.getSelectedRow(), table.getSelectedColumn());
-			KeyUtil.simulateTabKey();
 		} else if (table.isUnitFieldSelected()) {
 			SelectUnitDialog dialog = new SelectUnitDialog();
 			dialog.setVisible(true);
 			
 			String unit = dialog.getSelectedUnit();
-			if (table.isEditing()) {
-				table.getCellEditor().cancelCellEditing();
+			if (unit != null) {
+				if (table.isEditing()) {
+					table.getCellEditor().cancelCellEditing();
+				}
+				table.setValueAt(unit, table.getSelectedRow(), table.getSelectedColumn());
+				KeyUtil.simulateTabKey();
 			}
-			table.setValueAt(unit, table.getSelectedRow(), table.getSelectedColumn());
-			KeyUtil.simulateTabKey();
 		}
 	}
 
