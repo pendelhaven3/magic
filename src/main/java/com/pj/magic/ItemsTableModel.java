@@ -123,4 +123,8 @@ public class ItemsTableModel extends AbstractTableModel {
 		return editMode;
 	}
 	
+	public Item getRowItem(int rowIndex) {
+		return items.get(rowIndex);
+	}
+	
 }

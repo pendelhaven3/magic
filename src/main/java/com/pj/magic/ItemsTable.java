@@ -10,13 +10,11 @@ import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
+import javax.swing.InputMap;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.table.TableModel;
 import javax.swing.text.AbstractDocument;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.pj.magic.model.Item;
 
@@ -82,15 +80,12 @@ public class ItemsTable extends JTable {
 		getActionMap().put(DOWN_ACTION_NAME, new ItemsTableDownAction(this, getAction(KeyEvent.VK_DOWN)));
 		getActionMap().put(SHOW_SELECTION_DIALOG_ACTION_NAME, new ShowSelectionDialogAction(this));
 		getActionMap().put(CANCEL_ADD_MODE_ACTION_NAME, new CancelAddModeAction(this));
-				
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
-		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ADD_MODE_ACTION_NAME);
+		
+		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ADD_MODE_ACTION_NAME);
 	}
 	
 	private Action getAction(int keyEvent) {
@@ -126,22 +121,12 @@ public class ItemsTable extends JTable {
 		if (isEditing()) {
 			getCellEditor().stopCellEditing();
 		}
-		
-		TableModel model = getModel();
-		int rowIndex = getSelectedRow();
-		String productCode = (String)model.getValueAt(rowIndex, PRODUCT_CODE_COLUMN_INDEX);
-		String unit = (String)model.getValueAt(rowIndex, UNIT_COLUMN_INDEX);
-		String quantity = (String)model.getValueAt(rowIndex, QUANTITY_COLUMN_INDEX);
-		
-		return !StringUtils.isEmpty(productCode) 
-				&& !StringUtils.isEmpty(unit) 
-				&& !StringUtils.isEmpty(quantity);
+		return getModel().getRowItem(getSelectedRow()).isValid();
 	}
 	
 	protected void registerKeyBindings() {
 		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), SHOW_SELECT_ACTION_DIALOG_ACTION_NAME);
-		
 		getActionMap().put(SHOW_SELECT_ACTION_DIALOG_ACTION_NAME, new ShowSelectActionDialogAction(this));
 	}
 	
