@@ -7,10 +7,15 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class Product {
 
+	private Integer id;
 	private String code;
 	private String description;
-	private List<Unit> units;
+	private List<String> units;
 
+	public boolean isValid() {
+		return id != null && id.intValue() != 0;
+	}
+	
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder()
@@ -48,12 +53,20 @@ public class Product {
 		this.description = description;
 	}
 
-	public List<Unit> getUnits() {
+	public List<String> getUnits() {
 		return units;
 	}
 
-	public void setUnits(List<Unit> units) {
+	public void setUnits(List<String> units) {
 		this.units = units;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 }

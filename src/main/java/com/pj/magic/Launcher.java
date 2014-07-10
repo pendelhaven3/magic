@@ -2,6 +2,8 @@ package com.pj.magic;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.pj.magic.gui.MagicFrame;
+
 public class Launcher {
 
 	public void launch() {

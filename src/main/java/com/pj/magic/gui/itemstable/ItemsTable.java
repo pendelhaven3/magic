@@ -1,4 +1,4 @@
-package com.pj.magic;
+package com.pj.magic.gui.itemstable;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -20,11 +20,15 @@ import javax.swing.KeyStroke;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import com.pj.magic.component.MagicTextField;
-import com.pj.magic.dialog.ActionsTableModel;
-import com.pj.magic.dialog.SelectActionDialog;
+import com.pj.magic.gui.component.AbstractKeyListener;
+import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.dialog.ActionsTableModel;
+import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.model.Item;
+import com.pj.magic.model.Product;
+import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
 
 /*
@@ -47,8 +51,10 @@ public class ItemsTable extends JTable {
 	public static final int AMOUNT_COLUMN_INDEX = 5;
 	private static final int PRODUCT_CODE_MAXIMUM_LENGTH = 9;
 	private static final int UNIT_MAXIMUM_LENGTH = 3;
+	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String TAB_ACTION_NAME = "tab";
 	private static final String DOWN_ACTION_NAME = "down";
+	private static final String RIGHT_ACTION_NAME = "right";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String SHOW_SELECT_ACTION_DIALOG_ACTION_NAME = "showSelectActionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
@@ -59,6 +65,9 @@ public class ItemsTable extends JTable {
 	
 	@Autowired
 	private ItemsTableModel addModeTableModel; 
+	
+	@Autowired
+	private ProductService productService;
 	
 	private boolean addMode;
 	private List<Item> items = new ArrayList<>();
@@ -71,27 +80,68 @@ public class ItemsTable extends JTable {
 	}
 	
 	private void initializeColumns() {
+		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(50);
+		getColumnModel().getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(200);
+		getColumnModel().getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(50);
+		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(50);
+		getColumnModel().getColumn(UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
+		getColumnModel().getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(50);
+		
+		final JTable table = this;
+
 		MagicTextField productCodeTextField = new MagicTextField();
 		productCodeTextField.setMaximumLength(PRODUCT_CODE_MAXIMUM_LENGTH);
-		productCodeTextField.addKeyListener(new ProductCodeFieldKeyListener());
-		getColumnModel().getColumn(0).setCellEditor(new DefaultCellEditor(productCodeTextField));
+		productCodeTextField.addKeyListener(new AbstractKeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent event) {
+				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
+					JTextField textField = (JTextField)event.getComponent();
+					if (textField.getText().length() == PRODUCT_CODE_MAXIMUM_LENGTH) {
+						KeyUtil.simulateTabKey();
+					};
+				}
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent event) {
+				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
+					table.getCellEditor().stopCellEditing();
+					KeyUtil.simulateTabKey();
+				}
+			}
+		});
+		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(productCodeTextField));
 		
 		MagicTextField unitTextField = new MagicTextField();
 		unitTextField.setMaximumLength(UNIT_MAXIMUM_LENGTH);
-		unitTextField.addKeyListener(new UnitFieldKeyListener());
-		getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(unitTextField));
+		unitTextField.addKeyListener(new AbstractKeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent event) {
+				if (!KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
+					return;
+				}
+				JTextField textField = (JTextField)event.getComponent();
+				if (textField.getText().length() == UNIT_MAXIMUM_LENGTH) {
+					KeyUtil.simulateTabKey();
+				}
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent event) {
+				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
+					table.getCellEditor().stopCellEditing();
+					KeyUtil.simulateTabKey();
+				}
+			}
+		});
+		getColumnModel().getColumn(UNIT_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(unitTextField));
 		
-		final JTable table = this;
-		JTextField quantityTextField = new JTextField();
-		quantityTextField.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
+		MagicTextField quantityTextField = new MagicTextField();
+		quantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
+		quantityTextField.setNumbersOnly(true);
+		quantityTextField.addKeyListener(new AbstractKeyListener() {
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -101,7 +151,7 @@ public class ItemsTable extends JTable {
 				}
 			}
 		});
-		getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(quantityTextField));
+		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(quantityTextField));
 	}
 	
 	public void setItemsTableModel(ItemsTableModel dataModel) {
@@ -186,7 +236,6 @@ public class ItemsTable extends JTable {
 				changeSelection(selectedRowIndex, 0, false, false);
 			}
 		}
-		
 	}
 	
 	public Item getCurrentlySelectedRowItem() {
@@ -203,6 +252,7 @@ public class ItemsTable extends JTable {
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
+//		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), RIGHT_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), SHOW_SELECT_ACTION_DIALOG_ACTION_NAME);
@@ -226,13 +276,84 @@ public class ItemsTable extends JTable {
 				}
 			}
 		});
-		actionMap.put(TAB_ACTION_NAME, new ItemsTableTabAction(this));
+		actionMap.put(TAB_ACTION_NAME, new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (table.isEditing()) {
+					table.getCellEditor().stopCellEditing();
+				}
+				
+				int selectedColumn = table.getSelectedColumn();
+				int selectedRow = table.getSelectedRow();
+				
+				switch (selectedColumn) {
+				case PRODUCT_CODE_COLUMN_INDEX:
+					String code = (String)table.getValueAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
+					if (StringUtils.isEmpty(code)) {
+						JOptionPane.showMessageDialog(table,
+								"Product code must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
+						table.editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
+						getEditorComponent().requestFocusInWindow();
+					} else if (productService.findProductByCode(code) == null) {
+						JOptionPane.showMessageDialog(table,
+								"No product matching code specified", "Error Message", JOptionPane.ERROR_MESSAGE);
+						table.editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
+						getEditorComponent().requestFocusInWindow();
+					} else {
+						table.changeSelection(selectedRow, UNIT_COLUMN_INDEX, false, false);
+						table.editCellAt(selectedRow, UNIT_COLUMN_INDEX);
+						getEditorComponent().requestFocusInWindow();
+					}
+					break;
+				case ItemsTable.UNIT_COLUMN_INDEX:
+					String unit = (String)table.getValueAt(selectedRow, UNIT_COLUMN_INDEX);
+					
+					if (StringUtils.isEmpty(unit)) {
+						JOptionPane.showMessageDialog(table,
+								"Unit must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
+						table.editCellAt(selectedRow, UNIT_COLUMN_INDEX);
+						table.getEditorComponent().requestFocusInWindow();
+					} else {
+						Product product = table.getCurrentlySelectedRowItem().getProduct();
+						if (!product.getUnits().contains(unit)) {
+							JOptionPane.showMessageDialog(table,
+									"Invalid product unit", "Error Message", JOptionPane.ERROR_MESSAGE);
+							table.editCellAt(selectedRow, UNIT_COLUMN_INDEX);
+							table.getEditorComponent().requestFocusInWindow();
+						} else {
+							table.changeSelection(selectedRow, QUANTITY_COLUMN_INDEX, false, false);
+							table.editCellAt(selectedRow, QUANTITY_COLUMN_INDEX);
+							table.getEditorComponent().requestFocusInWindow();
+						}
+					}
+					
+					// TODO: check for duplicate
+					
+					break;
+				case QUANTITY_COLUMN_INDEX:
+					if (selectedRow + 1 < table.getRowCount()) {
+						table.changeSelection(selectedRow + 1, 0, false, false);
+						table.editCellAt(selectedRow + 1, 0);
+						table.getEditorComponent().requestFocusInWindow();
+					}
+					break;
+				}
+			}
+		});
 		actionMap.put(DOWN_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.isAdding() && table.isLastRowSelected() && table.isCurrentRowValid()) {
-					table.addNewRow();
+				if (table.isAdding() && table.isLastRowSelected()) {
+					Item item = table.getCurrentlySelectedRowItem();
+					if (item.getQuantity() == null) {
+						JOptionPane.showMessageDialog(table,
+								"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
+						table.editCellAt(table.getSelectedRow(), QUANTITY_COLUMN_INDEX);
+					} else {
+						table.addNewRow();
+					}
 				} else {
 					originalDownAction.actionPerformed(e);
 				}
@@ -266,12 +387,4 @@ public class ItemsTable extends JTable {
 		});
 	}
 	
-	public void setAddModeTableModel(ItemsTableModel addModeTableModel) {
-		this.addModeTableModel = addModeTableModel;
-	}
-	
-	public void setEditModeTableModel(ItemsTableModel editModeTableModel) {
-		this.editModeTableModel = editModeTableModel;
-	}
-
 }

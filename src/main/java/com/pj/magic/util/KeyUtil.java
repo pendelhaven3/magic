@@ -22,4 +22,9 @@ public class KeyUtil {
 		}
 	}
 	
+	public static boolean isAlphaNumericKeyCode(int keyCode) {
+		return (keyCode >= KeyEvent.VK_0 && keyCode <= KeyEvent.VK_9)
+				|| (keyCode >= KeyEvent.VK_A && keyCode <= KeyEvent.VK_Z);
+	}
+	
 }

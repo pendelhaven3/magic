@@ -1,4 +1,4 @@
-package com.pj.magic.dialog;
+package com.pj.magic.gui.dialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;

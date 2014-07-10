@@ -1,4 +1,4 @@
-package com.pj.magic;
+package com.pj.magic.gui.itemstable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,19 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.model.Item;
+import com.pj.magic.model.Product;
+import com.pj.magic.service.ProductService;
+
+/*
+ * [PJ 7/10/2014] 
+ * An item can have a Product instance but an invalid code.
+ * Product id is used instead to check for product code validity.
+ */
 
 @Component
 @Scope("prototype")
@@ -17,7 +26,10 @@ public class ItemsTableModel extends AbstractTableModel {
 	
 	private static final long serialVersionUID = 3175876080507017536L;
 	
-	private String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
+	@Autowired
+	private ProductService productService;
+	
+	private String[] columnNames = {"Code", "Description", "Unit", "Quantity", "Unit Price", "Amount"};
 	private List<Item> items = new ArrayList<>();
 	
 	@Override
@@ -83,13 +95,20 @@ public class ItemsTableModel extends AbstractTableModel {
 		String val = (String)value;
 		switch (columnIndex) {
 		case ItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-//			item.setProductCode(val);
+			Product product = productService.findProductByCode(val);
+			if (product == null) {
+				product = new Product();
+				product.setCode(val);
+			}
+			item.setProduct(product);
 			break;
 		case ItemsTable.UNIT_COLUMN_INDEX:
 			item.setUnit(val);
 			break;
 		case ItemsTable.QUANTITY_COLUMN_INDEX:
-//			item.setQuantity(val);
+			if (!StringUtils.isEmpty(val) && StringUtils.isNumeric(val)) {
+				item.setQuantity(Integer.parseInt(val));
+			}
 			break;
 		default:
 			throw new RuntimeException("Setting invalid column index: " + columnIndex);

@@ -10,7 +10,7 @@ public class Item {
 	private Integer quantity;
 
 	public boolean isValid() {
-		return product != null
+		return (product != null && product.isValid())
 				&& product.getUnits().contains(unit)
 				&& (quantity != null && quantity.intValue() > 0);
 	}

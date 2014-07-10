@@ -1,11 +1,11 @@
-package com.pj.magic;
+package com.pj.magic.gui.itemstable;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import com.pj.magic.dialog.SelectProductDialog;
-import com.pj.magic.dialog.SelectUnitDialog;
+import com.pj.magic.gui.dialog.SelectProductDialog;
+import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.util.KeyUtil;
 
 public class ShowSelectionDialogAction extends AbstractAction {
