@@ -18,6 +18,8 @@ import javax.swing.KeyStroke;
 import javax.swing.table.TableModel;
 
 import com.pj.magic.component.MagicTextField;
+import com.pj.magic.dialog.ActionsTableModel;
+import com.pj.magic.dialog.SelectActionDialog;
 import com.pj.magic.model.Item;
 import com.pj.magic.util.KeyUtil;
 
@@ -201,7 +203,23 @@ public class ItemsTable extends JTable {
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
 		
 		ActionMap actionMap = getActionMap();
-		actionMap.put(SHOW_SELECT_ACTION_DIALOG_ACTION_NAME, new ShowSelectActionDialogAction(this));
+		actionMap.put(SHOW_SELECT_ACTION_DIALOG_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SelectActionDialog dialog = new SelectActionDialog();
+				dialog.setVisible(true);
+				
+				String action = dialog.getSelectedAction();
+				if (ActionsTableModel.CREATE_ACTION.equals(action)) {
+					table.switchToAddMode();
+				} else if (ActionsTableModel.MODIFY_ACTION.equals(action)) {
+					if (table.isAdding()) {
+						table.switchToEditMode();
+					}
+				}
+			}
+		});
 		actionMap.put(TAB_ACTION_NAME, new ItemsTableTabAction(this));
 		actionMap.put(DOWN_ACTION_NAME, new AbstractAction() {
 			
