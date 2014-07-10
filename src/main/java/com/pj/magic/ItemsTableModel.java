@@ -127,4 +127,8 @@ public class ItemsTableModel extends AbstractTableModel {
 		return items.get(rowIndex);
 	}
 	
+	public Item getLastRowItem() {
+		return items.get(items.size() - 1);
+	}
+	
 }

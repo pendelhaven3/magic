@@ -7,4 +7,5 @@ public class Magic {
 		frame.setVisible(true);
 	}
 	
+	
 }

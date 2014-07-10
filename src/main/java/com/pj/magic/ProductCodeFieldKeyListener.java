@@ -20,7 +20,6 @@ public class ProductCodeFieldKeyListener implements KeyListener {
 		if (!isAlphaNumericKeyCode(event.getKeyCode())) {
 			return;
 		}
-		
 		if (isMaximumProductCodeLengthReached(event)) {
 			KeyUtil.simulateTabKey();
 		}

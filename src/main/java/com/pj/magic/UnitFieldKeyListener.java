@@ -1,11 +1,11 @@
 package com.pj.magic;
 
-import java.awt.AWTException;
-import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JTextField;
+
+import com.pj.magic.util.KeyUtil;
 
 public class UnitFieldKeyListener implements KeyListener {
 
@@ -20,14 +20,9 @@ public class UnitFieldKeyListener implements KeyListener {
 		if (!isAlphaNumericKeyCode(event.getKeyCode())) {
 			return;
 		}
-		
 		JTextField textField = (JTextField)event.getComponent();
 		if (textField.getText().length() == UNIT_MAXIMUM_LENGTH) {
-			try {
-				new Robot().keyPress(KeyEvent.VK_TAB);
-			} catch (AWTException e) {
-				e.printStackTrace();
-			}
+			KeyUtil.simulateTabKey();
 		}
 	}
 

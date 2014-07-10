@@ -14,4 +14,12 @@ public class KeyUtil {
 		}
 	}
 	
+	public static void simulateDownKey() {
+		try {
+			new Robot().keyPress(KeyEvent.VK_DOWN);
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }
