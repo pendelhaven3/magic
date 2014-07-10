@@ -1,29 +1,28 @@
 package com.pj.magic.model;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class Item {
 
-	private String productCode;
+	private Product product;
 	private String unit;
-	private String quantity;
+	private Integer quantity;
 
 	public boolean isValid() {
-		return !StringUtils.isEmpty(productCode)
-				&& !StringUtils.isEmpty(unit)
-				&& !StringUtils.isEmpty(quantity);
+		return product != null
+				&& product.getUnits().contains(unit)
+				&& (quantity != null && quantity.intValue() > 0);
 	}
 	
-	public String getProductCode() {
-		return productCode;
+	public Product getProduct() {
+		return product;
 	}
-
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
+	
+	public void setProduct(Product product) {
+		this.product = product;
 	}
-
+	
 	public String getUnit() {
 		return unit;
 	}
@@ -32,18 +31,18 @@ public class Item {
 		this.unit = unit;
 	}
 
-	public String getQuantity() {
+	public Integer getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(String quantity) {
+	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder()
-			.append(productCode)
+			.append(product)
 			.append(unit)
 			.toHashCode();
 	}
@@ -58,7 +57,7 @@ public class Item {
         }
         Item other = (Item)obj;		
 		return new EqualsBuilder()
-			.append(productCode, other.getProductCode())
+			.append(product, other.getProduct())
 			.append(unit, other.getUnit())
 			.isEquals();
 	}

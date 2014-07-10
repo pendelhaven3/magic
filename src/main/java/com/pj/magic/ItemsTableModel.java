@@ -5,22 +5,20 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.pj.magic.model.Item;
 
+@Component
+@Scope("prototype")
 public class ItemsTableModel extends AbstractTableModel {
 	
 	private static final long serialVersionUID = 3175876080507017536L;
 	
 	private String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
-	private List<Item> items;
-	
-	public ItemsTableModel() {
-		items = new ArrayList<>();
-	}
-	
-	public ItemsTableModel(List<Item> items) {
-		this.items = items;
-	}
+	private List<Item> items = new ArrayList<>();
 	
 	@Override
 	public int getColumnCount() {
@@ -37,13 +35,13 @@ public class ItemsTableModel extends AbstractTableModel {
 		Item item = items.get(rowIndex);
 		switch (columnIndex) {
 		case ItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			return item.getProductCode();
+			return (item.getProduct() != null) ? item.getProduct().getCode() : "";
 		case ItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
-			return "";
+			return (item.getProduct() != null) ? item.getProduct().getDescription() : "";
 		case ItemsTable.UNIT_COLUMN_INDEX:
-			return item.getUnit();
+			return StringUtils.defaultString(item.getUnit());
 		case ItemsTable.QUANTITY_COLUMN_INDEX:
-			return item.getQuantity();
+			return (item.getQuantity() != null) ? item.getQuantity() : "";
 		case ItemsTable.UNIT_PRICE_COLUMN_INDEX:
 			return "";
 		case ItemsTable.AMOUNT_COLUMN_INDEX:
@@ -60,11 +58,7 @@ public class ItemsTableModel extends AbstractTableModel {
 
 	public List<Item> getItems() {
 		List<Item> items = new ArrayList<>();
-		for (int i = 0; i < getRowCount(); i++) {
-			Item item = new Item();
-			item.setProductCode((String)getValueAt(i, ItemsTable.PRODUCT_CODE_COLUMN_INDEX));
-			item.setUnit((String)getValueAt(i, ItemsTable.UNIT_COLUMN_INDEX));
-			item.setQuantity((String)getValueAt(i, ItemsTable.QUANTITY_COLUMN_INDEX));
+		for (Item item : this.items) {
 			if (item.isValid()) {
 				items.add(item);
 			}
@@ -89,13 +83,13 @@ public class ItemsTableModel extends AbstractTableModel {
 		String val = (String)value;
 		switch (columnIndex) {
 		case ItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			item.setProductCode(val);
+//			item.setProductCode(val);
 			break;
 		case ItemsTable.UNIT_COLUMN_INDEX:
 			item.setUnit(val);
 			break;
 		case ItemsTable.QUANTITY_COLUMN_INDEX:
-			item.setQuantity(val);
+//			item.setQuantity(val);
 			break;
 		default:
 			throw new RuntimeException("Setting invalid column index: " + columnIndex);
@@ -121,6 +115,11 @@ public class ItemsTableModel extends AbstractTableModel {
 	
 	public boolean hasItems() {
 		return !items.isEmpty();
+	}
+	
+	public void clearForNewInput() {
+		items.clear();
+		items.add(new Item());
 	}
 	
 }

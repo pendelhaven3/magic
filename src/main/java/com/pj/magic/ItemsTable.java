@@ -6,6 +6,7 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -15,7 +16,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.table.TableModel;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.pj.magic.component.MagicTextField;
 import com.pj.magic.dialog.ActionsTableModel;
@@ -24,9 +28,13 @@ import com.pj.magic.model.Item;
 import com.pj.magic.util.KeyUtil;
 
 /*
- * [PJ 7/10/2014] ItemsTable has 2 modes: edit (default) and add (allows adding blank rows after the last row)
+ * [PJ 7/10/2014] 
+ * ItemsTable has 2 modes: edit (default) and add (allows adding blank rows after the last row).
+ * It also has 2 instances of ItemsTableModel (one for edit mode, one for add mode).
  */
 
+@Component
+@Scope("prototype")
 public class ItemsTable extends JTable {
 	
 	private static final long serialVersionUID = -8416737029470549899L;
@@ -45,18 +53,23 @@ public class ItemsTable extends JTable {
 	private static final String SHOW_SELECT_ACTION_DIALOG_ACTION_NAME = "showSelectActionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
+
+	@Autowired
+	private ItemsTableModel editModeTableModel; 
+	
+	@Autowired
+	private ItemsTableModel addModeTableModel; 
 	
 	private boolean addMode;
 	private List<Item> items = new ArrayList<>();
 	
-	public ItemsTable(ItemsTableModel model) {
-		super(model);
-		items.addAll(model.getItems());
+	@PostConstruct
+	public void initialize() throws Exception {
+		setItemsTableModel(editModeTableModel);
 		setSurrendersFocusOnKeystroke(true);
 		registerKeyBindings();
-		initializeColumns();
 	}
-
+	
 	private void initializeColumns() {
 		MagicTextField productCodeTextField = new MagicTextField();
 		productCodeTextField.setMaximumLength(PRODUCT_CODE_MAXIMUM_LENGTH);
@@ -91,15 +104,15 @@ public class ItemsTable extends JTable {
 		getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(quantityTextField));
 	}
 	
-	@Override
-	public void setModel(TableModel dataModel) {
-		super.setModel(dataModel);
+	public void setItemsTableModel(ItemsTableModel dataModel) {
+		setModel(dataModel);
 		initializeColumns();
 	}
 	
 	public void switchToAddMode() {
 		addMode = true;
-		setModel(generateModelWithBlankRow());
+		addModeTableModel.clearForNewInput();
+		setItemsTableModel(addModeTableModel);
 		changeSelection(0, 0, false, false);
 		editCellAt(0, 0);
 		getEditorComponent().requestFocusInWindow();
@@ -112,7 +125,7 @@ public class ItemsTable extends JTable {
 
 	public void addNewRow() {
 		int newRowIndex = getSelectedRow() + 1;
-		getModel().addNewRow();
+		getItemsTableModel().addNewRow();
 		changeSelection(newRowIndex, 0, false, false);
 		editCellAt(newRowIndex, 0);
 		getEditorComponent().requestFocusInWindow();
@@ -131,26 +144,18 @@ public class ItemsTable extends JTable {
 	}
 	
 	public boolean isLastRowSelected() {
-		return getSelectedRow() + 1 == getModel().getRowCount();
+		return getSelectedRow() + 1 == getItemsTableModel().getRowCount();
 	}
 
 	public boolean isCurrentRowValid() {
 		if (isEditing()) {
 			getCellEditor().stopCellEditing();
 		}
-		return getModel().getRowItem(getSelectedRow()).isValid();
+		return getItemsTableModel().getRowItem(getSelectedRow()).isValid();
 	}
 	
-	@Override
-	public ItemsTableModel getModel() {
+	public ItemsTableModel getItemsTableModel() {
 		return (ItemsTableModel)super.getModel();
-	}
-	
-	private ItemsTableModel generateModelWithBlankRow() {
-		List<Item> items = new ArrayList<>();
-		items.add(new Item());
-		
-		return new ItemsTableModel(items);
 	}
 	
 	public boolean isAdding() {
@@ -159,8 +164,9 @@ public class ItemsTable extends JTable {
 	
 	public void switchToEditMode() {
 		addMode = false;
-		items.addAll(getModel().getItems());
-		setModel(new ItemsTableModel(items));
+		items.addAll(getItemsTableModel().getItems());
+		editModeTableModel.setItems(items);
+		setItemsTableModel(editModeTableModel);
 		
 		if (items.size() > 0) {
 			changeSelection(0, 0, false, false);
@@ -170,11 +176,11 @@ public class ItemsTable extends JTable {
 	public void removeCurrentlySelectedRow() {
 		int selectedRowIndex = getSelectedRow();
 		Item item = getCurrentlySelectedRowItem();
-		getModel().removeItem(selectedRowIndex);
+		getItemsTableModel().removeItem(selectedRowIndex);
 		items.remove(item);
 		
-		if (getModel().hasItems()) {
-			if (selectedRowIndex == getModel().getRowCount()) {
+		if (getItemsTableModel().hasItems()) {
+			if (selectedRowIndex == getItemsTableModel().getRowCount()) {
 				changeSelection(selectedRowIndex - 1, 0, false, false);
 			} else {
 				changeSelection(selectedRowIndex, 0, false, false);
@@ -184,7 +190,7 @@ public class ItemsTable extends JTable {
 	}
 	
 	public Item getCurrentlySelectedRowItem() {
-		return getModel().getRowItem(getSelectedRow());
+		return getItemsTableModel().getRowItem(getSelectedRow());
 	}
 	
 	protected void registerKeyBindings() {
@@ -248,7 +254,7 @@ public class ItemsTable extends JTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.getModel().hasItems()) {
+				if (table.getItemsTableModel().hasItems()) {
 					if (table.getCurrentlySelectedRowItem().isValid()) {
 						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?");
 						if (confirm == JOptionPane.OK_OPTION) {
@@ -260,4 +266,12 @@ public class ItemsTable extends JTable {
 		});
 	}
 	
+	public void setAddModeTableModel(ItemsTableModel addModeTableModel) {
+		this.addModeTableModel = addModeTableModel;
+	}
+	
+	public void setEditModeTableModel(ItemsTableModel editModeTableModel) {
+		this.editModeTableModel = editModeTableModel;
+	}
+
 }
