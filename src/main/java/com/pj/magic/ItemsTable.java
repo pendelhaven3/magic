@@ -41,6 +41,7 @@ public class ItemsTable extends JTable {
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String SHOW_SELECT_ACTION_DIALOG_ACTION_NAME = "showSelectActionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
+	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 	
 	private boolean addMode;
 	private List<Item> items = new ArrayList<>();
@@ -48,7 +49,6 @@ public class ItemsTable extends JTable {
 	public ItemsTable(ItemsTableModel model) {
 		super(model);
 		items.addAll(model.getItems());
-		model.setEditMode(true);
 		setSurrendersFocusOnKeystroke(true);
 		registerKeyBindings();
 		initializeColumns();
@@ -147,10 +147,7 @@ public class ItemsTable extends JTable {
 		List<Item> items = new ArrayList<>();
 		items.add(new Item());
 		
-		ItemsTableModel model = new ItemsTableModel(items);
-		model.setEditMode(true);
-		
-		return model;
+		return new ItemsTableModel(items);
 	}
 	
 	public boolean isAdding() {
@@ -160,10 +157,7 @@ public class ItemsTable extends JTable {
 	public void switchToEditMode() {
 		addMode = false;
 		items.addAll(getModel().getItems());
-		
-		ItemsTableModel model = new ItemsTableModel(items);
-		model.setEditMode(true);
-		setModel(model);
+		setModel(new ItemsTableModel(items));
 		
 		if (items.size() > 0) {
 			changeSelection(0, 0, false, false);
@@ -180,6 +174,7 @@ public class ItemsTable extends JTable {
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), SHOW_SELECT_ACTION_DIALOG_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
@@ -208,6 +203,12 @@ public class ItemsTable extends JTable {
 				} else {
 					originalEscapeAction.actionPerformed(e);
 				}
+			}
+		});
+		actionMap.put(DELETE_ITEM_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
 			}
 		});
 	}

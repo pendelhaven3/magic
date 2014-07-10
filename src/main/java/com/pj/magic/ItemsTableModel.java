@@ -13,7 +13,6 @@ public class ItemsTableModel extends AbstractTableModel {
 	
 	private String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
 	private List<Item> items;
-	private boolean editMode;
 	
 	public ItemsTableModel() {
 		items = new ArrayList<>();
@@ -106,21 +105,9 @@ public class ItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if (editMode) {
-			return columnIndex == ItemsTable.PRODUCT_CODE_COLUMN_INDEX
-					|| columnIndex == ItemsTable.QUANTITY_COLUMN_INDEX
-					|| columnIndex == ItemsTable.UNIT_COLUMN_INDEX;
-		} else {
-			return false;
-		}
-	}
-	
-	public void setEditMode(boolean editMode) {
-		this.editMode = editMode;
-	}
-	
-	public boolean isEditing() {
-		return editMode;
+		return columnIndex == ItemsTable.PRODUCT_CODE_COLUMN_INDEX
+				|| columnIndex == ItemsTable.QUANTITY_COLUMN_INDEX
+				|| columnIndex == ItemsTable.UNIT_COLUMN_INDEX;
 	}
 	
 	public Item getRowItem(int rowIndex) {
