@@ -78,7 +78,7 @@ public class ItemsTableModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 	
-	public void addBlankRow() {
+	public void addNewRow() {
 		items.add(new Item());
 		fireTableDataChanged();
 	}
@@ -114,8 +114,13 @@ public class ItemsTableModel extends AbstractTableModel {
 		return items.get(rowIndex);
 	}
 	
-	public Item getLastRowItem() {
-		return items.get(items.size() - 1);
+	public void removeItem(int rowIndex) {
+		items.remove(rowIndex);
+		fireTableDataChanged();
+	}
+	
+	public boolean hasItems() {
+		return !items.isEmpty();
 	}
 	
 }

@@ -1,6 +1,8 @@
 package com.pj.magic.model;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class Item {
 
@@ -38,4 +40,27 @@ public class Item {
 		this.quantity = quantity;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(productCode)
+			.append(unit)
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof Item)) {
+            return false;
+        }
+        Item other = (Item)obj;		
+		return new EqualsBuilder()
+			.append(productCode, other.getProductCode())
+			.append(unit, other.getUnit())
+			.isEquals();
+	}
+	
 }

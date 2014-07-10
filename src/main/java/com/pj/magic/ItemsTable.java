@@ -11,6 +11,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -109,7 +110,7 @@ public class ItemsTable extends JTable {
 
 	public void addNewRow() {
 		int newRowIndex = getSelectedRow() + 1;
-		getModel().addBlankRow();
+		getModel().addNewRow();
 		changeSelection(newRowIndex, 0, false, false);
 		editCellAt(newRowIndex, 0);
 		getEditorComponent().requestFocusInWindow();
@@ -164,6 +165,26 @@ public class ItemsTable extends JTable {
 		}
 	}
 	
+	public void removeCurrentlySelectedRow() {
+		int selectedRowIndex = getSelectedRow();
+		Item item = getCurrentlySelectedRowItem();
+		getModel().removeItem(selectedRowIndex);
+		items.remove(item);
+		
+		if (getModel().hasItems()) {
+			if (selectedRowIndex == getModel().getRowCount()) {
+				changeSelection(selectedRowIndex - 1, 0, false, false);
+			} else {
+				changeSelection(selectedRowIndex, 0, false, false);
+			}
+		}
+		
+	}
+	
+	public Item getCurrentlySelectedRowItem() {
+		return getModel().getRowItem(getSelectedRow());
+	}
+	
 	protected void registerKeyBindings() {
 		// TODO: shift + tab
 		
@@ -209,6 +230,14 @@ public class ItemsTable extends JTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (table.getModel().hasItems()) {
+					if (table.getCurrentlySelectedRowItem().isValid()) {
+						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?");
+						if (confirm == JOptionPane.OK_OPTION) {
+							table.removeCurrentlySelectedRow();
+						}
+					}
+				}
 			}
 		});
 	}
