@@ -83,12 +83,12 @@ public class ItemsTable extends JTable {
 	}
 	
 	private void initializeColumns() {
-		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(50);
-		getColumnModel().getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(200);
-		getColumnModel().getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(50);
-		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(50);
-		getColumnModel().getColumn(UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
-		getColumnModel().getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(50);
+		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(120);
+		getColumnModel().getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
+		getColumnModel().getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(70);
+		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
+		getColumnModel().getColumn(UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(100);
+		getColumnModel().getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
 		
 		final JTable table = this;
 
@@ -262,6 +262,7 @@ public class ItemsTable extends JTable {
 	protected void registerKeyBindings() {
 		// TODO: shift + tab
 		// TODO: Remove table references inside anonymous classes
+		// TODO: Modify on other columns dont work
 		
 		final ItemsTable table = this;
 		final Action originalDownAction = getAction(KeyEvent.VK_DOWN);

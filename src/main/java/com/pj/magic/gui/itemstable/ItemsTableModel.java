@@ -29,7 +29,7 @@ public class ItemsTableModel extends AbstractTableModel {
 	@Autowired
 	private ProductService productService;
 	
-	private String[] columnNames = {"Code", "Description", "Unit", "Quantity", "Unit Price", "Amount"};
+	private String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
 	private List<Item> items = new ArrayList<>();
 	
 	@Override

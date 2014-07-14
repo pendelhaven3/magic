@@ -4,8 +4,12 @@ package com.pj.magic;
 public class Magic {
 
 	public static void main(String[] args) {
-		Launcher launcher = new Launcher();
-		launcher.launch();
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+        		Launcher launcher = new Launcher();
+        		launcher.launch();
+            }
+        });
 	}
 	
 }
