@@ -140,5 +140,14 @@ public class ItemsTableModel extends AbstractTableModel {
 		items.clear();
 		items.add(new Item());
 	}
+
+	public boolean hasDuplicate(Item checkItem) {
+		for (Item item : items) {
+			if (item.equals(checkItem) && item != checkItem) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 }

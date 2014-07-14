@@ -28,7 +28,6 @@ import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.model.Item;
-import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
 
@@ -36,6 +35,12 @@ import com.pj.magic.util.KeyUtil;
  * [PJ 7/10/2014] 
  * ItemsTable has 2 modes: edit (default) and add (allows adding blank rows after the last row).
  * It also has 2 instances of ItemsTableModel (one for edit mode, one for add mode).
+ * 
+ * [PJ 7/14/2014]
+ * Separation of table models follows the behavior of the existing system wherein
+ * already added items are hidden when user switches to add mode.
+ * These items become visible again when user switches back to edit mode.
+ * 
  */
 
 @Component
@@ -240,6 +245,20 @@ public class ItemsTable extends JTable {
 		return getItemsTableModel().getRowItem(getSelectedRow());
 	}
 	
+	public void editCellAtCurrentRow(int columnIndex) {
+		editCellAt(getSelectedRow(), columnIndex);
+		getEditorComponent().requestFocusInWindow();
+	}
+	
+	private boolean hasDuplicate(Item checkItem) {
+		for (Item item : items) {
+			if (item.equals(checkItem) && item != checkItem) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	protected void registerKeyBindings() {
 		// TODO: shift + tab
 		// TODO: Remove table references inside anonymous classes
@@ -305,28 +324,24 @@ public class ItemsTable extends JTable {
 					break;
 				case ItemsTable.UNIT_COLUMN_INDEX:
 					String unit = (String)table.getValueAt(selectedRow, UNIT_COLUMN_INDEX);
+					Item item = table.getCurrentlySelectedRowItem();
 					
 					if (StringUtils.isEmpty(unit)) {
 						JOptionPane.showMessageDialog(table,
 								"Unit must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						table.editCellAt(selectedRow, UNIT_COLUMN_INDEX);
-						table.getEditorComponent().requestFocusInWindow();
+						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
+					} else if (!item.getProduct().getUnits().contains(unit)) {
+						JOptionPane.showMessageDialog(table,
+								"Product does not have unit specified", "Error Message", JOptionPane.ERROR_MESSAGE);
+						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
+					} else if (getItemsTableModel().hasDuplicate(item) || hasDuplicate(item)) {
+						JOptionPane.showMessageDialog(table,
+								"Duplicate item", "Error Message", JOptionPane.ERROR_MESSAGE);
+						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
 					} else {
-						Product product = table.getCurrentlySelectedRowItem().getProduct();
-						if (!product.getUnits().contains(unit)) {
-							JOptionPane.showMessageDialog(table,
-									"Invalid product unit", "Error Message", JOptionPane.ERROR_MESSAGE);
-							table.editCellAt(selectedRow, UNIT_COLUMN_INDEX);
-							table.getEditorComponent().requestFocusInWindow();
-						} else {
-							table.changeSelection(selectedRow, QUANTITY_COLUMN_INDEX, false, false);
-							table.editCellAt(selectedRow, QUANTITY_COLUMN_INDEX);
-							table.getEditorComponent().requestFocusInWindow();
-						}
+						table.changeSelection(selectedRow, QUANTITY_COLUMN_INDEX, false, false);
+						editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
 					}
-					
-					// TODO: check for duplicate
-					
 					break;
 				case QUANTITY_COLUMN_INDEX:
 					if (selectedRow + 1 < table.getRowCount()) {
@@ -342,14 +357,14 @@ public class ItemsTable extends JTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.isAdding() && table.isLastRowSelected()) {
-					Item item = table.getCurrentlySelectedRowItem();
+				if (isAdding() && isLastRowSelected() && isQuantityFieldSelected()) {
+					Item item = getCurrentlySelectedRowItem();
 					if (item.getQuantity() == null) {
 						JOptionPane.showMessageDialog(table,
 								"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						table.editCellAt(table.getSelectedRow(), QUANTITY_COLUMN_INDEX);
+						editCellAt(table.getSelectedRow(), QUANTITY_COLUMN_INDEX);
 					} else {
-						table.addNewRow();
+						addNewRow();
 					}
 				} else {
 					originalDownAction.actionPerformed(e);
