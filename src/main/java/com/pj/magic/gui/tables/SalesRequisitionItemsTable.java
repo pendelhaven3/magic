@@ -2,7 +2,6 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.table.TableColumnModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -79,15 +79,14 @@ public class SalesRequisitionItemsTable extends JTable {
 	}
 	
 	private void initializeColumns() {
-		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(120);
-		getColumnModel().getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
-		getColumnModel().getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(70);
-		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
-		getColumnModel().getColumn(UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(100);
-		getColumnModel().getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
+		TableColumnModel columnModel = getColumnModel();
+		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(120);
+		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(70);
+		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
+		columnModel.getColumn(UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
 		
-		final JTable table = this;
-
 		MagicTextField productCodeTextField = new MagicTextField();
 		productCodeTextField.setMaximumLength(PRODUCT_CODE_MAXIMUM_LENGTH);
 		productCodeTextField.addKeyListener(new AbstractKeyListener() {
@@ -105,7 +104,7 @@ public class SalesRequisitionItemsTable extends JTable {
 			@Override
 			public void keyPressed(KeyEvent event) {
 				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					table.getCellEditor().stopCellEditing();
+					getCellEditor().stopCellEditing();
 					KeyUtil.simulateTabKey();
 				}
 			}
@@ -130,7 +129,7 @@ public class SalesRequisitionItemsTable extends JTable {
 			@Override
 			public void keyPressed(KeyEvent event) {
 				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					table.getCellEditor().stopCellEditing();
+					getCellEditor().stopCellEditing();
 					KeyUtil.simulateTabKey();
 				}
 			}
@@ -145,7 +144,7 @@ public class SalesRequisitionItemsTable extends JTable {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					table.getCellEditor().stopCellEditing();
+					getCellEditor().stopCellEditing();
 					KeyUtil.simulateDownKey();
 				}
 			}
@@ -221,7 +220,6 @@ public class SalesRequisitionItemsTable extends JTable {
 		if (items.size() > 0) {
 			changeSelection(0, 0, false, false);
 		}
-		System.out.println("x: " + salesRequisition);
 	}
 	
 	public void removeCurrentlySelectedRow() {
