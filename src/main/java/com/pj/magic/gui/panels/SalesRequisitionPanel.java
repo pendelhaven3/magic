@@ -13,12 +13,13 @@ import javax.swing.KeyStroke;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.component.MagicPanel;
 import com.pj.magic.gui.itemstable.ItemsTable;
 
 @Component
 public class SalesRequisitionPanel extends MagicPanel {
 
+	private static final String GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME = "goToSalesRequisitionsList";
+	
 	@Autowired private ItemsTable itemsTable;
 	
 	@PostConstruct
@@ -39,8 +40,8 @@ public class SalesRequisitionPanel extends MagicPanel {
 
 	private void registerKeyBindings() {
 		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), "goToSalesRequisitionsList");
-		getActionMap().put("goToSalesRequisitionsList", new AbstractAction() {
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME);
+		getActionMap().put(GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {

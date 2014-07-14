@@ -47,8 +47,6 @@ import com.pj.magic.util.KeyUtil;
 @Scope("prototype")
 public class ItemsTable extends JTable {
 	
-	private static final long serialVersionUID = -8416737029470549899L;
-	
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
 	public static final int UNIT_COLUMN_INDEX = 2;

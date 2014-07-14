@@ -23,12 +23,13 @@ public class MagicFrame extends JFrame {
 	@Autowired private SalesRequisitionPanel salesRequisitionPanel;
 	
 	private JPanel panelHolder;
+	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
 
 	public MagicFrame() {
 		this.setSize(800, 600);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setTitle(ResourceBundle.getBundle("application").getString("application.title"));
+		setTitle(constructTitle());
 	}
 	
 	@PostConstruct
@@ -37,10 +38,27 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(salesRequisitionPanel, SALES_REQUISITION_PANEL);
 		panelHolder.add(salesRequisitionsListPanel, SALES_REQUISITIONS_LIST_PANEL);
         getContentPane().add(panelHolder);
+        
+		salesRequisitionsListPanel.update();
 	}
 	
 	public void switchToSalesRequisitionsListPanel() {
+		addPanelNameToTitle("Sales Requisitions List");
+		salesRequisitionsListPanel.update();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_REQUISITIONS_LIST_PANEL);
+	}
+	
+	public void switchToSalesRequisitionPanel() {
+		addPanelNameToTitle("Sales Requisition");
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_REQUISITION_PANEL);
+	}
+	
+	public String constructTitle() {
+		return resourceBundle.getString("application.title");
+	}
+	
+	public void addPanelNameToTitle(String panelName) {
+		setTitle(constructTitle() + " - " + panelName);
 	}
 	
 }

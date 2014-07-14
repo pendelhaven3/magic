@@ -24,8 +24,6 @@ import com.pj.magic.service.ProductService;
 @Scope("prototype")
 public class ItemsTableModel extends AbstractTableModel {
 	
-	private static final long serialVersionUID = 3175876080507017536L;
-	
 	@Autowired
 	private ProductService productService;
 	
