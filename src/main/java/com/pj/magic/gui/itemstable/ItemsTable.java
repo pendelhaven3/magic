@@ -2,7 +2,6 @@ package com.pj.magic.gui.itemstable;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +25,8 @@ import com.pj.magic.gui.component.AbstractKeyListener;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.ActionsTableModel;
 import com.pj.magic.gui.dialog.SelectActionDialog;
+import com.pj.magic.gui.dialog.SelectProductDialog;
+import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.model.Item;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
@@ -54,20 +55,17 @@ public class ItemsTable extends JTable {
 	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String TAB_ACTION_NAME = "tab";
 	private static final String DOWN_ACTION_NAME = "down";
-	private static final String RIGHT_ACTION_NAME = "right";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String SHOW_SELECT_ACTION_DIALOG_ACTION_NAME = "showSelectActionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 
-	@Autowired
-	private ItemsTableModel editModeTableModel; 
-	
-	@Autowired
-	private ItemsTableModel addModeTableModel; 
-	
-	@Autowired
-	private ProductService productService;
+	@Autowired private ItemsTableModel editModeTableModel; 
+	@Autowired private ItemsTableModel addModeTableModel; 
+	@Autowired private SelectActionDialog selectActionDialog;
+	@Autowired private SelectProductDialog selectProductDialog;
+	@Autowired private SelectUnitDialog selectUnitDialog;
+	@Autowired private ProductService productService;
 	
 	private boolean addMode;
 	private List<Item> items = new ArrayList<>();
@@ -244,6 +242,7 @@ public class ItemsTable extends JTable {
 	
 	protected void registerKeyBindings() {
 		// TODO: shift + tab
+		// TODO: Remove table references inside anonymous classes
 		
 		final ItemsTable table = this;
 		final Action originalDownAction = getAction(KeyEvent.VK_DOWN);
@@ -252,7 +251,6 @@ public class ItemsTable extends JTable {
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
-//		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), RIGHT_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), SHOW_SELECT_ACTION_DIALOG_ACTION_NAME);
@@ -263,15 +261,14 @@ public class ItemsTable extends JTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SelectActionDialog dialog = new SelectActionDialog();
-				dialog.setVisible(true);
+				selectActionDialog.setVisible(true);
 				
-				String action = dialog.getSelectedAction();
+				String action = selectActionDialog.getSelectedAction();
 				if (ActionsTableModel.CREATE_ACTION.equals(action)) {
-					table.switchToAddMode();
+					switchToAddMode();
 				} else if (ActionsTableModel.MODIFY_ACTION.equals(action)) {
-					if (table.isAdding()) {
-						table.switchToEditMode();
+					if (isAdding()) {
+						switchToEditMode();
 					}
 				}
 			}
@@ -359,7 +356,36 @@ public class ItemsTable extends JTable {
 				}
 			}
 		});
-		actionMap.put(SHOW_SELECTION_DIALOG_ACTION_NAME, new ShowSelectionDialogAction(this));
+		actionMap.put(SHOW_SELECTION_DIALOG_ACTION_NAME, new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (isProductCodeFieldSelected()) {
+					selectProductDialog.setVisible(true);
+					
+					String productCode = selectProductDialog.getSelectedProductCode();
+					if (productCode != null) {
+						if (isEditing()) {
+							getCellEditor().cancelCellEditing();
+						}
+						setValueAt(productCode, getSelectedRow(), getSelectedColumn());
+						KeyUtil.simulateTabKey();
+					}
+				} else if (isUnitFieldSelected()) {
+					selectUnitDialog.setUnitChoices(getCurrentlySelectedRowItem().getProduct().getUnits());
+					selectUnitDialog.setVisible(true);
+					
+					String unit = selectUnitDialog.getSelectedUnit();
+					if (unit != null) {
+						if (isEditing()) {
+							getCellEditor().cancelCellEditing();
+						}
+						setValueAt(unit, getSelectedRow(), getSelectedColumn());
+						KeyUtil.simulateTabKey();
+					}
+				}
+			}
+		});
 		actionMap.put(CANCEL_ACTION_NAME, new AbstractAction() {
 			
 			@Override

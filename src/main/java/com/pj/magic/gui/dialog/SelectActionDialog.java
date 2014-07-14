@@ -9,6 +9,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Component
+@Scope("prototype")
 public class SelectActionDialog extends MagicDialog {
 
 	private static final long serialVersionUID = 6680440304005176359L;
