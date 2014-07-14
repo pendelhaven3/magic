@@ -1,4 +1,4 @@
-package com.pj.magic.gui.itemstable;
+package com.pj.magic.gui.tables;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.model.Item;
+import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
 
@@ -22,13 +22,13 @@ import com.pj.magic.service.ProductService;
 
 @Component
 @Scope("prototype")
-public class ItemsTableModel extends AbstractTableModel {
+public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 	
 	@Autowired
 	private ProductService productService;
 	
 	private String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
-	private List<Item> items = new ArrayList<>();
+	private List<SalesRequisitionItem> items = new ArrayList<>();
 	
 	@Override
 	public int getColumnCount() {
@@ -42,19 +42,19 @@ public class ItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		Item item = items.get(rowIndex);
+		SalesRequisitionItem item = items.get(rowIndex);
 		switch (columnIndex) {
-		case ItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+		case SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 			return (item.getProduct() != null) ? item.getProduct().getCode() : "";
-		case ItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
+		case SalesRequisitionItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
 			return (item.getProduct() != null) ? item.getProduct().getDescription() : "";
-		case ItemsTable.UNIT_COLUMN_INDEX:
+		case SalesRequisitionItemsTable.UNIT_COLUMN_INDEX:
 			return StringUtils.defaultString(item.getUnit());
-		case ItemsTable.QUANTITY_COLUMN_INDEX:
+		case SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX:
 			return (item.getQuantity() != null) ? item.getQuantity() : "";
-		case ItemsTable.UNIT_PRICE_COLUMN_INDEX:
+		case SalesRequisitionItemsTable.UNIT_PRICE_COLUMN_INDEX:
 			return "";
-		case ItemsTable.AMOUNT_COLUMN_INDEX:
+		case SalesRequisitionItemsTable.AMOUNT_COLUMN_INDEX:
 			return "";
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
@@ -66,9 +66,9 @@ public class ItemsTableModel extends AbstractTableModel {
 		return columnNames[columnIndex];
 	}
 
-	public List<Item> getItems() {
-		List<Item> items = new ArrayList<>();
-		for (Item item : this.items) {
+	public List<SalesRequisitionItem> getItems() {
+		List<SalesRequisitionItem> items = new ArrayList<>();
+		for (SalesRequisitionItem item : this.items) {
 			if (item.isValid()) {
 				items.add(item);
 			}
@@ -76,23 +76,23 @@ public class ItemsTableModel extends AbstractTableModel {
 		return items;
 	}
 	
-	public void setItems(List<Item> items) {
+	public void setItems(List<SalesRequisitionItem> items) {
 		this.items.clear();
 		this.items.addAll(items);
 		fireTableDataChanged();
 	}
 	
 	public void addNewRow() {
-		items.add(new Item());
+		items.add(new SalesRequisitionItem());
 		fireTableDataChanged();
 	}
 	
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		Item item = items.get(rowIndex);
+		SalesRequisitionItem item = items.get(rowIndex);
 		String val = (String)value;
 		switch (columnIndex) {
-		case ItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+		case SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 			Product product = productService.findProductByCode(val);
 			if (product == null) {
 				product = new Product();
@@ -100,10 +100,10 @@ public class ItemsTableModel extends AbstractTableModel {
 			}
 			item.setProduct(product);
 			break;
-		case ItemsTable.UNIT_COLUMN_INDEX:
+		case SalesRequisitionItemsTable.UNIT_COLUMN_INDEX:
 			item.setUnit(val);
 			break;
-		case ItemsTable.QUANTITY_COLUMN_INDEX:
+		case SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX:
 			if (!StringUtils.isEmpty(val) && StringUtils.isNumeric(val)) {
 				item.setQuantity(Integer.parseInt(val));
 			}
@@ -116,12 +116,12 @@ public class ItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == ItemsTable.PRODUCT_CODE_COLUMN_INDEX
-				|| columnIndex == ItemsTable.QUANTITY_COLUMN_INDEX
-				|| columnIndex == ItemsTable.UNIT_COLUMN_INDEX;
+		return columnIndex == SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX
+				|| columnIndex == SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX
+				|| columnIndex == SalesRequisitionItemsTable.UNIT_COLUMN_INDEX;
 	}
 	
-	public Item getRowItem(int rowIndex) {
+	public SalesRequisitionItem getRowItem(int rowIndex) {
 		return items.get(rowIndex);
 	}
 	
@@ -136,11 +136,11 @@ public class ItemsTableModel extends AbstractTableModel {
 	
 	public void clearForNewInput() {
 		items.clear();
-		items.add(new Item());
+		items.add(new SalesRequisitionItem());
 	}
 
-	public boolean hasDuplicate(Item checkItem) {
-		for (Item item : items) {
+	public boolean hasDuplicate(SalesRequisitionItem checkItem) {
+		for (SalesRequisitionItem item : items) {
 			if (item.equals(checkItem) && item != checkItem) {
 				return true;
 			}

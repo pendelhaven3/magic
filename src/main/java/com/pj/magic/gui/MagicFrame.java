@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.panels.SalesRequisitionPanel;
 import com.pj.magic.gui.panels.SalesRequisitionsListPanel;
+import com.pj.magic.model.SalesRequisition;
 
 @Component
 public class MagicFrame extends JFrame {
@@ -35,21 +36,22 @@ public class MagicFrame extends JFrame {
 	@PostConstruct
 	private void addContents() {
 		panelHolder = new JPanel(new CardLayout());
-		panelHolder.add(salesRequisitionPanel, SALES_REQUISITION_PANEL);
 		panelHolder.add(salesRequisitionsListPanel, SALES_REQUISITIONS_LIST_PANEL);
+		panelHolder.add(salesRequisitionPanel, SALES_REQUISITION_PANEL);
         getContentPane().add(panelHolder);
         
-		salesRequisitionsListPanel.update();
+		salesRequisitionsListPanel.refreshDisplay();
 	}
 	
 	public void switchToSalesRequisitionsListPanel() {
 		addPanelNameToTitle("Sales Requisitions List");
-		salesRequisitionsListPanel.update();
+		salesRequisitionsListPanel.refreshDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_REQUISITIONS_LIST_PANEL);
 	}
 	
-	public void switchToSalesRequisitionPanel() {
+	public void switchToSalesRequisitionPanel(SalesRequisition salesRequisition) {
 		addPanelNameToTitle("Sales Requisition");
+		salesRequisitionPanel.refreshDisplay(salesRequisition);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_REQUISITION_PANEL);
 	}
 	

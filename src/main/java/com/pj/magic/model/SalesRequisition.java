@@ -1,12 +1,13 @@
 package com.pj.magic.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SalesRequisition {
 
 	private Long salesRequisitionNumber;
 	private String customerName; // TODO: Turn into Customer object
-	private List<Item> items;
+	private List<SalesRequisitionItem> items = new ArrayList<>();
 
 	public Long getSalesRequisitionNumber() {
 		return salesRequisitionNumber;
@@ -24,11 +25,11 @@ public class SalesRequisition {
 		this.customerName = customerName;
 	}
 
-	public List<Item> getItems() {
+	public List<SalesRequisitionItem> getItems() {
 		return items;
 	}
 
-	public void setItems(List<Item> items) {
+	public void setItems(List<SalesRequisitionItem> items) {
 		this.items = items;
 	}
 

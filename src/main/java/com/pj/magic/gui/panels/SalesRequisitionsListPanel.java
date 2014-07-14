@@ -9,7 +9,8 @@ import javax.swing.JScrollPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.itemstable.SalesRequisitionsTable;
+import com.pj.magic.gui.tables.SalesRequisitionsTable;
+import com.pj.magic.model.SalesRequisition;
 
 @Component
 public class SalesRequisitionsListPanel extends MagicPanel {
@@ -33,8 +34,12 @@ public class SalesRequisitionsListPanel extends MagicPanel {
 		focusOnThisComponentWhenThisPanelIsDisplayed(table);
 	}
 
-	public void update() {
+	public void refreshDisplay() {
 		table.update();
+	}
+
+	public void displaySalesRequisitionDetails(SalesRequisition salesRequisition) {
+		getMagicFrame().switchToSalesRequisitionPanel(salesRequisition);
 	}
 	
 }

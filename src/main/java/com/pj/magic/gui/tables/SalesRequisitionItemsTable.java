@@ -1,4 +1,4 @@
-package com.pj.magic.gui.itemstable;
+package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -17,7 +17,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -27,7 +26,8 @@ import com.pj.magic.gui.dialog.ActionsTableModel;
 import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
-import com.pj.magic.model.Item;
+import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
 
@@ -44,8 +44,7 @@ import com.pj.magic.util.KeyUtil;
  */
 
 @Component
-@Scope("prototype")
-public class ItemsTable extends JTable {
+public class SalesRequisitionItemsTable extends JTable {
 	
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
@@ -63,19 +62,18 @@ public class ItemsTable extends JTable {
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 
-	@Autowired private ItemsTableModel editModeTableModel; 
-	@Autowired private ItemsTableModel addModeTableModel; 
+	@Autowired private SalesRequisitionItemsTableModel editModeTableModel; 
+	@Autowired private SalesRequisitionItemsTableModel addModeTableModel; 
 	@Autowired private SelectActionDialog selectActionDialog;
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;
 	
 	private boolean addMode;
-	private List<Item> items = new ArrayList<>();
+	private SalesRequisition salesRequisition;
 	
 	@PostConstruct
-	public void initialize() throws Exception {
-		setItemsTableModel(editModeTableModel);
+	public void initialize() {
 		setSurrendersFocusOnKeystroke(true);
 		registerKeyBindings();
 	}
@@ -155,7 +153,7 @@ public class ItemsTable extends JTable {
 		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(quantityTextField));
 	}
 	
-	public void setItemsTableModel(ItemsTableModel dataModel) {
+	public void setItemsTableModel(SalesRequisitionItemsTableModel dataModel) {
 		setModel(dataModel);
 		initializeColumns();
 	}
@@ -205,8 +203,8 @@ public class ItemsTable extends JTable {
 		return getItemsTableModel().getRowItem(getSelectedRow()).isValid();
 	}
 	
-	public ItemsTableModel getItemsTableModel() {
-		return (ItemsTableModel)super.getModel();
+	public SalesRequisitionItemsTableModel getItemsTableModel() {
+		return (SalesRequisitionItemsTableModel)super.getModel();
 	}
 	
 	public boolean isAdding() {
@@ -215,6 +213,7 @@ public class ItemsTable extends JTable {
 	
 	public void switchToEditMode() {
 		addMode = false;
+		List<SalesRequisitionItem> items = salesRequisition.getItems();
 		items.addAll(getItemsTableModel().getItems());
 		editModeTableModel.setItems(items);
 		setItemsTableModel(editModeTableModel);
@@ -222,13 +221,14 @@ public class ItemsTable extends JTable {
 		if (items.size() > 0) {
 			changeSelection(0, 0, false, false);
 		}
+		System.out.println("x: " + salesRequisition);
 	}
 	
 	public void removeCurrentlySelectedRow() {
 		int selectedRowIndex = getSelectedRow();
-		Item item = getCurrentlySelectedRowItem();
+		SalesRequisitionItem item = getCurrentlySelectedRowItem();
 		getItemsTableModel().removeItem(selectedRowIndex);
-		items.remove(item);
+		salesRequisition.getItems().remove(item);
 		
 		if (getItemsTableModel().hasItems()) {
 			if (selectedRowIndex == getItemsTableModel().getRowCount()) {
@@ -239,7 +239,7 @@ public class ItemsTable extends JTable {
 		}
 	}
 	
-	public Item getCurrentlySelectedRowItem() {
+	public SalesRequisitionItem getCurrentlySelectedRowItem() {
 		return getItemsTableModel().getRowItem(getSelectedRow());
 	}
 	
@@ -248,8 +248,8 @@ public class ItemsTable extends JTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
-	private boolean hasDuplicate(Item checkItem) {
-		for (Item item : items) {
+	private boolean hasDuplicate(SalesRequisitionItem checkItem) {
+		for (SalesRequisitionItem item : salesRequisition.getItems()) {
 			if (item.equals(checkItem) && item != checkItem) {
 				return true;
 			}
@@ -257,12 +257,18 @@ public class ItemsTable extends JTable {
 		return false;
 	}
 	
+	public void setSalesRequisition(SalesRequisition salesRequisition) {
+		this.salesRequisition = salesRequisition;
+		editModeTableModel.setItems(salesRequisition.getItems());
+		setItemsTableModel(editModeTableModel);
+	}
+	
 	protected void registerKeyBindings() {
 		// TODO: shift + tab
 		// TODO: Remove table references inside anonymous classes
 		// TODO: Modify on other columns dont work
 		
-		final ItemsTable table = this;
+		final SalesRequisitionItemsTable table = this;
 		final Action originalDownAction = getAction(KeyEvent.VK_DOWN);
 		final Action originalEscapeAction = getAction(KeyEvent.VK_ESCAPE);
 		
@@ -321,9 +327,9 @@ public class ItemsTable extends JTable {
 						getEditorComponent().requestFocusInWindow();
 					}
 					break;
-				case ItemsTable.UNIT_COLUMN_INDEX:
+				case SalesRequisitionItemsTable.UNIT_COLUMN_INDEX:
 					String unit = (String)table.getValueAt(selectedRow, UNIT_COLUMN_INDEX);
-					Item item = table.getCurrentlySelectedRowItem();
+					SalesRequisitionItem item = table.getCurrentlySelectedRowItem();
 					
 					if (StringUtils.isEmpty(unit)) {
 						JOptionPane.showMessageDialog(table,
@@ -357,7 +363,7 @@ public class ItemsTable extends JTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (isAdding() && isLastRowSelected() && isQuantityFieldSelected()) {
-					Item item = getCurrentlySelectedRowItem();
+					SalesRequisitionItem item = getCurrentlySelectedRowItem();
 					if (item.getQuantity() == null) {
 						JOptionPane.showMessageDialog(table,
 								"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);

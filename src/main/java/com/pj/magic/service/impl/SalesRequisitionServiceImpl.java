@@ -11,9 +11,11 @@ import com.pj.magic.service.SalesRequisitionService;
 @Service
 public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 
-	@Override
-	public List<SalesRequisition> getAllSalesRequisitions() {
-		List<SalesRequisition> salesRequisitions = new ArrayList<>();
+	private static List<SalesRequisition> salesRequisitions;
+	
+	// TODO: temporary
+	static {
+		salesRequisitions = new ArrayList<>();
 		
 		for (int i = 1; i <= 10; i++) {
 			SalesRequisition salesRequisition = new SalesRequisition();
@@ -21,7 +23,10 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 			salesRequisition.setCustomerName("CUSTOMER " + i);
 			salesRequisitions.add(salesRequisition);
 		}
-		
+	}
+	
+	@Override
+	public List<SalesRequisition> getAllSalesRequisitions() {
 		return salesRequisitions;
 	}
 
