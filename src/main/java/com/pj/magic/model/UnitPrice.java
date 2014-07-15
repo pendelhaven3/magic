@@ -2,25 +2,22 @@ package com.pj.magic.model;
 
 import java.math.BigDecimal;
 
-public class ProductUnitPrice {
+public class UnitPrice {
 
-	private Product product;
-	private Unit unit;
+	private String unit;
 	private BigDecimal price;
 
-	public Product getProduct() {
-		return product;
+	public UnitPrice(String unit, BigDecimal price) {
+		super();
+		this.unit = unit;
+		this.price = price;
 	}
 
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public Unit getUnit() {
+	public String getUnit() {
 		return unit;
 	}
 
-	public void setUnit(Unit unit) {
+	public void setUnit(String unit) {
 		this.unit = unit;
 	}
 

@@ -7,4 +7,8 @@ public class Unit {
 	public static final String DOZEN = "DOZEN";
 	public static final String PIECES = "PIECES";
 
+	private Unit() {
+		// Can never be instantiated. This class is only for the constants.
+	}
+	
 }

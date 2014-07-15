@@ -11,9 +11,14 @@ public class Product {
 	private String code;
 	private String description;
 	private List<String> units;
+	private List<UnitPrice> unitPrices;
 
 	public boolean isValid() {
 		return id != null && id.intValue() != 0;
+	}
+	
+	public boolean hasUnit(String unit) {
+		return units.contains(unit);
 	}
 	
 	@Override
@@ -67,6 +72,14 @@ public class Product {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public List<UnitPrice> getUnitPrices() {
+		return unitPrices;
+	}
+
+	public void setUnitPrices(List<UnitPrice> unitPrices) {
+		this.unitPrices = unitPrices;
 	}
 
 }

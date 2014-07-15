@@ -1,5 +1,6 @@
 package com.pj.magic.gui.tables;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.ProductService;
 
 /*
@@ -53,9 +54,11 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		case SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX:
 			return (item.getQuantity() != null) ? item.getQuantity() : "";
 		case SalesRequisitionItemsTable.UNIT_PRICE_COLUMN_INDEX:
-			return "";
+			BigDecimal unitPrice = item.getUnitPrice();
+			return (unitPrice != null) ? unitPrice.toString() : "";
 		case SalesRequisitionItemsTable.AMOUNT_COLUMN_INDEX:
-			return "";
+			BigDecimal amount = item.getAmount();
+			return (amount != null) ? amount.toString() : "";
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}

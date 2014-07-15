@@ -361,6 +361,9 @@ public class SalesRequisitionItemsTable extends JTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (isAdding() && isLastRowSelected() && isQuantityFieldSelected()) {
+					if (isEditing()) {
+						getCellEditor().stopCellEditing();
+					}
 					SalesRequisitionItem item = getCurrentlySelectedRowItem();
 					if (item.getQuantity() == null) {
 						JOptionPane.showMessageDialog(table,

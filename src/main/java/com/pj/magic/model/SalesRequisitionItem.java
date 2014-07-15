@@ -1,5 +1,7 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -13,6 +15,26 @@ public class SalesRequisitionItem {
 		return (product != null && product.isValid())
 				&& product.getUnits().contains(unit)
 				&& (quantity != null && quantity.intValue() > 0);
+	}
+	
+	public BigDecimal getUnitPrice() {
+		if (product == null || !product.isValid() || !product.hasUnit(unit)) {
+			return null;
+		}
+		
+		for (UnitPrice unitPrice : product.getUnitPrices()) {
+			if (unitPrice.getUnit().equals(unit)) {
+				return unitPrice.getPrice();
+			}
+		}
+		return null;
+	}
+	
+	public BigDecimal getAmount() {
+		if (product == null || !product.isValid() || quantity == null) {
+			return null;
+		}
+		return getUnitPrice().multiply(new BigDecimal(quantity.intValue()));
 	}
 	
 	public Product getProduct() {
