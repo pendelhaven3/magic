@@ -1,6 +1,7 @@
 package com.pj.magic.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 			SalesRequisition salesRequisition = new SalesRequisition();
 			salesRequisition.setSalesRequisitionNumber((long)i);
 			salesRequisition.setCustomerName("CUSTOMER " + i);
+			salesRequisition.setCreateDate(new Date());
+			salesRequisition.setEncoder("PJ");
 			salesRequisitions.add(salesRequisition);
 		}
 	}

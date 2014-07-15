@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.model.Product;
-import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.PriceService;
 import com.pj.magic.service.ProductService;
 

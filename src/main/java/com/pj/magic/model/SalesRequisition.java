@@ -1,12 +1,15 @@
 package com.pj.magic.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SalesRequisition {
 
 	private Long salesRequisitionNumber;
 	private String customerName; // TODO: Turn into Customer object
+	private Date createDate;
+	private String encoder; // TODO: Turn into User object
 	private List<SalesRequisitionItem> items = new ArrayList<>();
 
 	public Long getSalesRequisitionNumber() {
@@ -31,6 +34,22 @@ public class SalesRequisition {
 
 	public void setItems(List<SalesRequisitionItem> items) {
 		this.items = items;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public String getEncoder() {
+		return encoder;
+	}
+
+	public void setEncoder(String encoder) {
+		this.encoder = encoder;
 	}
 
 }

@@ -1,15 +1,19 @@
 package com.pj.magic.gui.tables;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.util.LabelUtil;
 
 public class SalesRequisitionsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"SR No.", "Customer Name"};
+	private static final String[] COLUMN_NAMES = {"SR No.", "Customer Name", "Create Date", "Encoder"};
 	
 	private List<SalesRequisition> salesRequisitions = new ArrayList<>();
 	
@@ -31,6 +35,11 @@ public class SalesRequisitionsTableModel extends AbstractTableModel {
 			return salesRequisition.getSalesRequisitionNumber().toString();
 		case SalesRequisitionsTable.CUSTOMER_NAME_COLUMN_INDEX:
 			return salesRequisition.getCustomerName();
+		case SalesRequisitionsTable.CREATE_DATE_COLUMN_INDEX:
+			Date date = salesRequisition.getCreateDate();
+			return (date != null) ? LabelUtil.formatDate(date) : "";
+		case SalesRequisitionsTable.ENCODER_COLUMN_INDEX:
+			return StringUtils.defaultString(salesRequisition.getEncoder());
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
