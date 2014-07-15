@@ -11,6 +11,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,8 +37,46 @@ public class SalesRequisitionPanel extends MagicPanel {
 	
 	@PostConstruct
 	public void initialize() {
+		layoutComponents();
+		registerKeyBindings();
+		focusOnThisComponentWhenThisPanelIsDisplayed(itemsTable);
+		updateTotalAmountFieldWhenItemsTableChanges();
+	}
+	
+	private void updateTotalAmountFieldWhenItemsTableChanges() {
+		itemsTable.getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				totalAmountField.setText(salesRequisition.getTotalAmount().toString());
+			}
+		});
+	}
+
+	public void refreshDisplay(SalesRequisition salesRequisition) {
+		this.salesRequisition = salesRequisition;
+		salesRequisitionNumberField.setText(salesRequisition.getSalesRequisitionNumber().toString());
+		customerNameField.setText(salesRequisition.getCustomerName());
+		createDateField.setText(LabelUtil.formatDate(salesRequisition.getCreateDate()));
+		encoderField.setText(salesRequisition.getEncoder());
+		totalAmountField.setText(salesRequisition.getTotalAmount().toString());
+		itemsTable.setSalesRequisition(salesRequisition);
+	}
+
+	private void registerKeyBindings() {
+		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME);
+		getActionMap().put(GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getMagicFrame().switchToSalesRequisitionsListPanel();
+			}
+		});
+	}
+	
+	private void layoutComponents() {
 		setLayout(new GridBagLayout());
-		
 		GridBagConstraints c = new GridBagConstraints();
 
 		// first row
@@ -53,7 +93,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.gridx = 1;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		add(LabelUtil.createLabel(150, "Sales Requisition No.:"), c);
+		add(LabelUtil.createLabel(150, "SR No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -146,30 +186,6 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		totalAmountField = LabelUtil.createLabel(150, "");
 		add(totalAmountField, c);
-		
-		registerKeyBindings();
-		focusOnThisComponentWhenThisPanelIsDisplayed(itemsTable);
-	}
-	
-	public void refreshDisplay(SalesRequisition salesRequisition) {
-		this.salesRequisition = salesRequisition;
-		salesRequisitionNumberField.setText(salesRequisition.getSalesRequisitionNumber().toString());
-		customerNameField.setText(salesRequisition.getCustomerName());
-		createDateField.setText(LabelUtil.formatDate(salesRequisition.getCreateDate()));
-		encoderField.setText(salesRequisition.getEncoder());
-		itemsTable.setSalesRequisition(salesRequisition);
-	}
-
-	private void registerKeyBindings() {
-		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME);
-		getActionMap().put(GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getMagicFrame().switchToSalesRequisitionsListPanel();
-			}
-		});
 	}
 	
 }
