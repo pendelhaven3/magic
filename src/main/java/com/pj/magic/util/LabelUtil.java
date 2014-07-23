@@ -1,6 +1,8 @@
 package com.pj.magic.util;
 
 import java.awt.Dimension;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,6 +26,10 @@ public class LabelUtil {
 	
 	public static final String formatDate(Date date) {
 		return new SimpleDateFormat(Constants.DATE_FORMAT).format(date);
+	}
+	
+	public static final String formatAmount(BigDecimal amount) {
+		return new DecimalFormat(Constants.AMOUNT_FORMAT).format(amount);
 	}
 	
 }

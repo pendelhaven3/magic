@@ -20,7 +20,7 @@ public abstract class MagicPanel extends JPanel {
 		return (MagicFrame)SwingUtilities.getRoot(this);
 	}
 	
-	protected void focusOnThisComponentWhenThisPanelIsDisplayed(JComponent component) {
+	protected void focusOnComponentWhenThisPanelIsDisplayed(JComponent component) {
 		final JComponent target = component;
 		addComponentListener(new ComponentAdapter() {
 

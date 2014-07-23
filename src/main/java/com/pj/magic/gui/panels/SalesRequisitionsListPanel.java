@@ -31,7 +31,7 @@ public class SalesRequisitionsListPanel extends MagicPanel {
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane, c);
 		
-		focusOnThisComponentWhenThisPanelIsDisplayed(table);
+		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 
 	public void refreshDisplay() {

@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
@@ -39,7 +40,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 	public void initialize() {
 		layoutComponents();
 		registerKeyBindings();
-		focusOnThisComponentWhenThisPanelIsDisplayed(itemsTable);
+		focusOnComponentWhenThisPanelIsDisplayed(itemsTable);
 		updateTotalAmountFieldWhenItemsTableChanges();
 	}
 	
@@ -48,7 +49,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalAmountField.setText(salesRequisition.getTotalAmount().toString());
+				totalAmountField.setText(LabelUtil.formatAmount(salesRequisition.getTotalAmount()));
 			}
 		});
 	}

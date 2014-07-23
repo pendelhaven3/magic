@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.util.LabelUtil;
 
 /*
  * [PJ 7/10/2014] 
@@ -53,10 +54,10 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 			return (item.getQuantity() != null) ? item.getQuantity() : "";
 		case SalesRequisitionItemsTable.UNIT_PRICE_COLUMN_INDEX:
 			BigDecimal unitPrice = item.getUnitPrice();
-			return (unitPrice != null) ? unitPrice.toString() : "";
+			return (unitPrice != null) ? LabelUtil.formatAmount(unitPrice) : "";
 		case SalesRequisitionItemsTable.AMOUNT_COLUMN_INDEX:
 			BigDecimal amount = item.getAmount();
-			return (amount != null) ? amount.toString() : "";
+			return (amount != null) ? LabelUtil.formatAmount(amount) : "";
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
@@ -112,7 +113,8 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		default:
 			throw new RuntimeException("Setting invalid column index: " + columnIndex);
 		}
-		fireTableCellUpdated(rowIndex, columnIndex);
+		fireTableRowsUpdated(rowIndex, rowIndex);
+//		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
 	@Override
