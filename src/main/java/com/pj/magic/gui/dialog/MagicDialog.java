@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
@@ -14,6 +15,7 @@ public abstract class MagicDialog extends JDialog {
 	
 	public MagicDialog() {
 		setModal(true);
+		closeDialogWhenEscapeKeyPressed();
 	}
 	
 	protected void registerCloseOnEscapeKeyBinding(JTable table) {
@@ -27,5 +29,21 @@ public abstract class MagicDialog extends JDialog {
 			}
 		});
 	}
+	
+	protected void closeDialogWhenEscapeKeyPressed() {
+		getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CLOSE_ACTION_NAME);
+		getRootPane().getActionMap().put(CLOSE_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doWhenEscapeKeyPressed();
+				setVisible(false);
+			}
+
+		});
+	}
+
+	protected abstract void doWhenEscapeKeyPressed();
 	
 }

@@ -52,14 +52,17 @@ public class SelectProductDialog extends MagicDialog {
 			}
 		});
 		
-		registerCloseOnEscapeKeyBinding(table);
-		
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane);	
 	}
 
 	public String getSelectedProductCode() {
 		return selectedProductCode;
+	}
+
+	@Override
+	protected void doWhenEscapeKeyPressed() {
+		selectedProductCode = null;
 	}
 	
 }

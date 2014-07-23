@@ -32,8 +32,6 @@ public class SelectUnitDialog extends MagicDialog {
 	private void addContents() {
 		table = new JTable();
 		
-		// TODO: Attach escape key binding to parent of table component instead
-		
 		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_UNIT_ACTION_NAME);
 		table.getActionMap().put(SELECT_UNIT_ACTION_NAME, new AbstractAction() {
 			
@@ -43,8 +41,6 @@ public class SelectUnitDialog extends MagicDialog {
 				setVisible(false);
 			}
 		});
-		
-		registerCloseOnEscapeKeyBinding(table);
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane);	
@@ -95,6 +91,11 @@ public class SelectUnitDialog extends MagicDialog {
 			return columnNames[column];
 		}
 		
+	}
+
+	@Override
+	protected void doWhenEscapeKeyPressed() {
+		selectedUnit = null;
 	}
 	
 }
