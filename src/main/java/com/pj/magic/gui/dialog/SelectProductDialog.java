@@ -1,46 +1,56 @@
 package com.pj.magic.gui.dialog;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.tables.ProductUnitPricesTableModel;
+import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
 
 @Component
-@Scope("prototype")
 public class SelectProductDialog extends MagicDialog {
 
 	private static final long serialVersionUID = -1155384453472953071L;
 	private static final String SELECT_PRODUCT_ACTION_NAME = "selectProduct";
 	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 
-	@Autowired
-	private ProductService productService;
-	
-	@Autowired
-	private ProductsTableModel tableModel;
+	@Autowired private ProductService productService;
+	@Autowired private ProductsTableModel tableModel;
+	@Autowired private ProductUnitPricesTableModel unitPricesTableModel;
 	
 	private String selectedProductCode;
 	
 	public SelectProductDialog() {
-		setSize(500, 200);
+		setSize(500, 400);
 		setLocationRelativeTo(null);
 		setTitle("Select Product");
 	}
 
 	@PostConstruct
 	public void initialize() {
+		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		
 		final JTable table = new JTable(tableModel);
 		table.setRowSelectionInterval(0, 0);
+		
+		add(new JScrollPane(table));
+		add(Box.createRigidArea(new Dimension(0, 5)));
+		add(new JScrollPane(new JTable(unitPricesTableModel)));
 		
 		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_PRODUCT_ACTION_NAME);
 		table.getActionMap().put(SELECT_PRODUCT_ACTION_NAME, new AbstractAction() {
@@ -52,8 +62,16 @@ public class SelectProductDialog extends MagicDialog {
 			}
 		});
 		
-		JScrollPane scrollPane = new JScrollPane(table);
-		add(scrollPane);	
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				ListSelectionModel selectionModel = (ListSelectionModel)e.getSource();
+				int selectedRow = selectionModel.getMinSelectionIndex();
+				Product product = tableModel.getProduct(selectedRow);
+				unitPricesTableModel.setProduct(product);
+			}
+		});
 	}
 
 	public String getSelectedProductCode() {

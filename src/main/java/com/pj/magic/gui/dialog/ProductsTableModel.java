@@ -6,21 +6,18 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
 
 @Component
-@Scope("prototype")
 public class ProductsTableModel extends AbstractTableModel {
 
-	private static final long serialVersionUID = -4623255772951504093L;
 	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	private static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
+	private static final String[] columnNames = {"Code", "Description"};
 	
-	private String[] columnNames = {"Code", "Description"};
 	private List<Product> products;
 	
 	@Autowired
@@ -50,5 +47,14 @@ public class ProductsTableModel extends AbstractTableModel {
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
 	}
+	
+	@Override
+	public String getColumnName(int column) {
+		return columnNames[column];
+	}
 
+	public Product getProduct(int rowIndex) {
+		return products.get(rowIndex);
+	}
+	
 }
