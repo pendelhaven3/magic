@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -62,8 +61,6 @@ public class SalesRequisitionItemsTable extends JTable {
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 
-	@Autowired private SalesRequisitionItemsTableModel editModeTableModel; 
-	@Autowired private SalesRequisitionItemsTableModel addModeTableModel; 
 	@Autowired private SelectActionDialog selectActionDialog;
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
@@ -72,8 +69,10 @@ public class SalesRequisitionItemsTable extends JTable {
 	private boolean addMode;
 	private SalesRequisition salesRequisition;
 	
-	@PostConstruct
-	public void initialize() {
+	@Autowired
+	public SalesRequisitionItemsTable(SalesRequisitionItemsTableModel tableModel) {
+		super(tableModel);
+		initializeColumns();
 		setSurrendersFocusOnKeystroke(true);
 		registerKeyBindings();
 	}
@@ -152,15 +151,9 @@ public class SalesRequisitionItemsTable extends JTable {
 		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(quantityTextField));
 	}
 	
-	public void setItemsTableModel(SalesRequisitionItemsTableModel dataModel) {
-		setModel(dataModel);
-		initializeColumns();
-	}
-	
 	public void switchToAddMode() {
 		addMode = true;
-		addModeTableModel.clearForNewInput();
-		setItemsTableModel(addModeTableModel);
+		getItemsTableModel().clearForNewInput();
 		changeSelection(0, 0, false, false);
 		editCellAt(0, 0);
 		getEditorComponent().requestFocusInWindow();
@@ -211,11 +204,14 @@ public class SalesRequisitionItemsTable extends JTable {
 	}
 	
 	public void switchToEditMode() {
+		if (isEditing()) {
+			getCellEditor().cancelCellEditing();
+		}
+		
 		addMode = false;
 		List<SalesRequisitionItem> items = salesRequisition.getItems();
 		items.addAll(getItemsTableModel().getItems());
-		editModeTableModel.setItems(items);
-		setItemsTableModel(editModeTableModel);
+		getItemsTableModel().setItems(items);
 		
 		if (items.size() > 0) {
 			changeSelection(0, 0, false, false);
@@ -257,8 +253,7 @@ public class SalesRequisitionItemsTable extends JTable {
 	
 	public void setSalesRequisition(SalesRequisition salesRequisition) {
 		this.salesRequisition = salesRequisition;
-		editModeTableModel.setItems(salesRequisition.getItems());
-		setItemsTableModel(editModeTableModel);
+		getItemsTableModel().setItems(salesRequisition.getItems());
 	}
 	
 	protected void registerKeyBindings() {

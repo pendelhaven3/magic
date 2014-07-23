@@ -8,7 +8,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.model.Product;
@@ -22,7 +21,6 @@ import com.pj.magic.service.ProductService;
  */
 
 @Component
-@Scope("prototype")
 public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 	
 	@Autowired
@@ -140,6 +138,7 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 	public void clearForNewInput() {
 		items.clear();
 		items.add(new SalesRequisitionItem());
+		fireTableDataChanged();
 	}
 
 	public boolean hasDuplicate(SalesRequisitionItem checkItem) {

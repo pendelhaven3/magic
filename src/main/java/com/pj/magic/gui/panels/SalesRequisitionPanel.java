@@ -61,6 +61,10 @@ public class SalesRequisitionPanel extends MagicPanel {
 		encoderField.setText(salesRequisition.getEncoder());
 		totalAmountField.setText(salesRequisition.getTotalAmount().toString());
 		itemsTable.setSalesRequisition(salesRequisition);
+		if (!salesRequisition.getItems().isEmpty()) {
+			itemsTable.getCellEditor().cancelCellEditing();// for some reason, table shows up in edit mode
+			itemsTable.changeSelection(0, 0, false, false);
+		}
 	}
 
 	private void registerKeyBindings() {
