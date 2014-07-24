@@ -6,9 +6,8 @@ public class ActionsTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = -3064604545204823075L;
 	public static final String CREATE_ACTION = "Create";
-	public static final String MODIFY_ACTION = "Modify";
 
-	private String[][] actions = {{MODIFY_ACTION}, {CREATE_ACTION}};
+	private String[][] actions = {{CREATE_ACTION}};
 	
 	@Override
 	public int getRowCount() {

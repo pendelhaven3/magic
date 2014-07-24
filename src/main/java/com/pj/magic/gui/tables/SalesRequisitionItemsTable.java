@@ -284,10 +284,6 @@ public class SalesRequisitionItemsTable extends JTable {
 				String action = selectActionDialog.getSelectedAction();
 				if (ActionsTableModel.CREATE_ACTION.equals(action)) {
 					switchToAddMode();
-				} else if (ActionsTableModel.MODIFY_ACTION.equals(action)) {
-					if (isAdding()) {
-						switchToEditMode();
-					}
 				}
 			}
 		});
