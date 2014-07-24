@@ -114,7 +114,6 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 			throw new RuntimeException("Setting invalid column index: " + columnIndex);
 		}
 		fireTableRowsUpdated(rowIndex, rowIndex);
-//		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
 	@Override

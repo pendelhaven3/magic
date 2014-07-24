@@ -2,6 +2,7 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -427,6 +428,16 @@ public class SalesRequisitionItemsTable extends JTable {
 				}
 			}
 		});
+	}
+	
+	public BigDecimal getTotalAmount() {
+		BigDecimal totalAmount = salesRequisition.getTotalAmount();
+		if (isAdding()) {
+			for (SalesRequisitionItem item : getItemsTableModel().getItems()) {
+				totalAmount = totalAmount.add(item.getAmount());
+			}
+		}
+		return totalAmount;
 	}
 	
 }

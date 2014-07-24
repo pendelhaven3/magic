@@ -48,7 +48,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalAmountField.setText(LabelUtil.formatAmount(salesRequisition.getTotalAmount()));
+				totalAmountField.setText(LabelUtil.formatAmount(itemsTable.getTotalAmount()));
 			}
 		});
 	}
