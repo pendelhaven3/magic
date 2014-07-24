@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -30,7 +31,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
-	private JLabel customerNameField;
+	private JTextField customerNameField;
 	private JLabel createDateField;
 	private JLabel encoderField;
 	private JLabel totalAmountField;
@@ -134,7 +135,9 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.gridx = 2;
 		c.gridy = 1;
 		c.anchor = GridBagConstraints.WEST;
-		customerNameField = LabelUtil.createLabel(200, "");
+		customerNameField = new JTextField();
+		customerNameField.setPreferredSize(new Dimension(180, 20));
+		customerNameField.setFocusable(false);
 		add(customerNameField, c);
 		
 		c.weightx = c.weighty = 0.0;
