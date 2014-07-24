@@ -3,6 +3,8 @@ package com.pj.magic.gui.dialog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
@@ -33,6 +35,7 @@ public class SelectProductDialog extends MagicDialog {
 	@Autowired private ProductsTableModel tableModel;
 	@Autowired private ProductUnitPricesTableModel unitPricesTableModel;
 	
+	private JTable productsTable;
 	private String selectedProductCode;
 	
 	public SelectProductDialog() {
@@ -43,26 +46,25 @@ public class SelectProductDialog extends MagicDialog {
 
 	@PostConstruct
 	public void initialize() {
+		productsTable = new JTable(tableModel);
+		
 		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 		
-		final JTable table = new JTable(tableModel);
-		table.setRowSelectionInterval(0, 0);
-		
-		add(new JScrollPane(table));
+		add(new JScrollPane(productsTable));
 		add(Box.createRigidArea(new Dimension(0, 5)));
 		add(new JScrollPane(new JTable(unitPricesTableModel)));
 		
-		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_PRODUCT_ACTION_NAME);
-		table.getActionMap().put(SELECT_PRODUCT_ACTION_NAME, new AbstractAction() {
+		productsTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_PRODUCT_ACTION_NAME);
+		productsTable.getActionMap().put(SELECT_PRODUCT_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectedProductCode = (String)table.getValueAt(table.getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
+				selectedProductCode = (String)productsTable.getValueAt(productsTable.getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
 				setVisible(false);
 			}
 		});
 		
-		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+		productsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
@@ -70,6 +72,14 @@ public class SelectProductDialog extends MagicDialog {
 				int selectedRow = selectionModel.getMinSelectionIndex();
 				Product product = tableModel.getProduct(selectedRow);
 				unitPricesTableModel.setProduct(product);
+			}
+		});
+		
+		addWindowListener(new WindowAdapter() {
+			
+			@Override
+			public void windowActivated(WindowEvent e) {
+				productsTable.changeSelection(0, 0, false, false);
 			}
 		});
 	}
