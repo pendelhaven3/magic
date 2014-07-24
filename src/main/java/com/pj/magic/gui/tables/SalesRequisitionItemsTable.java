@@ -222,11 +222,11 @@ public class SalesRequisitionItemsTable extends JTable {
 	public void removeCurrentlySelectedRow() {
 		int selectedRowIndex = getSelectedRow();
 		SalesRequisitionItem item = getCurrentlySelectedRowItem();
+		salesRequisition.getItems().remove(item); // must update SR model before table model so that total amount is updated correctly
 		getItemsTableModel().removeItem(selectedRowIndex);
-		salesRequisition.getItems().remove(item);
 		
 		if (getItemsTableModel().hasItems()) {
-			if (selectedRowIndex == getItemsTableModel().getRowCount()) {
+			if (selectedRowIndex == getModel().getRowCount()) {
 				changeSelection(selectedRowIndex - 1, 0, false, false);
 			} else {
 				changeSelection(selectedRowIndex, 0, false, false);

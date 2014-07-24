@@ -26,6 +26,9 @@ public abstract class MagicPanel extends JPanel {
 
 			@Override
 			public void componentShown(ComponentEvent e) {
+				if (!target.isFocusable()) {
+					target.setFocusable(true);
+				}
 				target.requestFocusInWindow();
 			}
 		});

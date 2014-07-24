@@ -22,6 +22,10 @@ public class SalesRequisition {
 		return total.setScale(2, RoundingMode.HALF_UP);
 	}
 	
+	public boolean hasItems() {
+		return !items.isEmpty();
+	}
+	
 	public Long getSalesRequisitionNumber() {
 		return salesRequisitionNumber;
 	}

@@ -18,6 +18,7 @@ import javax.swing.event.TableModelListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.util.LabelUtil;
@@ -40,10 +41,11 @@ public class SalesRequisitionPanel extends MagicPanel {
 	public void initialize() {
 		layoutComponents();
 		registerKeyBindings();
-		focusOnComponentWhenThisPanelIsDisplayed(itemsTable);
+		focusOnComponentWhenThisPanelIsDisplayed(customerNameField);
 		updateTotalAmountFieldWhenItemsTableChanges();
+		initializeCustomerNameFieldBehavior();
 	}
-	
+
 	private void updateTotalAmountFieldWhenItemsTableChanges() {
 		itemsTable.getModel().addTableModelListener(new TableModelListener() {
 			
@@ -54,6 +56,23 @@ public class SalesRequisitionPanel extends MagicPanel {
 		});
 	}
 
+	private void initializeCustomerNameFieldBehavior() {
+		customerNameField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enter");
+		customerNameField.getActionMap().put("enter", new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				salesRequisition.setCustomerName(customerNameField.getText());
+				if (!salesRequisition.hasItems()) {
+					itemsTable.switchToAddMode();
+				} else {
+					itemsTable.changeSelection(0, 0, false, false);
+				}
+				customerNameField.setFocusable(false);
+			}
+		});
+	}
+	
 	public void refreshDisplay(SalesRequisition salesRequisition) {
 		this.salesRequisition = salesRequisition;
 		salesRequisitionNumberField.setText(salesRequisition.getSalesRequisitionNumber().toString());
@@ -62,10 +81,6 @@ public class SalesRequisitionPanel extends MagicPanel {
 		encoderField.setText(salesRequisition.getEncoder());
 		totalAmountField.setText(salesRequisition.getTotalAmount().toString());
 		itemsTable.setSalesRequisition(salesRequisition);
-		if (!salesRequisition.getItems().isEmpty()) {
-			itemsTable.getCellEditor().cancelCellEditing();// for some reason, table shows up in edit mode
-			itemsTable.changeSelection(0, 0, false, false);
-		}
 	}
 
 	private void registerKeyBindings() {
@@ -75,6 +90,9 @@ public class SalesRequisitionPanel extends MagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (itemsTable.isEditing()) {
+					itemsTable.getCellEditor().cancelCellEditing();
+				}
 				getMagicFrame().switchToSalesRequisitionsListPanel();
 			}
 		});
@@ -135,9 +153,8 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.gridx = 2;
 		c.gridy = 1;
 		c.anchor = GridBagConstraints.WEST;
-		customerNameField = new JTextField();
+		customerNameField = new MagicTextField();
 		customerNameField.setPreferredSize(new Dimension(180, 20));
-		customerNameField.setFocusable(false);
 		add(customerNameField, c);
 		
 		c.weightx = c.weighty = 0.0;

@@ -52,7 +52,10 @@ public class SelectProductDialog extends MagicDialog {
 		
 		add(new JScrollPane(productsTable));
 		add(Box.createRigidArea(new Dimension(0, 5)));
-		add(new JScrollPane(new JTable(unitPricesTableModel)));
+		
+		JScrollPane unitPricesScrollPane = new JScrollPane(new JTable(unitPricesTableModel));
+		unitPricesScrollPane.setPreferredSize(new Dimension(500, 120));
+		add(unitPricesScrollPane);
 		
 		productsTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_PRODUCT_ACTION_NAME);
 		productsTable.getActionMap().put(SELECT_PRODUCT_ACTION_NAME, new AbstractAction() {

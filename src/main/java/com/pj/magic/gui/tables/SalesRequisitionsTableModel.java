@@ -13,7 +13,7 @@ import com.pj.magic.util.LabelUtil;
 
 public class SalesRequisitionsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"SR No.", "Customer Name", "Create Date", "Encoder"};
+	private static final String[] COLUMN_NAMES = {"SR No.", "Customer Name", "Create Date", "Encoder", "Total Amount"};
 	
 	private List<SalesRequisition> salesRequisitions = new ArrayList<>();
 	
@@ -40,6 +40,8 @@ public class SalesRequisitionsTableModel extends AbstractTableModel {
 			return (date != null) ? LabelUtil.formatDate(date) : "";
 		case SalesRequisitionsTable.ENCODER_COLUMN_INDEX:
 			return StringUtils.defaultString(salesRequisition.getEncoder());
+		case SalesRequisitionsTable.TOTAL_AMOUNT_COLUMN_INDEX:
+			return LabelUtil.formatAmount(salesRequisition.getTotalAmount());
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
