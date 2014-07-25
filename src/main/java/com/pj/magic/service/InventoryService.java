@@ -9,4 +9,6 @@ public interface InventoryService {
 
 	List<UnitQuantity> getUnitQuantities(Product product);
 	
+	int getQuantity(Product product, String unit);
+
 }

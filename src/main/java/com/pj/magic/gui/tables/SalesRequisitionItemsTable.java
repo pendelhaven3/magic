@@ -28,18 +28,13 @@ import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
+import com.pj.magic.service.InventoryService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
 
 /*
  * [PJ 7/10/2014] 
  * ItemsTable has 2 modes: edit (default) and add (allows adding blank rows after the last row).
- * It also has 2 instances of ItemsTableModel (one for edit mode, one for add mode).
- * 
- * [PJ 7/14/2014]
- * Separation of table models follows the behavior of the existing system wherein
- * already added items are hidden when user switches to add mode.
- * These items become visible again when user switches back to edit mode.
  * 
  */
 
@@ -66,6 +61,7 @@ public class SalesRequisitionItemsTable extends JTable {
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;
+	@Autowired private InventoryService inventoryService;
 	
 	private boolean addMode;
 	private SalesRequisition salesRequisition;
@@ -297,6 +293,7 @@ public class SalesRequisitionItemsTable extends JTable {
 				
 				int selectedColumn = table.getSelectedColumn();
 				int selectedRow = table.getSelectedRow();
+				SalesRequisitionItem item = table.getCurrentlySelectedRowItem();
 				
 				switch (selectedColumn) {
 				case PRODUCT_CODE_COLUMN_INDEX:
@@ -319,7 +316,6 @@ public class SalesRequisitionItemsTable extends JTable {
 					break;
 				case SalesRequisitionItemsTable.UNIT_COLUMN_INDEX:
 					String unit = (String)table.getValueAt(selectedRow, UNIT_COLUMN_INDEX);
-					SalesRequisitionItem item = table.getCurrentlySelectedRowItem();
 					
 					if (StringUtils.isEmpty(unit)) {
 						JOptionPane.showMessageDialog(table,
@@ -360,9 +356,15 @@ public class SalesRequisitionItemsTable extends JTable {
 					if (item.getQuantity() == null) {
 						JOptionPane.showMessageDialog(table,
 								"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						editCellAt(table.getSelectedRow(), QUANTITY_COLUMN_INDEX);
+						editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
 					} else {
-						addNewRow();
+						if (inventoryService.getQuantity(item.getProduct(), item.getUnit()) < item.getQuantity().intValue()) {
+							JOptionPane.showMessageDialog(table,
+									"Not enough stocks", "Error Message", JOptionPane.ERROR_MESSAGE);
+							editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
+						} else {
+							addNewRow();
+						}
 					}
 				} else {
 					originalDownAction.actionPerformed(e);

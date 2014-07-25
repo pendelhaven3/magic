@@ -34,4 +34,14 @@ public class InventoryServiceImpl implements InventoryService {
 		return unitQuantities;
 	}
 
+	@Override
+	public int getQuantity(Product product, String unit) {
+		for (UnitQuantity unitQuantity : getUnitQuantities(product)) {
+			if (unitQuantity.getUnit().equals(unit)) {
+				return unitQuantity.getQuantity();
+			}
+		}
+		return 0;
+	}
+
 }

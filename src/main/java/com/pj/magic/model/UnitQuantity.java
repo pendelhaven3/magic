@@ -3,9 +3,9 @@ package com.pj.magic.model;
 public class UnitQuantity {
 
 	private String unit;
-	private Integer quantity;
+	private int quantity;
 	
-	public UnitQuantity(String unit, Integer quantity) {
+	public UnitQuantity(String unit, int quantity) {
 		this.unit = unit;
 		this.quantity = quantity;
 	}
@@ -18,12 +18,12 @@ public class UnitQuantity {
 		this.unit = unit;
 	}
 
-	public Integer getQuantity() {
+	public int getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Integer quantity) {
+	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-
+	
 }

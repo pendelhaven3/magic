@@ -47,7 +47,7 @@ public class ProductUnitPricesTableModel extends AbstractTableModel {
 		case UNIT_COLUMN_INDEX:
 			return unitPrice.getUnit();
 		case QUANTITY_COLUMN_INDEX:
-			return unitQuantity.getQuantity().toString();
+			return String.valueOf(unitQuantity.getQuantity());
 		case UNIT_PRICE_COLUMN_INDEX:
 			return LabelUtil.formatAmount(unitPrice.getPrice());
 		default:
