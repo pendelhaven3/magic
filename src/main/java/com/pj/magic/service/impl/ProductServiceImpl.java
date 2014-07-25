@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.model.Product;
+import com.pj.magic.service.InventoryService;
 import com.pj.magic.service.PriceService;
 import com.pj.magic.service.ProductService;
 
@@ -17,6 +18,7 @@ public class ProductServiceImpl implements ProductService {
 	private static List<Product> products; // TODO: Temporary
 	
 	@Autowired private PriceService priceService;
+	@Autowired private InventoryService inventoryService;
 	
 	@Override
 	public List<Product> getAllProducts() {
@@ -32,6 +34,7 @@ public class ProductServiceImpl implements ProductService {
 		product.setDescription("REJOICE GREEN 12mlx288");
 		product.setUnits(Arrays.asList("CSE", "DOZ"));
 		product.setUnitPrices(priceService.getUnitPrices(product));
+		product.setUnitQuantities(inventoryService.getUnitQuantities(product));
 		products.add(product);
 		
 		product = new Product();
@@ -40,6 +43,7 @@ public class ProductServiceImpl implements ProductService {
 		product.setDescription("ZONROX REGULAR 100mlx144");
 		product.setUnits(Arrays.asList("CSE", "PCS"));
 		product.setUnitPrices(priceService.getUnitPrices(product));
+		product.setUnitQuantities(inventoryService.getUnitQuantities(product));
 		products.add(product);
 		
 		product = new Product();
@@ -48,6 +52,7 @@ public class ProductServiceImpl implements ProductService {
 		product.setDescription("ZONROX REGULAR 250mlx72");
 		product.setUnits(Arrays.asList("CSE", "PCS"));
 		product.setUnitPrices(priceService.getUnitPrices(product));
+		product.setUnitQuantities(inventoryService.getUnitQuantities(product));
 		products.add(product);
 		
 		return products; 

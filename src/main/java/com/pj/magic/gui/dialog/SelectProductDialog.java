@@ -13,7 +13,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -71,8 +70,7 @@ public class SelectProductDialog extends MagicDialog {
 			
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				ListSelectionModel selectionModel = (ListSelectionModel)e.getSource();
-				int selectedRow = selectionModel.getMinSelectionIndex();
+				int selectedRow = productsTable.getSelectedRow();
 				Product product = tableModel.getProduct(selectedRow);
 				unitPricesTableModel.setProduct(product);
 			}

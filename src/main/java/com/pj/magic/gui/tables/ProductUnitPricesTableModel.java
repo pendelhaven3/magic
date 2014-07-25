@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.model.Product;
 import com.pj.magic.model.UnitPrice;
+import com.pj.magic.model.UnitQuantity;
 import com.pj.magic.util.LabelUtil;
 
 @Component
@@ -40,12 +41,13 @@ public class ProductUnitPricesTableModel extends AbstractTableModel {
 		}
 		
 		UnitPrice unitPrice = product.getUnitPrices().get(rowIndex);
+		UnitQuantity unitQuantity = product.getUnitQuantities().get(rowIndex);
 		
 		switch (columnIndex) {
 		case UNIT_COLUMN_INDEX:
 			return unitPrice.getUnit();
 		case QUANTITY_COLUMN_INDEX:
-			return "999"; // TODO: to be implemented in the future
+			return unitQuantity.getQuantity().toString();
 		case UNIT_PRICE_COLUMN_INDEX:
 			return LabelUtil.formatAmount(unitPrice.getPrice());
 		default:

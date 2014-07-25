@@ -12,6 +12,7 @@ public class Product {
 	private String description;
 	private List<String> units;
 	private List<UnitPrice> unitPrices;
+	private List<UnitQuantity> unitQuantities;
 
 	public boolean isValid() {
 		return id != null && id.intValue() != 0;
@@ -82,4 +83,12 @@ public class Product {
 		this.unitPrices = unitPrices;
 	}
 
+	public List<UnitQuantity> getUnitQuantities() {
+		return unitQuantities;
+	}
+	
+	public void setUnitQuantities(List<UnitQuantity> unitQuantities) {
+		this.unitQuantities = unitQuantities;
+	}
+	
 }
