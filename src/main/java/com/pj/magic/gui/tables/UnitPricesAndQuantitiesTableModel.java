@@ -10,7 +10,7 @@ import com.pj.magic.model.UnitQuantity;
 import com.pj.magic.util.LabelUtil;
 
 @Component
-public class ProductUnitPricesTableModel extends AbstractTableModel {
+public class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
 
 	private static final int UNIT_COLUMN_INDEX = 0;
 	private static final int QUANTITY_COLUMN_INDEX = 1;

@@ -19,7 +19,7 @@ import javax.swing.event.ListSelectionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.tables.ProductUnitPricesTableModel;
+import com.pj.magic.gui.tables.UnitPricesAndQuantitiesTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
 
@@ -32,7 +32,7 @@ public class SelectProductDialog extends MagicDialog {
 
 	@Autowired private ProductService productService;
 	@Autowired private ProductsTableModel tableModel;
-	@Autowired private ProductUnitPricesTableModel unitPricesTableModel;
+	@Autowired private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel;
 	
 	private JTable productsTable;
 	private String selectedProductCode;
@@ -52,9 +52,9 @@ public class SelectProductDialog extends MagicDialog {
 		add(new JScrollPane(productsTable));
 		add(Box.createRigidArea(new Dimension(0, 5)));
 		
-		JScrollPane unitPricesScrollPane = new JScrollPane(new JTable(unitPricesTableModel));
-		unitPricesScrollPane.setPreferredSize(new Dimension(500, 120));
-		add(unitPricesScrollPane);
+		JScrollPane productInfoScrollPane = new JScrollPane(new JTable(unitPricesAndQuantitiesTableModel));
+		productInfoScrollPane.setPreferredSize(new Dimension(500, 80));
+		add(productInfoScrollPane);
 		
 		productsTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_PRODUCT_ACTION_NAME);
 		productsTable.getActionMap().put(SELECT_PRODUCT_ACTION_NAME, new AbstractAction() {
@@ -72,7 +72,7 @@ public class SelectProductDialog extends MagicDialog {
 			public void valueChanged(ListSelectionEvent e) {
 				int selectedRow = productsTable.getSelectedRow();
 				Product product = tableModel.getProduct(selectedRow);
-				unitPricesTableModel.setProduct(product);
+				unitPricesAndQuantitiesTableModel.setProduct(product);
 			}
 		});
 		

@@ -1,5 +1,6 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -20,6 +21,24 @@ public class Product {
 	
 	public boolean hasUnit(String unit) {
 		return units.contains(unit);
+	}
+	
+	public int getUnitQuantity(String unit) {
+		for (UnitQuantity unitQuantity : unitQuantities) {
+			if (unit.equals(unitQuantity.getUnit())) {
+				return unitQuantity.getQuantity();
+			}
+		}
+		return 0;
+	}
+	
+	public BigDecimal getUnitPrice(String unit) {
+		for (UnitPrice unitPrice : unitPrices) {
+			if (unit.equals(unitPrice.getUnit())) {
+				return unitPrice.getPrice();
+			}
+		}
+		return null;
 	}
 	
 	@Override
