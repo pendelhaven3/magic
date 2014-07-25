@@ -24,6 +24,7 @@ import com.pj.magic.service.SalesRequisitionService;
 public class SalesRequisitionsListPanel extends MagicPanel {
 	
 	private static final String OPEN_SELECT_ACTION_DIALOG_ACTION_NAME = "openSelectActionDialog";
+	private static final String BACK_ACTION_NAME = "back";
 	
 	@Autowired private SalesRequisitionsTable table;
 	@Autowired private SelectActionDialog selectActionDialog;
@@ -76,6 +77,17 @@ public class SalesRequisitionsListPanel extends MagicPanel {
 					getMagicFrame().switchToSalesRequisitionPanel(salesRequisition);
 				}
 			}
+		});
+		
+		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), BACK_ACTION_NAME);
+		getActionMap().put(BACK_ACTION_NAME, new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getMagicFrame().switchToMainMenuPanel();
+			}
+			
 		});
 	}
 }
