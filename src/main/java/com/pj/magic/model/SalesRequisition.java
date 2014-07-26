@@ -8,6 +8,7 @@ import java.util.List;
 
 public class SalesRequisition {
 
+	private Long id;
 	private Long salesRequisitionNumber;
 	private String customerName; // TODO: Turn into Customer object
 	private Date createDate;
@@ -64,6 +65,14 @@ public class SalesRequisition {
 
 	public void setEncoder(String encoder) {
 		this.encoder = encoder;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 }

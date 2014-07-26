@@ -16,23 +16,23 @@ import com.pj.magic.model.UnitQuantity;
 @Repository
 public class ProductDaoImpl extends MagicDao implements ProductDao {
 	
-	private static final String SELECT_ALL_PRODUCTS_SQL =
-			"select ID, CODE, DESCRIPTION, UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
+	private static final String GET_ALL_PRODUCTS_SQL =
+			"select a.ID, CODE, DESCRIPTION, UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
 			+ " UNIT_PRICE_CSE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
 			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS"
 			+ " from PRODUCT a, PRODUCT_PRICE b"
 			+ " where a.ID = b.PRODUCT_ID";
 
-	private static final String SELECT_PRODUCT_BY_CODE_SQL =
-			"select ID, CODE, DESCRIPTION, UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
+	private static final String FIND_PRODUCT_BY_CODE_SQL =
+			"select a.ID, CODE, DESCRIPTION, UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
 			+ " UNIT_PRICE_CSE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
 			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS"
 			+ " from PRODUCT a, PRODUCT_PRICE b"
 			+ " where a.ID = b.PRODUCT_ID"
 			+ " and a.CODE = ?";
 
-	private static final String SELECT_PRODUCT_BY_ID_SQL =
-			"select ID, CODE, DESCRIPTION, UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
+	private static final String FIND_PRODUCT_BY_ID_SQL =
+			"select a.ID, CODE, DESCRIPTION, UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
 			+ " UNIT_PRICE_CSE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
 			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS"
 			+ " from PRODUCT a, PRODUCT_PRICE b"
@@ -43,13 +43,13 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	
 	@Override
 	public List<Product> getAllProducts() {
-		return getJdbcTemplate().query(SELECT_ALL_PRODUCTS_SQL, productRowMapper);
+		return getJdbcTemplate().query(GET_ALL_PRODUCTS_SQL, productRowMapper);
 	}
 
 	@Override
 	public Product findProductByCode(String code) {
 		try {
-			return getJdbcTemplate().queryForObject(SELECT_PRODUCT_BY_CODE_SQL, 
+			return getJdbcTemplate().queryForObject(FIND_PRODUCT_BY_CODE_SQL, 
 					new Object[] {code}, productRowMapper);
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
@@ -58,7 +58,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	
 	@Override
 	public Product getProduct(int id) {
-		return getJdbcTemplate().queryForObject(SELECT_PRODUCT_BY_ID_SQL, 
+		return getJdbcTemplate().queryForObject(FIND_PRODUCT_BY_ID_SQL, 
 				new Object[] {id}, productRowMapper);
 	}
 

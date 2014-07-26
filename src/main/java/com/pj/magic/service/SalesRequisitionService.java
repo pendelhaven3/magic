@@ -8,6 +8,6 @@ public interface SalesRequisitionService {
 
 	List<SalesRequisition> getAllSalesRequisitions();
 	
-	SalesRequisition save(SalesRequisition salesRequisition);
+	void save(SalesRequisition salesRequisition);
 	
 }

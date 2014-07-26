@@ -30,6 +30,7 @@ import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.SalesRequisitionService;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
@@ -39,6 +40,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 	
 	@Autowired private SalesRequisitionItemsTable itemsTable;
 	@Autowired private ProductService productService;
+	@Autowired private SalesRequisitionService salesRequisitionService;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -75,6 +77,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				salesRequisition.setCustomerName(customerNameField.getText());
+				salesRequisitionService.save(salesRequisition);
 				if (!salesRequisition.hasItems()) {
 					itemsTable.switchToAddMode();
 				} else {

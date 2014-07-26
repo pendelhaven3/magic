@@ -260,6 +260,7 @@ public class SalesRequisitionItemsTable extends JTable {
 	}
 	
 	public void setSalesRequisition(SalesRequisition salesRequisition) {
+		clearSelection();
 		this.salesRequisition = salesRequisition;
 		getItemsTableModel().setItems(salesRequisition.getItems());
 	}
