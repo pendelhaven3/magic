@@ -1,6 +1,7 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -11,9 +12,9 @@ public class Product {
 	private Integer id;
 	private String code;
 	private String description;
-	private List<String> units;
-	private List<UnitPrice> unitPrices;
-	private List<UnitQuantity> unitQuantities;
+	private List<String> units = new ArrayList<>();
+	private List<UnitPrice> unitPrices = new ArrayList<>();
+	private List<UnitQuantity> unitQuantities= new ArrayList<>();
 
 	public boolean isValid() {
 		return id != null && id.intValue() != 0;

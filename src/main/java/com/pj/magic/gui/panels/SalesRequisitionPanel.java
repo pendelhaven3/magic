@@ -263,7 +263,11 @@ public class SalesRequisitionPanel extends MagicPanel {
 			return;
 		}
 		
-		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
+		Product product = null;
+		if (itemsTable.getItemsTableModel().hasItems()) { // to handle switchToEditMode() event
+			product = itemsTable.getCurrentlySelectedRowItem().getProduct();
+		}
+		
 		if (product != null && product.isValid()) {
 			unitPricesAndQuantitiesTableModel.setProduct(product);
 		} else {

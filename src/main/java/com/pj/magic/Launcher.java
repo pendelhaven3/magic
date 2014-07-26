@@ -14,7 +14,6 @@ public class Launcher {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
 		try {
 			MagicFrame frame = context.getBean(MagicFrame.class);
-//			frame.pack();
 			frame.setVisible(true);
 		} finally {
 			context.close();

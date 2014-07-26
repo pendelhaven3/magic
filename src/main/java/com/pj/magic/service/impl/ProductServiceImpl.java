@@ -1,12 +1,11 @@
 package com.pj.magic.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.InventoryService;
 import com.pj.magic.service.PriceService;
@@ -19,9 +18,12 @@ public class ProductServiceImpl implements ProductService {
 	
 	@Autowired private PriceService priceService;
 	@Autowired private InventoryService inventoryService;
+	@Autowired private ProductDao productDao;
 	
 	@Override
 	public List<Product> getAllProducts() {
+		return productDao.getAllProducts();
+		/*
 		if (products != null) {
 			return products;
 		}
@@ -56,6 +58,7 @@ public class ProductServiceImpl implements ProductService {
 		products.add(product);
 		
 		return products; 
+		*/
 	}
 
 	@Override

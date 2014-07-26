@@ -65,7 +65,9 @@ public class SalesRequisitionsTable extends JTable {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				displaySalesRequisitionDetails(getCurrentlySelectedSalesRequisition());
+				if (getSelectedRow() != -1) {
+					displaySalesRequisitionDetails(getCurrentlySelectedSalesRequisition());
+				}
 			}
 		});
 	}
