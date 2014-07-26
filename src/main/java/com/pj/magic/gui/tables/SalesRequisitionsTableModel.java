@@ -9,7 +9,7 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.commons.lang.StringUtils;
 
 import com.pj.magic.model.SalesRequisition;
-import com.pj.magic.util.LabelUtil;
+import com.pj.magic.util.FormatterUtil;
 
 public class SalesRequisitionsTableModel extends AbstractTableModel {
 
@@ -37,11 +37,11 @@ public class SalesRequisitionsTableModel extends AbstractTableModel {
 			return salesRequisition.getCustomerName();
 		case SalesRequisitionsTable.CREATE_DATE_COLUMN_INDEX:
 			Date date = salesRequisition.getCreateDate();
-			return (date != null) ? LabelUtil.formatDate(date) : "";
+			return (date != null) ? FormatterUtil.formatDate(date) : "";
 		case SalesRequisitionsTable.ENCODER_COLUMN_INDEX:
 			return StringUtils.defaultString(salesRequisition.getEncoder());
 		case SalesRequisitionsTable.TOTAL_AMOUNT_COLUMN_INDEX:
-			return LabelUtil.formatAmount(salesRequisition.getTotalAmount());
+			return FormatterUtil.formatAmount(salesRequisition.getTotalAmount());
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}

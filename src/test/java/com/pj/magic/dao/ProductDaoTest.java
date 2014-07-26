@@ -1,8 +1,9 @@
 package com.pj.magic.dao;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,9 +19,13 @@ public class ProductDaoTest extends AbstractJUnit4SpringContextTests {
 	@Test
 	public void getAllProducts() {
 		List<Product> allProducts = productDao.getAllProducts();
-		for (Product product : allProducts) {
-			System.out.println(ToStringBuilder.reflectionToString(product));
-		}
+		assertFalse(allProducts.isEmpty());
+	}
+	
+	@Test
+	public void findProductByCode() {
+		Product product = productDao.findProductByCode("ZONRED2500");
+		assertNotNull(product);
 	}
 
 }

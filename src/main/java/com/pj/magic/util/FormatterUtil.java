@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 
 import com.pj.magic.Constants;
 
-public class LabelUtil {
+public class FormatterUtil {
 
 	public static final JLabel createFiller(int width, int height) {
 		JLabel label = new JLabel();

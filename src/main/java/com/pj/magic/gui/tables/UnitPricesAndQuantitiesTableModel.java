@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.model.UnitQuantity;
-import com.pj.magic.util.LabelUtil;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
@@ -49,7 +49,7 @@ public class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
 		case QUANTITY_COLUMN_INDEX:
 			return String.valueOf(unitQuantity.getQuantity());
 		case UNIT_PRICE_COLUMN_INDEX:
-			return LabelUtil.formatAmount(unitPrice.getPrice());
+			return FormatterUtil.formatAmount(unitPrice.getPrice());
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}

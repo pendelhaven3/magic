@@ -10,4 +10,6 @@ public interface ProductService {
 	
 	Product findProductByCode(String code);
 	
+	Product getProduct(int id);
+	
 }

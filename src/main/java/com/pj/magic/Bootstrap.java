@@ -21,7 +21,12 @@ public class Bootstrap {
 	
 	@PostConstruct
 	public void initialize() throws Exception {
-		InputStream in = getClass().getClassLoader().getResourceAsStream("sql/product.sql");
+		runScriptFile("tables.sql");
+		runScriptFile("data.sql");
+	}
+	
+	private void runScriptFile(String filename) throws Exception {
+		InputStream in = getClass().getClassLoader().getResourceAsStream("sql/" + filename);
 		try (
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			Connection conn = dataSource.getConnection();

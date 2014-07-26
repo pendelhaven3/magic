@@ -42,6 +42,10 @@ public class Product {
 		return null;
 	}
 	
+	public boolean hasAvailableUnitQuantity(String unit, int quantity) {
+		return getUnitQuantity(unit) >= quantity;
+	}
+	
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder()

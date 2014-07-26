@@ -30,7 +30,7 @@ import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.ProductService;
-import com.pj.magic.util.LabelUtil;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class SalesRequisitionPanel extends MagicPanel {
@@ -63,7 +63,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalAmountField.setText(LabelUtil.formatAmount(itemsTable.getTotalAmount()));
+				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
 			}
 		});
 	}
@@ -89,7 +89,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 		this.salesRequisition = salesRequisition;
 		salesRequisitionNumberField.setText(salesRequisition.getSalesRequisitionNumber().toString());
 		customerNameField.setText(salesRequisition.getCustomerName());
-		createDateField.setText(LabelUtil.formatDate(salesRequisition.getCreateDate()));
+		createDateField.setText(FormatterUtil.formatDate(salesRequisition.getCreateDate()));
 		encoderField.setText(salesRequisition.getEncoder());
 		totalAmountField.setText(salesRequisition.getTotalAmount().toString());
 		itemsTable.setSalesRequisition(salesRequisition);
@@ -121,20 +121,20 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		add(LabelUtil.createFiller(50, 30), c);
+		add(FormatterUtil.createFiller(50, 30), c);
 
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 1;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		add(LabelUtil.createLabel(150, "SR No.:"), c);
+		add(FormatterUtil.createLabel(150, "SR No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		salesRequisitionNumberField = LabelUtil.createLabel(200, "");
+		salesRequisitionNumberField = FormatterUtil.createLabel(200, "");
 		add(salesRequisitionNumberField, c);
 		
 		c.weightx = c.weighty = 0.0;
@@ -142,14 +142,14 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.gridx = 3;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		add(LabelUtil.createLabel(100, "Create Date:"), c);
+		add(FormatterUtil.createLabel(100, "Create Date:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 4;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		createDateField = LabelUtil.createLabel(150, "");
+		createDateField = FormatterUtil.createLabel(150, "");
 		add(createDateField, c);
 		
 		// second row
@@ -159,7 +159,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.gridx = 1;
 		c.gridy = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(LabelUtil.createLabel(150, "Customer Name:"), c);
+		add(FormatterUtil.createLabel(150, "Customer Name:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -174,14 +174,14 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.gridx = 3;
 		c.gridy = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(LabelUtil.createLabel(100, "Encoder:"), c);
+		add(FormatterUtil.createLabel(100, "Encoder:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 4;
 		c.gridy = 1;
 		c.anchor = GridBagConstraints.WEST;
-		encoderField = LabelUtil.createLabel(150, "");
+		encoderField = FormatterUtil.createLabel(150, "");
 		add(encoderField, c);
 		
 		// third row
@@ -191,7 +191,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.gridx = 0;
 		c.gridy = 2;
 		c.anchor = GridBagConstraints.WEST;
-		add(LabelUtil.createFiller(50, 10), c);
+		add(FormatterUtil.createFiller(50, 10), c);
 		
 		// fourth row
 		
@@ -225,14 +225,14 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.gridy = 5;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(LabelUtil.createLabel(100, "Total Amount:"), c);
+		add(FormatterUtil.createLabel(100, "Total Amount:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 4;
 		c.gridy = 5;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = LabelUtil.createLabel(150, "");
+		totalAmountField = FormatterUtil.createLabel(150, "");
 		add(totalAmountField, c);
 	}
 	
@@ -260,14 +260,11 @@ public class SalesRequisitionPanel extends MagicPanel {
 	
 	private void updateUnitPricesAndQuantitiesTable() {
 		if (itemsTable.getSelectedRow() == -1) {
+			unitPricesAndQuantitiesTableModel.setProduct(null);
 			return;
 		}
 		
-		Product product = null;
-		if (itemsTable.getItemsTableModel().hasItems()) { // to handle switchToEditMode() event
-			product = itemsTable.getCurrentlySelectedRowItem().getProduct();
-		}
-		
+		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
 		if (product != null && product.isValid()) {
 			unitPricesAndQuantitiesTableModel.setProduct(product);
 		} else {
@@ -335,7 +332,14 @@ public class SalesRequisitionPanel extends MagicPanel {
 			}
 			
 			if (product == null) {
-				return "";
+				switch (columnIndex) {
+				case 1:
+				case 4:
+					return "0";
+				case 2:
+				case 5:
+					return FormatterUtil.formatAmount(BigDecimal.ZERO);
+				}
 			}
 			
 			product = productService.findProductByCode(product.getCode());
@@ -349,7 +353,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 					if (unitPrice == null) {
 						unitPrice = BigDecimal.ZERO;
 					}
-					return LabelUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitPrice);
 				case 4:
 					return String.valueOf(product.getUnitQuantity("DOZ"));
 				case 5:
@@ -357,7 +361,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 					if (unitPrice == null) {
 						unitPrice = BigDecimal.ZERO;
 					}
-					return LabelUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitPrice);
 				}
 			} else if (rowIndex == 1) {
 				switch (columnIndex) {
@@ -368,7 +372,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 					if (unitPrice == null) {
 						unitPrice = BigDecimal.ZERO;
 					}
-					return LabelUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitPrice);
 				case 4:
 					return String.valueOf(product.getUnitQuantity("PCS"));
 				case 5:
@@ -376,7 +380,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 					if (unitPrice == null) {
 						unitPrice = BigDecimal.ZERO;
 					}
-					return LabelUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitPrice);
 				}
 			}
 			return "";

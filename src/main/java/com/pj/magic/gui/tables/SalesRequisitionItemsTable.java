@@ -26,6 +26,7 @@ import com.pj.magic.gui.dialog.ActionsTableModel;
 import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.InventoryService;
@@ -149,6 +150,15 @@ public class SalesRequisitionItemsTable extends JTable {
 	}
 	
 	public void switchToAddMode() {
+		clearSelection();
+		if (isEditing()) {
+			getCellEditor().cancelCellEditing();
+		}
+		
+		if (addMode) {
+			salesRequisition.getItems().addAll(getItemsTableModel().getItems());
+		}
+		
 		addMode = true;
 		getItemsTableModel().clearForNewInput();
 		changeSelection(0, 0, false, false);
@@ -201,6 +211,7 @@ public class SalesRequisitionItemsTable extends JTable {
 	}
 	
 	public void switchToEditMode() {
+		clearSelection();
 		if (isEditing()) {
 			getCellEditor().cancelCellEditing();
 		}
@@ -358,7 +369,8 @@ public class SalesRequisitionItemsTable extends JTable {
 								"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
 						editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
 					} else {
-						if (inventoryService.getQuantity(item.getProduct(), item.getUnit()) < item.getQuantity().intValue()) {
+						Product product = productService.getProduct(item.getProduct().getId());
+						if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity().intValue())) {
 							JOptionPane.showMessageDialog(table,
 									"Not enough stocks", "Error Message", JOptionPane.ERROR_MESSAGE);
 							editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
