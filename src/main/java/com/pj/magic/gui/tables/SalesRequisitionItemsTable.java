@@ -225,9 +225,11 @@ public class SalesRequisitionItemsTable extends JTable {
 	}
 	
 	public void removeCurrentlySelectedRow() {
+		
 		int selectedRowIndex = getSelectedRow();
 		SalesRequisitionItem item = getCurrentlySelectedRowItem();
-		salesRequisition.getItems().remove(item); // must update SR model before table model so that total amount is updated correctly
+		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
+		salesRequisition.getItems().remove(item);
 		getItemsTableModel().removeItem(selectedRowIndex);
 		
 		if (getItemsTableModel().hasItems()) {
@@ -454,6 +456,14 @@ public class SalesRequisitionItemsTable extends JTable {
 			}
 		}
 		return totalAmount;
+	}
+	
+	public int getTotalNumberOfItems() {
+		int totalNumberOfItems = salesRequisition.getTotalNumberOfItems();
+		if (isAdding()) {
+			totalNumberOfItems += getItemsTableModel().getItems().size();
+		}
+		return totalNumberOfItems;
 	}
 	
 }

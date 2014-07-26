@@ -27,6 +27,10 @@ public class SalesRequisition {
 		return !items.isEmpty();
 	}
 	
+	public int getTotalNumberOfItems() {
+		return items.size();
+	}
+	
 	public Long getSalesRequisitionNumber() {
 		return salesRequisitionNumber;
 	}

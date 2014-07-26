@@ -31,6 +31,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesRequisitionService;
+import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
@@ -47,6 +48,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 	private JTextField customerNameField;
 	private JLabel createDateField;
 	private JLabel encoderField;
+	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	
@@ -65,6 +67,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
+				totalItemsField.setText(String.valueOf(itemsTable.getTotalNumberOfItems()));
 				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
 			}
 		});
@@ -94,6 +97,7 @@ public class SalesRequisitionPanel extends MagicPanel {
 		customerNameField.setText(salesRequisition.getCustomerName());
 		createDateField.setText(FormatterUtil.formatDate(salesRequisition.getCreateDate()));
 		encoderField.setText(salesRequisition.getEncoder());
+		totalItemsField.setText(String.valueOf(salesRequisition.getTotalNumberOfItems()));
 		totalAmountField.setText(salesRequisition.getTotalAmount().toString());
 		itemsTable.setSalesRequisition(salesRequisition);
 	}
@@ -116,57 +120,58 @@ public class SalesRequisitionPanel extends MagicPanel {
 	private void layoutComponents() {
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
+		int currentRow = 0;
 
 		// first row
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 0;
-		c.gridy = 0;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(FormatterUtil.createFiller(50, 30), c);
+		add(ComponentUtil.createFiller(50, 30), c);
 
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 1;
-		c.gridy = 0;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(FormatterUtil.createLabel(150, "SR No.:"), c);
+		add(ComponentUtil.createLabel(150, "SR No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
-		c.gridy = 0;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		salesRequisitionNumberField = FormatterUtil.createLabel(200, "");
+		salesRequisitionNumberField = ComponentUtil.createLabel(200, "");
 		add(salesRequisitionNumberField, c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 3;
-		c.gridy = 0;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(FormatterUtil.createLabel(100, "Create Date:"), c);
+		add(ComponentUtil.createLabel(100, "Create Date:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 4;
-		c.gridy = 0;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		createDateField = FormatterUtil.createLabel(150, "");
+		createDateField = ComponentUtil.createLabel(150, "");
 		add(createDateField, c);
 		
-		// second row
+		currentRow++; // second row
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 1;
-		c.gridy = 1;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(FormatterUtil.createLabel(150, "Customer Name:"), c);
+		add(ComponentUtil.createLabel(150, "Customer Name:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
-		c.gridy = 1;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		customerNameField = new MagicTextField();
 		customerNameField.setPreferredSize(new Dimension(180, 20));
@@ -175,67 +180,85 @@ public class SalesRequisitionPanel extends MagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 3;
-		c.gridy = 1;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(FormatterUtil.createLabel(100, "Encoder:"), c);
+		add(ComponentUtil.createLabel(100, "Encoder:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 4;
-		c.gridy = 1;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		encoderField = FormatterUtil.createLabel(150, "");
+		encoderField = ComponentUtil.createLabel(150, "");
 		add(encoderField, c);
 		
-		// third row
+		currentRow++; // third row
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 0;
-		c.gridy = 2;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(FormatterUtil.createFiller(50, 10), c);
+		add(ComponentUtil.createFiller(50, 10), c);
 		
-		// fourth row
+		currentRow++; // fourth row
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
-		c.gridy = 3;
+		c.gridy = currentRow;
 		c.gridwidth = 5;
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
 		add(itemsTableScrollPane, c);
 
-		// fifth row
+		currentRow++; // fifth row
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
-		c.gridy = 4;
+		c.gridy = currentRow;
 		c.gridwidth = 5;
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
 		infoTableScrollPane.setPreferredSize(new Dimension(500, 45));
 		add(infoTableScrollPane, c);
 		
-		// sixth row
+		currentRow++; // sixth row
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 3;
-		c.gridy = 5;
+		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(FormatterUtil.createLabel(100, "Total Amount:"), c);
+		add(ComponentUtil.createLabel(100, "Total Items:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 4;
-		c.gridy = 5;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = FormatterUtil.createLabel(150, "");
+		totalItemsField = ComponentUtil.createLabel(150, "");
+		add(totalItemsField, c);
+		
+		currentRow++; // seventh row
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAmountField = ComponentUtil.createLabel(150, "");
 		add(totalAmountField, c);
 	}
 	
