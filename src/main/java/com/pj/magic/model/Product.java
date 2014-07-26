@@ -9,13 +9,20 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class Product {
 
-	private Integer id;
+	private Long id;
 	private String code;
 	private String description;
 	private List<String> units = new ArrayList<>();
 	private List<UnitPrice> unitPrices = new ArrayList<>();
-	private List<UnitQuantity> unitQuantities= new ArrayList<>();
+	private List<UnitQuantity> unitQuantities = new ArrayList<>();
 
+	public Product() {
+	}
+	
+	public Product(Long id) {
+		this.id = id;
+	}
+	
 	public boolean isValid() {
 		return id != null && id.intValue() != 0;
 	}
@@ -91,11 +98,11 @@ public class Product {
 		this.units = units;
 	}
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

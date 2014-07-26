@@ -29,7 +29,6 @@ import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
-import com.pj.magic.service.InventoryService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
 
@@ -62,7 +61,6 @@ public class SalesRequisitionItemsTable extends JTable {
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;
-	@Autowired private InventoryService inventoryService;
 	
 	private boolean addMode;
 	private SalesRequisition salesRequisition;
@@ -160,7 +158,7 @@ public class SalesRequisitionItemsTable extends JTable {
 		}
 		
 		addMode = true;
-		getItemsTableModel().clearForNewInput();
+		getItemsTableModel().clearAndAddItem(createBlankItem());
 		changeSelection(0, 0, false, false);
 		editCellAt(0, 0);
 		getEditorComponent().requestFocusInWindow();
@@ -173,7 +171,7 @@ public class SalesRequisitionItemsTable extends JTable {
 
 	public void addNewRow() {
 		int newRowIndex = getSelectedRow() + 1;
-		getItemsTableModel().addNewRow();
+		getItemsTableModel().addItem(createBlankItem());
 		changeSelection(newRowIndex, 0, false, false);
 		editCellAt(newRowIndex, 0);
 		getEditorComponent().requestFocusInWindow();
@@ -261,8 +259,15 @@ public class SalesRequisitionItemsTable extends JTable {
 	
 	public void setSalesRequisition(SalesRequisition salesRequisition) {
 		clearSelection();
+		addMode = false;
 		this.salesRequisition = salesRequisition;
 		getItemsTableModel().setItems(salesRequisition.getItems());
+	}
+	
+	private SalesRequisitionItem createBlankItem() {
+		SalesRequisitionItem item = new SalesRequisitionItem();
+		item.setParent(salesRequisition);
+		return item;
 	}
 	
 	protected void registerKeyBindings() {
@@ -430,7 +435,7 @@ public class SalesRequisitionItemsTable extends JTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (table.getItemsTableModel().hasItems()) {
-					if (table.getCurrentlySelectedRowItem().isValid()) {
+					if (table.getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
 						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?");
 						if (confirm == JOptionPane.OK_OPTION) {
 							table.removeCurrentlySelectedRow();

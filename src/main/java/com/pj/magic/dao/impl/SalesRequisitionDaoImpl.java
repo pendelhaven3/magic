@@ -49,8 +49,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	@Override
 	public SalesRequisition get(long id) {
 		try {
-			return getJdbcTemplate().queryForObject(FIND_BY_ID_SQL, 
-					new Object[] {id}, salesRequisitionRowMapper);
+			return getJdbcTemplate().queryForObject(FIND_BY_ID_SQL, salesRequisitionRowMapper, id);
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
@@ -86,8 +85,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	}
 	
 	private void update(SalesRequisition salesRequisition) {
-		getJdbcTemplate().update(UPDATE_SQL, new Object[] {salesRequisition.getCustomerName(),
-				salesRequisition.getId()});
+		getJdbcTemplate().update(UPDATE_SQL, salesRequisition.getCustomerName(), salesRequisition.getId());
 	}
 	
 	private class SalesRequisitionRowMapper implements RowMapper<SalesRequisition> {

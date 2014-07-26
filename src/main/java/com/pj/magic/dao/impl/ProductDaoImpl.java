@@ -49,17 +49,15 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	@Override
 	public Product findProductByCode(String code) {
 		try {
-			return getJdbcTemplate().queryForObject(FIND_PRODUCT_BY_CODE_SQL, 
-					new Object[] {code}, productRowMapper);
+			return getJdbcTemplate().queryForObject(FIND_PRODUCT_BY_CODE_SQL, productRowMapper, code);
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
 	}
 	
 	@Override
-	public Product getProduct(int id) {
-		return getJdbcTemplate().queryForObject(FIND_PRODUCT_BY_ID_SQL, 
-				new Object[] {id}, productRowMapper);
+	public Product getProduct(long id) {
+		return getJdbcTemplate().queryForObject(FIND_PRODUCT_BY_ID_SQL, productRowMapper, id);
 	}
 
 	private class ProductRowMapper implements RowMapper<Product> {
@@ -67,7 +65,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		@Override
 		public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Product product = new Product();
-			product.setId(rs.getInt("ID"));
+			product.setId(rs.getLong("ID"));
 			product.setCode(rs.getString("CODE"));
 			product.setDescription(rs.getString("DESCRIPTION"));
 			if ("Y".equals(rs.getString("UNIT_IND_CSE"))) {

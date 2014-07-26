@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.SalesRequisitionService;
 import com.pj.magic.util.FormatterUtil;
 
 /*
@@ -24,10 +25,11 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 	
-	@Autowired
-	private ProductService productService;
+	private static final String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
 	
-	private String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
+	@Autowired private ProductService productService;
+	@Autowired private SalesRequisitionService salesRequisitionService;
+	
 	private List<SalesRequisitionItem> items = new ArrayList<>();
 	
 	@Override
@@ -84,8 +86,8 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 	
-	public void addNewRow() {
-		items.add(new SalesRequisitionItem());
+	public void addItem(SalesRequisitionItem item) {
+		items.add(item);
 		fireTableDataChanged();
 	}
 	
@@ -113,6 +115,9 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		default:
 			throw new RuntimeException("Setting invalid column index: " + columnIndex);
 		}
+		if (item.isValid()) {
+			salesRequisitionService.save(item);
+		}
 		fireTableRowsUpdated(rowIndex, rowIndex);
 	}
 	
@@ -128,7 +133,8 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 	}
 	
 	public void removeItem(int rowIndex) {
-		items.remove(rowIndex);
+		SalesRequisitionItem item = items.remove(rowIndex);
+		salesRequisitionService.delete(item);
 		fireTableDataChanged();
 	}
 	
@@ -136,10 +142,9 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		return !items.isEmpty();
 	}
 	
-	public void clearForNewInput() {
+	public void clearAndAddItem(SalesRequisitionItem item) {
 		items.clear();
-		items.add(new SalesRequisitionItem());
-		fireTableDataChanged();
+		addItem(item);
 	}
 
 	public boolean hasDuplicate(SalesRequisitionItem checkItem) {

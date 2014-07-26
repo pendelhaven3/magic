@@ -7,14 +7,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class SalesRequisitionItem {
 
+	private Long id;
+	private SalesRequisition parent;
 	private Product product;
 	private String unit;
 	private Integer quantity;
 
 	public boolean isValid() {
 		return (product != null && product.isValid())
-				&& product.getUnits().contains(unit)
-				&& (quantity != null && quantity.intValue() > 0);
+				&& product.hasUnit(unit)
+				&& (quantity != null && product.hasAvailableUnitQuantity(unit, quantity));
 	}
 	
 	public BigDecimal getUnitPrice() {
@@ -37,6 +39,22 @@ public class SalesRequisitionItem {
 		return getUnitPrice().multiply(new BigDecimal(quantity.intValue()));
 	}
 	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
+	public SalesRequisition getParent() {
+		return parent;
+	}
+
+	public void setParent(SalesRequisition parent) {
+		this.parent = parent;
+	}
+
 	public Product getProduct() {
 		return product;
 	}

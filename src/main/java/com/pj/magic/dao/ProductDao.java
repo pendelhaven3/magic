@@ -10,6 +10,6 @@ public interface ProductDao {
 
 	Product findProductByCode(String code);
 
-	Product getProduct(int id);
+	Product getProduct(long id);
 	
 }

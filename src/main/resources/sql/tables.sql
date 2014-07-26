@@ -37,10 +37,12 @@ create table SALES_REQUISITION (
 
 create table SALES_REQUISITION_ITEM (
   ID integer auto_increment,
+  SALES_REQUISITION_ID integer not null,
   PRODUCT_ID integer not null,
   UNIT varchar2(3) not null,
   QUANTITY integer not null,
   constraint SALES_REQUISITION_ITEM$PK primary key (ID),
-  constraint SALES_REQUISITION_ITEM$FK foreign key (PRODUCT_ID) references PRODUCT (ID)
+  constraint SALES_REQUISITION_ITEM$FK foreign key (SALES_REQUISITION_ID) references SALES_REQUISITION (ID),
+  constraint SALES_REQUISITION_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
 
