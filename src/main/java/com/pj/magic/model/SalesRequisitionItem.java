@@ -16,7 +16,7 @@ public class SalesRequisitionItem {
 	public boolean isValid() {
 		return (product != null && product.isValid())
 				&& product.hasUnit(unit)
-				&& (quantity != null && product.hasAvailableUnitQuantity(unit, quantity));
+				&& (quantity != null && isQuantityValid());
 	}
 	
 	public BigDecimal getUnitPrice() {
@@ -37,6 +37,10 @@ public class SalesRequisitionItem {
 			return null;
 		}
 		return getUnitPrice().multiply(new BigDecimal(quantity.intValue()));
+	}
+	
+	public boolean isQuantityValid() {
+		return product.hasAvailableUnitQuantity(unit, quantity);
 	}
 	
 	public Long getId() {

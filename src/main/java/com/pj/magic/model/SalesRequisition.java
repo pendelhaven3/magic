@@ -55,6 +55,14 @@ public class SalesRequisition {
 			.isEquals();
 	}
 
+	public void validate() {
+		for (SalesRequisitionItem item : items) {
+			if (!item.isValid()) {
+				
+			}
+		}
+	}
+	
 	public Long getSalesRequisitionNumber() {
 		return salesRequisitionNumber;
 	}
@@ -103,4 +111,22 @@ public class SalesRequisition {
 		this.id = id;
 	}
 
+	public SalesInvoice createSalesInvoice() {
+		SalesInvoice salesInvoice = new SalesInvoice();
+		salesInvoice.setCustomerName(customerName);
+		salesInvoice.setPostDate(new Date());
+		salesInvoice.setPostedBy("PJ POST"); // TODO: to be implemented
+		
+		for (SalesRequisitionItem item : items) {
+			SalesInvoiceItem invoiceItem = new SalesInvoiceItem();
+			invoiceItem.setParent(salesInvoice);
+			invoiceItem.setProduct(item.getProduct());
+			invoiceItem.setUnit(item.getUnit());
+			invoiceItem.setQuantity(item.getQuantity());
+			salesInvoice.getItems().add(invoiceItem);
+		}
+		
+		return salesInvoice;
+	}
+	
 }

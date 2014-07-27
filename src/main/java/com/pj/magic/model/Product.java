@@ -24,7 +24,7 @@ public class Product {
 	}
 	
 	public boolean isValid() {
-		return id != null && id.intValue() != 0;
+		return id != null;
 	}
 	
 	public boolean hasUnit(String unit) {
@@ -120,6 +120,14 @@ public class Product {
 	
 	public void setUnitQuantities(List<UnitQuantity> unitQuantities) {
 		this.unitQuantities = unitQuantities;
+	}
+
+	public void subtractUnitQuantity(String unit, Integer quantity) {
+		for (UnitQuantity unitQuantity : unitQuantities) {
+			if (unit.equals(unitQuantity)) {
+				unitQuantity.setQuantity(unitQuantity.getQuantity() - quantity);
+			}
+		}
 	}
 	
 }

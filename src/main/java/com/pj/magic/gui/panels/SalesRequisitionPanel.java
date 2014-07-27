@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
@@ -12,6 +13,7 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -27,6 +29,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
@@ -38,9 +41,11 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class SalesRequisitionPanel extends MagicPanel {
+public class SalesRequisitionPanel extends MagicPanel implements ActionListener {
 
 	private static final String GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME = "goToSalesRequisitionsList";
+	private static final String PRINT_PREVIEW_ACTION_COMMAND = "printPreview";
+	private static final String POST_ACTION_COMMAND = "post";
 	
 	@Autowired private SalesRequisitionItemsTable itemsTable;
 	@Autowired private ProductService productService;
@@ -317,11 +322,15 @@ public class SalesRequisitionPanel extends MagicPanel {
 		toolBar.addSeparator();
 		
 		JButton printPreviewButton = new MagicToolBarButton("printpreview", "Print Preview");
-		toolBar.add(printPreviewButton);
+		printPreviewButton.setActionCommand(PRINT_PREVIEW_ACTION_COMMAND);
+		printPreviewButton.addActionListener(this);
 		
 		JButton postButton = new MagicToolBarButton("invoice", "Post");
-		toolBar.add(postButton);
+		postButton.setActionCommand(POST_ACTION_COMMAND);
+		postButton.addActionListener(this);
 		
+		toolBar.add(printPreviewButton);
+		toolBar.add(postButton);
 		return toolBar;
 	}
 	
@@ -440,5 +449,21 @@ public class SalesRequisitionPanel extends MagicPanel {
 		}
 		
 	}
-	
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		switch (e.getActionCommand()) {
+		case PRINT_PREVIEW_ACTION_COMMAND:
+			JOptionPane.showMessageDialog(this, "Coming soon!");
+			break;
+		case POST_ACTION_COMMAND:
+			try {
+				salesRequisitionService.post(salesRequisition);
+			} catch (NotEnoughStocksException e1) {
+				// TODO: handle this
+			}
+			break;
+		}
+	}
+
 }

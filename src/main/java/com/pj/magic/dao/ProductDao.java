@@ -12,4 +12,6 @@ public interface ProductDao {
 
 	Product getProduct(long id);
 	
+	void updateAvailableQuantities(Product product);
+	
 }

@@ -46,3 +46,24 @@ create table SALES_REQUISITION_ITEM (
   constraint SALES_REQUISITION_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
 
+create table SALES_INVOICE (
+  ID integer auto_increment,
+  SALES_INVOICE_NO integer auto_increment,
+  CUSTOMER_NAME varchar2(30) not null,
+  POST_DT date not null,
+  POSTED_BY varchar2(30),
+  constraint SALES_INVOICE$PK primary key (ID)
+);
+
+create table SALES_INVOICE_ITEM (
+  ID integer auto_increment,
+  SALES_INVOICE_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT varchar2(3) not null,
+  QUANTITY integer not null,
+  UNIT_PRICE number(10, 2) not null,
+  constraint SALES_INVOICE_ITEM$PK primary key (ID),
+  constraint SALES_INVOICE_ITEM$FK foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID),
+  constraint SALES_INVOICE_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);
+  

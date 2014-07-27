@@ -9,8 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
+import com.pj.magic.exception.NotEnoughStocksException;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
+import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesRequisitionService;
 
 @Service
@@ -19,6 +22,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private SalesRequisitionDao salesRequisitionDao;
 	@Autowired private SalesRequisitionItemDao salesRequisitionItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private SalesInvoiceService salesInvoiceService;
 	
 	@Override
 	public List<SalesRequisition> getAllSalesRequisitions() {
@@ -63,6 +67,22 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	public void delete(SalesRequisition salesRequisition) {
 		salesRequisitionItemDao.deleteAllBySalesRequisition(salesRequisition);
 		salesRequisitionDao.delete(salesRequisition);
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public void post(SalesRequisition salesRequisition) throws NotEnoughStocksException {
+		SalesRequisition updated = salesRequisitionDao.get(salesRequisition.getId());
+		for (SalesRequisitionItem item : updated.getItems()) {
+			if (!item.isQuantityValid()) {
+				throw new NotEnoughStocksException(item);
+			} else {
+				item.getProduct().subtractUnitQuantity(item.getUnit(), item.getQuantity());
+				productDao.updateAvailableQuantities(item.getProduct());
+			}
+		}
+		SalesInvoice salesInvoice = updated.createSalesInvoice();
+		salesInvoiceService.save(salesInvoice);
 	}
 	
 }

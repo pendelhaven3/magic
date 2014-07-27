@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.Unit;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.model.UnitQuantity;
 
@@ -91,6 +92,21 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			return product;
 		}
 		
+	}
+
+	private static final String UPDATE_AVAILABLE_QUANTITIES_SQL =
+			"update PRODUCT"
+			+ " set AVAIL_QTY_CSE = ?, AVAIL_QTY_CTN = ?, AVAIL_QTY_DOZ = ?, AVAIL_QTY_PCS = ?"
+			+ " where ID = ?";
+	
+	@Override
+	public void updateAvailableQuantities(Product product) {
+		getJdbcTemplate().update(UPDATE_AVAILABLE_QUANTITIES_SQL,
+				product.getUnitQuantity(Unit.CASE),
+				product.getUnitQuantity(Unit.CARTON),
+				product.getUnitQuantity(Unit.DOZEN),
+				product.getUnitQuantity(Unit.PIECES),
+				product.getId());
 	}
 
 }
