@@ -65,5 +65,10 @@ public class SalesRequisitionsTableModel extends AbstractTableModel {
 	public SalesRequisition getSalesRequisition(int rowIndex) {
 		return salesRequisitions.get(rowIndex);
 	}
+
+	public void remove(SalesRequisition salesRequisition) {
+		salesRequisitions.remove(salesRequisition);
+		fireTableDataChanged();
+	}
 	
 }

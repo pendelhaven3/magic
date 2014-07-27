@@ -12,5 +12,7 @@ public interface SalesRequisitionItemDao {
 	List<SalesRequisitionItem> findAllBySalesRequisition(SalesRequisition salesRequisition);
 
 	void delete(SalesRequisitionItem item);
+
+	void deleteAllBySalesRequisition(SalesRequisition salesRequisition);
 	
 }

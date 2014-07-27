@@ -16,5 +16,7 @@ public interface SalesRequisitionService {
 	void save(SalesRequisitionItem item);
 
 	void delete(SalesRequisitionItem item);
+
+	void delete(SalesRequisition currentlySelectedSalesRequisition);
 	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
@@ -55,6 +56,13 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Override
 	public void delete(SalesRequisitionItem item) {
 		salesRequisitionItemDao.delete(item);
+	}
+
+	@Transactional
+	@Override
+	public void delete(SalesRequisition salesRequisition) {
+		salesRequisitionItemDao.deleteAllBySalesRequisition(salesRequisition);
+		salesRequisitionDao.delete(salesRequisition);
 	}
 	
 }

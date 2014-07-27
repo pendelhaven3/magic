@@ -21,35 +21,26 @@ import com.pj.magic.model.SalesRequisition;
 @Repository
 public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitionDao {
 
+	private SalesRequisitionRowMapper salesRequisitionRowMapper = new SalesRequisitionRowMapper();
+	
 	private static final String GET_ALL_SQL =
 			"select ID, SALES_REQUISITION_NO, CUSTOMER_NAME, CREATE_DT, ENCODER"
 			+ " from SALES_REQUISITION";
-	
-	private static final String FIND_BY_ID_SQL =
-			"select ID, SALES_REQUISITION_NO, CUSTOMER_NAME, CREATE_DT, ENCODER"
-			+ " from SALES_REQUISITION"
-			+ " where ID = ?";
-	
-	private static final String INSERT_SQL =
-			"insert into SALES_REQUISITION (CUSTOMER_NAME, CREATE_DT, ENCODER)"
-			+ " values (?, ?, ?)";
-	
-	private static final String UPDATE_SQL =
-			"update SALES_REQUISITION"
-			+ " set CUSTOMER_NAME = ?"
-			+ " where ID = ?";
-	
-	private SalesRequisitionRowMapper salesRequisitionRowMapper = new SalesRequisitionRowMapper();
 	
 	@Override
 	public List<SalesRequisition> getAll() {
 		return getJdbcTemplate().query(GET_ALL_SQL, salesRequisitionRowMapper);
 	}
 
+	private static final String GET_SQL =
+			"select ID, SALES_REQUISITION_NO, CUSTOMER_NAME, CREATE_DT, ENCODER"
+			+ " from SALES_REQUISITION"
+			+ " where ID = ?";
+	
 	@Override
 	public SalesRequisition get(long id) {
 		try {
-			return getJdbcTemplate().queryForObject(FIND_BY_ID_SQL, salesRequisitionRowMapper, id);
+			return getJdbcTemplate().queryForObject(GET_SQL, salesRequisitionRowMapper, id);
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
@@ -63,6 +54,10 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			update(salesRequisition);
 		}
 	}
+	
+	private static final String INSERT_SQL =
+			"insert into SALES_REQUISITION (CUSTOMER_NAME, CREATE_DT, ENCODER)"
+			+ " values (?, ?, ?)";
 	
 	private void insert(final SalesRequisition salesRequisition) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -84,6 +79,11 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 		salesRequisition.setSalesRequisitionNumber(updated.getSalesRequisitionNumber());
 	}
 	
+	private static final String UPDATE_SQL =
+			"update SALES_REQUISITION"
+			+ " set CUSTOMER_NAME = ?"
+			+ " where ID = ?";
+	
 	private void update(SalesRequisition salesRequisition) {
 		getJdbcTemplate().update(UPDATE_SQL, salesRequisition.getCustomerName(), salesRequisition.getId());
 	}
@@ -100,7 +100,13 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			salesRequisition.setEncoder(rs.getString("ENCODER"));
 			return salesRequisition;
 		}
-		
+	}
+
+	private static final String DELETE_SQL = "delete SALES_REQUISITION where ID = ?";
+	
+	@Override
+	public void delete(SalesRequisition salesRequisition) {
+		getJdbcTemplate().update(DELETE_SQL, salesRequisition.getId());
 	}
 
 }

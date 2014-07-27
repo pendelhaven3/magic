@@ -11,5 +11,7 @@ public interface SalesRequisitionDao {
 	SalesRequisition get(long id);
 
 	void save(SalesRequisition salesRequisition);
+
+	void delete(SalesRequisition salesRequisition);
 	
 }

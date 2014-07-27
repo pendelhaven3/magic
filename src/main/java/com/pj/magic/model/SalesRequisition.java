@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class SalesRequisition {
 
 	private Long id;
@@ -31,6 +34,27 @@ public class SalesRequisition {
 		return items.size();
 	}
 	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof SalesRequisition)) {
+            return false;
+        }
+        SalesRequisition other = (SalesRequisition)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+
 	public Long getSalesRequisitionNumber() {
 		return salesRequisitionNumber;
 	}

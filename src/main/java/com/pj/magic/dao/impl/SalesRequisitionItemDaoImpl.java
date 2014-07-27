@@ -90,5 +90,13 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 	public void delete(SalesRequisitionItem item) {
 		getJdbcTemplate().update(DELETE_SQL, item.getId());
 	}
+
+	private static final String DELETE_ALL_BY_SALES_REQUISITION_SQL =
+			"delete SALES_REQUISITION_ITEM where SALES_REQUISITION_ID = ?";
+	
+	@Override
+	public void deleteAllBySalesRequisition(SalesRequisition salesRequisition) {
+		getJdbcTemplate().update(DELETE_ALL_BY_SALES_REQUISITION_SQL, salesRequisition.getId());
+	}
 	
 }
