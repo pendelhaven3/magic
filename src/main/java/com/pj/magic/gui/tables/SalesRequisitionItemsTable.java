@@ -306,6 +306,10 @@ public class SalesRequisitionItemsTable extends JTable {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (getSelectedRow() == -1) {
+					return;
+				}
+				
 				if (table.isEditing()) {
 					table.getCellEditor().stopCellEditing();
 				}
@@ -402,6 +406,7 @@ public class SalesRequisitionItemsTable extends JTable {
 					if (productCode != null) {
 						if (isEditing()) {
 							getCellEditor().cancelCellEditing();
+							requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
 						}
 						setValueAt(productCode, getSelectedRow(), getSelectedColumn());
 						KeyUtil.simulateTabKey();

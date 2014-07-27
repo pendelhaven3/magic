@@ -10,10 +10,12 @@ import java.math.BigDecimal;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -26,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
@@ -122,12 +125,22 @@ public class SalesRequisitionPanel extends MagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 
-		// first row
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		c.anchor = GridBagConstraints.WEST;
+		add(createToolBar(), c);
+
+		currentRow++; // first row
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createFiller(50, 30), c);
 
@@ -296,6 +309,20 @@ public class SalesRequisitionPanel extends MagicPanel {
 		} else {
 			unitPricesAndQuantitiesTableModel.setProduct(null);
 		}
+	}
+	
+	private JToolBar createToolBar() {
+		JToolBar toolBar = new JToolBar();
+		toolBar.setFloatable(false);
+		toolBar.addSeparator();
+		
+		JButton printPreviewButton = new MagicToolBarButton("printpreview", "Print Preview");
+		toolBar.add(printPreviewButton);
+		
+		JButton postButton = new MagicToolBarButton("invoice", "Post");
+		toolBar.add(postButton);
+		
+		return toolBar;
 	}
 	
 	private class UnitPricesAndQuantitiesTable extends JTable {
