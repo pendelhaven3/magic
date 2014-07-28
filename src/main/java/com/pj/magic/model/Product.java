@@ -130,4 +130,24 @@ public class Product {
 		}
 	}
 	
+	public void addUnitQuantity(String unit, int quantity) {
+		for (UnitQuantity unitQuantity : unitQuantities) {
+			if (unit.equals(unitQuantity)) {
+				unitQuantity.setQuantity(unitQuantity.getQuantity() + quantity);
+				return;
+			}
+		}
+		unitQuantities.add(new UnitQuantity(unit, quantity));
+	}
+
+	public void setUnitPrice(String unit, BigDecimal price) {
+		for (UnitPrice unitPrice : unitPrices) {
+			if (unit.equals(unitPrice.getUnit())) {
+				unitPrice.setPrice(price);
+				return;
+			}
+		}
+		unitPrices.add(new UnitPrice(unit, price));
+	}
+	
 }

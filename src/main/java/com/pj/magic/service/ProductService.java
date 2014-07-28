@@ -11,5 +11,7 @@ public interface ProductService {
 	Product findProductByCode(String code);
 	
 	Product getProduct(long id);
+
+	void save(Product createProductFromRow);
 	
 }

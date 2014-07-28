@@ -18,7 +18,7 @@ public class ProductDaoTest extends AbstractJUnit4SpringContextTests {
 	
 	@Test
 	public void getAllProducts() {
-		List<Product> allProducts = productDao.getAllProducts();
+		List<Product> allProducts = productDao.getAll();
 		assertFalse(allProducts.isEmpty());
 	}
 	

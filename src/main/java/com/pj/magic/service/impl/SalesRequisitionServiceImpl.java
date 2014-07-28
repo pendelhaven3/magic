@@ -10,7 +10,6 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.exception.NotEnoughStocksException;
-import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.SalesInvoiceService;
@@ -48,7 +47,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	private void loadSalesRequisitionItems(SalesRequisition salesRequisition) {
 		salesRequisition.setItems(salesRequisitionItemDao.findAllBySalesRequisition(salesRequisition));
 		for (SalesRequisitionItem item : salesRequisition.getItems()) {
-			item.setProduct(productDao.getProduct(item.getProduct().getId()));
+			item.setProduct(productDao.get(item.getProduct().getId()));
 		}
 	}
 
@@ -81,8 +80,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 				productDao.updateAvailableQuantities(item.getProduct());
 			}
 		}
-		SalesInvoice salesInvoice = updated.createSalesInvoice();
-		salesInvoiceService.save(salesInvoice);
+		salesInvoiceService.save(updated.createSalesInvoice());
 	}
 	
 }

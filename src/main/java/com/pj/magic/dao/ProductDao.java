@@ -6,12 +6,13 @@ import com.pj.magic.model.Product;
 
 public interface ProductDao {
 
-	List<Product> getAllProducts();
+	List<Product> getAll();
 
 	Product findProductByCode(String code);
 
-	Product getProduct(long id);
+	Product get(long id);
 	
 	void updateAvailableQuantities(Product product);
 	
+	void save(Product product);
 }

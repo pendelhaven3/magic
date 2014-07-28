@@ -1,11 +1,17 @@
 package com.pj.magic.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ProductDao;
@@ -43,7 +49,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	private ProductRowMapper productRowMapper = new ProductRowMapper();
 	
 	@Override
-	public List<Product> getAllProducts() {
+	public List<Product> getAll() {
 		return getJdbcTemplate().query(GET_ALL_PRODUCTS_SQL, productRowMapper);
 	}
 
@@ -57,7 +63,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	}
 	
 	@Override
-	public Product getProduct(long id) {
+	public Product get(long id) {
 		return getJdbcTemplate().queryForObject(FIND_PRODUCT_BY_ID_SQL, productRowMapper, id);
 	}
 
@@ -84,7 +90,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.getUnitPrices().add(new UnitPrice("DOZ", rs.getBigDecimal("UNIT_PRICE_DOZ")));
 				product.getUnitQuantities().add(new UnitQuantity("DOZ", rs.getInt("AVAIL_QTY_DOZ")));
 			}
-			if ("Y".equals(rs.getString("UNIT_IND_CSE"))) {
+			if ("Y".equals(rs.getString("UNIT_IND_PCS"))) {
 				product.getUnits().add("PCS");
 				product.getUnitPrices().add(new UnitPrice("PCS", rs.getBigDecimal("UNIT_PRICE_PCS")));
 				product.getUnitQuantities().add(new UnitQuantity("PCS", rs.getInt("AVAIL_QTY_PCS")));
@@ -108,5 +114,41 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.getUnitQuantity(Unit.PIECES),
 				product.getId());
 	}
+
+	@Override
+	public void save(Product product) {
+		insert(product);
+	}
+
+	private static final String INSERT_SQL =
+			"insert into PRODUCT (CODE, DESCRIPTION, UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
+			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	
+	private void insert(final Product product) {
+		KeyHolder holder = new GeneratedKeyHolder();
+		getJdbcTemplate().update(new PreparedStatementCreator() {
+			
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con)
+					throws SQLException {
+				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+				ps.setString(1, product.getCode());
+				ps.setString(2, product.getDescription());
+				ps.setString(3, product.hasUnit(Unit.CASE) ? "Y" : "N");
+				ps.setString(4, product.hasUnit(Unit.CARTON) ? "Y" : "N");
+				ps.setString(5, product.hasUnit(Unit.DOZEN) ? "Y" : "N");
+				ps.setString(6, product.hasUnit(Unit.PIECES) ? "Y" : "N");
+				ps.setInt(7, product.getUnitQuantity(Unit.CASE));
+				ps.setInt(8, product.getUnitQuantity(Unit.CARTON));
+				ps.setInt(9, product.getUnitQuantity(Unit.DOZEN));
+				ps.setInt(10, product.getUnitQuantity(Unit.PIECES));
+				return ps;
+			}
+		}, holder); // TODO: check if keyholder works with oracle db
+		
+		product.setId(holder.getKey().longValue());
+	}
+	
 
 }

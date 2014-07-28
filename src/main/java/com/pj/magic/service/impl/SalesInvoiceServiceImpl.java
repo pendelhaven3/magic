@@ -39,7 +39,7 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 	private void loadSalesInvoiceItems(SalesInvoice salesInvoice) {
 		salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
 		for (SalesInvoiceItem item : salesInvoice.getItems()) {
-			item.setProduct(productDao.getProduct(item.getProduct().getId()));
+			item.setProduct(productDao.get(item.getProduct().getId()));
 		}
 	}
 
