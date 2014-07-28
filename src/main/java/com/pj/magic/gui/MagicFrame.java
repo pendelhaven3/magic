@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.panels.MainMenuPanel;
+import com.pj.magic.gui.panels.SalesInvoicesListPanel;
 import com.pj.magic.gui.panels.SalesRequisitionPanel;
 import com.pj.magic.gui.panels.SalesRequisitionsListPanel;
 import com.pj.magic.model.SalesRequisition;
@@ -21,10 +22,12 @@ public class MagicFrame extends JFrame {
 	private static final String MAIN_MENU_PANEL = "MAIN_MENU_PANEL";
 	private static final String SALES_REQUISITIONS_LIST_PANEL = "SALES_REQUISITIONS_LIST_PANEL";
 	private static final String SALES_REQUISITION_PANEL = "SALES_REQUISITION_PANEL";
+	private static final String SALES_INVOICES_LIST_PANEL = "SALES_INVOICES_LIST_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionsListPanel salesRequisitionsListPanel;
 	@Autowired private SalesRequisitionPanel salesRequisitionPanel;
+	@Autowired private SalesInvoicesListPanel salesInvoicesListPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -41,6 +44,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(mainMenuPanel, MAIN_MENU_PANEL);
 		panelHolder.add(salesRequisitionsListPanel, SALES_REQUISITIONS_LIST_PANEL);
 		panelHolder.add(salesRequisitionPanel, SALES_REQUISITION_PANEL);
+		panelHolder.add(salesInvoicesListPanel, SALES_INVOICES_LIST_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -70,6 +74,12 @@ public class MagicFrame extends JFrame {
 	
 	public void addPanelNameToTitle(String panelName) {
 		setTitle(constructTitle() + " - " + panelName);
+	}
+
+	public void switchToSalesInvoicesListPanel() {
+		addPanelNameToTitle("Sales Invoices List");
+		salesInvoicesListPanel.refreshDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_INVOICES_LIST_PANEL);
 	}
 	
 }

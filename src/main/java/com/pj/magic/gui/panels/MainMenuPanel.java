@@ -9,8 +9,6 @@ import java.awt.event.KeyEvent;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.AbstractTableModel;
@@ -21,6 +19,8 @@ import org.springframework.stereotype.Component;
 public class MainMenuPanel extends MagicPanel {
 
 	private static final String SELECT_MENU_ITEM_ACTION_NAME = "selectMenuItem";
+	private static final int SALES_REQUISITIONS_MENU_INDEX = 0;
+	private static final int SALES_INVOICES_MENU_INDEX = 1;
 	
 	private JTable menuItemsTable;
 	
@@ -48,19 +48,17 @@ public class MainMenuPanel extends MagicPanel {
 	}
 	
 	private void registerKeyBindings() {
-		final JPanel panel = this;
-		
 		menuItemsTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECT_MENU_ITEM_ACTION_NAME);
 		menuItemsTable.getActionMap().put(SELECT_MENU_ITEM_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				switch (menuItemsTable.getSelectedRow()) {
-				case 0:
+				case SALES_REQUISITIONS_MENU_INDEX:
 					getMagicFrame().switchToSalesRequisitionsListPanel();
 					break;
-				case 1:
-					JOptionPane.showMessageDialog(panel, "Coming soon!");
+				case SALES_INVOICES_MENU_INDEX:
+					getMagicFrame().switchToSalesInvoicesListPanel();
 					break;
 				}
 			}

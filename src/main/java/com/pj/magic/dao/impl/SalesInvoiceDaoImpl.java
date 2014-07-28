@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -32,7 +33,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	}
 
 	private static final String INSERT_SQL =
-			"insert into SALES_INVOICE (CUSTOMER_NAME, POST_DT, POSTED_BY) values (?, ?, ?, ?)";
+			"insert into SALES_INVOICE (CUSTOMER_NAME, POST_DT, POSTED_BY) values (?, ?, ?)";
 	
 	private void insert(final SalesInvoice salesInvoice) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -85,4 +86,13 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 		}
 		
 	}
+
+	private static final String GET_ALL_SQL = 
+			"select ID, SALES_INVOICE_NO, CUSTOMER_NAME, POST_DT, POSTED_BY from SALES_INVOICE";
+	
+	@Override
+	public List<SalesInvoice> getAll() {
+		return getJdbcTemplate().query(GET_ALL_SQL, salesInvoiceRowMapper);
+	}
+	
 }

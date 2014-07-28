@@ -72,7 +72,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void post(SalesRequisition salesRequisition) throws NotEnoughStocksException {
-		SalesRequisition updated = salesRequisitionDao.get(salesRequisition.getId());
+		SalesRequisition updated = getSalesRequisition(salesRequisition.getId());
 		for (SalesRequisitionItem item : updated.getItems()) {
 			if (!item.isQuantityValid()) {
 				throw new NotEnoughStocksException(item);

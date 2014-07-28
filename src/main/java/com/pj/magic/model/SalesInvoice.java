@@ -1,5 +1,6 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +60,14 @@ public class SalesInvoice {
 
 	public void setItems(List<SalesInvoiceItem> items) {
 		this.items = items;
+	}
+
+	public BigDecimal getTotalAmount() {
+		BigDecimal total = BigDecimal.ZERO;
+		for (SalesInvoiceItem item : items) {
+			total = total.add(item.getAmount());
+		}
+		return total;
 	}
 
 }

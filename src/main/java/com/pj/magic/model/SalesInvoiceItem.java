@@ -1,6 +1,7 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class SalesInvoiceItem {
 
@@ -57,6 +58,10 @@ public class SalesInvoiceItem {
 
 	public void setUnitPrice(BigDecimal unitPrice) {
 		this.unitPrice = unitPrice;
+	}
+
+	public BigDecimal getAmount() {
+		return unitPrice.multiply(new BigDecimal(quantity)).setScale(2, RoundingMode.HALF_UP);
 	}
 
 }
