@@ -70,4 +70,12 @@ public class SalesInvoice {
 		return total;
 	}
 
+	public int getTotalNumberOfItems() {
+		return items.size();
+	}
+	
+	public boolean hasItems() {
+		return !items.isEmpty();
+	}
+
 }

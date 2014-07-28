@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.panels.MainMenuPanel;
+import com.pj.magic.gui.panels.SalesInvoicePanel;
 import com.pj.magic.gui.panels.SalesInvoicesListPanel;
 import com.pj.magic.gui.panels.SalesRequisitionPanel;
 import com.pj.magic.gui.panels.SalesRequisitionsListPanel;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 
 @Component
@@ -23,11 +25,13 @@ public class MagicFrame extends JFrame {
 	private static final String SALES_REQUISITIONS_LIST_PANEL = "SALES_REQUISITIONS_LIST_PANEL";
 	private static final String SALES_REQUISITION_PANEL = "SALES_REQUISITION_PANEL";
 	private static final String SALES_INVOICES_LIST_PANEL = "SALES_INVOICES_LIST_PANEL";
+	private static final String SALES_INVOICE_PANEL = "SALES_INVOICE_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionsListPanel salesRequisitionsListPanel;
 	@Autowired private SalesRequisitionPanel salesRequisitionPanel;
 	@Autowired private SalesInvoicesListPanel salesInvoicesListPanel;
+	@Autowired private SalesInvoicePanel salesInvoicePanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -45,6 +49,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(salesRequisitionsListPanel, SALES_REQUISITIONS_LIST_PANEL);
 		panelHolder.add(salesRequisitionPanel, SALES_REQUISITION_PANEL);
 		panelHolder.add(salesInvoicesListPanel, SALES_INVOICES_LIST_PANEL);
+		panelHolder.add(salesInvoicePanel, SALES_INVOICE_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -80,6 +85,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Sales Invoices List");
 		salesInvoicesListPanel.refreshDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_INVOICES_LIST_PANEL);
+	}
+	
+	public void switchToSalesInvoicePanel(SalesInvoice salesInvoice) {
+		addPanelNameToTitle("Sales Invoice");
+		salesInvoicePanel.refreshDisplay(salesInvoice);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_INVOICE_PANEL);
 	}
 	
 }

@@ -37,7 +37,7 @@ public class SalesInvoicesListPanel extends MagicPanel {
 	}
 
 	public void displaySalesInvoiceDetails(SalesInvoice salesInvoice) {
-//		getMagicFrame().switchToSalesInvoicesListPanel(salesInvoice);
+		getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
 	}
 	
 	private void layoutComponents() {
