@@ -443,7 +443,7 @@ public class SalesRequisitionItemsTable extends JTable {
 			public void actionPerformed(ActionEvent e) {
 				if (table.getItemsTableModel().hasItems()) {
 					if (table.getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
-						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?");
+						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?", "Select An Option", JOptionPane.YES_NO_OPTION);
 						if (confirm == JOptionPane.OK_OPTION) {
 							table.removeCurrentlySelectedRow();
 						}

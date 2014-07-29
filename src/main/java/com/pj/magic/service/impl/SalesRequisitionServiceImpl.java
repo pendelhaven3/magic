@@ -10,6 +10,7 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.exception.NotEnoughStocksException;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.SalesInvoiceService;
@@ -70,9 +71,9 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void post(SalesRequisition salesRequisition) throws NotEnoughStocksException {
-		SalesRequisition updated = getSalesRequisition(salesRequisition.getId());
-		for (SalesRequisitionItem item : updated.getItems()) {
+	public SalesInvoice post(SalesRequisition salesRequisition) throws NotEnoughStocksException {
+		loadSalesRequisitionItems(salesRequisition); // reload to refresh product quantities and prices
+		for (SalesRequisitionItem item : salesRequisition.getItems()) {
 			if (!item.isQuantityValid()) {
 				throw new NotEnoughStocksException(item);
 			} else {
@@ -80,10 +81,12 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 				productDao.updateAvailableQuantities(item.getProduct());
 			}
 		}
-		salesInvoiceService.save(updated.createSalesInvoice());
-		
-		updated.setPosted(true);
-		salesRequisitionDao.save(updated);
+		salesRequisition.setPosted(true);
+		salesRequisitionDao.save(salesRequisition);
+
+		SalesInvoice salesInvoice = salesRequisition.createSalesInvoice();
+		salesInvoiceService.save(salesInvoice);
+		return salesInvoice;
 	}
 
 	@Override

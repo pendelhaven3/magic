@@ -34,6 +34,7 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesRequisitionService;
@@ -329,7 +330,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 		postButton.setActionCommand(POST_ACTION_COMMAND);
 		postButton.addActionListener(this);
 		
-		toolBar.add(printPreviewButton);
+//		toolBar.add(printPreviewButton);
 		toolBar.add(postButton);
 		return toolBar;
 	}
@@ -451,14 +452,17 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case PRINT_PREVIEW_ACTION_COMMAND:
-			JOptionPane.showMessageDialog(this, "Coming soon!");
-			break;
+	public void actionPerformed(ActionEvent event) {
+		switch (event.getActionCommand()) {
 		case POST_ACTION_COMMAND:
 			try {
-				salesRequisitionService.post(salesRequisition);
+				int confirm = JOptionPane.showConfirmDialog(this, "Do you want to post this sales requisition?",
+						"Select an Option", JOptionPane.YES_NO_OPTION);
+				if (confirm == JOptionPane.OK_OPTION) {
+					SalesInvoice salesInvoice = salesRequisitionService.post(salesRequisition);
+					JOptionPane.showMessageDialog(this, "Post successful!");
+					getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
+				}
 			} catch (NotEnoughStocksException e1) {
 				// TODO: handle this
 			}
