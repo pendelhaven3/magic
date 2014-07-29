@@ -12,6 +12,7 @@ public class SalesInvoice {
 	private String customerName; // TODO: Use Customer object instead
 	private Date postDate;
 	private String postedBy;
+	private SalesRequisition origin;
 	private List<SalesInvoiceItem> items = new ArrayList<>();
 
 	public Long getId() {
@@ -76,6 +77,14 @@ public class SalesInvoice {
 	
 	public boolean hasItems() {
 		return !items.isEmpty();
+	}
+
+	public SalesRequisition getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(SalesRequisition origin) {
+		this.origin = origin;
 	}
 
 }

@@ -21,6 +21,10 @@ import com.pj.magic.model.SalesRequisition;
 @Repository
 public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitionDao {
 
+	private static final String SIMPLE_SELECT_SQL =
+			"select ID, SALES_REQUISITION_NO, CUSTOMER_NAME, CREATE_DT, ENCODER, POST_IND"
+			+ " from SALES_REQUISITION";
+	
 	private SalesRequisitionRowMapper salesRequisitionRowMapper = new SalesRequisitionRowMapper();
 	
 	private static final String GET_ALL_SQL =
@@ -32,10 +36,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 		return getJdbcTemplate().query(GET_ALL_SQL, salesRequisitionRowMapper);
 	}
 
-	private static final String GET_SQL =
-			"select ID, SALES_REQUISITION_NO, CUSTOMER_NAME, CREATE_DT, ENCODER"
-			+ " from SALES_REQUISITION"
-			+ " where ID = ?";
+	private static final String GET_SQL = SIMPLE_SELECT_SQL + " where ID = ?";
 	
 	@Override
 	public SalesRequisition get(long id) {
@@ -81,11 +82,12 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	
 	private static final String UPDATE_SQL =
 			"update SALES_REQUISITION"
-			+ " set CUSTOMER_NAME = ?"
+			+ " set CUSTOMER_NAME = ?, POST_IND = ?"
 			+ " where ID = ?";
 	
 	private void update(SalesRequisition salesRequisition) {
-		getJdbcTemplate().update(UPDATE_SQL, salesRequisition.getCustomerName(), salesRequisition.getId());
+		getJdbcTemplate().update(UPDATE_SQL, salesRequisition.getCustomerName(), 
+				salesRequisition.isPosted() ? "Y" : "N", salesRequisition.getId());
 	}
 	
 	private class SalesRequisitionRowMapper implements RowMapper<SalesRequisition> {
@@ -98,6 +100,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			salesRequisition.setCustomerName(rs.getString("CUSTOMER_NAME"));
 			salesRequisition.setCreateDate(rs.getDate("CREATE_DT"));
 			salesRequisition.setEncoder(rs.getString("ENCODER"));
+			salesRequisition.setPosted("Y".equals(rs.getString("POST_IND")));
 			return salesRequisition;
 		}
 	}
@@ -107,6 +110,16 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	@Override
 	public void delete(SalesRequisition salesRequisition) {
 		getJdbcTemplate().update(DELETE_SQL, salesRequisition.getId());
+	}
+
+	@Override
+	public List<SalesRequisition> search(SalesRequisition criteria) {
+		StringBuilder sql = new StringBuilder(SIMPLE_SELECT_SQL);
+		sql.append(" where POST_IND = ?");
+		sql.append(" order by ID desc"); // TODO: change to be more flexible when the need arises
+		
+		return getJdbcTemplate().query(sql.toString(), salesRequisitionRowMapper,
+				criteria.isPosted() ? "Y" : "N");
 	}
 
 }

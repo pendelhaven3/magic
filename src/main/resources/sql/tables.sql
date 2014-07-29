@@ -31,6 +31,7 @@ create table SALES_REQUISITION (
   CUSTOMER_NAME varchar2(30),
   CREATE_DT date not null,
   ENCODER varchar2(30) not null,
+  POST_IND varchar2(1) default 'N' not null,
   constraint SALES_REQUISITION$PK primary key (ID),
   constraint SALES_REQUISITION$UK unique (SALES_REQUISITION_NO)
 );
@@ -52,6 +53,7 @@ create table SALES_INVOICE (
   CUSTOMER_NAME varchar2(30) not null,
   POST_DT date not null,
   POSTED_BY varchar2(30),
+  SALES_INVOICE_ID integer not null,
   constraint SALES_INVOICE$PK primary key (ID)
 );
 

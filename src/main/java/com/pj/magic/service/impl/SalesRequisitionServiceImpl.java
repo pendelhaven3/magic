@@ -81,6 +81,21 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 			}
 		}
 		salesInvoiceService.save(updated.createSalesInvoice());
+		
+		updated.setPosted(true);
+		salesRequisitionDao.save(updated);
+	}
+
+	@Override
+	public List<SalesRequisition> getAllNonPostedSalesRequisitions() {
+		SalesRequisition criteria = new SalesRequisition();
+		criteria.setPosted(false);
+		
+		List<SalesRequisition> salesRequisitions = salesRequisitionDao.search(criteria);
+		for (SalesRequisition salesRequisition : salesRequisitions) {
+			loadSalesRequisitionItems(salesRequisition);
+		}
+		return salesRequisitions;
 	}
 	
 }

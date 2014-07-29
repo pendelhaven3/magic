@@ -16,8 +16,16 @@ public class SalesRequisition {
 	private String customerName; // TODO: Turn into Customer object
 	private Date createDate;
 	private String encoder; // TODO: Turn into User object
+	private boolean posted;
 	private List<SalesRequisitionItem> items = new ArrayList<>();
 
+	public SalesRequisition() {
+	}
+	
+	public SalesRequisition(long id) {
+		this.id = id;
+	}
+	
 	public BigDecimal getTotalAmount() {
 		BigDecimal total = BigDecimal.ZERO;
 		for (SalesRequisitionItem item : items) {
@@ -116,6 +124,7 @@ public class SalesRequisition {
 		salesInvoice.setCustomerName(customerName);
 		salesInvoice.setPostDate(new Date());
 		salesInvoice.setPostedBy("PJ POST"); // TODO: to be implemented
+		salesInvoice.setOrigin(this);
 		
 		for (SalesRequisitionItem item : items) {
 			SalesInvoiceItem invoiceItem = new SalesInvoiceItem();
@@ -128,6 +137,14 @@ public class SalesRequisition {
 		}
 		
 		return salesInvoice;
+	}
+
+	public boolean isPosted() {
+		return posted;
+	}
+
+	public void setPosted(boolean posted) {
+		this.posted = posted;
 	}
 	
 }

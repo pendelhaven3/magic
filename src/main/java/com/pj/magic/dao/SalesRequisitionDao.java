@@ -13,5 +13,7 @@ public interface SalesRequisitionDao {
 	void save(SalesRequisition salesRequisition);
 
 	void delete(SalesRequisition salesRequisition);
+
+	List<SalesRequisition> search(SalesRequisition criteria);
 	
 }

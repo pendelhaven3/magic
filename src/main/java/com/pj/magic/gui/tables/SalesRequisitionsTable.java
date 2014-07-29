@@ -40,7 +40,7 @@ public class SalesRequisitionsTable extends JTable {
     }
 	
 	public void update() {
-		List<SalesRequisition> salesRequisitions = salesRequisitionService.getAllSalesRequisitions();
+		List<SalesRequisition> salesRequisitions = salesRequisitionService.getAllNonPostedSalesRequisitions();
 		tableModel.setSalesRequisitions(salesRequisitions);
 		if (!salesRequisitions.isEmpty()) {
 			changeSelection(0, 0, false, false);

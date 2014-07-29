@@ -22,4 +22,6 @@ public interface SalesRequisitionService {
 
 	void post(SalesRequisition salesRequisition) throws NotEnoughStocksException;
 	
+	List<SalesRequisition> getAllNonPostedSalesRequisitions();
+	
 }
