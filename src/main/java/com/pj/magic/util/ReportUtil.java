@@ -26,6 +26,8 @@ public class ReportUtil {
 			} else if (ALIGN_RIGHT.equals(align)) {
 				value = StringUtils.leftPad(value, length);
 			}
+		} else if (value.length() > length) {
+			value = value.substring(0, length);
 		}
 		return value;
 	}

@@ -25,10 +25,19 @@ create table PRODUCT_PRICE (
   constraint PRODUCT_PRICE$FK foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
 
+create table CUSTOMER (
+  ID integer auto_increment,
+  CODE varchar2(12) not null,
+  NAME varchar2(30) not null,
+  ADDRESS varchar2 (100) not null,
+  constraint CUSTOMER$PK primary key (ID),
+  constraint CUSTOMER$UK unique (CODE)
+);
+
 create table SALES_REQUISITION (
   ID integer auto_increment,
   SALES_REQUISITION_NO integer auto_increment,
-  CUSTOMER_NAME varchar2(30),
+  CUSTOMER_ID integer null,
   CREATE_DT date not null,
   ENCODER varchar2(30) not null,
   POST_IND varchar2(1) default 'N' not null,
@@ -50,7 +59,7 @@ create table SALES_REQUISITION_ITEM (
 create table SALES_INVOICE (
   ID integer auto_increment,
   SALES_INVOICE_NO integer auto_increment,
-  CUSTOMER_NAME varchar2(30) not null,
+  CUSTOMER_ID integer not null,
   POST_DT date not null,
   POSTED_BY varchar2(30),
   SALES_INVOICE_ID integer not null,

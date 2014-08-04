@@ -22,7 +22,6 @@ import org.springframework.util.StringUtils;
 
 import com.pj.magic.gui.component.AbstractKeyListener;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.gui.dialog.ActionsTableModel;
 import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;

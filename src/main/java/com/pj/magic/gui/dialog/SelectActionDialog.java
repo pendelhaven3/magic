@@ -10,6 +10,8 @@ import javax.swing.KeyStroke;
 
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.tables.ActionsTableModel;
+
 @Component
 public class SelectActionDialog extends MagicDialog {
 

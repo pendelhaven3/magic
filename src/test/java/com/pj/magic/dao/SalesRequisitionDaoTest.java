@@ -19,12 +19,6 @@ public class SalesRequisitionDaoTest extends AbstractJUnit4SpringContextTests {
 	@Autowired private SalesRequisitionDao salesRequisitionDao;
 	
 	@Test
-	public void getAllSalesRequisitions() {
-		List<SalesRequisition> allProducts = salesRequisitionDao.getAll();
-		assertTrue(allProducts.isEmpty());
-	}
-	
-	@Test
 	public void save() {
 		SalesRequisition salesRequisition = new SalesRequisition();
 		

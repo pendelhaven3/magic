@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
@@ -18,6 +19,7 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 	@Autowired private SalesInvoiceDao salesInvoiceDao;
 	@Autowired private SalesInvoiceItemDao salesInvoiceItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private CustomerDao customerDao;
 	
 	@Override
 	public void save(SalesInvoice salesInvoice) {
@@ -31,16 +33,17 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 	public List<SalesInvoice> getAllSalesInvoices() {
 		List<SalesInvoice> salesInvoices = salesInvoiceDao.getAll();
 		for (SalesInvoice salesInvoice : salesInvoices) {
-			loadSalesInvoiceItems(salesInvoice);
+			loadSalesInvoiceDetails(salesInvoice);
 		}
 		return salesInvoices;
 	}
 
-	private void loadSalesInvoiceItems(SalesInvoice salesInvoice) {
+	private void loadSalesInvoiceDetails(SalesInvoice salesInvoice) {
 		salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
 		for (SalesInvoiceItem item : salesInvoice.getItems()) {
 			item.setProduct(productDao.get(item.getProduct().getId()));
 		}
+		salesInvoice.setCustomer(customerDao.get(salesInvoice.getCustomer().getId()));
 	}
 
 }

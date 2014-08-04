@@ -9,8 +9,6 @@ import com.pj.magic.model.SalesRequisitionItem;
 
 public interface SalesRequisitionService {
 
-	List<SalesRequisition> getAllSalesRequisitions();
-	
 	void save(SalesRequisition salesRequisition);
 	
 	SalesRequisition getSalesRequisition(long id);

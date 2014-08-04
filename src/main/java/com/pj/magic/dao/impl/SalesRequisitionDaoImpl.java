@@ -23,20 +23,11 @@ import com.pj.magic.model.SalesRequisition;
 public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitionDao {
 
 	private static final String SIMPLE_SELECT_SQL =
-			"select ID, SALES_REQUISITION_NO, CUSTOMER_NAME, CREATE_DT, ENCODER, POST_IND"
+			"select ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER, POST_IND"
 			+ " from SALES_REQUISITION";
 	
 	private SalesRequisitionRowMapper salesRequisitionRowMapper = new SalesRequisitionRowMapper();
 	
-	private static final String GET_ALL_SQL =
-			"select ID, SALES_REQUISITION_NO, CUSTOMER_NAME, CREATE_DT, ENCODER"
-			+ " from SALES_REQUISITION";
-	
-	@Override
-	public List<SalesRequisition> getAll() {
-		return getJdbcTemplate().query(GET_ALL_SQL, salesRequisitionRowMapper);
-	}
-
 	private static final String GET_SQL = SIMPLE_SELECT_SQL + " where ID = ?";
 	
 	@Override
@@ -58,8 +49,8 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	}
 	
 	private static final String INSERT_SQL =
-			"insert into SALES_REQUISITION (CUSTOMER_NAME, CREATE_DT, ENCODER)"
-			+ " values (?, ?, ?)";
+			"insert into SALES_REQUISITION (CREATE_DT, ENCODER)"
+			+ " values (?, ?)";
 	
 	private void insert(final SalesRequisition salesRequisition) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -69,9 +60,8 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setString(1, salesRequisition.getCustomer().getName()); // TODO: Replace with proper Customer table
-				ps.setDate(2, new Date(salesRequisition.getCreateDate().getTime()));
-				ps.setString(3, salesRequisition.getEncoder());
+				ps.setDate(1, new Date(salesRequisition.getCreateDate().getTime()));
+				ps.setString(2, salesRequisition.getEncoder());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -83,11 +73,11 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	
 	private static final String UPDATE_SQL =
 			"update SALES_REQUISITION"
-			+ " set CUSTOMER_NAME = ?, POST_IND = ?"
+			+ " set CUSTOMER_ID = ?, POST_IND = ?"
 			+ " where ID = ?";
 	
 	private void update(SalesRequisition salesRequisition) {
-		getJdbcTemplate().update(UPDATE_SQL, salesRequisition.getCustomer(), 
+		getJdbcTemplate().update(UPDATE_SQL, salesRequisition.getCustomer().getId(), 
 				salesRequisition.isPosted() ? "Y" : "N", salesRequisition.getId());
 	}
 	
@@ -98,16 +88,16 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			SalesRequisition salesRequisition = new SalesRequisition();
 			salesRequisition.setId(rs.getLong("ID"));
 			salesRequisition.setSalesRequisitionNumber(rs.getLong("SALES_REQUISITION_NO"));
-			
-			// TODO: Replce with proper CUSTOMER table
-			Customer customer = new Customer();
-			customer.setName(rs.getString("CUSTOMER_NAME"));
-			customer.setAddress("DUMMY_ADDRESS");
-			salesRequisition.setCustomer(customer);
-			
 			salesRequisition.setCreateDate(rs.getDate("CREATE_DT"));
 			salesRequisition.setEncoder(rs.getString("ENCODER"));
 			salesRequisition.setPosted("Y".equals(rs.getString("POST_IND")));
+
+			if (rs.getLong("CUSTOMER_ID") != 0) {
+				Customer customer = new Customer();
+				customer.setId(rs.getLong("CUSTOMER_ID"));
+				salesRequisition.setCustomer(customer);
+			}
+			
 			return salesRequisition;
 		}
 	}

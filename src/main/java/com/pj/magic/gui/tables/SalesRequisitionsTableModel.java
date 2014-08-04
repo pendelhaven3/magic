@@ -34,7 +34,11 @@ public class SalesRequisitionsTableModel extends AbstractTableModel {
 		case SalesRequisitionsTable.SALES_REQUISITION_NUMBER_COLUMN_INDEX:
 			return salesRequisition.getSalesRequisitionNumber().toString();
 		case SalesRequisitionsTable.CUSTOMER_NAME_COLUMN_INDEX:
-			return salesRequisition.getCustomer();
+			if (salesRequisition.getCustomer() != null) {
+				return salesRequisition.getCustomer().getName();
+			} else {
+				return "";
+			}
 		case SalesRequisitionsTable.CREATE_DATE_COLUMN_INDEX:
 			Date date = salesRequisition.getCreateDate();
 			return (date != null) ? FormatterUtil.formatDate(date) : "";

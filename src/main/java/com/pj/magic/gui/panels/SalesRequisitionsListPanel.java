@@ -14,8 +14,8 @@ import javax.swing.KeyStroke;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.dialog.ActionsTableModel;
 import com.pj.magic.gui.dialog.SelectActionDialog;
+import com.pj.magic.gui.tables.ActionsTableModel;
 import com.pj.magic.gui.tables.SalesRequisitionsTable;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.SalesRequisitionService;

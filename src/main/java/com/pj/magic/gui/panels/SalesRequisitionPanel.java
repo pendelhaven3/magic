@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
@@ -46,12 +47,15 @@ import com.pj.magic.util.FormatterUtil;
 public class SalesRequisitionPanel extends MagicPanel implements ActionListener {
 
 	private static final String GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME = "goToSalesRequisitionsList";
+	private static final String SAVE_CUSTOMER_ACTION_NAME = "enter";
+	private static final String OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME = "openSelectCustomerDialog";
 	private static final String PRINT_PREVIEW_ACTION_COMMAND = "printPreview";
 	private static final String POST_ACTION_COMMAND = "post";
 	
 	@Autowired private SalesRequisitionItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private SalesRequisitionService salesRequisitionService;
+	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -84,11 +88,17 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	}
 
 	private void initializeCustomerNameFieldBehavior() {
-		customerNameField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enter");
-		customerNameField.getActionMap().put("enter", new AbstractAction() {
+		customerNameField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_CUSTOMER_ACTION_NAME);
+		customerNameField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME);
+		
+		customerNameField.getActionMap().put(SAVE_CUSTOMER_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (salesRequisition.getCustomer() != null) {
+					
+				}
+				
 				Customer customer = new Customer(); // TODO: replace with selection dialog
 				customer.setName(customerNameField.getText());
 				customer.setAddress("DUMMY ADDRESS");
@@ -103,12 +113,34 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 				customerNameField.setFocusable(false);
 			}
 		});
+		customerNameField.getActionMap().put(OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectCustomerDialog.updateAndMakeVisible();
+				
+				Customer customer = selectCustomerDialog.getSelectedCustomer();
+				if (customer != null) {
+					salesRequisition.setCustomer(customer);
+					salesRequisitionService.save(salesRequisition);
+					customerNameField.setText(customer.getName());
+					if (!salesRequisition.hasItems()) {
+						itemsTable.switchToAddMode();
+					} else {
+						itemsTable.changeSelection(0, 0, false, false);
+					}
+					customerNameField.setFocusable(false);
+				}
+			}
+		});
 	}
 	
 	public void refreshDisplay(SalesRequisition salesRequisition) {
 		this.salesRequisition = salesRequisition;
 		salesRequisitionNumberField.setText(salesRequisition.getSalesRequisitionNumber().toString());
-		customerNameField.setText(salesRequisition.getCustomer().getName());
+		if (salesRequisition.getCustomer() != null) {
+			customerNameField.setText(salesRequisition.getCustomer().getName());
+		}
 		createDateField.setText(FormatterUtil.formatDate(salesRequisition.getCreateDate()));
 		encoderField.setText(salesRequisition.getEncoder());
 		totalItemsField.setText(String.valueOf(salesRequisition.getTotalNumberOfItems()));

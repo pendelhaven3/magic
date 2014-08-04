@@ -19,9 +19,9 @@ import javax.swing.event.ListSelectionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.tables.ProductsTableModel;
 import com.pj.magic.gui.tables.UnitPricesAndQuantitiesTableModel;
 import com.pj.magic.model.Product;
-import com.pj.magic.service.ProductService;
 
 @Component
 public class SelectProductDialog extends MagicDialog {
@@ -30,7 +30,6 @@ public class SelectProductDialog extends MagicDialog {
 	private static final String SELECT_PRODUCT_ACTION_NAME = "selectProduct";
 	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 
-	@Autowired private ProductService productService;
 	@Autowired private ProductsTableModel tableModel;
 	@Autowired private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel;
 	

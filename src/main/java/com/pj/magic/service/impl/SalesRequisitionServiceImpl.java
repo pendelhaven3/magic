@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
@@ -23,16 +24,8 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private SalesRequisitionItemDao salesRequisitionItemDao;
 	@Autowired private ProductDao productDao;
 	@Autowired private SalesInvoiceService salesInvoiceService;
+	@Autowired private CustomerDao customerDao;
 	
-	@Override
-	public List<SalesRequisition> getAllSalesRequisitions() {
-		List<SalesRequisition> salesRequisitions = salesRequisitionDao.getAll();
-		for (SalesRequisition salesRequisition : salesRequisitions) {
-			loadSalesRequisitionItems(salesRequisition);
-		}
-		return salesRequisitions;
-	}
-
 	@Override
 	public void save(SalesRequisition salesRequisition) {
 		salesRequisitionDao.save(salesRequisition);
@@ -41,14 +34,17 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Override
 	public SalesRequisition getSalesRequisition(long id) {
 		SalesRequisition salesRequisition = salesRequisitionDao.get(id);
-		loadSalesRequisitionItems(salesRequisition);
+		loadSalesRequisitionDetails(salesRequisition);
 		return salesRequisition;
 	}
 	
-	private void loadSalesRequisitionItems(SalesRequisition salesRequisition) {
+	private void loadSalesRequisitionDetails(SalesRequisition salesRequisition) {
 		salesRequisition.setItems(salesRequisitionItemDao.findAllBySalesRequisition(salesRequisition));
 		for (SalesRequisitionItem item : salesRequisition.getItems()) {
 			item.setProduct(productDao.get(item.getProduct().getId()));
+		}
+		if (salesRequisition.getCustomer() != null) {
+			salesRequisition.setCustomer(customerDao.get(salesRequisition.getCustomer().getId()));
 		}
 	}
 
@@ -72,7 +68,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public SalesInvoice post(SalesRequisition salesRequisition) throws NotEnoughStocksException {
-		loadSalesRequisitionItems(salesRequisition); // reload to refresh product quantities and prices
+		loadSalesRequisitionDetails(salesRequisition); // reload to refresh product quantities and prices
 		for (SalesRequisitionItem item : salesRequisition.getItems()) {
 			if (!item.isQuantityValid()) {
 				throw new NotEnoughStocksException(item);
@@ -96,7 +92,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		
 		List<SalesRequisition> salesRequisitions = salesRequisitionDao.search(criteria);
 		for (SalesRequisition salesRequisition : salesRequisitions) {
-			loadSalesRequisitionItems(salesRequisition);
+			loadSalesRequisitionDetails(salesRequisition);
 		}
 		return salesRequisitions;
 	}

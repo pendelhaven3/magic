@@ -19,6 +19,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.dao.CustomerDao;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ProductService;
@@ -28,6 +30,7 @@ public class Bootstrap {
 
 	@Autowired private DataSource dataSource;
 	@Autowired private ProductService productService;
+	@Autowired private CustomerDao customerDao;
 
 	// TODO: Make method accept list of strings instead
 	
@@ -35,6 +38,7 @@ public class Bootstrap {
 	public void initialize() throws Exception {
 		runScriptFile("tables.sql");
 		loadProductsFromExcelFile();
+		loadCustomersFromExcelFile();
 	}
 	
 	private void runScriptFile(String filename) throws Exception {
@@ -94,6 +98,33 @@ public class Bootstrap {
 			product.setUnitPrice(Unit.PIECES, new BigDecimal(row.getCell(13).getNumericCellValue()));
 		}
 		return product;
+	}
+	
+	private void loadCustomersFromExcelFile() throws Exception {
+		try (
+			InputStream in = getClass().getClassLoader().getResourceAsStream("data/customers.xls"); // TODO: study XSSF
+		) {
+			Workbook workbook = new HSSFWorkbook(in);
+			Sheet sheet = workbook.getSheetAt(0);
+			Iterator<Row> rows = sheet.iterator();
+			rows.next();
+			
+			while (rows.hasNext()) {
+				Row row = rows.next();
+				Cell cell = row.getCell(0);
+				if (cell != null) {
+					customerDao.save(createCustomerFromRow(row));
+				}
+			}
+		}
+	}
+	
+	private Customer createCustomerFromRow(Row row) {
+		Customer customer = new Customer();
+		customer.setCode(row.getCell(0).getStringCellValue());
+		customer.setName(row.getCell(1).getStringCellValue());
+		customer.setAddress(row.getCell(2).getStringCellValue());
+		return customer;
 	}
 	
 }

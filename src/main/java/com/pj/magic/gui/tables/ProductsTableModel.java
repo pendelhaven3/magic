@@ -1,4 +1,4 @@
-package com.pj.magic.gui.dialog;
+package com.pj.magic.gui.tables;
 
 import java.util.ArrayList;
 import java.util.List;
