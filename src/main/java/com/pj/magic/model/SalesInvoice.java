@@ -9,11 +9,15 @@ public class SalesInvoice {
 
 	private Long id;
 	private Long salesInvoiceNumber;
-	private String customerName; // TODO: Use Customer object instead
+	private Customer customer;
 	private Date postDate;
 	private String postedBy;
 	private SalesRequisition origin;
 	private List<SalesInvoiceItem> items = new ArrayList<>();
+	private String mode = "WALK-IN"; // TODO: replace with actual value
+	private String remarks = "DUMMY REMARKS"; // TODO: replace with actual value
+	private PricingScheme pricingScheme = new PricingScheme(); // TODO: replace with actual value
+	private String encodedBy;
 
 	public Long getId() {
 		return id;
@@ -31,12 +35,12 @@ public class SalesInvoice {
 		this.salesInvoiceNumber = salesInvoiceNumber;
 	}
 
-	public String getCustomerName() {
-		return customerName;
+	public Customer getCustomer() {
+		return customer;
 	}
 
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public Date getPostDate() {
@@ -87,4 +91,51 @@ public class SalesInvoice {
 		this.origin = origin;
 	}
 
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public PricingScheme getPricingScheme() {
+		return pricingScheme;
+	}
+
+	public void setPricingScheme(PricingScheme pricingScheme) {
+		this.pricingScheme = pricingScheme;
+	}
+
+	public int getTotalQuantity() {
+		int total = 0;
+		for (SalesInvoiceItem item : items) {
+			total += item.getQuantity();
+		}
+		return total;
+	}
+	
+	public BigDecimal getTotalDiscountedAmount() {
+		return BigDecimal.ZERO; // TODO: add implementation
+	}
+
+	public String getEncodedBy() {
+		return encodedBy;
+	}
+
+	public void setEncodedBy(String encodedBy) {
+		this.encodedBy = encodedBy;
+	}
+	
+	public BigDecimal getTotalNetAmount() {
+		return getTotalAmount(); // TODO: add correct implementation
+	}
 }

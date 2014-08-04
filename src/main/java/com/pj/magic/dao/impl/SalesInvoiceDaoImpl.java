@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SalesInvoiceDao;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 
@@ -44,7 +45,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setString(1, salesInvoice.getCustomerName());
+				ps.setString(1, salesInvoice.getCustomer().getName()); // TODO: replace with proper Customer table
 				ps.setDate(2, new Date(salesInvoice.getPostDate().getTime()));
 				ps.setString(3, salesInvoice.getPostedBy());
 				ps.setLong(4, salesInvoice.getOrigin().getId());
@@ -81,7 +82,13 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			SalesInvoice salesInvoice = new SalesInvoice();
 			salesInvoice.setId(rs.getLong("ID"));
 			salesInvoice.setSalesInvoiceNumber(rs.getLong("SALES_INVOICE_NO"));
-			salesInvoice.setCustomerName(rs.getString("CUSTOMER_NAME"));
+			
+			// TODO: Replce with proper CUSTOMER table
+			Customer customer = new Customer();
+			customer.setName(rs.getString("CUSTOMER_NAME"));
+			customer.setAddress("DUMMY_ADDRESS");
+			salesInvoice.setCustomer(customer);
+			
 			salesInvoice.setPostDate(rs.getDate("POST_DT"));
 			salesInvoice.setPostedBy(rs.getString("POSTED_BY"));
 			salesInvoice.setOrigin(new SalesRequisition(rs.getLong("ID")));

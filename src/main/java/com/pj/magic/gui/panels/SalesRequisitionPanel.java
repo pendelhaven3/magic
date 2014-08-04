@@ -33,6 +33,7 @@ import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
@@ -88,7 +89,11 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				salesRequisition.setCustomerName(customerNameField.getText());
+				Customer customer = new Customer(); // TODO: replace with selection dialog
+				customer.setName(customerNameField.getText());
+				customer.setAddress("DUMMY ADDRESS");
+				
+				salesRequisition.setCustomer(customer);
 				salesRequisitionService.save(salesRequisition);
 				if (!salesRequisition.hasItems()) {
 					itemsTable.switchToAddMode();
@@ -103,7 +108,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	public void refreshDisplay(SalesRequisition salesRequisition) {
 		this.salesRequisition = salesRequisition;
 		salesRequisitionNumberField.setText(salesRequisition.getSalesRequisitionNumber().toString());
-		customerNameField.setText(salesRequisition.getCustomerName());
+		customerNameField.setText(salesRequisition.getCustomer().getName());
 		createDateField.setText(FormatterUtil.formatDate(salesRequisition.getCreateDate()));
 		encoderField.setText(salesRequisition.getEncoder());
 		totalItemsField.setText(String.valueOf(salesRequisition.getTotalNumberOfItems()));

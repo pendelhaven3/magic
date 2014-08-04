@@ -34,7 +34,6 @@ public class Bootstrap {
 	@PostConstruct
 	public void initialize() throws Exception {
 		runScriptFile("tables.sql");
-//		runScriptFile("data.sql");
 		loadProductsFromExcelFile();
 	}
 	

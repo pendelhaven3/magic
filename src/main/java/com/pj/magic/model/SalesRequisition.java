@@ -13,7 +13,7 @@ public class SalesRequisition {
 
 	private Long id;
 	private Long salesRequisitionNumber;
-	private String customerName; // TODO: Turn into Customer object
+	private Customer customer;
 	private Date createDate;
 	private String encoder; // TODO: Turn into User object
 	private boolean posted;
@@ -79,12 +79,12 @@ public class SalesRequisition {
 		this.salesRequisitionNumber = salesRequisitionNumber;
 	}
 
-	public String getCustomerName() {
-		return customerName;
+	public Customer getCustomer() {
+		return customer;
 	}
 
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public List<SalesRequisitionItem> getItems() {
@@ -121,7 +121,7 @@ public class SalesRequisition {
 
 	public SalesInvoice createSalesInvoice() {
 		SalesInvoice salesInvoice = new SalesInvoice();
-		salesInvoice.setCustomerName(customerName);
+		salesInvoice.setCustomer(customer);
 		salesInvoice.setPostDate(new Date());
 		salesInvoice.setPostedBy("PJ POST"); // TODO: to be implemented
 		salesInvoice.setOrigin(this);

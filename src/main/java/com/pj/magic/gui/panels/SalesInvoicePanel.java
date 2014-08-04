@@ -13,7 +13,6 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -33,6 +32,7 @@ import com.pj.magic.gui.tables.SalesInvoiceItemsTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -41,10 +41,11 @@ import com.pj.magic.util.FormatterUtil;
 public class SalesInvoicePanel extends MagicPanel implements ActionListener {
 
 	private static final String GO_TO_SALES_INVOICES_LIST_ACTION_NAME = "goToSalesRequisitionsList";
-	private static final String PRINT_PREVIEW_ACTION_COMMAND = "printPreview";
+	private static final String PRINT_ACTION_COMMAND = "printPreview";
 	
 	@Autowired private SalesInvoiceItemsTable itemsTable;
 	@Autowired private ProductService productService;
+	@Autowired private PrintService printService;
 	
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
@@ -66,7 +67,7 @@ public class SalesInvoicePanel extends MagicPanel implements ActionListener {
 	public void refreshDisplay(SalesInvoice salesInvoice) {
 		this.salesInvoice = salesInvoice;
 		salesInvoiceNumberField.setText(salesInvoice.getSalesInvoiceNumber().toString());
-		customerNameField.setText(salesInvoice.getCustomerName());
+		customerNameField.setText(salesInvoice.getCustomer().getName());
 		createDateField.setText(FormatterUtil.formatDate(salesInvoice.getPostDate()));
 		encoderField.setText(salesInvoice.getPostedBy());
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
@@ -284,11 +285,11 @@ public class SalesInvoicePanel extends MagicPanel implements ActionListener {
 		toolBar.setFloatable(false);
 		toolBar.addSeparator();
 		
-		JButton printPreviewButton = new MagicToolBarButton("printpreview", "Print Preview");
-		printPreviewButton.setActionCommand(PRINT_PREVIEW_ACTION_COMMAND);
-		printPreviewButton.addActionListener(this);
+		JButton printButton = new MagicToolBarButton("print", "Print");
+		printButton.setActionCommand(PRINT_ACTION_COMMAND);
+		printButton.addActionListener(this);
 		
-		toolBar.add(printPreviewButton);
+		toolBar.add(printButton);
 		return toolBar;
 	}
 	
@@ -411,8 +412,8 @@ public class SalesInvoicePanel extends MagicPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
-		case PRINT_PREVIEW_ACTION_COMMAND:
-			JOptionPane.showMessageDialog(this, "Coming soon!");
+		case PRINT_ACTION_COMMAND:
+			printService.print(salesInvoice);
 			break;
 		}
 	}

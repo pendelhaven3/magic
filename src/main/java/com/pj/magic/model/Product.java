@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class Product {
+public class Product implements Comparable<Product> {
 
 	private Long id;
 	private String code;
@@ -148,6 +148,11 @@ public class Product {
 			}
 		}
 		unitPrices.add(new UnitPrice(unit, price));
+	}
+
+	@Override
+	public int compareTo(Product o) {
+		return description.compareTo(o.getDescription());
 	}
 	
 }

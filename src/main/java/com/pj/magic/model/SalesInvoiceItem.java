@@ -3,7 +3,7 @@ package com.pj.magic.model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class SalesInvoiceItem {
+public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 
 	private Long id;
 	private SalesInvoice parent;
@@ -62,6 +62,16 @@ public class SalesInvoiceItem {
 
 	public BigDecimal getAmount() {
 		return unitPrice.multiply(new BigDecimal(quantity)).setScale(2, RoundingMode.HALF_UP);
+	}
+
+	@Override
+	public int compareTo(SalesInvoiceItem o) {
+		int result = product.compareTo(o.getProduct());
+		if (result == 0) {
+			return Unit.compare(unit, o.getUnit());
+		} else {
+			return result;
+		}
 	}
 
 }

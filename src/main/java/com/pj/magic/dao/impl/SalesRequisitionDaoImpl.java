@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SalesRequisitionDao;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesRequisition;
 
 @Repository
@@ -68,7 +69,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setString(1, salesRequisition.getCustomerName());
+				ps.setString(1, salesRequisition.getCustomer().getName()); // TODO: Replace with proper Customer table
 				ps.setDate(2, new Date(salesRequisition.getCreateDate().getTime()));
 				ps.setString(3, salesRequisition.getEncoder());
 				return ps;
@@ -86,7 +87,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			+ " where ID = ?";
 	
 	private void update(SalesRequisition salesRequisition) {
-		getJdbcTemplate().update(UPDATE_SQL, salesRequisition.getCustomerName(), 
+		getJdbcTemplate().update(UPDATE_SQL, salesRequisition.getCustomer(), 
 				salesRequisition.isPosted() ? "Y" : "N", salesRequisition.getId());
 	}
 	
@@ -97,7 +98,13 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			SalesRequisition salesRequisition = new SalesRequisition();
 			salesRequisition.setId(rs.getLong("ID"));
 			salesRequisition.setSalesRequisitionNumber(rs.getLong("SALES_REQUISITION_NO"));
-			salesRequisition.setCustomerName(rs.getString("CUSTOMER_NAME"));
+			
+			// TODO: Replce with proper CUSTOMER table
+			Customer customer = new Customer();
+			customer.setName(rs.getString("CUSTOMER_NAME"));
+			customer.setAddress("DUMMY_ADDRESS");
+			salesRequisition.setCustomer(customer);
+			
 			salesRequisition.setCreateDate(rs.getDate("CREATE_DT"));
 			salesRequisition.setEncoder(rs.getString("ENCODER"));
 			salesRequisition.setPosted("Y".equals(rs.getString("POST_IND")));

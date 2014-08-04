@@ -24,7 +24,7 @@ public class ProductDaoTest extends AbstractJUnit4SpringContextTests {
 	
 	@Test
 	public void findProductByCode() {
-		Product product = productDao.findProductByCode("ZONRED250");
+		Product product = productDao.findProductByCode("555CAL155");
 		assertNotNull(product);
 	}
 
