@@ -2,14 +2,10 @@ package com.pj.magic.gui.tables;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.springframework.stereotype.Component;
-
 import com.pj.magic.model.Product;
-import com.pj.magic.model.UnitPrice;
-import com.pj.magic.model.UnitQuantity;
+import com.pj.magic.model.Unit;
 import com.pj.magic.util.FormatterUtil;
 
-@Component
 public class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
 
 	private static final int UNIT_COLUMN_INDEX = 0;
@@ -26,7 +22,7 @@ public class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
 	
 	@Override
 	public int getRowCount() {
-		return (product != null) ? product.getUnits().size() : 0;
+		return 4;
 	}
 
 	@Override
@@ -36,20 +32,33 @@ public class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if (product == null) {
-			return "";
+		String unit = null;
+		switch (rowIndex) {
+		case 0:
+			unit = Unit.CASE;
+			break;
+		case 1:
+			unit = Unit.CARTON;
+			break;
+		case 2:
+			unit = Unit.DOZEN;
+			break;
+		case 3:
+			unit = Unit.PIECES;
+			break;
 		}
-		
-		UnitPrice unitPrice = product.getUnitPrices().get(rowIndex);
-		UnitQuantity unitQuantity = product.getUnitQuantities().get(rowIndex);
-		
+
 		switch (columnIndex) {
 		case UNIT_COLUMN_INDEX:
-			return unitPrice.getUnit();
+			return unit;
 		case QUANTITY_COLUMN_INDEX:
-			return String.valueOf(unitQuantity.getQuantity());
+			return (product != null) ? product.getUnitQuantity(unit) : "0";
 		case UNIT_PRICE_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(unitPrice.getPrice());
+			if (product != null && product.hasUnit(unit)) {
+				return FormatterUtil.formatAmount(product.getUnitPrice(unit));
+			} else {
+				return "0.00";
+			}
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}

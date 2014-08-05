@@ -9,8 +9,8 @@ public class Unit {
 	
 	public static final String CASE = "CSE";
 	public static final String CARTON = "CTN";
-	public static final String DOZEN = "DOZEN";
-	public static final String PIECES = "PIECES";
+	public static final String DOZEN = "DOZ";
+	public static final String PIECES = "PCS";
 
 	private static final Map<String, Integer> compareMap = new HashMap<>();
 	
