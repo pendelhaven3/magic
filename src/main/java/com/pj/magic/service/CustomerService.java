@@ -8,4 +8,6 @@ public interface CustomerService {
 
 	List<Customer> getAllCustomers();
 	
+	Customer findFirstCustomerWithCodeLike(String code);
+	
 }

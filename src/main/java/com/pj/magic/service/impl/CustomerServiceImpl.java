@@ -19,4 +19,9 @@ public class CustomerServiceImpl implements CustomerService {
 		return customerDao.getAll();
 	}
 
+	@Override
+	public Customer findFirstCustomerWithCodeLike(String code) {
+		return customerDao.findFirstWithCodeLike(code);
+	}
+
 }

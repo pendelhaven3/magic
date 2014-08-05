@@ -12,4 +12,6 @@ public interface CustomerDao {
 	
 	Customer get(long id);
 	
+	Customer findFirstWithCodeLike(String code);
+	
 }

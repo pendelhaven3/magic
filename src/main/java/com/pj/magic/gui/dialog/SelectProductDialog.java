@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
@@ -44,7 +43,6 @@ public class SelectProductDialog extends MagicDialog {
 		setSize(500, 400);
 		setLocationRelativeTo(null);
 		setTitle("Select Product");
-		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 	}
 
 	@PostConstruct
@@ -137,10 +135,10 @@ public class SelectProductDialog extends MagicDialog {
 		List<Product> products = productService.getAllProducts();
 		productsTableModel.setProducts(products);
 		
-		Product product = productService.findFirstProductWithCodeLike(productCode);
+		Product selectedProduct = productService.findFirstProductWithCodeLike(productCode);
 		int selectedRow = 0;
-		if (product != null) {
-			selectedRow = products.indexOf(product);
+		if (selectedProduct != null) {
+			selectedRow = products.indexOf(selectedProduct);
 		}
 		productsTable.changeSelection(selectedRow, 0, false, false);
 	}

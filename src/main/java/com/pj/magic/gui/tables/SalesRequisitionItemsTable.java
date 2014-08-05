@@ -412,13 +412,15 @@ public class SalesRequisitionItemsTable extends JTable {
 						KeyUtil.simulateTabKey();
 					}
 				} else if (isUnitFieldSelected()) {
-					selectUnitDialog.setUnitChoices(getCurrentlySelectedRowItem().getProduct().getUnits());
+					selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
+					selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
 					selectUnitDialog.setVisible(true);
 					
 					String unit = selectUnitDialog.getSelectedUnit();
 					if (unit != null) {
 						if (isEditing()) {
 							getCellEditor().cancelCellEditing();
+							requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
 						}
 						setValueAt(unit, getSelectedRow(), getSelectedColumn());
 						KeyUtil.simulateTabKey();

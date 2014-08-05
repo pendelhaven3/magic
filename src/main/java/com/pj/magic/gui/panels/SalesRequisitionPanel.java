@@ -112,14 +112,14 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 				} else {
 					itemsTable.changeSelection(0, 0, false, false);
 				}
-				customerNameField.setFocusable(false);
 			}
 		});
 		customerCodeField.getActionMap().put(OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectCustomerDialog.updateAndMakeVisible();
+				selectCustomerDialog.searchCustomers(customerCodeField.getText());
+				selectCustomerDialog.setVisible(true);
 				
 				Customer customer = selectCustomerDialog.getSelectedCustomer();
 				if (customer != null) {
@@ -132,7 +132,6 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 					} else {
 						itemsTable.changeSelection(0, 0, false, false);
 					}
-					customerNameField.setFocusable(false);
 				}
 			}
 		});

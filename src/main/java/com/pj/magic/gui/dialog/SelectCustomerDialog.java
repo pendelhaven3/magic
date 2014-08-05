@@ -2,12 +2,14 @@ package com.pj.magic.gui.dialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +25,7 @@ public class SelectCustomerDialog extends MagicDialog {
 	@Autowired private CustomerService customerService;
 	
 	private Customer selectedCustomer;
-	private JTable table;
+	private JTable customersTable;
 	private CustomersTableModel customersTableModel = new CustomersTableModel();
 	
 	public SelectCustomerDialog() {
@@ -34,19 +36,19 @@ public class SelectCustomerDialog extends MagicDialog {
 	}
 
 	private void addContents() {
-		table = new JTable(customersTableModel);
+		customersTable = new JTable(customersTableModel);
 		
-		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_CUSTOMER_ACTION_NAME);
-		table.getActionMap().put(SELECT_CUSTOMER_ACTION_NAME, new AbstractAction() {
+		customersTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_CUSTOMER_ACTION_NAME);
+		customersTable.getActionMap().put(SELECT_CUSTOMER_ACTION_NAME, new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectedCustomer = customersTableModel.getCustomer(table.getSelectedRow());
+				selectedCustomer = customersTableModel.getCustomer(customersTable.getSelectedRow());
 				setVisible(false);
 			}
 		});
 		
-		JScrollPane scrollPane = new JScrollPane(table);
+		JScrollPane scrollPane = new JScrollPane(customersTable);
 		add(scrollPane);	
 	}
 
@@ -59,10 +61,18 @@ public class SelectCustomerDialog extends MagicDialog {
 		selectedCustomer = null;
 	}
 	
-	public void updateAndMakeVisible() {
-		customersTableModel.setCustomers(customerService.getAllCustomers());
-		table.setRowSelectionInterval(0, 0);
-		setVisible(true);
+	public void searchCustomers(String customerCode) {
+		List<Customer> customers = customerService.getAllCustomers();
+		customersTableModel.setCustomers(customers);
+		
+		int selectedRow = 0;
+		if (!StringUtils.isEmpty(customerCode)) {
+			Customer selectedCustomer = customerService.findFirstCustomerWithCodeLike(customerCode);
+			if (selectedCustomer != null) {
+				selectedRow = customers.indexOf(selectedCustomer);
+			}
+		}
+		customersTable.changeSelection(selectedRow, 0, false, false);
 	}
 	
 }

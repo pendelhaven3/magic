@@ -1,5 +1,8 @@
 package com.pj.magic.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class Customer {
 
 	private Long id;
@@ -13,8 +16,6 @@ public class Customer {
 	public Customer(Long id) {
 		this.id = id;
 	}
-
-
 
 	public Long getId() {
 		return id;
@@ -48,4 +49,25 @@ public class Customer {
 		this.address = address;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(code)
+			.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof Customer)) {
+            return false;
+        }
+        Customer other = (Customer)obj;		
+		return new EqualsBuilder()
+			.append(code, other.getCode())
+			.isEquals();
+	}
+	
 }
