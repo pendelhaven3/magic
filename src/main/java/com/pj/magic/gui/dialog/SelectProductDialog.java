@@ -5,8 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.ProductsTableModel;
 import com.pj.magic.gui.tables.UnitPricesAndQuantitiesTableModel;
 import com.pj.magic.model.Product;
+import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
@@ -31,8 +31,9 @@ public class SelectProductDialog extends MagicDialog {
 	private static final String SELECT_PRODUCT_ACTION_NAME = "selectProduct";
 	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 
-	@Autowired private ProductsTableModel productsTableModel;
+	@Autowired private ProductService productService;
 
+	private ProductsTableModel productsTableModel = new ProductsTableModel();
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = 
 			new UnitPricesAndQuantitiesTableModel();
 	private JTable productsTable;
@@ -59,16 +60,10 @@ public class SelectProductDialog extends MagicDialog {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				int selectedRow = productsTable.getSelectedRow();
-				Product product = productsTableModel.getProduct(selectedRow);
-				unitPricesAndQuantitiesTableModel.setProduct(product);
-			}
-		});
-		
-		addWindowListener(new WindowAdapter() {
-			
-			@Override
-			public void windowActivated(WindowEvent e) {
-				productsTable.changeSelection(0, 0, false, false);
+				if (selectedRow != -1) {
+					Product product = productsTableModel.getProduct(selectedRow);
+					unitPricesAndQuantitiesTableModel.setProduct(product);
+				}
 			}
 		});
 	}
@@ -136,6 +131,18 @@ public class SelectProductDialog extends MagicDialog {
 		JScrollPane unitPricesAndQuantitiesScrollPane = new JScrollPane(unitPricesAndQuantitiesTable);
 		unitPricesAndQuantitiesScrollPane.setPreferredSize(new Dimension(400, 87));
 		add(unitPricesAndQuantitiesScrollPane, c);
+	}
+	
+	public void searchProducts(String productCode) {
+		List<Product> products = productService.getAllProducts();
+		productsTableModel.setProducts(products);
+		
+		Product product = productService.findFirstProductWithCodeLike(productCode);
+		int selectedRow = 0;
+		if (product != null) {
+			selectedRow = products.indexOf(product);
+		}
+		productsTable.changeSelection(selectedRow, 0, false, false);
 	}
 	
 }

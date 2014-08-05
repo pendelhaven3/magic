@@ -5,24 +5,19 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.pj.magic.model.Product;
-import com.pj.magic.service.ProductService;
 
-@Component
 public class ProductsTableModel extends AbstractTableModel {
 
 	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	private static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
 	private static final String[] columnNames = {"Code", "Description"};
 	
-	private List<Product> products;
+	private List<Product> products = new ArrayList<>();
 	
-	@Autowired
-	public ProductsTableModel(ProductService productService) {
-		products = new ArrayList<>(productService.getAllProducts());
+	public void setProducts(List<Product> products) {
+		this.products = products;
+		fireTableDataChanged();
 	}
 	
 	@Override

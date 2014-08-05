@@ -23,7 +23,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Product findProductByCode(String code) {
-		return productDao.findProductByCode(code);
+		return productDao.findByCode(code);
 	}
 
 	@Override
@@ -35,6 +35,11 @@ public class ProductServiceImpl implements ProductService {
 	public void save(Product product) {
 		productDao.save(product);
 		productPriceDao.save(product);
+	}
+
+	@Override
+	public Product findFirstProductWithCodeLike(String code) {
+		return productDao.findFirstWithCodeLike(code);
 	}
 	
 }

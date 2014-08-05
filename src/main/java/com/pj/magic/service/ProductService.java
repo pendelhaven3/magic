@@ -14,4 +14,6 @@ public interface ProductService {
 
 	void save(Product createProductFromRow);
 	
+	Product findFirstProductWithCodeLike(String code);
+	
 }

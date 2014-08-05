@@ -399,6 +399,7 @@ public class SalesRequisitionItemsTable extends JTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (isProductCodeFieldSelected()) {
+					selectProductDialog.searchProducts((String)getCellEditor().getCellEditorValue());
 					selectProductDialog.setVisible(true);
 					
 					String productCode = selectProductDialog.getSelectedProductCode();

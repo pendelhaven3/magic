@@ -8,11 +8,14 @@ public interface ProductDao {
 
 	List<Product> getAll();
 
-	Product findProductByCode(String code);
+	Product findByCode(String code);
 
 	Product get(long id);
 	
 	void updateAvailableQuantities(Product product);
 	
 	void save(Product product);
+	
+	Product findFirstWithCodeLike(String code);
+	
 }
