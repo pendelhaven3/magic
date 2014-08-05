@@ -14,6 +14,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -59,7 +60,8 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
-	private JTextField customerNameField;
+	private JTextField customerCodeField;
+	private JLabel customerNameField;
 	private JLabel createDateField;
 	private JLabel encoderField;
 	private JLabel totalItemsField;
@@ -70,9 +72,9 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	public void initialize() {
 		layoutComponents();
 		registerKeyBindings();
-		focusOnComponentWhenThisPanelIsDisplayed(customerNameField);
+		focusOnComponentWhenThisPanelIsDisplayed(customerCodeField);
 		updateTotalAmountFieldWhenItemsTableChanges();
-		initializeCustomerNameFieldBehavior();
+		initializeCustomerCodeFieldBehavior();
 		initializeUnitPricesAndQuantitiesTable();
 	}
 
@@ -87,11 +89,11 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 		});
 	}
 
-	private void initializeCustomerNameFieldBehavior() {
-		customerNameField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_CUSTOMER_ACTION_NAME);
-		customerNameField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME);
+	private void initializeCustomerCodeFieldBehavior() {
+		customerCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_CUSTOMER_ACTION_NAME);
+		customerCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME);
 		
-		customerNameField.getActionMap().put(SAVE_CUSTOMER_ACTION_NAME, new AbstractAction() {
+		customerCodeField.getActionMap().put(SAVE_CUSTOMER_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -113,7 +115,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 				customerNameField.setFocusable(false);
 			}
 		});
-		customerNameField.getActionMap().put(OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME, new AbstractAction() {
+		customerCodeField.getActionMap().put(OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -123,6 +125,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 				if (customer != null) {
 					salesRequisition.setCustomer(customer);
 					salesRequisitionService.save(salesRequisition);
+					customerCodeField.setText(customer.getCode());
 					customerNameField.setText(customer.getName());
 					if (!salesRequisition.hasItems()) {
 						itemsTable.switchToAddMode();
@@ -229,9 +232,17 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		customerNameField = new MagicTextField();
-		customerNameField.setPreferredSize(new Dimension(180, 20));
-		add(customerNameField, c);
+		
+		customerCodeField = new MagicTextField();
+		customerCodeField.setPreferredSize(new Dimension(100, 20));
+		customerNameField = ComponentUtil.createLabel(190, "");
+		
+		JPanel customerNamePanel = new JPanel();
+		customerNamePanel.add(customerCodeField);
+		customerNamePanel.add(ComponentUtil.createFiller(10, 20));
+		customerNamePanel.add(customerNameField);
+		
+		add(customerNamePanel, c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -245,7 +256,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		encoderField = ComponentUtil.createLabel(150, "");
+		encoderField = ComponentUtil.createLabel(180, "");
 		add(encoderField, c);
 		
 		currentRow++; // third row

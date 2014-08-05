@@ -37,7 +37,7 @@ public class MagicFrame extends JFrame {
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
 
 	public MagicFrame() {
-		this.setSize(800, 600);
+		this.setSize(1024, 600);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}

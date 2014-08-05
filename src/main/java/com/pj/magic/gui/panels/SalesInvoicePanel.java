@@ -67,7 +67,7 @@ public class SalesInvoicePanel extends MagicPanel implements ActionListener {
 	public void refreshDisplay(SalesInvoice salesInvoice) {
 		this.salesInvoice = salesInvoice;
 		salesInvoiceNumberField.setText(salesInvoice.getSalesInvoiceNumber().toString());
-		customerNameField.setText(salesInvoice.getCustomer().getName());
+		customerNameField.setText(salesInvoice.getCustomer().getCode() + " - " + salesInvoice.getCustomer().getName());
 		createDateField.setText(FormatterUtil.formatDate(salesInvoice.getPostDate()));
 		encoderField.setText(salesInvoice.getPostedBy());
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
@@ -156,7 +156,7 @@ public class SalesInvoicePanel extends MagicPanel implements ActionListener {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		customerNameField = ComponentUtil.createLabel(150, "");
+		customerNameField = ComponentUtil.createLabel(300, "");
 		add(customerNameField, c);
 		
 		c.weightx = c.weighty = 0.0;
