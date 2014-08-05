@@ -104,5 +104,17 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 			return null;
 		}
 	}
+
+	private static final String FIND_BY_CODE_SQL =
+			SIMPLE_SELECT_SQL + " where CODE = ?";
+	
+	@Override
+	public Customer findByCode(String code) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_CODE_SQL, customerRowMapper, code);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
 	
 }

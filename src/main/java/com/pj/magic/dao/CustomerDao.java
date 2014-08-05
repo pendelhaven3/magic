@@ -14,4 +14,6 @@ public interface CustomerDao {
 	
 	Customer findFirstWithCodeLike(String code);
 	
+	Customer findByCode(String code);
+	
 }

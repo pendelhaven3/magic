@@ -39,6 +39,7 @@ import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesRequisitionService;
 import com.pj.magic.util.ComponentUtil;
@@ -57,6 +58,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	@Autowired private ProductService productService;
 	@Autowired private SalesRequisitionService salesRequisitionService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
+	@Autowired private CustomerService customerService;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -93,24 +95,30 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 		customerCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_CUSTOMER_ACTION_NAME);
 		customerCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME);
 		
+		final JPanel panel = this;
 		customerCodeField.getActionMap().put(SAVE_CUSTOMER_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (salesRequisition.getCustomer() != null) {
-					
+					if (salesRequisition.getCustomer().getCode().equals(customerCodeField.getText())) {
+						// skip saving sales requisition since there is no change in customer
+						System.out.println("here!");
+						moveFocusToItemsTable();
+						return;
+					}
 				}
 				
-				Customer customer = new Customer(); // TODO: replace with selection dialog
-				customer.setName(customerNameField.getText());
-				customer.setAddress("DUMMY ADDRESS");
-				
-				salesRequisition.setCustomer(customer);
-				salesRequisitionService.save(salesRequisition);
-				if (!salesRequisition.hasItems()) {
-					itemsTable.switchToAddMode();
+				Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
+				if (customer == null) {
+					JOptionPane.showMessageDialog(panel, "No customer matching code specified",
+							"Error Message", JOptionPane.ERROR_MESSAGE);
+					return;
 				} else {
-					itemsTable.changeSelection(0, 0, false, false);
+					salesRequisition.setCustomer(customer);
+					salesRequisitionService.save(salesRequisition);
+					customerNameField.setText(customer.getName());
+					moveFocusToItemsTable();
 				}
 			}
 		});
@@ -127,11 +135,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 					salesRequisitionService.save(salesRequisition);
 					customerCodeField.setText(customer.getCode());
 					customerNameField.setText(customer.getName());
-					if (!salesRequisition.hasItems()) {
-						itemsTable.switchToAddMode();
-					} else {
-						itemsTable.changeSelection(0, 0, false, false);
-					}
+					moveFocusToItemsTable();
 				}
 			}
 		});
@@ -140,7 +144,11 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	public void refreshDisplay(SalesRequisition salesRequisition) {
 		this.salesRequisition = salesRequisition;
 		salesRequisitionNumberField.setText(salesRequisition.getSalesRequisitionNumber().toString());
-		if (salesRequisition.getCustomer() != null) {
+		if (salesRequisition.getCustomer() == null) {
+			customerCodeField.setText("");
+			customerNameField.setText("");
+		} else {
+			customerCodeField.setText(salesRequisition.getCustomer().getCode());
 			customerNameField.setText(salesRequisition.getCustomer().getName());
 		}
 		createDateField.setText(FormatterUtil.formatDate(salesRequisition.getCreateDate()));
@@ -517,4 +525,12 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 		}
 	}
 
+	private void moveFocusToItemsTable() {
+		if (!salesRequisition.hasItems()) {
+			itemsTable.switchToAddMode();
+		} else {
+			itemsTable.changeSelection(0, 0, false, false);
+		}
+	}
+	
 }

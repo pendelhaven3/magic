@@ -124,7 +124,7 @@ public class Product implements Comparable<Product> {
 
 	public void subtractUnitQuantity(String unit, Integer quantity) {
 		for (UnitQuantity unitQuantity : unitQuantities) {
-			if (unit.equals(unitQuantity)) {
+			if (unit.equals(unitQuantity.getUnit())) {
 				unitQuantity.setQuantity(unitQuantity.getQuantity() - quantity);
 			}
 		}

@@ -10,4 +10,6 @@ public interface CustomerService {
 	
 	Customer findFirstCustomerWithCodeLike(String code);
 	
+	Customer findCustomerByCode(String code);
+	
 }

@@ -15,6 +15,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -135,10 +136,12 @@ public class SelectProductDialog extends MagicDialog {
 		List<Product> products = productService.getAllProducts();
 		productsTableModel.setProducts(products);
 		
-		Product selectedProduct = productService.findFirstProductWithCodeLike(productCode);
 		int selectedRow = 0;
-		if (selectedProduct != null) {
-			selectedRow = products.indexOf(selectedProduct);
+		if (!StringUtils.isEmpty(productCode)) {
+			Product selectedProduct = productService.findFirstProductWithCodeLike(productCode);
+			if (selectedProduct != null) {
+				selectedRow = products.indexOf(selectedProduct);
+			}
 		}
 		productsTable.changeSelection(selectedRow, 0, false, false);
 	}
