@@ -16,9 +16,9 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.pj.magic.gui.component.AbstractKeyListener;
 import com.pj.magic.gui.component.MagicTextField;
@@ -471,6 +471,22 @@ public class SalesRequisitionItemsTable extends JTable {
 			totalNumberOfItems += getItemsTableModel().getItems().size();
 		}
 		return totalNumberOfItems;
+	}
+
+	public void highlightQuantityColumn(SalesRequisitionItem item) {
+		int row = salesRequisition.getItems().indexOf(item);
+		changeSelection(row, QUANTITY_COLUMN_INDEX, false, false);
+		editCellAt(row, QUANTITY_COLUMN_INDEX);
+		getEditorComponent().requestFocusInWindow();
+	}
+	
+	public void highlight() {
+		if (!salesRequisition.hasItems()) {
+			switchToAddMode();
+		} else {
+			changeSelection(0, 0, false, false);
+			requestFocusInWindow();
+		}
 	}
 	
 }

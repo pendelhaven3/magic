@@ -51,7 +51,6 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	private static final String GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME = "goToSalesRequisitionsList";
 	private static final String SAVE_CUSTOMER_ACTION_NAME = "enter";
 	private static final String OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME = "openSelectCustomerDialog";
-	private static final String PRINT_PREVIEW_ACTION_COMMAND = "printPreview";
 	private static final String POST_ACTION_COMMAND = "post";
 	
 	@Autowired private SalesRequisitionItemsTable itemsTable;
@@ -103,8 +102,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 				if (salesRequisition.getCustomer() != null) {
 					if (salesRequisition.getCustomer().getCode().equals(customerCodeField.getText())) {
 						// skip saving sales requisition since there is no change in customer
-						System.out.println("here!");
-						moveFocusToItemsTable();
+						itemsTable.highlight();
 						return;
 					}
 				}
@@ -118,7 +116,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 					salesRequisition.setCustomer(customer);
 					salesRequisitionService.save(salesRequisition);
 					customerNameField.setText(customer.getName());
-					moveFocusToItemsTable();
+					itemsTable.highlight();
 				}
 			}
 		});
@@ -135,14 +133,14 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 					salesRequisitionService.save(salesRequisition);
 					customerCodeField.setText(customer.getCode());
 					customerNameField.setText(customer.getName());
-					moveFocusToItemsTable();
+					itemsTable.highlight();
 				}
 			}
 		});
 	}
 	
-	public void refreshDisplay(SalesRequisition salesRequisition) {
-		this.salesRequisition = salesRequisition;
+	public void updateDisplay(SalesRequisition salesRequisition) {
+		this.salesRequisition = salesRequisitionService.getSalesRequisition(salesRequisition.getId());
 		salesRequisitionNumberField.setText(salesRequisition.getSalesRequisitionNumber().toString());
 		if (salesRequisition.getCustomer() == null) {
 			customerCodeField.setText("");
@@ -377,15 +375,10 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 		toolBar.setFloatable(false);
 		toolBar.addSeparator();
 		
-		JButton printPreviewButton = new MagicToolBarButton("printpreview", "Print Preview");
-		printPreviewButton.setActionCommand(PRINT_PREVIEW_ACTION_COMMAND);
-		printPreviewButton.addActionListener(this);
-		
 		JButton postButton = new MagicToolBarButton("invoice", "Post");
 		postButton.setActionCommand(POST_ACTION_COMMAND);
 		postButton.addActionListener(this);
 		
-//		toolBar.add(printPreviewButton);
 		toolBar.add(postButton);
 		return toolBar;
 	}
@@ -510,27 +503,31 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	public void actionPerformed(ActionEvent event) {
 		switch (event.getActionCommand()) {
 		case POST_ACTION_COMMAND:
-			try {
-				int confirm = JOptionPane.showConfirmDialog(this, "Do you want to post this sales requisition?",
-						"Select an Option", JOptionPane.YES_NO_OPTION);
-				if (confirm == JOptionPane.OK_OPTION) {
-					SalesInvoice salesInvoice = salesRequisitionService.post(salesRequisition);
-					JOptionPane.showMessageDialog(this, "Post successful!");
-					getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
-				}
-			} catch (NotEnoughStocksException e1) {
-				// TODO: handle this
-			}
+			postSalesRequisition();
 			break;
 		}
 	}
 
-	private void moveFocusToItemsTable() {
-		if (!salesRequisition.hasItems()) {
-			itemsTable.switchToAddMode();
-		} else {
-			itemsTable.changeSelection(0, 0, false, false);
+	private void postSalesRequisition() {
+		int confirm = JOptionPane.showConfirmDialog(this, "Do you want to post this sales requisition?",
+				"Select an Option", JOptionPane.YES_NO_OPTION);
+		if (confirm == JOptionPane.OK_OPTION) {
+//			if (!salesRequisition.hasItems()) {
+//				JOptionPane.showMessageDialog(this, "Cannot post a sales requisition with no items",
+//						"Error Message", JOptionPane.ERROR_MESSAGE);
+//				return;
+//			}
+			try {
+				SalesInvoice salesInvoice = salesRequisitionService.post(salesRequisition);
+				JOptionPane.showMessageDialog(this, "Post successful!");
+				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
+			} catch (NotEnoughStocksException e) {	
+				JOptionPane.showMessageDialog(this, "Not enough available stocks!",
+						"Error Message", JOptionPane.ERROR_MESSAGE);
+				updateDisplay(salesRequisition);
+				itemsTable.highlightQuantityColumn(e.getItem());
+			}
 		}
 	}
-	
+
 }

@@ -6,8 +6,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,9 +28,13 @@ import com.pj.magic.model.SalesRequisition;
 @Repository
 public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitionDao {
 
+	private static final Logger logger = LoggerFactory.getLogger(SalesRequisitionDaoImpl.class);
+	
 	private static final String SIMPLE_SELECT_SQL =
 			"select ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER, POST_IND"
 			+ " from SALES_REQUISITION";
+	
+	@Autowired private DataSource dataSource;
 	
 	private SalesRequisitionRowMapper salesRequisitionRowMapper = new SalesRequisitionRowMapper();
 	
@@ -49,8 +59,8 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	}
 	
 	private static final String INSERT_SQL =
-			"insert into SALES_REQUISITION (CREATE_DT, ENCODER)"
-			+ " values (?, ?)";
+			"insert into SALES_REQUISITION (CUSTOMER_ID, CREATE_DT, ENCODER)"
+			+ " values (?, ?, ?)";
 	
 	private void insert(final SalesRequisition salesRequisition) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -60,8 +70,13 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setDate(1, new Date(salesRequisition.getCreateDate().getTime()));
-				ps.setString(2, salesRequisition.getEncoder());
+				if (salesRequisition.getCustomer() != null) {
+					ps.setLong(1, salesRequisition.getCustomer().getId());
+				} else {
+					ps.setNull(1, Types.INTEGER);
+				}
+				ps.setDate(2, new Date(salesRequisition.getCreateDate().getTime()));
+				ps.setString(3, salesRequisition.getEncoder());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db

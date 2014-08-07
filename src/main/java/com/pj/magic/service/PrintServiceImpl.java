@@ -56,7 +56,6 @@ public class PrintServiceImpl implements PrintService {
 		VelocityContext context = new VelocityContext(reportData);
 		context.put("report", ReportUtil.class);
 		template.merge(context, writer);
-//		System.out.println(writer.toString());
 		try {
 			PrinterUtil.print(writer.toString());
 		} catch (PrintException e) {

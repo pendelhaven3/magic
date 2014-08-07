@@ -18,6 +18,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.model.Customer;
@@ -31,9 +34,8 @@ public class Bootstrap {
 	@Autowired private DataSource dataSource;
 	@Autowired private ProductService productService;
 	@Autowired private CustomerDao customerDao;
+	@Autowired private TransactionTemplate transactionTemplate;
 
-	// TODO: Make method accept list of strings instead
-	
 	@PostConstruct
 	public void initialize() throws Exception {
 		runScriptFile("tables.sql");
@@ -59,17 +61,24 @@ public class Bootstrap {
 		) {
 			Workbook workbook = new HSSFWorkbook(in);
 			Sheet sheet = workbook.getSheetAt(0);
-			Iterator<Row> rows = sheet.iterator();
+			final Iterator<Row> rows = sheet.iterator();
 			rows.next();
 			rows.next();
 			
-			while (rows.hasNext()) {
-				Row row = rows.next();
-				Cell cell = row.getCell(0);
-				if (cell != null) {
-					productService.save(createProductFromRow(row));
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+				
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					while (rows.hasNext()) {
+						Row row = rows.next();
+						Cell cell = row.getCell(0);
+						if (cell != null) {
+							productService.save(createProductFromRow(row));
+						}
+					}
 				}
-			}
+			});
+			
 		}
 	}
 	
@@ -106,16 +115,22 @@ public class Bootstrap {
 		) {
 			Workbook workbook = new HSSFWorkbook(in);
 			Sheet sheet = workbook.getSheetAt(0);
-			Iterator<Row> rows = sheet.iterator();
+			final Iterator<Row> rows = sheet.iterator();
 			rows.next();
 			
-			while (rows.hasNext()) {
-				Row row = rows.next();
-				Cell cell = row.getCell(0);
-				if (cell != null) {
-					customerDao.save(createCustomerFromRow(row));
+			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+
+				@Override
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					while (rows.hasNext()) {
+						Row row = rows.next();
+						Cell cell = row.getCell(0);
+						if (cell != null) {
+							customerDao.save(createCustomerFromRow(row));
+						}
+					}
 				}
-			}
+			});
 		}
 	}
 	

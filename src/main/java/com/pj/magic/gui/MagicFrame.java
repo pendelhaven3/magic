@@ -69,7 +69,7 @@ public class MagicFrame extends JFrame {
 	
 	public void switchToSalesRequisitionPanel(SalesRequisition salesRequisition) {
 		addPanelNameToTitle("Sales Requisition");
-		salesRequisitionPanel.refreshDisplay(salesRequisition);
+		salesRequisitionPanel.updateDisplay(salesRequisition);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_REQUISITION_PANEL);
 	}
 	

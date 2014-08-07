@@ -29,4 +29,9 @@ public class CustomerServiceImpl implements CustomerService {
 		return customerDao.findByCode(code);
 	}
 
+	@Override
+	public void save(Customer customer) {
+		customerDao.save(customer);
+	}
+
 }

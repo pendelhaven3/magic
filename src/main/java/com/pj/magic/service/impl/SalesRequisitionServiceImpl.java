@@ -11,6 +11,7 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.exception.NotEnoughStocksException;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
@@ -26,6 +27,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private CustomerDao customerDao;
 	
+	@Transactional
 	@Override
 	public void save(SalesRequisition salesRequisition) {
 		salesRequisitionDao.save(salesRequisition);
@@ -48,11 +50,13 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		}
 	}
 
+	@Transactional
 	@Override
 	public void save(SalesRequisitionItem item) {
 		salesRequisitionItemDao.save(item);
 	}
 
+	@Transactional
 	@Override
 	public void delete(SalesRequisitionItem item) {
 		salesRequisitionItemDao.delete(item);
@@ -65,16 +69,18 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		salesRequisitionDao.delete(salesRequisition);
 	}
 
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional // TODO: Look for other transactional methods
 	@Override
 	public SalesInvoice post(SalesRequisition salesRequisition) throws NotEnoughStocksException {
-		loadSalesRequisitionDetails(salesRequisition); // reload to refresh product quantities and prices
 		for (SalesRequisitionItem item : salesRequisition.getItems()) {
-			if (!item.isQuantityValid()) {
+			// [PJ 08/06/2014] Do not update product quantity inside sales requisition object
+			// because it has to be "rolled back" manually when an exception happens during posting
+			Product product = productDao.get(item.getProduct().getId());
+			if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity())) {
 				throw new NotEnoughStocksException(item);
 			} else {
-				item.getProduct().subtractUnitQuantity(item.getUnit(), item.getQuantity());
-				productDao.updateAvailableQuantities(item.getProduct());
+				product.subtractUnitQuantity(item.getUnit(), item.getQuantity());
+				productDao.updateAvailableQuantities(product);
 			}
 		}
 		salesRequisition.setPosted(true);
