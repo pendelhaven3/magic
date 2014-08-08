@@ -110,15 +110,15 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		case SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX:
 			if (!StringUtils.isEmpty(val) && StringUtils.isNumeric(val)) {
 				item.setQuantity(Integer.parseInt(val));
+			} else {
+				item.setQuantity(null);
 			}
 			break;
-		default:
-			throw new RuntimeException("Setting invalid column index: " + columnIndex);
 		}
 		if (item.isValid()) {
 			salesRequisitionService.save(item);
 		}
-		fireTableRowsUpdated(rowIndex, rowIndex);
+		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
 	@Override

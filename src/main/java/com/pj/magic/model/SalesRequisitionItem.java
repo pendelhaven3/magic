@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.springframework.util.StringUtils;
 
 public class SalesRequisitionItem {
 
@@ -104,6 +105,10 @@ public class SalesRequisitionItem {
 			.append(product, other.getProduct())
 			.append(unit, other.getUnit())
 			.isEquals();
+	}
+	
+	public boolean isFilledUp() {
+		return product != null && !StringUtils.isEmpty(unit) && quantity != null;
 	}
 	
 }

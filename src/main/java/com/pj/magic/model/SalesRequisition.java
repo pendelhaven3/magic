@@ -63,14 +63,6 @@ public class SalesRequisition {
 			.isEquals();
 	}
 
-	public void validate() {
-		for (SalesRequisitionItem item : items) {
-			if (!item.isValid()) {
-				
-			}
-		}
-	}
-	
 	public Long getSalesRequisitionNumber() {
 		return salesRequisitionNumber;
 	}

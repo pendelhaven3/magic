@@ -364,7 +364,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 		
 		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
 		if (product != null && product.isValid()) {
-			unitPricesAndQuantitiesTableModel.setProduct(product);
+			unitPricesAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
 		} else {
 			unitPricesAndQuantitiesTableModel.setProduct(null);
 		}

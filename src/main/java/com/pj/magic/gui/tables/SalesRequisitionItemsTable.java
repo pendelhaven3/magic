@@ -14,7 +14,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +42,7 @@ import com.pj.magic.util.KeyUtil;
  */
 
 @Component
-public class SalesRequisitionItemsTable extends JTable {
+public class SalesRequisitionItemsTable extends JTable{
 	
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
@@ -63,15 +67,19 @@ public class SalesRequisitionItemsTable extends JTable {
 	
 	private boolean addMode;
 	private SalesRequisition salesRequisition;
+	private Action originalDownAction;
+	private Action originalEscapeAction;
 	
 	@Autowired
 	public SalesRequisitionItemsTable(SalesRequisitionItemsTableModel tableModel) {
 		super(tableModel);
-		initializeColumns();
 		setSurrendersFocusOnKeystroke(true);
+		initializeColumns();
+		initializeModelListener();
 		registerKeyBindings();
 	}
 	
+	// TODO: replace tab key simulation with table model listener
 	private void initializeColumns() {
 		TableColumnModel columnModel = getColumnModel();
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(120);
@@ -133,16 +141,6 @@ public class SalesRequisitionItemsTable extends JTable {
 		MagicTextField quantityTextField = new MagicTextField();
 		quantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
 		quantityTextField.setNumbersOnly(true);
-		quantityTextField.addKeyListener(new AbstractKeyListener() {
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateDownKey();
-				}
-			}
-		});
 		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(quantityTextField));
 	}
 	
@@ -277,8 +275,8 @@ public class SalesRequisitionItemsTable extends JTable {
 		// TODO: Modify on other columns dont work
 		
 		final SalesRequisitionItemsTable table = this;
-		final Action originalDownAction = getAction(KeyEvent.VK_DOWN);
-		final Action originalEscapeAction = getAction(KeyEvent.VK_ESCAPE);
+		originalDownAction = getAction(KeyEvent.VK_DOWN);
+		originalEscapeAction = getAction(KeyEvent.VK_ESCAPE);
 		
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
@@ -370,25 +368,8 @@ public class SalesRequisitionItemsTable extends JTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (isAdding() && isLastRowSelected() && isQuantityFieldSelected()) {
-					if (isEditing()) {
-						getCellEditor().stopCellEditing();
-					}
-					SalesRequisitionItem item = getCurrentlySelectedRowItem();
-					if (item.getQuantity() == null) {
-						JOptionPane.showMessageDialog(table,
-								"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-					} else {
-						Product product = productService.getProduct(item.getProduct().getId());
-						if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity().intValue())) {
-							JOptionPane.showMessageDialog(table,
-									"Not enough stocks", "Error Message", JOptionPane.ERROR_MESSAGE);
-							editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-						} else {
-							addNewRow();
-						}
-					}
+				if (isEditing()) {
+					getCellEditor().stopCellEditing();
 				} else {
 					originalDownAction.actionPerformed(e);
 				}
@@ -444,10 +425,10 @@ public class SalesRequisitionItemsTable extends JTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (table.getItemsTableModel().hasItems()) {
-					if (table.getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
+					if (table.getCurrentlySelectedRowItem().isFilledUp()) { // check valid row to prevent deleting the blank row
 						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?", "Select An Option", JOptionPane.YES_NO_OPTION);
 						if (confirm == JOptionPane.OK_OPTION) {
-							table.removeCurrentlySelectedRow();
+							removeCurrentlySelectedRow();
 						}
 					}
 				}
@@ -455,11 +436,32 @@ public class SalesRequisitionItemsTable extends JTable {
 		});
 	}
 	
+	public boolean validateQuantity(SalesRequisitionItem item) {
+		if (item.getQuantity() == null) {
+			JOptionPane.showMessageDialog(this,
+					"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
+			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
+			return false;
+		} else {
+			Product product = productService.getProduct(item.getProduct().getId());
+			if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity().intValue())) {
+				JOptionPane.showMessageDialog(this,
+						"Not enough stocks", "Error Message", JOptionPane.ERROR_MESSAGE);
+				editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+	
 	public BigDecimal getTotalAmount() {
 		BigDecimal totalAmount = salesRequisition.getTotalAmount();
 		if (isAdding()) {
 			for (SalesRequisitionItem item : getItemsTableModel().getItems()) {
-				totalAmount = totalAmount.add(item.getAmount());
+				if (item.isFilledUp()) {
+					totalAmount = totalAmount.add(item.getAmount());
+				}
 			}
 		}
 		return totalAmount;
@@ -487,6 +489,37 @@ public class SalesRequisitionItemsTable extends JTable {
 			changeSelection(0, 0, false, false);
 			requestFocusInWindow();
 		}
+	}
+	
+	private void initializeModelListener() {
+		getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				final TableModel model = (TableModel)e.getSource();
+				final int row = e.getFirstRow();
+				
+				switch (e.getColumn()) {
+				case UNIT_COLUMN_INDEX:
+					model.setValueAt("", row, UNIT_PRICE_COLUMN_INDEX);
+					break;
+				case QUANTITY_COLUMN_INDEX:
+					SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+							model.setValueAt("", row, AMOUNT_COLUMN_INDEX);
+							if (validateQuantity(getCurrentlySelectedRowItem())) {
+								if (isAdding() && isLastRowSelected()) {
+									addNewRow();
+								}
+							}
+						}
+					});
+					break;
+				}
+			}
+		});
 	}
 	
 }
