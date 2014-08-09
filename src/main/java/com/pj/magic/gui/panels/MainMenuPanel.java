@@ -19,8 +19,9 @@ import org.springframework.stereotype.Component;
 public class MainMenuPanel extends MagicPanel {
 
 	private static final String SELECT_MENU_ITEM_ACTION_NAME = "selectMenuItem";
-	private static final int SALES_REQUISITIONS_MENU_INDEX = 0;
-	private static final int SALES_INVOICES_MENU_INDEX = 1;
+	private static final int PRODUCT_LIST_MENU_INDEX = 0;
+	private static final int SALES_REQUISITIONS_MENU_INDEX = 1;
+	private static final int SALES_INVOICES_MENU_INDEX = 2;
 	
 	private JTable menuItemsTable;
 	
@@ -54,6 +55,9 @@ public class MainMenuPanel extends MagicPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				switch (menuItemsTable.getSelectedRow()) {
+				case PRODUCT_LIST_MENU_INDEX:
+					getMagicFrame().switchToProductListPanel();
+					break;
 				case SALES_REQUISITIONS_MENU_INDEX:
 					getMagicFrame().switchToSalesRequisitionsListPanel();
 					break;
@@ -67,7 +71,10 @@ public class MainMenuPanel extends MagicPanel {
 	
 	private class MainMenuTableModel extends AbstractTableModel {
 
-		private String[][] data = new String[][] {{"Sales Requisition"}, {"Sales Invoice"}};
+		private String[][] data = new String[][] {
+				{"Product Maintenance"},
+				{"Sales Requisition"}, 
+				{"Sales Invoice"}};
 		
 		@Override
 		public int getRowCount() {

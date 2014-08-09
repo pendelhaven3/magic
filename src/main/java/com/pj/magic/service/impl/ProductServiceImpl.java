@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ProductPriceDao;
@@ -31,10 +32,14 @@ public class ProductServiceImpl implements ProductService {
 		return productDao.get(id);
 	}
 
+	@Transactional
 	@Override
 	public void save(Product product) {
+		boolean inserting = (product.getId() == null);
 		productDao.save(product);
-		productPriceDao.save(product);
+		if (inserting) {
+			productPriceDao.save(product);
+		}
 	}
 
 	@Override

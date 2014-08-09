@@ -18,7 +18,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.SalesInvoiceService;
 
 @Component
-public class SalesInvoicesListPanel extends MagicPanel {
+public class SalesInvoiceListPanel extends MagicPanel {
 
 	private static final String BACK_ACTION_NAME = "back";
 	

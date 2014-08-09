@@ -10,11 +10,14 @@ import javax.swing.JPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.panels.EditProductPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
+import com.pj.magic.gui.panels.ProductListPanel;
+import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.panels.SalesInvoicePanel;
-import com.pj.magic.gui.panels.SalesInvoicesListPanel;
+import com.pj.magic.gui.panels.SalesRequisitionListPanel;
 import com.pj.magic.gui.panels.SalesRequisitionPanel;
-import com.pj.magic.gui.panels.SalesRequisitionsListPanel;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 
@@ -26,12 +29,16 @@ public class MagicFrame extends JFrame {
 	private static final String SALES_REQUISITION_PANEL = "SALES_REQUISITION_PANEL";
 	private static final String SALES_INVOICES_LIST_PANEL = "SALES_INVOICES_LIST_PANEL";
 	private static final String SALES_INVOICE_PANEL = "SALES_INVOICE_PANEL";
+	private static final String PRODUCT_LIST_PANEL = "PRODUCT_LIST_PANEL";
+	private static final String EDIT_PRODUCT_PANEL = "EDIT_PRODUCT_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
-	@Autowired private SalesRequisitionsListPanel salesRequisitionsListPanel;
+	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
 	@Autowired private SalesRequisitionPanel salesRequisitionPanel;
-	@Autowired private SalesInvoicesListPanel salesInvoicesListPanel;
+	@Autowired private SalesInvoiceListPanel salesInvoicesListPanel;
 	@Autowired private SalesInvoicePanel salesInvoicePanel;
+	@Autowired private ProductListPanel productListPanel;
+	@Autowired private EditProductPanel editProductPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -50,6 +57,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(salesRequisitionPanel, SALES_REQUISITION_PANEL);
 		panelHolder.add(salesInvoicesListPanel, SALES_INVOICES_LIST_PANEL);
 		panelHolder.add(salesInvoicePanel, SALES_INVOICE_PANEL);
+		panelHolder.add(productListPanel, PRODUCT_LIST_PANEL);
+		panelHolder.add(editProductPanel, EDIT_PRODUCT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -91,6 +100,18 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Sales Invoice");
 		salesInvoicePanel.refreshDisplay(salesInvoice);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_INVOICE_PANEL);
+	}
+	
+	public void switchToProductListPanel() {
+		addPanelNameToTitle("Product List");
+		productListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRODUCT_LIST_PANEL);
+	}
+	
+	public void switchToEditProductListPanel(Product product) {
+		addPanelNameToTitle("Edit Product");
+		editProductPanel.updateDisplay(product);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, EDIT_PRODUCT_PANEL);
 	}
 	
 }

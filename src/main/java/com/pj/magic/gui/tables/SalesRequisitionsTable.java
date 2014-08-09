@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.panels.SalesRequisitionsListPanel;
+import com.pj.magic.gui.panels.SalesRequisitionListPanel;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.SalesRequisitionService;
 
@@ -56,8 +56,8 @@ public class SalesRequisitionsTable extends JTable {
 	}
 	
 	public void displaySalesRequisitionDetails(SalesRequisition salesRequisition) {
-		SalesRequisitionsListPanel panel = (SalesRequisitionsListPanel)
-				SwingUtilities.getAncestorOfClass(SalesRequisitionsListPanel.class, this);
+		SalesRequisitionListPanel panel = (SalesRequisitionListPanel)
+				SwingUtilities.getAncestorOfClass(SalesRequisitionListPanel.class, this);
 		panel.displaySalesRequisitionDetails(salesRequisition);
 	}
 	

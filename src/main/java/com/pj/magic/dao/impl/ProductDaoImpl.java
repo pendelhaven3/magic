@@ -110,7 +110,18 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 
 	@Override
 	public void save(Product product) {
-		insert(product);
+		if (product.getId() == null) {
+			insert(product);
+		} else {
+			update(product);
+		}
+	}
+
+	private static final String UPDATE_SQL =
+			"update PRODUCT set CODE = ?, DESCRIPTION = ? where ID = ?";
+	
+	private void update(Product product) {
+		getJdbcTemplate().update(UPDATE_SQL, product.getCode(), product.getDescription(), product.getId());
 	}
 
 	private static final String INSERT_SQL =

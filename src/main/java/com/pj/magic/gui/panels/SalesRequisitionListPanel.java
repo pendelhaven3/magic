@@ -21,7 +21,7 @@ import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.SalesRequisitionService;
 
 @Component
-public class SalesRequisitionsListPanel extends MagicPanel {
+public class SalesRequisitionListPanel extends MagicPanel {
 	
 	private static final String OPEN_SELECT_ACTION_DIALOG_ACTION_NAME = "openSelectActionDialog";
 	private static final String BACK_ACTION_NAME = "back";

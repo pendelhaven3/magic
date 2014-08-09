@@ -13,7 +13,7 @@ import javax.swing.SwingUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.panels.SalesInvoicesListPanel;
+import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.SalesInvoiceService;
 
@@ -54,8 +54,8 @@ public class SalesInvoicesTable extends JTable {
 	}
 	
 	public void displaySalesInvoiceDetails(SalesInvoice salesInvoice) {
-		SalesInvoicesListPanel panel = (SalesInvoicesListPanel)
-				SwingUtilities.getAncestorOfClass(SalesInvoicesListPanel.class, this);
+		SalesInvoiceListPanel panel = (SalesInvoiceListPanel)
+				SwingUtilities.getAncestorOfClass(SalesInvoiceListPanel.class, this);
 		panel.displaySalesInvoiceDetails(salesInvoice);
 	}
 	
