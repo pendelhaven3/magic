@@ -15,6 +15,9 @@ public class Product implements Comparable<Product> {
 	private List<String> units = new ArrayList<>();
 	private List<UnitPrice> unitPrices = new ArrayList<>();
 	private List<UnitQuantity> unitQuantities = new ArrayList<>();
+	private Integer minimumStockLevel;
+	private Integer maximumStockLevel;
+	private boolean active;
 
 	public Product() {
 	}
@@ -153,6 +156,30 @@ public class Product implements Comparable<Product> {
 	@Override
 	public int compareTo(Product o) {
 		return description.compareTo(o.getDescription());
+	}
+
+	public Integer getMinimumStockLevel() {
+		return minimumStockLevel;
+	}
+
+	public void setMinimumStockLevel(Integer minimumStockLevel) {
+		this.minimumStockLevel = minimumStockLevel;
+	}
+
+	public Integer getMaximumStockLevel() {
+		return maximumStockLevel;
+	}
+
+	public void setMaximumStockLevel(Integer maximumStockLevel) {
+		this.maximumStockLevel = maximumStockLevel;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 	
 }

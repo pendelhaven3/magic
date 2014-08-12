@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
@@ -21,6 +22,7 @@ import com.pj.magic.service.ProductService;
 public class ProductListPanel extends AbstractMagicPanel {
 
 	private static final String EDIT_PRODUCT_ACTION_NAME = "editProduct";
+	private static final String BACK_ACTION_NAME = "back";
 	
 	@Autowired private ProductService productService;
 	
@@ -52,6 +54,8 @@ public class ProductListPanel extends AbstractMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
+		registerBackKeyBinding();
+		
 		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), EDIT_PRODUCT_ACTION_NAME);
 		table.getActionMap().put(EDIT_PRODUCT_ACTION_NAME, new AbstractAction() {
 			
@@ -59,6 +63,18 @@ public class ProductListPanel extends AbstractMagicPanel {
 			public void actionPerformed(ActionEvent e) {
 				Product product = tableModel.getProduct(table.getSelectedRow());
 				getMagicFrame().switchToEditProductListPanel(product);
+			}
+		});
+	}
+
+	private void registerBackKeyBinding() {
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), BACK_ACTION_NAME);
+		getActionMap().put(BACK_ACTION_NAME, new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getMagicFrame().switchToMainMenuPanel();
 			}
 		});
 	}

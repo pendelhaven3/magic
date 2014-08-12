@@ -24,7 +24,8 @@ import com.pj.magic.model.UnitQuantity;
 public class ProductDaoImpl extends MagicDao implements ProductDao {
 	
 	private static final String SIMPLE_SELECT_SQL =
-			"select a.ID, CODE, DESCRIPTION, UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
+			"select a.ID, CODE, DESCRIPTION, MAX_STOCK_LEVEL, MIN_STOCK_LEVEL, ACTIVE_IND,"
+			+ " UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
 			+ " UNIT_PRICE_CSE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
 			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS"
 			+ " from PRODUCT a, PRODUCT_PRICE b"
@@ -68,6 +69,9 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			product.setId(rs.getLong("ID"));
 			product.setCode(rs.getString("CODE"));
 			product.setDescription(rs.getString("DESCRIPTION"));
+			product.setMaximumStockLevel(rs.getInt("MAX_STOCK_LEVEL"));
+			product.setMinimumStockLevel(rs.getInt("MIN_STOCK_LEVEL"));
+			product.setActive("Y".equals(rs.getString("ACTIVE_IND")));
 			if ("Y".equals(rs.getString("UNIT_IND_CSE"))) {
 				product.getUnits().add("CSE");
 				product.getUnitPrices().add(new UnitPrice("CSE", rs.getBigDecimal("UNIT_PRICE_CSE")));
@@ -118,10 +122,18 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	}
 
 	private static final String UPDATE_SQL =
-			"update PRODUCT set CODE = ?, DESCRIPTION = ? where ID = ?";
+			"update PRODUCT set CODE = ?, DESCRIPTION = ?,"
+			+ " MAX_STOCK_LEVEL = ?, MIN_STOCK_LEVEL = ?,"
+			+ " ACTIVE_IND = ? where ID = ?";
 	
 	private void update(Product product) {
-		getJdbcTemplate().update(UPDATE_SQL, product.getCode(), product.getDescription(), product.getId());
+		getJdbcTemplate().update(UPDATE_SQL, 
+				product.getCode(), 
+				product.getDescription(),
+				product.getMaximumStockLevel(),
+				product.getMinimumStockLevel(),
+				product.isActive() ? "Y" : "N",
+				product.getId());
 	}
 
 	private static final String INSERT_SQL =
