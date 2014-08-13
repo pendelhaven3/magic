@@ -6,10 +6,15 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import org.springframework.util.StringUtils;
+
+import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.MagicFrame;
 
 public abstract class MagicPanel extends JPanel {
@@ -37,6 +42,7 @@ public abstract class MagicPanel extends JPanel {
 		});
 	}
 	
+	// TODO: Reevaluate this one
 	/*
 	 * F11 seems to select the window options 
 	 * (triggered by clicking the icon in the upper left window corner)
@@ -45,4 +51,15 @@ public abstract class MagicPanel extends JPanel {
 		getInputMap().remove(KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
 	}
 	
+	protected void showErrorMessage(String message) {
+		JOptionPane.showMessageDialog(this, message, "Error Message", JOptionPane.ERROR_MESSAGE);
+	}
+	
+	protected void validateMandatoryField(JTextField field, String description) throws ValidationException {
+		if (StringUtils.isEmpty(field.getText())) {
+			showErrorMessage(description + " must be specified");
+			field.requestFocusInWindow();
+			throw new ValidationException();
+		}
+	}
 }

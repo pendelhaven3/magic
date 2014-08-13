@@ -150,7 +150,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 			customerNameField.setText(salesRequisition.getCustomer().getName());
 		}
 		createDateField.setText(FormatterUtil.formatDate(salesRequisition.getCreateDate()));
-		encoderField.setText(salesRequisition.getEncoder());
+		encoderField.setText(salesRequisition.getEncoder().getUsername());
 		totalItemsField.setText(String.valueOf(salesRequisition.getTotalNumberOfItems()));
 		totalAmountField.setText(salesRequisition.getTotalAmount().toString());
 		itemsTable.setSalesRequisition(salesRequisition);

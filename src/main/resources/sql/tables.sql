@@ -42,7 +42,7 @@ create table SALES_REQUISITION (
   SALES_REQUISITION_NO integer auto_increment,
   CUSTOMER_ID integer null,
   CREATE_DT date not null,
-  ENCODER varchar2(30) not null,
+  ENCODER_ID integer not null,
   POST_IND varchar2(1) default 'N' not null,
   constraint SALES_REQUISITION$PK primary key (ID),
   constraint SALES_REQUISITION$UK unique (SALES_REQUISITION_NO)
@@ -80,4 +80,12 @@ create table SALES_INVOICE_ITEM (
   constraint SALES_INVOICE_ITEM$FK foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID),
   constraint SALES_INVOICE_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
-  
+
+create table USER (
+  ID integer auto_increment,
+  USERNAME varchar2(15) not null,
+  constraint USER$PK primary key (ID),
+  constraint USER$UK unique (USERNAME)
+);
+
+insert into USER (ID, USERNAME) values (1, 'PJ');  

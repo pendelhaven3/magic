@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -19,12 +18,14 @@ import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
+import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.model.Unit;
+import com.pj.magic.model.User;
 
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
 public class SalesRequisitionServiceIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
@@ -35,6 +36,7 @@ public class SalesRequisitionServiceIntegrationTest extends AbstractTransactiona
 	@Autowired private SalesRequisitionItemDao salesRequisitionItemDao;
 	@Autowired private CustomerDao customerDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private UserDao userDao;
 	
 	@Autowired private DataSource dataSource;
 	
@@ -48,9 +50,13 @@ public class SalesRequisitionServiceIntegrationTest extends AbstractTransactiona
 		customer.setAddress("TEST CUSTOMER ADDRESS");
 		customerDao.save(customer);
 		
+		User encoder = new User();
+		encoder.setUsername("TEST ENCODER");
+		userDao.save(encoder);
+		
 		salesRequisition.setCustomer(customer);
 		salesRequisition.setCreateDate(new Date());
-		salesRequisition.setEncoder("TEST ENCODER");
+		salesRequisition.setEncoder(encoder);
 		salesRequisitionDao.save(salesRequisition);
 	}
 	

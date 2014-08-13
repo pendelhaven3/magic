@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
@@ -127,11 +128,16 @@ public class EditProductPanel extends AbstractMagicPanel {
 	}
 
 	protected void saveProduct() {
+		if (!validateProduct()) {
+			return;
+		}
+		
 		product.setCode(codeField.getText());
 		product.setDescription(descriptionField.getText());
 		product.setMaximumStockLevel(Integer.parseInt(maximumStockLevelField.getText()));
 		product.setMinimumStockLevel(Integer.parseInt(minimumStockLevelField.getText()));
 		product.setActive(activeIndicatorCheckBox.isSelected());
+		
 		try {
 			int confirm = JOptionPane.showConfirmDialog(this, "Save changes?", "Message", JOptionPane.YES_NO_OPTION);
 			if (confirm == JOptionPane.OK_OPTION) {
@@ -142,6 +148,41 @@ public class EditProductPanel extends AbstractMagicPanel {
 			logger.error(e.getMessage(), e);
 			JOptionPane.showMessageDialog(this, "Error occurred during saving!", "Error Message",
 					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private boolean validateProduct() {
+		try {
+			validateMandatoryField(codeField, "Code");
+			validateMandatoryField(descriptionField, "Description");
+			validateMandatoryField(maximumStockLevelField, "Maximum Stock Level");
+			validateMandatoryField(minimumStockLevelField, "Minimum Stock Level");
+			validateStockLevel();
+			if (caseUnitIndicatorCheckBox.isSelected()) {
+				validateMandatoryField(caseQuantityField, "Available Quantity (Case)");
+			}
+			if (cartonUnitIndicatorCheckBox.isSelected()) {
+				validateMandatoryField(cartonQuantityField, "Available Quantity (Carton)");
+			}
+			if (dozenUnitIndicatorCheckBox.isSelected()) {
+				validateMandatoryField(dozenQuantityField, "Available Quantity (Dozen)");
+			}
+			if (piecesUnitIndicatorCheckBox.isSelected()) {
+				validateMandatoryField(piecesQuantityField, "Available Quantity (Pieces)");
+			}
+		} catch (ValidationException e) {
+			return false;
+		}
+		return true;
+	}
+
+	private void validateStockLevel() throws ValidationException {
+		int maximumStockLevel = Integer.parseInt(maximumStockLevelField.getText());
+		int minimumStockLevel = Integer.parseInt(minimumStockLevelField.getText());
+		if (maximumStockLevel < minimumStockLevel) {
+			showErrorMessage("Maximum stock level must be greater than or equal to minimum stock level");
+			maximumStockLevelField.requestFocusInWindow();
+			throw new ValidationException();
 		}
 	}
 
@@ -319,7 +360,7 @@ public class EditProductPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(100, "Quantity"), c);
+		panel.add(ComponentUtil.createLabel(100, "Available Quantity"), c);
 		
 		currentRow++;
 		

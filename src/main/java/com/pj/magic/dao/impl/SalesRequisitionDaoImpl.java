@@ -11,8 +11,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -24,14 +22,13 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.model.User;
 
 @Repository
 public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitionDao {
 
-	private static final Logger logger = LoggerFactory.getLogger(SalesRequisitionDaoImpl.class);
-	
 	private static final String SIMPLE_SELECT_SQL =
-			"select ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER, POST_IND"
+			"select ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER_ID, POST_IND"
 			+ " from SALES_REQUISITION";
 	
 	@Autowired private DataSource dataSource;
@@ -59,7 +56,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	}
 	
 	private static final String INSERT_SQL =
-			"insert into SALES_REQUISITION (CUSTOMER_ID, CREATE_DT, ENCODER)"
+			"insert into SALES_REQUISITION (CUSTOMER_ID, CREATE_DT, ENCODER_ID)"
 			+ " values (?, ?, ?)";
 	
 	private void insert(final SalesRequisition salesRequisition) {
@@ -76,7 +73,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 					ps.setNull(1, Types.INTEGER);
 				}
 				ps.setDate(2, new Date(salesRequisition.getCreateDate().getTime()));
-				ps.setString(3, salesRequisition.getEncoder());
+				ps.setLong(3, salesRequisition.getEncoder().getId());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -104,7 +101,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			salesRequisition.setId(rs.getLong("ID"));
 			salesRequisition.setSalesRequisitionNumber(rs.getLong("SALES_REQUISITION_NO"));
 			salesRequisition.setCreateDate(rs.getDate("CREATE_DT"));
-			salesRequisition.setEncoder(rs.getString("ENCODER"));
+			salesRequisition.setEncoder(new User(rs.getLong("ENCODER_ID")));
 			salesRequisition.setPosted("Y".equals(rs.getString("POST_IND")));
 
 			if (rs.getLong("CUSTOMER_ID") != 0) {

@@ -10,6 +10,7 @@ import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
+import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
@@ -26,6 +27,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private ProductDao productDao;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private CustomerDao customerDao;
+	@Autowired private UserDao userDao;
 	
 	@Transactional
 	@Override
@@ -48,6 +50,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		if (salesRequisition.getCustomer() != null) {
 			salesRequisition.setCustomer(customerDao.get(salesRequisition.getCustomer().getId()));
 		}
+		salesRequisition.setEncoder(userDao.get(salesRequisition.getEncoder().getId()));
 	}
 
 	@Transactional
