@@ -123,8 +123,11 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 
 	private static final String UPDATE_SQL =
 			"update PRODUCT set CODE = ?, DESCRIPTION = ?,"
-			+ " MAX_STOCK_LEVEL = ?, MIN_STOCK_LEVEL = ?,"
-			+ " ACTIVE_IND = ? where ID = ?";
+			+ " MAX_STOCK_LEVEL = ?, MIN_STOCK_LEVEL = ?, ACTIVE_IND = ?,"
+			+ " UNIT_IND_CSE = ?, AVAIL_QTY_CSE = ?,"
+			+ " UNIT_IND_CTN = ?, AVAIL_QTY_CTN = ?,"
+			+ " UNIT_IND_DOZ = ?, AVAIL_QTY_DOZ = ?,"
+			+ " UNIT_IND_PCS = ?, AVAIL_QTY_PCS = ? where ID = ?";
 	
 	private void update(Product product) {
 		getJdbcTemplate().update(UPDATE_SQL, 
@@ -133,6 +136,14 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.getMaximumStockLevel(),
 				product.getMinimumStockLevel(),
 				product.isActive() ? "Y" : "N",
+				product.hasUnit(Unit.CASE) ? "Y" : "N",
+				product.getUnitQuantity(Unit.CASE),
+				product.hasUnit(Unit.CARTON) ? "Y" : "N",
+				product.getUnitQuantity(Unit.CARTON),
+				product.hasUnit(Unit.DOZEN) ? "Y" : "N",
+				product.getUnitQuantity(Unit.DOZEN),
+				product.hasUnit(Unit.PIECES) ? "Y" : "N",
+				product.getUnitQuantity(Unit.PIECES),
 				product.getId());
 	}
 

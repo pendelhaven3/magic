@@ -132,22 +132,40 @@ public class EditProductPanel extends AbstractMagicPanel {
 			return;
 		}
 		
-		product.setCode(codeField.getText());
-		product.setDescription(descriptionField.getText());
-		product.setMaximumStockLevel(Integer.parseInt(maximumStockLevelField.getText()));
-		product.setMinimumStockLevel(Integer.parseInt(minimumStockLevelField.getText()));
-		product.setActive(activeIndicatorCheckBox.isSelected());
-		
-		try {
-			int confirm = JOptionPane.showConfirmDialog(this, "Save changes?", "Message", JOptionPane.YES_NO_OPTION);
-			if (confirm == JOptionPane.OK_OPTION) {
+		int confirm = JOptionPane.showConfirmDialog(this, "Save changes?", "Message", JOptionPane.YES_NO_OPTION);
+		if (confirm == JOptionPane.OK_OPTION) {
+			product.setCode(codeField.getText());
+			product.setDescription(descriptionField.getText());
+			product.setMaximumStockLevel(Integer.parseInt(maximumStockLevelField.getText()));
+			product.setMinimumStockLevel(Integer.parseInt(minimumStockLevelField.getText()));
+			product.setActive(activeIndicatorCheckBox.isSelected());
+			
+			product.getUnits().clear();
+			product.getUnitQuantities().clear();
+			if (caseUnitIndicatorCheckBox.isSelected()) {
+				product.getUnits().add(Unit.CASE);
+				product.addUnitQuantity(Unit.CASE, Integer.parseInt(caseQuantityField.getText()));
+			}
+			if (cartonUnitIndicatorCheckBox.isSelected()) {
+				product.getUnits().add(Unit.CARTON);
+				product.addUnitQuantity(Unit.CARTON, Integer.parseInt(cartonQuantityField.getText()));
+			}
+			if (dozenUnitIndicatorCheckBox.isSelected()) {
+				product.getUnits().add(Unit.DOZEN);
+				product.addUnitQuantity(Unit.DOZEN, Integer.parseInt(dozenQuantityField.getText()));
+			}
+			if (piecesUnitIndicatorCheckBox.isSelected()) {
+				product.getUnits().add(Unit.PIECES);
+				product.addUnitQuantity(Unit.PIECES, Integer.parseInt(piecesQuantityField.getText()));
+			}
+			
+			try {
 				productService.save(product);
 				JOptionPane.showMessageDialog(this, "Changes saved!");
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Error occurred during saving!");
 			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			JOptionPane.showMessageDialog(this, "Error occurred during saving!", "Error Message",
-					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
