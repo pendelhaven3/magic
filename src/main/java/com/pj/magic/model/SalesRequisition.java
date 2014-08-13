@@ -15,7 +15,7 @@ public class SalesRequisition {
 	private Long salesRequisitionNumber;
 	private Customer customer;
 	private Date createDate;
-	private String encoder; // TODO: Turn into User object
+	private User encoder;
 	private boolean posted;
 	private List<SalesRequisitionItem> items = new ArrayList<>();
 
@@ -95,14 +95,6 @@ public class SalesRequisition {
 		this.createDate = createDate;
 	}
 
-	public String getEncoder() {
-		return encoder;
-	}
-
-	public void setEncoder(String encoder) {
-		this.encoder = encoder;
-	}
-
 	public Long getId() {
 		return id;
 	}
@@ -137,6 +129,14 @@ public class SalesRequisition {
 
 	public void setPosted(boolean posted) {
 		this.posted = posted;
+	}
+
+	public User getEncoder() {
+		return encoder;
+	}
+
+	public void setEncoder(User encoder) {
+		this.encoder = encoder;
 	}
 	
 }

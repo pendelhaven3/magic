@@ -18,6 +18,7 @@ import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.tables.ActionsTableModel;
 import com.pj.magic.gui.tables.SalesRequisitionsTable;
 import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.model.User;
 import com.pj.magic.service.SalesRequisitionService;
 
 @Component
@@ -71,7 +72,7 @@ public class SalesRequisitionsListPanel extends MagicPanel {
 				if (ActionsTableModel.CREATE_ACTION.equals(action)) {
 					SalesRequisition salesRequisition = new SalesRequisition();
 					salesRequisition.setCreateDate(new Date());
-					salesRequisition.setEncoder("PJ");
+					salesRequisition.setEncoder(new User(1L)); // TODO: Replace with actual value
 					salesRequisitionService.save(salesRequisition);
 					
 					getMagicFrame().switchToSalesRequisitionPanel(salesRequisition);

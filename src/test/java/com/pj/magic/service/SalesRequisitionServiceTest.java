@@ -13,12 +13,14 @@ import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
+import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.model.Unit;
+import com.pj.magic.model.User;
 
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
 public class SalesRequisitionServiceTest extends AbstractJUnit4SpringContextTests {
@@ -30,6 +32,7 @@ public class SalesRequisitionServiceTest extends AbstractJUnit4SpringContextTest
 	@Autowired private ProductDao productDao;
 	@Autowired private ProductService productService;
 	@Autowired private SalesRequisitionItemDao salesRequisitionItemDao;
+	@Autowired private UserDao userDao;
 	
 	@Autowired private DataSource dataSource;
 	
@@ -41,10 +44,14 @@ public class SalesRequisitionServiceTest extends AbstractJUnit4SpringContextTest
 		customer.setAddress("TEST CUSTOMER ADDRESS");
 		customerDao.save(customer);
 		
+		User encoder = new User();
+		encoder.setUsername("TEST ENCODER");
+		userDao.save(encoder);
+		
 		SalesRequisition salesRequisition = new SalesRequisition();
 		salesRequisition.setCustomer(customer);
 		salesRequisition.setCreateDate(new Date());
-		salesRequisition.setEncoder("TEST ENCODER");
+		salesRequisition.setEncoder(encoder);
 		salesRequisitionDao.save(salesRequisition);
 		
 		SalesRequisitionItem item = new SalesRequisitionItem();

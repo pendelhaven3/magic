@@ -43,7 +43,7 @@ public class SalesRequisitionsTableModel extends AbstractTableModel {
 			Date date = salesRequisition.getCreateDate();
 			return (date != null) ? FormatterUtil.formatDate(date) : "";
 		case SalesRequisitionsTable.ENCODER_COLUMN_INDEX:
-			return StringUtils.defaultString(salesRequisition.getEncoder());
+			return salesRequisition.getEncoder().getUsername();
 		case SalesRequisitionsTable.TOTAL_AMOUNT_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(salesRequisition.getTotalAmount());
 		default:
