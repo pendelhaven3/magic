@@ -76,7 +76,8 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Transactional(propagation=Propagation.REQUIRES_NEW) // TODO: Look for other transactional methods
 	@Override
 	public SalesInvoice post(SalesRequisition salesRequisition) throws NotEnoughStocksException {
-		for (SalesRequisitionItem item : salesRequisition.getItems()) {
+		SalesRequisition updated = getSalesRequisition(salesRequisition.getId());
+		for (SalesRequisitionItem item : updated.getItems()) {
 			// [PJ 08/06/2014] Do not update product quantity inside sales requisition object
 			// because it has to be "rolled back" manually when an exception happens during posting
 			Product product = productDao.get(item.getProduct().getId());
@@ -87,10 +88,10 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 				productDao.updateAvailableQuantities(product);
 			}
 		}
-		salesRequisition.setPosted(true);
-		salesRequisitionDao.save(salesRequisition);
+		updated.setPosted(true);
+		salesRequisitionDao.save(updated);
 
-		SalesInvoice salesInvoice = salesRequisition.createSalesInvoice();
+		SalesInvoice salesInvoice = updated.createSalesInvoice();
 		salesInvoiceService.save(salesInvoice);
 		return salesInvoice;
 	}

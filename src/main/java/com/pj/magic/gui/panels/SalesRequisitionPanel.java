@@ -503,21 +503,23 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 	}
 
 	private void postSalesRequisition() {
-		int confirm = JOptionPane.showConfirmDialog(this, "Do you want to post this sales requisition?",
-				"Select an Option", JOptionPane.YES_NO_OPTION);
+		if (itemsTable.isAdding()) {
+			itemsTable.switchToEditMode();
+		}
+		
+		int confirm = showConfirmMessage("Do you want to post this sales requisition?");
 		if (confirm == JOptionPane.OK_OPTION) {
-//			if (!salesRequisition.hasItems()) {
-//				JOptionPane.showMessageDialog(this, "Cannot post a sales requisition with no items",
-//						"Error Message", JOptionPane.ERROR_MESSAGE);
-//				return;
-//			}
+			if (!salesRequisition.hasItems()) {
+				showErrorMessage("Cannot post a sales requisition with no items");
+				itemsTable.requestFocusInWindow();
+				return;
+			}
 			try {
 				SalesInvoice salesInvoice = salesRequisitionService.post(salesRequisition);
 				JOptionPane.showMessageDialog(this, "Post successful!");
 				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
 			} catch (NotEnoughStocksException e) {	
-				JOptionPane.showMessageDialog(this, "Not enough available stocks!",
-						"Error Message", JOptionPane.ERROR_MESSAGE);
+				showErrorMessage("Not enough available stocks!");
 				updateDisplay(salesRequisition);
 				itemsTable.highlightQuantityColumn(e.getItem());
 			}
