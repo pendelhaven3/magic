@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
@@ -371,9 +372,7 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	}
 	
 	private JToolBar createToolBar() {
-		JToolBar toolBar = new JToolBar();
-		toolBar.setFloatable(false);
-		toolBar.addSeparator();
+		JToolBar toolBar = new MagicToolBar();
 		
 		JButton postButton = new MagicToolBarButton("invoice", "Post");
 		postButton.setActionCommand(POST_ACTION_COMMAND);

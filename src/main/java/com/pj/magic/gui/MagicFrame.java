@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.panels.EditProductPanel;
+import com.pj.magic.gui.panels.MaintainProductPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
@@ -30,7 +30,7 @@ public class MagicFrame extends JFrame {
 	private static final String SALES_INVOICES_LIST_PANEL = "SALES_INVOICES_LIST_PANEL";
 	private static final String SALES_INVOICE_PANEL = "SALES_INVOICE_PANEL";
 	private static final String PRODUCT_LIST_PANEL = "PRODUCT_LIST_PANEL";
-	private static final String EDIT_PRODUCT_PANEL = "EDIT_PRODUCT_PANEL";
+	private static final String MAINTAIN_PRODUCT_PANEL = "MAINTAIN_PRODUCT_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
@@ -38,7 +38,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private SalesInvoiceListPanel salesInvoicesListPanel;
 	@Autowired private SalesInvoicePanel salesInvoicePanel;
 	@Autowired private ProductListPanel productListPanel;
-	@Autowired private EditProductPanel editProductPanel;
+	@Autowired private MaintainProductPanel maintainProductPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -58,7 +58,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(salesInvoicesListPanel, SALES_INVOICES_LIST_PANEL);
 		panelHolder.add(salesInvoicePanel, SALES_INVOICE_PANEL);
 		panelHolder.add(productListPanel, PRODUCT_LIST_PANEL);
-		panelHolder.add(editProductPanel, EDIT_PRODUCT_PANEL);
+		panelHolder.add(maintainProductPanel, MAINTAIN_PRODUCT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -108,10 +108,19 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRODUCT_LIST_PANEL);
 	}
 	
-	public void switchToEditProductListPanel(Product product) {
+	public void switchToEditProductPanel(Product product) {
 		addPanelNameToTitle("Edit Product");
-		editProductPanel.updateDisplay(product);
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, EDIT_PRODUCT_PANEL);
+		switchToMaintainProductPanel(product);
+	}
+
+	private void switchToMaintainProductPanel(Product product) {
+		maintainProductPanel.updateDisplay(product);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PRODUCT_PANEL);
+	}
+
+	public void switchToAddNewProductListPanel() {
+		addPanelNameToTitle("Add New Product");
+		switchToMaintainProductPanel(new Product());
 	}
 	
 }

@@ -32,9 +32,9 @@ import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class EditProductPanel extends AbstractMagicPanel {
+public class MaintainProductPanel extends AbstractMagicPanel {
 
-	private static final Logger logger = LoggerFactory.getLogger(EditProductPanel.class);
+	private static final Logger logger = LoggerFactory.getLogger(MaintainProductPanel.class);
 	private static final String BACK_ACTION_NAME = "back";
 	private static final String NEXT_FIELD_ACTION_NAME = "nextField";
 	private static final String SAVE_ACTION_NAME = "save";
@@ -502,6 +502,11 @@ public class EditProductPanel extends AbstractMagicPanel {
 
 	public void updateDisplay(Product product) {
 		this.product = product;
+		if (!product.isValid()) {
+			clearDisplay();
+			return;
+		}
+		
 		codeField.setText(product.getCode());
 		descriptionField.setText(product.getDescription());
 		maximumStockLevelField.setText(product.getMaximumStockLevel().toString());
@@ -531,6 +536,22 @@ public class EditProductPanel extends AbstractMagicPanel {
 		} else {
 			piecesQuantityField.setText(null);
 		}
+	}
+
+	private void clearDisplay() {
+		codeField.setText(null);
+		descriptionField.setText(null);
+		maximumStockLevelField.setText(null);
+		minimumStockLevelField.setText(null);
+		activeIndicatorCheckBox.setSelected(true);
+		caseUnitIndicatorCheckBox.setSelected(false);
+		caseQuantityField.setText(null);
+		cartonUnitIndicatorCheckBox.setSelected(false);
+		cartonQuantityField.setText(null);
+		dozenUnitIndicatorCheckBox.setSelected(false);
+		dozenQuantityField.setText(null);
+		piecesUnitIndicatorCheckBox.setSelected(false);
+		piecesQuantityField.setText(null);
 	}
 
 }

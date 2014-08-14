@@ -49,7 +49,12 @@ public class Product implements Comparable<Product> {
 				return unitPrice.getPrice();
 			}
 		}
-		return null;
+		if (hasUnit(unit)) {
+			unitPrices.add(new UnitPrice(unit, BigDecimal.ZERO));
+			return BigDecimal.ZERO;
+		} else {
+			return null;
+		}
 	}
 	
 	public boolean hasAvailableUnitQuantity(String unit, int quantity) {
