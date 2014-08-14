@@ -6,11 +6,9 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.FocusManager;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -35,7 +33,6 @@ import com.pj.magic.util.ComponentUtil;
 public class MaintainProductPanel extends AbstractMagicPanel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MaintainProductPanel.class);
-	private static final String BACK_ACTION_NAME = "back";
 	private static final String NEXT_FIELD_ACTION_NAME = "nextField";
 	private static final String SAVE_ACTION_NAME = "save";
 	
@@ -56,7 +53,6 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	private MagicTextField dozenQuantityField;
 	private MagicTextField piecesQuantityField;
 	private JButton saveButton;
-	private List<JComponent> focusOrder = new ArrayList<>();
 	
 	@Override
 	protected void initializeComponents() {
@@ -107,10 +103,10 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		});
 		
 		focusOnComponentWhenThisPanelIsDisplayed(codeField);
-		initializeFocusOrder();
 	}
 
-	private void initializeFocusOrder() {
+	@Override
+	protected void initializeFocusOrder(List<JComponent> focusOrder) {
 		focusOrder.add(codeField);
 		focusOrder.add(descriptionField);
 		focusOrder.add(maximumStockLevelField);
@@ -126,13 +122,13 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		focusOrder.add(piecesQuantityField);
 		focusOrder.add(saveButton);
 	}
-
+	
 	protected void saveProduct() {
 		if (!validateProduct()) {
 			return;
 		}
 		
-		int confirm = JOptionPane.showConfirmDialog(this, "Save changes?", "Message", JOptionPane.YES_NO_OPTION);
+		int confirm = showConfirmMessage("Save?");
 		if (confirm == JOptionPane.OK_OPTION) {
 			product.setCode(codeField.getText());
 			product.setDescription(descriptionField.getText());
@@ -161,7 +157,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			
 			try {
 				productService.save(product);
-				JOptionPane.showMessageDialog(this, "Changes saved!");
+				showMessage("Saved!");
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
@@ -458,8 +454,6 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
-		registerBackKeyBinding();
-		
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), NEXT_FIELD_ACTION_NAME);
 		getActionMap().put(NEXT_FIELD_ACTION_NAME, new AbstractAction() {
@@ -476,26 +470,6 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveProduct();
-			}
-		});
-	}
-
-	protected void focusNextField() {
-		java.awt.Component focusOwner = FocusManager.getCurrentManager().getFocusOwner();
-		int focusOwnerIndex = focusOrder.indexOf(focusOwner);
-		if (focusOwnerIndex != focusOrder.size() - 1) {
-			focusOrder.get(focusOwnerIndex + 1).requestFocusInWindow();
-		}
-	}
-
-	private void registerBackKeyBinding() {
-		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), BACK_ACTION_NAME);
-		getActionMap().put(BACK_ACTION_NAME, new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getMagicFrame().switchToProductListPanel();
 			}
 		});
 	}
@@ -552,6 +526,11 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		dozenQuantityField.setText(null);
 		piecesUnitIndicatorCheckBox.setSelected(false);
 		piecesQuantityField.setText(null);
+	}
+
+	@Override
+	protected void doOnBack() {
+		getMagicFrame().switchToProductListPanel();
 	}
 
 }

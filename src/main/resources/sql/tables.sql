@@ -89,3 +89,10 @@ create table USER (
 );
 
 insert into USER (ID, USERNAME) values (1, 'PJ');  
+
+create table MANUFACTURER (
+  ID integer auto_increment,
+  NAME varchar2(30) not null,
+  constraint MANUFACTURER$PK primary key (ID),
+  constraint MANUFACTURER$UK unique (NAME)
+);

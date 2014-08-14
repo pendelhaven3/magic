@@ -19,26 +19,26 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.tables.ProductsTableModel;
-import com.pj.magic.model.Product;
-import com.pj.magic.service.ProductService;
+import com.pj.magic.gui.tables.ManufacturersTableModel;
+import com.pj.magic.model.Manufacturer;
+import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class ProductListPanel extends AbstractMagicPanel implements ActionListener {
+public class ManufacturerListPanel extends AbstractMagicPanel implements ActionListener {
 
-	private static final String EDIT_PRODUCT_ACTION_NAME = "editProduct";
-	private static final String NEW_PRODUCT_ACTION_NAME = "newProduct";
+	private static final String EDIT_MANUFACTURER_ACTION_NAME = "editManufacturer";
+	private static final String NEW_MANUFACTURER_ACTION_NAME = "newManufacturer";
 	
-	@Autowired private ProductService productService;
+	@Autowired private ManufacturerService manufacturerService;
 	
 	private JTable table;
-	private ProductsTableModel tableModel = new ProductsTableModel();
+	private ManufacturersTableModel tableModel = new ManufacturersTableModel();
 	
 	public void updateDisplay() {
-		List<Product> products = productService.getAllProducts();
-		tableModel.setProducts(products);
-		if (!products.isEmpty()) {
+		List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
+		tableModel.setManufacturers(manufacturers);
+		if (!manufacturers.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
 	}
@@ -85,7 +85,7 @@ public class ProductListPanel extends AbstractMagicPanel implements ActionListen
 		JToolBar toolBar = new MagicToolBar();
 		
 		JButton postButton = new MagicToolBarButton("plus", "New");
-		postButton.setActionCommand(NEW_PRODUCT_ACTION_NAME);
+		postButton.setActionCommand(NEW_MANUFACTURER_ACTION_NAME);
 		postButton.addActionListener(this);
 		
 		toolBar.add(postButton);
@@ -94,13 +94,13 @@ public class ProductListPanel extends AbstractMagicPanel implements ActionListen
 
 	@Override
 	protected void registerKeyBindings() {
-		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), EDIT_PRODUCT_ACTION_NAME);
-		table.getActionMap().put(EDIT_PRODUCT_ACTION_NAME, new AbstractAction() {
+		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), EDIT_MANUFACTURER_ACTION_NAME);
+		table.getActionMap().put(EDIT_MANUFACTURER_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Product product = tableModel.getProduct(table.getSelectedRow());
-				getMagicFrame().switchToEditProductPanel(product);
+				Manufacturer manufacturer = tableModel.getManufacturer(table.getSelectedRow());
+				getMagicFrame().switchToEditManufacturerPanel(manufacturer);
 			}
 		});
 	}
@@ -108,14 +108,14 @@ public class ProductListPanel extends AbstractMagicPanel implements ActionListen
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
-		case NEW_PRODUCT_ACTION_NAME:
-			switchToNewProductPanel();
+		case NEW_MANUFACTURER_ACTION_NAME:
+			switchToNewManufacturerPanel();
 			break;
 		}
 	}
 
-	private void switchToNewProductPanel() {
-		getMagicFrame().switchToAddNewProductListPanel();
+	private void switchToNewManufacturerPanel() {
+		getMagicFrame().switchToAddNewManufacturerPanel();
 	}
 
 	@Override

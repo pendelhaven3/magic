@@ -19,9 +19,6 @@ import org.springframework.stereotype.Component;
 public class MainMenuPanel extends MagicPanel {
 
 	private static final String SELECT_MENU_ITEM_ACTION_NAME = "selectMenuItem";
-	private static final int PRODUCT_LIST_MENU_INDEX = 0;
-	private static final int SALES_REQUISITIONS_MENU_INDEX = 1;
-	private static final int SALES_INVOICES_MENU_INDEX = 2;
 	
 	private JTable menuItemsTable;
 	
@@ -42,7 +39,7 @@ public class MainMenuPanel extends MagicPanel {
 		c.gridy = 0;
 		
 		menuItemsTable = new JTable(new MainMenuTableModel());
-		menuItemsTable.setPreferredSize(new Dimension(200, 50));
+		menuItemsTable.setPreferredSize(new Dimension(200, 100));
 		menuItemsTable.setBorder(BorderFactory.createEmptyBorder());
 		menuItemsTable.setShowGrid(false);
 		add(menuItemsTable, c);
@@ -54,14 +51,17 @@ public class MainMenuPanel extends MagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				switch (menuItemsTable.getSelectedRow()) {
-				case PRODUCT_LIST_MENU_INDEX:
+				switch ((String)menuItemsTable.getValueAt(menuItemsTable.getSelectedRow(), 0)) {
+				case "Product List":
 					getMagicFrame().switchToProductListPanel();
 					break;
-				case SALES_REQUISITIONS_MENU_INDEX:
+				case "Manufacturer List":
+					getMagicFrame().switchToManufacturerListPanel();
+					break;
+				case "Sales Requisition":
 					getMagicFrame().switchToSalesRequisitionsListPanel();
 					break;
-				case SALES_INVOICES_MENU_INDEX:
+				case "Sales Invoice":
 					getMagicFrame().switchToSalesInvoicesListPanel();
 					break;
 				}
@@ -72,9 +72,11 @@ public class MainMenuPanel extends MagicPanel {
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private String[][] data = new String[][] {
-				{"Product Maintenance"},
+				{"Product List"},
+				{"Manufacturer List"},
 				{"Sales Requisition"}, 
-				{"Sales Invoice"}};
+				{"Sales Invoice"}
+		};
 		
 		@Override
 		public int getRowCount() {
