@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -47,9 +46,8 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class SalesRequisitionPanel extends MagicPanel implements ActionListener {
+public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionListener {
 
-	private static final String GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME = "goToSalesRequisitionsList";
 	private static final String SAVE_CUSTOMER_ACTION_NAME = "enter";
 	private static final String OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME = "openSelectCustomerDialog";
 	private static final String POST_ACTION_COMMAND = "post";
@@ -70,16 +68,28 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	
-	@PostConstruct
-	public void initialize() {
-		layoutComponents();
-		registerKeyBindings();
+	@Override
+	protected void initializeComponents() {
+		customerCodeField = new MagicTextField();
+		
 		focusOnComponentWhenThisPanelIsDisplayed(customerCodeField);
 		updateTotalAmountFieldWhenItemsTableChanges();
 		initializeCustomerCodeFieldBehavior();
 		initializeUnitPricesAndQuantitiesTable();
 	}
 
+	@Override
+	protected void registerKeyBindings() {
+	}
+
+	@Override
+	protected void doOnBack() {
+		if (itemsTable.isEditing()) {
+			itemsTable.getCellEditor().cancelCellEditing();
+		}
+		getMagicFrame().switchToSalesRequisitionsListPanel();
+	}
+	
 	private void updateTotalAmountFieldWhenItemsTableChanges() {
 		itemsTable.getModel().addTableModelListener(new TableModelListener() {
 			
@@ -157,22 +167,8 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 		itemsTable.setSalesRequisition(salesRequisition);
 	}
 
-	private void registerKeyBindings() {
-		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME);
-		getActionMap().put(GO_TO_SALES_REQUISITIONS_LIST_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (itemsTable.isEditing()) {
-					itemsTable.getCellEditor().cancelCellEditing();
-				}
-				getMagicFrame().switchToSalesRequisitionsListPanel();
-			}
-		});
-	}
-	
-	private void layoutComponents() {
+	@Override
+	protected void layoutComponents() {
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
@@ -239,7 +235,6 @@ public class SalesRequisitionPanel extends MagicPanel implements ActionListener 
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		
-		customerCodeField = new MagicTextField();
 		customerCodeField.setPreferredSize(new Dimension(100, 20));
 		customerNameField = ComponentUtil.createLabel(190, "");
 		

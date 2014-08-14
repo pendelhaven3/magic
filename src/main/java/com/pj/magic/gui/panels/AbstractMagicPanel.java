@@ -22,6 +22,7 @@ public abstract class AbstractMagicPanel extends MagicPanel {
 		initializeComponents();
 		layoutComponents();
 		registerKeyBindings();
+		
 		registerBackKeyBinding();
 	}
 	

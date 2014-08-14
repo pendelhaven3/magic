@@ -2,7 +2,7 @@ package com.pj.magic.exception;
 
 import com.pj.magic.model.SalesRequisitionItem;
 
-public class NotEnoughStocksException extends Exception {
+public class NotEnoughStocksException extends RuntimeException {
 
 	private SalesRequisitionItem item;
 
