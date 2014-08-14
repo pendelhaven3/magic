@@ -9,7 +9,7 @@ public class MagicToolBarButton extends JButton {
 
 	public MagicToolBarButton(String imageName, String toolTipText) {
 		setPreferredSize(new Dimension(36, 36));
-		setIcon(new ImageIcon(getClass().getClassLoader().getResource("images\\" + imageName + ".png")));
+		setIcon(new ImageIcon(getClass().getResource("/images/" + imageName + ".png")));
 		setToolTipText(toolTipText);
 	}
 	
