@@ -58,6 +58,9 @@ public class MainMenuPanel extends MagicPanel {
 				case "Manufacturer List":
 					getMagicFrame().switchToManufacturerListPanel();
 					break;
+				case "Supplier List":
+					getMagicFrame().switchToSupplierListPanel();
+					break;
 				case "Sales Requisition":
 					getMagicFrame().switchToSalesRequisitionsListPanel();
 					break;
@@ -74,6 +77,7 @@ public class MainMenuPanel extends MagicPanel {
 		private String[][] data = new String[][] {
 				{"Product List"},
 				{"Manufacturer List"},
+				{"Supplier List"},
 				{"Sales Requisition"}, 
 				{"Sales Invoice"}
 		};

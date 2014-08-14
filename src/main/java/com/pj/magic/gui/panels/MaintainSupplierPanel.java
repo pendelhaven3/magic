@@ -21,20 +21,20 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.model.Manufacturer;
-import com.pj.magic.service.ManufacturerService;
+import com.pj.magic.model.Supplier;
+import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class MaintainManufacturerPanel extends AbstractMagicPanel {
+public class MaintainSupplierPanel extends AbstractMagicPanel {
 
-	private static final Logger logger = LoggerFactory.getLogger(MaintainManufacturerPanel.class);
+	private static final Logger logger = LoggerFactory.getLogger(MaintainSupplierPanel.class);
 	private static final String NEXT_FIELD_ACTION_NAME = "nextField";
 	private static final String SAVE_ACTION_NAME = "save";
 	
-	@Autowired private ManufacturerService manufacturerService;
+	@Autowired private SupplierService supplierService;
 	
-	private Manufacturer manufacturer;
+	private Supplier supplier;
 	private MagicTextField nameField;
 	private JButton saveButton;
 	
@@ -48,7 +48,7 @@ public class MaintainManufacturerPanel extends AbstractMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveManufacturer();
+				saveSupplier();
 			}
 		});
 		
@@ -61,17 +61,17 @@ public class MaintainManufacturerPanel extends AbstractMagicPanel {
 		focusOrder.add(saveButton);
 	}
 	
-	protected void saveManufacturer() {
-		if (!validateManufacturer()) {
+	protected void saveSupplier() {
+		if (!validateSupplier()) {
 			return;
 		}
 		
 		int confirm = showConfirmMessage("Save?");
 		if (confirm == JOptionPane.OK_OPTION) {
-			manufacturer.setName(nameField.getText());
+			supplier.setName(nameField.getText());
 			
 			try {
-				manufacturerService.save(manufacturer);
+				supplierService.save(supplier);
 				showMessage("Saved!");
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
@@ -80,7 +80,7 @@ public class MaintainManufacturerPanel extends AbstractMagicPanel {
 		}
 	}
 
-	private boolean validateManufacturer() {
+	private boolean validateSupplier() {
 		try {
 			validateMandatoryField(nameField, "Name");
 		} catch (ValidationException e) {
@@ -165,19 +165,19 @@ public class MaintainManufacturerPanel extends AbstractMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveManufacturer();
+				saveSupplier();
 			}
 		});
 	}
 
-	public void updateDisplay(Manufacturer manufacturer) {
-		this.manufacturer = manufacturer;
-		if (manufacturer.getId() == null) {
+	public void updateDisplay(Supplier supplier) {
+		this.supplier = supplier;
+		if (supplier.getId() == null) {
 			clearDisplay();
 			return;
 		}
 		
-		nameField.setText(manufacturer.getName());
+		nameField.setText(supplier.getName());
 	}
 
 	private void clearDisplay() {
@@ -186,7 +186,7 @@ public class MaintainManufacturerPanel extends AbstractMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToManufacturerListPanel();
+		getMagicFrame().switchToSupplierListPanel();
 	}
 
 }

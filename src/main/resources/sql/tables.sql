@@ -96,3 +96,10 @@ create table MANUFACTURER (
   constraint MANUFACTURER$PK primary key (ID),
   constraint MANUFACTURER$UK unique (NAME)
 );
+
+create table SUPPLIER (
+  ID integer auto_increment,
+  NAME varchar2(30) not null,
+  constraint SUPPLIER$PK primary key (ID),
+  constraint SUPPLIER$UK unique (NAME)
+);
