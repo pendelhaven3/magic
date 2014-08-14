@@ -133,7 +133,7 @@ public class SelectProductDialog extends MagicDialog {
 	}
 	
 	public void searchProducts(String productCode) {
-		List<Product> products = productService.getAllProducts();
+		List<Product> products = productService.getAllActiveProducts();
 		productsTableModel.setProducts(products);
 		
 		int selectedRow = 0;
@@ -143,7 +143,9 @@ public class SelectProductDialog extends MagicDialog {
 				selectedRow = products.indexOf(selectedProduct);
 			}
 		}
-		productsTable.changeSelection(selectedRow, 0, false, false);
+		if (!products.isEmpty()) {
+			productsTable.changeSelection(selectedRow, 0, false, false);
+		}
 	}
 	
 }

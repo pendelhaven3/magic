@@ -17,5 +17,7 @@ public interface ProductDao {
 	void save(Product product);
 	
 	Product findFirstWithCodeLike(String code);
+
+	List<Product> search(Product criteria);
 	
 }

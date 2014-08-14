@@ -46,5 +46,13 @@ public class ProductServiceImpl implements ProductService {
 	public Product findFirstProductWithCodeLike(String code) {
 		return productDao.findFirstWithCodeLike(code);
 	}
+
+	@Override
+	public List<Product> getAllActiveProducts() {
+		Product criteria = new Product();
+		criteria.setActive(true);
+
+		return productDao.search(criteria);
+	}
 	
 }

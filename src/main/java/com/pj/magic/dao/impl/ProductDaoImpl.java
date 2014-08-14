@@ -190,4 +190,14 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		}
 	}
 
+	@Override
+	public List<Product> search(Product criteria) {
+		StringBuilder sql = new StringBuilder(SIMPLE_SELECT_SQL);
+		sql.append(" and ACTIVE_IND = ?");
+		sql.append(" order by CODE"); // TODO: change to be more flexible when the need arises
+		
+		return getJdbcTemplate().query(sql.toString(), productRowMapper,
+				criteria.isActive() ? "Y" : "N");
+	}
+
 }
