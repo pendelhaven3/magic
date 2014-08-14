@@ -17,6 +17,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.InitializingBean;
 
 // TODO: Create post about this
+// TODO: Check again if relevant since context is now not closed
+
 /*
  * This class is part of a workaround to a strange behavior observed
  * where in a Swing application, on trigger of new transaction,

@@ -103,3 +103,10 @@ create table SUPPLIER (
   constraint SUPPLIER$PK primary key (ID),
   constraint SUPPLIER$UK unique (NAME)
 );
+
+create table PRODUCT_CATEGORY (
+  ID integer auto_increment,
+  NAME varchar2(50) not null,
+  constraint PRODUCT_CATEGORY$PK primary key (ID),
+  constraint PRODUCT_CATEGORY$UK unique (NAME)
+);

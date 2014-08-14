@@ -6,7 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JTable;
@@ -16,20 +15,22 @@ import javax.swing.table.AbstractTableModel;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MainMenuPanel extends MagicPanel {
+public class MainMenuPanel extends AbstractMagicPanel {
 
 	private static final String SELECT_MENU_ITEM_ACTION_NAME = "selectMenuItem";
 	
-	private JTable menuItemsTable;
+	private JTable table;
 	
-	@PostConstruct
-	public void initialize() {
-		layoutComponents();
-		focusOnComponentWhenThisPanelIsDisplayed(menuItemsTable);
-		registerKeyBindings();
+	@Override
+	protected void initializeComponents() {
+		table = new JTable(new MainMenuTableModel());
+		table.changeSelection(0, 0, false, false);
+		
+		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 
-	private void layoutComponents() {
+	@Override
+	protected void layoutComponents() {
 		setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -38,20 +39,20 @@ public class MainMenuPanel extends MagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		menuItemsTable = new JTable(new MainMenuTableModel());
-		menuItemsTable.setPreferredSize(new Dimension(200, 100));
-		menuItemsTable.setBorder(BorderFactory.createEmptyBorder());
-		menuItemsTable.setShowGrid(false);
-		add(menuItemsTable, c);
+		table.setPreferredSize(new Dimension(200, 100));
+		table.setBorder(BorderFactory.createEmptyBorder());
+		table.setShowGrid(false);
+		add(table, c);
 	}
-	
-	private void registerKeyBindings() {
-		menuItemsTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECT_MENU_ITEM_ACTION_NAME);
-		menuItemsTable.getActionMap().put(SELECT_MENU_ITEM_ACTION_NAME, new AbstractAction() {
+
+	@Override
+	protected void registerKeyBindings() {
+		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECT_MENU_ITEM_ACTION_NAME);
+		table.getActionMap().put(SELECT_MENU_ITEM_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				switch ((String)menuItemsTable.getValueAt(menuItemsTable.getSelectedRow(), 0)) {
+				switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
 				case "Product List":
 					getMagicFrame().switchToProductListPanel();
 					break;
@@ -60,6 +61,9 @@ public class MainMenuPanel extends MagicPanel {
 					break;
 				case "Supplier List":
 					getMagicFrame().switchToSupplierListPanel();
+					break;
+				case "Product Category List":
+					getMagicFrame().switchToProductCategoryListPanel();
 					break;
 				case "Sales Requisition":
 					getMagicFrame().switchToSalesRequisitionsListPanel();
@@ -71,15 +75,21 @@ public class MainMenuPanel extends MagicPanel {
 			}
 		});
 	}
-	
+
+	@Override
+	protected void doOnBack() {
+		// do nothing
+	}
+
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private String[][] data = new String[][] {
 				{"Product List"},
 				{"Manufacturer List"},
 				{"Supplier List"},
+				{"Product Category List"},
 				{"Sales Requisition"}, 
-				{"Sales Invoice"}
+				{"Sales Invoice"},
 		};
 		
 		@Override
@@ -99,8 +109,4 @@ public class MainMenuPanel extends MagicPanel {
 		
 	}
 
-	public void refreshDisplay() {
-		menuItemsTable.changeSelection(0, 0, false, false);
-	}
-	
 }

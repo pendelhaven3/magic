@@ -12,9 +12,11 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.panels.MainMenuPanel;
 import com.pj.magic.gui.panels.MaintainManufacturerPanel;
+import com.pj.magic.gui.panels.MaintainProductCategoryPanel;
 import com.pj.magic.gui.panels.MaintainProductPanel;
 import com.pj.magic.gui.panels.MaintainSupplierPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
+import com.pj.magic.gui.panels.ProductCategoryListPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.panels.SalesInvoicePanel;
@@ -23,6 +25,7 @@ import com.pj.magic.gui.panels.SalesRequisitionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.Supplier;
@@ -41,6 +44,8 @@ public class MagicFrame extends JFrame {
 	private static final String MAINTAIN_MANUFACTURER_PANEL = "MAINTAIN_MANUFACTURER_PANEL";
 	private static final String SUPPLIER_LIST_PANEL = "SUPPLIER_LIST_PANEL";
 	private static final String MAINTAIN_SUPPLIER_PANEL = "MAINTAIN_SUPPLIER_PANEL";
+	private static final String PRODUCT_CATEGORY_LIST_PANEL = "PRODUCT_CATEGORY_LIST_PANEL";
+	private static final String MAINTAIN_PRODUCT_CATEGORY_PANEL = "MAINTAIN_PRODUCT_CATEGORY_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
@@ -53,6 +58,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainManufacturerPanel maintainManufacturerPanel;
 	@Autowired private SupplierListPanel supplierListPanel;
 	@Autowired private MaintainSupplierPanel maintainSupplierPanel;
+	@Autowired private ProductCategoryListPanel productCategoryListPanel;
+	@Autowired private MaintainProductCategoryPanel maintainProductCategoryPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -77,6 +84,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(maintainManufacturerPanel, MAINTAIN_MANUFACTURER_PANEL);
 		panelHolder.add(supplierListPanel, SUPPLIER_LIST_PANEL);
 		panelHolder.add(maintainSupplierPanel, MAINTAIN_SUPPLIER_PANEL);
+		panelHolder.add(productCategoryListPanel, PRODUCT_CATEGORY_LIST_PANEL);
+		panelHolder.add(maintainProductCategoryPanel, MAINTAIN_PRODUCT_CATEGORY_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -84,7 +93,6 @@ public class MagicFrame extends JFrame {
 	
 	public void switchToMainMenuPanel() {
 		setTitle(constructTitle());
-		mainMenuPanel.refreshDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAIN_MENU_PANEL);
 	}
 	
@@ -181,6 +189,27 @@ public class MagicFrame extends JFrame {
 	private void switchToMaintainSupplierPanel(Supplier supplier) {
 		maintainSupplierPanel.updateDisplay(supplier);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_SUPPLIER_PANEL);
+	}
+
+	public void switchToProductCategoryListPanel() {
+		addPanelNameToTitle("Product Category List");
+		productCategoryListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRODUCT_CATEGORY_LIST_PANEL);
+	}
+	
+	public void switchToEditProductCategoryPanel(ProductCategory category) {
+		addPanelNameToTitle("Edit Product Category");
+		switchToMaintainProductCategoryPanel(category);
+	}
+
+	public void switchToAddNewProductCategoryPanel() {
+		addPanelNameToTitle("Add New Product Category");
+		switchToMaintainProductCategoryPanel(new ProductCategory());
+	}
+
+	private void switchToMaintainProductCategoryPanel(ProductCategory category) {
+		maintainProductCategoryPanel.updateDisplay(category);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PRODUCT_CATEGORY_PANEL);
 	}
 
 }
