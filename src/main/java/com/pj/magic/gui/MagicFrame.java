@@ -98,7 +98,7 @@ public class MagicFrame extends JFrame {
 	
 	public void switchToSalesRequisitionsListPanel() {
 		addPanelNameToTitle("Sales Requisitions List");
-		salesRequisitionsListPanel.refreshDisplay();
+		salesRequisitionsListPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_REQUISITIONS_LIST_PANEL);
 	}
 	
@@ -118,13 +118,13 @@ public class MagicFrame extends JFrame {
 
 	public void switchToSalesInvoicesListPanel() {
 		addPanelNameToTitle("Sales Invoices List");
-		salesInvoicesListPanel.refreshDisplay();
+		salesInvoicesListPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_INVOICES_LIST_PANEL);
 	}
 	
 	public void switchToSalesInvoicePanel(SalesInvoice salesInvoice) {
 		addPanelNameToTitle("Sales Invoice");
-		salesInvoicePanel.refreshDisplay(salesInvoice);
+		salesInvoicePanel.updateDisplay(salesInvoice);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_INVOICE_PANEL);
 	}
 	

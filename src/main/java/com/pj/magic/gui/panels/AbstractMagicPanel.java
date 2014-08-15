@@ -1,29 +1,40 @@
 package com.pj.magic.gui.panels;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.FocusManager;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
-// TODO: Make other panels use this
-public abstract class AbstractMagicPanel extends MagicPanel {
+import org.springframework.util.StringUtils;
+
+import com.pj.magic.exception.ValidationException;
+import com.pj.magic.gui.MagicFrame;
+
+public abstract class AbstractMagicPanel extends JPanel {
 
 	private List<JComponent> focusOrder;
 	
 	@PostConstruct
 	public void initialize() {
+		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		registerBackKeyBinding();
+		
 		initializeComponents();
 		layoutComponents();
 		registerKeyBindings();
-		
-		registerBackKeyBinding();
 	}
 	
 	protected abstract void initializeComponents();
@@ -79,4 +90,35 @@ public abstract class AbstractMagicPanel extends MagicPanel {
 	protected void showMessage(String message) {
 		JOptionPane.showMessageDialog(this, message);
 	}
+	
+	protected MagicFrame getMagicFrame() {
+		return (MagicFrame)SwingUtilities.getRoot(this);
+	}
+	
+	protected void focusOnComponentWhenThisPanelIsDisplayed(JComponent component) {
+		final JComponent target = component;
+		addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+				if (!target.isFocusable()) {
+					target.setFocusable(true);
+				}
+				target.requestFocusInWindow();
+			}
+		});
+	}
+	
+	protected void showErrorMessage(String message) {
+		JOptionPane.showMessageDialog(this, message, "Error Message", JOptionPane.ERROR_MESSAGE);
+	}
+	
+	protected void validateMandatoryField(JTextField field, String description) throws ValidationException {
+		if (StringUtils.isEmpty(field.getText())) {
+			showErrorMessage(description + " must be specified");
+			field.requestFocusInWindow();
+			throw new ValidationException();
+		}
+	}
+	
 }

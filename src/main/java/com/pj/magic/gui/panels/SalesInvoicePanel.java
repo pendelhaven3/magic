@@ -5,18 +5,14 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
-import javax.annotation.PostConstruct;
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -38,10 +34,9 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class SalesInvoicePanel extends MagicPanel implements ActionListener {
+public class SalesInvoicePanel extends AbstractMagicPanel implements ActionListener {
 
-	private static final String GO_TO_SALES_INVOICES_LIST_ACTION_NAME = "goToSalesRequisitionsList";
-	private static final String PRINT_ACTION_COMMAND = "printPreview";
+	private static final String PRINT_ACTION_COMMAND = "print";
 	
 	@Autowired private SalesInvoiceItemsTable itemsTable;
 	@Autowired private ProductService productService;
@@ -56,41 +51,38 @@ public class SalesInvoicePanel extends MagicPanel implements ActionListener {
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	
-	@PostConstruct
-	public void initialize() {
-		layoutComponents();
-		registerKeyBindings();
+	@Override
+	protected void initializeComponents() {
 		focusOnComponentWhenThisPanelIsDisplayed(itemsTable);
 		initializeUnitPricesAndQuantitiesTable();
 	}
 
-	public void refreshDisplay(SalesInvoice salesInvoice) {
+	public void updateDisplay(SalesInvoice salesInvoice) {
 		this.salesInvoice = salesInvoice;
 		salesInvoiceNumberField.setText(salesInvoice.getSalesInvoiceNumber().toString());
 		customerNameField.setText(salesInvoice.getCustomer().getCode() + " - " + salesInvoice.getCustomer().getName());
 		createDateField.setText(FormatterUtil.formatDate(salesInvoice.getPostDate()));
 		encoderField.setText(salesInvoice.getPostedBy());
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
-		totalAmountField.setText(salesInvoice.getTotalAmount().toString());
+		totalAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalAmount()));
 		itemsTable.setSalesInvoice(salesInvoice);
 		if (salesInvoice.hasItems()) {
 			itemsTable.changeSelection(0, 0, false, false);
 		}
 	}
 
-	private void registerKeyBindings() {
-		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), GO_TO_SALES_INVOICES_LIST_ACTION_NAME);
-		getActionMap().put(GO_TO_SALES_INVOICES_LIST_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getMagicFrame().switchToSalesInvoicesListPanel();
-			}
-		});
+	@Override
+	protected void registerKeyBindings() {
+		
 	}
 	
-	private void layoutComponents() {
+	@Override
+	protected void doOnBack() {
+		getMagicFrame().switchToSalesInvoicesListPanel();
+	}
+	
+	@Override
+	protected void layoutComponents() {
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;

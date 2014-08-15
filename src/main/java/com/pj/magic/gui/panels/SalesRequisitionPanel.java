@@ -152,6 +152,8 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 	
 	public void updateDisplay(SalesRequisition salesRequisition) {
 		this.salesRequisition = salesRequisitionService.getSalesRequisition(salesRequisition.getId());
+		salesRequisition = this.salesRequisition;
+		
 		salesRequisitionNumberField.setText(salesRequisition.getSalesRequisitionNumber().toString());
 		if (salesRequisition.getCustomer() == null) {
 			customerCodeField.setText("");

@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Date;
 
-import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
@@ -22,23 +21,20 @@ import com.pj.magic.model.User;
 import com.pj.magic.service.SalesRequisitionService;
 
 @Component
-public class SalesRequisitionListPanel extends MagicPanel {
+public class SalesRequisitionListPanel extends AbstractMagicPanel {
 	
 	private static final String OPEN_SELECT_ACTION_DIALOG_ACTION_NAME = "openSelectActionDialog";
-	private static final String BACK_ACTION_NAME = "back";
 	
 	@Autowired private SalesRequisitionsTable table;
 	@Autowired private SelectActionDialog selectActionDialog;
 	@Autowired private SalesRequisitionService salesRequisitionService;
 	
-	@PostConstruct
-	public void initialize() {
-		layoutComponents();
-		registerKeyBindings();
+	@Override
+	public void initializeComponents() {
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 
-	public void refreshDisplay() {
+	public void updateDisplay() {
 		table.update();
 	}
 
@@ -46,7 +42,8 @@ public class SalesRequisitionListPanel extends MagicPanel {
 		getMagicFrame().switchToSalesRequisitionPanel(salesRequisition);
 	}
 	
-	private void layoutComponents() {
+	@Override
+	protected void layoutComponents() {
 		setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -59,7 +56,8 @@ public class SalesRequisitionListPanel extends MagicPanel {
 		add(scrollPane, c);
 	}
 	
-	private void registerKeyBindings() {
+	@Override
+	protected void registerKeyBindings() {
 		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), OPEN_SELECT_ACTION_DIALOG_ACTION_NAME);
 		getActionMap().put(OPEN_SELECT_ACTION_DIALOG_ACTION_NAME, new AbstractAction() {
@@ -78,17 +76,11 @@ public class SalesRequisitionListPanel extends MagicPanel {
 					getMagicFrame().switchToSalesRequisitionPanel(salesRequisition);
 				}
 			}
-		});
-		
-		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), BACK_ACTION_NAME);
-		getActionMap().put(BACK_ACTION_NAME, new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getMagicFrame().switchToMainMenuPanel();
-			}
-			
-		});
+		});		
+	}
+	
+	@Override
+	protected void doOnBack() {
+		getMagicFrame().switchToMainMenuPanel();
 	}
 }

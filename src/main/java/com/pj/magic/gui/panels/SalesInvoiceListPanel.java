@@ -2,13 +2,8 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 
-import javax.annotation.PostConstruct;
-import javax.swing.AbstractAction;
 import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,21 +13,22 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.SalesInvoiceService;
 
 @Component
-public class SalesInvoiceListPanel extends MagicPanel {
+public class SalesInvoiceListPanel extends AbstractMagicPanel {
 
-	private static final String BACK_ACTION_NAME = "back";
-	
 	@Autowired private SalesInvoicesTable table;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	
-	@PostConstruct
-	public void initialize() {
-		layoutComponents();
-		registerKeyBindings();
+	@Override
+	protected void initializeComponents() {
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 
-	public void refreshDisplay() {
+	@Override
+	protected void doOnBack() {
+		getMagicFrame().switchToMainMenuPanel();
+	}
+	
+	public void updateDisplay() {
 		table.update();
 	}
 
@@ -40,7 +36,8 @@ public class SalesInvoiceListPanel extends MagicPanel {
 		getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
 	}
 	
-	private void layoutComponents() {
+	@Override
+	protected void layoutComponents() {
 		setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -53,17 +50,9 @@ public class SalesInvoiceListPanel extends MagicPanel {
 		add(scrollPane, c);
 	}
 	
-	private void registerKeyBindings() {
-		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), BACK_ACTION_NAME);
-		getActionMap().put(BACK_ACTION_NAME, new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getMagicFrame().switchToMainMenuPanel();
-			}
-			
-		});
+	@Override
+	protected void registerKeyBindings() {
+		
 	}
-	
+
 }
