@@ -1,5 +1,8 @@
 package com.pj.magic.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class Manufacturer {
 
 	private Long id;
@@ -21,4 +24,30 @@ public class Manufacturer {
 		this.name = name;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof Manufacturer)) {
+            return false;
+        }
+        Manufacturer other = (Manufacturer)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 }

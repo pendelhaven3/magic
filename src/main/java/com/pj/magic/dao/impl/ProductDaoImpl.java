@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -34,7 +35,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " join PRODUCT_PRICE b"
 			+ " 	on b.PRODUCT_ID = a.ID"
 			+ " left join MANUFACTURER c"
-			+ "		on c.ID and a.MANUFACTURER_ID"
+			+ "		on c.ID = a.MANUFACTURER_ID"
 			+ " where 1 = 1";
 	
 	private static final String GET_ALL_SQL = SIMPLE_SELECT_SQL
@@ -142,7 +143,8 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " UNIT_IND_CSE = ?, AVAIL_QTY_CSE = ?,"
 			+ " UNIT_IND_CTN = ?, AVAIL_QTY_CTN = ?,"
 			+ " UNIT_IND_DOZ = ?, AVAIL_QTY_DOZ = ?,"
-			+ " UNIT_IND_PCS = ?, AVAIL_QTY_PCS = ? where ID = ?";
+			+ " UNIT_IND_PCS = ?, AVAIL_QTY_PCS = ?,"
+			+ " MANUFACTURER_ID = ? where ID = ?";
 	
 	private void update(Product product) {
 		getJdbcTemplate().update(UPDATE_SQL, 
@@ -159,6 +161,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.getUnitQuantity(Unit.DOZEN),
 				product.hasUnit(Unit.PIECES) ? "Y" : "N",
 				product.getUnitQuantity(Unit.PIECES),
+				product.getManufacturer() != null ? product.getManufacturer().getId() : null,
 				product.getId());
 	}
 
@@ -167,7 +170,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
 			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS, "
 			+ " MANUFACTURER_ID)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Product product) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -190,7 +193,11 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				ps.setInt(11, product.getUnitQuantity(Unit.CARTON));
 				ps.setInt(12, product.getUnitQuantity(Unit.DOZEN));
 				ps.setInt(13, product.getUnitQuantity(Unit.PIECES));
-				ps.setLong(14, product.getManufacturer() != null ? product.getManufacturer().getId() : null);
+				if (product.getManufacturer() != null) {
+					ps.setLong(14, product.getManufacturer().getId());
+				} else {
+					ps.setNull(14, Types.INTEGER);
+				}
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db

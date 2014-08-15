@@ -9,8 +9,10 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -24,8 +26,10 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
+import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -37,6 +41,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	private static final String SAVE_ACTION_NAME = "save";
 	
 	@Autowired private ProductService productService;
+	@Autowired private ManufacturerService manufacturerService;
 	
 	private Product product;
 	private MagicTextField codeField;
@@ -52,6 +57,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	private MagicTextField cartonQuantityField;
 	private MagicTextField dozenQuantityField;
 	private MagicTextField piecesQuantityField;
+	private JComboBox<Manufacturer> manufacturerComboBox;
 	private JButton saveButton;
 	
 	@Override
@@ -93,6 +99,8 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		piecesQuantityField.setMaximumLength(6);
 		piecesQuantityField.setNumbersOnly(true);
 		
+		manufacturerComboBox = new JComboBox<>();
+		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
 			
@@ -112,6 +120,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		focusOrder.add(maximumStockLevelField);
 		focusOrder.add(minimumStockLevelField);
 		focusOrder.add(activeIndicatorCheckBox);
+		focusOrder.add(manufacturerComboBox);
 		focusOrder.add(caseUnitIndicatorCheckBox);
 		focusOrder.add(caseQuantityField);
 		focusOrder.add(cartonUnitIndicatorCheckBox);
@@ -155,13 +164,17 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 				product.addUnitQuantity(Unit.PIECES, Integer.parseInt(piecesQuantityField.getText()));
 			}
 			
+			product.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
+			
 			try {
 				productService.save(product);
 				showMessage("Saved!");
+				codeField.requestFocusInWindow();
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
 			}
+			
 		}
 	}
 
@@ -293,6 +306,22 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		add(activeIndicatorCheckBox, c);
+
+		currentRow++;
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		add(ComponentUtil.createLabel(150, "Manufacturer:"), c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		manufacturerComboBox.setPreferredSize(new Dimension(300, 20));
+		add(manufacturerComboBox, c);
 
 		currentRow++;
 		
@@ -464,6 +493,15 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			}
 		});
 		
+		manufacturerComboBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), NEXT_FIELD_ACTION_NAME);
+		manufacturerComboBox.getActionMap().put(NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				focusNextField();
+			}
+		});
+		
 		saveButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_ACTION_NAME);
 		saveButton.getActionMap().put(SAVE_ACTION_NAME, new AbstractAction() {
 			
@@ -483,8 +521,8 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		
 		codeField.setText(product.getCode());
 		descriptionField.setText(product.getDescription());
-		maximumStockLevelField.setText(product.getMaximumStockLevel().toString());
-		minimumStockLevelField.setText(product.getMinimumStockLevel().toString());
+		maximumStockLevelField.setText(String.valueOf(product.getMaximumStockLevel()));
+		minimumStockLevelField.setText(String.valueOf(product.getMinimumStockLevel()));
 		activeIndicatorCheckBox.setSelected(product.isActive());
 		caseUnitIndicatorCheckBox.setSelected(product.hasUnit(Unit.CASE));
 		if (caseUnitIndicatorCheckBox.isSelected()) {
@@ -510,6 +548,16 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		} else {
 			piecesQuantityField.setText(null);
 		}
+		
+		List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
+		manufacturerComboBox.setModel(
+				new DefaultComboBoxModel<>(manufacturers.toArray(new Manufacturer[manufacturers.size()])));
+		manufacturerComboBox.insertItemAt(null, 0);
+		if (product.getManufacturer() != null) {
+			manufacturerComboBox.setSelectedItem(product.getManufacturer());
+		} else {
+			manufacturerComboBox.setSelectedItem(null);
+		}
 	}
 
 	private void clearDisplay() {
@@ -526,6 +574,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		dozenQuantityField.setText(null);
 		piecesUnitIndicatorCheckBox.setSelected(false);
 		piecesQuantityField.setText(null);
+		manufacturerComboBox.setSelectedItem(null);
 	}
 
 	@Override

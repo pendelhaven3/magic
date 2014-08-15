@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -35,12 +36,16 @@ public class Bootstrap {
 	@Autowired private ProductService productService;
 	@Autowired private CustomerDao customerDao;
 	@Autowired private TransactionTemplate transactionTemplate;
+	
+	private ResourceBundle resources = ResourceBundle.getBundle("application");
 
 	@PostConstruct
 	public void initialize() throws Exception {
 		runScriptFile("tables.sql", "data.sql");
-		loadProductsFromExcelFile();
-		loadCustomersFromExcelFile();
+		if (Boolean.parseBoolean(resources.getString("development"))) {
+			loadProductsFromExcelFile();
+			loadCustomersFromExcelFile();
+		}
 	}
 	
 	private void runScriptFile(String... filenames) throws Exception {
