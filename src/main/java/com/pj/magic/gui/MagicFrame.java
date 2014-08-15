@@ -10,7 +10,9 @@ import javax.swing.JPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
+import com.pj.magic.gui.panels.MaintainCustomerPanel;
 import com.pj.magic.gui.panels.MaintainManufacturerPanel;
 import com.pj.magic.gui.panels.MaintainProductCategoryPanel;
 import com.pj.magic.gui.panels.MaintainProductPanel;
@@ -23,6 +25,7 @@ import com.pj.magic.gui.panels.SalesInvoicePanel;
 import com.pj.magic.gui.panels.SalesRequisitionListPanel;
 import com.pj.magic.gui.panels.SalesRequisitionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
@@ -46,6 +49,8 @@ public class MagicFrame extends JFrame {
 	private static final String MAINTAIN_SUPPLIER_PANEL = "MAINTAIN_SUPPLIER_PANEL";
 	private static final String PRODUCT_CATEGORY_LIST_PANEL = "PRODUCT_CATEGORY_LIST_PANEL";
 	private static final String MAINTAIN_PRODUCT_CATEGORY_PANEL = "MAINTAIN_PRODUCT_CATEGORY_PANEL";
+	private static final String CUSTOMER_LIST_PANEL = "CUSTOMER_LIST_PANEL";
+	private static final String MAINTAIN_CUSTOMER_PANEL = "MAINTAIN_CUSTOMER_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
@@ -60,6 +65,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainSupplierPanel maintainSupplierPanel;
 	@Autowired private ProductCategoryListPanel productCategoryListPanel;
 	@Autowired private MaintainProductCategoryPanel maintainProductCategoryPanel;
+	@Autowired private CustomerListPanel customerListPanel;
+	@Autowired private MaintainCustomerPanel maintainCustomerPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -86,6 +93,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(maintainSupplierPanel, MAINTAIN_SUPPLIER_PANEL);
 		panelHolder.add(productCategoryListPanel, PRODUCT_CATEGORY_LIST_PANEL);
 		panelHolder.add(maintainProductCategoryPanel, MAINTAIN_PRODUCT_CATEGORY_PANEL);
+		panelHolder.add(customerListPanel, CUSTOMER_LIST_PANEL);
+		panelHolder.add(maintainCustomerPanel, MAINTAIN_CUSTOMER_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -212,4 +221,25 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PRODUCT_CATEGORY_PANEL);
 	}
 
+	public void switchToCustomerListPanel() {
+		addPanelNameToTitle("Customer List");
+		customerListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, CUSTOMER_LIST_PANEL);
+	}
+
+	public void switchToEditCustomerPanel(Customer customer) {
+		addPanelNameToTitle("Edit Customer");
+		switchToMaintainCustomerPanel(customer);
+	}
+
+	public void switchToAddNewCustomerPanel() {
+		addPanelNameToTitle("Add New Customer");
+		switchToMaintainCustomerPanel(new Customer());
+	}
+
+	private void switchToMaintainCustomerPanel(Customer customer) {
+		maintainCustomerPanel.updateDisplay(customer);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_CUSTOMER_PANEL);
+	}
+	
 }

@@ -39,7 +39,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(200, 100));
+		table.setPreferredSize(new Dimension(200, 150));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		add(table, c);
@@ -71,6 +71,9 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				case "Sales Invoice":
 					getMagicFrame().switchToSalesInvoicesListPanel();
 					break;
+				case "Customer List":
+					getMagicFrame().switchToCustomerListPanel();
+					break;
 				}
 			}
 		});
@@ -90,6 +93,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				{"Product Category List"},
 				{"Sales Requisition"}, 
 				{"Sales Invoice"},
+				{"Customer List"}
 		};
 		
 		@Override

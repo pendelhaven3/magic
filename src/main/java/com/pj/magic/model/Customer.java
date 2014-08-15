@@ -1,14 +1,28 @@
 package com.pj.magic.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+@Entity
 public class Customer {
 
+	@Id
+	@GeneratedValue
 	private Long id;
 	private String code;
 	private String name;
 	private String address;
+	
+	@Column(name="CONTACT_PERSON")
+	private String contactPerson;
+	
+	@Column(name="CONTACT_NUMBER")
+	private String contactNumber;
 
 	public Customer() {
 	}
@@ -68,6 +82,22 @@ public class Customer {
 		return new EqualsBuilder()
 			.append(code, other.getCode())
 			.isEquals();
+	}
+
+	public String getContactPerson() {
+		return contactPerson;
+	}
+
+	public void setContactPerson(String contactPerson) {
+		this.contactPerson = contactPerson;
+	}
+
+	public String getContactNumber() {
+		return contactNumber;
+	}
+
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
 	}
 	
 }

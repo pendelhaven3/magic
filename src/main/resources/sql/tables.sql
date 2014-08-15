@@ -49,8 +49,10 @@ create table PRODUCT_PRICE (
 create table CUSTOMER (
   ID integer auto_increment,
   CODE varchar2(12) not null,
-  NAME varchar2(30) not null,
-  ADDRESS varchar2 (100) not null,
+  NAME varchar2(50) not null,
+  ADDRESS varchar2(100) null,
+  CONTACT_PERSON varchar2(100) null,
+  CONTACT_NUMBER varchar2(100) null,
   constraint CUSTOMER$PK primary key (ID),
   constraint CUSTOMER$UK unique (CODE)
 );
