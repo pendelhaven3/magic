@@ -1,3 +1,17 @@
+create table MANUFACTURER (
+  ID integer auto_increment,
+  NAME varchar2(50) not null,
+  constraint MANUFACTURER$PK primary key (ID),
+  constraint MANUFACTURER$UK unique (NAME)
+);
+
+create table PRODUCT_CATEGORY (
+  ID integer auto_increment,
+  NAME varchar2(50) not null,
+  constraint PRODUCT_CATEGORY$PK primary key (ID),
+  constraint PRODUCT_CATEGORY$UK unique (NAME)
+);
+
 create table PRODUCT (
   ID integer auto_increment,
   CODE varchar2(12) not null,
@@ -13,8 +27,12 @@ create table PRODUCT (
   AVAIL_QTY_CTN integer(4) default 0 not null,
   AVAIL_QTY_DOZ integer(4) default 0 not null,
   AVAIL_QTY_PCS integer(4) default 0 not null,
+  MANUFACTURER_ID integer null,
+  CATEGORY_ID integer null,
   constraint PRODUCT$PK primary key (ID),
-  constraint PRODUCT$CODE$UK unique (CODE)
+  constraint PRODUCT$CODE$UK unique (CODE),
+  constraint PRODUCT$FK foreign key (MANUFACTURER_ID) references MANUFACTURER (ID),
+  constraint PRODUCT$FK2 foreign key (CATEGORY_ID) references PRODUCT_CATEGORY (ID)
 );
 
 create table PRODUCT_PRICE (
@@ -88,25 +106,9 @@ create table USER (
   constraint USER$UK unique (USERNAME)
 );
 
-insert into USER (ID, USERNAME) values (1, 'PJ');  
-
-create table MANUFACTURER (
-  ID integer auto_increment,
-  NAME varchar2(30) not null,
-  constraint MANUFACTURER$PK primary key (ID),
-  constraint MANUFACTURER$UK unique (NAME)
-);
-
 create table SUPPLIER (
   ID integer auto_increment,
-  NAME varchar2(30) not null,
+  NAME varchar2(50) not null,
   constraint SUPPLIER$PK primary key (ID),
   constraint SUPPLIER$UK unique (NAME)
-);
-
-create table PRODUCT_CATEGORY (
-  ID integer auto_increment,
-  NAME varchar2(50) not null,
-  constraint PRODUCT_CATEGORY$PK primary key (ID),
-  constraint PRODUCT_CATEGORY$UK unique (NAME)
 );

@@ -18,6 +18,7 @@ public class Product implements Comparable<Product> {
 	private Integer minimumStockLevel;
 	private Integer maximumStockLevel;
 	private boolean active;
+	private Manufacturer manufacturer;
 
 	public Product() {
 	}
@@ -185,6 +186,14 @@ public class Product implements Comparable<Product> {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public Manufacturer getManufacturer() {
+		return manufacturer;
+	}
+
+	public void setManufacturer(Manufacturer manufacturer) {
+		this.manufacturer = manufacturer;
 	}
 	
 }
