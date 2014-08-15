@@ -15,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.UnitPrice;
@@ -27,9 +28,14 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			"select a.ID, CODE, DESCRIPTION, MAX_STOCK_LEVEL, MIN_STOCK_LEVEL, ACTIVE_IND,"
 			+ " UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
 			+ " UNIT_PRICE_CSE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
-			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS"
-			+ " from PRODUCT a, PRODUCT_PRICE b"
-			+ " where a.ID = b.PRODUCT_ID";
+			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS,"
+			+ " MANUFACTURER_ID, c.NAME MANUFACTURER_NAME"
+			+ " from PRODUCT a"
+			+ " join PRODUCT_PRICE b"
+			+ " 	on b.PRODUCT_ID = a.ID"
+			+ " left join MANUFACTURER c"
+			+ "		on c.ID and a.MANUFACTURER_ID"
+			+ " where 1 = 1";
 	
 	private static final String GET_ALL_SQL = SIMPLE_SELECT_SQL
 			+ " order by a.CODE";
@@ -72,6 +78,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			product.setMaximumStockLevel(rs.getInt("MAX_STOCK_LEVEL"));
 			product.setMinimumStockLevel(rs.getInt("MIN_STOCK_LEVEL"));
 			product.setActive("Y".equals(rs.getString("ACTIVE_IND")));
+			
 			if ("Y".equals(rs.getString("UNIT_IND_CSE"))) {
 				product.getUnits().add("CSE");
 				product.getUnitPrices().add(new UnitPrice("CSE", rs.getBigDecimal("UNIT_PRICE_CSE")));
@@ -92,6 +99,14 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.getUnitPrices().add(new UnitPrice("PCS", rs.getBigDecimal("UNIT_PRICE_PCS")));
 				product.getUnitQuantities().add(new UnitQuantity("PCS", rs.getInt("AVAIL_QTY_PCS")));
 			}
+			
+			if (rs.getLong("MANUFACTURER_ID") != 0) {
+				Manufacturer manufacturer = new Manufacturer();
+				manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
+				manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
+				product.setManufacturer(manufacturer);
+			}
+			
 			return product;
 		}
 		
@@ -148,8 +163,10 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	}
 
 	private static final String INSERT_SQL =
-			"insert into PRODUCT (CODE, DESCRIPTION, UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
-			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS)"
+			"insert into PRODUCT (CODE, DESCRIPTION, MAX_STOCK_LEVEL, MIN_STOCK_LEVEL, ACTIVE_IND,"
+			+ " UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
+			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS, "
+			+ " MANUFACTURER_ID)"
 			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Product product) {
@@ -162,14 +179,18 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setString(1, product.getCode());
 				ps.setString(2, product.getDescription());
-				ps.setString(3, product.hasUnit(Unit.CASE) ? "Y" : "N");
-				ps.setString(4, product.hasUnit(Unit.CARTON) ? "Y" : "N");
-				ps.setString(5, product.hasUnit(Unit.DOZEN) ? "Y" : "N");
-				ps.setString(6, product.hasUnit(Unit.PIECES) ? "Y" : "N");
-				ps.setInt(7, product.getUnitQuantity(Unit.CASE));
-				ps.setInt(8, product.getUnitQuantity(Unit.CARTON));
-				ps.setInt(9, product.getUnitQuantity(Unit.DOZEN));
-				ps.setInt(10, product.getUnitQuantity(Unit.PIECES));
+				ps.setInt(3, product.getMaximumStockLevel());
+				ps.setInt(4, product.getMinimumStockLevel());
+				ps.setString(5, product.isActive() ? "Y" : "N");
+				ps.setString(6, product.hasUnit(Unit.CASE) ? "Y" : "N");
+				ps.setString(7, product.hasUnit(Unit.CARTON) ? "Y" : "N");
+				ps.setString(8, product.hasUnit(Unit.DOZEN) ? "Y" : "N");
+				ps.setString(9, product.hasUnit(Unit.PIECES) ? "Y" : "N");
+				ps.setInt(10, product.getUnitQuantity(Unit.CASE));
+				ps.setInt(11, product.getUnitQuantity(Unit.CARTON));
+				ps.setInt(12, product.getUnitQuantity(Unit.DOZEN));
+				ps.setInt(13, product.getUnitQuantity(Unit.PIECES));
+				ps.setLong(14, product.getManufacturer() != null ? product.getManufacturer().getId() : null);
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db

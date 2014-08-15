@@ -41,7 +41,7 @@ public class MaintainManufacturerPanel extends AbstractMagicPanel {
 	@Override
 	protected void initializeComponents() {
 		nameField = new MagicTextField();
-		nameField.setMaximumLength(30);
+		nameField.setMaximumLength(50);
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -108,7 +108,7 @@ public class MaintainManufacturerPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		nameField.setPreferredSize(new Dimension(200, 20));
+		nameField.setPreferredSize(new Dimension(300, 20));
 		add(nameField, c);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;

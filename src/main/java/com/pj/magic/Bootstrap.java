@@ -38,20 +38,25 @@ public class Bootstrap {
 
 	@PostConstruct
 	public void initialize() throws Exception {
-		runScriptFile("tables.sql");
+		runScriptFile("tables.sql", "data.sql");
 		loadProductsFromExcelFile();
 		loadCustomersFromExcelFile();
 	}
 	
-	private void runScriptFile(String filename) throws Exception {
-		InputStream in = getClass().getClassLoader().getResourceAsStream("sql/" + filename);
+	private void runScriptFile(String... filenames) throws Exception {
 		try (
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			Connection conn = dataSource.getConnection();
 		) {
-			ScriptRunner runner = new ScriptRunner(conn);
-			runner.setLogWriter(null);
-			runner.runScript(reader);
+			for (String filename : filenames) {
+				InputStream in = getClass().getClassLoader().getResourceAsStream("sql/" + filename);
+				try (
+					BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+				) {
+					ScriptRunner runner = new ScriptRunner(conn);
+					runner.setLogWriter(null);
+					runner.runScript(reader);
+				}
+			}
 		}
 	}
 	
