@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.model.UnitQuantity;
@@ -25,26 +26,30 @@ import com.pj.magic.model.UnitQuantity;
 @Repository
 public class ProductDaoImpl extends MagicDao implements ProductDao {
 	
-	private static final String SIMPLE_SELECT_SQL =
+	// TODO: Rename other SIMPLE_SELECT_SQL to BASE_SQL
+	private static final String BASE_SQL =
 			"select a.ID, CODE, DESCRIPTION, MAX_STOCK_LEVEL, MIN_STOCK_LEVEL, ACTIVE_IND,"
 			+ " UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
 			+ " UNIT_PRICE_CSE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
 			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS,"
-			+ " MANUFACTURER_ID, c.NAME MANUFACTURER_NAME"
+			+ " MANUFACTURER_ID, c.NAME as MANUFACTURER_NAME,"
+			+ " CATEGORY_ID, d.NAME as CATEGORY_NAME"
 			+ " from PRODUCT a"
 			+ " join PRODUCT_PRICE b"
 			+ " 	on b.PRODUCT_ID = a.ID"
 			+ " left join MANUFACTURER c"
 			+ "		on c.ID = a.MANUFACTURER_ID"
+			+ " left join PRODUCT_CATEGORY d"
+			+ "		on d.ID = a.CATEGORY_ID"
 			+ " where 1 = 1";
 	
-	private static final String GET_ALL_SQL = SIMPLE_SELECT_SQL
+	private static final String GET_ALL_SQL = BASE_SQL
 			+ " order by a.CODE";
 
-	private static final String FIND_BY_CODE_SQL = SIMPLE_SELECT_SQL
+	private static final String FIND_BY_CODE_SQL = BASE_SQL
 			+ " and a.CODE = ?";
 
-	private static final String FIND_BY_ID_SQL = SIMPLE_SELECT_SQL
+	private static final String FIND_BY_ID_SQL = BASE_SQL
 			+ " and a.ID = ?";
 
 	private ProductRowMapper productRowMapper = new ProductRowMapper();
@@ -108,6 +113,13 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.setManufacturer(manufacturer);
 			}
 			
+			if (rs.getLong("CATEGORY_ID") != 0) {
+				ProductCategory category = new ProductCategory();
+				category.setId(rs.getLong("CATEGORY_ID"));
+				category.setName(rs.getString("CATEGORY_NAME"));
+				product.setCategory(category);
+			}
+			
 			return product;
 		}
 		
@@ -144,7 +156,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " UNIT_IND_CTN = ?, AVAIL_QTY_CTN = ?,"
 			+ " UNIT_IND_DOZ = ?, AVAIL_QTY_DOZ = ?,"
 			+ " UNIT_IND_PCS = ?, AVAIL_QTY_PCS = ?,"
-			+ " MANUFACTURER_ID = ? where ID = ?";
+			+ " MANUFACTURER_ID = ?, CATEGORY_ID = ? where ID = ?";
 	
 	private void update(Product product) {
 		getJdbcTemplate().update(UPDATE_SQL, 
@@ -162,6 +174,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.hasUnit(Unit.PIECES) ? "Y" : "N",
 				product.getUnitQuantity(Unit.PIECES),
 				product.getManufacturer() != null ? product.getManufacturer().getId() : null,
+				product.getCategory() != null ? product.getCategory().getId() : null,
 				product.getId());
 	}
 
@@ -169,8 +182,8 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			"insert into PRODUCT (CODE, DESCRIPTION, MAX_STOCK_LEVEL, MIN_STOCK_LEVEL, ACTIVE_IND,"
 			+ " UNIT_IND_CSE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
 			+ " AVAIL_QTY_CSE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS, "
-			+ " MANUFACTURER_ID)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " MANUFACTURER_ID, CATEGORY_ID)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Product product) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -196,7 +209,12 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				if (product.getManufacturer() != null) {
 					ps.setLong(14, product.getManufacturer().getId());
 				} else {
-					ps.setNull(14, Types.INTEGER);
+					ps.setNull(14, Types.NUMERIC);
+				}
+				if (product.getCategory() != null) {
+					ps.setLong(15, product.getCategory().getId());
+				} else {
+					ps.setNull(15, Types.NUMERIC);
 				}
 				return ps;
 			}
@@ -205,7 +223,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		product.setId(holder.getKey().longValue());
 	}
 
-	private static final String FIND_FIRST_WITH_CODE_LIKE_SQL = SIMPLE_SELECT_SQL
+	private static final String FIND_FIRST_WITH_CODE_LIKE_SQL = BASE_SQL
 			+ " and CODE like ? limit 1";
 			
 	
@@ -220,7 +238,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 
 	@Override
 	public List<Product> search(Product criteria) {
-		StringBuilder sql = new StringBuilder(SIMPLE_SELECT_SQL);
+		StringBuilder sql = new StringBuilder(BASE_SQL);
 		sql.append(" and ACTIVE_IND = ?");
 		sql.append(" order by CODE"); // TODO: change to be more flexible when the need arises
 		

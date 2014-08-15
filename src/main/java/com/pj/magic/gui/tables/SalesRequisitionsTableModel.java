@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.util.FormatterUtil;
 

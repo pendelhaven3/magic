@@ -116,6 +116,7 @@ public class Bootstrap {
 			product.addUnitQuantity(Unit.PIECES, (int)row.getCell(9).getNumericCellValue());
 			product.setUnitPrice(Unit.PIECES, new BigDecimal(row.getCell(13).getNumericCellValue()));
 		}
+		product.setActive(true);
 		return product;
 	}
 	

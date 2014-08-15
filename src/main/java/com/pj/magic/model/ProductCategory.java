@@ -5,6 +5,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 @Entity
 @Table(name="PRODUCT_CATEGORY")
 public class ProductCategory {
@@ -30,4 +33,30 @@ public class ProductCategory {
 		this.name = name;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof ProductCategory)) {
+            return false;
+        }
+        ProductCategory other = (ProductCategory)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 }

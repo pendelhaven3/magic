@@ -28,8 +28,10 @@ import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ManufacturerService;
+import com.pj.magic.service.ProductCategoryService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -42,6 +44,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	
 	@Autowired private ProductService productService;
 	@Autowired private ManufacturerService manufacturerService;
+	@Autowired private ProductCategoryService categoryService;
 	
 	private Product product;
 	private MagicTextField codeField;
@@ -58,6 +61,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	private MagicTextField dozenQuantityField;
 	private MagicTextField piecesQuantityField;
 	private JComboBox<Manufacturer> manufacturerComboBox;
+	private JComboBox<ProductCategory> categoryComboBox;
 	private JButton saveButton;
 	
 	@Override
@@ -100,6 +104,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		piecesQuantityField.setNumbersOnly(true);
 		
 		manufacturerComboBox = new JComboBox<>();
+		categoryComboBox = new JComboBox<>();
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -117,6 +122,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	protected void initializeFocusOrder(List<JComponent> focusOrder) {
 		focusOrder.add(codeField);
 		focusOrder.add(descriptionField);
+		focusOrder.add(categoryComboBox);
 		focusOrder.add(maximumStockLevelField);
 		focusOrder.add(minimumStockLevelField);
 		focusOrder.add(activeIndicatorCheckBox);
@@ -164,6 +170,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 				product.addUnitQuantity(Unit.PIECES, Integer.parseInt(piecesQuantityField.getText()));
 			}
 			
+			product.setCategory((ProductCategory)categoryComboBox.getSelectedItem());
 			product.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
 			
 			try {
@@ -265,6 +272,23 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
+		add(ComponentUtil.createLabel(100, "Category: "), c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		categoryComboBox.setPreferredSize(new Dimension(300, 20));
+		add(categoryComboBox, c);
+
+		currentRow++;
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
 		add(ComponentUtil.createLabel(150, "Maximum Stock Level: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
@@ -329,9 +353,25 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
+		add(ComponentUtil.createFiller(10, 10), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
 		c.gridwidth = 2;
 		c.anchor = GridBagConstraints.CENTER;
 		add(new JSeparator(), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		add(ComponentUtil.createFiller(10, 10), c);
 		
 		currentRow++;
 		
@@ -403,7 +443,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(100, "Available Quantity"), c);
+		panel.add(ComponentUtil.createLabel(100, "Available Qty"), c);
 		
 		currentRow++;
 		
@@ -502,6 +542,15 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			}
 		});
 		
+		categoryComboBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), NEXT_FIELD_ACTION_NAME);
+		categoryComboBox.getActionMap().put(NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				focusNextField();
+			}
+		});
+		
 		saveButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_ACTION_NAME);
 		saveButton.getActionMap().put(SAVE_ACTION_NAME, new AbstractAction() {
 			
@@ -558,6 +607,16 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		} else {
 			manufacturerComboBox.setSelectedItem(null);
 		}
+		
+		List<ProductCategory> categories = categoryService.getAllProductCategories();
+		categoryComboBox.setModel(
+				new DefaultComboBoxModel<>(categories.toArray(new ProductCategory[categories.size()])));
+		categoryComboBox.insertItemAt(null, 0);
+		if (product.getCategory() != null) {
+			categoryComboBox.setSelectedItem(product.getCategory());
+		} else {
+			categoryComboBox.setSelectedItem(null);
+		}
 	}
 
 	private void clearDisplay() {
@@ -575,6 +634,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		piecesUnitIndicatorCheckBox.setSelected(false);
 		piecesQuantityField.setText(null);
 		manufacturerComboBox.setSelectedItem(null);
+		categoryComboBox.setSelectedItem(null);
 	}
 
 	@Override

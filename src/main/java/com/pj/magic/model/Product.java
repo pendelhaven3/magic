@@ -19,6 +19,7 @@ public class Product implements Comparable<Product> {
 	private int maximumStockLevel = 0;
 	private boolean active;
 	private Manufacturer manufacturer;
+	private ProductCategory category;
 
 	public Product() {
 	}
@@ -194,6 +195,14 @@ public class Product implements Comparable<Product> {
 
 	public void setMaximumStockLevel(int maximumStockLevel) {
 		this.maximumStockLevel = maximumStockLevel;
+	}
+
+	public ProductCategory getCategory() {
+		return category;
+	}
+
+	public void setCategory(ProductCategory category) {
+		this.category = category;
 	}
 	
 }
