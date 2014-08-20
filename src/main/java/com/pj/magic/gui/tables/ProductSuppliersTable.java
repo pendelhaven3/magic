@@ -19,6 +19,8 @@ import com.pj.magic.service.ProductService;
 @Component
 public class ProductSuppliersTable extends JTable {
 
+	public static final int BUTTON_COLUMN_INDEX = 1;
+	
 	@Autowired private ProductService productService;
 	@Autowired private ProductSuppliersTableModel tableModel;
 	

@@ -2,6 +2,8 @@ package com.pj.magic.gui.dialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +43,25 @@ public class SelectUnitDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectedUnit = (String)unitsTable.getValueAt(unitsTable.getSelectedRow(), UNIT_COLUMN_INDEX);
-				setVisible(false);
+				selectUnit();
 			}
 		});
+		
+		unitsTable.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					selectUnit();
+				}
+			}
+		});
+		
+	}
+
+	protected void selectUnit() {
+		selectedUnit = (String)unitsTable.getValueAt(unitsTable.getSelectedRow(), UNIT_COLUMN_INDEX);
+		setVisible(false);
 	}
 
 	public void setUnits(List<String> units) {

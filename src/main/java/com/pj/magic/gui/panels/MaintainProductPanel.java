@@ -137,7 +137,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (productSuppliersTable.getSelectedColumn() == 1) {
+				if (productSuppliersTable.getSelectedColumn() == ProductSuppliersTable.BUTTON_COLUMN_INDEX) {
 					deleteProductSupplier();
 				}
 			}

@@ -2,6 +2,8 @@ package com.pj.magic.gui.dialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JScrollPane;
@@ -19,6 +21,7 @@ public class SelectActionDialog extends MagicDialog {
 	private static final int ACTION_COLUMN_INDEX = 0;
 	
 	private String selectedAction;
+	private JTable table;
 	
 	public SelectActionDialog() {
 		setSize(180, 150);
@@ -28,7 +31,7 @@ public class SelectActionDialog extends MagicDialog {
 	}
 
 	private void addContents() {
-		final JTable table = new JTable(new ActionsTableModel());
+		table = new JTable(new ActionsTableModel());
 		table.setTableHeader(null);
 		table.setRowSelectionInterval(0, 0);
 		
@@ -37,13 +40,28 @@ public class SelectActionDialog extends MagicDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectedAction = (String)table.getValueAt(table.getSelectedRow(), ACTION_COLUMN_INDEX);
-				setVisible(false);
+				selectAction();
 			}
+		});
+		
+		table.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					selectAction();
+				}
+			}
+			
 		});
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane);	
+	}
+	
+	protected void selectAction() {
+		selectedAction = (String)table.getValueAt(table.getSelectedRow(), ACTION_COLUMN_INDEX);
+		setVisible(false);
 	}
 
 	public String getSelectedAction() {
