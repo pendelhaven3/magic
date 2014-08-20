@@ -16,6 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
@@ -26,9 +27,12 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.dialog.SelectSupplierDialog;
+import com.pj.magic.gui.tables.ProductSuppliersTable;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ProductCategoryService;
@@ -45,6 +49,8 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	@Autowired private ProductService productService;
 	@Autowired private ManufacturerService manufacturerService;
 	@Autowired private ProductCategoryService categoryService;
+	@Autowired private ProductSuppliersTable productSuppliersTable;
+	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	
 	private Product product;
 	private MagicTextField codeField;
@@ -63,6 +69,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	private JComboBox<Manufacturer> manufacturerComboBox;
 	private JComboBox<ProductCategory> categoryComboBox;
 	private JButton saveButton;
+	private JButton addSupplierButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -115,7 +122,27 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			}
 		});
 		
+		addSupplierButton = new JButton("Add Supplier");
+		addSupplierButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addProductSupplier();
+			}
+		});
+		
 		focusOnComponentWhenThisPanelIsDisplayed(codeField);
+	}
+
+	protected void addProductSupplier() {
+		selectSupplierDialog.searchAvailableSuppliers(product);
+		selectSupplierDialog.setVisible(true);
+		
+		Supplier supplier = selectSupplierDialog.getSelectedSupplier();
+		if (supplier != null) {
+			productService.addProductSupplier(product, supplier);
+			productSuppliersTable.updateDisplay(product);
+		}
 	}
 
 	@Override
@@ -242,10 +269,24 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		codeField.setPreferredSize(new Dimension(100, 20));
 		add(codeField, c);
 		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createFiller(50, 20), c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(150, "Suppliers:"), c);
+		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 1.0; // right space filler
 		c.weighty = 0.0;
-		c.gridx = 2;
+		c.gridx = 4;
 		c.gridy = currentRow;
 		add(ComponentUtil.createFiller(1, 1), c);
 		
@@ -266,12 +307,25 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		descriptionField.setPreferredSize(new Dimension(300, 20));
 		add(descriptionField, c);
 
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.gridheight = 4;
+		c.anchor = GridBagConstraints.NORTHWEST;
+		JScrollPane scrollPane = new JScrollPane(productSuppliersTable);
+		scrollPane.setPreferredSize(new Dimension(350, 110));
+		add(scrollPane, c);
+		
 		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.gridheight = 1;
 		add(ComponentUtil.createLabel(100, "Category: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
@@ -331,6 +385,14 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		add(activeIndicatorCheckBox, c);
 
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.EAST;
+		add(addSupplierButton, c);
+		
 		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
@@ -617,6 +679,8 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		} else {
 			categoryComboBox.setSelectedItem(null);
 		}
+		
+		productSuppliersTable.updateDisplay(product);
 	}
 
 	private void clearDisplay() {

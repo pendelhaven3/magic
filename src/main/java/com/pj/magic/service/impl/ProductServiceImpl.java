@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ProductPriceDao;
+import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.service.ProductService;
 
 @Service
@@ -16,6 +18,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Autowired private ProductDao productDao;
 	@Autowired private ProductPriceDao productPriceDao;
+	@Autowired private SupplierDao supplierDao;
 	
 	@Override
 	public List<Product> getAllProducts() {
@@ -53,6 +56,22 @@ public class ProductServiceImpl implements ProductService {
 		criteria.setActive(true);
 
 		return productDao.search(criteria);
+	}
+
+	@Transactional
+	@Override
+	public void addProductSupplier(Product product, Supplier supplier) {
+		supplierDao.saveSupplierProduct(supplier, product);
+	}
+	
+	@Override
+	public List<Supplier> getProductSuppliers(Product product) {
+		return supplierDao.findAllByProduct(product);
+	}
+
+	@Override
+	public List<Supplier> getAvailableSuppliers(Product product) {
+		return supplierDao.findAllNotHavingProduct(product);
 	}
 	
 }

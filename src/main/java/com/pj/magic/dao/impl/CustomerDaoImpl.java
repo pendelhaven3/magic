@@ -20,10 +20,10 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 	private static final String BASE_SQL =
 			"select ID, CODE, NAME, ADDRESS, CONTACT_PERSON, CONTACT_NUMBER from CUSTOMER";
 	
-	private CustomerRowMapper customerRowMapper = new CustomerRowMapper();
-	
 	@PersistenceContext
 	private EntityManager entityManager;
+	
+	private CustomerRowMapper customerRowMapper = new CustomerRowMapper();
 	
 	@Override
 	public void save(Customer customer) {

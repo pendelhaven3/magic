@@ -15,12 +15,13 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SupplierDao;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
 
 @Repository
 public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	
-	private static final String SIMPLE_SELECT_SQL = "select ID, NAME from SUPPLIER";
+	private static final String BASE_SQL = "select ID, NAME from SUPPLIER a";
 	
 	private SupplierRowMapper supplierRowMapper = new SupplierRowMapper();
 	
@@ -57,7 +58,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 		getJdbcTemplate().update(UPDATE_SQL, supplier.getName(), supplier.getId());
 	}
 
-	private static final String GET_SQL = SIMPLE_SELECT_SQL + " where id = ?";
+	private static final String GET_SQL = BASE_SQL + " where id = ?";
 	
 	@Override
 	public Supplier get(long id) {
@@ -68,7 +69,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 		}
 	}
 
-	private static final String GET_ALL_SQL = SIMPLE_SELECT_SQL + " order by NAME";
+	private static final String GET_ALL_SQL = BASE_SQL + " order by NAME";
 	
 	@Override
 	public List<Supplier> getAll() {
@@ -85,6 +86,38 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 			return supplier;
 		}
 		
+	}
+
+	private static final String FIND_ALL_BY_PRODUCT = BASE_SQL
+			+ " join SUPPLIER_PRODUCT b"
+			+ "		on b.SUPPLIER_ID = a.ID"
+			+ " where b.PRODUCT_ID = ?"
+			+ " order by a.NAME";
+	
+	@Override
+	public List<Supplier> findAllByProduct(Product product) {
+		return getJdbcTemplate().query(FIND_ALL_BY_PRODUCT, supplierRowMapper, product.getId());
+	}
+
+	private static final String SAVE_PRODUCT_SUPPLIER_SQL =
+			" insert into SUPPLIER_PRODUCT (SUPPLIER_ID, PRODUCT_ID) values (?, ?)";
+	
+	@Override
+	public void saveSupplierProduct(Supplier supplier, Product product) {
+		getJdbcTemplate().update(SAVE_PRODUCT_SUPPLIER_SQL, supplier.getId(), product.getId());
+	}
+	
+	private static final String FIND_ALL_NOT_HAVING_PRODUCT_SQL = BASE_SQL +
+			" where not exists("
+			+ "		select 1"
+			+ "		from SUPPLIER_PRODUCT b"
+			+ "		where b.SUPPLIER_ID = a.ID"
+			+ "		and b.PRODUCT_ID = ?"
+			+ ")";
+
+	@Override
+	public List<Supplier> findAllNotHavingProduct(Product product) {
+		return getJdbcTemplate().query(FIND_ALL_NOT_HAVING_PRODUCT_SQL, supplierRowMapper, product.getId());
 	}
 	
 }
