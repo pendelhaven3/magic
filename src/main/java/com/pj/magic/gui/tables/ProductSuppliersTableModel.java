@@ -31,7 +31,11 @@ public class ProductSuppliersTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 1;
+		return 2;
+	}
+
+	public Supplier getSupplier(int rowIndex) {
+		return suppliers.get(rowIndex);
 	}
 	
 }

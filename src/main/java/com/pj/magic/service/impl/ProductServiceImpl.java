@@ -73,5 +73,10 @@ public class ProductServiceImpl implements ProductService {
 	public List<Supplier> getAvailableSuppliers(Product product) {
 		return supplierDao.findAllNotHavingProduct(product);
 	}
+
+	@Override
+	public void deleteProductSupplier(Product product, Supplier supplier) {
+		supplierDao.deleteSupplierProduct(supplier, product);
+	}
 	
 }

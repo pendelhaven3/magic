@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -131,7 +133,28 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			}
 		});
 		
+		productSuppliersTable.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (productSuppliersTable.getSelectedColumn() == 1) {
+					deleteProductSupplier();
+				}
+			}
+			
+		});
+		
 		focusOnComponentWhenThisPanelIsDisplayed(codeField);
+	}
+
+	protected void deleteProductSupplier() {
+		int confirm = showConfirmMessage("Delete?");
+		if (confirm == JOptionPane.OK_OPTION) {
+			int selectedRow = productSuppliersTable.getSelectedRow();
+			Supplier supplier = productSuppliersTable.getSupplier(selectedRow);
+			productService.deleteProductSupplier(product, supplier);
+			productSuppliersTable.updateDisplay(product);
+		}
 	}
 
 	protected void addProductSupplier() {
@@ -203,6 +226,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			try {
 				productService.save(product);
 				showMessage("Saved!");
+				updateDisplay(product);
 				codeField.requestFocusInWindow();
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
@@ -681,6 +705,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		}
 		
 		productSuppliersTable.updateDisplay(product);
+		addSupplierButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -699,6 +724,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		piecesQuantityField.setText(null);
 		manufacturerComboBox.setSelectedItem(null);
 		categoryComboBox.setSelectedItem(null);
+		addSupplierButton.setEnabled(false);
 	}
 
 	@Override

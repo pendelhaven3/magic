@@ -24,5 +24,7 @@ public interface ProductService {
 	List<Supplier> getProductSuppliers(Product product);
 
 	List<Supplier> getAvailableSuppliers(Product product);
+
+	void deleteProductSupplier(Product product, Supplier supplier);
 	
 }

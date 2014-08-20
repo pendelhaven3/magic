@@ -119,5 +119,13 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	public List<Supplier> findAllNotHavingProduct(Product product) {
 		return getJdbcTemplate().query(FIND_ALL_NOT_HAVING_PRODUCT_SQL, supplierRowMapper, product.getId());
 	}
+
+	private static final String DELETE_SUPPLIER_PRODUCT_SQL =
+			" delete from SUPPLIER_PRODUCT where SUPPLIER_ID = ? and PRODUCT_ID = ?";
+	
+	@Override
+	public void deleteSupplierProduct(Supplier supplier, Product product) {
+		getJdbcTemplate().update(DELETE_SUPPLIER_PRODUCT_SQL, supplier.getId(), product.getId());
+	}
 	
 }

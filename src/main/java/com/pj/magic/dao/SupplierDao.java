@@ -18,5 +18,7 @@ public interface SupplierDao {
 	void saveSupplierProduct(Supplier supplier, Product product);
 	
 	List<Supplier> findAllNotHavingProduct(Product product);
+
+	void deleteSupplierProduct(Supplier supplier, Product product);
 	
 }
