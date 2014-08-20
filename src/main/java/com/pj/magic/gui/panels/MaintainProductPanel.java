@@ -648,6 +648,8 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	}
 
 	public void updateDisplay(Product product) {
+		updateComboBoxes();
+		
 		this.product = product;
 		if (!product.isValid()) {
 			clearDisplay();
@@ -684,20 +686,12 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			piecesQuantityField.setText(null);
 		}
 		
-		List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
-		manufacturerComboBox.setModel(
-				new DefaultComboBoxModel<>(manufacturers.toArray(new Manufacturer[manufacturers.size()])));
-		manufacturerComboBox.insertItemAt(null, 0);
 		if (product.getManufacturer() != null) {
 			manufacturerComboBox.setSelectedItem(product.getManufacturer());
 		} else {
 			manufacturerComboBox.setSelectedItem(null);
 		}
 		
-		List<ProductCategory> categories = categoryService.getAllProductCategories();
-		categoryComboBox.setModel(
-				new DefaultComboBoxModel<>(categories.toArray(new ProductCategory[categories.size()])));
-		categoryComboBox.insertItemAt(null, 0);
 		if (product.getCategory() != null) {
 			categoryComboBox.setSelectedItem(product.getCategory());
 		} else {
@@ -706,6 +700,18 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		
 		productSuppliersTable.updateDisplay(product);
 		addSupplierButton.setEnabled(true);
+	}
+
+	private void updateComboBoxes() {
+		List<ProductCategory> categories = categoryService.getAllProductCategories();
+		categoryComboBox.setModel(
+				new DefaultComboBoxModel<>(categories.toArray(new ProductCategory[categories.size()])));
+		categoryComboBox.insertItemAt(null, 0);
+		
+		List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
+		manufacturerComboBox.setModel(
+				new DefaultComboBoxModel<>(manufacturers.toArray(new Manufacturer[manufacturers.size()])));
+		manufacturerComboBox.insertItemAt(null, 0);
 	}
 
 	private void clearDisplay() {

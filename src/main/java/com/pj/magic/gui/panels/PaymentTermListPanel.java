@@ -5,11 +5,14 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -19,26 +22,27 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.tables.ProductCategoriesTableModel;
-import com.pj.magic.model.ProductCategory;
-import com.pj.magic.service.ProductCategoryService;
+import com.pj.magic.gui.tables.PaymentTermsTableModel;
+import com.pj.magic.model.PaymentTerm;
+import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class ProductCategoryListPanel extends AbstractMagicPanel implements ActionListener {
+public class PaymentTermListPanel extends AbstractMagicPanel implements ActionListener {
 
-	private static final String EDIT_PRODUCT_CATEGORY_ACTION_NAME = "editProductCategory";
-	private static final String NEW_PRODUCT_CATEGORY_ACTION_NAME = "newProductCategory";
+	private static final String EDIT_PAYMENT_TERM_ACTION_NAME = "editPaymentTerm";
+	private static final String NEW_PAYMENT_TERM_ACTION_NAME = "newPaymentTerm";
+	private static final String BACK_ACTION_COMMAND_NAME = "back";
 	
-	@Autowired private ProductCategoryService productCategoryService;
+	@Autowired private PaymentTermService paymentTermService;
 	
 	private JTable table;
-	private ProductCategoriesTableModel tableModel = new ProductCategoriesTableModel();
+	private PaymentTermsTableModel tableModel = new PaymentTermsTableModel();
 	
 	public void updateDisplay() {
-		List<ProductCategory> categories = productCategoryService.getAllProductCategories();
-		tableModel.setProductCategories(categories);
-		if (!categories.isEmpty()) {
+		List<PaymentTerm> paymentTerms = paymentTermService.getAllPaymentTerms();
+		tableModel.setPaymentTerms(paymentTerms);
+		if (!paymentTerms.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
 	}
@@ -84,38 +88,60 @@ public class ProductCategoryListPanel extends AbstractMagicPanel implements Acti
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new MagicToolBar();
 		
-		JButton postButton = new MagicToolBarButton("plus", "New");
-		postButton.setActionCommand(NEW_PRODUCT_CATEGORY_ACTION_NAME);
-		postButton.addActionListener(this);
+		JButton backButton = new MagicToolBarButton("back", "Back");
+		backButton.setActionCommand(BACK_ACTION_COMMAND_NAME);
+		backButton.addActionListener(this);
+		toolBar.add(backButton);
 		
+		JButton postButton = new MagicToolBarButton("plus", "New");
+		postButton.setActionCommand(NEW_PAYMENT_TERM_ACTION_NAME);
+		postButton.addActionListener(this);
 		toolBar.add(postButton);
+		
 		return toolBar;
 	}
 
 	@Override
 	protected void registerKeyBindings() {
-		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), EDIT_PRODUCT_CATEGORY_ACTION_NAME);
-		table.getActionMap().put(EDIT_PRODUCT_CATEGORY_ACTION_NAME, new AbstractAction() {
+		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), EDIT_PAYMENT_TERM_ACTION_NAME);
+		table.getActionMap().put(EDIT_PAYMENT_TERM_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ProductCategory category = tableModel.getProductCategory(table.getSelectedRow());
-				getMagicFrame().switchToEditProductCategoryPanel(category);
+				selectPaymentTerm();
 			}
 		});
+		
+		table.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					selectPaymentTerm();
+				}
+			}
+		});
+	}
+
+	protected void selectPaymentTerm() {
+		PaymentTerm paymentTerm = tableModel.getPaymentTerm(table.getSelectedRow());
+		getMagicFrame().switchToEditPaymentTermPanel(paymentTerm);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
-		case NEW_PRODUCT_CATEGORY_ACTION_NAME:
-			switchToNewProductCategoryPanel();
+		case NEW_PAYMENT_TERM_ACTION_NAME:
+			switchToNewPaymentTermPanel();
+			break;
+		case BACK_ACTION_COMMAND_NAME:
+			doOnBack();
 			break;
 		}
 	}
 
-	private void switchToNewProductCategoryPanel() {
-		getMagicFrame().switchToAddNewProductCategoryPanel();
+	private void switchToNewPaymentTermPanel() {
+		getMagicFrame().switchToAddNewPaymentTermPanel();
 	}
 
 	@Override

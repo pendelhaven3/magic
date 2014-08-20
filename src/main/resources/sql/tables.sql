@@ -122,4 +122,11 @@ create table SUPPLIER_PRODUCT (
   constraint SUPPLIER_PRODUCT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),
   constraint SUPPLIER_PRODUCT$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
-  
+ 
+create table PAYMENT_TERM (
+  ID integer auto_increment,
+  NAME varchar2(50),
+  NUMBER_OF_DAYS integer(3),
+  constraint PAYMENT_TERM$PK primary key (ID),
+  constraint PAYMENT_tERM$UK unique (NAME)
+);

@@ -14,10 +14,12 @@ import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
 import com.pj.magic.gui.panels.MaintainCustomerPanel;
 import com.pj.magic.gui.panels.MaintainManufacturerPanel;
+import com.pj.magic.gui.panels.MaintainPaymentTermPanel;
 import com.pj.magic.gui.panels.MaintainProductCategoryPanel;
 import com.pj.magic.gui.panels.MaintainProductPanel;
 import com.pj.magic.gui.panels.MaintainSupplierPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
+import com.pj.magic.gui.panels.PaymentTermListPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
@@ -27,6 +29,7 @@ import com.pj.magic.gui.panels.SalesRequisitionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
+import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.SalesInvoice;
@@ -51,6 +54,8 @@ public class MagicFrame extends JFrame {
 	private static final String MAINTAIN_PRODUCT_CATEGORY_PANEL = "MAINTAIN_PRODUCT_CATEGORY_PANEL";
 	private static final String CUSTOMER_LIST_PANEL = "CUSTOMER_LIST_PANEL";
 	private static final String MAINTAIN_CUSTOMER_PANEL = "MAINTAIN_CUSTOMER_PANEL";
+	private static final String PAYMENT_TERM_LIST_PANEL = "PAYMENT_TERM_LIST_PANEL";
+	private static final String MAINTAIN_PAYMENT_TERM_PANEL = "MAINTAIN_PAYMENT_TERM_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
@@ -67,6 +72,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainProductCategoryPanel maintainProductCategoryPanel;
 	@Autowired private CustomerListPanel customerListPanel;
 	@Autowired private MaintainCustomerPanel maintainCustomerPanel;
+	@Autowired private PaymentTermListPanel paymentTermListPanel;
+	@Autowired private MaintainPaymentTermPanel maintainPaymentTermPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -95,6 +102,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(maintainProductCategoryPanel, MAINTAIN_PRODUCT_CATEGORY_PANEL);
 		panelHolder.add(customerListPanel, CUSTOMER_LIST_PANEL);
 		panelHolder.add(maintainCustomerPanel, MAINTAIN_CUSTOMER_PANEL);
+		panelHolder.add(paymentTermListPanel, PAYMENT_TERM_LIST_PANEL);
+		panelHolder.add(maintainPaymentTermPanel, MAINTAIN_PAYMENT_TERM_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -240,6 +249,27 @@ public class MagicFrame extends JFrame {
 	private void switchToMaintainCustomerPanel(Customer customer) {
 		maintainCustomerPanel.updateDisplay(customer);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_CUSTOMER_PANEL);
+	}
+
+	public void switchToPaymentTermListPanel() {
+		addPanelNameToTitle("Payment Term List");
+		paymentTermListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAYMENT_TERM_LIST_PANEL);
+	}
+	
+	public void switchToEditPaymentTermPanel(PaymentTerm paymentTerm) {
+		addPanelNameToTitle("Edit Payment Term");
+		switchToMaintainPaymentTermPanel(paymentTerm);
+	}
+
+	public void switchToAddNewPaymentTermPanel() {
+		addPanelNameToTitle("Add New Payment Term");
+		switchToMaintainPaymentTermPanel(new PaymentTerm());
+	}
+
+	private void switchToMaintainPaymentTermPanel(PaymentTerm paymentTerm) {
+		maintainPaymentTermPanel.updateDisplay(paymentTerm);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PAYMENT_TERM_PANEL);
 	}
 	
 }
