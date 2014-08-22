@@ -3,6 +3,7 @@ package com.pj.magic.dao.impl;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ProductPriceDao;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 
@@ -23,6 +24,25 @@ public class ProductPriceDaoImpl extends MagicDao implements ProductPriceDao {
 				product.getUnitPrice(Unit.CASE), 
 				product.getUnitPrice(Unit.TIE), product.getUnitPrice(Unit.CARTON),
 				product.getUnitPrice(Unit.DOZEN), product.getUnitPrice(Unit.PIECES));
+	}
+
+	private static final String UPDATE_UNIT_PRICES_SQL =
+			"update PRODUCT_PRICE"
+			+ " set UNIT_PRICE_CSE = ?, UNIT_PRICE_TIE = ?, UNIT_PRICE_CTN = ?,"
+			+ " UNIT_PRICE_DOZ = ?, UNIT_PRICE_PCS = ?"
+			+ " where PRODUCT_ID = ? and PRICING_SCHEME_ID = ?";
+
+	@Override
+	public void updateUnitPrices(Product product, PricingScheme pricingScheme) {
+		getJdbcTemplate().update(UPDATE_UNIT_PRICES_SQL,
+				product.getUnitPrice(Unit.CASE),
+				product.getUnitPrice(Unit.TIE),
+				product.getUnitPrice(Unit.CARTON),
+				product.getUnitPrice(Unit.DOZEN),
+				product.getUnitPrice(Unit.PIECES),
+				product.getId(),
+				pricingScheme.getId()
+		);
 	}
 
 }

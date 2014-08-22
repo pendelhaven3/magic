@@ -16,7 +16,7 @@ public abstract class MagicDialog extends JDialog {
 	
 	public MagicDialog() {
 		setModal(true);
-		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
 		closeDialogWhenEscapeKeyPressed();
 	}
 	

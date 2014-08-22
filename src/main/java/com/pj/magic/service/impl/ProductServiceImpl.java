@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ProductPriceDao;
 import com.pj.magic.dao.SupplierDao;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.service.ProductService;
@@ -77,6 +78,11 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public void deleteProductSupplier(Product product, Supplier supplier) {
 		supplierDao.deleteSupplierProduct(supplier, product);
+	}
+
+	@Override
+	public void saveUnitPrices(Product product, PricingScheme pricingScheme) {
+		productPriceDao.updateUnitPrices(product, pricingScheme);
 	}
 	
 }

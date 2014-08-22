@@ -121,7 +121,6 @@ public class PricingSchemeListPanel extends AbstractMagicPanel implements Action
 
 	@Override
 	protected void doOnBack() {
-		System.out.println("here!");
 		getMagicFrame().switchToMainMenuPanel();
 	}
 	

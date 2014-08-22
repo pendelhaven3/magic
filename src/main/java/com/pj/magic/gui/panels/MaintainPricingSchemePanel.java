@@ -27,8 +27,10 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.dialog.EditProductPriceDialog;
 import com.pj.magic.gui.tables.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
+import com.pj.magic.model.Product;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -38,8 +40,10 @@ public class MaintainPricingSchemePanel extends AbstractMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(MaintainPricingSchemePanel.class);
 	private static final String NEXT_FIELD_ACTION_NAME = "nextField";
 	private static final String SAVE_ACTION_NAME = "save";
+	private static final String SELECT_PRODUCT_PRICE_ACTION_NAME = "selectProductPrice";
 	
 	@Autowired private PricingSchemeService pricingSchemeService;
+	@Autowired private EditProductPriceDialog editProductPriceDialog;
 	
 	private PricingScheme pricingScheme;
 	private MagicTextField nameField;
@@ -225,6 +229,23 @@ public class MaintainPricingSchemePanel extends AbstractMagicPanel {
 				saveCustomer();
 			}
 		});
+		
+		pricesTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
+				SELECT_PRODUCT_PRICE_ACTION_NAME);
+		pricesTable.getActionMap().put(SELECT_PRODUCT_PRICE_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectProductPrice();
+			}
+		});
+	}
+
+	protected void selectProductPrice() {
+		int selectedRow = pricesTable.getSelectedRow();
+		Product product = pricesTableModel.getProduct(selectedRow);
+		editProductPriceDialog.updateDisplay(product, pricingScheme);
+		editProductPriceDialog.setVisible(true);
 	}
 
 	public void updateDisplay(PricingScheme pricingScheme) {

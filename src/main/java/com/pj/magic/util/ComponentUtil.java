@@ -18,4 +18,11 @@ public class ComponentUtil {
 		return label;
 	}
 	
+	public static final JLabel createRightLabel(int width, String text) {
+		JLabel label = new JLabel(text);
+		label.setPreferredSize(new Dimension(width, 30));
+		label.setHorizontalAlignment(JLabel.RIGHT);
+		return label;
+	}
+	
 }

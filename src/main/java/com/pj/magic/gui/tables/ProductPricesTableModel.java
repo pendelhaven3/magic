@@ -91,4 +91,8 @@ public class ProductPricesTableModel extends AbstractTableModel {
 		return false;
 	}
 	
+	public Product getProduct(int rowIndex) {
+		return products.get(rowIndex);
+	}
+	
 }
