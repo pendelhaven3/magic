@@ -23,7 +23,7 @@ import com.pj.magic.model.Supplier;
 @Repository
 public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	
-	private static final String BASE_SQL = "select a.ID, a.NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON,"
+	private static final String BASE_SELECT_SQL = "select a.ID, a.NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON,"
 			+ " FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME, b.NUMBER_OF_DAYS"
 			+ " from SUPPLIER a"
 			+ " left join PAYMENT_TERM b"
@@ -88,7 +88,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 				supplier.getId());
 	}
 
-	private static final String GET_SQL = BASE_SQL + " where a.ID = ?";
+	private static final String GET_SQL = BASE_SELECT_SQL + " where a.ID = ?";
 	
 	@Override
 	public Supplier get(long id) {
@@ -99,7 +99,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 		}
 	}
 
-	private static final String GET_ALL_SQL = BASE_SQL + " order by NAME";
+	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by NAME";
 	
 	@Override
 	public List<Supplier> getAll() {
@@ -131,7 +131,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 		
 	}
 
-	private static final String FIND_ALL_BY_PRODUCT = BASE_SQL
+	private static final String FIND_ALL_BY_PRODUCT = BASE_SELECT_SQL
 			+ " join SUPPLIER_PRODUCT b"
 			+ "		on b.SUPPLIER_ID = a.ID"
 			+ " where b.PRODUCT_ID = ?"
@@ -150,7 +150,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 		getJdbcTemplate().update(SAVE_PRODUCT_SUPPLIER_SQL, supplier.getId(), product.getId());
 	}
 	
-	private static final String FIND_ALL_NOT_HAVING_PRODUCT_SQL = BASE_SQL +
+	private static final String FIND_ALL_NOT_HAVING_PRODUCT_SQL = BASE_SELECT_SQL +
 			" where not exists("
 			+ "		select 1"
 			+ "		from SUPPLIER_PRODUCT b"

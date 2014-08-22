@@ -19,7 +19,7 @@ import com.pj.magic.model.User;
 @Repository
 public class UserDaoImpl extends MagicDao implements UserDao {
 
-	private static final String SIMPLE_SELECT_SQL = "select ID, USERNAME from USER";
+	private static final String BASE_SELECT_SQL = "select ID, USERNAME from USER";
 	
 	private UserRowMapper userRowMapper = new UserRowMapper();
 	
@@ -54,7 +54,7 @@ public class UserDaoImpl extends MagicDao implements UserDao {
 		// TODO: To be implemented
 	}
 
-	private static final String GET_SQL = SIMPLE_SELECT_SQL + " where ID = ?";
+	private static final String GET_SQL = BASE_SELECT_SQL + " where ID = ?";
 	
 	@Override
 	public User get(long id) {

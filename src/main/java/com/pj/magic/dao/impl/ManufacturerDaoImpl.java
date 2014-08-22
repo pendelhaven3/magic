@@ -20,7 +20,7 @@ import com.pj.magic.model.Manufacturer;
 @Repository
 public class ManufacturerDaoImpl extends MagicDao implements ManufacturerDao {
 	
-	private static final String SIMPLE_SELECT_SQL = "select ID, NAME from MANUFACTURER";
+	private static final String BASE_SELECT_SQL = "select ID, NAME from MANUFACTURER";
 	
 	private ManufacturerRowMapper manufacturerRowMapper = new ManufacturerRowMapper();
 	
@@ -57,7 +57,7 @@ public class ManufacturerDaoImpl extends MagicDao implements ManufacturerDao {
 		getJdbcTemplate().update(UPDATE_SQL, manufacturer.getName(), manufacturer.getId());
 	}
 
-	private static final String GET_SQL = SIMPLE_SELECT_SQL + " where id = ?";
+	private static final String GET_SQL = BASE_SELECT_SQL + " where id = ?";
 	
 	@Override
 	public Manufacturer get(long id) {
@@ -68,7 +68,7 @@ public class ManufacturerDaoImpl extends MagicDao implements ManufacturerDao {
 		}
 	}
 
-	private static final String GET_ALL_SQL = SIMPLE_SELECT_SQL + " order by NAME";
+	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by NAME";
 	
 	@Override
 	public List<Manufacturer> getAll() {

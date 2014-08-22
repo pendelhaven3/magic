@@ -17,7 +17,7 @@ import com.pj.magic.model.Customer;
 @Repository
 public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 
-	private static final String BASE_SQL =
+	private static final String BASE_SELECT_SQL =
 			"select ID, CODE, NAME, ADDRESS, CONTACT_PERSON, CONTACT_NUMBER from CUSTOMER";
 	
 	@PersistenceContext
@@ -57,7 +57,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 	}
 
 	private static final String FIND_FIRST_WITH_CODE_LIKE_SQL =
-			BASE_SQL + " where CODE like ? limit 1";
+			BASE_SELECT_SQL + " where CODE like ? limit 1";
 	
 	@Override
 	public Customer findFirstWithCodeLike(String code) {
@@ -69,7 +69,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 	}
 
 	private static final String FIND_BY_CODE_SQL =
-			BASE_SQL + " where CODE = ?";
+			BASE_SELECT_SQL + " where CODE = ?";
 	
 	@Override
 	public Customer findByCode(String code) {

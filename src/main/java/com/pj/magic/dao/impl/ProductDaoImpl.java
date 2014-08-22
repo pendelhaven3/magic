@@ -26,8 +26,7 @@ import com.pj.magic.model.UnitQuantity;
 @Repository
 public class ProductDaoImpl extends MagicDao implements ProductDao {
 	
-	// TODO: Rename other SIMPLE_SELECT_SQL to BASE_SQL
-	private static final String BASE_SQL =
+	private static final String BASE_SELECT_SQL =
 			"select a.ID, CODE, DESCRIPTION, MAX_STOCK_LEVEL, MIN_STOCK_LEVEL, ACTIVE_IND,"
 			+ " UNIT_IND_CSE, UNIT_IND_TIE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
 			+ " UNIT_PRICE_CSE, UNIT_PRICE_TIE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
@@ -43,13 +42,13 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ "		on d.ID = a.CATEGORY_ID"
 			+ " where 1 = 1";
 	
-	private static final String GET_ALL_SQL = BASE_SQL
+	private static final String GET_ALL_SQL = BASE_SELECT_SQL
 			+ " order by a.CODE";
 
-	private static final String FIND_BY_CODE_SQL = BASE_SQL
+	private static final String FIND_BY_CODE_SQL = BASE_SELECT_SQL
 			+ " and a.CODE = ?";
 
-	private static final String FIND_BY_ID_SQL = BASE_SQL
+	private static final String FIND_BY_ID_SQL = BASE_SELECT_SQL
 			+ " and a.ID = ?";
 
 	private ProductRowMapper productRowMapper = new ProductRowMapper();
@@ -233,7 +232,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		product.setId(holder.getKey().longValue());
 	}
 
-	private static final String FIND_FIRST_WITH_CODE_LIKE_SQL = BASE_SQL
+	private static final String FIND_FIRST_WITH_CODE_LIKE_SQL = BASE_SELECT_SQL
 			+ " and CODE like ? limit 1";
 			
 	
@@ -248,7 +247,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 
 	@Override
 	public List<Product> search(Product criteria) {
-		StringBuilder sql = new StringBuilder(BASE_SQL);
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
 		sql.append(" and ACTIVE_IND = ?");
 		sql.append(" order by CODE"); // TODO: change to be more flexible when the need arises
 		

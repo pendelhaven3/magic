@@ -27,7 +27,7 @@ import com.pj.magic.model.User;
 @Repository
 public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitionDao {
 
-	private static final String SIMPLE_SELECT_SQL =
+	private static final String BASE_SELECT_SQL =
 			"select ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER_ID, POST_IND"
 			+ " from SALES_REQUISITION";
 	
@@ -35,7 +35,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	
 	private SalesRequisitionRowMapper salesRequisitionRowMapper = new SalesRequisitionRowMapper();
 	
-	private static final String GET_SQL = SIMPLE_SELECT_SQL + " where ID = ?";
+	private static final String GET_SQL = BASE_SELECT_SQL + " where ID = ?";
 	
 	@Override
 	public SalesRequisition get(long id) {
@@ -123,7 +123,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 
 	@Override
 	public List<SalesRequisition> search(SalesRequisition criteria) {
-		StringBuilder sql = new StringBuilder(SIMPLE_SELECT_SQL);
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
 		sql.append(" where POST_IND = ?");
 		sql.append(" order by ID desc"); // TODO: change to be more flexible when the need arises
 		
