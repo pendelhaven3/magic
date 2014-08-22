@@ -28,7 +28,7 @@ public class PaymentTermDaoImpl implements PaymentTermDao {
 
 	@Override
 	public List<PaymentTerm> getAll() {
-        return entityManager.createQuery("SELECT p FROM PaymentTerm p", PaymentTerm.class).getResultList();
+        return entityManager.createQuery("SELECT p FROM PaymentTerm p order by p.name", PaymentTerm.class).getResultList();
 	}
 
 }

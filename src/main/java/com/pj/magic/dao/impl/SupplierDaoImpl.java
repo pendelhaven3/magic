@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -15,13 +16,18 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SupplierDao;
+import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
 
 @Repository
 public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	
-	private static final String BASE_SQL = "select ID, NAME from SUPPLIER a";
+	private static final String BASE_SQL = "select a.ID, a.NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON,"
+			+ " FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME, b.NUMBER_OF_DAYS"
+			+ " from SUPPLIER a"
+			+ " left join PAYMENT_TERM b"
+			+ " 	on b.ID = a.PAYMENT_TERM_ID";
 	
 	private SupplierRowMapper supplierRowMapper = new SupplierRowMapper();
 	
@@ -34,7 +40,9 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 		}
 	}
 
-	private static final String INSERT_SQL = "insert into SUPPLIER (NAME) values (?)";
+	private static final String INSERT_SQL = "insert into SUPPLIER"
+			+ " (NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Supplier supplier) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -45,6 +53,17 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setString(1, supplier.getName());
+				ps.setString(2, supplier.getAddress());
+				ps.setString(3, supplier.getContactNumber());
+				ps.setString(4, supplier.getContactPerson());
+				ps.setString(5, supplier.getFaxNumber());
+				ps.setString(6, supplier.getEmailAddress());
+				ps.setString(7, supplier.getTin());
+				if (supplier.getPaymentTerm() != null) {
+					ps.setLong(8, supplier.getPaymentTerm().getId());
+				} else {
+					ps.setNull(8, Types.INTEGER);
+				}
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -52,13 +71,24 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 		supplier.setId(holder.getKey().longValue());
 	}
 
-	private static final String UPDATE_SQL = "update SUPPLIER set NAME = ? where ID = ?";
+	private static final String UPDATE_SQL = "update SUPPLIER"
+			+ " set NAME = ?, ADDRESS = ?, CONTACT_NUMBER = ?, CONTACT_PERSON = ?,"
+			+ " FAX_NUMBER = ?, EMAIL_ADDRESS = ?, TIN = ?, PAYMENT_TERM_ID = ? where ID = ?";
 	
 	private void update(Supplier supplier) {
-		getJdbcTemplate().update(UPDATE_SQL, supplier.getName(), supplier.getId());
+		getJdbcTemplate().update(UPDATE_SQL, 
+				supplier.getName(),
+				supplier.getAddress(),
+				supplier.getContactNumber(),
+				supplier.getContactPerson(),
+				supplier.getFaxNumber(),
+				supplier.getEmailAddress(),
+				supplier.getTin(),
+				(supplier.getPaymentTerm() != null) ? supplier.getPaymentTerm().getId() : null,
+				supplier.getId());
 	}
 
-	private static final String GET_SQL = BASE_SQL + " where id = ?";
+	private static final String GET_SQL = BASE_SQL + " where a.ID = ?";
 	
 	@Override
 	public Supplier get(long id) {
@@ -83,6 +113,19 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 			Supplier supplier = new Supplier();
 			supplier.setId(rs.getLong("ID"));
 			supplier.setName(rs.getString("NAME"));
+			supplier.setAddress(rs.getString("ADDRESS"));
+			supplier.setContactNumber(rs.getString("CONTACT_NUMBER"));
+			supplier.setContactPerson(rs.getString("CONTACT_PERSON"));
+			supplier.setFaxNumber(rs.getString("FAX_NUMBER"));
+			supplier.setEmailAddress(rs.getString("EMAIL_ADDRESS"));
+			if (rs.getLong("PAYMENT_TERM_ID") != 0) {
+				PaymentTerm paymentTerm = new PaymentTerm();
+				paymentTerm.setId(rs.getLong("PAYMENT_TERM_ID"));
+				paymentTerm.setName(rs.getString("PAYMENT_TERM_NAME"));
+				paymentTerm.setNumberOfDays(rs.getInt("NUMBER_OF_DAYS"));
+				supplier.setPaymentTerm(paymentTerm);
+			}
+			supplier.setTin(rs.getString("TIN"));
 			return supplier;
 		}
 		

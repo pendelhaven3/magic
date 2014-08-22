@@ -6,6 +6,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 @Entity
 @Table(name="PAYMENT_TERM")
 public class PaymentTerm {
@@ -40,6 +43,32 @@ public class PaymentTerm {
 
 	public void setNumberOfDays(int numberOfDays) {
 		this.numberOfDays = numberOfDays;
+	}
+
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof PaymentTerm)) {
+            return false;
+        }
+        PaymentTerm other = (PaymentTerm)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 	
 }

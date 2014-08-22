@@ -111,6 +111,13 @@ create table USER (
 create table SUPPLIER (
   ID integer auto_increment,
   NAME varchar2(50) not null,
+  ADDRESS varchar2(200) null,
+  CONTACT_NUMBER varchar2(100) null,
+  CONTACT_PERSON varchar2(100) null,
+  FAX_NUMBER varchar2(100) null,
+  EMAIL_ADDRESS varchar2(50) null,
+  TIN varchar2(20) null,
+  PAYMENT_TERM_ID integer null,
   constraint SUPPLIER$PK primary key (ID),
   constraint SUPPLIER$UK unique (NAME)
 );
