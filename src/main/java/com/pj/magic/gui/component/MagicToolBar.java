@@ -13,13 +13,4 @@ public class MagicToolBar extends JToolBar {
 		setFloatable(false);
 	}
 	
-	public void addBackButton(AbstractMagicPanel panel) {
-		JButton backButton = new MagicToolBarButton("back", "Back (F9)");
-		backButton.setActionCommand(AbstractMagicPanel.BACK_ACTION_COMMAND_NAME);
-		if (panel instanceof ActionListener) {
-			backButton.addActionListener((ActionListener)panel);
-		}
-		add(backButton);
-	}
-	
 }

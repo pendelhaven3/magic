@@ -77,6 +77,9 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				case "Payment Terms List":
 					getMagicFrame().switchToPaymentTermListPanel();
 					break;
+				case "Pricing Schemes":
+					getMagicFrame().switchToPricingSchemeListPanel();
+					break;
 				}
 			}
 		});
@@ -91,11 +94,12 @@ public class MainMenuPanel extends AbstractMagicPanel {
 
 		private String[][] data = new String[][] {
 				{"Product List"},
+				{"Pricing Schemes"},
+				{"Sales Requisition"}, 
+				{"Sales Invoice"},
 				{"Manufacturer List"},
 				{"Supplier List"},
 				{"Product Category List"},
-				{"Sales Requisition"}, 
-				{"Sales Invoice"},
 				{"Customer List"},
 				{"Payment Terms List"}
 		};

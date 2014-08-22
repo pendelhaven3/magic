@@ -110,7 +110,7 @@ public class SalesRequisitionListPanel extends AbstractMagicPanel implements Act
 	
 	private JToolBar createToolBar() {
 		MagicToolBar toolBar = new MagicToolBar();
-		toolBar.addBackButton(this);
+		addBackButton(toolBar);
 		
 		JButton postButton = new MagicToolBarButton("plus", "New (F4)");
 		postButton.setActionCommand(NEW_SALES_REQUISITION_ACTION_COMMAND_NAME);
@@ -125,9 +125,6 @@ public class SalesRequisitionListPanel extends AbstractMagicPanel implements Act
 		switch (e.getActionCommand()) {
 		case NEW_SALES_REQUISITION_ACTION_COMMAND_NAME:
 			switchToNewSalesRequisitionPanel();
-			break;
-		case BACK_ACTION_COMMAND_NAME:
-			doOnBack();
 			break;
 		}
 	}

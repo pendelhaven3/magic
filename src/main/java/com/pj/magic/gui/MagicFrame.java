@@ -15,11 +15,13 @@ import com.pj.magic.gui.panels.MainMenuPanel;
 import com.pj.magic.gui.panels.MaintainCustomerPanel;
 import com.pj.magic.gui.panels.MaintainManufacturerPanel;
 import com.pj.magic.gui.panels.MaintainPaymentTermPanel;
+import com.pj.magic.gui.panels.MaintainPricingSchemePanel;
 import com.pj.magic.gui.panels.MaintainProductCategoryPanel;
 import com.pj.magic.gui.panels.MaintainProductPanel;
 import com.pj.magic.gui.panels.MaintainSupplierPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
+import com.pj.magic.gui.panels.PricingSchemeListPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
@@ -30,6 +32,7 @@ import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.PaymentTerm;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.SalesInvoice;
@@ -56,6 +59,8 @@ public class MagicFrame extends JFrame {
 	private static final String MAINTAIN_CUSTOMER_PANEL = "MAINTAIN_CUSTOMER_PANEL";
 	private static final String PAYMENT_TERM_LIST_PANEL = "PAYMENT_TERM_LIST_PANEL";
 	private static final String MAINTAIN_PAYMENT_TERM_PANEL = "MAINTAIN_PAYMENT_TERM_PANEL";
+	private static final String PRICING_SCHEME_LIST_PANEL = "PRICING_SCHEME_LIST_PANEL";
+	private static final String MAINTAIN_PRICING_SCHEME_PANEL = "MAINTAIN_PRICING_SCHEME_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
@@ -74,6 +79,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainCustomerPanel maintainCustomerPanel;
 	@Autowired private PaymentTermListPanel paymentTermListPanel;
 	@Autowired private MaintainPaymentTermPanel maintainPaymentTermPanel;
+	@Autowired private PricingSchemeListPanel pricingSchemeListPanel;
+	@Autowired private MaintainPricingSchemePanel maintainPricingSchemePanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -104,6 +111,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(maintainCustomerPanel, MAINTAIN_CUSTOMER_PANEL);
 		panelHolder.add(paymentTermListPanel, PAYMENT_TERM_LIST_PANEL);
 		panelHolder.add(maintainPaymentTermPanel, MAINTAIN_PAYMENT_TERM_PANEL);
+		panelHolder.add(pricingSchemeListPanel, PRICING_SCHEME_LIST_PANEL);
+		panelHolder.add(maintainPricingSchemePanel, MAINTAIN_PRICING_SCHEME_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -270,6 +279,27 @@ public class MagicFrame extends JFrame {
 	private void switchToMaintainPaymentTermPanel(PaymentTerm paymentTerm) {
 		maintainPaymentTermPanel.updateDisplay(paymentTerm);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PAYMENT_TERM_PANEL);
+	}
+
+	public void switchToPricingSchemeListPanel() {
+		addPanelNameToTitle("Pricing Schemes");
+		pricingSchemeListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRICING_SCHEME_LIST_PANEL);
+	}
+	
+	public void switchToEditPricingSchemePanel(PricingScheme pricingScheme) {
+		addPanelNameToTitle("Edit Pricing Scheme");
+		switchToMaintainPricingSchemePanel(pricingScheme);
+	}
+
+	public void switchToAddNewPricingSchemePanel() {
+		addPanelNameToTitle("Add New Pricing Scheme");
+		switchToMaintainPricingSchemePanel(new PricingScheme());
+	}
+
+	private void switchToMaintainPricingSchemePanel(PricingScheme pricingScheme) {
+		maintainPricingSchemePanel.updateDisplay(pricingScheme);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PRICING_SCHEME_PANEL);
 	}
 	
 }

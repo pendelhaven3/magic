@@ -1,6 +1,7 @@
 package com.pj.magic.gui.panels;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -11,10 +12,12 @@ import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.FocusManager;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -22,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.MagicFrame;
+import com.pj.magic.gui.component.MagicToolBarButton;
 
 public abstract class AbstractMagicPanel extends JPanel {
 
@@ -121,6 +125,19 @@ public abstract class AbstractMagicPanel extends JPanel {
 			field.requestFocusInWindow();
 			throw new ValidationException();
 		}
+	}
+	
+	protected void addBackButton(JToolBar toolBar) {
+		JButton backButton = new MagicToolBarButton("back", "Back (F9)");
+		backButton.setActionCommand(BACK_ACTION_COMMAND_NAME);
+		backButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doOnBack();
+			}
+		});
+		toolBar.add(backButton);
 	}
 	
 }

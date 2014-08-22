@@ -2,7 +2,8 @@ package com.pj.magic.model;
 
 public class PricingScheme {
 
-	private Long id = 1L; // TODO: replace with actual value
+	private Long id;
+	private String name;
 
 	public Long getId() {
 		return id;
@@ -10,6 +11,14 @@ public class PricingScheme {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

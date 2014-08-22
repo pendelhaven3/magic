@@ -21,3 +21,5 @@ insert into SUPPLIER (NAME) values ('AMICI WATER SYSTEMS, PHILIPPINES');
 insert into SUPPLIER (NAME) values ('ABENSON AVANT');
 insert into SUPPLIER (NAME) values ('K SERVICO TRADE, INC.');
 insert into SUPPLIER (NAME) values ('PHILGROCER');
+
+insert into PRICING_SCHEME (NAME) values ('CANVASSER');
