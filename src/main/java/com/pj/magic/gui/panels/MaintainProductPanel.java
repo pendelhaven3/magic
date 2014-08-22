@@ -61,10 +61,12 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	private MagicTextField minimumStockLevelField;
 	private JCheckBox activeIndicatorCheckBox;
 	private JCheckBox caseUnitIndicatorCheckBox;
+	private JCheckBox tieUnitIndicatorCheckBox;
 	private JCheckBox cartonUnitIndicatorCheckBox;
 	private JCheckBox dozenUnitIndicatorCheckBox;
 	private JCheckBox piecesUnitIndicatorCheckBox;
 	private MagicTextField caseQuantityField;
+	private MagicTextField tieQuantityField;
 	private MagicTextField cartonQuantityField;
 	private MagicTextField dozenQuantityField;
 	private MagicTextField piecesQuantityField;
@@ -92,6 +94,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		activeIndicatorCheckBox = new JCheckBox("Yes");
 		
 		caseUnitIndicatorCheckBox = new JCheckBox("Case");
+		tieUnitIndicatorCheckBox = new JCheckBox("Tie");
 		cartonUnitIndicatorCheckBox = new JCheckBox("Carton");
 		dozenUnitIndicatorCheckBox = new JCheckBox("Dozen");
 		piecesUnitIndicatorCheckBox = new JCheckBox("Pieces");
@@ -99,6 +102,10 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		caseQuantityField = new MagicTextField();
 		caseQuantityField.setMaximumLength(6);
 		caseQuantityField.setNumbersOnly(true);
+		
+		tieQuantityField = new MagicTextField();
+		tieQuantityField.setMaximumLength(6);
+		tieQuantityField.setNumbersOnly(true);
 		
 		cartonQuantityField = new MagicTextField();
 		cartonQuantityField.setMaximumLength(6);
@@ -179,6 +186,8 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		focusOrder.add(manufacturerComboBox);
 		focusOrder.add(caseUnitIndicatorCheckBox);
 		focusOrder.add(caseQuantityField);
+		focusOrder.add(tieUnitIndicatorCheckBox);
+		focusOrder.add(tieQuantityField);
 		focusOrder.add(cartonUnitIndicatorCheckBox);
 		focusOrder.add(cartonQuantityField);
 		focusOrder.add(dozenUnitIndicatorCheckBox);
@@ -206,6 +215,10 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			if (caseUnitIndicatorCheckBox.isSelected()) {
 				product.getUnits().add(Unit.CASE);
 				product.addUnitQuantity(Unit.CASE, Integer.parseInt(caseQuantityField.getText()));
+			}
+			if (tieUnitIndicatorCheckBox.isSelected()) {
+				product.getUnits().add(Unit.TIE);
+				product.addUnitQuantity(Unit.TIE, Integer.parseInt(tieQuantityField.getText()));
 			}
 			if (cartonUnitIndicatorCheckBox.isSelected()) {
 				product.getUnits().add(Unit.CARTON);
@@ -245,6 +258,9 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 			validateStockLevel();
 			if (caseUnitIndicatorCheckBox.isSelected()) {
 				validateMandatoryField(caseQuantityField, "Available Quantity (Case)");
+			}
+			if (tieUnitIndicatorCheckBox.isSelected()) {
+				validateMandatoryField(tieQuantityField, "Available Quantity (Tie)");
 			}
 			if (cartonUnitIndicatorCheckBox.isSelected()) {
 				validateMandatoryField(cartonQuantityField, "Available Quantity (Carton)");
@@ -510,7 +526,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 
 	private java.awt.Component createUnitsPanel() {
 		JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(300, 125));
+		panel.setPreferredSize(new Dimension(300, 160));
 		panel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -538,7 +554,6 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		caseUnitIndicatorCheckBox.setPreferredSize(new Dimension(100, 20));
 		panel.add(caseUnitIndicatorCheckBox, c);
 		
 		c.fill = GridBagConstraints.NONE;
@@ -549,6 +564,24 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		caseQuantityField.setPreferredSize(new Dimension(50, 20));
 		panel.add(caseQuantityField, c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(tieUnitIndicatorCheckBox, c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		tieQuantityField.setPreferredSize(new Dimension(50, 20));
+		panel.add(tieQuantityField, c);
 		
 		currentRow++;
 		
@@ -667,6 +700,12 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		} else {
 			caseQuantityField.setText(null);
 		}
+		tieUnitIndicatorCheckBox.setSelected(product.hasUnit(Unit.TIE));
+		if (tieUnitIndicatorCheckBox.isSelected()) {
+			tieQuantityField.setText(String.valueOf(product.getUnitQuantity(Unit.TIE)));
+		} else {
+			tieQuantityField.setText(null);
+		}
 		cartonUnitIndicatorCheckBox.setSelected(product.hasUnit(Unit.CARTON));
 		if (cartonUnitIndicatorCheckBox.isSelected()) {
 			cartonQuantityField.setText(String.valueOf(product.getUnitQuantity(Unit.CARTON)));
@@ -722,6 +761,8 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		activeIndicatorCheckBox.setSelected(true);
 		caseUnitIndicatorCheckBox.setSelected(false);
 		caseQuantityField.setText(null);
+		tieUnitIndicatorCheckBox.setSelected(false);
+		tieQuantityField.setText(null);
 		cartonUnitIndicatorCheckBox.setSelected(false);
 		cartonQuantityField.setText(null);
 		dozenUnitIndicatorCheckBox.setSelected(false);
