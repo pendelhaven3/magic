@@ -25,6 +25,8 @@ import com.pj.magic.gui.MagicFrame;
 
 public abstract class AbstractMagicPanel extends JPanel {
 
+	public static final String BACK_ACTION_COMMAND_NAME = "back";
+	
 	private List<JComponent> focusOrder;
 	
 	@PostConstruct

@@ -2,6 +2,8 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -30,12 +32,15 @@ public class SalesRequisitionsTable extends JTable {
 	private static final String DELETE_SALES_REQUISITION_ACTION_NAME = "deleteSalesRequisition";
 
 	@Autowired private SalesRequisitionService salesRequisitionService;
+	@Autowired private SalesRequisitionsTableModel tableModel;
 	
-	private SalesRequisitionsTableModel tableModel = new SalesRequisitionsTableModel();
+	@Autowired
+	public SalesRequisitionsTable(SalesRequisitionsTableModel tableModel) {
+		super(tableModel);
+	}
 	
 	@PostConstruct
 	public void initialize() {
-		setModel(tableModel);
 		registerKeyBindings();
     }
 	
@@ -88,7 +93,7 @@ public class SalesRequisitionsTable extends JTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (getSelectedRow() != -1) {
-					displaySalesRequisitionDetails(getCurrentlySelectedSalesRequisition());
+					selectSalesRequisition();
 				}
 			}
 		});
@@ -104,6 +109,20 @@ public class SalesRequisitionsTable extends JTable {
 				}
 			}
 		});
+		
+		addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					selectSalesRequisition();
+				}
+			}
+		});
+	}
+
+	protected void selectSalesRequisition() {
+		displaySalesRequisitionDetails(getCurrentlySelectedSalesRequisition());
 	}
 	
 }

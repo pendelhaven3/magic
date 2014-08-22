@@ -12,7 +12,6 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
@@ -32,7 +31,6 @@ public class PaymentTermListPanel extends AbstractMagicPanel implements ActionLi
 
 	private static final String EDIT_PAYMENT_TERM_ACTION_NAME = "editPaymentTerm";
 	private static final String NEW_PAYMENT_TERM_ACTION_NAME = "newPaymentTerm";
-	private static final String BACK_ACTION_COMMAND_NAME = "back";
 	
 	@Autowired private PaymentTermService paymentTermService;
 	

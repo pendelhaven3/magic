@@ -6,9 +6,12 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.springframework.stereotype.Component;
+
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.util.FormatterUtil;
 
+@Component
 public class SalesRequisitionsTableModel extends AbstractTableModel {
 
 	private static final String[] COLUMN_NAMES = {"SR No.", "Customer Name", "Create Date", "Encoder", "Total Amount"};

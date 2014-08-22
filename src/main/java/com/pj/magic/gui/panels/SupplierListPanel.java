@@ -28,7 +28,7 @@ import com.pj.magic.util.ComponentUtil;
 public class SupplierListPanel extends AbstractMagicPanel implements ActionListener {
 
 	private static final String EDIT_SUPPLIER_ACTION_NAME = "editSupplier";
-	private static final String NEW_SUPPLIER_ACTION_NAME = "newSupplier";
+	private static final String NEW_SUPPLIER_ACTION_COMMAND = "newSupplier";
 	
 	@Autowired private SupplierService supplierService;
 	
@@ -85,7 +85,7 @@ public class SupplierListPanel extends AbstractMagicPanel implements ActionListe
 		JToolBar toolBar = new MagicToolBar();
 		
 		JButton postButton = new MagicToolBarButton("plus", "New");
-		postButton.setActionCommand(NEW_SUPPLIER_ACTION_NAME);
+		postButton.setActionCommand(NEW_SUPPLIER_ACTION_COMMAND);
 		postButton.addActionListener(this);
 		
 		toolBar.add(postButton);
@@ -108,7 +108,7 @@ public class SupplierListPanel extends AbstractMagicPanel implements ActionListe
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
-		case NEW_SUPPLIER_ACTION_NAME:
+		case NEW_SUPPLIER_ACTION_COMMAND:
 			switchToNewSupplierPanel();
 			break;
 		}
