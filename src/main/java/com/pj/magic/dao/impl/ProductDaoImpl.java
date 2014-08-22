@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.Manufacturer;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.Unit;
@@ -253,6 +254,14 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		
 		return getJdbcTemplate().query(sql.toString(), productRowMapper,
 				criteria.isActive() ? "Y" : "N");
+	}
+
+	private static final String FIND_ALL_WITH_PRICING_SCHEME_SQL = BASE_SELECT_SQL +
+			" and b.PRICING_SCHEME_ID = ? order by a.CODE";
+	
+	@Override
+	public List<Product> findAllWithPricingScheme(PricingScheme pricingScheme) {
+		return getJdbcTemplate().query(FIND_ALL_WITH_PRICING_SCHEME_SQL, productRowMapper, pricingScheme.getId());
 	}
 
 }

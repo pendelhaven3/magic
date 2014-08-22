@@ -2,6 +2,7 @@ package com.pj.magic.dao;
 
 import java.util.List;
 
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 
 public interface ProductDao {
@@ -19,5 +20,7 @@ public interface ProductDao {
 	Product findFirstWithCodeLike(String code);
 
 	List<Product> search(Product criteria);
+	
+	List<Product> findAllWithPricingScheme(PricingScheme pricingScheme);
 	
 }

@@ -11,8 +11,14 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.tables.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.util.ComponentUtil;
@@ -37,6 +44,8 @@ public class MaintainPricingSchemePanel extends AbstractMagicPanel {
 	private PricingScheme pricingScheme;
 	private MagicTextField nameField;
 	private JButton saveButton;
+	private JTable pricesTable;
+	private ProductPricesTableModel pricesTableModel = new ProductPricesTableModel();
 	
 	@Override
 	protected void initializeComponents() {
@@ -52,7 +61,9 @@ public class MaintainPricingSchemePanel extends AbstractMagicPanel {
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(nameField);
+		pricesTable = new JTable(pricesTableModel);
+		
+		focusOnComponentWhenThisPanelIsDisplayed(pricesTable);
 	}
 
 	@Override
@@ -93,7 +104,6 @@ public class MaintainPricingSchemePanel extends AbstractMagicPanel {
 	@Override
 	protected void layoutComponents() {
 		setLayout(new GridBagLayout());
-		
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 		
@@ -142,11 +152,57 @@ public class MaintainPricingSchemePanel extends AbstractMagicPanel {
 		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.0;
-		c.weighty = 1.0; // bottom space filler
+		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
+		add(ComponentUtil.createFiller(10, 10), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 3;
+		c.anchor = GridBagConstraints.CENTER;
+		add(new JSeparator(), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		add(ComponentUtil.createFiller(10, 10), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		layoutPricesTable();
+		add(new JScrollPane(pricesTable), c);
+	}
+
+	private void layoutPricesTable() {
+		TableColumnModel columnModel = pricesTable.getColumnModel();
+		columnModel.getColumn(ProductPricesTableModel.CODE_COLUMN_INDEX).setPreferredWidth(50);
+		columnModel.getColumn(ProductPricesTableModel.DESCRIPTION_COLUMN_INDEX).setPreferredWidth(250);
+		columnModel.getColumn(ProductPricesTableModel.CASE_UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
+		columnModel.getColumn(ProductPricesTableModel.TIE_UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
+		columnModel.getColumn(ProductPricesTableModel.CARTON_UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
+		columnModel.getColumn(ProductPricesTableModel.DOZEN_UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
+		columnModel.getColumn(ProductPricesTableModel.PIECES_UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
+		
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(JLabel.RIGHT);
+		
+		columnModel.getColumn(ProductPricesTableModel.CASE_UNIT_PRICE_COLUMN_INDEX).setCellRenderer(renderer);
+		columnModel.getColumn(ProductPricesTableModel.TIE_UNIT_PRICE_COLUMN_INDEX).setCellRenderer(renderer);
+		columnModel.getColumn(ProductPricesTableModel.CARTON_UNIT_PRICE_COLUMN_INDEX).setCellRenderer(renderer);
+		columnModel.getColumn(ProductPricesTableModel.DOZEN_UNIT_PRICE_COLUMN_INDEX).setCellRenderer(renderer);
+		columnModel.getColumn(ProductPricesTableModel.PIECES_UNIT_PRICE_COLUMN_INDEX).setCellRenderer(renderer);
 	}
 
 	@Override
@@ -177,8 +233,11 @@ public class MaintainPricingSchemePanel extends AbstractMagicPanel {
 			clearDisplay();
 			return;
 		}
-		
+
+		pricingScheme = pricingSchemeService.get(pricingScheme.getId());
 		nameField.setText(pricingScheme.getName());
+		pricesTableModel.setProducts(pricingScheme.getProducts());
+		pricesTable.changeSelection(0, 0, false, false);
 	}
 
 	private void clearDisplay() {

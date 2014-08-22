@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pj.magic.dao.PricingSchemeDao;
+import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.service.PricingSchemeService;
 
@@ -14,6 +15,7 @@ import com.pj.magic.service.PricingSchemeService;
 public class PricingSchemeServiceImpl implements PricingSchemeService {
 
 	@Autowired private PricingSchemeDao pricingSchemeDao;
+	@Autowired private ProductDao productDao;
 	
 	@Override
 	public List<PricingScheme> getAllPricingSchemes() {
@@ -28,7 +30,9 @@ public class PricingSchemeServiceImpl implements PricingSchemeService {
 
 	@Override
 	public PricingScheme get(long id) {
-		return pricingSchemeDao.get(id);
+		PricingScheme pricingScheme = pricingSchemeDao.get(id);
+		pricingScheme.setProducts(productDao.findAllWithPricingScheme(pricingScheme));
+		return pricingScheme;
 	}
 
 }
