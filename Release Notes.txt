@@ -6,3 +6,12 @@ version 0.2
 
 version 0.3
 1. Allow adding/editing of products
+
+version 0.4
+1. Added more product properties
+2. Allow adding/editing of manufacturers
+3. Allow adding/editing of suppliers
+4. Allow adding/editing of customers
+5. Allow adding/editing of payment terms
+6. Allow adding/editing of product categories
+ 
