@@ -14,4 +14,6 @@ version 0.4
 4. Allow adding/editing of customers
 5. Allow adding/editing of payment terms
 6. Allow adding/editing of product categories
- 
+
+version 0.5
+1. Added TIE unit
