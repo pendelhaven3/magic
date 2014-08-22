@@ -39,6 +39,7 @@ import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.model.Unit;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesRequisitionService;
@@ -292,7 +293,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		c.gridwidth = 5;
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
-		infoTableScrollPane.setPreferredSize(new Dimension(500, 45));
+		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
 		add(infoTableScrollPane, c);
 		
 		currentRow++; // sixth row
@@ -414,7 +415,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		
 		@Override
 		public int getRowCount() {
-			return 2;
+			return 3;
 		}
 
 		@Override
@@ -424,18 +425,31 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			if (rowIndex == 0) {
+			switch (rowIndex) {
+			case 0:
 				if (columnIndex == 0) {
-					return "CSE";
+					return Unit.CASE;
 				} else if (columnIndex == 3) {
-					return "DOZ";
+					return Unit.TIE;
 				}
-			} else if (rowIndex == 1) {
+				break;
+			case 1:
 				if (columnIndex == 0) {
-					return "CTN";
+					return Unit.CARTON;
 				} else if (columnIndex == 3) {
-					return "PCS";
+					return Unit.DOZEN;
 				}
+				break;
+			case 2:
+				switch (columnIndex) {
+				case 0:
+					return Unit.PIECES;
+				case 3:
+				case 4:
+				case 5:
+					return "";
+				}
+				break;
 			}
 			
 			if (product == null) {
@@ -454,17 +468,17 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 			if (rowIndex == 0) {
 				switch (columnIndex) {
 				case 1:
-					return String.valueOf(product.getUnitQuantity("CSE"));
+					return String.valueOf(product.getUnitQuantity(Unit.CASE));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice("CSE");
+					BigDecimal unitPrice = product.getUnitPrice(Unit.CASE);
 					if (unitPrice == null) {
 						unitPrice = BigDecimal.ZERO;
 					}
 					return FormatterUtil.formatAmount(unitPrice);
 				case 4:
-					return String.valueOf(product.getUnitQuantity("DOZ"));
+					return String.valueOf(product.getUnitQuantity(Unit.TIE));
 				case 5:
-					unitPrice = product.getUnitPrice("DOZ");
+					unitPrice = product.getUnitPrice(Unit.TIE);
 					if (unitPrice == null) {
 						unitPrice = BigDecimal.ZERO;
 					}
@@ -473,17 +487,28 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 			} else if (rowIndex == 1) {
 				switch (columnIndex) {
 				case 1:
-					return String.valueOf(product.getUnitQuantity("CTN"));
+					return String.valueOf(product.getUnitQuantity(Unit.CARTON));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice("CTN");
+					BigDecimal unitPrice = product.getUnitPrice(Unit.CARTON);
 					if (unitPrice == null) {
 						unitPrice = BigDecimal.ZERO;
 					}
 					return FormatterUtil.formatAmount(unitPrice);
 				case 4:
-					return String.valueOf(product.getUnitQuantity("PCS"));
+					return String.valueOf(product.getUnitQuantity(Unit.DOZEN));
 				case 5:
-					unitPrice = product.getUnitPrice("PCS");
+					unitPrice = product.getUnitPrice(Unit.DOZEN);
+					if (unitPrice == null) {
+						unitPrice = BigDecimal.ZERO;
+					}
+					return FormatterUtil.formatAmount(unitPrice);
+				}
+			} else if (rowIndex == 2) {
+				switch (columnIndex) {
+				case 1:
+					return String.valueOf(product.getUnitQuantity(Unit.PIECES));
+				case 2:
+					BigDecimal unitPrice = product.getUnitPrice(Unit.PIECES);
 					if (unitPrice == null) {
 						unitPrice = BigDecimal.ZERO;
 					}

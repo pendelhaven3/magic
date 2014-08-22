@@ -145,7 +145,7 @@ public class SelectProductDialog extends MagicDialog {
 		c.anchor = GridBagConstraints.CENTER;
 
 		JScrollPane unitPricesAndQuantitiesScrollPane = new JScrollPane(unitPricesAndQuantitiesTable);
-		unitPricesAndQuantitiesScrollPane.setPreferredSize(new Dimension(400, 87));
+		unitPricesAndQuantitiesScrollPane.setPreferredSize(new Dimension(400, 105));
 		add(unitPricesAndQuantitiesScrollPane, c);
 	}
 	

@@ -22,7 +22,7 @@ public class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
 	
 	@Override
 	public int getRowCount() {
-		return 4;
+		return 5;
 	}
 
 	@Override
@@ -38,12 +38,15 @@ public class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
 			unit = Unit.CASE;
 			break;
 		case 1:
-			unit = Unit.CARTON;
+			unit = Unit.TIE;
 			break;
 		case 2:
-			unit = Unit.DOZEN;
+			unit = Unit.CARTON;
 			break;
 		case 3:
+			unit = Unit.DOZEN;
+			break;
+		case 4:
 			unit = Unit.PIECES;
 			break;
 		}

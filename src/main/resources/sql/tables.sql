@@ -40,11 +40,11 @@ create table PRODUCT (
 create table PRODUCT_PRICE (
   ID integer auto_increment,
   PRODUCT_ID integer not null,
-  UNIT_PRICE_CSE number(10, 2) null,
-  UNIT_PRICE_TIE number(10, 2) null,
-  UNIT_PRICE_CTN number(10, 2) null,
-  UNIT_PRICE_DOZ number(10, 2) null,
-  UNIT_PRICE_PCS number(10, 2) null,
+  UNIT_PRICE_CSE number(10, 2) default 0 not null,
+  UNIT_PRICE_TIE number(10, 2) default 0 not null,
+  UNIT_PRICE_CTN number(10, 2) default 0 not null,
+  UNIT_PRICE_DOZ number(10, 2) default 0 not null,
+  UNIT_PRICE_PCS number(10, 2) default 0 not null,
   constraint PRODUCT_PRICE$PK primary key (ID),
   constraint PRODUCT_PRICE$FK foreign key (PRODUCT_ID) references PRODUCT (ID)
 );

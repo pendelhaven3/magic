@@ -53,10 +53,8 @@ public class Product implements Comparable<Product> {
 		}
 		if (hasUnit(unit)) {
 			unitPrices.add(new UnitPrice(unit, BigDecimal.ZERO));
-			return BigDecimal.ZERO;
-		} else {
-			return null;
 		}
+		return BigDecimal.ZERO;
 	}
 	
 	public boolean hasAvailableUnitQuantity(String unit, int quantity) {
@@ -203,6 +201,12 @@ public class Product implements Comparable<Product> {
 
 	public void setCategory(ProductCategory category) {
 		this.category = category;
+	}
+	
+	public void addUnit(String unit) {
+		if (!units.contains(unit)) {
+			units.add(unit);
+		}
 	}
 	
 }
