@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
+import com.pj.magic.model.UnitConversion;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.model.UnitQuantity;
 
@@ -53,6 +54,11 @@ public class ProductDaoTest extends AbstractTransactionalJUnit4SpringContextTest
 		BigDecimal cartonUnitPrice = new BigDecimal("20.00");
 		BigDecimal dozenUnitPrice = new BigDecimal("25.00");
 		BigDecimal piecesUnitPrice = new BigDecimal("30.00");
+		int caseUnitConversion = 240;
+		int tieUnitConversion = 36;
+		int cartonUnitConversion = 60;
+		int dozenUnitConversion = 12;
+		int piecesUnitConversion = 1;
 		
 		Product product = new Product();
 		product.setCode(code);
@@ -62,22 +68,27 @@ public class ProductDaoTest extends AbstractTransactionalJUnit4SpringContextTest
 		product.getUnits().add(Unit.CASE);
 		product.getUnitQuantities().add(new UnitQuantity(Unit.CASE, caseQuantity));
 		product.getUnitPrices().add(new UnitPrice(Unit.CASE, caseUnitPrice));
+		product.getUnitConversions().add(new UnitConversion(Unit.CASE, caseUnitConversion));
 		
 		product.getUnits().add(Unit.TIE);
 		product.getUnitQuantities().add(new UnitQuantity(Unit.TIE, tieQuantity));
 		product.getUnitPrices().add(new UnitPrice(Unit.TIE, tieUnitPrice));
+		product.getUnitConversions().add(new UnitConversion(Unit.TIE, tieUnitConversion));
 		
 		product.getUnits().add(Unit.CARTON);
 		product.getUnitQuantities().add(new UnitQuantity(Unit.CARTON, cartonQuantity));
 		product.getUnitPrices().add(new UnitPrice(Unit.CARTON, cartonUnitPrice));
+		product.getUnitConversions().add(new UnitConversion(Unit.CARTON, cartonUnitConversion));
 		
 		product.getUnits().add(Unit.DOZEN);
 		product.getUnitQuantities().add(new UnitQuantity(Unit.DOZEN, dozenQuantity));
 		product.getUnitPrices().add(new UnitPrice(Unit.DOZEN, dozenUnitPrice));
+		product.getUnitConversions().add(new UnitConversion(Unit.DOZEN, dozenUnitConversion));
 		
 		product.getUnits().add(Unit.PIECES);
 		product.getUnitQuantities().add(new UnitQuantity(Unit.PIECES, piecesQuantity));
 		product.getUnitPrices().add(new UnitPrice(Unit.PIECES, piecesUnitPrice));
+		product.getUnitConversions().add(new UnitConversion(Unit.PIECES, piecesUnitConversion));
 		
 		productDao.save(product);
 		productPriceDao.save(product);
@@ -104,6 +115,12 @@ public class ProductDaoTest extends AbstractTransactionalJUnit4SpringContextTest
 		assertEquals(cartonUnitPrice, fromDb.getUnitPrice(Unit.CARTON));
 		assertEquals(dozenUnitPrice, fromDb.getUnitPrice(Unit.DOZEN));
 		assertEquals(piecesUnitPrice, fromDb.getUnitPrice(Unit.PIECES));
+		
+		assertEquals(caseUnitConversion, fromDb.getUnitConversion(Unit.CASE));
+		assertEquals(tieUnitConversion, fromDb.getUnitConversion(Unit.TIE));
+		assertEquals(cartonUnitConversion, fromDb.getUnitConversion(Unit.CARTON));
+		assertEquals(dozenUnitConversion, fromDb.getUnitConversion(Unit.DOZEN));
+		assertEquals(piecesUnitConversion, fromDb.getUnitConversion(Unit.PIECES));
 	}
 	
 	@Test
@@ -118,6 +135,11 @@ public class ProductDaoTest extends AbstractTransactionalJUnit4SpringContextTest
 		int cartonQuantity = 20;
 		int dozenQuantity = 25;
 		int piecesQuantity = 30;
+		int caseUnitConversion = 240;
+		int tieUnitConversion = 36;
+		int cartonUnitConversion = 60;
+		int dozenUnitConversion = 12;
+		int piecesUnitConversion = 1;
 		
 		product.setCode(code);
 		product.setDescription(description);
@@ -128,6 +150,11 @@ public class ProductDaoTest extends AbstractTransactionalJUnit4SpringContextTest
 		product.addUnitQuantity(Unit.CARTON, cartonQuantity);
 		product.addUnitQuantity(Unit.DOZEN, dozenQuantity);
 		product.addUnitQuantity(Unit.PIECES, piecesQuantity);
+		product.setUnitConversion(Unit.CASE, caseUnitConversion);
+		product.setUnitConversion(Unit.TIE, tieUnitConversion);
+		product.setUnitConversion(Unit.CARTON, cartonUnitConversion);
+		product.setUnitConversion(Unit.DOZEN, dozenUnitConversion);
+		product.setUnitConversion(Unit.PIECES, piecesUnitConversion);
 		
 		productDao.save(product);
 		
@@ -141,6 +168,12 @@ public class ProductDaoTest extends AbstractTransactionalJUnit4SpringContextTest
 		assertEquals(cartonQuantity, fromDb.getUnitQuantity(Unit.CARTON));
 		assertEquals(dozenQuantity, fromDb.getUnitQuantity(Unit.DOZEN));
 		assertEquals(piecesQuantity, fromDb.getUnitQuantity(Unit.PIECES));
+		
+		assertEquals(caseUnitConversion, fromDb.getUnitConversion(Unit.CASE));
+		assertEquals(tieUnitConversion, fromDb.getUnitConversion(Unit.TIE));
+		assertEquals(cartonUnitConversion, fromDb.getUnitConversion(Unit.CARTON));
+		assertEquals(dozenUnitConversion, fromDb.getUnitConversion(Unit.DOZEN));
+		assertEquals(piecesUnitConversion, fromDb.getUnitConversion(Unit.PIECES));
 	}
 
 	private Product createProduct() {

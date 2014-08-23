@@ -20,6 +20,7 @@ public class Product implements Comparable<Product> {
 	private boolean active;
 	private Manufacturer manufacturer;
 	private ProductCategory category;
+	private List<UnitConversion> unitConversions = new ArrayList<>();
 
 	public Product() {
 	}
@@ -207,6 +208,33 @@ public class Product implements Comparable<Product> {
 		if (!units.contains(unit)) {
 			units.add(unit);
 		}
+	}
+
+	public List<UnitConversion> getUnitConversions() {
+		return unitConversions;
+	}
+
+	public void setUnitConversions(List<UnitConversion> unitConversions) {
+		this.unitConversions = unitConversions;
+	}
+
+	public int getUnitConversion(String unit) {
+		for (UnitConversion unitConversion : unitConversions) {
+			if (unit.equals(unitConversion.getUnit())) {
+				return unitConversion.getQuantity();
+			}
+		}
+		return 0;
+	}
+
+	public void setUnitConversion(String unit, int quantity) {
+		for (UnitConversion unitConversion : unitConversions) {
+			if (unit.equals(unitConversion.getUnit())) {
+				unitConversion.setQuantity(quantity);
+				return;
+			}
+		}
+		unitConversions.add(new UnitConversion(unit, quantity));
 	}
 	
 }

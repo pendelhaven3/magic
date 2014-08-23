@@ -21,6 +21,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.Unit;
+import com.pj.magic.model.UnitConversion;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.model.UnitQuantity;
 
@@ -32,6 +33,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " UNIT_IND_CSE, UNIT_IND_TIE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
 			+ " UNIT_PRICE_CSE, UNIT_PRICE_TIE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
 			+ " AVAIL_QTY_CSE, AVAIL_QTY_TIE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS,"
+			+ " UNIT_CONV_CSE, UNIT_CONV_TIE, UNIT_CONV_CTN, UNIT_CONV_DOZ, UNIT_CONV_PCS,"
 			+ " MANUFACTURER_ID, c.NAME as MANUFACTURER_NAME,"
 			+ " CATEGORY_ID, d.NAME as CATEGORY_NAME"
 			+ " from PRODUCT a"
@@ -89,26 +91,31 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.getUnits().add(Unit.CASE);
 				product.getUnitPrices().add(new UnitPrice(Unit.CASE, rs.getBigDecimal("UNIT_PRICE_CSE")));
 				product.getUnitQuantities().add(new UnitQuantity(Unit.CASE, rs.getInt("AVAIL_QTY_CSE")));
+				product.getUnitConversions().add(new UnitConversion(Unit.CASE, rs.getInt("UNIT_CONV_CSE")));
 			}
 			if ("Y".equals(rs.getString("UNIT_IND_TIE"))) {
 				product.getUnits().add(Unit.TIE);
 				product.getUnitPrices().add(new UnitPrice(Unit.TIE, rs.getBigDecimal("UNIT_PRICE_TIE")));
 				product.getUnitQuantities().add(new UnitQuantity(Unit.TIE, rs.getInt("AVAIL_QTY_TIE")));
+				product.getUnitConversions().add(new UnitConversion(Unit.TIE, rs.getInt("UNIT_CONV_TIE")));
 			}
 			if ("Y".equals(rs.getString("UNIT_IND_CTN"))) {
 				product.getUnits().add(Unit.CARTON);
 				product.getUnitPrices().add(new UnitPrice(Unit.CARTON, rs.getBigDecimal("UNIT_PRICE_CTN")));
 				product.getUnitQuantities().add(new UnitQuantity(Unit.CARTON, rs.getInt("AVAIL_QTY_CTN")));
+				product.getUnitConversions().add(new UnitConversion(Unit.CARTON, rs.getInt("UNIT_CONV_CTN")));
 			}
 			if ("Y".equals(rs.getString("UNIT_IND_DOZ"))) {
 				product.getUnits().add(Unit.DOZEN);
 				product.getUnitPrices().add(new UnitPrice(Unit.DOZEN, rs.getBigDecimal("UNIT_PRICE_DOZ")));
 				product.getUnitQuantities().add(new UnitQuantity(Unit.DOZEN, rs.getInt("AVAIL_QTY_DOZ")));
+				product.getUnitConversions().add(new UnitConversion(Unit.DOZEN, rs.getInt("UNIT_CONV_DOZ")));
 			}
 			if ("Y".equals(rs.getString("UNIT_IND_PCS"))) {
 				product.getUnits().add(Unit.PIECES);
 				product.getUnitPrices().add(new UnitPrice(Unit.PIECES, rs.getBigDecimal("UNIT_PRICE_PCS")));
 				product.getUnitQuantities().add(new UnitQuantity(Unit.PIECES, rs.getInt("AVAIL_QTY_PCS")));
+				product.getUnitConversions().add(new UnitConversion(Unit.PIECES, rs.getInt("UNIT_CONV_PCS")));
 			}
 			
 			if (rs.getLong("MANUFACTURER_ID") != 0) {
@@ -157,11 +164,11 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	private static final String UPDATE_SQL =
 			"update PRODUCT set CODE = ?, DESCRIPTION = ?,"
 			+ " MAX_STOCK_LEVEL = ?, MIN_STOCK_LEVEL = ?, ACTIVE_IND = ?,"
-			+ " UNIT_IND_CSE = ?, AVAIL_QTY_CSE = ?,"
-			+ " UNIT_IND_TIE = ?, AVAIL_QTY_TIE = ?,"
-			+ " UNIT_IND_CTN = ?, AVAIL_QTY_CTN = ?,"
-			+ " UNIT_IND_DOZ = ?, AVAIL_QTY_DOZ = ?,"
-			+ " UNIT_IND_PCS = ?, AVAIL_QTY_PCS = ?,"
+			+ " UNIT_IND_CSE = ?, AVAIL_QTY_CSE = ?, UNIT_CONV_CSE = ?,"
+			+ " UNIT_IND_TIE = ?, AVAIL_QTY_TIE = ?, UNIT_CONV_TIE = ?,"
+			+ " UNIT_IND_CTN = ?, AVAIL_QTY_CTN = ?, UNIT_CONV_CTN = ?,"
+			+ " UNIT_IND_DOZ = ?, AVAIL_QTY_DOZ = ?, UNIT_CONV_DOZ = ?,"
+			+ " UNIT_IND_PCS = ?, AVAIL_QTY_PCS = ?, UNIT_CONV_PCS = ?,"
 			+ " MANUFACTURER_ID = ?, CATEGORY_ID = ? where ID = ?";
 	
 	private void update(Product product) {
@@ -173,14 +180,19 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.isActive() ? "Y" : "N",
 				product.hasUnit(Unit.CASE) ? "Y" : "N",
 				product.getUnitQuantity(Unit.CASE),
+				product.getUnitConversion(Unit.CASE),
 				product.hasUnit(Unit.TIE) ? "Y" : "N",
 				product.getUnitQuantity(Unit.TIE),
+				product.getUnitConversion(Unit.TIE),
 				product.hasUnit(Unit.CARTON) ? "Y" : "N",
 				product.getUnitQuantity(Unit.CARTON),
+				product.getUnitConversion(Unit.CARTON),
 				product.hasUnit(Unit.DOZEN) ? "Y" : "N",
 				product.getUnitQuantity(Unit.DOZEN),
+				product.getUnitConversion(Unit.DOZEN),
 				product.hasUnit(Unit.PIECES) ? "Y" : "N",
 				product.getUnitQuantity(Unit.PIECES),
+				product.getUnitConversion(Unit.PIECES),
 				product.getManufacturer() != null ? product.getManufacturer().getId() : null,
 				product.getCategory() != null ? product.getCategory().getId() : null,
 				product.getId());
@@ -189,9 +201,10 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	private static final String INSERT_SQL =
 			"insert into PRODUCT (CODE, DESCRIPTION, MAX_STOCK_LEVEL, MIN_STOCK_LEVEL, ACTIVE_IND,"
 			+ " UNIT_IND_CSE, UNIT_IND_TIE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
-			+ " AVAIL_QTY_CSE, AVAIL_QTY_TIE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS, "
+			+ " AVAIL_QTY_CSE, AVAIL_QTY_TIE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS,"
+			+ " UNIT_CONV_CSE, UNIT_CONV_TIE, UNIT_CONV_CTN, UNIT_CONV_DOZ, UNIT_CONV_PCS,"
 			+ " MANUFACTURER_ID, CATEGORY_ID)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Product product) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -216,15 +229,20 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				ps.setInt(13, product.getUnitQuantity(Unit.CARTON));
 				ps.setInt(14, product.getUnitQuantity(Unit.DOZEN));
 				ps.setInt(15, product.getUnitQuantity(Unit.PIECES));
+				ps.setInt(16, product.getUnitConversion(Unit.CASE));
+				ps.setInt(17, product.getUnitConversion(Unit.TIE));
+				ps.setInt(18, product.getUnitConversion(Unit.CARTON));
+				ps.setInt(19, product.getUnitConversion(Unit.DOZEN));
+				ps.setInt(20, product.getUnitConversion(Unit.PIECES));
 				if (product.getManufacturer() != null) {
-					ps.setLong(16, product.getManufacturer().getId());
+					ps.setLong(21, product.getManufacturer().getId());
 				} else {
-					ps.setNull(16, Types.NUMERIC);
+					ps.setNull(21, Types.NUMERIC);
 				}
 				if (product.getCategory() != null) {
-					ps.setLong(17, product.getCategory().getId());
+					ps.setLong(22, product.getCategory().getId());
 				} else {
-					ps.setNull(17, Types.NUMERIC);
+					ps.setNull(22, Types.NUMERIC);
 				}
 				return ps;
 			}
