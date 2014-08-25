@@ -5,7 +5,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -18,20 +17,19 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.tables.SalesRequisitionsTable;
-import com.pj.magic.model.SalesRequisition;
-import com.pj.magic.model.User;
-import com.pj.magic.service.SalesRequisitionService;
+import com.pj.magic.gui.tables.StockQuantityConversionsTable;
+import com.pj.magic.model.StockQuantityConversion;
+import com.pj.magic.service.StockQuantityConversionService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class SalesRequisitionListPanel extends AbstractMagicPanel implements ActionListener {
+public class StockQuantityConversionListPanel extends AbstractMagicPanel implements ActionListener {
 	
-	private static final String NEW_SALES_REQUISITION_ACTION_NAME = "newSalesRequisition";
-	private static final String NEW_SALES_REQUISITION_ACTION_COMMAND_NAME = "newSalesRequisition";
+	private static final String NEW_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "newStockQuantityConversion";
+	private static final String NEW_STOCK_QUANTITY_CONVERSION_ACTION_COMMAND_NAME = "newStockQuantityConversion";
 	
-	@Autowired private SalesRequisitionsTable table;
-	@Autowired private SalesRequisitionService salesRequisitionService;
+	@Autowired private StockQuantityConversionsTable table;
+	@Autowired private StockQuantityConversionService stockQuantityConversionService;
 	
 	@Override
 	public void initializeComponents() {
@@ -42,8 +40,8 @@ public class SalesRequisitionListPanel extends AbstractMagicPanel implements Act
 		table.update();
 	}
 
-	public void displaySalesRequisitionDetails(SalesRequisition salesRequisition) {
-		getMagicFrame().switchToSalesRequisitionPanel(salesRequisition);
+	public void displayStockQuantityConversionDetails(StockQuantityConversion stockQuantityConversion) {
+		getMagicFrame().switchToStockQuantityConversionPanel(stockQuantityConversion);
 	}
 	
 	@Override
@@ -82,23 +80,21 @@ public class SalesRequisitionListPanel extends AbstractMagicPanel implements Act
 	@Override
 	protected void registerKeyBindings() {
 		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), NEW_SALES_REQUISITION_ACTION_NAME);
-		getActionMap().put(NEW_SALES_REQUISITION_ACTION_NAME, new AbstractAction() {
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), NEW_STOCK_QUANTITY_CONVERSION_ACTION_NAME);
+		getActionMap().put(NEW_STOCK_QUANTITY_CONVERSION_ACTION_NAME, new AbstractAction() {
 		
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				switchToNewSalesRequisitionPanel();
+				switchToNewStockQuantityConversionPanel();
 			}
 		});		
 	}
 	
-	protected void switchToNewSalesRequisitionPanel() {
-		SalesRequisition salesRequisition = new SalesRequisition();
-		salesRequisition.setCreateDate(new Date());
-		salesRequisition.setEncoder(new User(1L)); // TODO: Use current user later
-		salesRequisitionService.save(salesRequisition);
+	protected void switchToNewStockQuantityConversionPanel() {
+		StockQuantityConversion stockQuantityConversion = new StockQuantityConversion();
+		stockQuantityConversionService.save(stockQuantityConversion);
 		
-		getMagicFrame().switchToSalesRequisitionPanel(salesRequisition);
+		getMagicFrame().switchToStockQuantityConversionPanel(stockQuantityConversion);
 	}
 
 	@Override
@@ -111,7 +107,7 @@ public class SalesRequisitionListPanel extends AbstractMagicPanel implements Act
 		addBackButton(toolBar);
 		
 		JButton postButton = new MagicToolBarButton("plus", "New (F4)");
-		postButton.setActionCommand(NEW_SALES_REQUISITION_ACTION_COMMAND_NAME);
+		postButton.setActionCommand(NEW_STOCK_QUANTITY_CONVERSION_ACTION_COMMAND_NAME);
 		postButton.addActionListener(this);
 		
 		toolBar.add(postButton);
@@ -121,8 +117,8 @@ public class SalesRequisitionListPanel extends AbstractMagicPanel implements Act
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
-		case NEW_SALES_REQUISITION_ACTION_COMMAND_NAME:
-			switchToNewSalesRequisitionPanel();
+		case NEW_STOCK_QUANTITY_CONVERSION_ACTION_COMMAND_NAME:
+			switchToNewStockQuantityConversionPanel();
 			break;
 		}
 	}

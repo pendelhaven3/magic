@@ -28,6 +28,8 @@ import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.panels.SalesInvoicePanel;
 import com.pj.magic.gui.panels.SalesRequisitionListPanel;
 import com.pj.magic.gui.panels.SalesRequisitionPanel;
+import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
+import com.pj.magic.gui.panels.StockQuantityConversionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
@@ -37,6 +39,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.Supplier;
 
 @Component
@@ -61,6 +64,8 @@ public class MagicFrame extends JFrame {
 	private static final String MAINTAIN_PAYMENT_TERM_PANEL = "MAINTAIN_PAYMENT_TERM_PANEL";
 	private static final String PRICING_SCHEME_LIST_PANEL = "PRICING_SCHEME_LIST_PANEL";
 	private static final String MAINTAIN_PRICING_SCHEME_PANEL = "MAINTAIN_PRICING_SCHEME_PANEL";
+	private static final String STOCK_QUANTITY_CONVERSION_LIST_PANEL = "STOCK_QUANTITY_CONVERSION_LIST_PANEL";
+	private static final String STOCK_QUANTITY_CONVERSION_PANEL = "STOCK_QUANTITY_CONVERSION_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
@@ -81,6 +86,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainPaymentTermPanel maintainPaymentTermPanel;
 	@Autowired private PricingSchemeListPanel pricingSchemeListPanel;
 	@Autowired private MaintainPricingSchemePanel maintainPricingSchemePanel;
+	@Autowired private StockQuantityConversionListPanel stockQuantityConversionListPanel;
+	@Autowired private StockQuantityConversionPanel stockQuantityConversionPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -113,6 +120,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(maintainPaymentTermPanel, MAINTAIN_PAYMENT_TERM_PANEL);
 		panelHolder.add(pricingSchemeListPanel, PRICING_SCHEME_LIST_PANEL);
 		panelHolder.add(maintainPricingSchemePanel, MAINTAIN_PRICING_SCHEME_PANEL);
+		panelHolder.add(stockQuantityConversionListPanel, STOCK_QUANTITY_CONVERSION_LIST_PANEL);
+		panelHolder.add(stockQuantityConversionPanel, STOCK_QUANTITY_CONVERSION_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -300,6 +309,18 @@ public class MagicFrame extends JFrame {
 	private void switchToMaintainPricingSchemePanel(PricingScheme pricingScheme) {
 		maintainPricingSchemePanel.updateDisplay(pricingScheme);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PRICING_SCHEME_PANEL);
+	}
+
+	public void switchToStockQuantityConversionListPanel() {
+		addPanelNameToTitle("Stock Quantity Conversions List");
+		stockQuantityConversionListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_QUANTITY_CONVERSION_LIST_PANEL);
+	}
+
+	public void switchToStockQuantityConversionPanel(StockQuantityConversion stockQuantityConversion) {
+		addPanelNameToTitle("Stock Quantity Conversion");
+		stockQuantityConversionPanel.updateDisplay(stockQuantityConversion);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_QUANTITY_CONVERSION_PANEL);
 	}
 	
 }

@@ -153,3 +153,23 @@ create table PRODUCT_PRICE (
   constraint PRODUCT_PRICE$FK foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID),
   constraint PRODUCT_PRICE$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
+
+create table STOCK_QTY_CONVERSION (
+  ID integer auto_increment,
+  STOCK_QTY_CONV_NO integer auto_increment,
+  REMARKS varchar2(100) null,
+  constraint STOCK_QTY_CONVERSION$PK primary key (ID),
+  constraint STOCK_QTY_CONVERSION$UK unique (STOCK_QTY_CONV_NO)
+);
+
+create table STOCK_QTY_CONVERSION_ITEM (
+  ID integer auto_increment,
+  STOCK_QTY_CONVERSION_ID integer not null,
+  PRODUCT_ID integer not null,
+  FROM_UNIT varchar2(3) not null,
+  TO_UNIT varchar2(3) not null,
+  QUANTITY integer(3) not null,
+  constraint STOCK_QTY_CONVERSION_ITEM$PK primary key (ID),
+  constraint STOCK_QTY_CONVERSION_ITEM$FK foreign key (STOCK_QTY_CONVERSION_ID) references STOCK_QTY_CONVERSION (ID),
+  constraint STOCK_QTY_CONVERSION_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);

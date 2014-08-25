@@ -39,7 +39,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(200, 150));
+		table.setPreferredSize(new Dimension(200, 200));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		add(table, c);
@@ -80,6 +80,9 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				case "Pricing Schemes":
 					getMagicFrame().switchToPricingSchemeListPanel();
 					break;
+				case "Stock Quantity Conversion":
+					getMagicFrame().switchToStockQuantityConversionListPanel();
+					break;
 				}
 			}
 		});
@@ -97,6 +100,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				{"Pricing Schemes"},
 				{"Sales Requisition"}, 
 				{"Sales Invoice"},
+				{"Stock Quantity Conversion"},
 				{"Manufacturer List"},
 				{"Supplier List"},
 				{"Product Category List"},
