@@ -1,6 +1,5 @@
 package com.pj.magic.gui.tables;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.StockQuantityConversionService;
-import com.pj.magic.util.FormatterUtil;
 
 /*
  * [PJ 8/25/2014] 
@@ -50,16 +48,14 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 			return (item.getProduct() != null) ? item.getProduct().getCode() : "";
 		case StockQuantityConversionItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
 			return (item.getProduct() != null) ? item.getProduct().getDescription() : "";
-		case StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX:
-			return StringUtils.defaultString(item.getUnit());
+		case StockQuantityConversionItemsTable.FROM_UNIT_COLUMN_INDEX:
+			return StringUtils.defaultString(item.getFromUnit());
 		case StockQuantityConversionItemsTable.QUANTITY_COLUMN_INDEX:
 			return (item.getQuantity() != null) ? item.getQuantity() : "";
-		case StockQuantityConversionItemsTable.FROM_UNIT_COLUMN_INDEX:
-			BigDecimal unitPrice = item.getUnitPrice();
-			return (unitPrice != null) ? FormatterUtil.formatAmount(unitPrice) : "";
+		case StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX:
+			return StringUtils.defaultString(item.getToUnit());
 		case StockQuantityConversionItemsTable.CONVERTED_QUANTITY_COLUMN_INDEX:
-			BigDecimal amount = item.getAmount();
-			return (amount != null) ? FormatterUtil.formatAmount(amount) : "";
+			return (item.isFilledUp()) ? String.valueOf(item.getConvertedQuantity()) : "";
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
@@ -104,15 +100,18 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 			}
 			item.setProduct(product);
 			break;
-		case StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX:
-			item.setUnit(val);
+		case StockQuantityConversionItemsTable.FROM_UNIT_COLUMN_INDEX:
+			item.setFromUnit(val);
 			break;
-		case StockQuantityConversionItemsTable.CONVERTED_QUANTITY_COLUMN_INDEX:
+		case StockQuantityConversionItemsTable.QUANTITY_COLUMN_INDEX:
 			if (!StringUtils.isEmpty(val) && StringUtils.isNumeric(val)) {
 				item.setQuantity(Integer.parseInt(val));
 			} else {
 				item.setQuantity(null);
 			}
+			break;
+		case StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX:
+			item.setToUnit(val);
 			break;
 		}
 		if (item.isValid()) {
@@ -124,8 +123,9 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		return columnIndex == StockQuantityConversionItemsTable.PRODUCT_CODE_COLUMN_INDEX
-				|| columnIndex == StockQuantityConversionItemsTable.CONVERTED_QUANTITY_COLUMN_INDEX
-				|| columnIndex == StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX;
+				|| columnIndex == StockQuantityConversionItemsTable.FROM_UNIT_COLUMN_INDEX
+				|| columnIndex == StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX
+				|| columnIndex == StockQuantityConversionItemsTable.QUANTITY_COLUMN_INDEX;
 	}
 	
 	public StockQuantityConversionItem getRowItem(int rowIndex) {

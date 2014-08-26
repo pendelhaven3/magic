@@ -45,6 +45,7 @@ public class Bootstrap {
 		if (Boolean.parseBoolean(resources.getString("development"))) {
 			loadProductsFromExcelFile();
 			loadCustomersFromExcelFile();
+			runScriptFile("data2.sql");
 		}
 	}
 	

@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.StockQuantityConversionDao;
+import com.pj.magic.dao.StockQuantityConversionItemDao;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.service.StockQuantityConversionService;
@@ -15,6 +17,8 @@ import com.pj.magic.service.StockQuantityConversionService;
 public class StockQuantityConversionServiceImpl implements StockQuantityConversionService {
 
 	@Autowired private StockQuantityConversionDao stockQuantityConversionDao;
+	@Autowired private StockQuantityConversionItemDao stockQuantityConversionItemDao;
+	@Autowired private ProductDao productDao;
 	
 	@Transactional
 	@Override
@@ -24,7 +28,18 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 
 	@Override
 	public StockQuantityConversion getStockQuantityConversion(long id) {
-		return stockQuantityConversionDao.get(id);
+		StockQuantityConversion stockQuantityConversion = stockQuantityConversionDao.get(id);
+		loadStockQuantityConversionDetails(stockQuantityConversion);
+		return stockQuantityConversion;
+	}
+
+	private void loadStockQuantityConversionDetails(
+			StockQuantityConversion stockQuantityConversion) {
+		stockQuantityConversion.setItems(
+				stockQuantityConversionItemDao.findAllByStockQuantityConversion(stockQuantityConversion));
+		for (StockQuantityConversionItem item : stockQuantityConversion.getItems()) {
+			item.setProduct(productDao.get(item.getProduct().getId()));
+		}
 	}
 
 	@Override
@@ -35,8 +50,8 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 	@Transactional
 	@Override
 	public void delete(StockQuantityConversion stockQuantityConversion) {
-		// TODO Auto-generated method stub
-		
+		stockQuantityConversionItemDao.deleteAllByStockQuantityConversion(stockQuantityConversion);
+		stockQuantityConversionDao.delete(stockQuantityConversion);
 	}
 
 	@Transactional
@@ -49,15 +64,13 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 	@Transactional
 	@Override
 	public void save(StockQuantityConversionItem item) {
-		// TODO Auto-generated method stub
-		
+		stockQuantityConversionItemDao.save(item);
 	}
 
 	@Transactional
 	@Override
 	public void delete(StockQuantityConversionItem item) {
-		// TODO Auto-generated method stub
-		
+		stockQuantityConversionItemDao.delete(item);
 	}
 
 }

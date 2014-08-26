@@ -90,5 +90,12 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		}
 		
 	}
+
+	private static final String DELETE_SQL = "delete STOCK_QTY_CONVERSION where ID = ?";
+	
+	@Override
+	public void delete(StockQuantityConversion stockQuantityConversion) {
+		getJdbcTemplate().update(DELETE_SQL, stockQuantityConversion.getId());
+	}
 	
 }

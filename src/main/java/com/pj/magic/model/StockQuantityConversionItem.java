@@ -1,7 +1,5 @@
 package com.pj.magic.model;
 
-import java.math.BigDecimal;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.util.StringUtils;
@@ -11,37 +9,18 @@ public class StockQuantityConversionItem {
 	private Long id;
 	private StockQuantityConversion parent;
 	private Product product;
-	private String unit;
+	private String fromUnit;
+	private String toUnit;
 	private Integer quantity;
 
 	public boolean isValid() {
 		return (product != null && product.isValid())
-				&& product.hasUnit(unit)
+				&& product.hasUnit(fromUnit) && product.hasUnit(toUnit)
 				&& (quantity != null && isQuantityValid());
 	}
 	
-	public BigDecimal getUnitPrice() {
-		if (product == null || !product.isValid() || !product.hasUnit(unit)) {
-			return null;
-		}
-		
-		for (UnitPrice unitPrice : product.getUnitPrices()) {
-			if (unitPrice.getUnit().equals(unit)) {
-				return unitPrice.getPrice();
-			}
-		}
-		return null;
-	}
-	
-	public BigDecimal getAmount() {
-		if (product == null || !product.isValid() || quantity == null) {
-			return null;
-		}
-		return getUnitPrice().multiply(new BigDecimal(quantity.intValue()));
-	}
-	
 	public boolean isQuantityValid() {
-		return product.hasAvailableUnitQuantity(unit, quantity);
+		return product.hasAvailableUnitQuantity(fromUnit, quantity);
 	}
 	
 	public Long getId() {
@@ -68,14 +47,6 @@ public class StockQuantityConversionItem {
 		this.product = product;
 	}
 	
-	public String getUnit() {
-		return unit;
-	}
-
-	public void setUnit(String unit) {
-		this.unit = unit;
-	}
-
 	public Integer getQuantity() {
 		return quantity;
 	}
@@ -88,7 +59,6 @@ public class StockQuantityConversionItem {
 	public int hashCode() {
 		return new HashCodeBuilder()
 			.append(product)
-			.append(unit)
 			.toHashCode();
 	}
 
@@ -103,12 +73,32 @@ public class StockQuantityConversionItem {
         StockQuantityConversionItem other = (StockQuantityConversionItem)obj;		
 		return new EqualsBuilder()
 			.append(product, other.getProduct())
-			.append(unit, other.getUnit())
 			.isEquals();
 	}
 	
 	public boolean isFilledUp() {
-		return product != null && !StringUtils.isEmpty(unit) && quantity != null;
+		return product != null && !StringUtils.isEmpty(fromUnit) 
+				&& !StringUtils.isEmpty(toUnit) && quantity != null;
+	}
+
+	public String getFromUnit() {
+		return fromUnit;
+	}
+
+	public void setFromUnit(String fromUnit) {
+		this.fromUnit = fromUnit;
+	}
+
+	public String getToUnit() {
+		return toUnit;
+	}
+
+	public void setToUnit(String toUnit) {
+		this.toUnit = toUnit;
+	}
+
+	public int getConvertedQuantity() {
+		return product.getUnitConversion(fromUnit) / product.getUnitConversion(toUnit) * quantity;
 	}
 	
 }

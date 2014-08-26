@@ -184,7 +184,7 @@ public class StockQuantityConversionPanel extends AbstractMagicPanel implements 
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		remarksField.setPreferredSize(new Dimension(100, 20));
+		remarksField.setPreferredSize(new Dimension(200, 20));
 		add(remarksField, c);
 		
 		currentRow++; // third row

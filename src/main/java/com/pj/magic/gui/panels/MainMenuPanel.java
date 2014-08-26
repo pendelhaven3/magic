@@ -14,6 +14,8 @@ import javax.swing.table.AbstractTableModel;
 
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
+
 @Component
 public class MainMenuPanel extends AbstractMagicPanel {
 
@@ -52,40 +54,53 @@ public class MainMenuPanel extends AbstractMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-				case "Product List":
-					getMagicFrame().switchToProductListPanel();
-					break;
-				case "Manufacturer List":
-					getMagicFrame().switchToManufacturerListPanel();
-					break;
-				case "Supplier List":
-					getMagicFrame().switchToSupplierListPanel();
-					break;
-				case "Product Category List":
-					getMagicFrame().switchToProductCategoryListPanel();
-					break;
-				case "Sales Requisition":
-					getMagicFrame().switchToSalesRequisitionsListPanel();
-					break;
-				case "Sales Invoice":
-					getMagicFrame().switchToSalesInvoicesListPanel();
-					break;
-				case "Customer List":
-					getMagicFrame().switchToCustomerListPanel();
-					break;
-				case "Payment Terms List":
-					getMagicFrame().switchToPaymentTermListPanel();
-					break;
-				case "Pricing Schemes":
-					getMagicFrame().switchToPricingSchemeListPanel();
-					break;
-				case "Stock Quantity Conversion":
-					getMagicFrame().switchToStockQuantityConversionListPanel();
-					break;
-				}
+				selectMenuItem();
 			}
 		});
+		
+		table.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				selectMenuItem();
+			}
+		});
+		
+	}
+
+	protected void selectMenuItem() {
+		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
+		case "Product List":
+			getMagicFrame().switchToProductListPanel();
+			break;
+		case "Manufacturer List":
+			getMagicFrame().switchToManufacturerListPanel();
+			break;
+		case "Supplier List":
+			getMagicFrame().switchToSupplierListPanel();
+			break;
+		case "Product Category List":
+			getMagicFrame().switchToProductCategoryListPanel();
+			break;
+		case "Sales Requisition":
+			getMagicFrame().switchToSalesRequisitionsListPanel();
+			break;
+		case "Sales Invoice":
+			getMagicFrame().switchToSalesInvoicesListPanel();
+			break;
+		case "Customer List":
+			getMagicFrame().switchToCustomerListPanel();
+			break;
+		case "Payment Terms List":
+			getMagicFrame().switchToPaymentTermListPanel();
+			break;
+		case "Pricing Schemes":
+			getMagicFrame().switchToPricingSchemeListPanel();
+			break;
+		case "Stock Quantity Conversion":
+			getMagicFrame().switchToStockQuantityConversionListPanel();
+			break;
+		}
 	}
 
 	@Override

@@ -11,5 +11,7 @@ public interface StockQuantityConversionDao {
 	StockQuantityConversion get(long id);
 	
 	List<StockQuantityConversion> getAll();
+
+	void delete(StockQuantityConversion stockQuantityConversion);
 	
 }
