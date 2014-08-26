@@ -93,6 +93,12 @@ public abstract class AbstractMagicPanel extends JPanel {
 		return JOptionPane.showConfirmDialog(this, message, "Confirmation Message", JOptionPane.YES_NO_OPTION);
 	}
 	
+	// TODO: Migrate references here
+	protected boolean confirm(String message) {
+		int confirm = JOptionPane.showConfirmDialog(this, message, "Confirmation Message", JOptionPane.YES_NO_OPTION);
+		return confirm == JOptionPane.OK_OPTION;
+	}
+	
 	protected void showMessage(String message) {
 		JOptionPane.showMessageDialog(this, message);
 	}

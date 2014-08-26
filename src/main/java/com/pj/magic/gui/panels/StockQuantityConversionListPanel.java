@@ -26,7 +26,7 @@ import com.pj.magic.util.ComponentUtil;
 public class StockQuantityConversionListPanel extends AbstractMagicPanel implements ActionListener {
 	
 	private static final String NEW_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "newStockQuantityConversion";
-	private static final String NEW_STOCK_QUANTITY_CONVERSION_ACTION_COMMAND_NAME = "newStockQuantityConversion";
+	private static final String DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "deleteStockQuantityConversion";
 	
 	@Autowired private StockQuantityConversionsTable table;
 	@Autowired private StockQuantityConversionService stockQuantityConversionService;
@@ -88,6 +88,16 @@ public class StockQuantityConversionListPanel extends AbstractMagicPanel impleme
 				switchToNewStockQuantityConversionPanel();
 			}
 		});		
+		
+		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME);
+		getActionMap().put(DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME, new AbstractAction() {
+	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteStockQuantityConversion();
+			}
+		});		
 	}
 	
 	protected void switchToNewStockQuantityConversionPanel() {
@@ -106,20 +116,41 @@ public class StockQuantityConversionListPanel extends AbstractMagicPanel impleme
 		MagicToolBar toolBar = new MagicToolBar();
 		addBackButton(toolBar);
 		
-		JButton postButton = new MagicToolBarButton("plus", "New (F4)");
-		postButton.setActionCommand(NEW_STOCK_QUANTITY_CONVERSION_ACTION_COMMAND_NAME);
-		postButton.addActionListener(this);
+		JButton addButton = new MagicToolBarButton("plus", "New (F4)");
+		addButton.setActionCommand(NEW_STOCK_QUANTITY_CONVERSION_ACTION_NAME);
+		addButton.addActionListener(this);
+		toolBar.add(addButton);
 		
-		toolBar.add(postButton);
+		JButton deleteButton = new MagicToolBarButton("minus", "Delete (F3)");
+		deleteButton.setActionCommand(DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME);
+		deleteButton.addActionListener(this);
+		toolBar.add(deleteButton);
+		
 		return toolBar;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
-		case NEW_STOCK_QUANTITY_CONVERSION_ACTION_COMMAND_NAME:
+		case NEW_STOCK_QUANTITY_CONVERSION_ACTION_NAME:
 			switchToNewStockQuantityConversionPanel();
 			break;
+		case DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME:
+			deleteStockQuantityConversion();
+			break;
+		}
+	}
+
+	private void deleteStockQuantityConversion() {
+		if (table.getSelectedRow() != -1) {
+			StockQuantityConversion selected = table.getCurrentlySelectedStockQuantityConversion();
+			if (selected.isPosted()) {
+				showErrorMessage("Cannot delete a stock quantity conversion that is already posted!");
+				return;
+			}
+			if (confirm("Are you sure you want to delete this stock quantity conversion?")) {
+				table.removeCurrentlySelectedRow();
+			}
 		}
 	}
 

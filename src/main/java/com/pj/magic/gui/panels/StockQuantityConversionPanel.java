@@ -277,6 +277,7 @@ public class StockQuantityConversionPanel extends AbstractMagicPanel implements 
 	
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new MagicToolBar();
+		addBackButton(toolBar);
 		
 		JButton postButton = new MagicToolBarButton("invoice", "Post");
 		postButton.setActionCommand(POST_ACTION_COMMAND);
