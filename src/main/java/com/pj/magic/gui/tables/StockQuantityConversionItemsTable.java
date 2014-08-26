@@ -485,8 +485,8 @@ public class StockQuantityConversionItemsTable extends ItemsTable {
 
 	public void highlightQuantityColumn(StockQuantityConversionItem item) {
 		int row = stockQuantityConversion.getItems().indexOf(item);
-		changeSelection(row, CONVERTED_QUANTITY_COLUMN_INDEX, false, false);
-		editCellAt(row, CONVERTED_QUANTITY_COLUMN_INDEX);
+		changeSelection(row, QUANTITY_COLUMN_INDEX, false, false);
+		editCellAt(row, QUANTITY_COLUMN_INDEX);
 		getEditorComponent().requestFocusInWindow();
 	}
 	

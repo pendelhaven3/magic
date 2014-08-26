@@ -89,7 +89,7 @@ public class PricingSchemeListPanel extends AbstractMagicPanel implements Action
 		postButton.setActionCommand(NEW_PRICING_SCHEME_ACTION_NAME);
 		postButton.addActionListener(this);
 		
-		toolBar.add(postButton);
+//		toolBar.add(postButton);
 		return toolBar;
 	}
 

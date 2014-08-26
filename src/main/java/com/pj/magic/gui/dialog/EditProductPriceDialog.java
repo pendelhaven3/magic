@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 
 import javax.annotation.PostConstruct;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -46,24 +47,13 @@ public class EditProductPriceDialog extends MagicDialog {
 		setSize(600, 500);
 		setLocationRelativeTo(null);
 		setTitle("Edit Product Price");
+		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
 	}
 
 	@PostConstruct
 	public void initialize() {
 		initializeComponents();
 		registerKeyBindings();
-		
-//		productsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-//			
-//			@Override
-//			public void valueChanged(ListSelectionEvent e) {
-//				int selectedRow = productsTable.getSelectedRow();
-//				if (selectedRow != -1) {
-//					Product product = productsTableModel.getProduct(selectedRow);
-//					unitPricesAndQuantitiesTableModel.setProduct(product);
-//				}
-//			}
-//		});
 	}
 
 	private void initializeComponents() {

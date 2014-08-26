@@ -430,30 +430,32 @@ public class StockQuantityConversionPanel extends AbstractMagicPanel implements 
 	public void actionPerformed(ActionEvent event) {
 		switch (event.getActionCommand()) {
 		case POST_ACTION_COMMAND:
-			postSalesRequisition();
+			postStockQuantityConversion();
 			break;
 		}
 	}
 
-	private void postSalesRequisition() {
+	private void postStockQuantityConversion() {
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();
 		}
 		
+		if (!stockQuantityConversion.hasItems()) {
+			showErrorMessage("Cannot post a stock quantity conversion with no items");
+			itemsTable.requestFocusInWindow();
+			return;
+		}
+		
 		int confirm = showConfirmMessage("Do you want to post this stock quantity conversion?");
 		if (confirm == JOptionPane.OK_OPTION) {
-			if (!stockQuantityConversion.hasItems()) {
-				showErrorMessage("Cannot post a sales requisition with no items");
-				itemsTable.requestFocusInWindow();
-				return;
-			}
 			try {
 				stockQuantityConversionService.post(stockQuantityConversion);
-				JOptionPane.showMessageDialog(this, "Post successful!");
+				showMessage("Post successful!");
+				getMagicFrame().switchToStockQuantityConversionListPanel();
 			} catch (NotEnoughStocksException e) {	
 				showErrorMessage("Not enough available stocks!");
 				updateDisplay(stockQuantityConversion);
-//				itemsTable.highlightQuantityColumn(e.getItem());
+				itemsTable.highlightQuantityColumn(e.getStockQuantityConversionItem());
 			}
 		}
 	}

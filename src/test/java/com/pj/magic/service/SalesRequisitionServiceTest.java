@@ -77,7 +77,7 @@ public class SalesRequisitionServiceTest extends AbstractJUnit4SpringContextTest
 		try {
 			salesRequisitionService.post(salesRequisition);
 		} catch (NotEnoughStocksException e) {
-			System.out.println(e.getItem().getProduct().getCode());
+			System.out.println(e.getSalesRequisitionItem().getProduct().getCode());
 			System.out.println(productService.findProductByCode("555CAL155").getUnitQuantity(Unit.CASE));
 		}
 	}

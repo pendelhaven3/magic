@@ -20,7 +20,8 @@ import com.pj.magic.model.StockQuantityConversion;
 @Repository
 public class StockQuantityConversionDaoImpl extends MagicDao implements StockQuantityConversionDao {
 	
-	private static final String BASE_SELECT_SQL = "select ID, STOCK_QTY_CONV_NO, REMARKS from STOCK_QTY_CONVERSION";
+	private static final String BASE_SELECT_SQL = 
+			"select ID, STOCK_QTY_CONV_NO, REMARKS, POST_IND, POST_DATE from STOCK_QTY_CONVERSION";
 	
 	private StockQuantityConversionRowMapper stockQuantityConversionRowMapper = new StockQuantityConversionRowMapper();
 	
@@ -54,10 +55,15 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		stockQuantityConversion.setStockQuantityConversionNumber(updated.getStockQuantityConversionNumber());
 	}
 
-	private static final String UPDATE_SQL = "update STOCK_QTY_CONVERSION set REMARKS = ? where ID = ?";
+	private static final String UPDATE_SQL = "update STOCK_QTY_CONVERSION"
+			+ " set REMARKS = ?, POST_IND = ?, POST_DATE = ? where ID = ?";
 	
 	private void update(StockQuantityConversion stockQuantityConversion) {
-		getJdbcTemplate().update(UPDATE_SQL, stockQuantityConversion.getRemarks(), stockQuantityConversion.getId());
+		getJdbcTemplate().update(UPDATE_SQL, 
+				stockQuantityConversion.getRemarks(),
+				stockQuantityConversion.isPosted() ? "Y" : "N",
+				stockQuantityConversion.getPostDate(),
+				stockQuantityConversion.getId());
 	}
 
 	private static final String GET_SQL = BASE_SELECT_SQL + " where id = ?";
@@ -71,7 +77,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		}
 	}
 
-	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by ID desc";
+	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by POST_IND asc, POST_DATE desc, ID desc";
 	
 	@Override
 	public List<StockQuantityConversion> getAll() {
@@ -86,6 +92,8 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 			stockQuantityConversion.setId(rs.getLong("ID"));
 			stockQuantityConversion.setStockQuantityConversionNumber(rs.getLong("STOCK_QTY_CONV_NO"));
 			stockQuantityConversion.setRemarks(rs.getString("REMARKS"));
+			stockQuantityConversion.setPosted("Y".equals(rs.getString("POST_IND")));
+			stockQuantityConversion.setPostDate(rs.getDate("POST_DATE"));
 			return stockQuantityConversion;
 		}
 		

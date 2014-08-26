@@ -158,6 +158,8 @@ create table STOCK_QTY_CONVERSION (
   ID integer auto_increment,
   STOCK_QTY_CONV_NO integer auto_increment,
   REMARKS varchar2(100) null,
+  POST_IND varchar2(1) default 'N' not null,
+  POST_DATE date null,
   constraint STOCK_QTY_CONVERSION$PK primary key (ID),
   constraint STOCK_QTY_CONVERSION$UK unique (STOCK_QTY_CONV_NO)
 );

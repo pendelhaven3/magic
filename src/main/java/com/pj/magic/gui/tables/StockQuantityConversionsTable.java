@@ -23,8 +23,6 @@ import com.pj.magic.service.StockQuantityConversionService;
 @Component
 public class StockQuantityConversionsTable extends JTable {
 
-	public static final int STOCK_QUANTITY_CONVERSION_NUMBER_COLUMN_INDEX = 0;
-	public static final int REMARKS_COLUMN_INDEX = 1;
 	private static final String GO_TO_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "goToStockQuantityConversion";
 	private static final String DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "deleteStockQuantityConversion";
 

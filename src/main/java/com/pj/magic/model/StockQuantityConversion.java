@@ -1,6 +1,7 @@
 package com.pj.magic.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class StockQuantityConversion {
@@ -9,6 +10,8 @@ public class StockQuantityConversion {
 	private Long stockQuantityConversionNumber;
 	private String remarks;
 	private List<StockQuantityConversionItem> items = new ArrayList<>();
+	private boolean posted;
+	private Date postDate;
 
 	public Long getId() {
 		return id;
@@ -49,5 +52,21 @@ public class StockQuantityConversion {
 	public boolean hasItems() {
 		return !items.isEmpty();
 	}
-	
+
+	public boolean isPosted() {
+		return posted;
+	}
+
+	public void setPosted(boolean posted) {
+		this.posted = posted;
+	}
+
+	public Date getPostDate() {
+		return postDate;
+	}
+
+	public void setPostDate(Date postDate) {
+		this.postDate = postDate;
+	}
+
 }

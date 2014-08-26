@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JTable;
@@ -16,7 +15,6 @@ public abstract class MagicDialog extends JDialog {
 	
 	public MagicDialog() {
 		setModal(true);
-		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
 		closeDialogWhenEscapeKeyPressed();
 	}
 	

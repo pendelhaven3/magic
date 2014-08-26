@@ -548,7 +548,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 			} catch (NotEnoughStocksException e) {	
 				showErrorMessage("Not enough available stocks!");
 				updateDisplay(salesRequisition);
-				itemsTable.highlightQuantityColumn(e.getItem());
+				itemsTable.highlightQuantityColumn(e.getSalesRequisitionItem());
 			}
 		}
 	}

@@ -18,4 +18,12 @@ public class ProductTest {
 		assertEquals(8, product.getUnitQuantities().get(1).getQuantity());
 	}
 	
+	@Test
+	public void addUnitQuantity() {
+		product.getUnitQuantities().add(new UnitQuantity(Unit.CASE, 10));
+		product.addUnitQuantity(Unit.CASE, 10);
+		
+		assertEquals(20, product.getUnitQuantities().get(0).getQuantity());
+	}
+	
 }
