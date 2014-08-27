@@ -99,6 +99,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		remarksField.setMaximumLength(100);
 		
 		focusOnComponentWhenThisPanelIsDisplayed(customerCodeField);
+		
 		updateTotalAmountFieldWhenItemsTableChanges();
 		initializeUnitPricesAndQuantitiesTable();
 	}
@@ -129,7 +130,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 			
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				savePricingScheme();
+				savePricingSchemeField();
 			}
 		});
 		
@@ -156,36 +157,38 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 	}
 
 	protected void saveRemarksField() {
-		if (salesRequisition.hasMinimumFieldsFilledUp()) {
+		if (!remarksField.getText().equals(salesRequisition.getRemarks())) {
+			salesRequisition.setRemarks(remarksField.getText());
 			salesRequisitionService.save(salesRequisition);
 		}
 		itemsTable.highlight();
 	}
 
 	protected void saveModeField() {
-		try {
-			validateMandatoryField(modeComboBox, "Mode");
-			if (salesRequisition.hasMinimumFieldsFilledUp()) {
-				salesRequisitionService.save(salesRequisition);
-			}
-			focusNextField();
-		} catch (ValidationException ex) {
-			// ignore
+		String mode = (String)modeComboBox.getSelectedItem();
+		if ((mode == null && salesRequisition.getMode() != null)
+				|| (mode != null && !mode.equals(salesRequisition.getMode()))) {
+			salesRequisition.setMode(mode);
+			salesRequisitionService.save(salesRequisition);
 		}
+		focusNextField();
 	}
 
-	protected void savePricingScheme() {
+	protected void savePricingSchemeField() {
 		try {
 			validateMandatoryField(pricingSchemeComboBox, "Pricing Scheme");
-			salesRequisition.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
 			if (salesRequisition.getId() == null) {
+				salesRequisition.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
 				salesRequisition.setCreateDate(new Date());
 				salesRequisition.setEncoder(new User(1L)); // TODO: Replace with actual user later
 				salesRequisitionService.save(salesRequisition);
 				updateDisplay(salesRequisition);
 			} else {
-				salesRequisitionService.save(salesRequisition);
-				// TODO: update prices in itemsTable
+				if (!pricingSchemeComboBox.getSelectedItem().equals(salesRequisition.getPricingScheme())) {
+					salesRequisition.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
+					salesRequisitionService.save(salesRequisition);
+					// TODO: update prices in itemsTable
+				}
 			}
 			focusNextField();
 		} catch (ValidationException ex) {
