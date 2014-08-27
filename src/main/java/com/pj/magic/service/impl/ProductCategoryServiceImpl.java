@@ -21,7 +21,6 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
 		productCategoryDao.save(supplier);
 	}
 
-	@Transactional(readOnly = true)
 	@Override
 	public ProductCategory getProductCategory(long id) {
 		return productCategoryDao.get(id);

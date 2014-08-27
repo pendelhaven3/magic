@@ -73,7 +73,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		salesRequisitionDao.delete(salesRequisition);
 	}
 
-	@Transactional(propagation=Propagation.REQUIRES_NEW) // TODO: Look for other transactional methods
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	@Override
 	public SalesInvoice post(SalesRequisition salesRequisition) throws NotEnoughStocksException {
 		SalesRequisition updated = getSalesRequisition(salesRequisition.getId());

@@ -75,11 +75,13 @@ public class ProductServiceImpl implements ProductService {
 		return supplierDao.findAllNotHavingProduct(product);
 	}
 
+	@Transactional
 	@Override
 	public void deleteProductSupplier(Product product, Supplier supplier) {
 		supplierDao.deleteSupplierProduct(supplier, product);
 	}
 
+	@Transactional
 	@Override
 	public void saveUnitPrices(Product product, PricingScheme pricingScheme) {
 		productPriceDao.updateUnitPrices(product, pricingScheme);
