@@ -5,7 +5,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -20,7 +19,6 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.SalesRequisitionsTable;
 import com.pj.magic.model.SalesRequisition;
-import com.pj.magic.model.User;
 import com.pj.magic.service.SalesRequisitionService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -93,12 +91,7 @@ public class SalesRequisitionListPanel extends AbstractMagicPanel implements Act
 	}
 	
 	protected void switchToNewSalesRequisitionPanel() {
-		SalesRequisition salesRequisition = new SalesRequisition();
-		salesRequisition.setCreateDate(new Date());
-		salesRequisition.setEncoder(new User(1L)); // TODO: Use current user later
-		salesRequisitionService.save(salesRequisition);
-		
-		getMagicFrame().switchToSalesRequisitionPanel(salesRequisition);
+		getMagicFrame().switchToSalesRequisitionPanel(new SalesRequisition());
 	}
 
 	@Override

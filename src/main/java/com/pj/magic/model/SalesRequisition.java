@@ -18,6 +18,9 @@ public class SalesRequisition {
 	private User encoder;
 	private boolean posted;
 	private List<SalesRequisitionItem> items = new ArrayList<>();
+	private PricingScheme pricingScheme;
+	private String mode;
+	private String remarks;
 
 	public SalesRequisition() {
 	}
@@ -137,6 +140,34 @@ public class SalesRequisition {
 
 	public void setEncoder(User encoder) {
 		this.encoder = encoder;
+	}
+
+	public PricingScheme getPricingScheme() {
+		return pricingScheme;
+	}
+
+	public void setPricingScheme(PricingScheme pricingScheme) {
+		this.pricingScheme = pricingScheme;
+	}
+
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+	
+	public boolean hasMinimumFieldsFilledUp() {
+		return customer != null && pricingScheme != null;
 	}
 	
 }

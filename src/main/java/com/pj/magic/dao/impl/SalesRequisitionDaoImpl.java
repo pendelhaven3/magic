@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.User;
 
@@ -28,7 +29,8 @@ import com.pj.magic.model.User;
 public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitionDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER_ID, POST_IND"
+			"select ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER_ID, POST_IND,"
+			+ " PRICING_SCHEME_ID, MODE, REMARKS"
 			+ " from SALES_REQUISITION";
 	
 	@Autowired private DataSource dataSource;
@@ -56,8 +58,9 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	}
 	
 	private static final String INSERT_SQL =
-			"insert into SALES_REQUISITION (CUSTOMER_ID, CREATE_DT, ENCODER_ID)"
-			+ " values (?, ?, ?)";
+			"insert into SALES_REQUISITION"
+			+ " (CUSTOMER_ID, CREATE_DT, ENCODER_ID, PRICING_SCHEME_ID, MODE, REMARKS)"
+			+ " values (?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final SalesRequisition salesRequisition) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -74,6 +77,9 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 				}
 				ps.setDate(2, new Date(salesRequisition.getCreateDate().getTime()));
 				ps.setLong(3, salesRequisition.getEncoder().getId());
+				ps.setLong(4, salesRequisition.getPricingScheme().getId());
+				ps.setString(5, salesRequisition.getMode());
+				ps.setString(6, salesRequisition.getRemarks());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -85,12 +91,16 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	
 	private static final String UPDATE_SQL =
 			"update SALES_REQUISITION"
-			+ " set CUSTOMER_ID = ?, POST_IND = ?"
+			+ " set CUSTOMER_ID = ?, POST_IND = ?, PRICING_SCHEME_ID = ?, MODE = ?, REMARKS = ?"
 			+ " where ID = ?";
 	
 	private void update(SalesRequisition salesRequisition) {
 		getJdbcTemplate().update(UPDATE_SQL, salesRequisition.getCustomer().getId(), 
-				salesRequisition.isPosted() ? "Y" : "N", salesRequisition.getId());
+				salesRequisition.isPosted() ? "Y" : "N",
+				salesRequisition.getPricingScheme().getId(),
+				salesRequisition.getMode(),
+				salesRequisition.getRemarks(),
+				salesRequisition.getId());
 	}
 	
 	private class SalesRequisitionRowMapper implements RowMapper<SalesRequisition> {
@@ -103,6 +113,9 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			salesRequisition.setCreateDate(rs.getDate("CREATE_DT"));
 			salesRequisition.setEncoder(new User(rs.getLong("ENCODER_ID")));
 			salesRequisition.setPosted("Y".equals(rs.getString("POST_IND")));
+			salesRequisition.setPricingScheme(new PricingScheme(rs.getLong("PRICING_SCHEME_ID")));
+			salesRequisition.setMode(rs.getString("MODE"));
+			salesRequisition.setRemarks(rs.getString("REMARKS"));
 
 			if (rs.getLong("CUSTOMER_ID") != 0) {
 				Customer customer = new Customer();

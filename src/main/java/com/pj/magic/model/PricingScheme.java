@@ -3,6 +3,9 @@ package com.pj.magic.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 
 public class PricingScheme {
 
@@ -10,6 +13,14 @@ public class PricingScheme {
 	private String name;
 	private List<Product> products = new ArrayList<>();
 
+	public PricingScheme() {
+		// default constructor
+	}
+	
+	public PricingScheme(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -34,4 +45,30 @@ public class PricingScheme {
 		this.products = products;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof PricingScheme)) {
+            return false;
+        }
+        PricingScheme other = (PricingScheme)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 }

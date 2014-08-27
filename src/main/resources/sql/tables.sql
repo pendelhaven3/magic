@@ -60,6 +60,9 @@ create table SALES_REQUISITION (
   CREATE_DT date not null,
   ENCODER_ID integer not null,
   POST_IND varchar2(1) default 'N' not null,
+  PRICING_SCHEME_ID integer not null,
+  MODE varchar2(10) null,
+  REMARKS varchar2(100) null,
   constraint SALES_REQUISITION$PK primary key (ID),
   constraint SALES_REQUISITION$UK unique (SALES_REQUISITION_NO)
 );

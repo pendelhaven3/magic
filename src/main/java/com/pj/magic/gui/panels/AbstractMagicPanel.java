@@ -13,6 +13,7 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.FocusManager;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -129,6 +130,14 @@ public abstract class AbstractMagicPanel extends JPanel {
 		if (StringUtils.isEmpty(field.getText())) {
 			showErrorMessage(description + " must be specified");
 			field.requestFocusInWindow();
+			throw new ValidationException();
+		}
+	}
+	
+	protected void validateMandatoryField(@SuppressWarnings("rawtypes") JComboBox comboBox, String description) throws ValidationException {
+		if (comboBox.getSelectedItem() == null) {
+			showErrorMessage(description + " must be specified");
+			comboBox.requestFocusInWindow();
 			throw new ValidationException();
 		}
 	}

@@ -7,10 +7,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -26,21 +31,26 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.NotEnoughStocksException;
+import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.Unit;
+import com.pj.magic.model.User;
 import com.pj.magic.service.CustomerService;
+import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesRequisitionService;
 import com.pj.magic.util.ComponentUtil;
@@ -49,7 +59,10 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionListener {
 
-	private static final String SAVE_CUSTOMER_ACTION_NAME = "enter";
+	private static final String SAVE_CUSTOMER_ACTION_NAME = "saveCustomer";
+	private static final String SAVE_PRICING_SCHEME_ACTION_NAME = "savePricingScheme";
+	private static final String SAVE_MODE_ACTION_NAME = "saveMode";
+	private static final String SAVE_REMARKS_ACTION_NAME = "saveRemarks";
 	private static final String OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME = "openSelectCustomerDialog";
 	private static final String POST_ACTION_COMMAND = "post";
 	
@@ -58,6 +71,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 	@Autowired private SalesRequisitionService salesRequisitionService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	@Autowired private CustomerService customerService;
+	@Autowired private PricingSchemeService pricingSchemeService;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -65,6 +79,9 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 	private JLabel customerNameField;
 	private JLabel createDateField;
 	private JLabel encoderField;
+	private JComboBox<String> modeComboBox;
+	private JComboBox<PricingScheme> pricingSchemeComboBox;
+	private MagicTextField remarksField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
@@ -72,17 +89,181 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 	@Override
 	protected void initializeComponents() {
 		customerCodeField = new MagicTextField();
+		pricingSchemeComboBox = new JComboBox<>();
+		
+		modeComboBox = new JComboBox<>();
+		modeComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"DELIVERY", "PICK-UP"}));
+		
+		remarksField = new MagicTextField();
+		remarksField.setMaximumLength(100);
 		
 		focusOnComponentWhenThisPanelIsDisplayed(customerCodeField);
 		updateTotalAmountFieldWhenItemsTableChanges();
-		initializeCustomerCodeFieldBehavior();
 		initializeUnitPricesAndQuantitiesTable();
 	}
 
 	@Override
 	protected void registerKeyBindings() {
+		customerCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_CUSTOMER_ACTION_NAME);
+		customerCodeField.getActionMap().put(SAVE_CUSTOMER_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveCustomerField();
+			}
+		});
+		
+		customerCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME);
+		customerCodeField.getActionMap().put(OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectCustomerDialog();
+			}
+		});
+
+		pricingSchemeComboBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
+				SAVE_PRICING_SCHEME_ACTION_NAME);
+		pricingSchemeComboBox.getActionMap().put(SAVE_PRICING_SCHEME_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				savePricingScheme();
+			}
+		});
+		
+		modeComboBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
+				SAVE_MODE_ACTION_NAME);
+		modeComboBox.getActionMap().put(SAVE_MODE_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveModeField();
+			}
+		});
+		
+		remarksField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
+				SAVE_REMARKS_ACTION_NAME);
+		remarksField.getActionMap().put(SAVE_REMARKS_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveRemarksField();
+			}
+		});
+		
 	}
 
+	protected void saveRemarksField() {
+		if (salesRequisition.hasMinimumFieldsFilledUp()) {
+			salesRequisitionService.save(salesRequisition);
+		}
+		itemsTable.highlight();
+	}
+
+	protected void saveModeField() {
+		try {
+			validateMandatoryField(modeComboBox, "Mode");
+			if (salesRequisition.hasMinimumFieldsFilledUp()) {
+				salesRequisitionService.save(salesRequisition);
+			}
+			focusNextField();
+		} catch (ValidationException ex) {
+			// ignore
+		}
+	}
+
+	protected void savePricingScheme() {
+		try {
+			validateMandatoryField(pricingSchemeComboBox, "Pricing Scheme");
+			salesRequisition.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
+			if (salesRequisition.getId() == null) {
+				salesRequisition.setCreateDate(new Date());
+				salesRequisition.setEncoder(new User(1L)); // TODO: Replace with actual user later
+				salesRequisitionService.save(salesRequisition);
+				updateDisplay(salesRequisition);
+			} else {
+				salesRequisitionService.save(salesRequisition);
+				// TODO: update prices in itemsTable
+			}
+			focusNextField();
+		} catch (ValidationException ex) {
+			// do nothing
+		}
+	}
+
+	protected void openSelectCustomerDialog() {
+		selectCustomerDialog.searchCustomers(customerCodeField.getText());
+		selectCustomerDialog.setVisible(true);
+		
+		Customer customer = selectCustomerDialog.getSelectedCustomer();
+		if (customer != null) {
+			if (salesRequisition.getCustomer() != null && salesRequisition.getCustomer().equals(customer)) {
+				// skip saving sales requisition since there is no change
+				focusNextField();
+				return;
+			}
+			
+			salesRequisition.setCustomer(customer);
+			if (salesRequisition.hasMinimumFieldsFilledUp()) {
+				try {
+					salesRequisitionService.save(salesRequisition);
+				} catch (Exception e) {
+					showErrorMessage("Error occurred during saving!");
+					return;
+				}
+			}
+			
+			customerCodeField.setText(customer.getCode());
+			customerNameField.setText(customer.getName());
+			pricingSchemeComboBox.setEnabled(true);
+			pricingSchemeComboBox.requestFocusInWindow();
+		}
+	}
+
+	protected void saveCustomerField() {
+		if (salesRequisition.getCustomer() != null) {
+			if (salesRequisition.getCustomer().getCode().equals(customerCodeField.getText())) {
+				// skip saving sales requisition since there is no change in customer
+				focusNextField();
+				return;
+			}
+		}
+		
+		if (StringUtils.isEmpty(customerCodeField.getText())) {
+			showErrorMessage("Customer must be specified");
+			return;
+		}
+		
+		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
+		if (customer == null) {
+			showErrorMessage("No customer matching code specified");
+			return;
+		} else {
+			salesRequisition.setCustomer(customer);
+			if (salesRequisition.hasMinimumFieldsFilledUp()) {
+				try {
+					salesRequisitionService.save(salesRequisition);
+				} catch (Exception e) {
+					showErrorMessage("Error occurred during saving!");
+					return;
+				}
+			}
+			customerNameField.setText(customer.getName());
+			pricingSchemeComboBox.setEnabled(true);
+			pricingSchemeComboBox.requestFocusInWindow();
+		}
+	}
+
+	@Override
+	protected void initializeFocusOrder(List<JComponent> focusOrder) {
+		focusOrder.add(customerCodeField);
+		focusOrder.add(pricingSchemeComboBox);
+		focusOrder.add(modeComboBox);
+		focusOrder.add(remarksField);
+		focusOrder.add(itemsTable);
+	}
+	
 	@Override
 	protected void doOnBack() {
 		if (itemsTable.isEditing()) {
@@ -102,56 +283,18 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		});
 	}
 
-	private void initializeCustomerCodeFieldBehavior() {
-		customerCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_CUSTOMER_ACTION_NAME);
-		customerCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME);
-		
-		final JPanel panel = this;
-		customerCodeField.getActionMap().put(SAVE_CUSTOMER_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (salesRequisition.getCustomer() != null) {
-					if (salesRequisition.getCustomer().getCode().equals(customerCodeField.getText())) {
-						// skip saving sales requisition since there is no change in customer
-						itemsTable.highlight();
-						return;
-					}
-				}
-				
-				Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
-				if (customer == null) {
-					JOptionPane.showMessageDialog(panel, "No customer matching code specified",
-							"Error Message", JOptionPane.ERROR_MESSAGE);
-					return;
-				} else {
-					salesRequisition.setCustomer(customer);
-					salesRequisitionService.save(salesRequisition);
-					customerNameField.setText(customer.getName());
-					itemsTable.highlight();
-				}
-			}
-		});
-		customerCodeField.getActionMap().put(OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectCustomerDialog.searchCustomers(customerCodeField.getText());
-				selectCustomerDialog.setVisible(true);
-				
-				Customer customer = selectCustomerDialog.getSelectedCustomer();
-				if (customer != null) {
-					salesRequisition.setCustomer(customer);
-					salesRequisitionService.save(salesRequisition);
-					customerCodeField.setText(customer.getCode());
-					customerNameField.setText(customer.getName());
-					itemsTable.highlight();
-				}
-			}
-		});
-	}
-	
 	public void updateDisplay(SalesRequisition salesRequisition) {
+		List<PricingScheme> pricingSchemes = pricingSchemeService.getAllPricingSchemes();
+		pricingSchemeComboBox.setModel(
+				new DefaultComboBoxModel<>(pricingSchemes.toArray(new PricingScheme[pricingSchemes.size()])));
+		pricingSchemeComboBox.insertItemAt(null, 0);
+		
+		if (salesRequisition.getId() == null) {
+			this.salesRequisition = salesRequisition;
+			clearDisplay();
+			return;
+		}
+		
 		this.salesRequisition = salesRequisitionService.getSalesRequisition(salesRequisition.getId());
 		salesRequisition = this.salesRequisition;
 		
@@ -165,8 +308,31 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		}
 		createDateField.setText(FormatterUtil.formatDate(salesRequisition.getCreateDate()));
 		encoderField.setText(salesRequisition.getEncoder().getUsername());
+		pricingSchemeComboBox.setEnabled(true);
+		pricingSchemeComboBox.setSelectedItem(salesRequisition.getPricingScheme());
+		modeComboBox.setEnabled(true);
+		modeComboBox.setSelectedItem(salesRequisition.getMode());
+		remarksField.setEnabled(true);
+		remarksField.setText(salesRequisition.getRemarks());
 		totalItemsField.setText(String.valueOf(salesRequisition.getTotalNumberOfItems()));
 		totalAmountField.setText(salesRequisition.getTotalAmount().toString());
+		itemsTable.setSalesRequisition(salesRequisition);
+	}
+
+	private void clearDisplay() {
+		salesRequisitionNumberField.setText(null);
+		customerCodeField.setText(null);
+		customerNameField.setText(null);
+		createDateField.setText(null);
+		encoderField.setText(null);
+		pricingSchemeComboBox.setEnabled(false);
+		pricingSchemeComboBox.setSelectedItem(null);
+		modeComboBox.setEnabled(false);
+		modeComboBox.setSelectedItem(null);
+		remarksField.setEnabled(false);
+		remarksField.setText(null);
+		totalItemsField.setText(null);
+		totalAmountField.setText(null);
 		itemsTable.setSalesRequisition(salesRequisition);
 	}
 
@@ -185,7 +351,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		c.anchor = GridBagConstraints.WEST;
 		add(createToolBar(), c);
 
-		currentRow++; // first row
+		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -224,7 +390,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		createDateField = ComponentUtil.createLabel(150, "");
 		add(createDateField, c);
 		
-		currentRow++; // second row
+		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -241,12 +407,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		customerCodeField.setPreferredSize(new Dimension(100, 20));
 		customerNameField = ComponentUtil.createLabel(190, "");
 		
-		JPanel customerNamePanel = new JPanel();
-		customerNamePanel.add(customerCodeField);
-		customerNamePanel.add(ComponentUtil.createFiller(10, 20));
-		customerNamePanel.add(customerNameField);
-		
-		add(customerNamePanel, c);
+		add(createCustomerNamePanel(), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -263,7 +424,54 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		encoderField = ComponentUtil.createLabel(180, "");
 		add(encoderField, c);
 		
-		currentRow++; // third row
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(150, "Pricing Scheme:"), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		pricingSchemeComboBox.setPreferredSize(new Dimension(100, 20));
+		add(pricingSchemeComboBox, c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(100, "Mode:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		modeComboBox.setPreferredSize(new Dimension(100, 20));
+		add(modeComboBox, c);
+		
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(150, "Remarks:"), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		remarksField.setPreferredSize(new Dimension(250, 20));
+		add(remarksField, c);
+
+		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -272,7 +480,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createFiller(50, 10), c);
 		
-		currentRow++; // fourth row
+		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
@@ -284,7 +492,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
 		add(itemsTableScrollPane, c);
 
-		currentRow++; // fifth row
+		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 0.0;
@@ -296,7 +504,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
 		add(infoTableScrollPane, c);
 		
-		currentRow++; // sixth row
+		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -314,7 +522,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		totalItemsField = ComponentUtil.createLabel(150, "");
 		add(totalItemsField, c);
 		
-		currentRow++; // seventh row
+		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -333,6 +541,36 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		add(totalAmountField, c);
 	}
 	
+	private java.awt.Component createCustomerNamePanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(customerCodeField, c);
+		
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createFiller(10, 20), c);
+		
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(customerNameField, c);
+		
+		return panel;
+	}
+
 	private void initializeUnitPricesAndQuantitiesTable() {
 		itemsTable.getModel().addTableModelListener(new TableModelListener() {
 			
@@ -371,6 +609,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 	
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new MagicToolBar();
+		addBackButton(toolBar);
 		
 		JButton postButton = new MagicToolBarButton("invoice", "Post");
 		postButton.setActionCommand(POST_ACTION_COMMAND);
