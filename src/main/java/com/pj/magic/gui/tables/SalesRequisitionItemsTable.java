@@ -476,10 +476,10 @@ public class SalesRequisitionItemsTable extends JTable {
 		return totalNumberOfItems;
 	}
 
-	public void highlightQuantityColumn(SalesRequisitionItem item) {
+	public void highlightColumn(SalesRequisitionItem item, int column) {
 		int row = salesRequisition.getItems().indexOf(item);
-		changeSelection(row, QUANTITY_COLUMN_INDEX, false, false);
-		editCellAt(row, QUANTITY_COLUMN_INDEX);
+		changeSelection(row, column, false, false);
+		editCellAt(row, column);
 		getEditorComponent().requestFocusInWindow();
 	}
 	

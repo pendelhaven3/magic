@@ -3,6 +3,7 @@ package com.pj.magic.service;
 import java.util.List;
 
 import com.pj.magic.exception.NotEnoughStocksException;
+import com.pj.magic.exception.NoSellingPriceException;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
@@ -19,7 +20,8 @@ public interface SalesRequisitionService {
 
 	void delete(SalesRequisition currentlySelectedSalesRequisition);
 
-	SalesInvoice post (SalesRequisition salesRequisition) throws NotEnoughStocksException;
+	SalesInvoice post (SalesRequisition salesRequisition)
+			throws NoSellingPriceException, NotEnoughStocksException;
 	
 	List<SalesRequisition> getAllNonPostedSalesRequisitions();
 	

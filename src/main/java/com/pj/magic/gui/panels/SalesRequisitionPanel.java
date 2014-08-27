@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.ValidationException;
+import com.pj.magic.exception.NoSellingPriceException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -287,7 +288,6 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		List<PricingScheme> pricingSchemes = pricingSchemeService.getAllPricingSchemes();
 		pricingSchemeComboBox.setModel(
 				new DefaultComboBoxModel<>(pricingSchemes.toArray(new PricingScheme[pricingSchemes.size()])));
-		pricingSchemeComboBox.insertItemAt(null, 0);
 		
 		if (salesRequisition.getId() == null) {
 			this.salesRequisition = salesRequisition;
@@ -784,10 +784,18 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 				SalesInvoice salesInvoice = salesRequisitionService.post(salesRequisition);
 				JOptionPane.showMessageDialog(this, "Post successful!");
 				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
-			} catch (NotEnoughStocksException e) {	
+			} catch (NotEnoughStocksException e ) {	
 				showErrorMessage("Not enough available stocks!");
 				updateDisplay(salesRequisition);
-				itemsTable.highlightQuantityColumn(e.getSalesRequisitionItem());
+				itemsTable.highlightColumn(e.getSalesRequisitionItem(), 
+						SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX);
+			} catch (NoSellingPriceException e) {
+				showErrorMessage("No selling price!");
+				updateDisplay(salesRequisition);
+				itemsTable.highlightColumn(e.getSalesRequisitionItem(), 
+						SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX);
+			} catch (Exception e) {
+				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}
 	}

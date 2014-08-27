@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.NotEnoughStocksException;
+import com.pj.magic.exception.NoSellingPriceException;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
@@ -75,9 +77,14 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	@Override
-	public SalesInvoice post(SalesRequisition salesRequisition) throws NotEnoughStocksException {
+	public SalesInvoice post(SalesRequisition salesRequisition)
+			throws NotEnoughStocksException, NoSellingPriceException {
 		SalesRequisition updated = getSalesRequisition(salesRequisition.getId());
 		for (SalesRequisitionItem item : updated.getItems()) {
+			if (item.getUnitPrice().equals(BigDecimal.ZERO.setScale(2))) {
+				throw new NoSellingPriceException(item);
+			}
+				
 			// [PJ 08/06/2014] Do not update product quantity inside sales requisition object
 			// because it has to be "rolled back" manually when an exception happens during posting
 			Product product = productDao.get(item.getProduct().getId());
