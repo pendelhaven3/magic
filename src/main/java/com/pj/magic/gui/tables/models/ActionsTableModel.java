@@ -1,4 +1,4 @@
-package com.pj.magic.gui.tables;
+package com.pj.magic.gui.tables.models;
 
 import javax.swing.table.AbstractTableModel;
 

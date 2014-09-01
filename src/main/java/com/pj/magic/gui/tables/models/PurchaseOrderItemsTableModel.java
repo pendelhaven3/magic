@@ -1,4 +1,4 @@
-package com.pj.magic.gui.tables;
+package com.pj.magic.gui.tables.models;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.tables.PurchaseOrderItemsTable;
 import com.pj.magic.gui.tables.rowitems.PurchaseOrderItemRowItem;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.service.ProductService;

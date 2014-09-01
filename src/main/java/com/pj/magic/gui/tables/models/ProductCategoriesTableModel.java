@@ -1,4 +1,4 @@
-package com.pj.magic.gui.tables;
+package com.pj.magic.gui.tables.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,18 +7,18 @@ import javax.swing.table.AbstractTableModel;
 
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.model.PricingScheme;
+import com.pj.magic.model.ProductCategory;
 
 @Component
-public class PricingSchemesTableModel extends AbstractTableModel {
+public class ProductCategoriesTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames = {"Name"};
 	
-	private List<PricingScheme> pricingSchemes = new ArrayList<>();
+	private List<ProductCategory> categories = new ArrayList<>();
 	
 	@Override
 	public int getRowCount() {
-		return pricingSchemes.size();
+		return categories.size();
 	}
 
 	@Override
@@ -28,7 +28,8 @@ public class PricingSchemesTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return pricingSchemes.get(rowIndex).getName();
+		ProductCategory category = categories.get(rowIndex);
+		return category.getName();
 	}
 
 	@Override
@@ -36,13 +37,13 @@ public class PricingSchemesTableModel extends AbstractTableModel {
 		return columnNames[column];
 	}
 	
-	public void setPricingSchemes(List<PricingScheme> pricingSchemes) {
-		this.pricingSchemes = pricingSchemes;
+	public void setProductCategories(List<ProductCategory> categories) {
+		this.categories = categories;
 		fireTableDataChanged();
 	}
 	
-	public PricingScheme getPricingScheme(int rowIndex) {
-		return pricingSchemes.get(rowIndex);
+	public ProductCategory getProductCategory(int rowIndex) {
+		return categories.get(rowIndex);
 	}
 	
 }

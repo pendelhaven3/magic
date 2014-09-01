@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.EditProductPriceDialog;
-import com.pj.magic.gui.tables.ProductPricesTableModel;
+import com.pj.magic.gui.tables.models.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.PricingSchemeService;

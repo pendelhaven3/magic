@@ -1,4 +1,4 @@
-package com.pj.magic.gui.tables;
+package com.pj.magic.gui.tables.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import javax.swing.table.AbstractTableModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.tables.SalesInvoiceItemsTable;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.FormatterUtil;

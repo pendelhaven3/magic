@@ -1,4 +1,4 @@
-package com.pj.magic.gui.tables;
+package com.pj.magic.gui.tables.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.tables.StockQuantityConversionItemsTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.service.ProductService;

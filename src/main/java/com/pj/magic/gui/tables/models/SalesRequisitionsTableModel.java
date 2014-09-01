@@ -1,4 +1,4 @@
-package com.pj.magic.gui.tables;
+package com.pj.magic.gui.tables.models;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,6 +8,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.tables.SalesRequisitionsTable;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.util.FormatterUtil;
 

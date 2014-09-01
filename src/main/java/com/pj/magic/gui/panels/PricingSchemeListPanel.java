@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.tables.PricingSchemesTableModel;
+import com.pj.magic.gui.tables.models.PricingSchemesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.util.ComponentUtil;

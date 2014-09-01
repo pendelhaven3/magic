@@ -21,8 +21,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.tables.ProductsTableModel;
-import com.pj.magic.gui.tables.UnitPricesAndQuantitiesTableModel;
+import com.pj.magic.gui.tables.models.ProductsTableModel;
+import com.pj.magic.gui.tables.models.UnitPricesAndQuantitiesTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;

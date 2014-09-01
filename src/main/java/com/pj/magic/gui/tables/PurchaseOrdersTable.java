@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.panels.PurchaseOrderListPanel;
+import com.pj.magic.gui.tables.models.PurchaseOrdersTableModel;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.service.PurchaseOrderService;
 

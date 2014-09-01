@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.panels.SalesRequisitionListPanel;
+import com.pj.magic.gui.tables.models.SalesRequisitionsTableModel;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.SalesRequisitionService;
 

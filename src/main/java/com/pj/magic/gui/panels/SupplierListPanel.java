@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.tables.SuppliersTableModel;
+import com.pj.magic.gui.tables.models.SuppliersTableModel;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;

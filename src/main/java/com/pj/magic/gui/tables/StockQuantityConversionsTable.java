@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
+import com.pj.magic.gui.tables.models.StockQuantityConversionsTableModel;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.service.StockQuantityConversionService;
 

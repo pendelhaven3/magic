@@ -1,4 +1,4 @@
-package com.pj.magic.gui.tables;
+package com.pj.magic.gui.tables.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,18 +7,18 @@ import javax.swing.table.AbstractTableModel;
 
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.Supplier;
 
 @Component
-public class ProductCategoriesTableModel extends AbstractTableModel {
+public class SuppliersTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames = {"Name"};
 	
-	private List<ProductCategory> categories = new ArrayList<>();
+	private List<Supplier> suppliers = new ArrayList<>();
 	
 	@Override
 	public int getRowCount() {
-		return categories.size();
+		return suppliers.size();
 	}
 
 	@Override
@@ -28,8 +28,8 @@ public class ProductCategoriesTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		ProductCategory category = categories.get(rowIndex);
-		return category.getName();
+		Supplier supplier = suppliers.get(rowIndex);
+		return supplier.getName();
 	}
 
 	@Override
@@ -37,13 +37,13 @@ public class ProductCategoriesTableModel extends AbstractTableModel {
 		return columnNames[column];
 	}
 	
-	public void setProductCategories(List<ProductCategory> categories) {
-		this.categories = categories;
+	public void setSuppliers(List<Supplier> suppliers) {
+		this.suppliers = suppliers;
 		fireTableDataChanged();
 	}
 	
-	public ProductCategory getProductCategory(int rowIndex) {
-		return categories.get(rowIndex);
+	public Supplier getSupplier(int rowIndex) {
+		return suppliers.get(rowIndex);
 	}
 	
 }

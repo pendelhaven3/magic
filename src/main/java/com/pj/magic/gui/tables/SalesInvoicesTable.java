@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
+import com.pj.magic.gui.tables.models.SalesInvoicesTableModel;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.SalesInvoiceService;
 

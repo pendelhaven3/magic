@@ -29,6 +29,8 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
+import com.pj.magic.gui.tables.models.ActionsTableModel;
+import com.pj.magic.gui.tables.models.SalesRequisitionItemsTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;

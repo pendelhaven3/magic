@@ -12,7 +12,7 @@ import javax.swing.KeyStroke;
 
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.tables.ActionsTableModel;
+import com.pj.magic.gui.tables.models.ActionsTableModel;
 
 @Component
 public class SelectActionDialog extends MagicDialog {

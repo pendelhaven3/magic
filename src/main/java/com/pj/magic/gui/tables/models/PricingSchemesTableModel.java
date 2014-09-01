@@ -1,4 +1,4 @@
-package com.pj.magic.gui.tables;
+package com.pj.magic.gui.tables.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,18 +7,18 @@ import javax.swing.table.AbstractTableModel;
 
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.model.Supplier;
+import com.pj.magic.model.PricingScheme;
 
 @Component
-public class SuppliersTableModel extends AbstractTableModel {
+public class PricingSchemesTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames = {"Name"};
 	
-	private List<Supplier> suppliers = new ArrayList<>();
+	private List<PricingScheme> pricingSchemes = new ArrayList<>();
 	
 	@Override
 	public int getRowCount() {
-		return suppliers.size();
+		return pricingSchemes.size();
 	}
 
 	@Override
@@ -28,8 +28,7 @@ public class SuppliersTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		Supplier supplier = suppliers.get(rowIndex);
-		return supplier.getName();
+		return pricingSchemes.get(rowIndex).getName();
 	}
 
 	@Override
@@ -37,13 +36,13 @@ public class SuppliersTableModel extends AbstractTableModel {
 		return columnNames[column];
 	}
 	
-	public void setSuppliers(List<Supplier> suppliers) {
-		this.suppliers = suppliers;
+	public void setPricingSchemes(List<PricingScheme> pricingSchemes) {
+		this.pricingSchemes = pricingSchemes;
 		fireTableDataChanged();
 	}
 	
-	public Supplier getSupplier(int rowIndex) {
-		return suppliers.get(rowIndex);
+	public PricingScheme getPricingScheme(int rowIndex) {
+		return pricingSchemes.get(rowIndex);
 	}
 	
 }
