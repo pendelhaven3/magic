@@ -4,6 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class Supplier {
 
 	@Id
@@ -12,6 +15,14 @@ public class Supplier {
 	private String name;
 	private String address;
 	
+	public Supplier() {
+		// default constructor
+	}
+	
+	public Supplier(Long id) {
+		this.id = id;
+	}
+
 	@Column(name="CONTACT_NUMBER")
 	private String contactNumber;
 	
@@ -99,4 +110,29 @@ public class Supplier {
 		this.paymentTerm = paymentTerm;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof Supplier)) {
+            return false;
+        }
+        Supplier other = (Supplier)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

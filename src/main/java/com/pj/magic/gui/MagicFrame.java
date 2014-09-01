@@ -24,6 +24,8 @@ import com.pj.magic.gui.panels.PaymentTermListPanel;
 import com.pj.magic.gui.panels.PricingSchemeListPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
+import com.pj.magic.gui.panels.PurchaseOrderListPanel;
+import com.pj.magic.gui.panels.PurchaseOrderPanel;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.panels.SalesInvoicePanel;
 import com.pj.magic.gui.panels.SalesRequisitionListPanel;
@@ -37,10 +39,19 @@ import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.Supplier;
+
+/**
+ * Main JFrame that holds all the panels.
+ * Switching from one panel to another is done through this class.
+ * 
+ * @author PJ
+ *
+ */
 
 @Component
 public class MagicFrame extends JFrame {
@@ -66,6 +77,8 @@ public class MagicFrame extends JFrame {
 	private static final String MAINTAIN_PRICING_SCHEME_PANEL = "MAINTAIN_PRICING_SCHEME_PANEL";
 	private static final String STOCK_QUANTITY_CONVERSION_LIST_PANEL = "STOCK_QUANTITY_CONVERSION_LIST_PANEL";
 	private static final String STOCK_QUANTITY_CONVERSION_PANEL = "STOCK_QUANTITY_CONVERSION_PANEL";
+	private static final String PURCHASE_ORDER_LIST_PANEL = "PURCHASE_ORDER_LIST_PANEL";
+	private static final String PURCHASE_ORDER_PANEL = "PURCHASE_ORDER_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
@@ -88,6 +101,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainPricingSchemePanel maintainPricingSchemePanel;
 	@Autowired private StockQuantityConversionListPanel stockQuantityConversionListPanel;
 	@Autowired private StockQuantityConversionPanel stockQuantityConversionPanel;
+	@Autowired private PurchaseOrderListPanel purchaseOrderListPanel;
+	@Autowired private PurchaseOrderPanel purchaseOrderPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -122,6 +137,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(maintainPricingSchemePanel, MAINTAIN_PRICING_SCHEME_PANEL);
 		panelHolder.add(stockQuantityConversionListPanel, STOCK_QUANTITY_CONVERSION_LIST_PANEL);
 		panelHolder.add(stockQuantityConversionPanel, STOCK_QUANTITY_CONVERSION_PANEL);
+		panelHolder.add(purchaseOrderListPanel, PURCHASE_ORDER_LIST_PANEL);
+		panelHolder.add(purchaseOrderPanel, PURCHASE_ORDER_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -321,6 +338,18 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Stock Quantity Conversion");
 		stockQuantityConversionPanel.updateDisplay(stockQuantityConversion);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_QUANTITY_CONVERSION_PANEL);
+	}
+
+	public void switchToPurchaseOrderListPanel() {
+		addPanelNameToTitle("Purchase Order List");
+		purchaseOrderListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_ORDER_LIST_PANEL);
+	}
+	
+	public void switchToPurchaseOrderPanel(PurchaseOrder purchaseOrder) {
+		addPanelNameToTitle("Purchase Order");
+		purchaseOrderPanel.updateDisplay(purchaseOrder);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_ORDER_PANEL);
 	}
 	
 }

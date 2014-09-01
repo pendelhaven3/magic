@@ -178,3 +178,29 @@ create table STOCK_QTY_CONVERSION_ITEM (
   constraint STOCK_QTY_CONVERSION_ITEM$FK foreign key (STOCK_QTY_CONVERSION_ID) references STOCK_QTY_CONVERSION (ID),
   constraint STOCK_QTY_CONVERSION_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
+
+create table PURCHASE_ORDER (
+  ID integer auto_increment,
+  PURCHASE_ORDER_NO integer auto_increment,
+  SUPPLIER_ID integer not null,
+  POST_IND varchar2(1) default 'N' not null,
+  ORDER_IND varchar2(1) default 'N' not null,
+  PAYMENT_TERM_ID integer null,
+  REMARKS varchar2(100) null,
+  REFERENCE_NO varchar2(30) null,
+  constraint PURCHASE_ORDER$PK primary key (ID),
+  constraint PURCHASE_ORDER$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID)
+);
+
+create table PURCHASE_ORDER_ITEM (
+  ID integer auto_increment,
+  PURCHASE_ORDER_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT varchar2(3) not null,
+  QUANTITY integer(4) not null,
+  COST number(6, 2) not null,
+  ACTUAL_QUANTITY integer(4) null,
+  constraint PURCHASE_ORDER_ITEM$PK primary key (ID),
+  constraint PURCHASE_ORDER_ITEM$FK foreign key (PURCHASE_ORDER_ID) references PURCHASE_ORDER (ID),
+  constraint PURCHASE_ORDER_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);

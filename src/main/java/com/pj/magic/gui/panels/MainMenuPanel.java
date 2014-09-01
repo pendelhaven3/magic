@@ -100,6 +100,9 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		case "Stock Quantity Conversion":
 			getMagicFrame().switchToStockQuantityConversionListPanel();
 			break;
+		case "Purchase Order":
+			getMagicFrame().switchToPurchaseOrderListPanel();
+			break;
 		}
 	}
 
@@ -116,6 +119,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				{"Sales Requisition"}, 
 				{"Sales Invoice"},
 				{"Stock Quantity Conversion"},
+				{"Purchase Order"},
 				{"Manufacturer List"},
 				{"Supplier List"},
 				{"Product Category List"},

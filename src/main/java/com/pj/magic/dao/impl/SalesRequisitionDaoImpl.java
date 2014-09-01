@@ -9,9 +9,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,8 +29,6 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			"select ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER_ID, POST_IND,"
 			+ " PRICING_SCHEME_ID, MODE, REMARKS"
 			+ " from SALES_REQUISITION";
-	
-	@Autowired private DataSource dataSource;
 	
 	private SalesRequisitionRowMapper salesRequisitionRowMapper = new SalesRequisitionRowMapper();
 	
