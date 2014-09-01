@@ -23,13 +23,14 @@ import com.pj.magic.model.Supplier;
 public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select ID, PURCHASE_ORDER_NO, SUPPLIER_ID, POST_IND, ORDER_IND,"
-			+ " PAYMENT_TERM_ID, REMARKS, REFERENCE_NO"
-			+ " from PURCHASE_ORDER";
+			"select a.ID, PURCHASE_ORDER_NO, SUPPLIER_ID, POST_IND, ORDER_IND,"
+			+ " a.PAYMENT_TERM_ID, REMARKS, REFERENCE_NO, b.NAME as SUPPLIER_NAME"
+			+ " from PURCHASE_ORDER a, SUPPLIER b"
+			+ " where a.SUPPLIER_ID = b.ID";
 	
 	private PurchaseOrderRowMapper purchaseOrderRowMapper = new PurchaseOrderRowMapper();
 	
-	private static final String GET_SQL = BASE_SELECT_SQL + " where ID = ?";
+	private static final String GET_SQL = BASE_SELECT_SQL + " and a.ID = ?";
 	
 	@Override
 	public PurchaseOrder get(long id) {
@@ -93,7 +94,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 			PurchaseOrder purchaseOrder = new PurchaseOrder();
 			purchaseOrder.setId(rs.getLong("ID"));
 			purchaseOrder.setPurchaseOrderNumber(rs.getLong("PURCHASE_ORDER_NO"));
-			purchaseOrder.setSupplier(new Supplier(rs.getLong("SUPPLIER_ID")));
+			purchaseOrder.setSupplier(new Supplier(rs.getLong("SUPPLIER_ID"), rs.getString("SUPPLIER_NAME")));
 			purchaseOrder.setPosted("Y".equals(rs.getString("POST_IND")));
 			purchaseOrder.setOrdered("Y".equals(rs.getString("ORDER_IND")));
 			if (rs.getLong("PAYMENT_TERM_ID") != 0) {
@@ -115,8 +116,8 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 	@Override
 	public List<PurchaseOrder> search(PurchaseOrder criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
-		sql.append(" where POST_IND = ?");
-		sql.append(" order by ID desc"); // TODO: change to be more flexible when the need arises
+		sql.append(" and POST_IND = ?");
+		sql.append(" order by a.ID desc"); // TODO: change to be more flexible when the need arises
 		
 		return getJdbcTemplate().query(sql.toString(), purchaseOrderRowMapper,
 				criteria.isPosted() ? "Y" : "N");

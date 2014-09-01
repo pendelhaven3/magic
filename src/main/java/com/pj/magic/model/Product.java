@@ -29,6 +29,7 @@ public class Product implements Comparable<Product> {
 		this.id = id;
 	}
 	
+	// TODO: Remove this
 	public boolean isValid() {
 		return id != null;
 	}

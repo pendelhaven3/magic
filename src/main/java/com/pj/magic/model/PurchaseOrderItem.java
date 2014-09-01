@@ -2,7 +2,8 @@ package com.pj.magic.model;
 
 import java.math.BigDecimal;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class PurchaseOrderItem {
 
@@ -70,14 +71,31 @@ public class PurchaseOrderItem {
 		this.actualQuantity = actualQuantity;
 	}
 
-	public boolean isFilledUp() {
-		return product != null && !StringUtils.isEmpty(unit) && quantity != null && cost != null;
+	public BigDecimal getAmount() {
+		return cost.multiply(new BigDecimal(quantity.intValue()));
 	}
 
-	public boolean isValid() {
-		return (product != null && product.isValid())
-				&& product.hasUnit(unit)
-				&& (quantity != null && cost != null);
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(product)
+			.append(unit)
+			.toHashCode();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof PurchaseOrderItem)) {
+            return false;
+        }
+        PurchaseOrderItem other = (PurchaseOrderItem)obj;		
+		return new EqualsBuilder()
+			.append(product, other.getProduct())
+			.append(unit, other.getUnit())
+			.isEquals();
+	}
+	
 }

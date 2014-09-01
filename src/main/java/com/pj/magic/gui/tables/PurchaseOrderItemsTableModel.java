@@ -1,5 +1,6 @@
 package com.pj.magic.gui.tables;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,26 +10,21 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.model.Product;
+import com.pj.magic.gui.tables.rowitems.PurchaseOrderItemRowItem;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.PurchaseOrderService;
-
-/*
- * [PJ 8/25/2014] 
- * An item can have a Product instance but an invalid code.
- * Product id is used instead to check for product code validity.
- */
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
-	private static final String[] columnNames = {"Code", "Description", "From Unit", "Qty", "To Unit", "Converted Qty"};
+	private static final String[] columnNames = {"Code", "Description", "Unit", "Quantity", "Cost", "Amount"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseOrderService purchaseOrderService;
 	
-	private List<PurchaseOrderItem> items = new ArrayList<>();
+	private List<PurchaseOrderItemRowItem> rowItems = new ArrayList<>();
 	
 	@Override
 	public int getColumnCount() {
@@ -37,25 +33,33 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public int getRowCount() {
-		return items.size();
+		return rowItems.size();
 	}
 	
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		PurchaseOrderItem item = items.get(rowIndex);
+		PurchaseOrderItemRowItem rowItem = rowItems.get(rowIndex);
 		switch (columnIndex) {
 		case PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			return (item.getProduct() != null) ? item.getProduct().getCode() : "";
+			return rowItem.getProductCode();
 		case PurchaseOrderItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
-			return (item.getProduct() != null) ? item.getProduct().getDescription() : "";
+			if (rowItem.getProduct() != null) {
+				return rowItem.getProduct().getDescription();
+			} else {
+				return "";
+			}
 		case PurchaseOrderItemsTable.UNIT_COLUMN_INDEX:
-			return StringUtils.defaultString(item.getUnit());
+			return StringUtils.defaultString(rowItem.getUnit());
 		case PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX:
-			return (item.getQuantity() != null) ? item.getQuantity() : "";
+			return StringUtils.defaultString(rowItem.getQuantity());
 		case PurchaseOrderItemsTable.COST_COLUMN_INDEX:
-			return "";
-		case PurchaseOrderItemsTable.ACTUAL_QUANTITY_COLUMN_INDEX:
-			return "";
+			return StringUtils.defaultString(rowItem.getCost());
+		case PurchaseOrderItemsTable.AMOUNT_COLUMN_INDEX:
+			if (rowItem.isValid()) {
+				return FormatterUtil.formatAmount(rowItem.getItem().getAmount());
+			} else {
+				return "";
+			}
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
@@ -68,51 +72,54 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 
 	public List<PurchaseOrderItem> getItems() {
 		List<PurchaseOrderItem> items = new ArrayList<>();
-		for (PurchaseOrderItem item : this.items) {
-			if (item.isValid()) {
-				items.add(item);
+		for (PurchaseOrderItemRowItem rowItem : this.rowItems) {
+			if (rowItem.isValid()) {
+				items.add(rowItem.getItem());
 			}
 		}
 		return items;
 	}
 	
 	public void setItems(List<PurchaseOrderItem> items) {
-		this.items.clear();
-		this.items.addAll(items);
+		this.rowItems.clear();
+		for (PurchaseOrderItem item : items) {
+			this.rowItems.add(new PurchaseOrderItemRowItem(item));
+		}
 		fireTableDataChanged();
 	}
 	
 	public void addItem(PurchaseOrderItem item) {
-		items.add(item);
+		rowItems.add(new PurchaseOrderItemRowItem(item));
 		fireTableDataChanged();
 	}
 	
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		PurchaseOrderItem item = items.get(rowIndex);
+		PurchaseOrderItemRowItem rowItem = rowItems.get(rowIndex);
 		String val = (String)value;
 		switch (columnIndex) {
 		case PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			Product product = productService.findProductByCode(val);
-			if (product == null) {
-				product = new Product();
-				product.setCode(val);
-			}
-			item.setProduct(product);
+			rowItem.setProductCode(val);
+			rowItem.setProduct(productService.findProductByCode(val));
 			break;
 		case PurchaseOrderItemsTable.UNIT_COLUMN_INDEX:
-			item.setUnit(val);
+			rowItem.setUnit(val);
 			break;
 		case PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX:
-			if (!StringUtils.isEmpty(val) && StringUtils.isNumeric(val)) {
-				item.setQuantity(Integer.parseInt(val));
-			} else {
-				item.setQuantity(null);
-			}
+			rowItem.setQuantity(val);
+			break;
+		case PurchaseOrderItemsTable.COST_COLUMN_INDEX:
+			rowItem.setCost(val);
 			break;
 		}
-		if (item.isValid()) {
+		if (rowItem.isValid()) {
+			PurchaseOrderItem item = rowItem.getItem();
+			item.setProduct(rowItem.getProduct());
+			item.setUnit(rowItem.getUnit());
+			item.setQuantity(Integer.valueOf(rowItem.getQuantity()));
+			item.setCost(new BigDecimal(rowItem.getCost()).setScale(2));
 			purchaseOrderService.save(item);
+			rowItem.setCost(item.getCost().toString());
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
@@ -125,32 +132,36 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 				|| columnIndex == PurchaseOrderItemsTable.COST_COLUMN_INDEX;
 	}
 	
-	public PurchaseOrderItem getRowItem(int rowIndex) {
-		return items.get(rowIndex);
+	public PurchaseOrderItemRowItem getRowItem(int rowIndex) {
+		return rowItems.get(rowIndex);
 	}
 	
 	public void removeItem(int rowIndex) {
-		PurchaseOrderItem item = items.remove(rowIndex);
-		purchaseOrderService.delete(item);
+		PurchaseOrderItemRowItem wrapper = rowItems.remove(rowIndex);
+		purchaseOrderService.delete(wrapper.getItem());
 		fireTableDataChanged();
 	}
 	
 	public boolean hasItems() {
-		return !items.isEmpty();
+		return !rowItems.isEmpty();
 	}
 	
 	public void clearAndAddItem(PurchaseOrderItem item) {
-		items.clear();
+		rowItems.clear();
 		addItem(item);
 	}
 
-	public boolean hasDuplicate(PurchaseOrderItem checkItem) {
-		for (PurchaseOrderItem item : items) {
-			if (item.equals(checkItem) && item != checkItem) {
+	public boolean hasDuplicate(PurchaseOrderItemRowItem checkItem) {
+		for (PurchaseOrderItemRowItem rowItem : rowItems) {
+			if (rowItem.equals(checkItem) && rowItem != checkItem) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public boolean isValid(int rowIndex) {
+		return rowItems.get(rowIndex).isValid();
 	}
 	
 }

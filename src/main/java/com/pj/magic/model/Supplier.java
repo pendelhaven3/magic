@@ -19,8 +19,9 @@ public class Supplier {
 		// default constructor
 	}
 	
-	public Supplier(Long id) {
+	public Supplier(Long id, String name) {
 		this.id = id;
+		this.name = name;
 	}
 
 	@Column(name="CONTACT_NUMBER")

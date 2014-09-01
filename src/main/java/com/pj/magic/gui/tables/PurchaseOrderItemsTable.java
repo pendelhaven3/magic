@@ -9,7 +9,6 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -29,10 +28,12 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
+import com.pj.magic.gui.tables.rowitems.PurchaseOrderItemRowItem;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
+import com.pj.magic.util.NumberUtil;
 
 /*
  * [PJ 8/27/2014] 
@@ -48,7 +49,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	public static final int UNIT_COLUMN_INDEX = 2;
 	public static final int QUANTITY_COLUMN_INDEX = 3;
 	public static final int COST_COLUMN_INDEX = 4;
-	public static final int ACTUAL_QUANTITY_COLUMN_INDEX = 5;
+	public static final int AMOUNT_COLUMN_INDEX = 5;
 	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String TAB_ACTION_NAME = "tab";
 	private static final String DOWN_ACTION_NAME = "down";
@@ -73,7 +74,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		super(tableModel);
 		setSurrendersFocusOnKeystroke(true);
 		initializeColumns();
-		initializeModelListener();
+		initializeRowItemValidationBehavior();
 		registerKeyBindings();
 	}
 	
@@ -85,7 +86,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(70);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
 		columnModel.getColumn(COST_COLUMN_INDEX).setPreferredWidth(70);
-		columnModel.getColumn(ACTUAL_QUANTITY_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(70);
 		
 		MagicTextField productCodeTextField = new MagicTextField();
 		productCodeTextField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
@@ -143,7 +144,6 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		
 		DefaultCellEditor quantityCellEditor = new DefaultCellEditor(quantityTextField);
 		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(quantityCellEditor);
-		getColumnModel().getColumn(ACTUAL_QUANTITY_COLUMN_INDEX).setCellEditor(quantityCellEditor);
 	}
 	
 	public void switchToAddMode() {
@@ -177,7 +177,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	}
 	
 	public boolean isQuantityFieldSelected() {
-		return getSelectedColumn() == ACTUAL_QUANTITY_COLUMN_INDEX;
+		return getSelectedColumn() == QUANTITY_COLUMN_INDEX;
 	}
 	
 	public boolean isProductCodeFieldSelected() {
@@ -213,9 +213,8 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	}
 	
 	public void removeCurrentlySelectedRow() {
-		
 		int selectedRowIndex = getSelectedRow();
-		PurchaseOrderItem item = getCurrentlySelectedRowItem();
+		PurchaseOrderItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
 		purchaseOrder.getItems().remove(item);
 		tableModel.removeItem(selectedRowIndex);
@@ -229,16 +228,15 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		}
 	}
 	
-	public PurchaseOrderItem getCurrentlySelectedRowItem() {
+	public PurchaseOrderItemRowItem getCurrentlySelectedRowItem() {
 		return tableModel.getRowItem(getSelectedRow());
 	}
 	
-	public void editCellAtCurrentRow(int columnIndex) {
-		editCellAt(getSelectedRow(), columnIndex);
-		getEditorComponent().requestFocusInWindow();
-	}
-	
-	private boolean hasDuplicate(PurchaseOrderItem checkItem) {
+	private boolean hasDuplicate(PurchaseOrderItemRowItem rowItem) {
+		PurchaseOrderItem checkItem = new PurchaseOrderItem();
+		checkItem.setProduct(rowItem.getProduct());
+		checkItem.setUnit(rowItem.getUnit());
+		
 		for (PurchaseOrderItem item : purchaseOrder.getItems()) {
 			if (item.equals(checkItem) && item != checkItem) {
 				return true;
@@ -262,10 +260,8 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	
 	protected void registerKeyBindings() {
 		// TODO: shift + tab
-		// TODO: Remove table references inside anonymous classes
 		// TODO: Modify on other columns dont work
 		
-		final PurchaseOrderItemsTable table = this;
 		originalDownAction = getAction(KeyEvent.VK_DOWN);
 		originalEscapeAction = getAction(KeyEvent.VK_ESCAPE);
 		
@@ -294,7 +290,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				doOnTab();
+				tab();
 			}
 		});
 		actionMap.put(DOWN_ACTION_NAME, new AbstractAction() {
@@ -319,8 +315,8 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.isAdding()) {
-					table.switchToEditMode();
+				if (isAdding()) {
+					switchToEditMode();
 				} else {
 					originalEscapeAction.actionPerformed(e);
 				}
@@ -330,19 +326,22 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.tableModel.hasItems()) {
-					if (table.getCurrentlySelectedRowItem().isFilledUp()) { // check valid row to prevent deleting the blank row
-						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?", "Select An Option", JOptionPane.YES_NO_OPTION);
-						if (confirm == JOptionPane.OK_OPTION) {
-							removeCurrentlySelectedRow();
-						}
-					}
-				}
+				delete();
 			}
 		});
 	}
 	
-	protected void doOnTab() {
+	protected void delete() {
+		if (tableModel.hasItems()) {
+			if (tableModel.isValid(getSelectedRow())) { // check valid row to prevent deleting the blank row
+				if (confirm("Do you wish to delete the selected item?")) {
+					removeCurrentlySelectedRow();
+				}
+			}
+		}
+	}
+
+	protected void tab() {
 		if (getSelectedRow() == -1) {
 			return;
 		}
@@ -353,7 +352,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		
 		int selectedColumn = getSelectedColumn();
 		int selectedRow = getSelectedRow();
-		PurchaseOrderItem item = getCurrentlySelectedRowItem();
+		PurchaseOrderItemRowItem rowItem = getCurrentlySelectedRowItem();
 		
 		switch (selectedColumn) {
 		case PRODUCT_CODE_COLUMN_INDEX:
@@ -363,7 +362,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 				editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
 				getEditorComponent().requestFocusInWindow();
 			} else if (productService.findProductByCode(code) == null) {
-				showErrorMessage("No product matching code specified");
+				showErrorMessage("No product matchng code specified");
 				editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
 				getEditorComponent().requestFocusInWindow();
 			} else {
@@ -374,14 +373,13 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 			break;
 		case PurchaseOrderItemsTable.UNIT_COLUMN_INDEX:
 			String fromUnit = (String)getValueAt(selectedRow, UNIT_COLUMN_INDEX);
-			
 			if (StringUtils.isEmpty(fromUnit)) {
-				showErrorMessage("From Unit must be specified");
+				showErrorMessage("Unit must be specified");
 				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-			} else if (!item.getProduct().getUnits().contains(fromUnit)) {
+			} else if (!rowItem.getProduct().getUnits().contains(fromUnit)) {
 				showErrorMessage("Product does not have unit specified");
 				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-			} else if (tableModel.hasDuplicate(item) || hasDuplicate(item)) {
+			} else if (tableModel.hasDuplicate(rowItem) || hasDuplicate(rowItem)) {
 				showErrorMessage("Duplicate item");
 				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
 			} else {
@@ -389,13 +387,13 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 				editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
 			}
 			break;
-		case PurchaseOrderItemsTable.COST_COLUMN_INDEX:
-			if (selectedRow + 1 < getRowCount()) {
-				changeSelection(selectedRow + 1, 0, false, false);
-				editCellAt(selectedRow + 1, 0);
-				getEditorComponent().requestFocusInWindow();
-			}
-			break;
+//		case PurchaseOrderItemsTable.COST_COLUMN_INDEX:
+//			if (selectedRow + 1 < getRowCount()) {
+//				changeSelection(selectedRow + 1, 0, false, false);
+//				editCellAt(selectedRow + 1, 0);
+//				getEditorComponent().requestFocusInWindow();
+//			}
+//			break;
 		}
 	}
 
@@ -430,10 +428,9 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		}
 	}
 
-	public boolean validateQuantity(PurchaseOrderItem item) {
-		if (item.getQuantity() == null) {
-			JOptionPane.showMessageDialog(this,
-					"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
+	public boolean validateQuantity(PurchaseOrderItemRowItem rowItem) {
+		if (StringUtils.isEmpty(rowItem.getQuantity())) {
+			showErrorMessage("Quantity must be specified");
 			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
 			return false;
 		} else {
@@ -466,7 +463,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		}
 	}
 	
-	private void initializeModelListener() {
+	private void initializeRowItemValidationBehavior() {
 		getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
@@ -480,7 +477,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 						@Override
 						public void run() {
 							if (validateQuantity(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, ACTUAL_QUANTITY_COLUMN_INDEX);
+								tableModel.setValueAt("", row, AMOUNT_COLUMN_INDEX);
 								changeSelection(row, COST_COLUMN_INDEX, false, false);
 								editCellAt(row, COST_COLUMN_INDEX);
 								getEditorComponent().requestFocusInWindow();
@@ -493,18 +490,37 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 
 						@Override
 						public void run() {
-//							if (validateToUnit(getCurrentlySelectedRowItem())) {
-//								tableModel.setValueAt("", row, ACTUAL_QUANTITY_COLUMN_INDEX);
-//								if (isAdding() && isLastRowSelected()) {
-//									addNewRow();
-//								}
-//							}
+							if (validateCost(getCurrentlySelectedRowItem())) {
+								tableModel.setValueAt("", row, AMOUNT_COLUMN_INDEX);
+								if (isAdding() && isLastRowSelected()) {
+									addNewRow();
+								} else {
+									changeSelection(row + 1, PRODUCT_CODE_COLUMN_INDEX, false, false);
+									editCellAtCurrentRow(PRODUCT_CODE_COLUMN_INDEX);
+								}
+							}
 						}
 					});
 					break;
 				}
 			}
 		});
+	}
+	
+	private boolean validateCost(PurchaseOrderItemRowItem rowItem) {
+		boolean valid = false;
+		if (StringUtils.isEmpty(rowItem.getCost())) {
+			showErrorMessage("Cost must be specified");
+		} else if (!NumberUtil.isAmount(rowItem.getCost())){
+			showErrorMessage("Cost must be a valid amount");
+		} else {
+			valid = true;
+		}
+		
+		if (!valid) {
+			editCellAtCurrentRow(COST_COLUMN_INDEX);
+		}
+		return valid;
 	}
 	
 }
