@@ -17,6 +17,7 @@ import javax.swing.KeyStroke;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.models.ProductsTableModel;
@@ -83,6 +84,7 @@ public class ProductListPanel extends AbstractMagicPanel implements ActionListen
 
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new MagicToolBar();
+		addBackButton(toolBar);
 		
 		JButton postButton = new MagicToolBarButton("plus", "New");
 		postButton.setActionCommand(NEW_PRODUCT_ACTION_NAME);
@@ -99,10 +101,21 @@ public class ProductListPanel extends AbstractMagicPanel implements ActionListen
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Product product = tableModel.getProduct(table.getSelectedRow());
-				getMagicFrame().switchToEditProductPanel(product);
+				selectProduct();
 			}
 		});
+		table.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				selectProduct();
+			}
+		});
+	}
+
+	protected void selectProduct() {
+		Product product = tableModel.getProduct(table.getSelectedRow());
+		getMagicFrame().switchToEditProductPanel(product);
 	}
 
 	@Override

@@ -83,6 +83,7 @@ public class ManufacturerListPanel extends AbstractMagicPanel implements ActionL
 
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new MagicToolBar();
+		addBackButton(toolBar);
 		
 		JButton postButton = new MagicToolBarButton("plus", "New");
 		postButton.setActionCommand(NEW_MANUFACTURER_ACTION_NAME);

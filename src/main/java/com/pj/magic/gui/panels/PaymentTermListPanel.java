@@ -85,11 +85,7 @@ public class PaymentTermListPanel extends AbstractMagicPanel implements ActionLi
 
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new MagicToolBar();
-		
-		JButton backButton = new MagicToolBarButton("back", "Back");
-		backButton.setActionCommand(BACK_ACTION_COMMAND_NAME);
-		backButton.addActionListener(this);
-		toolBar.add(backButton);
+		addBackButton(toolBar);
 		
 		JButton postButton = new MagicToolBarButton("plus", "New");
 		postButton.setActionCommand(NEW_PAYMENT_TERM_ACTION_NAME);

@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.ProductSuppliersTable;
 import com.pj.magic.model.Manufacturer;
@@ -334,10 +336,22 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		c.anchor = GridBagConstraints.WEST;
+		add(createToolBar(), c);
+		
+		currentRow++;
+		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createLabel(150, "Code: "), c);
 		
@@ -562,6 +576,12 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		add(ComponentUtil.createFiller(1, 1), c);
+	}
+
+	private java.awt.Component createToolBar() {
+		JToolBar toolBar = new MagicToolBar();
+		addBackButton(toolBar);
+		return toolBar;
 	}
 
 	private java.awt.Component createUnitsPanel() {

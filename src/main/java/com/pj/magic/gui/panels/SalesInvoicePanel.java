@@ -23,6 +23,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.SalesInvoiceItemsTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
@@ -273,15 +274,14 @@ public class SalesInvoicePanel extends AbstractMagicPanel implements ActionListe
 	}
 	
 	private JToolBar createToolBar() {
-		JToolBar toolBar = new JToolBar();
-		toolBar.setFloatable(false);
-		toolBar.addSeparator();
+		JToolBar toolBar = new MagicToolBar();
+		addBackButton(toolBar);
 		
 		JButton printButton = new MagicToolBarButton("print", "Print");
 		printButton.setActionCommand(PRINT_ACTION_COMMAND);
 		printButton.addActionListener(this);
-		
 		toolBar.add(printButton);
+		
 		return toolBar;
 	}
 	

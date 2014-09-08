@@ -83,12 +83,13 @@ public class SupplierListPanel extends AbstractMagicPanel implements ActionListe
 
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new MagicToolBar();
+		addBackButton(toolBar);
 		
 		JButton postButton = new MagicToolBarButton("plus", "New");
 		postButton.setActionCommand(NEW_SUPPLIER_ACTION_COMMAND);
 		postButton.addActionListener(this);
-		
 		toolBar.add(postButton);
+		
 		return toolBar;
 	}
 

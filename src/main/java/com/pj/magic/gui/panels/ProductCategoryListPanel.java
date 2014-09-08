@@ -83,6 +83,7 @@ public class ProductCategoryListPanel extends AbstractMagicPanel implements Acti
 
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new MagicToolBar();
+		addBackButton(toolBar);
 		
 		JButton postButton = new MagicToolBarButton("plus", "New");
 		postButton.setActionCommand(NEW_PRODUCT_CATEGORY_ACTION_NAME);
