@@ -189,7 +189,11 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 			}
 		}
 		
-		focusNextField();
+		if (purchaseOrder.isOrdered()) {
+			referenceNumberField.requestFocusInWindow();
+		} else {
+			paymentTermComboBox.requestFocusInWindow();
+		}
 	}
 
 	@Override
@@ -236,7 +240,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		paymentTermComboBox.setSelectedItem(purchaseOrder.getPaymentTerm());
 		remarksField.setEnabled(true);
 		remarksField.setText(purchaseOrder.getRemarks());
-		referenceNumberField.setEnabled(true);
+		referenceNumberField.setEnabled(purchaseOrder.isOrdered());
 		referenceNumberField.setText(purchaseOrder.getReferenceNumber());
 //		totalItemsField.setText(String.valueOf(purchaseOrder.getTotalNumberOfItems()));
 //		totalAmountField.setText(purchaseOrder.getTotalAmount().toString());
