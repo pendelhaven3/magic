@@ -26,6 +26,7 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	@Autowired private PurchaseOrderService purchaseOrderService;
 	
 	private List<PurchaseOrderItemRowItem> rowItems = new ArrayList<>();
+	private PurchaseOrderItemsTable table;
 	
 	@Override
 	public int getColumnCount() {
@@ -53,16 +54,18 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 			return StringUtils.defaultString(rowItem.getUnit());
 		case PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX:
 			return StringUtils.defaultString(rowItem.getQuantity());
-		case PurchaseOrderItemsTable.COST_COLUMN_INDEX:
-			return StringUtils.defaultString(rowItem.getCost());
-		case PurchaseOrderItemsTable.AMOUNT_COLUMN_INDEX:
-			if (rowItem.isValid()) {
-				return FormatterUtil.formatAmount(rowItem.getItem().getAmount());
-			} else {
-				return "";
-			}
 		default:
-			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
+			if (columnIndex == table.getCostColumnIndex()) {
+				return StringUtils.defaultString(rowItem.getCost());
+			} else if (columnIndex == table.getAmountColumnIndex()) {
+				if (rowItem.isValid()) {
+					return FormatterUtil.formatAmount(rowItem.getItem().getAmount());
+				} else {
+					return "";
+				}
+			} else {
+				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
+			}
 		}
 	}
 	
@@ -109,9 +112,10 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 		case PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX:
 			rowItem.setQuantity(val);
 			break;
-		case PurchaseOrderItemsTable.COST_COLUMN_INDEX:
-			rowItem.setCost(val);
-			break;
+		default:
+			if (columnIndex == table.getCostColumnIndex()) {
+				rowItem.setCost(val);
+			}
 		}
 		if (rowItem.isValid()) {
 			PurchaseOrderItem item = rowItem.getItem();
@@ -130,7 +134,7 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 		return columnIndex == PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX
 				|| columnIndex == PurchaseOrderItemsTable.UNIT_COLUMN_INDEX
 				|| columnIndex == PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX
-				|| columnIndex == PurchaseOrderItemsTable.COST_COLUMN_INDEX;
+				|| columnIndex == table.getCostColumnIndex();
 	}
 	
 	public PurchaseOrderItemRowItem getRowItem(int rowIndex) {
@@ -163,6 +167,10 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 
 	public boolean isValid(int rowIndex) {
 		return rowItems.get(rowIndex).isValid();
+	}
+	
+	public void setTable(PurchaseOrderItemsTable table) {
+		this.table = table;
 	}
 	
 }

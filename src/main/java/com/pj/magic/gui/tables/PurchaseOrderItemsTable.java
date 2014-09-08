@@ -37,12 +37,6 @@ import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
 import com.pj.magic.util.NumberUtil;
 
-/*
- * [PJ 8/27/2014] 
- * ItemsTable has 2 modes: edit (default) and add (allows adding blank rows after the last row).
- * 
- */
-
 @Component
 public class PurchaseOrderItemsTable extends ItemsTable {
 	
@@ -50,8 +44,6 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
 	public static final int UNIT_COLUMN_INDEX = 2;
 	public static final int QUANTITY_COLUMN_INDEX = 3;
-	public static final int COST_COLUMN_INDEX = 4;
-	public static final int AMOUNT_COLUMN_INDEX = 5;
 	
 	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String TAB_ACTION_NAME = "tab";
@@ -67,6 +59,9 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseOrderItemsTableModel tableModel;
 	
+	private int costColumnIndex = 4;
+	private int amountColumnIndex = 5;
+	
 	private PurchaseOrder purchaseOrder;
 	private Action originalDownAction;
 	private Action originalEscapeAction;
@@ -74,6 +69,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	@Autowired
 	public PurchaseOrderItemsTable(PurchaseOrderItemsTableModel tableModel) {
 		super(tableModel);
+		tableModel.setTable(this);
 		setSurrendersFocusOnKeystroke(true);
 		initializeColumns();
 		initializeRowItemValidationBehavior();
@@ -87,8 +83,8 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(70);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
-		columnModel.getColumn(COST_COLUMN_INDEX).setPreferredWidth(70);
-		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(70);
+		columnModel.getColumn(costColumnIndex).setPreferredWidth(70);
+		columnModel.getColumn(amountColumnIndex).setPreferredWidth(70);
 		
 		MagicTextField productCodeTextField = new MagicTextField();
 		productCodeTextField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
@@ -467,29 +463,28 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 			@Override
 			public void tableChanged(TableModelEvent e) {
 				final int row = getSelectedRow();
+				final int column = e.getColumn();
 				
-				switch (e.getColumn()) {
-				case QUANTITY_COLUMN_INDEX:
+				if (column == QUANTITY_COLUMN_INDEX) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						@Override
 						public void run() {
 							if (validateQuantity(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, AMOUNT_COLUMN_INDEX);
-								changeSelection(row, COST_COLUMN_INDEX, false, false);
-								editCellAt(row, COST_COLUMN_INDEX);
+								tableModel.setValueAt("", row, amountColumnIndex);
+								changeSelection(row, costColumnIndex, false, false);
+								editCellAt(row, costColumnIndex);
 								getEditorComponent().requestFocusInWindow();
 							}
 						}
 					});
-					break;
-				case COST_COLUMN_INDEX:
+				} else if (column == costColumnIndex) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						@Override
 						public void run() {
 							if (validateCost(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, AMOUNT_COLUMN_INDEX);
+								tableModel.setValueAt("", row, amountColumnIndex);
 								if (isAdding() && isLastRowSelected()) {
 									addNewRow();
 								} else {
@@ -499,7 +494,6 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 							}
 						}
 					});
-					break;
 				}
 			}
 		});
@@ -516,9 +510,17 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		}
 		
 		if (!valid) {
-			editCellAtCurrentRow(COST_COLUMN_INDEX);
+			editCellAtCurrentRow(costColumnIndex);
 		}
 		return valid;
+	}
+	
+	public int getCostColumnIndex() {
+		return costColumnIndex;
+	}
+	
+	public int getAmountColumnIndex() {
+		return amountColumnIndex;
 	}
 	
 }
