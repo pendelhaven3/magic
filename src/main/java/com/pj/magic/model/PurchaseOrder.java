@@ -1,6 +1,7 @@
 package com.pj.magic.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PurchaseOrder {
@@ -99,6 +100,13 @@ public class PurchaseOrder {
 
 	public void setReferenceNumber(String referenceNumber) {
 		this.referenceNumber = referenceNumber;
+	}
+
+	public ReceivingReceipt createReceivingReceipt() {
+		ReceivingReceipt receivingReceipt = new ReceivingReceipt();
+		receivingReceipt.setSupplier(supplier);
+		receivingReceipt.setReceivedDate(new Date());
+		return receivingReceipt;
 	}
 	
 }

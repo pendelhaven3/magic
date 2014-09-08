@@ -252,7 +252,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		checkItem.setUnit(rowItem.getUnit());
 		
 		for (PurchaseOrderItem item : purchaseOrder.getItems()) {
-			if (item.equals(checkItem) && item != checkItem) {
+			if (item.equals(checkItem) && item != rowItem.getItem()) {
 				return true;
 			}
 		}

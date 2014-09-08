@@ -12,7 +12,6 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -38,6 +37,7 @@ import com.pj.magic.gui.tables.PurchaseOrderItemsTable;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
+import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.PaymentTermService;
@@ -75,6 +75,8 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
+	private MagicToolBarButton orderButton;
+	private MagicToolBarButton postButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -239,6 +241,9 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 //		totalItemsField.setText(String.valueOf(purchaseOrder.getTotalNumberOfItems()));
 //		totalAmountField.setText(purchaseOrder.getTotalAmount().toString());
 		itemsTable.setPurchaseOrder(purchaseOrder);
+		
+		orderButton.setEnabled(!purchaseOrder.isOrdered());
+		postButton.setEnabled(purchaseOrder.isOrdered() && !purchaseOrder.isPosted());
 	}
 
 	private void clearDisplay() {
@@ -254,6 +259,9 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		totalItemsField.setText(null);
 		totalAmountField.setText(null);
 		itemsTable.setPurchaseOrder(purchaseOrder);
+		
+		orderButton.setEnabled(false);
+		postButton.setEnabled(false);
 	}
 
 	@Override
@@ -490,15 +498,15 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		JToolBar toolBar = new MagicToolBar();
 		addBackButton(toolBar);
 		
-		JButton postButton = new MagicToolBarButton("order", "Order");
-		postButton.setActionCommand(ORDER_ACTION_COMMAND);
+		orderButton = new MagicToolBarButton("order", "Order");
+		orderButton.setActionCommand(ORDER_ACTION_COMMAND);
+		orderButton.addActionListener(this);
+		toolBar.add(orderButton);
+		
+		postButton = new MagicToolBarButton("post", "Post");
+		postButton.setActionCommand(POST_ACTION_COMMAND);
 		postButton.addActionListener(this);
 		toolBar.add(postButton);
-		
-//		JButton postButton = new MagicToolBarButton("invoice", "Post");
-//		postButton.setActionCommand(POST_ACTION_COMMAND);
-//		postButton.addActionListener(this);
-//		toolBar.add(postButton);
 		
 		return toolBar;
 	}
@@ -649,6 +657,9 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		case ORDER_ACTION_COMMAND:
 			orderPurchaseOrder();
 			break;
+		case POST_ACTION_COMMAND:
+			postPurchaseOrder();
+			break;
 		}
 	}
 	
@@ -661,37 +672,30 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 	}
 
 	private void postPurchaseOrder() {
-		/*
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();
 		}
 		
-		int confirm = showConfirmMessage("Do you want to post this sales requisition?");
-		if (confirm == JOptionPane.OK_OPTION) {
-			if (!purchaseOrder.hasItems()) {
-				showErrorMessage("Cannot post a sales requisition with no items");
-				itemsTable.requestFocusInWindow();
-				return;
-			}
+		if (confirm("Do you want to post this Purchase Order?")) {
 			try {
-				SalesInvoice salesInvoice = purchaseOrderService.post(purchaseOrder);
-				JOptionPane.showMessageDialog(this, "Post successful!");
-				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
-			} catch (NotEnoughStocksException e ) {	
-				showErrorMessage("Not enough available stocks!");
+				ReceivingReceipt receivingReceipt = purchaseOrderService.post(purchaseOrder);
+				showMessage("Post successful!");
 				updateDisplay(purchaseOrder);
-				itemsTable.highlightColumn(e.getPurchaseOrderItem(), 
-						PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX);
-			} catch (NoSellingPriceException e) {
-				showErrorMessage("No selling price!");
-				updateDisplay(purchaseOrder);
-				itemsTable.highlightColumn(e.getPurchaseOrderItem(), 
-						PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX);
+//				getMagicFrame().switchToReceivingReceiptPanel(receivingReceipt);
+//			} catch (NotEnoughStocksException e ) {	
+//				showErrorMessage("Not enough available stocks!");
+//				updateDisplay(purchaseOrder);
+//				itemsTable.highlightColumn(e.getPurchaseOrderItem(), 
+//						PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX);
+//			} catch (NoSellingPriceException e) {
+//				showErrorMessage("No selling price!");
+//				updateDisplay(purchaseOrder);
+//				itemsTable.highlightColumn(e.getPurchaseOrderItem(), 
+//						PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX);
 			} catch (Exception e) {
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}
-		*/
 	}
 
 }

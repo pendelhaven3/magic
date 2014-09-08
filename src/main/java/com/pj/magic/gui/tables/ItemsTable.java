@@ -31,7 +31,7 @@ public abstract class ItemsTable extends JTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
-	protected boolean isAdding() {
+	public boolean isAdding() {
 		return addMode;
 	}
 	

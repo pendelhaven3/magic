@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
+import com.pj.magic.model.ReceivingReceipt;
 
 public interface PurchaseOrderService {
 
@@ -17,7 +18,7 @@ public interface PurchaseOrderService {
 
 	void delete(PurchaseOrder currentlySelectedPurchaseOrder);
 
-	void post (PurchaseOrder purchaseOrder);
+	ReceivingReceipt post (PurchaseOrder purchaseOrder);
 	
 	List<PurchaseOrder> getAllNonPostedPurchaseOrders();
 

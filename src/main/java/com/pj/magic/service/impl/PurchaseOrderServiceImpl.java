@@ -11,8 +11,10 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PurchaseOrderDao;
 import com.pj.magic.dao.PurchaseOrderItemDao;
 import com.pj.magic.dao.UserDao;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
+import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.service.SalesInvoiceService;
 
@@ -67,25 +69,14 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
 	@Transactional
 	@Override
-	public void post(PurchaseOrder purchaseOrder) {
-//		PurchaseOrder updated = getPurchaseOrder(purchaseOrder.getId());
-//		for (PurchaseOrderItem item : updated.getItems()) {
-//			// [PJ 08/06/2014] Do not update product quantity inside sales requisition object
-//			// because it has to be "rolled back" manually when an exception happens during posting
-//			Product product = productDao.get(item.getProduct().getId());
-//			if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity())) {
-//				throw new NotEnoughStocksException(item);
-//			} else {
-//				product.subtractUnitQuantity(item.getUnit(), item.getQuantity());
-//				productDao.updateAvailableQuantities(product);
-//			}
-//		}
-//		updated.setPosted(true);
-//		purchaseOrderDao.save(updated);
-//
-//		SalesInvoice salesInvoice = updated.createSalesInvoice();
-//		salesInvoiceService.save(salesInvoice);
-//		return salesInvoice;
+	public ReceivingReceipt post(PurchaseOrder purchaseOrder) {
+		PurchaseOrder updated = getPurchaseOrder(purchaseOrder.getId());
+		updated.setPosted(true);
+		purchaseOrderDao.save(updated);
+
+		ReceivingReceipt receivingReceipt = updated.createReceivingReceipt();
+//		salesInvoiceService.save(receivingReceipt);
+		return receivingReceipt;
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package com.pj.magic.gui.tables.models;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.Constants;
 import com.pj.magic.gui.tables.PurchaseOrderItemsTable;
 import com.pj.magic.gui.tables.rowitems.PurchaseOrderItemRowItem;
 import com.pj.magic.model.PurchaseOrder;
@@ -34,6 +31,7 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	private List<PurchaseOrderItemRowItem> rowItems = new ArrayList<>();
 	private PurchaseOrderItemsTable table;
 	private boolean ordered;
+	private boolean posted;
 	
 	@Override
 	public int getColumnCount() {
@@ -161,7 +159,9 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if (ordered) {
+		if (posted) {
+			return false;
+		} else if (ordered) {
 			if (getRowItem(rowIndex).getItem().isOrdered()) {
 				return columnIndex == table.getActualQuantityColumnIndex()
 						|| columnIndex == table.getCostColumnIndex();
@@ -216,9 +216,13 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	}
 
 	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-		this.ordered = purchaseOrder.isOrdered();
+		ordered = purchaseOrder.isOrdered();
+		posted = purchaseOrder.isPosted();
 		setItems(purchaseOrder.getItems(), false);
 		fireTableStructureChanged();
+	}
+
+	public void revertChanges(int rowIndex) {
 	}
 	
 }

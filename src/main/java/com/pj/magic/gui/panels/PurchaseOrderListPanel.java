@@ -19,7 +19,6 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.PurchaseOrdersTable;
 import com.pj.magic.model.PurchaseOrder;
-import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
@@ -29,7 +28,6 @@ public class PurchaseOrderListPanel extends AbstractMagicPanel implements Action
 	private static final String DELETE_PURCHASE_ORDER_ACTION_NAME = "deletePurchaseOrder";
 	
 	@Autowired private PurchaseOrdersTable table;
-	@Autowired private PurchaseOrderService purchaseOrderService;
 	
 	@Override
 	public void initializeComponents() {
