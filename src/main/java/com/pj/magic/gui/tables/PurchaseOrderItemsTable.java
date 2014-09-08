@@ -52,6 +52,7 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	public static final int QUANTITY_COLUMN_INDEX = 3;
 	public static final int COST_COLUMN_INDEX = 4;
 	public static final int AMOUNT_COLUMN_INDEX = 5;
+	
 	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String TAB_ACTION_NAME = "tab";
 	private static final String DOWN_ACTION_NAME = "down";
@@ -66,7 +67,6 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseOrderItemsTableModel tableModel;
 	
-	private boolean addMode;
 	private PurchaseOrder purchaseOrder;
 	private Action originalDownAction;
 	private Action originalEscapeAction;
@@ -194,10 +194,6 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		return getSelectedRow() + 1 == tableModel.getRowCount();
 	}
 
-	public boolean isAdding() {
-		return addMode;
-	}
-	
 	public void switchToEditMode() {
 		clearSelection();
 		if (isEditing()) {

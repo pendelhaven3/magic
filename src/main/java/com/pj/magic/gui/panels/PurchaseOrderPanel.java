@@ -55,6 +55,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 	private static final String SAVE_PAYMENT_TERM_ACTION_NAME = "savePaymentTerm";
 	private static final String SAVE_REMARKS_ACTION_NAME = "saveRemarks";
 	private static final String SAVE_REFERENCE_NUMBER_ACTION_NAME = "saveReferenceNumber";
+	private static final String ORDER_ACTION_COMMAND = "order";
 	private static final String POST_ACTION_COMMAND = "post";
 	
 	@Autowired private PurchaseOrderItemsTable itemsTable;
@@ -489,11 +490,16 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		JToolBar toolBar = new MagicToolBar();
 		addBackButton(toolBar);
 		
-		JButton postButton = new MagicToolBarButton("invoice", "Post");
-		postButton.setActionCommand(POST_ACTION_COMMAND);
+		JButton postButton = new MagicToolBarButton("order", "Order");
+		postButton.setActionCommand(ORDER_ACTION_COMMAND);
 		postButton.addActionListener(this);
-		
 		toolBar.add(postButton);
+		
+//		JButton postButton = new MagicToolBarButton("invoice", "Post");
+//		postButton.setActionCommand(POST_ACTION_COMMAND);
+//		postButton.addActionListener(this);
+//		toolBar.add(postButton);
+		
 		return toolBar;
 	}
 	
@@ -640,9 +646,17 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		switch (event.getActionCommand()) {
-		case POST_ACTION_COMMAND:
-			postPurchaseOrder();
+		case ORDER_ACTION_COMMAND:
+			markPurchaseOrderAsOrdered();
 			break;
+		}
+	}
+	
+	private void markPurchaseOrderAsOrdered() {
+		if (confirm("Mark PO as ordered?")) {
+			purchaseOrder.setOrdered(true);
+			purchaseOrderService.save(purchaseOrder);
+			updateDisplay(purchaseOrder);
 		}
 	}
 

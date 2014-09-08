@@ -6,6 +6,8 @@ import javax.swing.table.TableModel;
 
 public abstract class ItemsTable extends JTable {
 
+	protected boolean addMode;
+	
 	public ItemsTable(TableModel tableModel) {
 		super(tableModel);
 	}
@@ -22,6 +24,10 @@ public abstract class ItemsTable extends JTable {
 	protected void editCellAtCurrentRow(int columnIndex) {
 		editCellAt(getSelectedRow(), columnIndex);
 		getEditorComponent().requestFocusInWindow();
+	}
+	
+	protected boolean isAdding() {
+		return addMode;
 	}
 	
 }
