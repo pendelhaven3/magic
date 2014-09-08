@@ -1,5 +1,6 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,9 +15,11 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -79,6 +82,8 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	private MagicToolBarButton orderButton;
 	private MagicToolBarButton postButton;
+	private MagicToolBarButton addItemButton;
+	private MagicToolBarButton deleteItemButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -260,6 +265,8 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		
 		orderButton.setEnabled(!purchaseOrder.isOrdered());
 		postButton.setEnabled(purchaseOrder.isOrdered() && !purchaseOrder.isPosted());
+		addItemButton.setEnabled(true);
+		deleteItemButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -278,6 +285,8 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		
 		orderButton.setEnabled(false);
 		postButton.setEnabled(false);
+		addItemButton.setEnabled(false);
+		deleteItemButton.setEnabled(false);
 	}
 
 	@Override
@@ -415,6 +424,17 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		
 		currentRow++;
 		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 6;
+		c.anchor = GridBagConstraints.WEST;
+		add(createItemsTableToolBar(), c);
+
+		currentRow++;
+		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
@@ -474,6 +494,32 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		add(totalAmountField, c);
 	}
 	
+	private JPanel createItemsTableToolBar() {
+		JPanel panel = new JPanel();
+		
+		addItemButton = new MagicToolBarButton("plus_small", "Add Item", true);
+		addItemButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.switchToAddMode();
+			}
+		});
+		panel.add(addItemButton, BorderLayout.WEST);
+		
+		deleteItemButton = new MagicToolBarButton("minus_small", "Delete Item", true);
+		deleteItemButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.delete();
+			}
+		});
+		panel.add(deleteItemButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+
 	private void initializeUnitPricesAndQuantitiesTable() {
 		itemsTable.getModel().addTableModelListener(new TableModelListener() {
 			

@@ -353,7 +353,8 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		});
 	}
 	
-	protected void delete() {
+	// TODO: Rename method
+	public void delete() {
 		if (tableModel.hasItems()) {
 			if (tableModel.isValid(getSelectedRow())) { // check valid row to prevent deleting the blank row
 				if (confirm("Do you wish to delete the selected item?")) {
