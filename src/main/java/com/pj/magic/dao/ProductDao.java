@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.Supplier;
 
 public interface ProductDao {
 
@@ -22,5 +23,7 @@ public interface ProductDao {
 	List<Product> search(Product criteria);
 	
 	List<Product> findAllWithPricingScheme(PricingScheme pricingScheme);
+	
+	List<Product> findAllActiveBySupplier(Supplier supplier);
 	
 }

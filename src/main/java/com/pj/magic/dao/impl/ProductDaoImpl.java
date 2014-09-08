@@ -20,6 +20,7 @@ import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.UnitConversion;
 import com.pj.magic.model.UnitPrice;
@@ -280,6 +281,17 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	@Override
 	public List<Product> findAllWithPricingScheme(PricingScheme pricingScheme) {
 		return getJdbcTemplate().query(FIND_ALL_WITH_PRICING_SCHEME_SQL, productRowMapper, pricingScheme.getId());
+	}
+
+	private static final String FIND_ALL_ACTIVE_BY_SUPPLIER_SQL = BASE_SELECT_SQL +
+			" and a.ACTIVE_IND = 'Y'"
+			+ " and exists(select 1 from SUPPLIER_PRODUCT sp where sp.PRODUCT_ID = a.ID and sp.SUPPLIER_ID = ?)"
+			+ " order by a.CODE";
+			
+	
+	@Override
+	public List<Product> findAllActiveBySupplier(Supplier supplier) {
+		return getJdbcTemplate().query(FIND_ALL_ACTIVE_BY_SUPPLIER_SQL, productRowMapper, supplier.getId());
 	}
 
 }

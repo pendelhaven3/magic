@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.models.ProductsTableModel;
 import com.pj.magic.gui.tables.models.UnitPricesAndQuantitiesTableModel;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -158,6 +159,24 @@ public class SelectProductDialog extends MagicDialog {
 			Product selectedProduct = productService.findFirstProductWithCodeLike(productCode);
 			if (selectedProduct != null) {
 				selectedRow = products.indexOf(selectedProduct);
+			}
+		}
+		if (!products.isEmpty()) {
+			productsTable.changeSelection(selectedRow, 0, false, false);
+		}
+	}
+
+	public void searchProducts(String productCode, Supplier supplier) {
+		List<Product> products = productService.getAllActiveProductsBySupplier(supplier);
+		productsTableModel.setProducts(products);
+		
+		int selectedRow = 0;
+		if (!StringUtils.isEmpty(productCode)) {
+			for (Product product : products) {
+				if (product.getCode().startsWith(productCode)) {
+					selectedRow = products.indexOf(product);
+					break;
+				}
 			}
 		}
 		if (!products.isEmpty()) {

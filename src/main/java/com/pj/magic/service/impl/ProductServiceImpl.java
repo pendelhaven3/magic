@@ -86,5 +86,10 @@ public class ProductServiceImpl implements ProductService {
 	public void saveUnitPrices(Product product, PricingScheme pricingScheme) {
 		productPriceDao.updateUnitPrices(product, pricingScheme);
 	}
+
+	@Override
+	public List<Product> getAllActiveProductsBySupplier(Supplier supplier) {
+		return productDao.findAllActiveBySupplier(supplier);
+	}
 	
 }

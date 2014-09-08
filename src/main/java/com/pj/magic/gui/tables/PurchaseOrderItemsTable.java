@@ -418,7 +418,8 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 
 	protected void showSelectionDialog() {
 		if (isProductCodeFieldSelected()) {
-			selectProductDialog.searchProducts((String)getCellEditor().getCellEditorValue());
+			selectProductDialog.searchProducts((String)getCellEditor().getCellEditorValue(),
+					purchaseOrder.getSupplier());
 			selectProductDialog.setVisible(true);
 			
 			String productCode = selectProductDialog.getSelectedProductCode();
