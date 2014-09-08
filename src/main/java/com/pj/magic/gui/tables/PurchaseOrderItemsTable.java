@@ -2,8 +2,7 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.text.DecimalFormat;
-import java.text.ParseException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -453,6 +452,10 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 			showErrorMessage("Quantity must be specified");
 			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
 			return false;
+		} else if (rowItem.getQuantityAsInt() == 0) {
+			showErrorMessage("Quantity must be greater than 0");
+			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
+			return false;
 		} else {
 			return true;
 		}
@@ -565,6 +568,8 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 			showErrorMessage("Cost must be specified");
 		} else if (!NumberUtil.isAmount(rowItem.getCost())){
 			showErrorMessage("Cost must be a valid amount");
+		} else if (rowItem.getCostAsBigDecimal().equals(BigDecimal.ZERO.setScale(2))){
+			showErrorMessage("Cost must not be 0");
 		} else {
 			valid = true;
 		}

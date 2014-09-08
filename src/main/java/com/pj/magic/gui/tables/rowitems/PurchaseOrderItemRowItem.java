@@ -138,5 +138,9 @@ public class PurchaseOrderItemRowItem {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public int getQuantityAsInt() {
+		return Integer.parseInt(quantity);
+	}
 	
 }
