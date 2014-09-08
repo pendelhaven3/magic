@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.util.List;
@@ -81,6 +83,16 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 	@Override
 	protected void initializeComponents() {
 		supplierComboBox = new JComboBox<>();
+		supplierComboBox.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					saveSupplier();
+				}
+			}
+		});
+		
 		paymentTermComboBox = new JComboBox<>();
 
 		remarksField = new MagicTextField();
@@ -668,6 +680,15 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 	}
 	
 	private void orderPurchaseOrder() {
+		if (itemsTable.isAdding()) {
+			itemsTable.switchToEditMode();
+		}
+		
+		if (!purchaseOrder.hasItems()) {
+			showErrorMessage("Cannot order when there are no items");
+			return;
+		}
+		
 		if (confirm("Mark PO as ordered?")) {
 			purchaseOrderService.order(purchaseOrder);
 			updateDisplay(purchaseOrder);
