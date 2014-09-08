@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.PurchaseOrderItemsTable;
 import com.pj.magic.gui.tables.rowitems.PurchaseOrderItemRowItem;
+import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.PurchaseOrderService;
@@ -21,16 +22,19 @@ import com.pj.magic.util.FormatterUtil;
 public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
 	private static final String[] columnNames = {"Code", "Description", "Unit", "Quantity", "Cost", "Amount"};
+	private static final String[] orderedColumnNames = 
+		{"Code", "Description", "Unit", "Quantity", "Ordered", "Actual Qty", "Cost", "Amount"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseOrderService purchaseOrderService;
 	
 	private List<PurchaseOrderItemRowItem> rowItems = new ArrayList<>();
 	private PurchaseOrderItemsTable table;
+	private boolean ordered;
 	
 	@Override
 	public int getColumnCount() {
-		return columnNames.length;
+		return ordered ? orderedColumnNames.length : columnNames.length;
 	}
 	
 	@Override
@@ -63,6 +67,10 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 				} else {
 					return "";
 				}
+			} else if (columnIndex == table.getOrderedColumnIndex()) {
+				return "";
+			} else if (columnIndex == table.getActualQuantityColumnIndex()) {
+				return "";
 			} else {
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
@@ -71,7 +79,7 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public String getColumnName(int columnIndex) {
-		return columnNames[columnIndex];
+		return ordered ? orderedColumnNames[columnIndex] : columnNames[columnIndex];
 	}
 
 	public List<PurchaseOrderItem> getItems() {
@@ -85,11 +93,17 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	}
 	
 	public void setItems(List<PurchaseOrderItem> items) {
+		setItems(items, true);
+	}
+	
+	public void setItems(List<PurchaseOrderItem> items, boolean update) {
 		this.rowItems.clear();
 		for (PurchaseOrderItem item : items) {
 			this.rowItems.add(new PurchaseOrderItemRowItem(item));
 		}
-		fireTableDataChanged();
+		if (update) {
+			fireTableDataChanged();
+		}
 	}
 	
 	public void addItem(PurchaseOrderItem item) {
@@ -171,6 +185,12 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
 	public void setTable(PurchaseOrderItemsTable table) {
 		this.table = table;
+	}
+
+	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+		this.ordered = purchaseOrder.isOrdered();
+		setItems(purchaseOrder.getItems(), false);
+		fireTableStructureChanged();
 	}
 	
 }

@@ -37,6 +37,10 @@ import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
 import com.pj.magic.util.NumberUtil;
 
+/*
+ * PurchaseOrderItemsTable has 3 modes: New, Ordered, and Posted
+ */
+
 @Component
 public class PurchaseOrderItemsTable extends ItemsTable {
 	
@@ -59,8 +63,11 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseOrderItemsTableModel tableModel;
 	
-	private int costColumnIndex = 4;
-	private int amountColumnIndex = 5;
+	// dynamic columns
+	private int orderedColumnIndex = 4;
+	private int actualQuantityColumnIndex = 5;
+	private int costColumnIndex;
+	private int amountColumnIndex;
 	
 	private PurchaseOrder purchaseOrder;
 	private Action originalDownAction;
@@ -71,7 +78,6 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		super(tableModel);
 		tableModel.setTable(this);
 		setSurrendersFocusOnKeystroke(true);
-		initializeColumns();
 		initializeRowItemValidationBehavior();
 		registerKeyBindings();
 	}
@@ -79,12 +85,16 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	// TODO: replace tab key simulation with table model listener
 	private void initializeColumns() {
 		TableColumnModel columnModel = getColumnModel();
-		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(80);
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
-		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(70);
-		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
-		columnModel.getColumn(costColumnIndex).setPreferredWidth(70);
-		columnModel.getColumn(amountColumnIndex).setPreferredWidth(70);
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(60);
+		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(60);
+		columnModel.getColumn(costColumnIndex).setPreferredWidth(60);
+		columnModel.getColumn(amountColumnIndex).setPreferredWidth(60);
+		if (purchaseOrder.isOrdered()) {
+			columnModel.getColumn(orderedColumnIndex).setPreferredWidth(60);
+			columnModel.getColumn(actualQuantityColumnIndex).setPreferredWidth(60);
+		}
 		
 		MagicTextField productCodeTextField = new MagicTextField();
 		productCodeTextField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
@@ -239,11 +249,20 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		return false;
 	}
 	
-	public void setPurchaseOrder(PurchaseOrder stockQuantityConversion) {
+	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
 		clearSelection();
 		addMode = false;
-		this.purchaseOrder = stockQuantityConversion;
-		tableModel.setItems(stockQuantityConversion.getItems());
+		this.purchaseOrder = purchaseOrder;
+		
+		if (purchaseOrder.isOrdered()) {
+			costColumnIndex = 6;
+			amountColumnIndex = 7;
+		} else {
+			costColumnIndex = 4;
+			amountColumnIndex = 5;
+		}
+		tableModel.setPurchaseOrder(purchaseOrder);
+		initializeColumns();
 	}
 	
 	private PurchaseOrderItem createBlankItem() {
@@ -521,6 +540,14 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	
 	public int getAmountColumnIndex() {
 		return amountColumnIndex;
+	}
+	
+	public int getOrderedColumnIndex() {
+		return orderedColumnIndex;
+	}
+	
+	public int getActualQuantityColumnIndex() {
+		return actualQuantityColumnIndex;
 	}
 	
 }
