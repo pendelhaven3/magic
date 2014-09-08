@@ -1,20 +1,23 @@
 package com.pj.magic.util;
 
-import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 
 import org.springframework.util.StringUtils;
 
 public class NumberUtil {
 
+	private static final String AMOUNT_FORMAT = "#,##0.00";
+	
 	public static boolean isAmount(String value) {
 		if (StringUtils.isEmpty(value)) {
 			return false;
 		}
 		
 		try {
-			new BigDecimal(value);
+			new DecimalFormat(AMOUNT_FORMAT).parse(value);
 			return true;
-		} catch (NumberFormatException e) {
+		} catch (ParseException e) {
 			return false;
 		}
 	}

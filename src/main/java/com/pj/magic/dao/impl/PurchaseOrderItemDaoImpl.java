@@ -57,16 +57,17 @@ public class PurchaseOrderItemDaoImpl extends MagicDao implements PurchaseOrderI
 	
 	private static final String UPDATE_SQL =
 			"update PURCHASE_ORDER_ITEM"
-			+ " set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, COST = ?, ACTUAL_QUANTITY = ?"
+			+ " set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, COST = ?, ACTUAL_QUANTITY = ?, ORDER_IND = ?"
 			+ " where ID = ?";
 	
 	private void update(PurchaseOrderItem item) {
 		getJdbcTemplate().update(UPDATE_SQL, item.getProduct().getId(), item.getUnit(),
-				item.getQuantity(), item.getCost(), item.getActualQuantity(), item.getId());
+				item.getQuantity(), item.getCost(), item.getActualQuantity(),
+				item.isOrdered() ? "Y" : "N", item.getId());
 	}
 
 	private static final String FIND_ALL_BY_PURCHASE_ORDER_SQL =
-			"select ID, PRODUCT_ID, UNIT, QUANTITY, COST, ACTUAL_QUANTITY from PURCHASE_ORDER_ITEM"
+			"select ID, PRODUCT_ID, UNIT, QUANTITY, COST, ACTUAL_QUANTITY, ORDER_IND from PURCHASE_ORDER_ITEM"
 			+ " where PURCHASE_ORDER_ID = ?";
 	
 	@Override
@@ -86,6 +87,7 @@ public class PurchaseOrderItemDaoImpl extends MagicDao implements PurchaseOrderI
 				if (rs.getObject("ACTUAL_QUANTITY") != null) {
 					item.setActualQuantity(rs.getInt("ACTUAL_QUANTITY"));
 				}
+				item.setOrdered("Y".equals(rs.getString("ORDER_IND")));
 				return item;
 			}
 		}, purchaseOrder.getId());
@@ -104,6 +106,14 @@ public class PurchaseOrderItemDaoImpl extends MagicDao implements PurchaseOrderI
 	@Override
 	public void deleteAllByPurchaseOrder(PurchaseOrder purchaseOrder) {
 		getJdbcTemplate().update(DELETE_ALL_BY_STOCK_QUANTITY_CONVERSION_SQL, purchaseOrder.getId());
+	}
+
+	private static final String UPDATE_ALL_BY_PURCHASE_ORDER_AS_ORDERED_SQL = 
+			"update PURCHASE_ORDER_ITEM set ORDER_IND = 'Y' where PURCHASE_ORDER_ID = ?";
+	
+	@Override
+	public void updateAllByPurchaseOrderAsOrdered(PurchaseOrder purchaseOrder) {
+		getJdbcTemplate().update(UPDATE_ALL_BY_PURCHASE_ORDER_AS_ORDERED_SQL, purchaseOrder.getId());
 	}
 	
 }

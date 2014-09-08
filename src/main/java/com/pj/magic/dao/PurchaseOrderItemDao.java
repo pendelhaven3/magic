@@ -15,4 +15,6 @@ public interface PurchaseOrderItemDao {
 
 	void deleteAllByPurchaseOrder(PurchaseOrder purchaseOrder);
 	
+	void updateAllByPurchaseOrderAsOrdered(PurchaseOrder purchaseOrder);
+	
 }

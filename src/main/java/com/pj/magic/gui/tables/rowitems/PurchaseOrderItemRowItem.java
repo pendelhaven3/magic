@@ -1,9 +1,15 @@
 package com.pj.magic.gui.tables.rowitems;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.pj.magic.Constants;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.util.NumberUtil;
@@ -20,6 +26,7 @@ public class PurchaseOrderItemRowItem {
 	private String quantity;
 	private String cost;
 	private Product product;
+	private String actualQuantity;
 
 	public PurchaseOrderItemRowItem(PurchaseOrderItem item) {
 		this.item = item;
@@ -30,6 +37,9 @@ public class PurchaseOrderItemRowItem {
 		unit = item.getUnit();
 		if (item.getQuantity() != null) {
 			quantity = item.getQuantity().toString();
+		}
+		if (item.getActualQuantity() != null) {
+			actualQuantity = item.getActualQuantity().toString();
 		}
 		if (item.getCost() != null) {
 			cost = item.getCost().toString();
@@ -86,7 +96,7 @@ public class PurchaseOrderItemRowItem {
 
 	public boolean isValid() {
 		return product != null && product.hasUnit(unit) && StringUtils.isNumeric(quantity)
-				&& NumberUtil.isAmount(cost);
+				&& NumberUtil.isAmount(cost) && (StringUtils.isEmpty(actualQuantity) || StringUtils.isNumeric(actualQuantity));
 	}
 
 	@Override
@@ -110,6 +120,23 @@ public class PurchaseOrderItemRowItem {
 			.append(product, other.getProduct())
 			.append(unit, other.getUnit())
 			.isEquals();
+	}
+
+	public String getActualQuantity() {
+		return actualQuantity;
+	}
+
+	public void setActualQuantity(String actualQuantity) {
+		this.actualQuantity = actualQuantity;
+	}
+
+	public BigDecimal getCostAsBigDecimal() {
+		try {
+			return new BigDecimal(new DecimalFormat(Constants.AMOUNT_FORMAT).parse(cost).doubleValue())
+				.setScale(2, RoundingMode.HALF_UP);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 }

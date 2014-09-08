@@ -198,8 +198,9 @@ create table PURCHASE_ORDER_ITEM (
   PRODUCT_ID integer not null,
   UNIT varchar2(3) not null,
   QUANTITY integer(4) not null,
-  COST number(6, 2) not null,
+  COST number(10, 2) not null,
   ACTUAL_QUANTITY integer(4) null,
+  ORDER_IND varchar2(1) default 'N' not null,
   constraint PURCHASE_ORDER_ITEM$PK primary key (ID),
   constraint PURCHASE_ORDER_ITEM$FK foreign key (PURCHASE_ORDER_ID) references PURCHASE_ORDER (ID),
   constraint PURCHASE_ORDER_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)

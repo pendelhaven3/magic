@@ -647,16 +647,16 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 	public void actionPerformed(ActionEvent event) {
 		switch (event.getActionCommand()) {
 		case ORDER_ACTION_COMMAND:
-			markPurchaseOrderAsOrdered();
+			orderPurchaseOrder();
 			break;
 		}
 	}
 	
-	private void markPurchaseOrderAsOrdered() {
+	private void orderPurchaseOrder() {
 		if (confirm("Mark PO as ordered?")) {
-			purchaseOrder.setOrdered(true);
-			purchaseOrderService.save(purchaseOrder);
+			purchaseOrderService.order(purchaseOrder);
 			updateDisplay(purchaseOrder);
+			itemsTable.highlight();
 		}
 	}
 

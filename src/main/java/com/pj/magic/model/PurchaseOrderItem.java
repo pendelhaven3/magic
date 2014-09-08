@@ -14,6 +14,7 @@ public class PurchaseOrderItem {
 	private Integer quantity;
 	private BigDecimal cost;
 	private Integer actualQuantity;
+	private boolean ordered;
 
 	public Long getId() {
 		return id;
@@ -96,6 +97,14 @@ public class PurchaseOrderItem {
 			.append(product, other.getProduct())
 			.append(unit, other.getUnit())
 			.isEquals();
+	}
+
+	public boolean isOrdered() {
+		return ordered;
+	}
+
+	public void setOrdered(boolean ordered) {
+		this.ordered = ordered;
 	}
 	
 }

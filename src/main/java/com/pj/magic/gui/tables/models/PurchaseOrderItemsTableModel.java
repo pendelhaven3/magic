@@ -1,6 +1,7 @@
 package com.pj.magic.gui.tables.models;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
 import com.pj.magic.gui.tables.PurchaseOrderItemsTable;
 import com.pj.magic.gui.tables.rowitems.PurchaseOrderItemRowItem;
 import com.pj.magic.model.PurchaseOrder;
@@ -21,7 +23,8 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
-	private static final String[] columnNames = {"Code", "Description", "Unit", "Quantity", "Cost", "Amount"};
+	private static final String[] columnNames = 
+		{"Code", "Description", "Unit", "Quantity", "Cost", "Amount"};
 	private static final String[] orderedColumnNames = 
 		{"Code", "Description", "Unit", "Quantity", "Ordered", "Actual Qty", "Cost", "Amount"};
 	
@@ -60,7 +63,11 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 			return StringUtils.defaultString(rowItem.getQuantity());
 		default:
 			if (columnIndex == table.getCostColumnIndex()) {
-				return StringUtils.defaultString(rowItem.getCost());
+				if (rowItem.isValid()) {
+					return FormatterUtil.formatAmount(rowItem.getItem().getCost());
+				} else {
+					return StringUtils.defaultString(rowItem.getCost());
+				}
 			} else if (columnIndex == table.getAmountColumnIndex()) {
 				if (rowItem.isValid()) {
 					return FormatterUtil.formatAmount(rowItem.getItem().getAmount());
@@ -68,9 +75,9 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 					return "";
 				}
 			} else if (columnIndex == table.getOrderedColumnIndex()) {
-				return "";
+				return rowItem.getItem().isOrdered() ? "Yes" : "No";
 			} else if (columnIndex == table.getActualQuantityColumnIndex()) {
-				return "";
+				return StringUtils.defaultString(rowItem.getActualQuantity());
 			} else {
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
@@ -107,6 +114,9 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	}
 	
 	public void addItem(PurchaseOrderItem item) {
+		if (ordered) {
+			item.setQuantity(0);
+		}
 		rowItems.add(new PurchaseOrderItemRowItem(item));
 		fireTableDataChanged();
 	}
@@ -129,14 +139,20 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 		default:
 			if (columnIndex == table.getCostColumnIndex()) {
 				rowItem.setCost(val);
+			} else if (columnIndex == table.getActualQuantityColumnIndex()) {
+				rowItem.setActualQuantity(val);
 			}
 		}
-		if (rowItem.isValid()) {
+		// TODO: Save only when there is a change
+		if (isCellEditable(rowIndex, columnIndex) && rowItem.isValid()) {
 			PurchaseOrderItem item = rowItem.getItem();
 			item.setProduct(rowItem.getProduct());
 			item.setUnit(rowItem.getUnit());
 			item.setQuantity(Integer.valueOf(rowItem.getQuantity()));
-			item.setCost(new BigDecimal(rowItem.getCost()).setScale(2));
+			item.setCost(rowItem.getCostAsBigDecimal());
+			if (!StringUtils.isEmpty(rowItem.getActualQuantity())) {
+				item.setActualQuantity(Integer.valueOf(rowItem.getActualQuantity()));
+			}
 			purchaseOrderService.save(item);
 			rowItem.setCost(item.getCost().toString());
 		}
@@ -145,10 +161,22 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX
-				|| columnIndex == PurchaseOrderItemsTable.UNIT_COLUMN_INDEX
-				|| columnIndex == PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX
-				|| columnIndex == table.getCostColumnIndex();
+		if (ordered) {
+			if (getRowItem(rowIndex).getItem().isOrdered()) {
+				return columnIndex == table.getActualQuantityColumnIndex()
+						|| columnIndex == table.getCostColumnIndex();
+			} else {
+				return columnIndex == PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX
+						|| columnIndex == PurchaseOrderItemsTable.UNIT_COLUMN_INDEX
+						|| columnIndex == table.getActualQuantityColumnIndex()
+						|| columnIndex == table.getCostColumnIndex();
+			}
+		} else {
+			return columnIndex == PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX
+					|| columnIndex == PurchaseOrderItemsTable.UNIT_COLUMN_INDEX
+					|| columnIndex == PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX
+					|| columnIndex == table.getCostColumnIndex();
+		}
 	}
 	
 	public PurchaseOrderItemRowItem getRowItem(int rowIndex) {

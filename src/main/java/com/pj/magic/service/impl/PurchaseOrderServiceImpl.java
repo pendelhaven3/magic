@@ -99,5 +99,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 		}
 		return purchaseOrders;
 	}
+
+	@Transactional
+	@Override
+	public void order(PurchaseOrder purchaseOrder) {
+		purchaseOrder.setOrdered(true);
+		purchaseOrderDao.save(purchaseOrder);
+		purchaseOrderItemDao.updateAllByPurchaseOrderAsOrdered(purchaseOrder);
+	}
 	
 }

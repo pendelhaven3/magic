@@ -20,5 +20,7 @@ public interface PurchaseOrderService {
 	void post (PurchaseOrder purchaseOrder);
 	
 	List<PurchaseOrder> getAllNonPostedPurchaseOrders();
+
+	void order(PurchaseOrder purchaseOrder);
 	
 }

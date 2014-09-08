@@ -2,6 +2,8 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -9,12 +11,14 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 
@@ -152,6 +156,12 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		
 		DefaultCellEditor quantityCellEditor = new DefaultCellEditor(quantityTextField);
 		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(quantityCellEditor);
+		getColumnModel().getColumn(actualQuantityColumnIndex).setCellEditor(quantityCellEditor);
+		
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+		getColumnModel().getColumn(costColumnIndex).setCellRenderer(rightRenderer);
+		getColumnModel().getColumn(amountColumnIndex).setCellRenderer(rightRenderer);
 	}
 	
 	public void switchToAddMode() {
@@ -396,17 +406,14 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 				showErrorMessage("Duplicate item");
 				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
 			} else {
-				changeSelection(selectedRow, QUANTITY_COLUMN_INDEX, false, false);
-				editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
+				int nextField = QUANTITY_COLUMN_INDEX;
+				if (purchaseOrder.isOrdered()) {
+					nextField = actualQuantityColumnIndex;
+				}
+				changeSelection(selectedRow, nextField, false, false);
+				editCellAtCurrentRow(nextField);
 			}
 			break;
-//		case PurchaseOrderItemsTable.COST_COLUMN_INDEX:
-//			if (selectedRow + 1 < getRowCount()) {
-//				changeSelection(selectedRow + 1, 0, false, false);
-//				editCellAt(selectedRow + 1, 0);
-//				getEditorComponent().requestFocusInWindow();
-//			}
-//			break;
 		}
 	}
 
@@ -451,6 +458,16 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		}
 	}
 	
+	public boolean validateActualQuantity(PurchaseOrderItemRowItem rowItem) {
+		if (StringUtils.isEmpty(rowItem.getActualQuantity())) {
+			showErrorMessage("Actual Quantity must be specified");
+			editCellAtCurrentRow(actualQuantityColumnIndex);
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	public int getTotalNumberOfItems() {
 //		int totalNumberOfItems = purchaseOrder.getTotalNumberOfItems();
 //		if (isAdding()) {
@@ -471,8 +488,13 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		if (!purchaseOrder.hasItems()) {
 			switchToAddMode();
 		} else {
-			changeSelection(0, 0, false, false);
-			requestFocusInWindow();
+			if (purchaseOrder.isOrdered()) {
+				changeSelection(0, actualQuantityColumnIndex, false, false);
+				editCellAtCurrentRow(actualQuantityColumnIndex);
+			} else {
+				changeSelection(0, 0, false, false);
+				requestFocusInWindow();
+			}
 		}
 	}
 	
@@ -507,9 +529,28 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 								if (isAdding() && isLastRowSelected()) {
 									addNewRow();
 								} else {
-									changeSelection(row + 1, PRODUCT_CODE_COLUMN_INDEX, false, false);
-									editCellAtCurrentRow(PRODUCT_CODE_COLUMN_INDEX);
+									if (!isLastRowSelected()) {
+										int nextColumn = PRODUCT_CODE_COLUMN_INDEX;
+										if (purchaseOrder.isOrdered()) {
+											nextColumn = actualQuantityColumnIndex;
+										}
+										changeSelection(row + 1, nextColumn, false, false);
+										editCellAtCurrentRow(nextColumn);
+									}
 								}
+							}
+						}
+					});
+				} else if (column == actualQuantityColumnIndex && purchaseOrder.isOrdered()) {
+					SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+							if (validateActualQuantity(getCurrentlySelectedRowItem())) {
+								tableModel.setValueAt("", row, amountColumnIndex);
+								changeSelection(row, costColumnIndex, false, false);
+								editCellAt(row, costColumnIndex);
+								getEditorComponent().requestFocusInWindow();
 							}
 						}
 					});
