@@ -14,24 +14,26 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SearchProductDialog;
 import com.pj.magic.gui.tables.models.ProductsTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class ProductListPanel extends AbstractMagicPanel implements ActionListener {
+public class ProductListPanel extends AbstractMagicPanel {
 
 	private static final String EDIT_PRODUCT_ACTION_NAME = "editProduct";
-	private static final String NEW_PRODUCT_ACTION_NAME = "newProduct";
 	
 	@Autowired private ProductService productService;
+	@Autowired private SearchProductDialog searchProductDialog;
 	
 	private JTable table;
 	private ProductsTableModel tableModel = new ProductsTableModel();
@@ -87,11 +89,48 @@ public class ProductListPanel extends AbstractMagicPanel implements ActionListen
 		addBackButton(toolBar);
 		
 		JButton postButton = new MagicToolBarButton("plus", "New");
-		postButton.setActionCommand(NEW_PRODUCT_ACTION_NAME);
-		postButton.addActionListener(this);
-		
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getMagicFrame().switchToAddNewProductListPanel();
+			}
+		});
 		toolBar.add(postButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchProduct();
+			}
+		});
+		
+		toolBar.add(searchButton);
 		return toolBar;
+	}
+
+	protected void searchProduct() {
+		searchProductDialog.updateDisplay();
+		searchProductDialog.setVisible(true);
+		String productCode = searchProductDialog.getProductCodeCriteria();
+		if (!StringUtils.isEmpty(productCode)) {
+			boolean found = false;
+			List<Product> products = tableModel.getProducts();
+			for (int i = 0; i < products.size(); i++) {
+				if (products.get(i).getCode().startsWith(productCode)) {
+					found = true;
+					table.changeSelection(i, 0, false, false);
+					break;
+				}
+			}
+			
+			if (!found) {
+				showErrorMessage("No matching product");
+			}
+		}
+		table.requestFocusInWindow();
 	}
 
 	@Override
@@ -116,19 +155,6 @@ public class ProductListPanel extends AbstractMagicPanel implements ActionListen
 	protected void selectProduct() {
 		Product product = tableModel.getProduct(table.getSelectedRow());
 		getMagicFrame().switchToEditProductPanel(product);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case NEW_PRODUCT_ACTION_NAME:
-			switchToNewProductPanel();
-			break;
-		}
-	}
-
-	private void switchToNewProductPanel() {
-		getMagicFrame().switchToAddNewProductListPanel();
 	}
 
 	@Override

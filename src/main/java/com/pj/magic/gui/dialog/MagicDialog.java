@@ -1,6 +1,8 @@
 package com.pj.magic.gui.dialog;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
@@ -45,5 +47,19 @@ public abstract class MagicDialog extends JDialog {
 	}
 
 	protected abstract void doWhenEscapeKeyPressed();
+	
+	protected void focusOnComponentWhenThisPanelIsDisplayed(JComponent component) {
+		final JComponent target = component;
+		addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+				if (!target.isFocusable()) {
+					target.setFocusable(true);
+				}
+				target.requestFocusInWindow();
+			}
+		});
+	}
 	
 }
