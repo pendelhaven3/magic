@@ -19,6 +19,11 @@ public class PurchaseOrdersTableModel extends AbstractTableModel {
 	
 	private List<PurchaseOrder> purchaseOrders = new ArrayList<>();
 	
+	public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
+		this.purchaseOrders = purchaseOrders;
+		fireTableDataChanged();
+	}
+	
 	@Override
 	public int getRowCount() {
 		return purchaseOrders.size();
@@ -43,29 +48,14 @@ public class PurchaseOrdersTableModel extends AbstractTableModel {
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
 	}
-	
+
 	@Override
 	public String getColumnName(int column) {
 		return COLUMN_NAMES[column];
 	}
-	
-	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return false;
-	}
-	
-	public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
-		this.purchaseOrders = purchaseOrders;
-		fireTableDataChanged();
-	}
-	
-	public PurchaseOrder getPurchaseOrder(int rowIndex) {
-		return purchaseOrders.get(rowIndex);
-	}
 
-	public void remove(PurchaseOrder purchaseOrder) {
-		purchaseOrders.remove(purchaseOrder);
-		fireTableDataChanged();
+	public PurchaseOrder getPurchaseOrder(int row) {
+		return purchaseOrders.get(row);
 	}
 	
 }

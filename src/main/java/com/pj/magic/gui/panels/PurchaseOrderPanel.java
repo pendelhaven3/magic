@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -98,12 +100,34 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		});
 		
 		paymentTermComboBox = new JComboBox<>();
+		paymentTermComboBox.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					savePaymentTerm();
+				}
+			}
+		});
 
 		remarksField = new MagicTextField();
 		remarksField.setMaximumLength(100);
+		remarksField.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				saveRemarks();
+			}
+		});
 		
 		referenceNumberField = new MagicTextField();
 		referenceNumberField.setMaximumLength(30);
+		referenceNumberField.addFocusListener(new FocusAdapter() {
+			
+			public void focusLost(FocusEvent e) {
+				saveReferenceNumber();
+			}
+		});
 		
 		focusOnComponentWhenThisPanelIsDisplayed(supplierComboBox);
 		
@@ -138,6 +162,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveRemarks();
+				itemsTable.highlight();
 			}
 		});
 		
@@ -157,7 +182,6 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 			purchaseOrder.setReferenceNumber(referenceNumberField.getText());
 			purchaseOrderService.save(purchaseOrder);
 		}
-		focusNextField();
 	}
 
 	protected void saveRemarks() {
@@ -165,7 +189,6 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 			purchaseOrder.setRemarks(remarksField.getText());
 			purchaseOrderService.save(purchaseOrder);
 		}
-		itemsTable.highlight();
 	}
 
 	protected void savePaymentTerm() {
@@ -197,7 +220,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		if (!supplier.equals(purchaseOrder.getSupplier())) {
 			purchaseOrder.setSupplier(supplier);
 			try {
-				purchaseOrderService.save(purchaseOrder);
+				purchaseOrderService.save(purchaseOrder); // TODO: save only when there is a change
 				updateDisplay(purchaseOrder);
 			} catch (Exception e) {
 				showErrorMessage("Error occurred during saving!");

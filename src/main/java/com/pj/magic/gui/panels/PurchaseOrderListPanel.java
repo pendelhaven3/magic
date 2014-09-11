@@ -78,16 +78,6 @@ public class PurchaseOrderListPanel extends AbstractMagicPanel implements Action
 	@Override
 	protected void registerKeyBindings() {
 		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), NEW_PURCHASE_ORDER_ACTION_NAME);
-		getActionMap().put(NEW_PURCHASE_ORDER_ACTION_NAME, new AbstractAction() {
-		
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				switchToNewPurchaseOrderPanel();
-			}
-		});		
-		
-		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
 			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_PURCHASE_ORDER_ACTION_NAME);
 		getActionMap().put(DELETE_PURCHASE_ORDER_ACTION_NAME, new AbstractAction() {
 	
@@ -111,7 +101,7 @@ public class PurchaseOrderListPanel extends AbstractMagicPanel implements Action
 		MagicToolBar toolBar = new MagicToolBar();
 		addBackButton(toolBar);
 		
-		JButton addButton = new MagicToolBarButton("plus", "New (F4)");
+		JButton addButton = new MagicToolBarButton("plus", "New");
 		addButton.setActionCommand(NEW_PURCHASE_ORDER_ACTION_NAME);
 		addButton.addActionListener(this);
 		toolBar.add(addButton);
