@@ -26,6 +26,8 @@ import com.pj.magic.gui.panels.ProductCategoryListPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderPanel;
+import com.pj.magic.gui.panels.ReceivingReceiptListPanel;
+import com.pj.magic.gui.panels.ReceivingReceiptPanel;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.panels.SalesInvoicePanel;
 import com.pj.magic.gui.panels.SalesRequisitionListPanel;
@@ -40,6 +42,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.PurchaseOrder;
+import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.StockQuantityConversion;
@@ -79,6 +82,8 @@ public class MagicFrame extends JFrame {
 	private static final String STOCK_QUANTITY_CONVERSION_PANEL = "STOCK_QUANTITY_CONVERSION_PANEL";
 	private static final String PURCHASE_ORDER_LIST_PANEL = "PURCHASE_ORDER_LIST_PANEL";
 	private static final String PURCHASE_ORDER_PANEL = "PURCHASE_ORDER_PANEL";
+	private static final String RECEIVING_RECEIPT_LIST_PANEL = "RECEIVING_RECEIPT_LIST_PANEL";
+	private static final String RECEIVING_RECEIPT_PANEL = "RECEIVING_RECEIPT_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
@@ -103,6 +108,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private StockQuantityConversionPanel stockQuantityConversionPanel;
 	@Autowired private PurchaseOrderListPanel purchaseOrderListPanel;
 	@Autowired private PurchaseOrderPanel purchaseOrderPanel;
+	@Autowired private ReceivingReceiptListPanel receivingReceiptListPanel;
+	@Autowired private ReceivingReceiptPanel receivingReceiptPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -139,6 +146,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(stockQuantityConversionPanel, STOCK_QUANTITY_CONVERSION_PANEL);
 		panelHolder.add(purchaseOrderListPanel, PURCHASE_ORDER_LIST_PANEL);
 		panelHolder.add(purchaseOrderPanel, PURCHASE_ORDER_PANEL);
+		panelHolder.add(receivingReceiptListPanel, RECEIVING_RECEIPT_LIST_PANEL);
+		panelHolder.add(receivingReceiptPanel, RECEIVING_RECEIPT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -350,6 +359,18 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Purchase Order");
 		purchaseOrderPanel.updateDisplay(purchaseOrder);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_ORDER_PANEL);
+	}
+
+	public void switchToReceivingReceiptListPanel() {
+		addPanelNameToTitle("Receiving Receipt List");
+		receivingReceiptListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, RECEIVING_RECEIPT_LIST_PANEL);
+	}
+	
+	public void switchToReceivingReceiptPanel(ReceivingReceipt receivingReceipt) {
+		addPanelNameToTitle("Receiving Receipt");
+		receivingReceiptPanel.updateDisplay(receivingReceipt);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, RECEIVING_RECEIPT_PANEL);
 	}
 	
 }

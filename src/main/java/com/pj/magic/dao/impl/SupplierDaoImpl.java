@@ -156,7 +156,8 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 			+ "		from SUPPLIER_PRODUCT b"
 			+ "		where b.SUPPLIER_ID = a.ID"
 			+ "		and b.PRODUCT_ID = ?"
-			+ ")";
+			+ ")"
+			+ " order by a.NAME";
 
 	@Override
 	public List<Supplier> findAllNotHavingProduct(Product product) {

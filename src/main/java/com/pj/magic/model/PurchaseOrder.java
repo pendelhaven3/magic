@@ -106,6 +106,22 @@ public class PurchaseOrder {
 		ReceivingReceipt receivingReceipt = new ReceivingReceipt();
 		receivingReceipt.setSupplier(supplier);
 		receivingReceipt.setReceivedDate(new Date());
+		receivingReceipt.setPaymentTerm(paymentTerm);
+		receivingReceipt.setReferenceNumber(referenceNumber);
+		receivingReceipt.setRemarks(remarks);
+		
+		for (PurchaseOrderItem item : items) {
+			if (item.getActualQuantity() > 0) {
+				ReceivingReceiptItem receivingReceiptItem = new ReceivingReceiptItem();
+				receivingReceiptItem.setParent(receivingReceipt);
+				receivingReceiptItem.setProduct(item.getProduct());
+				receivingReceiptItem.setUnit(item.getUnit());
+				receivingReceiptItem.setQuantity(item.getActualQuantity());
+				receivingReceiptItem.setCost(item.getCost());
+				receivingReceipt.getItems().add(receivingReceiptItem);
+			}
+		}
+		
 		return receivingReceipt;
 	}
 	

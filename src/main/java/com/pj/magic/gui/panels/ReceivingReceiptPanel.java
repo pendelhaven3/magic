@@ -1,24 +1,16 @@
 package com.pj.magic.gui.panels;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -33,79 +25,54 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.tables.PurchaseOrderItemsTable;
-import com.pj.magic.model.PaymentTerm;
+import com.pj.magic.gui.tables.ReceivingReceiptItemsTable;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.ReceivingReceipt;
-import com.pj.magic.model.Supplier;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.ProductService;
-import com.pj.magic.service.PurchaseOrderService;
-import com.pj.magic.service.SupplierService;
+import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionListener {
+public class ReceivingReceiptPanel extends AbstractMagicPanel {
 
-	private static final String SAVE_SUPPLIER_ACTION_NAME = "saveSupplier";
-	private static final String SAVE_PAYMENT_TERM_ACTION_NAME = "savePaymentTerm";
 	private static final String SAVE_REMARKS_ACTION_NAME = "saveRemarks";
-	private static final String SAVE_REFERENCE_NUMBER_ACTION_NAME = "saveReferenceNumber";
-	private static final String ORDER_ACTION_COMMAND = "order";
-	private static final String POST_ACTION_COMMAND = "post";
 	
-	@Autowired private PurchaseOrderItemsTable itemsTable;
+	@Autowired private ReceivingReceiptItemsTable itemsTable;
 	@Autowired private ProductService productService;
-	@Autowired private PurchaseOrderService purchaseOrderService;
+	@Autowired private ReceivingReceiptService receivingReceiptService;
 	@Autowired private PricingSchemeService pricingSchemeService;
-	@Autowired private SupplierService supplierService;
 	@Autowired private PaymentTermService paymentTermService;
 	
-	private PurchaseOrder purchaseOrder;
-	private JLabel purchaseOrderNumberField;
+	private ReceivingReceipt receivingReceipt;
+	private JLabel receivingReceiptNumberField;
+	private JLabel supplierField;
+	private JLabel paymentTermField;
 	private JLabel statusField;
-	private JComboBox<Supplier> supplierComboBox;
-	private JComboBox<PaymentTerm> paymentTermComboBox;
 	private MagicTextField remarksField;
-	private MagicTextField referenceNumberField;
+	private JLabel referenceNumberField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
-	private MagicToolBarButton orderButton;
 	private MagicToolBarButton postButton;
-	private MagicToolBarButton addItemButton;
-	private MagicToolBarButton deleteItemButton;
 	
 	@Override
 	protected void initializeComponents() {
-		supplierComboBox = new JComboBox<>();
-		supplierComboBox.addItemListener(new ItemListener() {
-			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					saveSupplier();
-				}
-			}
-		});
+		supplierField = new JLabel();
+		paymentTermField = new JLabel();
+		referenceNumberField = new JLabel();
+		statusField = new JLabel();
 		
-		paymentTermComboBox = new JComboBox<>();
-
 		remarksField = new MagicTextField();
 		remarksField.setMaximumLength(100);
 		
-		referenceNumberField = new MagicTextField();
-		referenceNumberField.setMaximumLength(30);
-		
-		focusOnComponentWhenThisPanelIsDisplayed(supplierComboBox);
+		focusOnComponentWhenThisPanelIsDisplayed(remarksField);
 		
 		updateTotalAmountFieldWhenItemsTableChanges();
 		initializeUnitPricesAndQuantitiesTable();
@@ -113,25 +80,6 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 
 	@Override
 	protected void registerKeyBindings() {
-		supplierComboBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_SUPPLIER_ACTION_NAME);
-		supplierComboBox.getActionMap().put(SAVE_SUPPLIER_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveSupplier();
-			}
-		});
-		
-		paymentTermComboBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
-				SAVE_PAYMENT_TERM_ACTION_NAME);
-		paymentTermComboBox.getActionMap().put(SAVE_PAYMENT_TERM_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				savePaymentTerm();
-			}
-		});
-		
 		remarksField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_REMARKS_ACTION_NAME);
 		remarksField.getActionMap().put(SAVE_REMARKS_ACTION_NAME, new AbstractAction() {
 			
@@ -139,77 +87,15 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 			public void actionPerformed(ActionEvent e) {
 				saveRemarks();
 			}
-		});
-		
-		referenceNumberField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
-				SAVE_REFERENCE_NUMBER_ACTION_NAME);
-		referenceNumberField.getActionMap().put(SAVE_REFERENCE_NUMBER_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveReferenceNumber();
-			}
-		});
-	}
-
-	protected void saveReferenceNumber() {
-		if (!referenceNumberField.getText().equals(purchaseOrder.getReferenceNumber())) {
-			purchaseOrder.setReferenceNumber(referenceNumberField.getText());
-			purchaseOrderService.save(purchaseOrder);
-		}
-		focusNextField();
+		});		
 	}
 
 	protected void saveRemarks() {
-		if (!remarksField.getText().equals(purchaseOrder.getRemarks())) {
-			purchaseOrder.setRemarks(remarksField.getText());
-			purchaseOrderService.save(purchaseOrder);
+		if (!remarksField.getText().equals(receivingReceipt.getRemarks())) {
+			receivingReceipt.setRemarks(remarksField.getText());
+			receivingReceiptService.save(receivingReceipt);
 		}
 		itemsTable.highlight();
-	}
-
-	protected void savePaymentTerm() {
-		PaymentTerm paymentTerm = (PaymentTerm)paymentTermComboBox.getSelectedItem();
-		if ((paymentTerm == null && purchaseOrder.getPaymentTerm() != null)
-				|| (paymentTerm != null && !paymentTerm.equals(purchaseOrder.getPaymentTerm()))) {
-			purchaseOrder.setPaymentTerm(paymentTerm);
-			purchaseOrderService.save(purchaseOrder);
-		}
-		focusNextField();
-	}
-
-	@Override
-	protected void initializeFocusOrder(List<JComponent> focusOrder) {
-		focusOrder.add(supplierComboBox);
-		focusOrder.add(referenceNumberField);
-		focusOrder.add(paymentTermComboBox);
-		focusOrder.add(remarksField);
-	}
-	
-	protected void saveSupplier() {
-		try {
-			validateMandatoryField(supplierComboBox, "Supplier");
-		} catch (ValidationException e) {
-			return;
-		}
-		
-		Supplier supplier = (Supplier)supplierComboBox.getSelectedItem();
-		if (!supplier.equals(purchaseOrder.getSupplier())) {
-			purchaseOrder.setSupplier(supplier);
-			try {
-				purchaseOrderService.save(purchaseOrder);
-				updateDisplay(purchaseOrder);
-			} catch (Exception e) {
-				showErrorMessage("Error occurred during saving!");
-				return;
-			}
-		}
-		
-		if (purchaseOrder.isOrdered()) {
-			referenceNumberField.requestFocusInWindow();
-		} else {
-			paymentTermComboBox.requestFocusInWindow();
-		}
 	}
 
 	@Override
@@ -217,7 +103,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		if (itemsTable.isEditing()) {
 			itemsTable.getCellEditor().cancelCellEditing();
 		}
-		getMagicFrame().switchToPurchaseOrderListPanel();
+		getMagicFrame().switchToReceivingReceiptListPanel();
 	}
 	
 	private void updateTotalAmountFieldWhenItemsTableChanges() {
@@ -231,61 +117,21 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		});
 	}
 
-	public void updateDisplay(PurchaseOrder purchaseOrder) {
-		List<Supplier> suppliers = supplierService.getAllSuppliers();
-		supplierComboBox.setModel(
-				new DefaultComboBoxModel<>(suppliers.toArray(new Supplier[suppliers.size()])));
+	public void updateDisplay(ReceivingReceipt receivingReceipt) {
+		this.receivingReceipt = receivingReceiptService.getReceivingReceipt(receivingReceipt.getId());
+		receivingReceipt = this.receivingReceipt;
 		
-		List<PaymentTerm> paymentTerms = paymentTermService.getAllPaymentTerms();
-		paymentTermComboBox.setModel(
-				new DefaultComboBoxModel<>(paymentTerms.toArray(new PaymentTerm[paymentTerms.size()])));
+		receivingReceiptNumberField.setText(receivingReceipt.getReceivingReceiptNumber().toString());
+		statusField.setText(receivingReceipt.getStatus());
+		supplierField.setText(receivingReceipt.getSupplier().getName());
+		paymentTermField.setText(receivingReceipt.getPaymentTerm().getName());
+		remarksField.setText(receivingReceipt.getRemarks());
+		referenceNumberField.setText(receivingReceipt.getReferenceNumber());
+//		totalItemsField.setText(String.valueOf(receivingReceipt.getTotalNumberOfItems()));
+//		totalAmountField.setText(receivingReceipt.getTotalAmount().toString());
+		itemsTable.setReceivingReceipt(receivingReceipt);
 		
-		if (purchaseOrder.getId() == null) {
-			this.purchaseOrder = purchaseOrder;
-			clearDisplay();
-			return;
-		}
-		
-		this.purchaseOrder = purchaseOrderService.getPurchaseOrder(purchaseOrder.getId());
-		purchaseOrder = this.purchaseOrder;
-		
-		purchaseOrderNumberField.setText(purchaseOrder.getPurchaseOrderNumber().toString());
-		statusField.setText(purchaseOrder.getStatus());
-		supplierComboBox.setSelectedItem(purchaseOrder.getSupplier());
-		paymentTermComboBox.setEnabled(true);
-		paymentTermComboBox.setSelectedItem(purchaseOrder.getPaymentTerm());
-		remarksField.setEnabled(true);
-		remarksField.setText(purchaseOrder.getRemarks());
-		referenceNumberField.setEnabled(purchaseOrder.isOrdered());
-		referenceNumberField.setText(purchaseOrder.getReferenceNumber());
-//		totalItemsField.setText(String.valueOf(purchaseOrder.getTotalNumberOfItems()));
-//		totalAmountField.setText(purchaseOrder.getTotalAmount().toString());
-		itemsTable.setPurchaseOrder(purchaseOrder);
-		
-		orderButton.setEnabled(!purchaseOrder.isOrdered());
-		postButton.setEnabled(purchaseOrder.isOrdered() && !purchaseOrder.isPosted());
-		addItemButton.setEnabled(true);
-		deleteItemButton.setEnabled(true);
-	}
-
-	private void clearDisplay() {
-		purchaseOrderNumberField.setText(null);
-		statusField.setText(null);
-		supplierComboBox.setSelectedItem(null);
-		paymentTermComboBox.setEnabled(false);
-		paymentTermComboBox.setSelectedItem(null);
-		remarksField.setEnabled(false);
-		remarksField.setText(null);
-		referenceNumberField.setEnabled(false);
-		referenceNumberField.setText(null);
-		totalItemsField.setText(null);
-		totalAmountField.setText(null);
-		itemsTable.setPurchaseOrder(purchaseOrder);
-		
-		orderButton.setEnabled(false);
 		postButton.setEnabled(false);
-		addItemButton.setEnabled(false);
-		deleteItemButton.setEnabled(false);
 	}
 
 	@Override
@@ -324,8 +170,8 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		purchaseOrderNumberField = ComponentUtil.createLabel(200, "");
-		add(purchaseOrderNumberField, c);
+		receivingReceiptNumberField = ComponentUtil.createLabel(200, "");
+		add(receivingReceiptNumberField, c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 3;
@@ -361,9 +207,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		
-		supplierComboBox.setPreferredSize(new Dimension(300, 20));
-		add(supplierComboBox, c);
+		add(ComponentUtil.createFiller(1, 1), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -393,8 +237,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		paymentTermComboBox.setPreferredSize(new Dimension(100, 20));
-		add(paymentTermComboBox, c);
+		add(ComponentUtil.createFiller(1, 1), c);
 		
 		currentRow++;
 		
@@ -421,17 +264,6 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createFiller(50, 10), c);
 		
-		currentRow++;
-		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 6;
-		c.anchor = GridBagConstraints.WEST;
-		add(createItemsTableToolBar(), c);
-
 		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
@@ -493,38 +325,12 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		add(totalAmountField, c);
 	}
 	
-	private JPanel createItemsTableToolBar() {
-		JPanel panel = new JPanel();
-		
-		addItemButton = new MagicToolBarButton("plus_small", "Add Item", true);
-		addItemButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				itemsTable.switchToAddMode();
-			}
-		});
-		panel.add(addItemButton, BorderLayout.WEST);
-		
-		deleteItemButton = new MagicToolBarButton("minus_small", "Delete Item", true);
-		deleteItemButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				itemsTable.delete();
-			}
-		});
-		panel.add(deleteItemButton, BorderLayout.WEST);
-		
-		return panel;
-	}
-
 	private void initializeUnitPricesAndQuantitiesTable() {
 		itemsTable.getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				if (e.getColumn() == PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX ||
+				if (e.getColumn() == ReceivingReceiptItemsTable.PRODUCT_CODE_COLUMN_INDEX ||
 						e.getColumn() == TableModelEvent.ALL_COLUMNS) {
 					updateUnitPricesAndQuantitiesTable();
 				}
@@ -559,14 +365,14 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		JToolBar toolBar = new MagicToolBar();
 		addBackButton(toolBar);
 		
-		orderButton = new MagicToolBarButton("order", "Order");
-		orderButton.setActionCommand(ORDER_ACTION_COMMAND);
-		orderButton.addActionListener(this);
-		toolBar.add(orderButton);
-		
 		postButton = new MagicToolBarButton("post", "Post");
-		postButton.setActionCommand(POST_ACTION_COMMAND);
-		postButton.addActionListener(this);
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				postReceivingReceipt();
+			}
+		});
 		toolBar.add(postButton);
 		
 		return toolBar;
@@ -712,60 +518,33 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		switch (event.getActionCommand()) {
-		case ORDER_ACTION_COMMAND:
-			orderPurchaseOrder();
-			break;
-		case POST_ACTION_COMMAND:
-			postPurchaseOrder();
-			break;
-		}
-	}
-	
-	private void orderPurchaseOrder() {
-		if (itemsTable.isAdding()) {
-			itemsTable.switchToEditMode();
-		}
-		
-		if (!purchaseOrder.hasItems()) {
-			showErrorMessage("Cannot order when there are no items");
-			return;
-		}
-		
-		if (confirm("Mark PO as ordered?")) {
-			purchaseOrderService.order(purchaseOrder);
-			updateDisplay(purchaseOrder);
-			itemsTable.highlight();
-		}
-	}
-
-	private void postPurchaseOrder() {
+	private void postReceivingReceipt() {
+		/*
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();
 		}
 		
 		if (confirm("Do you want to post this Purchase Order?")) {
 			try {
-				ReceivingReceipt receivingReceipt = purchaseOrderService.post(purchaseOrder);
+				ReceivingReceipt receivingReceipt = receivingReceiptService.post(receivingReceipt);
 				showMessage("Post successful!");
 				getMagicFrame().switchToReceivingReceiptPanel(receivingReceipt);
 //			} catch (NotEnoughStocksException e ) {	
 //				showErrorMessage("Not enough available stocks!");
-//				updateDisplay(purchaseOrder);
-//				itemsTable.highlightColumn(e.getPurchaseOrderItem(), 
-//						PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX);
+//				updateDisplay(receivingReceipt);
+//				itemsTable.highlightColumn(e.getReceivingReceiptItem(), 
+//						ReceivingReceiptItemsTable.QUANTITY_COLUMN_INDEX);
 //			} catch (NoSellingPriceException e) {
 //				showErrorMessage("No selling price!");
-//				updateDisplay(purchaseOrder);
-//				itemsTable.highlightColumn(e.getPurchaseOrderItem(), 
-//						PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX);
+//				updateDisplay(receivingReceipt);
+//				itemsTable.highlightColumn(e.getReceivingReceiptItem(), 
+//						ReceivingReceiptItemsTable.PRODUCT_CODE_COLUMN_INDEX);
 			} catch (Exception e) {
 				e.printStackTrace();
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}
+		*/
 	}
 
 }

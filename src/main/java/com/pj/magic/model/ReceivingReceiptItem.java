@@ -2,19 +2,14 @@ package com.pj.magic.model;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
 public class ReceivingReceiptItem {
 
 	private Long id;
-	private PurchaseOrder parent;
+	private ReceivingReceipt parent;
 	private Product product;
 	private String unit;
 	private Integer quantity;
 	private BigDecimal cost;
-	private Integer actualQuantity;
-	private boolean ordered;
 
 	public Long getId() {
 		return id;
@@ -24,11 +19,11 @@ public class ReceivingReceiptItem {
 		this.id = id;
 	}
 
-	public PurchaseOrder getParent() {
+	public ReceivingReceipt getParent() {
 		return parent;
 	}
 
-	public void setParent(PurchaseOrder parent) {
+	public void setParent(ReceivingReceipt parent) {
 		this.parent = parent;
 	}
 
@@ -64,47 +59,8 @@ public class ReceivingReceiptItem {
 		this.cost = cost;
 	}
 
-	public Integer getActualQuantity() {
-		return actualQuantity;
-	}
-
-	public void setActualQuantity(Integer actualQuantity) {
-		this.actualQuantity = actualQuantity;
-	}
-
 	public BigDecimal getAmount() {
 		return cost.multiply(new BigDecimal(quantity.intValue()));
 	}
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(product)
-			.append(unit)
-			.toHashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-        if (!(obj instanceof ReceivingReceiptItem)) {
-            return false;
-        }
-        ReceivingReceiptItem other = (ReceivingReceiptItem)obj;		
-		return new EqualsBuilder()
-			.append(product, other.getProduct())
-			.append(unit, other.getUnit())
-			.isEquals();
-	}
-
-	public boolean isOrdered() {
-		return ordered;
-	}
-
-	public void setOrdered(boolean ordered) {
-		this.ordered = ordered;
-	}
-	
 }

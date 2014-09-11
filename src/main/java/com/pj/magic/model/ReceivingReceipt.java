@@ -14,6 +14,8 @@ public class ReceivingReceipt {
 	private PaymentTerm paymentTerm; // TODO: Look for payment terms
 	private String referenceNumber;
 	private List<ReceivingReceiptItem> items = new ArrayList<>();
+	private boolean posted;
+	private String remarks;
 
 	public Long getId() {
 		return id;
@@ -77,6 +79,26 @@ public class ReceivingReceipt {
 	
 	public List<ReceivingReceiptItem> getItems() {
 		return items;
+	}
+
+	public boolean isPosted() {
+		return posted;
+	}
+
+	public void setPosted(boolean posted) {
+		this.posted = posted;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public String getStatus() {
+		return posted ? "Posted" : "New";
 	}
 	
 }

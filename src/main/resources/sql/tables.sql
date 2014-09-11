@@ -205,3 +205,29 @@ create table PURCHASE_ORDER_ITEM (
   constraint PURCHASE_ORDER_ITEM$FK foreign key (PURCHASE_ORDER_ID) references PURCHASE_ORDER (ID),
   constraint PURCHASE_ORDER_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
+
+create table RECEIVING_RECEIPT (
+  ID integer auto_increment,
+  RECEIVING_RECEIPT_NO integer auto_increment,
+  SUPPLIER_ID integer not null,
+  POST_IND varchar2(1) default 'N' not null,
+  PAYMENT_TERM_ID integer not null,
+  REMARKS varchar2(100) null,
+  REFERENCE_NO varchar2(30) null,
+  RECEIVED_DT date not null,
+  RECEIVED_BY integer null,
+  constraint RECEIVING_RECEIPT$PK primary key (ID),
+  constraint RECEIVING_RECEIPT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID)
+);
+
+create table RECEIVING_RECEIPT_ITEM (
+  ID integer auto_increment,
+  RECEIVING_RECEIPT_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT varchar2(3) not null,
+  QUANTITY integer(4) not null,
+  COST number(10, 2) not null,
+  constraint RECEIVING_RECEIPT_ITEM$PK primary key (ID),
+  constraint RECEIVING_RECEIPT_ITEM$FK foreign key (RECEIVING_RECEIPT_ID) references RECEIVING_RECEIPT (ID),
+  constraint RECEIVING_RECEIPT_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);

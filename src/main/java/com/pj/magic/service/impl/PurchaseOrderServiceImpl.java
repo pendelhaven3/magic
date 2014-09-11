@@ -6,17 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PurchaseOrderDao;
 import com.pj.magic.dao.PurchaseOrderItemDao;
-import com.pj.magic.dao.UserDao;
-import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.service.PurchaseOrderService;
-import com.pj.magic.service.SalesInvoiceService;
+import com.pj.magic.service.ReceivingReceiptService;
 
 @Service
 public class PurchaseOrderServiceImpl implements PurchaseOrderService {
@@ -24,9 +21,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	@Autowired private PurchaseOrderDao purchaseOrderDao;
 	@Autowired private PurchaseOrderItemDao purchaseOrderItemDao;
 	@Autowired private ProductDao productDao;
-	@Autowired private SalesInvoiceService salesInvoiceService;
-	@Autowired private CustomerDao customerDao;
-	@Autowired private UserDao userDao;
+	@Autowired private ReceivingReceiptService receivingReceiptService;
 	
 	@Transactional
 	@Override
@@ -75,7 +70,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 		purchaseOrderDao.save(updated);
 
 		ReceivingReceipt receivingReceipt = updated.createReceivingReceipt();
-//		salesInvoiceService.save(receivingReceipt);
+		receivingReceiptService.save(receivingReceipt);
 		return receivingReceipt;
 	}
 
