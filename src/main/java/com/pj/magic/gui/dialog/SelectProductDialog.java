@@ -1,5 +1,6 @@
 package com.pj.magic.gui.dialog;
 
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.models.ProductsTableModel;
+import com.pj.magic.gui.tables.models.UnitCostsAndQuantitiesTableModel;
 import com.pj.magic.gui.tables.models.UnitPricesAndQuantitiesTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
@@ -33,15 +36,21 @@ public class SelectProductDialog extends MagicDialog {
 
 	private static final String SELECT_PRODUCT_ACTION_NAME = "selectProduct";
 	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
+	private static final String UNIT_PRICE_INFO_TABLE = "unitPriceInfoTable";
+	private static final String UNIT_COST_INFO_TABLE = "unitCostInfoTable";
 
 	@Autowired private ProductService productService;
 
 	private ProductsTableModel productsTableModel = new ProductsTableModel();
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = 
 			new UnitPricesAndQuantitiesTableModel();
+	private UnitCostsAndQuantitiesTableModel unitCostsAndQuantitiesTableModel =
+			new UnitCostsAndQuantitiesTableModel();
 	private JTable productsTable;
 	private String selectedProductCode;
 	private JTable unitPricesAndQuantitiesTable;
+	private JTable unitCostsAndQuantitiesTable;
+	private JPanel infoTablePanel;
 	
 	public SelectProductDialog() {
 		setSize(500, 400);
@@ -53,6 +62,7 @@ public class SelectProductDialog extends MagicDialog {
 	public void initialize() {
 		productsTable = new JTable(productsTableModel);
 		unitPricesAndQuantitiesTable = new JTable(unitPricesAndQuantitiesTableModel);
+		unitCostsAndQuantitiesTable = new JTable(unitCostsAndQuantitiesTableModel);
 		
 		layoutComponents();
 		registerKeyBindings();
@@ -65,6 +75,7 @@ public class SelectProductDialog extends MagicDialog {
 				if (selectedRow != -1) {
 					Product product = productsTableModel.getProduct(selectedRow);
 					unitPricesAndQuantitiesTableModel.setProduct(product);
+					unitCostsAndQuantitiesTableModel.setProduct(product);
 				}
 			}
 		});
@@ -144,12 +155,22 @@ public class SelectProductDialog extends MagicDialog {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.CENTER;
-
-		JScrollPane unitPricesAndQuantitiesScrollPane = new JScrollPane(unitPricesAndQuantitiesTable);
-		unitPricesAndQuantitiesScrollPane.setPreferredSize(new Dimension(400, 103));
-		add(unitPricesAndQuantitiesScrollPane, c);
+		add(createInfoTablePanel(), c);
 	}
 	
+	private JPanel createInfoTablePanel() {
+		infoTablePanel = new JPanel(new CardLayout());
+		infoTablePanel.setPreferredSize(new Dimension(400, 103));
+		
+		JScrollPane unitPricesAndQuantitiesScrollPane = new JScrollPane(unitPricesAndQuantitiesTable);
+		infoTablePanel.add(unitPricesAndQuantitiesScrollPane, UNIT_PRICE_INFO_TABLE);
+		
+		JScrollPane unitCostsAndQuantitiesScrollPane = new JScrollPane(unitCostsAndQuantitiesTable);
+		infoTablePanel.add(unitCostsAndQuantitiesScrollPane, UNIT_COST_INFO_TABLE);
+		
+		return infoTablePanel;
+	}
+
 	public void searchProducts(String productCode) {
 		List<Product> products = productService.getAllActiveProducts();
 		productsTableModel.setProducts(products);
@@ -164,6 +185,7 @@ public class SelectProductDialog extends MagicDialog {
 		if (!products.isEmpty()) {
 			productsTable.changeSelection(selectedRow, 0, false, false);
 		}
+		((CardLayout)infoTablePanel.getLayout()).show(infoTablePanel, UNIT_PRICE_INFO_TABLE);
 	}
 
 	public void searchProducts(String productCode, Supplier supplier) {
@@ -182,6 +204,7 @@ public class SelectProductDialog extends MagicDialog {
 		if (!products.isEmpty()) {
 			productsTable.changeSelection(selectedRow, 0, false, false);
 		}
+		((CardLayout)infoTablePanel.getLayout()).show(infoTablePanel, UNIT_COST_INFO_TABLE);
 	}
 	
 }
