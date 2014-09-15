@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class PurchaseOrderItem {
+public class PurchaseOrderItem implements Comparable<PurchaseOrderItem> {
 
 	private Long id;
 	private PurchaseOrder parent;
@@ -105,6 +105,16 @@ public class PurchaseOrderItem {
 
 	public void setOrdered(boolean ordered) {
 		this.ordered = ordered;
+	}
+
+	@Override
+	public int compareTo(PurchaseOrderItem o) {
+		int result = product.compareTo(o.getProduct());
+		if (result == 0) {
+			return Unit.compare(unit, o.getUnit());
+		} else {
+			return result;
+		}
 	}
 	
 }

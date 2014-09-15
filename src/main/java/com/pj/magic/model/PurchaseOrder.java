@@ -125,4 +125,11 @@ public class PurchaseOrder {
 		return receivingReceipt;
 	}
 	
+	public int getTotalQuantity() {
+		int totalQuantity = 0;
+		for (PurchaseOrderItem item : items) {
+			totalQuantity += item.getQuantity();
+		}
+		return totalQuantity;
+	}
 }

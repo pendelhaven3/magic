@@ -48,6 +48,7 @@ import com.pj.magic.model.Supplier;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.service.PricingSchemeService;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.service.SupplierService;
@@ -55,14 +56,12 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionListener {
+public class PurchaseOrderPanel extends AbstractMagicPanel {
 
 	private static final String SAVE_SUPPLIER_ACTION_NAME = "saveSupplier";
 	private static final String SAVE_PAYMENT_TERM_ACTION_NAME = "savePaymentTerm";
 	private static final String SAVE_REMARKS_ACTION_NAME = "saveRemarks";
 	private static final String SAVE_REFERENCE_NUMBER_ACTION_NAME = "saveReferenceNumber";
-	private static final String ORDER_ACTION_COMMAND = "order";
-	private static final String POST_ACTION_COMMAND = "post";
 	
 	@Autowired private PurchaseOrderItemsTable itemsTable;
 	@Autowired private ProductService productService;
@@ -70,6 +69,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private SupplierService supplierService;
 	@Autowired private PaymentTermService paymentTermService;
+	@Autowired private PrintService printService;
 	
 	private PurchaseOrder purchaseOrder;
 	private JLabel purchaseOrderNumberField;
@@ -85,6 +85,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton addItemButton;
 	private MagicToolBarButton deleteItemButton;
+	private MagicToolBarButton printButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -583,14 +584,34 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		addBackButton(toolBar);
 		
 		orderButton = new MagicToolBarButton("order", "Order");
-		orderButton.setActionCommand(ORDER_ACTION_COMMAND);
-		orderButton.addActionListener(this);
+		orderButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				orderPurchaseOrder();
+			}
+		});
 		toolBar.add(orderButton);
 		
 		postButton = new MagicToolBarButton("post", "Post");
-		postButton.setActionCommand(POST_ACTION_COMMAND);
-		postButton.addActionListener(this);
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				postPurchaseOrder();
+			}
+		});
 		toolBar.add(postButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(purchaseOrder);
+			}
+		});
+		toolBar.add(printButton);
 		
 		return toolBar;
 	}
@@ -735,18 +756,6 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 		
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		switch (event.getActionCommand()) {
-		case ORDER_ACTION_COMMAND:
-			orderPurchaseOrder();
-			break;
-		case POST_ACTION_COMMAND:
-			postPurchaseOrder();
-			break;
-		}
-	}
-	
 	private void orderPurchaseOrder() {
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();
@@ -774,16 +783,6 @@ public class PurchaseOrderPanel extends AbstractMagicPanel implements ActionList
 				ReceivingReceipt receivingReceipt = purchaseOrderService.post(purchaseOrder);
 				showMessage("Post successful!");
 				getMagicFrame().switchToReceivingReceiptPanel(receivingReceipt);
-//			} catch (NotEnoughStocksException e ) {	
-//				showErrorMessage("Not enough available stocks!");
-//				updateDisplay(purchaseOrder);
-//				itemsTable.highlightColumn(e.getPurchaseOrderItem(), 
-//						PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX);
-//			} catch (NoSellingPriceException e) {
-//				showErrorMessage("No selling price!");
-//				updateDisplay(purchaseOrder);
-//				itemsTable.highlightColumn(e.getPurchaseOrderItem(), 
-//						PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX);
 			} catch (Exception e) {
 				e.printStackTrace();
 				showErrorMessage("Unexpected error occurred during posting!");
