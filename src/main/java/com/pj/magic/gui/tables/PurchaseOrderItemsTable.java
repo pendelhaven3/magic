@@ -31,7 +31,6 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
-import com.pj.magic.gui.tables.models.ActionsTableModel;
 import com.pj.magic.gui.tables.models.PurchaseOrderItemsTableModel;
 import com.pj.magic.gui.tables.rowitems.PurchaseOrderItemRowItem;
 import com.pj.magic.model.PurchaseOrder;
@@ -56,7 +55,6 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	private static final String TAB_ACTION_NAME = "tab";
 	private static final String DOWN_ACTION_NAME = "down";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
-	private static final String SHOW_SELECT_ACTION_DIALOG_ACTION_NAME = "showSelectActionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 
@@ -292,22 +290,9 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), SHOW_SELECT_ACTION_DIALOG_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
 		
 		ActionMap actionMap = getActionMap();
-		actionMap.put(SHOW_SELECT_ACTION_DIALOG_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectActionDialog.setVisible(true);
-				
-				String action = selectActionDialog.getSelectedAction();
-				if (ActionsTableModel.CREATE_ACTION.equals(action)) {
-					switchToAddMode();
-				}
-			}
-		});
 		actionMap.put(TAB_ACTION_NAME, new AbstractAction() {
 
 			@Override
