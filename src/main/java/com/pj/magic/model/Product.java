@@ -21,6 +21,7 @@ public class Product implements Comparable<Product> {
 	private Manufacturer manufacturer;
 	private ProductCategory category;
 	private List<UnitConversion> unitConversions = new ArrayList<>();
+	private List<UnitCost> unitCosts = new ArrayList<>();
 
 	public Product() {
 	}
@@ -236,6 +237,36 @@ public class Product implements Comparable<Product> {
 			}
 		}
 		unitConversions.add(new UnitConversion(unit, quantity));
+	}
+
+	public List<UnitCost> getUnitCosts() {
+		return unitCosts;
+	}
+
+	public void setUnitCosts(List<UnitCost> unitCosts) {
+		this.unitCosts = unitCosts;
+	}
+
+	public void setUnitCost(String unit, BigDecimal price) {
+		for (UnitCost unitCost : unitCosts) {
+			if (unit.equals(unitCost.getUnit())) {
+				unitCost.setCost(price);
+				return;
+			}
+		}
+		unitCosts.add(new UnitCost(unit, price));
+	}
+
+	public BigDecimal getUnitCost(String unit) {
+		for (UnitCost unitCost : unitCosts) {
+			if (unit.equals(unitCost.getUnit())) {
+				return unitCost.getCost();
+			}
+		}
+		if (hasUnit(unit)) {
+			unitCosts.add(new UnitCost(unit, BigDecimal.ZERO));
+		}
+		return BigDecimal.ZERO;
 	}
 	
 }

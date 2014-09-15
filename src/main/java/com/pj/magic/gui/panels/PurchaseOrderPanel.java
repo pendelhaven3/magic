@@ -17,7 +17,6 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -86,7 +85,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 	private MagicTextField referenceNumberField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
-	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
+	private UnitCostsAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitCostsAndQuantitiesTableModel();
 	private MagicToolBarButton orderButton;
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton addItemButton;
@@ -678,7 +677,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		
 	}
 	
-	private class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
+	private class UnitCostsAndQuantitiesTableModel extends AbstractTableModel {
 
 		private Product product;
 		
@@ -744,49 +743,49 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.CASE));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CASE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					BigDecimal unitCost = product.getUnitCost(Unit.CASE);
+					if (unitCost == null) {
+						unitCost = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitCost);
 				case 4:
 					return String.valueOf(product.getUnitQuantity(Unit.TIE));
 				case 5:
-					unitPrice = product.getUnitPrice(Unit.TIE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					unitCost = product.getUnitCost(Unit.TIE);
+					if (unitCost == null) {
+						unitCost = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitCost);
 				}
 			} else if (rowIndex == 1) {
 				switch (columnIndex) {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.CARTON));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CARTON);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					BigDecimal unitCost = product.getUnitCost(Unit.CARTON);
+					if (unitCost == null) {
+						unitCost = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitCost);
 				case 4:
 					return String.valueOf(product.getUnitQuantity(Unit.DOZEN));
 				case 5:
-					unitPrice = product.getUnitPrice(Unit.DOZEN);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					unitCost = product.getUnitCost(Unit.DOZEN);
+					if (unitCost == null) {
+						unitCost = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitCost);
 				}
 			} else if (rowIndex == 2) {
 				switch (columnIndex) {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.PIECES));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.PIECES);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					BigDecimal unitCost = product.getUnitCost(Unit.PIECES);
+					if (unitCost == null) {
+						unitCost = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitCost);
 				}
 			}
 			return "";
