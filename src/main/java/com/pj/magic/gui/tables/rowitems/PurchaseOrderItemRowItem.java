@@ -144,4 +144,12 @@ public class PurchaseOrderItemRowItem {
 		return Integer.parseInt(quantity);
 	}
 	
+	public String getSuggestedOrder() {
+		if (product != null && product.isMaxUnit(unit)) {
+			return String.valueOf(product.getSuggestedOrder(unit));
+		} else {
+			return "";
+		}
+	}
+	
 }

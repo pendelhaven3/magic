@@ -49,7 +49,8 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
 	public static final int UNIT_COLUMN_INDEX = 2;
-	public static final int QUANTITY_COLUMN_INDEX = 3;
+	public static final int SUGGESTED_ORDER_COLUMN_INDEX = 3;
+	public static final int QUANTITY_COLUMN_INDEX = 4;
 	
 	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String TAB_ACTION_NAME = "tab";
@@ -65,8 +66,8 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	@Autowired private PurchaseOrderItemsTableModel tableModel;
 	
 	// dynamic columns
-	private int orderedColumnIndex = 4;
-	private int actualQuantityColumnIndex = 5;
+	private int orderedColumnIndex = 5;
+	private int actualQuantityColumnIndex = 6;
 	private int costColumnIndex;
 	private int amountColumnIndex;
 	
@@ -88,8 +89,9 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		TableColumnModel columnModel = getColumnModel();
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(80);
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
-		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(60);
-		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(60);
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(40);
+		columnModel.getColumn(SUGGESTED_ORDER_COLUMN_INDEX).setPreferredWidth(60);
+		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(40);
 		columnModel.getColumn(costColumnIndex).setPreferredWidth(60);
 		columnModel.getColumn(amountColumnIndex).setPreferredWidth(60);
 		if (purchaseOrder.isOrdered()) {
@@ -262,11 +264,11 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		this.purchaseOrder = purchaseOrder;
 		
 		if (purchaseOrder.isOrdered()) {
-			costColumnIndex = 6;
-			amountColumnIndex = 7;
+			costColumnIndex = 7;
+			amountColumnIndex = 8;
 		} else {
-			costColumnIndex = 4;
-			amountColumnIndex = 5;
+			costColumnIndex = 5;
+			amountColumnIndex = 6;
 		}
 		tableModel.setPurchaseOrder(purchaseOrder);
 		initializeColumns();

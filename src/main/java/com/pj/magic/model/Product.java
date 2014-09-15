@@ -2,6 +2,8 @@ package com.pj.magic.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -267,6 +269,26 @@ public class Product implements Comparable<Product> {
 			unitCosts.add(new UnitCost(unit, BigDecimal.ZERO));
 		}
 		return BigDecimal.ZERO;
+	}
+
+	public boolean isMaxUnit(String unit) {
+		String maxUnit = Collections.max(units, new Comparator<String>() {
+
+			@Override
+			public int compare(String unit1, String unit2) {
+				return Unit.compare(unit1, unit2);
+			}
+		});
+		return maxUnit.equals(unit);
+	}
+	
+	public int getSuggestedOrder(String unit) {
+		int currentQuantity = getUnitQuantity(unit);
+		if (currentQuantity > maximumStockLevel) {
+			return 0;
+		} else {
+			return maximumStockLevel - currentQuantity;
+		}
 	}
 	
 }

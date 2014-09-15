@@ -22,9 +22,9 @@ import com.pj.magic.util.FormatterUtil;
 public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
 	private static final String[] columnNames = 
-		{"Code", "Description", "Unit", "Quantity", "Cost", "Amount"};
+		{"Code", "Description", "Unit", "Suggested Order", "Quantity", "Cost", "Amount"};
 	private static final String[] orderedColumnNames = 
-		{"Code", "Description", "Unit", "Quantity", "Ordered", "Actual Qty", "Cost", "Amount"};
+		{"Code", "Description", "Unit", "Suggested Order", "Quantity", "Ordered", "Actual Qty", "Cost", "Amount"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseOrderService purchaseOrderService;
@@ -58,6 +58,8 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 			}
 		case PurchaseOrderItemsTable.UNIT_COLUMN_INDEX:
 			return StringUtils.defaultString(rowItem.getUnit());
+		case PurchaseOrderItemsTable.SUGGESTED_ORDER_COLUMN_INDEX:
+			return rowItem.getSuggestedOrder();
 		case PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX:
 			return StringUtils.defaultString(rowItem.getQuantity());
 		default:
