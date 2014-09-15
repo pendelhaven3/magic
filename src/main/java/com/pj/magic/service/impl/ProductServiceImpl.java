@@ -46,6 +46,7 @@ public class ProductServiceImpl implements ProductService {
 		}
 	}
 
+	// TODO: Deprecate this one
 	@Override
 	public Product findFirstProductWithCodeLike(String code) {
 		return productDao.findFirstWithCodeLike(code);

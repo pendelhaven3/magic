@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +15,13 @@ import com.pj.magic.gui.tables.models.SuppliersTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.SupplierService;
 
 @Component
 public class SelectSupplierDialog extends MagicDialog {
 
 	@Autowired private ProductService productService;
+	@Autowired private SupplierService supplierService;
 	
 	private Supplier selectedSupplier;
 	private JTable table;
@@ -65,6 +68,26 @@ public class SelectSupplierDialog extends MagicDialog {
 		if (!suppliers.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
+	}
+	
+	public void searchSuppliers(String supplierCode) {
+		List<Supplier> suppliers = supplierService.getAllSuppliers();
+		tableModel.setSuppliers(suppliers);
+		
+		if (suppliers.isEmpty()) {
+			return;
+		}
+		
+		int selectedRow = 0;
+		if (!StringUtils.isEmpty(supplierCode)) {
+			for (int i = 0; i < suppliers.size(); i++) {
+				if (suppliers.get(i).getCode().startsWith(supplierCode)) {
+					selectedRow = i;
+					break;
+				}
+			}
+		}
+		table.changeSelection(selectedRow, 0, false, false);
 	}
 	
 }

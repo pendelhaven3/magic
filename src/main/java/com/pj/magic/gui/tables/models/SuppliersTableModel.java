@@ -24,6 +24,10 @@ public class SuppliersTableModel extends AbstractTableModel {
 		return suppliers.size();
 	}
 
+	public List<Supplier> getSuppliers() {
+		return suppliers;
+	}
+	
 	@Override
 	public int getColumnCount() {
 		return columnNames.length;

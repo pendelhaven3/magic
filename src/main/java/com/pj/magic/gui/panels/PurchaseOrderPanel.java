@@ -17,6 +17,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -32,13 +33,16 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.exception.ValidationException;
+import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.PurchaseOrderItemsTable;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.Product;
@@ -58,10 +62,12 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class PurchaseOrderPanel extends AbstractMagicPanel {
 
-	private static final String SAVE_SUPPLIER_ACTION_NAME = "saveSupplier";
 	private static final String SAVE_PAYMENT_TERM_ACTION_NAME = "savePaymentTerm";
 	private static final String SAVE_REMARKS_ACTION_NAME = "saveRemarks";
 	private static final String SAVE_REFERENCE_NUMBER_ACTION_NAME = "saveReferenceNumber";
+	private static final String OPEN_SELECT_SUPPLIER_DIALOG_ACTION_NAME = "openSelectSupplierDialog";
+	
+	private static final Logger logger = LoggerFactory.getLogger(PurchaseOrderPanel.class);
 	
 	@Autowired private PurchaseOrderItemsTable itemsTable;
 	@Autowired private ProductService productService;
@@ -70,11 +76,13 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 	@Autowired private SupplierService supplierService;
 	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private PrintService printService;
+	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	
 	private PurchaseOrder purchaseOrder;
 	private JLabel purchaseOrderNumberField;
 	private JLabel statusField;
-	private JComboBox<Supplier> supplierComboBox;
+	private MagicTextField supplierCodeField;
+	private JLabel supplierNameField;
 	private JComboBox<PaymentTerm> paymentTermComboBox;
 	private MagicTextField remarksField;
 	private MagicTextField referenceNumberField;
@@ -86,19 +94,12 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 	private MagicToolBarButton addItemButton;
 	private MagicToolBarButton deleteItemButton;
 	private MagicToolBarButton printButton;
+	private JButton selectSupplierButton;
 	
 	@Override
 	protected void initializeComponents() {
-		supplierComboBox = new JComboBox<>();
-		supplierComboBox.addItemListener(new ItemListener() {
-			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					saveSupplier();
-				}
-			}
-		});
+		supplierCodeField = new MagicTextField();
+		supplierCodeField.setMaximumLength(15);
 		
 		paymentTermComboBox = new JComboBox<>();
 		paymentTermComboBox.addItemListener(new ItemListener() {
@@ -130,20 +131,60 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(supplierComboBox);
+		focusOnComponentWhenThisPanelIsDisplayed(supplierCodeField);
 		
 		updateTotalAmountFieldWhenItemsTableChanges();
 		initializeUnitPricesAndQuantitiesTable();
+		
+		selectSupplierButton = new EllipsisButton();
+		selectSupplierButton.setToolTipText("Select Supplier (F5)");
+		selectSupplierButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectSupplier();
+			}
+		});
+	}
+
+	protected void selectSupplier() {
+		selectSupplierDialog.searchSuppliers(supplierCodeField.getText());
+		selectSupplierDialog.setVisible(true);
+		
+		Supplier selectedSupplier = selectSupplierDialog.getSelectedSupplier();
+		if (selectedSupplier != null) {
+			if (!selectedSupplier.equals(purchaseOrder.getSupplier())) {
+				purchaseOrder.setSupplier(selectedSupplier);
+				supplierCodeField.setText(selectedSupplier.getCode());
+				supplierNameField.setName(selectedSupplier.getName());
+				
+				try {
+					purchaseOrderService.save(purchaseOrder);
+					updateDisplay(purchaseOrder);
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
+					showErrorMessage("Error occurred during saving!");
+					return;
+				}
+			}
+			
+			if (purchaseOrder.isOrdered()) {
+				referenceNumberField.requestFocusInWindow();
+			} else {
+		 		paymentTermComboBox.requestFocusInWindow();
+			}
+		}
 	}
 
 	@Override
 	protected void registerKeyBindings() {
-		supplierComboBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_SUPPLIER_ACTION_NAME);
-		supplierComboBox.getActionMap().put(SAVE_SUPPLIER_ACTION_NAME, new AbstractAction() {
+		supplierCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0),
+				OPEN_SELECT_SUPPLIER_DIALOG_ACTION_NAME);
+		supplierCodeField.getActionMap().put(OPEN_SELECT_SUPPLIER_DIALOG_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveSupplier();
+				selectSupplier();
 			}
 		});
 		
@@ -204,38 +245,12 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 
 	@Override
 	protected void initializeFocusOrder(List<JComponent> focusOrder) {
-		focusOrder.add(supplierComboBox);
+		focusOrder.add(supplierCodeField);
 		focusOrder.add(referenceNumberField);
 		focusOrder.add(paymentTermComboBox);
 		focusOrder.add(remarksField);
 	}
 	
-	protected void saveSupplier() {
-		try {
-			validateMandatoryField(supplierComboBox, "Supplier");
-		} catch (ValidationException e) {
-			return;
-		}
-		
-		Supplier supplier = (Supplier)supplierComboBox.getSelectedItem();
-		if (!supplier.equals(purchaseOrder.getSupplier())) {
-			purchaseOrder.setSupplier(supplier);
-			try {
-				purchaseOrderService.save(purchaseOrder); // TODO: save only when there is a change
-				updateDisplay(purchaseOrder);
-			} catch (Exception e) {
-				showErrorMessage("Error occurred during saving!");
-				return;
-			}
-		}
-		
-		if (purchaseOrder.isOrdered()) {
-			referenceNumberField.requestFocusInWindow();
-		} else {
-			paymentTermComboBox.requestFocusInWindow();
-		}
-	}
-
 	@Override
 	protected void doOnBack() {
 		if (itemsTable.isEditing()) {
@@ -256,10 +271,6 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 	}
 
 	public void updateDisplay(PurchaseOrder purchaseOrder) {
-		List<Supplier> suppliers = supplierService.getAllSuppliers();
-		supplierComboBox.setModel(
-				new DefaultComboBoxModel<>(suppliers.toArray(new Supplier[suppliers.size()])));
-		
 		List<PaymentTerm> paymentTerms = paymentTermService.getAllPaymentTerms();
 		paymentTermComboBox.setModel(
 				new DefaultComboBoxModel<>(paymentTerms.toArray(new PaymentTerm[paymentTerms.size()])));
@@ -275,7 +286,8 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		
 		purchaseOrderNumberField.setText(purchaseOrder.getPurchaseOrderNumber().toString());
 		statusField.setText(purchaseOrder.getStatus());
-		supplierComboBox.setSelectedItem(purchaseOrder.getSupplier());
+		supplierCodeField.setText(purchaseOrder.getSupplier().getCode());
+		supplierNameField.setText(purchaseOrder.getSupplier().getName());
 		paymentTermComboBox.setEnabled(true);
 		paymentTermComboBox.setSelectedItem(purchaseOrder.getPaymentTerm());
 		remarksField.setEnabled(true);
@@ -295,7 +307,8 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 	private void clearDisplay() {
 		purchaseOrderNumberField.setText(null);
 		statusField.setText(null);
-		supplierComboBox.setSelectedItem(null);
+		supplierCodeField.setText(null);
+		supplierNameField.setText(null);
 		paymentTermComboBox.setEnabled(false);
 		paymentTermComboBox.setSelectedItem(null);
 		remarksField.setEnabled(false);
@@ -385,9 +398,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		
-		supplierComboBox.setPreferredSize(new Dimension(300, 20));
-		add(supplierComboBox, c);
+		add(createSupplierPanel(), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -517,6 +528,43 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		add(totalAmountField, c);
 	}
 	
+	private JPanel createSupplierPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		supplierCodeField.setPreferredSize(new Dimension(100, 20));
+		panel.add(supplierCodeField, c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(selectSupplierButton, c);
+		
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createFiller(10, 20), c);
+		
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 3;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		supplierNameField = ComponentUtil.createLabel(200, "");
+		panel.add(supplierNameField, c);
+		
+		return panel;
+	}
+
 	private JPanel createItemsTableToolBar() {
 		JPanel panel = new JPanel();
 		

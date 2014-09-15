@@ -24,7 +24,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PURCHASE_ORDER_NO, SUPPLIER_ID, POST_IND, ORDER_IND,"
-			+ " a.PAYMENT_TERM_ID, REMARKS, REFERENCE_NO, b.NAME as SUPPLIER_NAME"
+			+ " a.PAYMENT_TERM_ID, REMARKS, REFERENCE_NO, b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME"
 			+ " from PURCHASE_ORDER a, SUPPLIER b"
 			+ " where a.SUPPLIER_ID = b.ID";
 	
@@ -94,7 +94,13 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 			PurchaseOrder purchaseOrder = new PurchaseOrder();
 			purchaseOrder.setId(rs.getLong("ID"));
 			purchaseOrder.setPurchaseOrderNumber(rs.getLong("PURCHASE_ORDER_NO"));
-			purchaseOrder.setSupplier(new Supplier(rs.getLong("SUPPLIER_ID"), rs.getString("SUPPLIER_NAME")));
+			
+			Supplier supplier = new Supplier();
+			supplier.setId(rs.getLong("SUPPLIER_ID"));
+			supplier.setCode(rs.getString("SUPPLIER_CODE"));
+			supplier.setName(rs.getString("SUPPLIER_NAME"));
+			purchaseOrder.setSupplier(supplier);
+			
 			purchaseOrder.setPosted("Y".equals(rs.getString("POST_IND")));
 			purchaseOrder.setOrdered("Y".equals(rs.getString("ORDER_IND")));
 			if (rs.getLong("PAYMENT_TERM_ID") != 0) {
