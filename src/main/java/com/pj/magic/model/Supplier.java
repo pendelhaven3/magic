@@ -12,6 +12,7 @@ public class Supplier {
 	@Id
 	@GeneratedValue
 	private Long id;
+	private String code;
 	private String name;
 	private String address;
 	
@@ -136,4 +137,13 @@ public class Supplier {
 	public String toString() {
 		return name;
 	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+	
 }

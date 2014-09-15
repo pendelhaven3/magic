@@ -23,7 +23,7 @@ import com.pj.magic.model.Supplier;
 @Repository
 public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	
-	private static final String BASE_SELECT_SQL = "select a.ID, a.NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON,"
+	private static final String BASE_SELECT_SQL = "select a.ID, CODE, a.NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON,"
 			+ " FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME, b.NUMBER_OF_DAYS"
 			+ " from SUPPLIER a"
 			+ " left join PAYMENT_TERM b"
@@ -41,8 +41,8 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	}
 
 	private static final String INSERT_SQL = "insert into SUPPLIER"
-			+ " (NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " (CODE, NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Supplier supplier) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -52,17 +52,18 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setString(1, supplier.getName());
-				ps.setString(2, supplier.getAddress());
-				ps.setString(3, supplier.getContactNumber());
-				ps.setString(4, supplier.getContactPerson());
-				ps.setString(5, supplier.getFaxNumber());
-				ps.setString(6, supplier.getEmailAddress());
-				ps.setString(7, supplier.getTin());
+				ps.setString(1, supplier.getCode());
+				ps.setString(2, supplier.getName());
+				ps.setString(3, supplier.getAddress());
+				ps.setString(4, supplier.getContactNumber());
+				ps.setString(5, supplier.getContactPerson());
+				ps.setString(6, supplier.getFaxNumber());
+				ps.setString(7, supplier.getEmailAddress());
+				ps.setString(8, supplier.getTin());
 				if (supplier.getPaymentTerm() != null) {
-					ps.setLong(8, supplier.getPaymentTerm().getId());
+					ps.setLong(9, supplier.getPaymentTerm().getId());
 				} else {
-					ps.setNull(8, Types.INTEGER);
+					ps.setNull(9, Types.INTEGER);
 				}
 				return ps;
 			}
@@ -72,11 +73,12 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	}
 
 	private static final String UPDATE_SQL = "update SUPPLIER"
-			+ " set NAME = ?, ADDRESS = ?, CONTACT_NUMBER = ?, CONTACT_PERSON = ?,"
+			+ " set CODE = ?, NAME = ?, ADDRESS = ?, CONTACT_NUMBER = ?, CONTACT_PERSON = ?,"
 			+ " FAX_NUMBER = ?, EMAIL_ADDRESS = ?, TIN = ?, PAYMENT_TERM_ID = ? where ID = ?";
 	
 	private void update(Supplier supplier) {
-		getJdbcTemplate().update(UPDATE_SQL, 
+		getJdbcTemplate().update(UPDATE_SQL,
+				supplier.getCode(),
 				supplier.getName(),
 				supplier.getAddress(),
 				supplier.getContactNumber(),
@@ -112,6 +114,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 		public Supplier mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Supplier supplier = new Supplier();
 			supplier.setId(rs.getLong("ID"));
+			supplier.setCode(rs.getString("CODE"));
 			supplier.setName(rs.getString("NAME"));
 			supplier.setAddress(rs.getString("ADDRESS"));
 			supplier.setContactNumber(rs.getString("CONTACT_NUMBER"));

@@ -42,6 +42,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 	@Autowired private PaymentTermService paymentTermService;
 	
 	private Supplier supplier;
+	private MagicTextField codeField;
 	private MagicTextField nameField;
 	private MagicTextField addressField;
 	private MagicTextField contactNumberField;
@@ -54,6 +55,9 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 	
 	@Override
 	protected void initializeComponents() {
+		codeField = new MagicTextField();
+		codeField.setMaximumLength(15);
+		
 		nameField = new MagicTextField();
 		nameField.setMaximumLength(30);
 		
@@ -86,11 +90,12 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(nameField);
+		focusOnComponentWhenThisPanelIsDisplayed(codeField);
 	}
 
 	@Override
 	protected void initializeFocusOrder(List<JComponent> focusOrder) {
+		focusOrder.add(codeField);
 		focusOrder.add(nameField);
 		focusOrder.add(addressField);
 		focusOrder.add(contactNumberField);
@@ -109,6 +114,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		
 		int confirm = showConfirmMessage("Save?");
 		if (confirm == JOptionPane.OK_OPTION) {
+			supplier.setCode(codeField.getText());
 			supplier.setName(nameField.getText());
 			supplier.setAddress(addressField.getText());
 			supplier.setContactNumber(contactNumberField.getText());
@@ -130,6 +136,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 
 	private boolean validateSupplier() {
 		try {
+			validateMandatoryField(codeField, "Code");
 			validateMandatoryField(nameField, "Name");
 		} catch (ValidationException e) {
 			return false;
@@ -161,6 +168,31 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(120, "Code: "), c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		codeField.setPreferredSize(new Dimension(200, 20));
+		add(codeField, c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1.0; // right space filler
+		c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		add(ComponentUtil.createFiller(1, 1), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createLabel(120, "Name: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
@@ -170,13 +202,6 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		nameField.setPreferredSize(new Dimension(200, 20));
 		add(nameField, c);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0; // right space filler
-		c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
 		
 		currentRow++;
 		
@@ -376,6 +401,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 			return;
 		}
 		
+		codeField.setText(supplier.getCode());
 		nameField.setText(supplier.getName());
 		addressField.setText(supplier.getAddress());
 		contactNumberField.setText(supplier.getContactNumber());
@@ -391,7 +417,15 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 	}
 
 	private void clearDisplay() {
+		codeField.setText(null);
 		nameField.setText(null);
+		addressField.setText(null);
+		contactNumberField.setText(null);
+		contactPersonField.setText(null);
+		faxNumberField.setText(null);
+		emailAddressField.setText(null);
+		tinField.setText(null);
+		paymentTermComboBox.setSelectedItem(null);
 	}
 
 	@Override

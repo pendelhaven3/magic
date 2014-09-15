@@ -47,6 +47,10 @@ public class SupplierListPanel extends AbstractMagicPanel implements ActionListe
 	@Override
 	protected void initializeComponents() {
 		table = new JTable(tableModel);
+		
+		table.getColumnModel().getColumn(SuppliersTableModel.CODE_COLUMN_INDEX).setPreferredWidth(100);
+		table.getColumnModel().getColumn(SuppliersTableModel.NAME_COLUMN_INDEX).setPreferredWidth(500);
+		
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 

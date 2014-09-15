@@ -109,6 +109,7 @@ create table USER (
 
 create table SUPPLIER (
   ID integer auto_increment,
+  CODE varchar2(15) not null,
   NAME varchar2(50) not null,
   ADDRESS varchar2(200) null,
   CONTACT_NUMBER varchar2(100) null,

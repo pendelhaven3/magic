@@ -12,7 +12,10 @@ import com.pj.magic.model.Supplier;
 @Component
 public class SuppliersTableModel extends AbstractTableModel {
 
-	private static final String[] columnNames = {"Name"};
+	public static final int CODE_COLUMN_INDEX = 0;
+	public static final int NAME_COLUMN_INDEX = 1;
+	
+	private static final String[] columnNames = {"Code", "Name"};
 	
 	private List<Supplier> suppliers = new ArrayList<>();
 	
@@ -29,7 +32,14 @@ public class SuppliersTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Supplier supplier = suppliers.get(rowIndex);
-		return supplier.getName();
+		switch (columnIndex) {
+		case CODE_COLUMN_INDEX:
+			return supplier.getCode();
+		case NAME_COLUMN_INDEX:
+			return supplier.getName();
+		default:
+			throw new RuntimeException("Fetching unexpected index: " + columnIndex);
+		}
 	}
 
 	@Override

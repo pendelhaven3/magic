@@ -17,10 +17,10 @@ insert into PRODUCT_CATEGORY (NAME) values ('DETERGENTS AND FABRIC CONDITIONERS'
 insert into PRODUCT_CATEGORY (NAME) values ('BREAKFAST ITEMS');
 insert into PRODUCT_CATEGORY (NAME) values ('HOUSEHOLD PRODUCTS');
 
-insert into SUPPLIER (NAME) values ('AMICI WATER SYSTEMS, PHILIPPINES');
-insert into SUPPLIER (NAME) values ('ABENSON AVANT');
-insert into SUPPLIER (NAME) values ('K SERVICO TRADE, INC.');
-insert into SUPPLIER (NAME) values ('PHILGROCER');
+insert into SUPPLIER (CODE, NAME) values ('AMICI', 'AMICI WATER SYSTEMS, PHILIPPINES');
+insert into SUPPLIER (CODE, NAME) values ('ABENSON', 'ABENSON AVANT');
+insert into SUPPLIER (CODE, NAME) values ('KSERVICO', 'K SERVICO TRADE, INC.');
+insert into SUPPLIER (CODE, NAME) values ('PHILGROCER', 'PHILGROCER');
 
 insert into PRICING_SCHEME (NAME) values ('CANVASSER');
 
