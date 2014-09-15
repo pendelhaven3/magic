@@ -17,6 +17,7 @@ import javax.swing.KeyStroke;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.models.SuppliersTableModel;
@@ -100,10 +101,23 @@ public class SupplierListPanel extends AbstractMagicPanel implements ActionListe
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Supplier supplier = tableModel.getSupplier(table.getSelectedRow());
-				getMagicFrame().switchToEditSupplierPanel(supplier);
+				selectSupplier();
 			}
 		});
+		
+		table.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				selectSupplier();
+			}
+		});
+		
+	}
+
+	protected void selectSupplier() {
+		Supplier supplier = tableModel.getSupplier(table.getSelectedRow());
+		getMagicFrame().switchToEditSupplierPanel(supplier);
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.service.PaymentTermService;
@@ -141,11 +143,23 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
+
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 3;
+		c.anchor = GridBagConstraints.WEST;
+		add(createToolBar(), c);
+		
+		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createLabel(120, "Name: "), c);
 		
@@ -311,6 +325,12 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		add(ComponentUtil.createFiller(1, 1), c);
+	}
+
+	private JToolBar createToolBar() {
+		MagicToolBar toolBar = new MagicToolBar();
+		addBackButton(toolBar);
+		return toolBar;
 	}
 
 	@Override
