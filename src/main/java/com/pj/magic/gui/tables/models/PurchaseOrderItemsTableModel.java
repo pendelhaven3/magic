@@ -230,8 +230,9 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 		setItems(purchaseOrder.getItems(), false);
 		fireTableStructureChanged();
 	}
-
-	public void revertChanges(int rowIndex) {
-	}
 	
+	public List<PurchaseOrderItemRowItem> getRowItems() {
+		return rowItems;
+	}
+
 }

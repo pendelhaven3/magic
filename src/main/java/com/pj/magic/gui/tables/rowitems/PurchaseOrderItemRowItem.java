@@ -151,5 +151,9 @@ public class PurchaseOrderItemRowItem {
 			return "";
 		}
 	}
+
+	public BigDecimal getAmount() {
+		return item.getAmount();
+	}
 	
 }

@@ -254,7 +254,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 			@Override
 			public void tableChanged(TableModelEvent e) {
 				totalItemsField.setText(String.valueOf(itemsTable.getTotalNumberOfItems()));
-//				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
+				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
 			}
 		});
 	}

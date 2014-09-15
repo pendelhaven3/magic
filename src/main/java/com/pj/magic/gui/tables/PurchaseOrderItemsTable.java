@@ -461,12 +461,11 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	}
 	
 	public int getTotalNumberOfItems() {
-//		int totalNumberOfItems = purchaseOrder.getTotalNumberOfItems();
-//		if (isAdding()) {
-//			totalNumberOfItems += tableModel.getItems().size();
-//		}
-//		return totalNumberOfItems;
-		return 0;
+		int totalNumberOfItems = purchaseOrder.getTotalNumberOfItems();
+		if (isAdding()) {
+			totalNumberOfItems += tableModel.getItems().size();
+		}
+		return totalNumberOfItems;
 	}
 
 	public void highlightQuantityColumn(PurchaseOrderItem item) {
@@ -583,6 +582,18 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 	
 	public int getActualQuantityColumnIndex() {
 		return actualQuantityColumnIndex;
+	}
+
+	public BigDecimal getTotalAmount() {
+		BigDecimal totalAmount = purchaseOrder.getTotalAmount();
+		if (isAdding()) {
+			for (PurchaseOrderItemRowItem item : tableModel.getRowItems()) {
+				if (item.isValid()) {
+					totalAmount = totalAmount.add(item.getAmount());
+				}
+			}
+		}
+		return totalAmount;
 	}
 	
 }

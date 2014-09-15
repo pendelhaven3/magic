@@ -1,5 +1,7 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -131,5 +133,17 @@ public class PurchaseOrder {
 			totalQuantity += item.getQuantity();
 		}
 		return totalQuantity;
+	}
+
+	public int getTotalNumberOfItems() {
+		return items.size();
+	}
+
+	public BigDecimal getTotalAmount() {
+		BigDecimal total = BigDecimal.ZERO;
+		for (PurchaseOrderItem item : items) {
+			total = total.add(item.getAmount());
+		}
+		return total.setScale(2, RoundingMode.HALF_UP);
 	}
 }
