@@ -8,8 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.util.List;
@@ -102,16 +100,13 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		supplierCodeField.setMaximumLength(15);
 		
 		paymentTermComboBox = new JComboBox<>();
-		paymentTermComboBox.addItemListener(new ItemListener() {
+		paymentTermComboBox.addFocusListener(new FocusAdapter() {
 			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if (e.getStateChange() == ItemEvent.SELECTED) {
-					savePaymentTerm();
-				}
+			public void focusLost(FocusEvent e) {
+				savePaymentTerm();
 			}
 		});
-
+			
 		remarksField = new MagicTextField();
 		remarksField.setMaximumLength(100);
 		remarksField.addFocusListener(new FocusAdapter() {
@@ -156,7 +151,11 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 			if (!selectedSupplier.equals(purchaseOrder.getSupplier())) {
 				purchaseOrder.setSupplier(selectedSupplier);
 				supplierCodeField.setText(selectedSupplier.getCode());
-				supplierNameField.setName(selectedSupplier.getName());
+				supplierNameField.setText(selectedSupplier.getName());
+				
+				purchaseOrder.setPaymentTerm(selectedSupplier.getPaymentTerm());
+				paymentTermComboBox.setEnabled(true);
+				paymentTermComboBox.setSelectedItem(selectedSupplier.getPaymentTerm());
 				
 				try {
 					purchaseOrderService.save(purchaseOrder);
@@ -240,17 +239,8 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 			purchaseOrder.setPaymentTerm(paymentTerm);
 			purchaseOrderService.save(purchaseOrder);
 		}
-		focusNextField();
 	}
 
-	@Override
-	protected void initializeFocusOrder(List<JComponent> focusOrder) {
-		focusOrder.add(supplierCodeField);
-		focusOrder.add(referenceNumberField);
-		focusOrder.add(paymentTermComboBox);
-		focusOrder.add(remarksField);
-	}
-	
 	@Override
 	protected void doOnBack() {
 		if (itemsTable.isEditing()) {

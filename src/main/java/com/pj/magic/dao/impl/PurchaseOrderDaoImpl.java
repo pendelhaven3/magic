@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -51,7 +52,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 	}
 	
 	private static final String INSERT_SQL =
-			"insert into PURCHASE_ORDER (SUPPLIER_ID) values (?)";
+			"insert into PURCHASE_ORDER (SUPPLIER_ID, PAYMENT_TERM_ID) values (?, ?)";
 	
 	private void insert(final PurchaseOrder purchaseOrder) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -62,6 +63,11 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, purchaseOrder.getSupplier().getId());
+				if (purchaseOrder.getPaymentTerm() != null) {
+					ps.setLong(2, purchaseOrder.getPaymentTerm().getId());
+				} else {
+					ps.setNull(2, Types.INTEGER);
+				}
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db

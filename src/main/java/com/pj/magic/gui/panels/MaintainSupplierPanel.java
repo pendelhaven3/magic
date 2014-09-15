@@ -59,7 +59,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		codeField.setMaximumLength(15);
 		
 		nameField = new MagicTextField();
-		nameField.setMaximumLength(30);
+		nameField.setMaximumLength(50);
 		
 		addressField = new MagicTextField();
 		addressField.setMaximumLength(200);
@@ -175,7 +175,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		codeField.setPreferredSize(new Dimension(200, 20));
+		codeField.setPreferredSize(new Dimension(100, 20));
 		add(codeField, c);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -200,7 +200,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		nameField.setPreferredSize(new Dimension(200, 20));
+		nameField.setPreferredSize(new Dimension(300, 20));
 		add(nameField, c);
 		
 		currentRow++;
@@ -217,7 +217,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		addressField.setPreferredSize(new Dimension(200, 20));
+		addressField.setPreferredSize(new Dimension(300, 20));
 		add(addressField, c);
 		
 		currentRow++;
