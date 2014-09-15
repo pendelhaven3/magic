@@ -96,7 +96,8 @@ public class PurchaseOrderItemRowItem {
 
 	public boolean isValid() {
 		return product != null && product.hasUnit(unit) && StringUtils.isNumeric(quantity)
-				&& NumberUtil.isAmount(cost) && (StringUtils.isEmpty(actualQuantity) || StringUtils.isNumeric(actualQuantity));
+				&& (NumberUtil.isAmount(cost) || StringUtils.isEmpty(cost)) 
+				&& (StringUtils.isEmpty(actualQuantity) || StringUtils.isNumeric(actualQuantity));
 	}
 
 	@Override

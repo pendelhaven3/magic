@@ -1,5 +1,6 @@
 package com.pj.magic.gui.tables.models;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,7 +148,13 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 			item.setProduct(rowItem.getProduct());
 			item.setUnit(rowItem.getUnit());
 			item.setQuantity(Integer.valueOf(rowItem.getQuantity()));
-			item.setCost(rowItem.getCostAsBigDecimal());
+			if (!StringUtils.isEmpty(rowItem.getCost())) {
+				item.setCost(rowItem.getCostAsBigDecimal());
+			} else {
+				BigDecimal originalCost = rowItem.getProduct().getUnitCost(rowItem.getUnit());
+				item.setCost(originalCost);
+				rowItem.setCost(FormatterUtil.formatAmount(originalCost));
+			}
 			if (!StringUtils.isEmpty(rowItem.getActualQuantity())) {
 				item.setActualQuantity(Integer.valueOf(rowItem.getActualQuantity()));
 			}
