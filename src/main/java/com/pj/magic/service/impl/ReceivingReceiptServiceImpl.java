@@ -25,7 +25,13 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	@Transactional
 	@Override
 	public void save(ReceivingReceipt receivingReceipt) {
+		boolean inserting = (receivingReceipt.getId() == null);
 		receivingReceiptDao.save(receivingReceipt);
+		if (inserting) {
+			for (ReceivingReceiptItem item : receivingReceipt.getItems()) {
+				receivingReceiptItemDao.save(item);
+			}
+		}
 	}
 
 	@Override

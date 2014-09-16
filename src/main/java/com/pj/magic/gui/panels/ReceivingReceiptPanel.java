@@ -371,12 +371,12 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 			return;
 		}
 		
-		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
-		if (product != null && product.isValid()) {
-			unitCostsAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
-		} else {
-			unitCostsAndQuantitiesTableModel.setProduct(null);
-		}
+//		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
+//		if (product != null && product.isValid()) {
+//			unitCostsAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
+//		} else {
+//			unitCostsAndQuantitiesTableModel.setProduct(null);
+//		}
 	}
 	
 	private JToolBar createToolBar() {

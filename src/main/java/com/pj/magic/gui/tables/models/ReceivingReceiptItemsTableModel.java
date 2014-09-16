@@ -16,12 +16,14 @@ import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.NumberUtil;
 
 @Component
 public class ReceivingReceiptItemsTableModel extends AbstractTableModel {
 	
 	private static final String[] columnNames = 
-		{"Code", "Description", "Unit", "Quantity", "Cost", "Amount"};
+		{"Code", "Description", "Unit", "Quantity", "Cost", "Amount", "Disc. 1", "Disc. 2", "Disc. 3",
+				"Flat Rate", "Disc. Amount", "Net Amount"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
@@ -41,19 +43,56 @@ public class ReceivingReceiptItemsTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		ReceivingReceiptItemRowItem rowItem = rowItems.get(rowIndex);
+		ReceivingReceiptItem item = rowItem.getItem();
 		switch (columnIndex) {
 		case ReceivingReceiptItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			return rowItem.getProductCode();
+			return item.getProduct().getCode();
 		case ReceivingReceiptItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
-			if (rowItem.getProduct() != null) {
-				return rowItem.getProduct().getDescription();
+			return item.getProduct().getDescription();
+		case ReceivingReceiptItemsTable.UNIT_COLUMN_INDEX:
+			return item.getUnit();
+		case ReceivingReceiptItemsTable.QUANTITY_COLUMN_INDEX:
+			return item.getQuantity().toString();
+		case ReceivingReceiptItemsTable.COST_COLUMN_INDEX:
+			return FormatterUtil.formatAmount(item.getCost());
+		case ReceivingReceiptItemsTable.AMOUNT_COLUMN_INDEX:
+			return FormatterUtil.formatAmount(item.getAmount());
+		case ReceivingReceiptItemsTable.DISCOUNT_1_COLUMN_INDEX:
+			if (!StringUtils.isEmpty(rowItem.getDiscount1()) && NumberUtil.isAmount(rowItem.getDiscount1())) {
+				return FormatterUtil.formatAmount(rowItem.getDiscount1AsBigDecimal());
+			} else {
+				return StringUtils.defaultString(rowItem.getDiscount1());
+			}
+		case ReceivingReceiptItemsTable.DISCOUNT_2_COLUMN_INDEX:
+			if (!StringUtils.isEmpty(rowItem.getDiscount2()) && NumberUtil.isAmount(rowItem.getDiscount2())) {
+				return FormatterUtil.formatAmount(rowItem.getDiscount2AsBigDecimal());
+			} else {
+				return StringUtils.defaultString(rowItem.getDiscount2());
+			}
+		case ReceivingReceiptItemsTable.DISCOUNT_3_COLUMN_INDEX:
+			if (!StringUtils.isEmpty(rowItem.getDiscount3()) && NumberUtil.isAmount(rowItem.getDiscount3())) {
+				return FormatterUtil.formatAmount(rowItem.getDiscount3AsBigDecimal());
+			} else {
+				return StringUtils.defaultString(rowItem.getDiscount3());
+			}
+		case ReceivingReceiptItemsTable.FLAT_RATE_COLUMN_INDEX:
+			if (!StringUtils.isEmpty(rowItem.getFlatRate()) && NumberUtil.isAmount(rowItem.getFlatRate())) {
+				return FormatterUtil.formatAmount(rowItem.getFlatRateAsBigDecimal());
+			} else {
+				return StringUtils.defaultString(rowItem.getFlatRate());
+			}
+		case ReceivingReceiptItemsTable.DISCOUNTED_AMOUNT_COLUMN_INDEX:
+			if (rowItem.isValid()) {
+				return item.getDiscountedAmount();
 			} else {
 				return "";
 			}
-		case ReceivingReceiptItemsTable.UNIT_COLUMN_INDEX:
-			return StringUtils.defaultString(rowItem.getUnit());
-		case ReceivingReceiptItemsTable.QUANTITY_COLUMN_INDEX:
-			return StringUtils.defaultString(rowItem.getQuantity());
+		case ReceivingReceiptItemsTable.NET_AMOUNT_COLUMN_INDEX:
+			if (rowItem.isValid()) {
+				return item.getNetAmount();
+			} else {
+				return "";
+			}
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
@@ -90,6 +129,7 @@ public class ReceivingReceiptItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		/*
 		ReceivingReceiptItemRowItem rowItem = rowItems.get(rowIndex);
 		String val = (String)value;
 		switch (columnIndex) {
@@ -116,6 +156,7 @@ public class ReceivingReceiptItemsTableModel extends AbstractTableModel {
 			rowItem.setCost(item.getCost().toString());
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
+		*/
 	}
 	
 	@Override
@@ -137,6 +178,7 @@ public class ReceivingReceiptItemsTableModel extends AbstractTableModel {
 	
 	public void setReceivingReceipt(ReceivingReceipt receivingReceipt) {
 		setItems(receivingReceipt.getItems());
+		fireTableDataChanged();
 	}
 
 }

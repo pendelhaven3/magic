@@ -822,7 +822,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		if (confirm("Mark PO as ordered?")) {
 			purchaseOrderService.order(purchaseOrder);
 			updateDisplay(purchaseOrder);
-			itemsTable.highlight();
+			referenceNumberField.requestFocusInWindow();
 		}
 	}
 

@@ -1,43 +1,26 @@
 package com.pj.magic.gui.tables.rowitems;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.pj.magic.Constants;
-import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.util.NumberUtil;
 
 /*
- * Wrapper class to separate table gui concerns of inputting purchase order items
- * from the business logic of purchase order item model.
+ * Wrapper class to separate table gui concerns of inputting Receiving Receipt Items
+ * from the business logic of Receiving Receipt Item model.
  */
 public class ReceivingReceiptItemRowItem {
 
 	private ReceivingReceiptItem item;
-	private String productCode;
-	private String unit;
-	private String quantity;
-	private String cost;
-	private Product product;
+	private String discount1;
+	private String discount2;
+	private String discount3;
+	private String flatRate;
 
 	public ReceivingReceiptItemRowItem(ReceivingReceiptItem item) {
 		this.item = item;
-		if (item.getProduct() != null) {
-			productCode = item.getProduct().getCode();
-			product = item.getProduct();
-		}
-		unit = item.getUnit();
-		if (item.getQuantity() != null) {
-			quantity = item.getQuantity().toString();
-		}
-		if (item.getCost() != null) {
-			cost = item.getCost().toString();
-		}
 	}
 	
 	public ReceivingReceiptItem getItem() {
@@ -48,62 +31,62 @@ public class ReceivingReceiptItemRowItem {
 		this.item = item;
 	}
 
-	public String getProductCode() {
-		return productCode;
-	}
-
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
-	}
-
-	public String getUnit() {
-		return unit;
-	}
-
-	public void setUnit(String unit) {
-		this.unit = unit;
-	}
-
-	public String getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(String quantity) {
-		this.quantity = quantity;
-	}
-
-	public String getCost() {
-		return cost;
-	}
-
-	public void setCost(String cost) {
-		this.cost = cost;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
 	public boolean isValid() {
-		return product != null && product.hasUnit(unit) && StringUtils.isNumeric(quantity)
-				&& NumberUtil.isAmount(cost);
+		return (NumberUtil.isAmount(discount1) || StringUtils.isEmpty(discount1))
+				&& (NumberUtil.isAmount(discount2) || StringUtils.isEmpty(discount2))
+				&& (NumberUtil.isAmount(discount3) || StringUtils.isEmpty(discount3))
+				&& (NumberUtil.isAmount(flatRate) || StringUtils.isEmpty(flatRate));
 	}
 
-	public BigDecimal getCostAsBigDecimal() {
-		try {
-			return new BigDecimal(new DecimalFormat(Constants.AMOUNT_FORMAT).parse(cost).doubleValue())
-				.setScale(2, RoundingMode.HALF_UP);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public int getQuantityAsInt() {
-		return Integer.parseInt(quantity);
+	public String getDiscount1() {
+		return discount1;
 	}
 	
+	public BigDecimal getDiscount1AsBigDecimal() {
+		return new BigDecimal(discount1).setScale(2);
+	}
+
+	public void setDiscount1(String discount1) {
+		this.discount1 = discount1;
+	}
+
+	public String getDiscount2() {
+		return discount2;
+	}
+
+	public void setDiscount2(String discount2) {
+		this.discount2 = discount2;
+	}
+
+	public String getDiscount3() {
+		return discount3;
+	}
+
+	public void setDiscount3(String discount3) {
+		this.discount3 = discount3;
+	}
+
+	public String getFlatRate() {
+		return flatRate;
+	}
+
+	public void setFlatRate(String flatRate) {
+		this.flatRate = flatRate;
+	}
+
+	public BigDecimal getDiscount2AsBigDecimal() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public BigDecimal getDiscount3AsBigDecimal() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public BigDecimal getFlatRateAsBigDecimal() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

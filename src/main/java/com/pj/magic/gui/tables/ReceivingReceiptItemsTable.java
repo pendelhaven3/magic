@@ -2,7 +2,6 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -14,9 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
@@ -28,17 +24,12 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.AbstractKeyListener;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.gui.dialog.SelectActionDialog;
-import com.pj.magic.gui.dialog.SelectProductDialog;
-import com.pj.magic.gui.dialog.SelectUnitDialog;
-import com.pj.magic.gui.tables.models.ActionsTableModel;
 import com.pj.magic.gui.tables.models.ReceivingReceiptItemsTableModel;
 import com.pj.magic.gui.tables.rowitems.ReceivingReceiptItemRowItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
-import com.pj.magic.util.NumberUtil;
 
 @Component
 public class ReceivingReceiptItemsTable extends ItemsTable {
@@ -48,18 +39,19 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 	public static final int UNIT_COLUMN_INDEX = 2;
 	public static final int QUANTITY_COLUMN_INDEX = 3;
 	public static final int COST_COLUMN_INDEX = 4;
+	public static final int AMOUNT_COLUMN_INDEX = 5;
+	public static final int DISCOUNT_1_COLUMN_INDEX = 6;
+	public static final int DISCOUNT_2_COLUMN_INDEX = 7;
+	public static final int DISCOUNT_3_COLUMN_INDEX = 8;
+	public static final int FLAT_RATE_COLUMN_INDEX = 9;
+	public static final int DISCOUNTED_AMOUNT_COLUMN_INDEX = 10;
+	public static final int NET_AMOUNT_COLUMN_INDEX = 11;
 	
 	private static final String TAB_ACTION_NAME = "tab";
 	private static final String DOWN_ACTION_NAME = "down";
 
 	@Autowired private ProductService productService;
 	@Autowired private ReceivingReceiptItemsTableModel tableModel;
-	
-	// dynamic columns
-	private int orderedColumnIndex = 4;
-	private int actualQuantityColumnIndex = 5;
-	private int costColumnIndex;
-	private int amountColumnIndex;
 	
 	private ReceivingReceipt receivingReceipt;
 	private Action originalDownAction;
@@ -69,6 +61,7 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 	public ReceivingReceiptItemsTable(ReceivingReceiptItemsTableModel tableModel) {
 		super(tableModel);
 		setSurrendersFocusOnKeystroke(true);
+		initializeColumns();
 		initializeRowItemValidationBehavior();
 		registerKeyBindings();
 	}
@@ -80,8 +73,6 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(60);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(60);
-		columnModel.getColumn(costColumnIndex).setPreferredWidth(60);
-		columnModel.getColumn(amountColumnIndex).setPreferredWidth(60);
 		
 		MagicTextField productCodeTextField = new MagicTextField();
 		productCodeTextField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
@@ -135,8 +126,8 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 		
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-		getColumnModel().getColumn(costColumnIndex).setCellRenderer(rightRenderer);
-		getColumnModel().getColumn(amountColumnIndex).setCellRenderer(rightRenderer);
+//		getColumnModel().getColumn(costColumnIndex).setCellRenderer(rightRenderer);
+//		getColumnModel().getColumn(amountColumnIndex).setCellRenderer(rightRenderer);
 	}
 	
 	private Action getAction(int keyEvent) {
@@ -180,26 +171,10 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 		return tableModel.getRowItem(getSelectedRow());
 	}
 	
-	private boolean hasDuplicate(ReceivingReceiptItemRowItem rowItem) {
-		ReceivingReceiptItem checkItem = new ReceivingReceiptItem();
-		checkItem.setProduct(rowItem.getProduct());
-		checkItem.setUnit(rowItem.getUnit());
-		
-		for (ReceivingReceiptItem item : receivingReceipt.getItems()) {
-			if (item.equals(checkItem) && item != rowItem.getItem()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	public void setReceivingReceipt(ReceivingReceipt receivingReceipt) {
 		clearSelection();
-		addMode = false;
 		this.receivingReceipt = receivingReceipt;
-		
 		tableModel.setReceivingReceipt(receivingReceipt);
-		initializeColumns();
 	}
 	
 	private ReceivingReceiptItem createBlankItem() {
@@ -275,9 +250,6 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 			if (StringUtils.isEmpty(fromUnit)) {
 				showErrorMessage("Unit must be specified");
 				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-			} else if (!rowItem.getProduct().getUnits().contains(fromUnit)) {
-				showErrorMessage("Product does not have unit specified");
-				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
 			} else {
 				int nextField = QUANTITY_COLUMN_INDEX;
 				changeSelection(selectedRow, nextField, false, false);
@@ -318,6 +290,7 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 	}
 	
 	private void initializeRowItemValidationBehavior() {
+		/*
 		getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
@@ -360,9 +333,11 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 				}
 			}
 		});
+		*/
 	}
 	
 	private boolean validateCost(ReceivingReceiptItemRowItem rowItem) {
+		/*
 		boolean valid = false;
 		if (StringUtils.isEmpty(rowItem.getCost())) {
 			showErrorMessage("Cost must be specified");
@@ -378,22 +353,8 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 			editCellAtCurrentRow(costColumnIndex);
 		}
 		return valid;
-	}
-	
-	public int getCostColumnIndex() {
-		return costColumnIndex;
-	}
-	
-	public int getAmountColumnIndex() {
-		return amountColumnIndex;
-	}
-	
-	public int getOrderedColumnIndex() {
-		return orderedColumnIndex;
-	}
-	
-	public int getActualQuantityColumnIndex() {
-		return actualQuantityColumnIndex;
+		*/
+		return false;
 	}
 	
 }
