@@ -244,3 +244,47 @@ create table RECEIVING_RECEIPT_ITEM (
   constraint RECEIVING_RECEIPT_ITEM$FK foreign key (RECEIVING_RECEIPT_ID) references RECEIVING_RECEIPT (ID),
   constraint RECEIVING_RECEIPT_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
+
+create table ADJUSTMENT_OUT (
+  ID integer auto_increment,
+  ADJUSTMENT_OUT_NO integer auto_increment,
+  POST_IND varchar2(1) default 'N' not null,
+  REMARKS varchar2(100) null,
+  POST_DT date null,
+  POSTED_BY integer null,
+  constraint ADJUSTMENT_OUT$PK primary key (ID),
+  constraint ADJUSTMENT_OUT$UK unique (ADJUSTMENT_OUT_NO)
+);
+
+create table ADJUSTMENT_OUT_ITEM (
+  ID integer auto_increment,
+  ADJUSTMENT_OUT_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT varchar2(3) not null,
+  QUANTITY integer not null,
+  constraint ADJUSTMENT_OUT_ITEM$PK primary key (ID),
+  constraint ADJUSTMENT_OUT_ITEM$FK foreign key (ADJUSTMENT_OUT_ID) references ADJUSTMENT_OUT (ID),
+  constraint ADJUSTMENT_OUT_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);
+
+create table ADJUSTMENT_IN (
+  ID integer auto_increment,
+  ADJUSTMENT_IN_NO integer auto_increment,
+  POST_IND varchar2(1) default 'N' not null,
+  REMARKS varchar2(100) null,
+  POST_DT date null,
+  POSTED_BY integer null,
+  constraint ADJUSTMENT_IN$PK primary key (ID),
+  constraint ADJUSTMENT_IN$UK unique (ADJUSTMENT_IN_NO)
+);
+
+create table ADJUSTMENT_IN_ITEM (
+  ID integer auto_increment,
+  ADJUSTMENT_IN_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT varchar2(3) not null,
+  QUANTITY integer not null,
+  constraint ADJUSTMENT_IN_ITEM$PK primary key (ID),
+  constraint ADJUSTMENT_IN_ITEM$FK foreign key (ADJUSTMENT_IN_ID) references ADJUSTMENT_IN (ID),
+  constraint ADJUSTMENT_IN_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);

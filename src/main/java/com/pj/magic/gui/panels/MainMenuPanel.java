@@ -41,7 +41,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(200, 200));
+		table.setPreferredSize(new Dimension(200, 250));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		add(table, c);
@@ -106,6 +106,12 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		case "Receiving Receipt":
 			getMagicFrame().switchToReceivingReceiptListPanel();
 			break;
+		case "Adjustment In":
+			getMagicFrame().switchToAdjustmentInListPanel();
+			break;
+		case "Adjustment Out":
+			getMagicFrame().switchToAdjustmentOutListPanel();
+			break;
 		}
 	}
 
@@ -124,6 +130,8 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				{"Stock Quantity Conversion"},
 				{"Purchase Order"},
 				{"Receiving Receipt"},
+				{"Adjustment In"},
+				{"Adjustment Out"},
 				{"Manufacturer List"},
 				{"Supplier List"},
 				{"Product Category List"},

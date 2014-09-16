@@ -10,6 +10,10 @@ import javax.swing.JPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.panels.AdjustmentInListPanel;
+import com.pj.magic.gui.panels.AdjustmentInPanel;
+import com.pj.magic.gui.panels.AdjustmentOutListPanel;
+import com.pj.magic.gui.panels.AdjustmentOutPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
 import com.pj.magic.gui.panels.MaintainCustomerPanel;
@@ -35,6 +39,8 @@ import com.pj.magic.gui.panels.SalesRequisitionPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
+import com.pj.magic.model.AdjustmentIn;
+import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.PaymentTerm;
@@ -84,6 +90,10 @@ public class MagicFrame extends JFrame {
 	private static final String PURCHASE_ORDER_PANEL = "PURCHASE_ORDER_PANEL";
 	private static final String RECEIVING_RECEIPT_LIST_PANEL = "RECEIVING_RECEIPT_LIST_PANEL";
 	private static final String RECEIVING_RECEIPT_PANEL = "RECEIVING_RECEIPT_PANEL";
+	private static final String ADJUSTMENT_OUT_LIST_PANEL = "ADJUSTMENT_OUT_LIST_PANEL";
+	private static final String ADJUSTMENT_OUT_PANEL = "ADJUSTMENT_OUT_PANEL";
+	private static final String ADJUSTMENT_IN_LIST_PANEL = "ADJUSTMENT_IN_LIST_PANEL";
+	private static final String ADJUSTMENT_IN_PANEL = "ADJUSTMENT_IN_PANEL";
 	
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
@@ -110,6 +120,10 @@ public class MagicFrame extends JFrame {
 	@Autowired private PurchaseOrderPanel purchaseOrderPanel;
 	@Autowired private ReceivingReceiptListPanel receivingReceiptListPanel;
 	@Autowired private ReceivingReceiptPanel receivingReceiptPanel;
+	@Autowired private AdjustmentOutListPanel adjustmentOutListPanel;
+	@Autowired private AdjustmentOutPanel adjustmentOutPanel;
+	@Autowired private AdjustmentInListPanel adjustmentInListPanel;
+	@Autowired private AdjustmentInPanel adjustmentInPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -148,6 +162,10 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(purchaseOrderPanel, PURCHASE_ORDER_PANEL);
 		panelHolder.add(receivingReceiptListPanel, RECEIVING_RECEIPT_LIST_PANEL);
 		panelHolder.add(receivingReceiptPanel, RECEIVING_RECEIPT_PANEL);
+		panelHolder.add(adjustmentOutListPanel, ADJUSTMENT_OUT_LIST_PANEL);
+		panelHolder.add(adjustmentOutPanel, ADJUSTMENT_OUT_PANEL);
+		panelHolder.add(adjustmentInListPanel, ADJUSTMENT_IN_LIST_PANEL);
+		panelHolder.add(adjustmentInPanel, ADJUSTMENT_IN_PANEL);
         getContentPane().add(panelHolder);
 
         switchToMainMenuPanel();
@@ -371,6 +389,30 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Receiving Receipt");
 		receivingReceiptPanel.updateDisplay(receivingReceipt);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, RECEIVING_RECEIPT_PANEL);
+	}
+	
+	public void switchToAdjustmentOutListPanel() {
+		addPanelNameToTitle("Adjustment Out List");
+		adjustmentOutListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADJUSTMENT_OUT_LIST_PANEL);
+	}
+	
+	public void switchToAdjustmentOutPanel(AdjustmentOut adjustmentOut) {
+		addPanelNameToTitle("Adjustment Out");
+		adjustmentOutPanel.updateDisplay(adjustmentOut);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADJUSTMENT_OUT_PANEL);
+	}
+	
+	public void switchToAdjustmentInListPanel() {
+		addPanelNameToTitle("Adjustment In List");
+		adjustmentInListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADJUSTMENT_IN_LIST_PANEL);
+	}
+	
+	public void switchToAdjustmentInPanel(AdjustmentIn adjustmentIn) {
+		addPanelNameToTitle("Adjustment In");
+		adjustmentInPanel.updateDisplay(adjustmentIn);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADJUSTMENT_IN_PANEL);
 	}
 	
 }

@@ -193,8 +193,8 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	}
 	
 	public void removeItem(int rowIndex) {
-		PurchaseOrderItemRowItem wrapper = rowItems.remove(rowIndex);
-		purchaseOrderService.delete(wrapper.getItem());
+		PurchaseOrderItemRowItem rowItem = rowItems.remove(rowIndex);
+		purchaseOrderService.delete(rowItem.getItem());
 		fireTableDataChanged();
 	}
 	
