@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ReceivingReceiptDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
+import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.service.ReceivingReceiptService;
@@ -57,6 +58,18 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	@Override
 	public List<ReceivingReceipt> getAllReceivingReceipts() {
 		return receivingReceiptDao.getAll();
+	}
+
+	@Override
+	public List<ReceivingReceipt> getAllNonPostedReceivingReceipts() {
+		ReceivingReceipt criteria = new ReceivingReceipt();
+		criteria.setPosted(false);
+		
+		List<ReceivingReceipt> receivingReceipts = receivingReceiptDao.search(criteria);
+		for (ReceivingReceipt purchaseOrder : receivingReceipts) {
+			loadReceivingReceiptDetails(purchaseOrder);
+		}
+		return receivingReceipts;
 	}
 
 }

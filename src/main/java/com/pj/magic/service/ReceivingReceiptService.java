@@ -14,5 +14,7 @@ public interface ReceivingReceiptService {
 	void save(ReceivingReceiptItem receivingReceiptItem);
 	
 	ReceivingReceipt getReceivingReceipt(long id);
+
+	List<ReceivingReceipt> getAllNonPostedReceivingReceipts();
 	
 }

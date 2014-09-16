@@ -103,6 +103,9 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		case "Purchase Order":
 			getMagicFrame().switchToPurchaseOrderListPanel();
 			break;
+		case "Receiving Receipt":
+			getMagicFrame().switchToReceivingReceiptListPanel();
+			break;
 		}
 	}
 
@@ -120,6 +123,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				{"Sales Invoice"},
 				{"Stock Quantity Conversion"},
 				{"Purchase Order"},
+				{"Receiving Receipt"},
 				{"Manufacturer List"},
 				{"Supplier List"},
 				{"Product Category List"},
