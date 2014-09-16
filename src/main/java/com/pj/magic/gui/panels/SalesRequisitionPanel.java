@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.exception.NoSellingPriceException;
+import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -86,6 +87,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
+	private JButton selectCustomerButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -97,6 +99,16 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		
 		remarksField = new MagicTextField();
 		remarksField.setMaximumLength(100);
+		
+		selectCustomerButton = new EllipsisButton();
+		selectCustomerButton.setToolTipText("Select Customer (F5)");
+		selectCustomerButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectCustomer();
+			}
+		});;
 		
 		focusOnComponentWhenThisPanelIsDisplayed(customerCodeField);
 		
@@ -120,7 +132,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openSelectCustomerDialog();
+				selectCustomer();
 			}
 		});
 
@@ -196,7 +208,7 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		}
 	}
 
-	protected void openSelectCustomerDialog() {
+	protected void selectCustomer() {
 		selectCustomerDialog.searchCustomers(customerCodeField.getText());
 		selectCustomerDialog.setVisible(true);
 		
@@ -557,16 +569,22 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		c.anchor = GridBagConstraints.WEST;
 		panel.add(customerCodeField, c);
 		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(selectCustomerButton, c);
+		
 		c.weightx = 0.0;
 		c.weighty = 0.0;
-		c.gridx = 1;
+		c.gridx = 2;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
 		panel.add(ComponentUtil.createFiller(10, 20), c);
 		
 		c.weightx = 0.0;
 		c.weighty = 0.0;
-		c.gridx = 2;
+		c.gridx = 3;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
 		panel.add(customerNameField, c);
