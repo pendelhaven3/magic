@@ -1,16 +1,19 @@
 package com.pj.magic.gui.dialog;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.tables.models.SuppliersTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
@@ -20,6 +23,8 @@ import com.pj.magic.service.SupplierService;
 @Component
 public class SelectSupplierDialog extends MagicDialog {
 
+	private static final String SELECT_SUPPLIER_ACTION = "selectSupplier";
+	
 	@Autowired private ProductService productService;
 	@Autowired private SupplierService supplierService;
 	
@@ -32,25 +37,39 @@ public class SelectSupplierDialog extends MagicDialog {
 		setLocationRelativeTo(null);
 		setTitle("Select Supplier");
 		addContents();
+		registerKeyBindings();
 	}
 
 	private void addContents() {
 		table = new JTable(tableModel);
-		table.addMouseListener(new MouseAdapter() {
+		JScrollPane scrollPane = new JScrollPane(table);
+		add(scrollPane);	
+	}
+
+	private void registerKeyBindings() {
+		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_SUPPLIER_ACTION);
+		table.getActionMap().put(SELECT_SUPPLIER_ACTION, new AbstractAction() {
 			
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					if (table.getSelectedRow() != -1) {
-						selectedSupplier = tableModel.getSupplier(table.getSelectedRow());
-						setVisible(false);
-					}
-				}
+			public void actionPerformed(ActionEvent e) {
+				selectSupplier();
 			}
 		});
 		
-		JScrollPane scrollPane = new JScrollPane(table);
-		add(scrollPane);	
+		table.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				selectSupplier();
+			}
+		});
+	}
+
+	protected void selectSupplier() {
+		if (table.getSelectedRow() != -1) {
+			selectedSupplier = tableModel.getSupplier(table.getSelectedRow());
+			setVisible(false);
+		}
 	}
 
 	public Supplier getSelectedSupplier() {
