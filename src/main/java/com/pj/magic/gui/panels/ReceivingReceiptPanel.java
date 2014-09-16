@@ -7,16 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -27,11 +24,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.ReceivingReceiptItemsTable;
-import com.pj.magic.gui.tables.models.UnitCostsAndQuantitiesTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Unit;
@@ -45,8 +40,6 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class ReceivingReceiptPanel extends AbstractMagicPanel {
 
-	private static final String SAVE_REMARKS_ACTION_NAME = "saveRemarks";
-	
 	@Autowired private ReceivingReceiptItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
@@ -74,7 +67,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		
 		focusOnItemsTableWhenThisPanelIsDisplayed();
 		updateTotalAmountFieldWhenItemsTableChanges();
-		initializeUnitPricesAndQuantitiesTable();
+		initializeUnitCostsAndQuantitiesTable();
 	}
 
 	private void focusOnItemsTableWhenThisPanelIsDisplayed() {
@@ -333,40 +326,28 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		add(totalAmountField, c);
 	}
 	
-	private void initializeUnitPricesAndQuantitiesTable() {
-		itemsTable.getModel().addTableModelListener(new TableModelListener() {
-			
-			@Override
-			public void tableChanged(TableModelEvent e) {
-				if (e.getColumn() == ReceivingReceiptItemsTable.PRODUCT_CODE_COLUMN_INDEX ||
-						e.getColumn() == TableModelEvent.ALL_COLUMNS) {
-					updateUnitPricesAndQuantitiesTable();
-				}
-			}
-
-		});
-		
+	private void initializeUnitCostsAndQuantitiesTable() {
 		itemsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				updateUnitPricesAndQuantitiesTable();
+				updateUnitCostsAndQuantitiesTable();
 			}
 		});
 	}
 	
-	private void updateUnitPricesAndQuantitiesTable() {
+	private void updateUnitCostsAndQuantitiesTable() {
 		if (itemsTable.getSelectedRow() == -1) {
 			unitCostsAndQuantitiesTableModel.setProduct(null);
 			return;
 		}
 		
-//		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
-//		if (product != null && product.isValid()) {
-//			unitCostsAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
-//		} else {
-//			unitCostsAndQuantitiesTableModel.setProduct(null);
-//		}
+		Product product = itemsTable.getCurrentlySelectedRowItem().getItem().getProduct();
+		if (product != null && product.isValid()) {
+			unitCostsAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
+		} else {
+			unitCostsAndQuantitiesTableModel.setProduct(null);
+		}
 	}
 	
 	private JToolBar createToolBar() {
@@ -410,7 +391,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		
 	}
 	
-	private class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
+	private class UnitCostsAndQuantitiesTableModel extends AbstractTableModel {
 
 		private Product product;
 		
@@ -476,49 +457,49 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.CASE));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CASE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					BigDecimal unitCost = product.getUnitCost(Unit.CASE);
+					if (unitCost == null) {
+						unitCost = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitCost);
 				case 4:
 					return String.valueOf(product.getUnitQuantity(Unit.TIE));
 				case 5:
-					unitPrice = product.getUnitPrice(Unit.TIE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					unitCost = product.getUnitPrice(Unit.TIE);
+					if (unitCost == null) {
+						unitCost = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitCost);
 				}
 			} else if (rowIndex == 1) {
 				switch (columnIndex) {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.CARTON));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CARTON);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					BigDecimal unitCost = product.getUnitCost(Unit.CARTON);
+					if (unitCost == null) {
+						unitCost = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitCost);
 				case 4:
 					return String.valueOf(product.getUnitQuantity(Unit.DOZEN));
 				case 5:
-					unitPrice = product.getUnitPrice(Unit.DOZEN);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					unitCost = product.getUnitPrice(Unit.DOZEN);
+					if (unitCost == null) {
+						unitCost = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitCost);
 				}
 			} else if (rowIndex == 2) {
 				switch (columnIndex) {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.PIECES));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.PIECES);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					BigDecimal unitCost = product.getUnitCost(Unit.PIECES);
+					if (unitCost == null) {
+						unitCost = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(unitCost);
 				}
 			}
 			return "";
