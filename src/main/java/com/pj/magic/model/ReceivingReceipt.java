@@ -1,5 +1,7 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -112,6 +114,30 @@ public class ReceivingReceipt {
 
 	public int getTotalNumberOfItems() {
 		return items.size();
+	}
+
+	public BigDecimal getTotalAmount() {
+		BigDecimal totalAmount = BigDecimal.ZERO;
+		for (ReceivingReceiptItem item : items) {
+			totalAmount = totalAmount.add(item.getAmount());
+		}
+		return totalAmount.setScale(2, RoundingMode.HALF_UP);
+	}
+
+	public BigDecimal getTotalDiscountedAmount() {
+		BigDecimal totalDiscountedAmount = BigDecimal.ZERO;
+		for (ReceivingReceiptItem item : items) {
+			totalDiscountedAmount = totalDiscountedAmount.add(item.getDiscountedAmount());
+		}
+		return totalDiscountedAmount.setScale(2, RoundingMode.HALF_UP);
+	}
+
+	public BigDecimal getTotalNetAmount() {
+		BigDecimal totalNetAmount = BigDecimal.ZERO;
+		for (ReceivingReceiptItem item : items) {
+			totalNetAmount = totalNetAmount.add(item.getNetAmount());
+		}
+		return totalNetAmount.setScale(2, RoundingMode.HALF_UP);
 	}
 	
 }

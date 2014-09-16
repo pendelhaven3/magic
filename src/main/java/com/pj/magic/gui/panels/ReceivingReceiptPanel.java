@@ -54,8 +54,9 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 	private JLabel paymentTermField;
 	private JLabel receivedDateField;
 	private JLabel referenceNumberField;
-	private JLabel totalItemsField;
 	private JLabel totalAmountField;
+	private JLabel totalDiscountedAmountField;
+	private JLabel totalNetAmountField;
 	private UnitCostsAndQuantitiesTableModel unitCostsAndQuantitiesTableModel = new UnitCostsAndQuantitiesTableModel();
 	private MagicToolBarButton postButton;
 	
@@ -97,8 +98,10 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalItemsField.setText(String.valueOf(itemsTable.getTotalNumberOfItems()));
-//				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
+				totalAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalAmount()));
+				totalDiscountedAmountField.setText(
+						FormatterUtil.formatAmount(receivingReceipt.getTotalDiscountedAmount()));
+				totalNetAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalNetAmount()));
 			}
 		});
 	}
@@ -113,8 +116,10 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		paymentTermField.setText(receivingReceipt.getPaymentTerm().getName());
 		receivedDateField.setText(FormatterUtil.formatDate(receivingReceipt.getReceivedDate()));
 		referenceNumberField.setText(receivingReceipt.getReferenceNumber());
-//		totalItemsField.setText(String.valueOf(receivingReceipt.getTotalNumberOfItems()));
-//		totalAmountField.setText(receivingReceipt.getTotalAmount().toString());
+		totalAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalAmount()));
+		totalDiscountedAmountField.setText(
+				FormatterUtil.formatAmount(receivingReceipt.getTotalDiscountedAmount()));
+		totalNetAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalNetAmount()));
 		itemsTable.setReceivingReceipt(receivingReceipt);
 		
 		postButton.setEnabled(!receivingReceipt.isPosted());
@@ -131,7 +136,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 6;
+		c.gridwidth = 7;
 		c.anchor = GridBagConstraints.WEST;
 		add(createToolBar(), c);
 
@@ -172,13 +177,19 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createLabel(150, "Related PO No.:"), c);
 		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
+		c.weightx = c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		relatedPurchaseOrderNumberField = ComponentUtil.createLabel(200, "");
+		relatedPurchaseOrderNumberField = ComponentUtil.createLabel(100, "");
 		add(relatedPurchaseOrderNumberField, c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 6;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createFiller(1, 1), c);
 		
 		currentRow++;
 		
@@ -207,7 +218,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		orderDateField = ComponentUtil.createLabel(200, "");
+		orderDateField = ComponentUtil.createLabel(150, "");
 		add(orderDateField, c);
 		
 		currentRow++;
@@ -271,7 +282,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 6;
+		c.gridwidth = 7;
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
@@ -283,7 +294,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 6;
+		c.gridwidth = 7;
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
 		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
@@ -297,15 +308,15 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		add(ComponentUtil.createLabel(150, "Total Amount:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalItemsField = ComponentUtil.createLabel(150, "");
-		add(totalItemsField, c);
+		totalAmountField = ComponentUtil.createRightLabel(70, "");
+		add(totalAmountField, c);
 		
 		currentRow++;
 		
@@ -315,15 +326,34 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		add(ComponentUtil.createLabel(150, "Total Disc. Amount:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createLabel(150, "");
-		add(totalAmountField, c);
+		totalDiscountedAmountField = ComponentUtil.createRightLabel(70, "");
+		add(totalDiscountedAmountField, c);
+		
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(150, "Total Net Amount:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalNetAmountField = ComponentUtil.createRightLabel(70, "");
+		add(totalNetAmountField, c);
+		
 	}
 	
 	private void initializeUnitCostsAndQuantitiesTable() {
