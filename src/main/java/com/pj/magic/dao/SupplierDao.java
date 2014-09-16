@@ -20,5 +20,7 @@ public interface SupplierDao {
 	List<Supplier> findAllNotHavingProduct(Product product);
 
 	void deleteSupplierProduct(Supplier supplier, Product product);
+
+	Supplier findByCode(String code);
 	
 }

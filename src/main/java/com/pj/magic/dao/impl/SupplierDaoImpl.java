@@ -174,5 +174,16 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	public void deleteSupplierProduct(Supplier supplier, Product product) {
 		getJdbcTemplate().update(DELETE_SUPPLIER_PRODUCT_SQL, supplier.getId(), product.getId());
 	}
+
+	private static final String FIND_BY_CODE_SQL = BASE_SELECT_SQL + " where a.CODE = ?";
+	
+	@Override
+	public Supplier findByCode(String code) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_CODE_SQL, supplierRowMapper, code);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
 	
 }

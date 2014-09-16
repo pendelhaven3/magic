@@ -11,5 +11,7 @@ public interface SupplierService {
 	Supplier getSupplier(long id);
 	
 	List<Supplier> getAllSuppliers();
+
+	Supplier findSupplierByCode(String code);
 	
 }

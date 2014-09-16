@@ -59,10 +59,8 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class PurchaseOrderPanel extends AbstractMagicPanel {
 
-	private static final String SAVE_PAYMENT_TERM_ACTION_NAME = "savePaymentTerm";
-	private static final String SAVE_REMARKS_ACTION_NAME = "saveRemarks";
-	private static final String SAVE_REFERENCE_NUMBER_ACTION_NAME = "saveReferenceNumber";
 	private static final String OPEN_SELECT_SUPPLIER_DIALOG_ACTION_NAME = "openSelectSupplierDialog";
+	private static final String FOCUS_NEXT_FIELD_ACTION_NAME = "focusNextField";
 	
 	private static final Logger logger = LoggerFactory.getLogger(PurchaseOrderPanel.class);
 	
@@ -147,33 +145,37 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		
 		Supplier selectedSupplier = selectSupplierDialog.getSelectedSupplier();
 		if (selectedSupplier != null) {
-			if (!selectedSupplier.equals(purchaseOrder.getSupplier())) {
-				purchaseOrder.setSupplier(selectedSupplier);
-				supplierCodeField.setText(selectedSupplier.getCode());
-				supplierNameField.setText(selectedSupplier.getName());
-				
-				purchaseOrder.setPaymentTerm(selectedSupplier.getPaymentTerm());
-				paymentTermComboBox.setEnabled(true);
-				paymentTermComboBox.setSelectedItem(selectedSupplier.getPaymentTerm());
-				
-				try {
-					purchaseOrderService.save(purchaseOrder);
-					updateDisplay(purchaseOrder);
-				} catch (Exception e) {
-					logger.error(e.getMessage(), e);
-					showErrorMessage("Error occurred during saving!");
-					return;
-				}
-			}
-			
-			if (purchaseOrder.isOrdered()) {
-				referenceNumberField.requestFocusInWindow();
-			} else {
-		 		paymentTermComboBox.requestFocusInWindow();
-			}
+			saveSupplier(selectedSupplier);
 		}
 	}
 
+	private void saveSupplier(Supplier supplier) {
+		if (!supplier.equals(purchaseOrder.getSupplier())) {
+			purchaseOrder.setSupplier(supplier);
+			supplierCodeField.setText(supplier.getCode());
+			supplierNameField.setText(supplier.getName());
+			
+			purchaseOrder.setPaymentTerm(supplier.getPaymentTerm());
+			paymentTermComboBox.setEnabled(true);
+			paymentTermComboBox.setSelectedItem(supplier.getPaymentTerm());
+			
+			try {
+				purchaseOrderService.save(purchaseOrder);
+				updateDisplay(purchaseOrder);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Error occurred during saving!");
+				return;
+			}
+		}
+		
+		if (purchaseOrder.isOrdered()) {
+			referenceNumberField.requestFocusInWindow();
+		} else {
+	 		paymentTermComboBox.requestFocusInWindow();
+		}
+	}
+	
 	@Override
 	protected void registerKeyBindings() {
 		supplierCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0),
@@ -186,33 +188,47 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 			}
 		});
 		
-		paymentTermComboBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
-				SAVE_PAYMENT_TERM_ACTION_NAME);
-		paymentTermComboBox.getActionMap().put(SAVE_PAYMENT_TERM_ACTION_NAME, new AbstractAction() {
-			
+		supplierCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
+				FOCUS_NEXT_FIELD_ACTION_NAME);
+		supplierCodeField.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePaymentTerm();
+				Supplier supplier = supplierService.findSupplierByCode(supplierCodeField.getText());
+				if (supplier != null) {
+					saveSupplier(supplier);
+				} else {
+					showErrorMessage("No supplier matching code specified");
+				}
 			}
 		});
 		
-		remarksField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_REMARKS_ACTION_NAME);
-		remarksField.getActionMap().put(SAVE_REMARKS_ACTION_NAME, new AbstractAction() {
+		paymentTermComboBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
+				FOCUS_NEXT_FIELD_ACTION_NAME);
+		paymentTermComboBox.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveRemarks();
+				remarksField.requestFocusInWindow();
+			}
+		});
+		
+		remarksField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), FOCUS_NEXT_FIELD_ACTION_NAME);
+		remarksField.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				itemsTable.highlight();
 			}
 		});
 		
 		referenceNumberField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
-				SAVE_REFERENCE_NUMBER_ACTION_NAME);
-		referenceNumberField.getActionMap().put(SAVE_REFERENCE_NUMBER_ACTION_NAME, new AbstractAction() {
+				FOCUS_NEXT_FIELD_ACTION_NAME);
+		referenceNumberField.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveReferenceNumber();
+				paymentTermComboBox.requestFocusInWindow();
 			}
 		});
 	}

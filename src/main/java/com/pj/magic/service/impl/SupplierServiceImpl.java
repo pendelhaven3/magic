@@ -31,4 +31,9 @@ public class SupplierServiceImpl implements SupplierService {
 		return supplierDao.getAll();
 	}
 
+	@Override
+	public Supplier findSupplierByCode(String code) {
+		return supplierDao.findByCode(code);
+	}
+
 }
