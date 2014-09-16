@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	public ReceivingReceipt post(PurchaseOrder purchaseOrder) {
 		PurchaseOrder updated = getPurchaseOrder(purchaseOrder.getId());
 		updated.setPosted(true);
+		updated.setPostDate(new Date());
 		purchaseOrderDao.save(updated);
 
 		ReceivingReceipt receivingReceipt = updated.createReceivingReceipt();
@@ -90,6 +92,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	@Override
 	public void order(PurchaseOrder purchaseOrder) {
 		purchaseOrder.setOrdered(true);
+		purchaseOrder.setOrderDate(new Date());
 		purchaseOrderDao.save(purchaseOrder);
 		purchaseOrderItemDao.updateAllByPurchaseOrderAsOrdered(purchaseOrder);
 	}

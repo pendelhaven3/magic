@@ -194,6 +194,8 @@ create table PURCHASE_ORDER (
   PAYMENT_TERM_ID integer null,
   REMARKS varchar2(100) null,
   REFERENCE_NO varchar2(30) null,
+  ORDER_DT date null,
+  POST_DT date null,
   constraint PURCHASE_ORDER$PK primary key (ID),
   constraint PURCHASE_ORDER$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID)
 );
@@ -222,6 +224,7 @@ create table RECEIVING_RECEIPT (
   REFERENCE_NO varchar2(30) null,
   RECEIVED_DT date not null,
   RECEIVED_BY integer null,
+  ORDER_DT date not null,
   constraint RECEIVING_RECEIPT$PK primary key (ID),
   constraint RECEIVING_RECEIPT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID)
 );

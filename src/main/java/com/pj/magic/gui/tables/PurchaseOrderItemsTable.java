@@ -89,14 +89,14 @@ public class PurchaseOrderItemsTable extends ItemsTable {
 		TableColumnModel columnModel = getColumnModel();
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(80);
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
-		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(40);
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(30);
 		columnModel.getColumn(SUGGESTED_ORDER_COLUMN_INDEX).setPreferredWidth(60);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(40);
-		columnModel.getColumn(costColumnIndex).setPreferredWidth(60);
+		columnModel.getColumn(costColumnIndex).setPreferredWidth(50);
 		columnModel.getColumn(amountColumnIndex).setPreferredWidth(60);
 		if (purchaseOrder.isOrdered()) {
-			columnModel.getColumn(orderedColumnIndex).setPreferredWidth(60);
-			columnModel.getColumn(actualQuantityColumnIndex).setPreferredWidth(60);
+			columnModel.getColumn(orderedColumnIndex).setPreferredWidth(40);
+			columnModel.getColumn(actualQuantityColumnIndex).setPreferredWidth(50);
 		}
 		
 		MagicTextField productCodeTextField = new MagicTextField();

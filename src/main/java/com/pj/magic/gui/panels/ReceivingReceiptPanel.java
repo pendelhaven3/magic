@@ -29,6 +29,7 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.ReceivingReceiptItemsTable;
+import com.pj.magic.gui.tables.models.UnitCostsAndQuantitiesTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Unit;
@@ -52,14 +53,16 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 	
 	private ReceivingReceipt receivingReceipt;
 	private JLabel receivingReceiptNumberField;
+	private JLabel relatedPurchaseOrderNumberField;
 	private JLabel supplierField;
+	private JLabel orderDateField;
 	private JLabel paymentTermField;
-	private JLabel statusField;
+	private JLabel receivedDateField;
 	private MagicTextField remarksField;
 	private JLabel referenceNumberField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
-	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
+	private UnitCostsAndQuantitiesTableModel unitCostsAndQuantitiesTableModel = new UnitCostsAndQuantitiesTableModel();
 	private MagicToolBarButton postButton;
 	
 	@Override
@@ -67,7 +70,6 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		supplierField = new JLabel();
 		paymentTermField = new JLabel();
 		referenceNumberField = new JLabel();
-		statusField = new JLabel();
 		
 		remarksField = new MagicTextField();
 		remarksField.setMaximumLength(100);
@@ -122,16 +124,17 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		receivingReceipt = this.receivingReceipt;
 		
 		receivingReceiptNumberField.setText(receivingReceipt.getReceivingReceiptNumber().toString());
-		statusField.setText(receivingReceipt.getStatus());
 		supplierField.setText(receivingReceipt.getSupplier().getName());
+		orderDateField.setText(FormatterUtil.formatDate(receivingReceipt.getOrderDate()));
 		paymentTermField.setText(receivingReceipt.getPaymentTerm().getName());
+		receivedDateField.setText(FormatterUtil.formatDate(receivingReceipt.getReceivedDate()));
 		remarksField.setText(receivingReceipt.getRemarks());
 		referenceNumberField.setText(receivingReceipt.getReferenceNumber());
 //		totalItemsField.setText(String.valueOf(receivingReceipt.getTotalNumberOfItems()));
 //		totalAmountField.setText(receivingReceipt.getTotalAmount().toString());
 		itemsTable.setReceivingReceipt(receivingReceipt);
 		
-		postButton.setEnabled(false);
+		postButton.setEnabled(!receivingReceipt.isPosted());
 	}
 
 	@Override
@@ -164,7 +167,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(120, "PO No.:"), c);
+		add(ComponentUtil.createLabel(120, "RR No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -184,15 +187,15 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Status:"), c);
+		add(ComponentUtil.createLabel(150, "Related PO No.:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		statusField = ComponentUtil.createLabel(100, "");
-		add(statusField, c);
+		relatedPurchaseOrderNumberField = ComponentUtil.createLabel(200, "");
+		add(relatedPurchaseOrderNumberField, c);
 		
 		currentRow++;
 		
@@ -207,53 +210,68 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(1, 1), c);
+		add(supplierField, c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Reference No.:"), c);
+		add(ComponentUtil.createLabel(150, "Order Date:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		referenceNumberField.setPreferredSize(new Dimension(100, 20));
+		orderDateField = ComponentUtil.createLabel(200, "");
+		add(orderDateField, c);
+		
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(100, "Payment Term:"), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(paymentTermField, c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(150, "Received Date:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		receivedDateField = ComponentUtil.createLabel(100, "");
+		add(receivedDateField, c);
+		
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(100, "Reference No.:"), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		referenceNumberField = ComponentUtil.createLabel(100, "");
 		add(referenceNumberField, c);
-		
-		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Payment Terms:"), c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(1, 1), c);
-		
-		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Remarks:"), c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		remarksField.setPreferredSize(new Dimension(200, 20));
-		add(remarksField, c);
 
 		currentRow++;
 		
@@ -349,15 +367,15 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 	
 	private void updateUnitPricesAndQuantitiesTable() {
 		if (itemsTable.getSelectedRow() == -1) {
-			unitPricesAndQuantitiesTableModel.setProduct(null);
+			unitCostsAndQuantitiesTableModel.setProduct(null);
 			return;
 		}
 		
 		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
 		if (product != null && product.isValid()) {
-			unitPricesAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
+			unitCostsAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
 		} else {
-			unitPricesAndQuantitiesTableModel.setProduct(null);
+			unitCostsAndQuantitiesTableModel.setProduct(null);
 		}
 	}
 	
@@ -381,7 +399,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 	private class UnitPricesAndQuantitiesTable extends JTable {
 		
 		public UnitPricesAndQuantitiesTable() {
-			super(unitPricesAndQuantitiesTableModel);
+			super(unitCostsAndQuantitiesTableModel);
 			setTableHeader(null);
 			setRowHeight(20);
 			setShowGrid(false);

@@ -9,6 +9,7 @@ public class ReceivingReceipt {
 	private Long id;
 	private Long receivingReceiptNumber;
 	private Supplier supplier;
+	private Date orderDate;
 	private Date receivedDate;
 	private User receivedBy;
 	private PaymentTerm paymentTerm; // TODO: Look for payment terms
@@ -43,6 +44,14 @@ public class ReceivingReceipt {
 
 	public Date getReceivedDate() {
 		return receivedDate;
+	}
+
+	public Date getOrderDate() {
+		return orderDate;
+	}
+
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
 	}
 
 	public void setReceivedDate(Date receivedDate) {

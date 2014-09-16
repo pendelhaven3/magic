@@ -25,9 +25,11 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, RECEIVING_RECEIPT_NO, SUPPLIER_ID, POST_IND, "
-			+ " a.PAYMENT_TERM_ID, REMARKS, REFERENCE_NO, RECEIVED_DT, b.NAME as SUPPLIER_NAME"
-			+ " from RECEIVING_RECEIPT a, SUPPLIER b"
-			+ " where a.SUPPLIER_ID = b.ID";
+			+ " a.PAYMENT_TERM_ID, c.NAME as PAYMENT_TERM_NAME, REMARKS, REFERENCE_NO, RECEIVED_DT, "
+			+ " ORDER_DT, b.NAME as SUPPLIER_NAME"
+			+ " from RECEIVING_RECEIPT a, SUPPLIER b, PAYMENT_TERM c"
+			+ " where a.SUPPLIER_ID = b.ID"
+			+ " and a.PAYMENT_TERM_ID = c.ID";
 	
 	private ReceivingReceiptRowMapper receivingReceiptRowMapper = new ReceivingReceiptRowMapper();
 	
@@ -52,8 +54,9 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	}
 	
 	private static final String INSERT_SQL =
-			"insert into RECEIVING_RECEIPT (SUPPLIER_ID, PAYMENT_TERM_ID, REFERENCE_NO, REMARKS, RECEIVED_DT)"
-			+ " values (?, ?, ?, ?, ?)";
+			"insert into RECEIVING_RECEIPT"
+			+ " (SUPPLIER_ID, PAYMENT_TERM_ID, REFERENCE_NO, REMARKS, RECEIVED_DT, ORDER_DT)"
+			+ " values (?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final ReceivingReceipt receivingReceipt) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -68,6 +71,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				ps.setString(3, receivingReceipt.getReferenceNumber());
 				ps.setString(4, receivingReceipt.getRemarks());
 				ps.setDate(5, new Date(receivingReceipt.getReceivedDate().getTime()));
+				ps.setDate(6,  new Date(receivingReceipt.getOrderDate().getTime()));
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -101,10 +105,12 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			receivingReceipt.setReceivingReceiptNumber(rs.getLong("RECEIVING_RECEIPT_NO"));
 			receivingReceipt.setSupplier(new Supplier(rs.getLong("SUPPLIER_ID"), rs.getString("SUPPLIER_NAME")));
 			receivingReceipt.setPosted("Y".equals(rs.getString("POST_IND")));
-			receivingReceipt.setPaymentTerm(new PaymentTerm(rs.getLong("PAYMENT_TERM_ID")));
+			receivingReceipt.setPaymentTerm(
+					new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
 			receivingReceipt.setRemarks(rs.getString("REMARKS"));
 			receivingReceipt.setReferenceNumber(rs.getString("REFERENCE_NO"));
 			receivingReceipt.setReceivedDate(rs.getDate("RECEIVED_DT"));
+			receivingReceipt.setOrderDate(rs.getDate("ORDER_DT"));
 			return receivingReceipt;
 		}
 	}

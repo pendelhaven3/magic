@@ -22,9 +22,9 @@ import com.pj.magic.util.FormatterUtil;
 public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
 	private static final String[] columnNames = 
-		{"Code", "Description", "Unit", "Suggested Order", "Quantity", "Cost", "Amount"};
+		{"Code", "Description", "Unit", "Sugg. Order", "Quantity", "Cost", "Amount"};
 	private static final String[] orderedColumnNames = 
-		{"Code", "Description", "Unit", "Suggested Order", "Quantity", "Ordered", "Actual Qty", "Cost", "Amount"};
+		{"Code", "Description", "Unit", "Sugg. Order", "Quantity", "Ordered", "Actual Qty", "Cost", "Amount"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseOrderService purchaseOrderService;

@@ -17,6 +17,8 @@ public class PurchaseOrder {
 	private PaymentTerm paymentTerm;
 	private String remarks;
 	private String referenceNumber;
+	private Date orderDate;
+	private Date postDate;
 
 	public Long getId() {
 		return id;
@@ -107,6 +109,7 @@ public class PurchaseOrder {
 	public ReceivingReceipt createReceivingReceipt() {
 		ReceivingReceipt receivingReceipt = new ReceivingReceipt();
 		receivingReceipt.setSupplier(supplier);
+		receivingReceipt.setOrderDate(orderDate);
 		receivingReceipt.setReceivedDate(new Date());
 		receivingReceipt.setPaymentTerm(paymentTerm);
 		receivingReceipt.setReferenceNumber(referenceNumber);
@@ -146,4 +149,21 @@ public class PurchaseOrder {
 		}
 		return total.setScale(2, RoundingMode.HALF_UP);
 	}
+
+	public Date getOrderDate() {
+		return orderDate;
+	}
+
+	public void setOrderDate(Date orderDate) {
+		this.orderDate = orderDate;
+	}
+
+	public Date getPostDate() {
+		return postDate;
+	}
+
+	public void setPostDate(Date postDate) {
+		this.postDate = postDate;
+	}
+	
 }

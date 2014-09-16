@@ -25,7 +25,8 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PURCHASE_ORDER_NO, SUPPLIER_ID, POST_IND, ORDER_IND,"
-			+ " a.PAYMENT_TERM_ID, REMARKS, REFERENCE_NO, b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME"
+			+ " a.PAYMENT_TERM_ID, REMARKS, REFERENCE_NO, ORDER_DT, POST_DT,"
+			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME"
 			+ " from PURCHASE_ORDER a, SUPPLIER b"
 			+ " where a.SUPPLIER_ID = b.ID";
 	
@@ -79,7 +80,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 	
 	private static final String UPDATE_SQL =
 			"update PURCHASE_ORDER set SUPPLIER_ID = ?, POST_IND = ?, ORDER_IND = ?,"
-			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?"
+			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?, ORDER_DT = ?, POST_DT = ?"
 			+ " where ID = ?";
 	
 	private void update(PurchaseOrder purchaseOrder) {
@@ -90,6 +91,8 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 				purchaseOrder.getPaymentTerm() != null ? purchaseOrder.getPaymentTerm().getId() : null,
 				purchaseOrder.getRemarks(),
 				purchaseOrder.getReferenceNumber(),
+				purchaseOrder.getOrderDate(),
+				purchaseOrder.getPostDate(),
 				purchaseOrder.getId());
 	}
 	
@@ -114,6 +117,8 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 			}
 			purchaseOrder.setRemarks(rs.getString("REMARKS"));
 			purchaseOrder.setReferenceNumber(rs.getString("REFERENCE_NO"));
+			purchaseOrder.setOrderDate(rs.getDate("ORDER_DT"));
+			purchaseOrder.setPostDate(rs.getDate("POST_DT"));
 			return purchaseOrder;
 		}
 	}
