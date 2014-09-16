@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
@@ -58,7 +60,6 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 	private JLabel orderDateField;
 	private JLabel paymentTermField;
 	private JLabel receivedDateField;
-	private MagicTextField remarksField;
 	private JLabel referenceNumberField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
@@ -71,33 +72,23 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		paymentTermField = new JLabel();
 		referenceNumberField = new JLabel();
 		
-		remarksField = new MagicTextField();
-		remarksField.setMaximumLength(100);
-		
-		focusOnComponentWhenThisPanelIsDisplayed(remarksField);
-		
+		focusOnItemsTableWhenThisPanelIsDisplayed();
 		updateTotalAmountFieldWhenItemsTableChanges();
 		initializeUnitPricesAndQuantitiesTable();
 	}
 
-	@Override
-	protected void registerKeyBindings() {
-		remarksField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_REMARKS_ACTION_NAME);
-		remarksField.getActionMap().put(SAVE_REMARKS_ACTION_NAME, new AbstractAction() {
-			
+	private void focusOnItemsTableWhenThisPanelIsDisplayed() {
+		addComponentListener(new ComponentAdapter() {
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveRemarks();
+			public void componentShown(ComponentEvent e) {
+				itemsTable.highlight();
 			}
-		});		
+		});
 	}
 
-	protected void saveRemarks() {
-		if (!remarksField.getText().equals(receivingReceipt.getRemarks())) {
-			receivingReceipt.setRemarks(remarksField.getText());
-			receivingReceiptService.save(receivingReceipt);
-		}
-		itemsTable.highlight();
+	@Override
+	protected void registerKeyBindings() {
 	}
 
 	@Override
@@ -128,7 +119,6 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		orderDateField.setText(FormatterUtil.formatDate(receivingReceipt.getOrderDate()));
 		paymentTermField.setText(receivingReceipt.getPaymentTerm().getName());
 		receivedDateField.setText(FormatterUtil.formatDate(receivingReceipt.getReceivedDate()));
-		remarksField.setText(receivingReceipt.getRemarks());
 		referenceNumberField.setText(receivingReceipt.getReferenceNumber());
 //		totalItemsField.setText(String.valueOf(receivingReceipt.getTotalNumberOfItems()));
 //		totalAmountField.setText(receivingReceipt.getTotalAmount().toString());

@@ -57,16 +57,18 @@ public class ReceivingReceiptItemDaoImpl extends MagicDao implements ReceivingRe
 	
 	private static final String UPDATE_SQL =
 			"update RECEIVING_RECEIPT_ITEM"
-			+ " set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, COST = ?"
+			+ " set DISCOUNT_1 = ?, DISCOUNT_2 = ?, DISCOUNT_3 = ?, FLAT_RATE_DISCOUNT = ?"
 			+ " where ID = ?";
 	
 	private void update(ReceivingReceiptItem item) {
-		getJdbcTemplate().update(UPDATE_SQL, item.getProduct().getId(), item.getUnit(),
-				item.getQuantity(), item.getCost(), item.getId());
+		getJdbcTemplate().update(UPDATE_SQL, item.getDiscount1(), item.getDiscount2(), 
+				item.getDiscount3(), item.getFlatRateDiscount(), item.getId());
 	}
 
 	private static final String FIND_ALL_BY_RECEIVING_RECEIPT_SQL =
-			"select ID, PRODUCT_ID, UNIT, QUANTITY, COST from RECEIVING_RECEIPT_ITEM"
+			"select ID, PRODUCT_ID, UNIT, QUANTITY, COST,"
+			+ " DISCOUNT_1, DISCOUNT_2, DISCOUNT_3, FLAT_RATE_DISCOUNT"
+			+ " from RECEIVING_RECEIPT_ITEM"
 			+ " where RECEIVING_RECEIPT_ID = ?";
 	
 	@Override
@@ -83,6 +85,10 @@ public class ReceivingReceiptItemDaoImpl extends MagicDao implements ReceivingRe
 				item.setUnit(rs.getString("UNIT"));
 				item.setQuantity(rs.getInt("QUANTITY"));
 				item.setCost(rs.getBigDecimal("COST").setScale(2));
+				item.setDiscount1(rs.getBigDecimal("DISCOUNT_1").setScale(2));
+				item.setDiscount2(rs.getBigDecimal("DISCOUNT_2").setScale(2));
+				item.setDiscount3(rs.getBigDecimal("DISCOUNT_3").setScale(2));
+				item.setFlatRateDiscount(rs.getBigDecimal("FLAT_RATE_DISCOUNT").setScale(2));
 				return item;
 			}
 		}, receivingReceipt.getId());

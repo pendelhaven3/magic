@@ -2,34 +2,30 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.Constants;
-import com.pj.magic.gui.component.AbstractKeyListener;
-import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.models.ReceivingReceiptItemsTableModel;
 import com.pj.magic.gui.tables.rowitems.ReceivingReceiptItemRowItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.service.ProductService;
-import com.pj.magic.util.KeyUtil;
+import com.pj.magic.util.NumberUtil;
 
 @Component
 public class ReceivingReceiptItemsTable extends ItemsTable {
@@ -74,60 +70,16 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(60);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(60);
 		
-		MagicTextField productCodeTextField = new MagicTextField();
-		productCodeTextField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
-		productCodeTextField.addKeyListener(new AbstractKeyListener() {
-			
-			@Override
-			public void keyReleased(KeyEvent event) {
-				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
-					JTextField textField = (JTextField)event.getComponent();
-					if (textField.getText().length() == Constants.PRODUCT_CODE_MAXIMUM_LENGTH) {
-						KeyUtil.simulateTabKey();
-					};
-				}
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateTabKey();
-				}
-			}
-		});
-		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(productCodeTextField));
-		
-		MagicTextField unitTextField = new MagicTextField();
-		unitTextField.setMaximumLength(Constants.UNIT_MAXIMUM_LENGTH);
-		unitTextField.addKeyListener(new AbstractKeyListener() {
-			
-			@Override
-			public void keyReleased(KeyEvent event) {
-				if (!KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
-					return;
-				}
-				JTextField textField = (JTextField)event.getComponent();
-				if (textField.getText().length() == Constants.UNIT_MAXIMUM_LENGTH) {
-					KeyUtil.simulateTabKey();
-				}
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateTabKey();
-				}
-			}
-		});
-		TableCellEditor unitCellEditor = new DefaultCellEditor(unitTextField);
-		getColumnModel().getColumn(UNIT_COLUMN_INDEX).setCellEditor(unitCellEditor);
-		
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-//		getColumnModel().getColumn(costColumnIndex).setCellRenderer(rightRenderer);
-//		getColumnModel().getColumn(amountColumnIndex).setCellRenderer(rightRenderer);
+		getColumnModel().getColumn(COST_COLUMN_INDEX).setCellRenderer(rightRenderer);
+		getColumnModel().getColumn(AMOUNT_COLUMN_INDEX).setCellRenderer(rightRenderer);
+		getColumnModel().getColumn(DISCOUNT_1_COLUMN_INDEX).setCellRenderer(rightRenderer);
+		getColumnModel().getColumn(DISCOUNT_2_COLUMN_INDEX).setCellRenderer(rightRenderer);
+		getColumnModel().getColumn(DISCOUNT_3_COLUMN_INDEX).setCellRenderer(rightRenderer);
+		getColumnModel().getColumn(FLAT_RATE_COLUMN_INDEX).setCellRenderer(rightRenderer);
+		getColumnModel().getColumn(DISCOUNTED_AMOUNT_COLUMN_INDEX).setCellRenderer(rightRenderer);
+		getColumnModel().getColumn(NET_AMOUNT_COLUMN_INDEX).setCellRenderer(rightRenderer);
 	}
 	
 	private Action getAction(int keyEvent) {
@@ -151,22 +103,6 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 		return getSelectedRow() + 1 == tableModel.getRowCount();
 	}
 
-	public void switchToEditMode() {
-		clearSelection();
-		if (isEditing()) {
-			getCellEditor().cancelCellEditing();
-		}
-		
-		addMode = false;
-		List<ReceivingReceiptItem> items = receivingReceipt.getItems();
-		items.addAll(tableModel.getItems());
-		tableModel.setItems(items);
-		
-		if (items.size() > 0) {
-			changeSelection(0, 0, false, false);
-		}
-	}
-	
 	public ReceivingReceiptItemRowItem getCurrentlySelectedRowItem() {
 		return tableModel.getRowItem(getSelectedRow());
 	}
@@ -175,12 +111,6 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 		clearSelection();
 		this.receivingReceipt = receivingReceipt;
 		tableModel.setReceivingReceipt(receivingReceipt);
-	}
-	
-	private ReceivingReceiptItem createBlankItem() {
-		ReceivingReceiptItem item = new ReceivingReceiptItem();
-		item.setParent(receivingReceipt);
-		return item;
 	}
 	
 	protected void registerKeyBindings() {
@@ -229,43 +159,12 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 		ReceivingReceiptItemRowItem rowItem = getCurrentlySelectedRowItem();
 		
 		switch (selectedColumn) {
-		case PRODUCT_CODE_COLUMN_INDEX:
-			String code = (String)getValueAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-			if (StringUtils.isEmpty(code)) {
-				showErrorMessage("Product code must be specified");
-				editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-				getEditorComponent().requestFocusInWindow();
-			} else if (productService.findProductByCode(code) == null) {
-				showErrorMessage("No product matchng code specified");
-				editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-				getEditorComponent().requestFocusInWindow();
-			} else {
-				changeSelection(selectedRow, UNIT_COLUMN_INDEX, false, false);
-				editCellAt(selectedRow, UNIT_COLUMN_INDEX);
-				getEditorComponent().requestFocusInWindow();
-			}
-			break;
-		case ReceivingReceiptItemsTable.UNIT_COLUMN_INDEX:
-			String fromUnit = (String)getValueAt(selectedRow, UNIT_COLUMN_INDEX);
-			if (StringUtils.isEmpty(fromUnit)) {
-				showErrorMessage("Unit must be specified");
-				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-			} else {
-				int nextField = QUANTITY_COLUMN_INDEX;
-				changeSelection(selectedRow, nextField, false, false);
-				editCellAtCurrentRow(nextField);
-			}
-			break;
+		
 		}
 	}
 
 	public int getTotalNumberOfItems() {
-//		int totalNumberOfItems = receivingReceipt.getTotalNumberOfItems();
-//		if (isAdding()) {
-//			totalNumberOfItems += tableModel.getItems().size();
-//		}
-//		return totalNumberOfItems;
-		return 0;
+		return receivingReceipt.getTotalNumberOfItems();
 	}
 
 	public void highlightQuantityColumn(ReceivingReceiptItem item) {
@@ -276,21 +175,12 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 	}
 	
 	public void highlight() {
-//		if (!receivingReceipt.hasItems()) {
-//			switchToAddMode();
-//		} else {
-//			if (receivingReceipt.isOrdered()) {
-//				changeSelection(0, actualQuantityColumnIndex, false, false);
-//				editCellAtCurrentRow(actualQuantityColumnIndex);
-//			} else {
-//				changeSelection(0, 0, false, false);
-//				requestFocusInWindow();
-//			}
-//		}
+		changeSelection(0, DISCOUNT_1_COLUMN_INDEX, false, false);
+		editCellAt(0, DISCOUNT_1_COLUMN_INDEX);
+		getEditorComponent().requestFocusInWindow();
 	}
 	
 	private void initializeRowItemValidationBehavior() {
-		/*
 		getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
@@ -298,34 +188,59 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 				final int row = getSelectedRow();
 				final int column = e.getColumn();
 				
-				if (column == QUANTITY_COLUMN_INDEX) {
+				if (column == DISCOUNT_1_COLUMN_INDEX) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						@Override
 						public void run() {
-//							if (validateQuantity(getCurrentlySelectedRowItem())) {
-//								tableModel.setValueAt("", row, amountColumnIndex);
-//								changeSelection(row, costColumnIndex, false, false);
-//								editCellAt(row, costColumnIndex);
-//								getEditorComponent().requestFocusInWindow();
-//							}
+							if (validateDiscount1(getCurrentlySelectedRowItem())) {
+								tableModel.setValueAt("", row, DISCOUNTED_AMOUNT_COLUMN_INDEX);
+								tableModel.setValueAt("", row, NET_AMOUNT_COLUMN_INDEX);
+								changeSelection(row, DISCOUNT_2_COLUMN_INDEX, false, false);
+								editCellAt(row, DISCOUNT_2_COLUMN_INDEX);
+								getEditorComponent().requestFocusInWindow();
+							}
 						}
 					});
-				} else if (column == costColumnIndex) {
+				} else if (column == DISCOUNT_2_COLUMN_INDEX) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						@Override
 						public void run() {
-							if (validateCost(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, amountColumnIndex);
-								if (isAdding() && isLastRowSelected()) {
-//									addNewRow();
-								} else {
-									if (!isLastRowSelected()) {
-										int nextColumn = PRODUCT_CODE_COLUMN_INDEX;
-										changeSelection(row + 1, nextColumn, false, false);
-										editCellAtCurrentRow(nextColumn);
-									}
+							if (validateDiscount2(getCurrentlySelectedRowItem())) {
+								tableModel.setValueAt("", row, DISCOUNTED_AMOUNT_COLUMN_INDEX);
+								tableModel.setValueAt("", row, NET_AMOUNT_COLUMN_INDEX);
+								changeSelection(row, DISCOUNT_3_COLUMN_INDEX, false, false);
+								editCellAt(row, DISCOUNT_3_COLUMN_INDEX);
+								getEditorComponent().requestFocusInWindow();
+							}
+						}
+					});
+				} else if (column == DISCOUNT_3_COLUMN_INDEX) {
+					SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+							if (validateDiscount3(getCurrentlySelectedRowItem())) {
+								tableModel.setValueAt("", row, DISCOUNTED_AMOUNT_COLUMN_INDEX);
+								tableModel.setValueAt("", row, NET_AMOUNT_COLUMN_INDEX);
+								changeSelection(row, FLAT_RATE_COLUMN_INDEX, false, false);
+								editCellAt(row, FLAT_RATE_COLUMN_INDEX);
+								getEditorComponent().requestFocusInWindow();
+							}
+						}
+					});
+				} else if (column == FLAT_RATE_COLUMN_INDEX) {
+					SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+							if (validateFlatRate(getCurrentlySelectedRowItem())) {
+								tableModel.setValueAt("", row, DISCOUNTED_AMOUNT_COLUMN_INDEX);
+								tableModel.setValueAt("", row, NET_AMOUNT_COLUMN_INDEX);
+								if (!isLastRowSelected()) {
+									changeSelection(row + 1, DISCOUNT_1_COLUMN_INDEX, false, false);
+									editCellAtCurrentRow(DISCOUNT_1_COLUMN_INDEX);
 								}
 							}
 						}
@@ -333,28 +248,63 @@ public class ReceivingReceiptItemsTable extends ItemsTable {
 				}
 			}
 		});
-		*/
 	}
 	
-	private boolean validateCost(ReceivingReceiptItemRowItem rowItem) {
-		/*
+	private boolean validateDiscount1(ReceivingReceiptItemRowItem rowItem) {
 		boolean valid = false;
-		if (StringUtils.isEmpty(rowItem.getCost())) {
-			showErrorMessage("Cost must be specified");
-		} else if (!NumberUtil.isAmount(rowItem.getCost())){
-			showErrorMessage("Cost must be a valid amount");
-		} else if (rowItem.getCostAsBigDecimal().equals(BigDecimal.ZERO.setScale(2))){
-			showErrorMessage("Cost must not be 0");
+		if (!StringUtils.isEmpty(rowItem.getDiscount1()) && !NumberUtil.isAmount(rowItem.getDiscount1())) {
+			showErrorMessage("Discount 1 must be a valid amount");
 		} else {
 			valid = true;
 		}
 		
 		if (!valid) {
-			editCellAtCurrentRow(costColumnIndex);
+			editCellAtCurrentRow(DISCOUNT_1_COLUMN_INDEX);
 		}
 		return valid;
-		*/
-		return false;
+	}
+	
+	private boolean validateDiscount2(ReceivingReceiptItemRowItem rowItem) {
+		boolean valid = false;
+		if (!StringUtils.isEmpty(rowItem.getDiscount2()) && !NumberUtil.isAmount(rowItem.getDiscount2())) {
+			showErrorMessage("Discount 2 must be a valid amount");
+		} else {
+			valid = true;
+		}
+		
+		if (!valid) {
+			editCellAtCurrentRow(DISCOUNT_2_COLUMN_INDEX);
+		}
+		return valid;
+	}
+	
+	private boolean validateDiscount3(ReceivingReceiptItemRowItem rowItem) {
+		boolean valid = false;
+		if (!StringUtils.isEmpty(rowItem.getDiscount3()) && !NumberUtil.isAmount(rowItem.getDiscount3())) {
+			showErrorMessage("Discount 3 must be a valid amount");
+		} else {
+			valid = true;
+		}
+		
+		if (!valid) {
+			editCellAtCurrentRow(DISCOUNT_3_COLUMN_INDEX);
+		}
+		return valid;
+	}
+	
+	private boolean validateFlatRate(ReceivingReceiptItemRowItem rowItem) {
+		boolean valid = false;
+		if (!StringUtils.isEmpty(rowItem.getFlatRateDiscount()) 
+				&& !NumberUtil.isAmount(rowItem.getFlatRateDiscount())) {
+			showErrorMessage("Flat Rate Discount must be a valid amount");
+		} else {
+			valid = true;
+		}
+		
+		if (!valid) {
+			editCellAtCurrentRow(FLAT_RATE_COLUMN_INDEX);
+		}
+		return valid;
 	}
 	
 }

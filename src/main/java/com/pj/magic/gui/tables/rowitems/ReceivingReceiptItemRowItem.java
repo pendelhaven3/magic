@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.StringUtils;
 
 import com.pj.magic.model.ReceivingReceiptItem;
+import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.NumberUtil;
 
 /*
@@ -17,10 +18,14 @@ public class ReceivingReceiptItemRowItem {
 	private String discount1;
 	private String discount2;
 	private String discount3;
-	private String flatRate;
+	private String flatRateDiscount;
 
 	public ReceivingReceiptItemRowItem(ReceivingReceiptItem item) {
 		this.item = item;
+		discount1 = item.getDiscount1().toString();
+		discount2 = item.getDiscount2().toString();
+		discount3 = item.getDiscount3().toString();
+		flatRateDiscount = FormatterUtil.formatAmount(item.getFlatRateDiscount());
 	}
 	
 	public ReceivingReceiptItem getItem() {
@@ -35,7 +40,7 @@ public class ReceivingReceiptItemRowItem {
 		return (NumberUtil.isAmount(discount1) || StringUtils.isEmpty(discount1))
 				&& (NumberUtil.isAmount(discount2) || StringUtils.isEmpty(discount2))
 				&& (NumberUtil.isAmount(discount3) || StringUtils.isEmpty(discount3))
-				&& (NumberUtil.isAmount(flatRate) || StringUtils.isEmpty(flatRate));
+				&& (NumberUtil.isAmount(flatRateDiscount) || StringUtils.isEmpty(flatRateDiscount));
 	}
 
 	public String getDiscount1() {
@@ -43,6 +48,9 @@ public class ReceivingReceiptItemRowItem {
 	}
 	
 	public BigDecimal getDiscount1AsBigDecimal() {
+		if (StringUtils.isEmpty(discount1)) {
+			discount1 = BigDecimal.ZERO.setScale(2).toString();
+		}
 		return new BigDecimal(discount1).setScale(2);
 	}
 
@@ -66,27 +74,33 @@ public class ReceivingReceiptItemRowItem {
 		this.discount3 = discount3;
 	}
 
-	public String getFlatRate() {
-		return flatRate;
+	public String getFlatRateDiscount() {
+		return flatRateDiscount;
 	}
 
-	public void setFlatRate(String flatRate) {
-		this.flatRate = flatRate;
+	public void setFlatRateDiscount(String flatRateDiscount) {
+		this.flatRateDiscount = flatRateDiscount;
 	}
 
 	public BigDecimal getDiscount2AsBigDecimal() {
-		// TODO Auto-generated method stub
-		return null;
+		if (StringUtils.isEmpty(discount2)) {
+			discount2 = BigDecimal.ZERO.setScale(2).toString();
+		}
+		return new BigDecimal(discount2).setScale(2);
 	}
 
 	public BigDecimal getDiscount3AsBigDecimal() {
-		// TODO Auto-generated method stub
-		return null;
+		if (StringUtils.isEmpty(discount3)) {
+			discount3 = BigDecimal.ZERO.setScale(2).toString();
+		}
+		return new BigDecimal(discount3).setScale(2);
 	}
 
-	public BigDecimal getFlatRateAsBigDecimal() {
-		// TODO Auto-generated method stub
-		return null;
+	public BigDecimal getFlatRateDiscountAsBigDecimal() {
+		if (StringUtils.isEmpty(flatRateDiscount)) {
+			flatRateDiscount = BigDecimal.ZERO.setScale(2).toString();
+		}
+		return new BigDecimal(flatRateDiscount).setScale(2);
 	}
 
 }

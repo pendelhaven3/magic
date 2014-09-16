@@ -2,6 +2,8 @@ package com.pj.magic.model;
 
 import java.math.BigDecimal;
 
+import com.pj.magic.util.Percentage;
+
 public class ReceivingReceiptItem {
 
 	private Long id;
@@ -10,10 +12,10 @@ public class ReceivingReceiptItem {
 	private String unit;
 	private Integer quantity;
 	private BigDecimal cost;
-	private BigDecimal discount1;
-	private BigDecimal discount2;
-	private BigDecimal discount3;
-	private BigDecimal flatRate;
+	private BigDecimal discount1 = BigDecimal.ZERO;
+	private BigDecimal discount2 = BigDecimal.ZERO; 
+	private BigDecimal discount3 = BigDecimal.ZERO;
+	private BigDecimal flatRateDiscount = BigDecimal.ZERO;
 
 	public Long getId() {
 		return id;
@@ -91,20 +93,33 @@ public class ReceivingReceiptItem {
 		this.discount3 = discount3;
 	}
 
-	public BigDecimal getFlatRate() {
-		return flatRate;
+	public BigDecimal getFlatRateDiscount() {
+		return flatRateDiscount;
 	}
 
-	public void setFlatRate(BigDecimal flatRate) {
-		this.flatRate = flatRate;
+	public void setFlatRateDiscount(BigDecimal flatRateDiscount) {
+		this.flatRateDiscount = flatRateDiscount;
 	}
 	
 	public BigDecimal getDiscountedAmount() {
-		return null;
+		return getAmount().subtract(getNetAmount());
 	}
 	
 	public BigDecimal getNetAmount() {
-		return null;
+		BigDecimal netAmount = getAmount();
+		if (discount1 != null && !BigDecimal.ZERO.equals(discount1)) {
+			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount1).toDecimal()));
+		}
+		if (discount2 != null && !BigDecimal.ZERO.equals(discount2)) {
+			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount2).toDecimal()));
+		}
+		if (discount3 != null && !BigDecimal.ZERO.equals(discount3)) {
+			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount3).toDecimal()));
+		}
+		if (flatRateDiscount != null) {
+			netAmount = netAmount.subtract(flatRateDiscount);
+		}
+		return netAmount;
 	}
 
 }

@@ -109,5 +109,9 @@ public class ReceivingReceipt {
 	public String getStatus() {
 		return posted ? "Posted" : "New";
 	}
+
+	public int getTotalNumberOfItems() {
+		return items.size();
+	}
 	
 }

@@ -236,6 +236,10 @@ create table RECEIVING_RECEIPT_ITEM (
   UNIT varchar2(3) not null,
   QUANTITY integer(4) not null,
   COST number(10, 2) not null,
+  DISCOUNT_1 number(4, 2) default 0 not null,
+  DISCOUNT_2 number(4, 2) default 0 not null,
+  DISCOUNT_3 number(4, 2) default 0 not null,
+  FLAT_RATE_DISCOUNT number(8, 2) default 0 not null,
   constraint RECEIVING_RECEIPT_ITEM$PK primary key (ID),
   constraint RECEIVING_RECEIPT_ITEM$FK foreign key (RECEIVING_RECEIPT_ID) references RECEIVING_RECEIPT (ID),
   constraint RECEIVING_RECEIPT_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)

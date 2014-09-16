@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ReceivingReceiptDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
-import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.service.ReceivingReceiptService;
