@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.User;
 import com.pj.magic.service.AdjustmentOutService;
 
 @Service
@@ -76,6 +78,8 @@ public class AdjustmentOutServiceImpl implements AdjustmentOutService {
 			}
 		}
 		updated.setPosted(true);
+		updated.setPostDate(new Date());
+		updated.setPostedBy(new User(1)); // TODO: Change to use actual value
 		adjustmentOutDao.save(updated);
 	}
 

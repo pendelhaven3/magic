@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentInItem;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.User;
 import com.pj.magic.service.AdjustmentInService;
 
 @Service
@@ -71,6 +73,8 @@ public class AdjustmentInServiceImpl implements AdjustmentInService {
 			productDao.updateAvailableQuantities(product);
 		}
 		updated.setPosted(true);
+		updated.setPostDate(new Date());
+		updated.setPostedBy(new User(1)); // TODO: Change to use actual value
 		adjustmentInDao.save(updated);
 	}
 

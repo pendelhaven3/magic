@@ -493,18 +493,19 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 			itemsTable.switchToEditMode();
 		}
 		
-		int confirm = showConfirmMessage("Do you want to post this adjustment in?");
+		int confirm = showConfirmMessage("Do you want to post this Adjustment In?");
 		if (confirm == JOptionPane.OK_OPTION) {
 			if (!adjustmentIn.hasItems()) {
-				showErrorMessage("Cannot post a adjustment in with no items");
+				showErrorMessage("Cannot post a Adjustment In with no items");
 				itemsTable.requestFocusInWindow();
 				return;
 			}
 			try {
 				adjustmentInService.post(adjustmentIn);
 				JOptionPane.showMessageDialog(this, "Post successful!");
-//				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
+				updateDisplay(adjustmentIn);
 			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}

@@ -494,23 +494,24 @@ public class AdjustmentOutPanel extends AbstractMagicPanel {
 			itemsTable.switchToEditMode();
 		}
 		
-		int confirm = showConfirmMessage("Do you want to post this sales requisition?");
+		int confirm = showConfirmMessage("Do you want to post this Adjustment Out?");
 		if (confirm == JOptionPane.OK_OPTION) {
 			if (!adjustmentOut.hasItems()) {
-				showErrorMessage("Cannot post a sales requisition with no items");
+				showErrorMessage("Cannot post a Adjustment Out with no items");
 				itemsTable.requestFocusInWindow();
 				return;
 			}
 			try {
 				adjustmentOutService.post(adjustmentOut);
 				JOptionPane.showMessageDialog(this, "Post successful!");
-//				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
-			} catch (NotEnoughStocksException e ) {	
+				updateDisplay(adjustmentOut);
+			} catch (NotEnoughStocksException e) {	
 				showErrorMessage("Not enough available stocks!");
 				updateDisplay(adjustmentOut);
 				itemsTable.highlightColumn(e.getAdjustmentOutItem(), 
 						AdjustmentOutItemsTable.QUANTITY_COLUMN_INDEX);
 			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}
