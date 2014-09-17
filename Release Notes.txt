@@ -21,3 +21,13 @@ version 0.5
 version 0.6
 1. Added editing of prices (only 1 pricing scheme so far)
 2. Added stock quantity conversion
+
+version 0.7
+1. Added Purchase Order
+2. Added Pricing Scheme, Mode, Remarks properties to Sales Requisition
+3. Added no selling price validation to Sales Requisition
+
+version 0.8
+1. Added Receiving Receipt
+2. Added Adjustment In
+3. Added Adjustment Out
