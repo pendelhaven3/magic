@@ -118,5 +118,9 @@ public class AdjustmentOut {
 	public void setPostedBy(User postedBy) {
 		this.postedBy = postedBy;
 	}
+
+	public String getStatus() {
+		return posted ? "Posted" : "New";
+	}
 	
 }

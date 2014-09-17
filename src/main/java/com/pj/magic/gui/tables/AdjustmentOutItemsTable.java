@@ -247,6 +247,7 @@ public class AdjustmentOutItemsTable extends ItemsTable {
 		addMode = false;
 		this.adjustmentOut = adjustmentOut;
 		tableModel.setItems(adjustmentOut.getItems());
+		tableModel.setEditable(!adjustmentOut.isPosted());
 	}
 	
 	private AdjustmentOutItem createBlankItem() {
@@ -503,7 +504,25 @@ public class AdjustmentOutItemsTable extends ItemsTable {
 			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
 			return false;
 		} else {
-			return true;
+			Product product = productService.getProduct(rowItem.getProduct().getId());
+			if (!product.hasAvailableUnitQuantity(rowItem.getUnit(), rowItem.getQuantityAsInt())) {
+				showErrorMessage("Not enough stocks");
+				editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+
+	// TODO: Rename method
+	public void delete() {
+		if (tableModel.hasItems()) {
+			if (tableModel.isValid(getSelectedRow())) { // check valid row to prevent deleting the blank row
+				if (confirm("Do you wish to delete the selected item?")) {
+					removeCurrentlySelectedRow();
+				}
+			}
 		}
 	}
 	

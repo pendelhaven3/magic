@@ -247,6 +247,7 @@ public class AdjustmentInItemsTable extends ItemsTable {
 		addMode = false;
 		this.adjustmentIn = adjustmentIn;
 		tableModel.setItems(adjustmentIn.getItems());
+		tableModel.setEditable(!adjustmentIn.isPosted());
 	}
 	
 	private AdjustmentInItem createBlankItem() {
@@ -504,6 +505,17 @@ public class AdjustmentInItemsTable extends ItemsTable {
 			return false;
 		} else {
 			return true;
+		}
+	}
+
+	// TODO: Rename method
+	public void delete() {
+		if (tableModel.hasItems()) {
+			if (tableModel.isValid(getSelectedRow())) { // check valid row to prevent deleting the blank row
+				if (confirm("Do you wish to delete the selected item?")) {
+					removeCurrentlySelectedRow();
+				}
+			}
 		}
 	}
 	

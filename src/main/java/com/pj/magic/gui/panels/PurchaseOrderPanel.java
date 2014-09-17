@@ -299,8 +299,6 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		remarksField.setText(purchaseOrder.getRemarks());
 		referenceNumberField.setEnabled(purchaseOrder.isOrdered());
 		referenceNumberField.setText(purchaseOrder.getReferenceNumber());
-//		totalItemsField.setText(String.valueOf(purchaseOrder.getTotalNumberOfItems()));
-//		totalAmountField.setText(purchaseOrder.getTotalAmount().toString());
 		itemsTable.setPurchaseOrder(purchaseOrder);
 		
 		orderButton.setEnabled(!purchaseOrder.isOrdered());

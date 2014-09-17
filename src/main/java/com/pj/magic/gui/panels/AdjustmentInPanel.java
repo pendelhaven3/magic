@@ -1,5 +1,6 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -15,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
@@ -56,10 +58,16 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 	
 	private AdjustmentIn adjustmentIn;
 	private JLabel adjustmentInNumberField;
+	private JLabel statusField;
 	private MagicTextField remarksField;
+	private JLabel postDateField;
+	private JLabel postedByField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
+	private JButton postButton;
+	private JButton addItemButton;
+	private JButton deleteItemButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -136,18 +144,41 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		adjustmentIn = this.adjustmentIn;
 		
 		adjustmentInNumberField.setText(adjustmentIn.getAdjustmentInNumber().toString());
+		statusField.setText(adjustmentIn.getStatus());
+		if (adjustmentIn.getPostDate() != null) {
+			postDateField.setText(FormatterUtil.formatDate(adjustmentIn.getPostDate()));
+		} else {
+			postDateField.setText(null);
+		}
+		if (adjustmentIn.getPostedBy() != null) {
+			postedByField.setText(adjustmentIn.getPostedBy().getUsername());
+		} else {
+			postedByField.setText(null);
+		}
+		remarksField.setEnabled(!adjustmentIn.isPosted());
 		remarksField.setText(adjustmentIn.getRemarks());
 		totalItemsField.setText(String.valueOf(adjustmentIn.getTotalNumberOfItems()));
 		totalAmountField.setText(adjustmentIn.getTotalAmount().toString());
+		postButton.setEnabled(!adjustmentIn.isPosted());
+		addItemButton.setEnabled(!adjustmentIn.isPosted());
+		deleteItemButton.setEnabled(!adjustmentIn.isPosted());
+		
 		itemsTable.setAdjustmentIn(adjustmentIn);
 	}
 
 	private void clearDisplay() {
 		adjustmentInNumberField.setText(null);
+		statusField.setText(null);
+		postDateField.setText(null);
+		postedByField.setText(null);
+		remarksField.setEnabled(true);
 		remarksField.setText(null);
 		totalItemsField.setText(null);
 		totalAmountField.setText(null);
 		itemsTable.setAdjustmentIn(adjustmentIn);
+		postButton.setEnabled(false);
+		addItemButton.setEnabled(false);
+		deleteItemButton.setEnabled(false);
 	}
 
 	@Override
@@ -180,7 +211,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Adj. Out No.:"), c);
+		add(ComponentUtil.createLabel(100, "Adj. In No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -200,14 +231,15 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(1, 1), c);
+		add(ComponentUtil.createLabel(100, "Status:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(1, 1), c);
+		statusField = ComponentUtil.createLabel(100, "");
+		add(statusField, c);
 		
 		currentRow++;
 		
@@ -225,6 +257,36 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		remarksField.setPreferredSize(new Dimension(200, 20));
 		add(remarksField, c);
 
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(100, "Post Date:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postDateField = ComponentUtil.createLabel(100, "");
+		add(postDateField, c);
+		
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(100, "Posted By:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postedByField = ComponentUtil.createLabel(100, "");
+		add(postedByField, c);
+		
 		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
@@ -234,6 +296,17 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createFiller(50, 10), c);
 		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 6;
+		c.anchor = GridBagConstraints.WEST;
+		add(createItemsTableToolBar(), c);
+
 		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
@@ -295,6 +368,32 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		add(totalAmountField, c);
 	}
 	
+	private JPanel createItemsTableToolBar() {
+		JPanel panel = new JPanel();
+		
+		addItemButton = new MagicToolBarButton("plus_small", "Add Item", true);
+		addItemButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.switchToAddMode();
+			}
+		});
+		panel.add(addItemButton, BorderLayout.WEST);
+		
+		deleteItemButton = new MagicToolBarButton("minus_small", "Delete Item", true);
+		deleteItemButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.delete();
+			}
+		});
+		panel.add(deleteItemButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+
 	private void initializeUnitPricesAndQuantitiesTable() {
 		itemsTable.getModel().addTableModelListener(new TableModelListener() {
 			
@@ -335,7 +434,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		JToolBar toolBar = new MagicToolBar();
 		addBackButton(toolBar);
 		
-		JButton postButton = new MagicToolBarButton("post", "Post");
+		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
 			
 			@Override

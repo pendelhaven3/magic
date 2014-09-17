@@ -25,6 +25,7 @@ public class AdjustmentInItemsTableModel extends AbstractTableModel {
 	@Autowired private AdjustmentInService adjustmentInService;
 	
 	private List<AdjustmentInItemRowItem> rowItems = new ArrayList<>();
+	private boolean editable;
 	
 	@Override
 	public int getColumnCount() {
@@ -116,9 +117,13 @@ public class AdjustmentInItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == AdjustmentInItemsTable.PRODUCT_CODE_COLUMN_INDEX
-				|| columnIndex == AdjustmentInItemsTable.QUANTITY_COLUMN_INDEX
-				|| columnIndex == AdjustmentInItemsTable.UNIT_COLUMN_INDEX;
+		if (!editable) {
+			return false;
+		} else {
+			return columnIndex == AdjustmentInItemsTable.PRODUCT_CODE_COLUMN_INDEX
+					|| columnIndex == AdjustmentInItemsTable.QUANTITY_COLUMN_INDEX
+					|| columnIndex == AdjustmentInItemsTable.UNIT_COLUMN_INDEX;
+		}
 	}
 	
 	public AdjustmentInItemRowItem getRowItem(int rowIndex) {
@@ -147,6 +152,14 @@ public class AdjustmentInItemsTableModel extends AbstractTableModel {
 			}
 		}
 		return false;
+	}
+
+	public boolean isValid(int rowIndex) {
+		return rowItems.get(rowIndex).isValid();
+	}
+	
+	public void setEditable(boolean editable) {
+		this.editable = editable;
 	}
 	
 }

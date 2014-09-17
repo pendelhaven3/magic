@@ -118,5 +118,9 @@ public class AdjustmentIn {
 	public void setItems(List<AdjustmentInItem> items) {
 		this.items = items;
 	}
+
+	public String getStatus() {
+		return posted ? "Posted" : "New";
+	}
 	
 }
