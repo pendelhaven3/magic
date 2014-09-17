@@ -1,11 +1,17 @@
 package com.pj.magic.gui.component;
 
+import java.awt.event.KeyEvent;
+
+import javax.swing.Action;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.pj.magic.Constants;
 
 public class MagicTextField extends JTextField {
 
@@ -41,6 +47,12 @@ public class MagicTextField extends JTextField {
 
 	public void setNumbersOnly(boolean numbersOnly) {
 		this.numbersOnly = numbersOnly;
+	}
+	
+	// TODO: Migrate references here
+	public void onEnterKey(Action action) {
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), Constants.ENTER_KEY_ACTION_NAME);
+		getActionMap().put(Constants.ENTER_KEY_ACTION_NAME, action);
 	}
 	
 }

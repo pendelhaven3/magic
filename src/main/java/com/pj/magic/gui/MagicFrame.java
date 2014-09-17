@@ -15,6 +15,7 @@ import com.pj.magic.gui.panels.AdjustmentInPanel;
 import com.pj.magic.gui.panels.AdjustmentOutListPanel;
 import com.pj.magic.gui.panels.AdjustmentOutPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
+import com.pj.magic.gui.panels.LoginPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
 import com.pj.magic.gui.panels.MaintainCustomerPanel;
 import com.pj.magic.gui.panels.MaintainManufacturerPanel;
@@ -65,6 +66,7 @@ import com.pj.magic.model.Supplier;
 @Component
 public class MagicFrame extends JFrame {
 	
+	private static final String LOGIN_PANEL = "LOGIN_PANEL";
 	private static final String MAIN_MENU_PANEL = "MAIN_MENU_PANEL";
 	private static final String SALES_REQUISITIONS_LIST_PANEL = "SALES_REQUISITIONS_LIST_PANEL";
 	private static final String SALES_REQUISITION_PANEL = "SALES_REQUISITION_PANEL";
@@ -95,6 +97,7 @@ public class MagicFrame extends JFrame {
 	private static final String ADJUSTMENT_IN_LIST_PANEL = "ADJUSTMENT_IN_LIST_PANEL";
 	private static final String ADJUSTMENT_IN_PANEL = "ADJUSTMENT_IN_PANEL";
 	
+	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
 	@Autowired private SalesRequisitionListPanel salesRequisitionsListPanel;
 	@Autowired private SalesRequisitionPanel salesRequisitionPanel;
@@ -137,6 +140,7 @@ public class MagicFrame extends JFrame {
 	@PostConstruct
 	private void addContents() {
 		panelHolder = new JPanel(new CardLayout());
+		panelHolder.add(loginPanel, LOGIN_PANEL);
 		panelHolder.add(mainMenuPanel, MAIN_MENU_PANEL);
 		panelHolder.add(salesRequisitionsListPanel, SALES_REQUISITIONS_LIST_PANEL);
 		panelHolder.add(salesRequisitionPanel, SALES_REQUISITION_PANEL);
@@ -168,7 +172,12 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(adjustmentInPanel, ADJUSTMENT_IN_PANEL);
         getContentPane().add(panelHolder);
 
-        switchToMainMenuPanel();
+        switchToLoginPanel();
+	}
+	
+	public void switchToLoginPanel() {
+		addPanelNameToTitle("Login");
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, LOGIN_PANEL);
 	}
 	
 	public void switchToMainMenuPanel() {
