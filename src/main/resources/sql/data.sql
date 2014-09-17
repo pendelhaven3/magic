@@ -1,4 +1,6 @@
-insert into USER (ID, USERNAME) values (1, 'PJ');
+insert into USER (ID, USERNAME, PASSWORD) values (1, 'PJ', 'n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=');
+insert into USER (ID, USERNAME, PASSWORD) values (2, 'IRENE', 'n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=');
+insert into USER (ID, USERNAME, PASSWORD) values (3, 'JOY', 'n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=');
 
 insert into MANUFACTURER (NAME) values ('PEDIAHEALTH CORPORATION');
 insert into MANUFACTURER (NAME) values ('PHARMA EAST MEDICAL CORP.');

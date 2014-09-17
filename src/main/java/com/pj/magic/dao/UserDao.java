@@ -8,4 +8,6 @@ public interface UserDao {
 	
 	User get(long id);
 	
+	User findByUsername(String username);
+	
 }

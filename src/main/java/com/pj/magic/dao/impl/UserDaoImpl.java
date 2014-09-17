@@ -19,7 +19,7 @@ import com.pj.magic.model.User;
 @Repository
 public class UserDaoImpl extends MagicDao implements UserDao {
 
-	private static final String BASE_SELECT_SQL = "select ID, USERNAME from USER";
+	private static final String BASE_SELECT_SQL = "select ID, USERNAME, PASSWORD from USER";
 	
 	private UserRowMapper userRowMapper = new UserRowMapper();
 	
@@ -72,9 +72,21 @@ public class UserDaoImpl extends MagicDao implements UserDao {
 			User user = new User();
 			user.setId(rs.getLong("ID"));
 			user.setUsername(rs.getString("USERNAME"));
+			user.setPassword(rs.getString("PASSWORD"));
 			return user;
 		}
+	}
 
+	private static final String FIND_BY_USERNAME_SQL = BASE_SELECT_SQL + " where USERNAME = ?";
+	
+	
+	@Override
+	public User findByUsername(String username) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_USERNAME_SQL, userRowMapper, username);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
 	}
 
 }

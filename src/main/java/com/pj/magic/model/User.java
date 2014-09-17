@@ -4,6 +4,7 @@ public class User {
 
 	private Long id;
 	private String username;
+	private String password;
 
 	public User() {
 		// default constructor
@@ -27,6 +28,14 @@ public class User {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

@@ -113,6 +113,7 @@ create table SALES_INVOICE_ITEM (
 create table USER (
   ID integer auto_increment,
   USERNAME varchar2(15) not null,
+  PASSWORD varchar2(100) not null,
   constraint USER$PK primary key (ID),
   constraint USER$UK unique (USERNAME)
 );

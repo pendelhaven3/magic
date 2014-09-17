@@ -12,16 +12,21 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.exception.InvalidUsernamePasswordException;
 import com.pj.magic.gui.component.MagicPasswordField;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class LoginPanel extends AbstractMagicPanel {
 
+	@Autowired private LoginService loginService;
+	
 	private MagicTextField usernameField;
 	private MagicPasswordField passwordField;
 	private JButton loginButton;
@@ -46,7 +51,16 @@ public class LoginPanel extends AbstractMagicPanel {
 	}
 
 	protected void login() {
-		getMagicFrame().switchToMainMenuPanel();
+		String username = usernameField.getText();
+		String password = new String(passwordField.getPassword());
+		
+		try {
+			loginService.login(username, password);
+			getMagicFrame().switchToMainMenuPanel();
+		} catch (InvalidUsernamePasswordException e) {
+			showErrorMessage("Invalid username/password");
+			usernameField.requestFocusInWindow();
+		}
 	}
 
 	@Override
