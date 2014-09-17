@@ -1,6 +1,7 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import com.pj.magic.util.Percentage;
 
@@ -122,4 +123,8 @@ public class ReceivingReceiptItem {
 		return netAmount;
 	}
 
+	public BigDecimal getFinalCost() {
+		return getNetAmount().divide(new BigDecimal(quantity), 2, RoundingMode.HALF_UP);
+	}
+	
 }

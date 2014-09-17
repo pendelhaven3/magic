@@ -25,5 +25,7 @@ public interface ProductDao {
 	List<Product> findAllWithPricingScheme(PricingScheme pricingScheme);
 	
 	List<Product> findAllActiveBySupplier(Supplier supplier);
+
+	void updateCosts(Product product);
 	
 }

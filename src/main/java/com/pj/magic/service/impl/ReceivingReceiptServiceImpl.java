@@ -9,17 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ReceivingReceiptDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.service.ReceivingReceiptService;
-import com.pj.magic.service.SalesInvoiceService;
 
 @Service
 public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 
 	@Autowired private ReceivingReceiptDao receivingReceiptDao;
 	@Autowired private ReceivingReceiptItemDao receivingReceiptItemDao;
-	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private ProductDao productDao;
 	
 	@Transactional
@@ -69,6 +68,24 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 			loadReceivingReceiptDetails(purchaseOrder);
 		}
 		return receivingReceipts;
+	}
+
+	@Transactional
+	@Override
+	public void post(ReceivingReceipt receivingReceipt) {
+		ReceivingReceipt updated = getReceivingReceipt(receivingReceipt.getId());
+		for (ReceivingReceiptItem item : updated.getItems()) {
+			Product product = productDao.get(item.getProduct().getId());
+			product.setGrossCost(item.getUnit(), item.getCost());
+			product.setFinalCost(item.getUnit(), item.getFinalCost());
+			productDao.updateCosts(product);
+			
+			product.addUnitQuantity(item.getUnit(), item.getQuantity());
+			productDao.updateAvailableQuantities(product);
+		}
+		
+		updated.setPosted(true);
+		receivingReceiptDao.save(updated);
 	}
 
 }

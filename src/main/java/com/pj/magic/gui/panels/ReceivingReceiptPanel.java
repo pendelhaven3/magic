@@ -21,6 +21,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +42,8 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class ReceivingReceiptPanel extends AbstractMagicPanel {
 
+	private static final Logger logger = LoggerFactory.getLogger(ReceivingReceiptPanel.class);
+	
 	@Autowired private ReceivingReceiptItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
@@ -538,32 +542,21 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 	}
 
 	private void postReceivingReceipt() {
-		/*
-		if (itemsTable.isAdding()) {
-			itemsTable.switchToEditMode();
+		if (itemsTable.isEditing()) {
+			itemsTable.getCellEditor().cancelCellEditing();
 		}
 		
-		if (confirm("Do you want to post this Purchase Order?")) {
+		if (confirm("Do you want to post this Receiving Receipt?")) {
 			try {
-				ReceivingReceipt receivingReceipt = receivingReceiptService.post(receivingReceipt);
+				receivingReceiptService.post(receivingReceipt);
 				showMessage("Post successful!");
-				getMagicFrame().switchToReceivingReceiptPanel(receivingReceipt);
-//			} catch (NotEnoughStocksException e ) {	
-//				showErrorMessage("Not enough available stocks!");
-//				updateDisplay(receivingReceipt);
-//				itemsTable.highlightColumn(e.getReceivingReceiptItem(), 
-//						ReceivingReceiptItemsTable.QUANTITY_COLUMN_INDEX);
-//			} catch (NoSellingPriceException e) {
-//				showErrorMessage("No selling price!");
-//				updateDisplay(receivingReceipt);
-//				itemsTable.highlightColumn(e.getReceivingReceiptItem(), 
-//						ReceivingReceiptItemsTable.PRODUCT_CODE_COLUMN_INDEX);
+				updateDisplay(receivingReceipt);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");
+				updateDisplay(receivingReceipt);
 			}
 		}
-		*/
 	}
 
 }

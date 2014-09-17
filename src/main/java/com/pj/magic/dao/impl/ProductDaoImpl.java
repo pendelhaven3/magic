@@ -319,4 +319,28 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		return getJdbcTemplate().query(FIND_ALL_ACTIVE_BY_SUPPLIER_SQL, productRowMapper, supplier.getId());
 	}
 
+	private static final String UPDATE_COSTS_SQL =
+			"update PRODUCT"
+			+ " set GROSS_COST_CSE = ?, GROSS_COST_TIE = ?, GROSS_COST_CTN = ?, "
+			+ " GROSS_COST_DOZ = ?, GROSS_COST_PCS = ?, FINAL_COST_CSE = ?, "
+			+ " FINAL_COST_TIE = ?, FINAL_COST_CTN = ?, FINAL_COST_DOZ = ?, "
+			+ " FINAL_COST_PCS = ?"
+			+ " where ID = ?"; 
+	
+	@Override
+	public void updateCosts(Product product) {
+		getJdbcTemplate().update(UPDATE_COSTS_SQL,
+				product.getGrossCost(Unit.CASE),
+				product.getGrossCost(Unit.TIE),
+				product.getGrossCost(Unit.CARTON),
+				product.getGrossCost(Unit.DOZEN),
+				product.getGrossCost(Unit.PIECES),
+				product.getFinalCost(Unit.CASE),
+				product.getFinalCost(Unit.TIE),
+				product.getFinalCost(Unit.CARTON),
+				product.getFinalCost(Unit.DOZEN),
+				product.getFinalCost(Unit.PIECES),
+				product.getId());
+	}
+
 }
