@@ -759,7 +759,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.CASE));
 				case 2:
-					BigDecimal unitCost = product.getUnitCost(Unit.CASE);
+					BigDecimal unitCost = product.getGrossCost(Unit.CASE);
 					if (unitCost == null) {
 						unitCost = BigDecimal.ZERO;
 					}
@@ -767,7 +767,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 				case 4:
 					return String.valueOf(product.getUnitQuantity(Unit.TIE));
 				case 5:
-					unitCost = product.getUnitCost(Unit.TIE);
+					unitCost = product.getGrossCost(Unit.TIE);
 					if (unitCost == null) {
 						unitCost = BigDecimal.ZERO;
 					}
@@ -778,7 +778,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.CARTON));
 				case 2:
-					BigDecimal unitCost = product.getUnitCost(Unit.CARTON);
+					BigDecimal unitCost = product.getGrossCost(Unit.CARTON);
 					if (unitCost == null) {
 						unitCost = BigDecimal.ZERO;
 					}
@@ -786,7 +786,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 				case 4:
 					return String.valueOf(product.getUnitQuantity(Unit.DOZEN));
 				case 5:
-					unitCost = product.getUnitCost(Unit.DOZEN);
+					unitCost = product.getGrossCost(Unit.DOZEN);
 					if (unitCost == null) {
 						unitCost = BigDecimal.ZERO;
 					}
@@ -797,7 +797,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.PIECES));
 				case 2:
-					BigDecimal unitCost = product.getUnitCost(Unit.PIECES);
+					BigDecimal unitCost = product.getGrossCost(Unit.PIECES);
 					if (unitCost == null) {
 						unitCost = BigDecimal.ZERO;
 					}

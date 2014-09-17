@@ -2,16 +2,20 @@ package com.pj.magic.model;
 
 import java.math.BigDecimal;
 
-// TODO: Can be merged with UnitPrice?
 public class UnitCost {
 
 	private String unit;
-	private BigDecimal cost;
+	private BigDecimal grossCost = BigDecimal.ZERO;
+	private BigDecimal finalCost = BigDecimal.ZERO;
 
-	public UnitCost(String unit, BigDecimal cost) {
-		super();
+	public UnitCost(String unit) {
 		this.unit = unit;
-		this.cost = cost;
+	}
+	
+	public UnitCost(String unit, BigDecimal grossCost, BigDecimal finalCost) {
+		this.unit = unit;
+		this.grossCost = grossCost;
+		this.finalCost = finalCost;
 	}
 
 	public String getUnit() {
@@ -22,12 +26,20 @@ public class UnitCost {
 		this.unit = unit;
 	}
 
-	public BigDecimal getCost() {
-		return cost;
+	public BigDecimal getGrossCost() {
+		return grossCost;
 	}
 
-	public void setCost(BigDecimal cost) {
-		this.cost = cost;
+	public void setGrossCost(BigDecimal grossCost) {
+		this.grossCost = grossCost;
+	}
+
+	public BigDecimal getFinalCost() {
+		return finalCost;
+	}
+
+	public void setFinalCost(BigDecimal finalCost) {
+		this.finalCost = finalCost;
 	}
 
 }

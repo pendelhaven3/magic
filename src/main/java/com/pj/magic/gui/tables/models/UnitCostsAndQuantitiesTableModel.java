@@ -58,7 +58,7 @@ public class UnitCostsAndQuantitiesTableModel extends AbstractTableModel {
 			return (product != null) ? product.getUnitQuantity(unit) : "0";
 		case UNIT_COST_COLUMN_INDEX:
 			if (product != null && product.hasUnit(unit)) {
-				return FormatterUtil.formatAmount(product.getUnitCost(unit));
+				return FormatterUtil.formatAmount(product.getGrossCost(unit));
 			} else {
 				return "0.00";
 			}

@@ -249,28 +249,50 @@ public class Product implements Comparable<Product> {
 		this.unitCosts = unitCosts;
 	}
 
-	public void setUnitCost(String unit, BigDecimal price) {
+	public void setGrossCost(String unit, BigDecimal grossCost) {
 		for (UnitCost unitCost : unitCosts) {
 			if (unit.equals(unitCost.getUnit())) {
-				unitCost.setCost(price);
+				unitCost.setGrossCost(grossCost);
 				return;
 			}
 		}
-		unitCosts.add(new UnitCost(unit, price));
+		unitCosts.add(new UnitCost(unit, grossCost, BigDecimal.ZERO));
 	}
 
-	public BigDecimal getUnitCost(String unit) {
+	public BigDecimal getGrossCost(String unit) {
 		for (UnitCost unitCost : unitCosts) {
 			if (unit.equals(unitCost.getUnit())) {
-				return unitCost.getCost();
+				return unitCost.getGrossCost();
 			}
 		}
 		if (hasUnit(unit)) {
-			unitCosts.add(new UnitCost(unit, BigDecimal.ZERO));
+			unitCosts.add(new UnitCost(unit));
 		}
 		return BigDecimal.ZERO;
 	}
 
+	public void setFinalCost(String unit, BigDecimal finalCost) {
+		for (UnitCost unitCost : unitCosts) {
+			if (unit.equals(unitCost.getUnit())) {
+				unitCost.setFinalCost(finalCost);
+				return;
+			}
+		}
+		unitCosts.add(new UnitCost(unit, BigDecimal.ZERO, finalCost));
+	}
+
+	public BigDecimal getFinalCost(String unit) {
+		for (UnitCost unitCost : unitCosts) {
+			if (unit.equals(unitCost.getUnit())) {
+				return unitCost.getFinalCost();
+			}
+		}
+		if (hasUnit(unit)) {
+			unitCosts.add(new UnitCost(unit));
+		}
+		return BigDecimal.ZERO;
+	}
+	
 	public boolean isMaxUnit(String unit) {
 		String maxUnit = Collections.max(units, new Comparator<String>() {
 

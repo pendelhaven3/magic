@@ -153,7 +153,7 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 			if (!StringUtils.isEmpty(rowItem.getCost())) {
 				item.setCost(rowItem.getCostAsBigDecimal());
 			} else {
-				BigDecimal originalCost = rowItem.getProduct().getUnitCost(rowItem.getUnit());
+				BigDecimal originalCost = rowItem.getProduct().getGrossCost(rowItem.getUnit());
 				item.setCost(originalCost);
 				rowItem.setCost(FormatterUtil.formatAmount(originalCost));
 			}

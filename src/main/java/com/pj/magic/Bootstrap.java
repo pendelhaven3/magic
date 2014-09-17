@@ -101,25 +101,29 @@ public class Bootstrap {
 			product.getUnits().add(Unit.CASE);
 			product.addUnitQuantity(Unit.CASE, (int)row.getCell(6).getNumericCellValue());
 			product.setUnitPrice(Unit.CASE, new BigDecimal(row.getCell(10).getNumericCellValue()));
-			product.setUnitCost(Unit.CASE, new BigDecimal(row.getCell(14).getNumericCellValue()));
+			product.setFinalCost(Unit.CASE, new BigDecimal(row.getCell(14).getNumericCellValue()));
+			product.setGrossCost(Unit.CASE, new BigDecimal(row.getCell(18).getNumericCellValue()));
 		}
 		if (row.getCell(3) != null && "Y".equals(row.getCell(3).getStringCellValue())) {
 			product.getUnits().add(Unit.CARTON);
 			product.addUnitQuantity(Unit.CARTON, (int)row.getCell(7).getNumericCellValue());
 			product.setUnitPrice(Unit.CARTON, new BigDecimal(row.getCell(11).getNumericCellValue()));
-			product.setUnitCost(Unit.CARTON, new BigDecimal(row.getCell(15).getNumericCellValue()));
+			product.setFinalCost(Unit.CARTON, new BigDecimal(row.getCell(15).getNumericCellValue()));
+			product.setGrossCost(Unit.CARTON, new BigDecimal(row.getCell(19).getNumericCellValue()));
 		}
 		if (row.getCell(4) != null && "Y".equals(row.getCell(4).getStringCellValue())) {
 			product.getUnits().add(Unit.DOZEN);
 			product.addUnitQuantity(Unit.DOZEN, (int)row.getCell(8).getNumericCellValue());
 			product.setUnitPrice(Unit.DOZEN, new BigDecimal(row.getCell(12).getNumericCellValue()));
-			product.setUnitCost(Unit.DOZEN, new BigDecimal(row.getCell(16).getNumericCellValue()));
+			product.setFinalCost(Unit.DOZEN, new BigDecimal(row.getCell(16).getNumericCellValue()));
+			product.setGrossCost(Unit.DOZEN, new BigDecimal(row.getCell(20).getNumericCellValue()));
 		}
 		if (row.getCell(5) != null && "Y".equals(row.getCell(5).getStringCellValue())) {
 			product.getUnits().add(Unit.PIECES);
 			product.addUnitQuantity(Unit.PIECES, (int)row.getCell(9).getNumericCellValue());
 			product.setUnitPrice(Unit.PIECES, new BigDecimal(row.getCell(13).getNumericCellValue()));
-			product.setUnitCost(Unit.PIECES, new BigDecimal(row.getCell(17).getNumericCellValue()));
+			product.setFinalCost(Unit.PIECES, new BigDecimal(row.getCell(17).getNumericCellValue()));
+			product.setGrossCost(Unit.PIECES, new BigDecimal(row.getCell(21).getNumericCellValue()));
 		}
 		product.setActive(true);
 		return product;
