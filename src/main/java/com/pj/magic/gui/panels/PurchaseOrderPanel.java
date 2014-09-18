@@ -631,7 +631,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 	}
 	
 	private JToolBar createToolBar() {
-		JToolBar toolBar = new MagicToolBar();
+		MagicToolBar toolBar = new MagicToolBar();
 		addBackButton(toolBar);
 		
 		orderButton = new MagicToolBarButton("order", "Order");
@@ -664,7 +664,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		});
 		toolBar.add(printButton);
 		
-		addLogoutButton(toolBar);
+		addUsernameFieldAndLogoutButton(toolBar);
 		return toolBar;
 	}
 	

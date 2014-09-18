@@ -29,8 +29,8 @@ import org.springframework.util.StringUtils;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.MagicFrame;
+import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -47,28 +47,19 @@ public abstract class AbstractMagicPanel extends JPanel {
 	public void initialize() {
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		registerBackKeyBinding();
-		setLoggedInUserField();
-		
 		initializeComponents();
 		layoutComponents();
 		registerKeyBindings();
 	}
 	
-	private void setLoggedInUserField() {
-		addComponentListener(new ComponentAdapter() {
-			
-			@Override
-			public void componentShown(ComponentEvent e) {
-				User user = loginService.getLoggedInUser();
-				if (user != null && loggedInUserField != null) {
-					loggedInUserField.setText("Welcome, " + user.getUsername());
-				}
-			}
-		});
-	}
-
+	/**
+	 * Initialize screen components
+	 */
 	protected abstract void initializeComponents();
 
+	/**
+	 * Layout screen components
+	 */
 	protected abstract void layoutComponents();
 
 	protected abstract void registerKeyBindings();
@@ -100,7 +91,7 @@ public abstract class AbstractMagicPanel extends JPanel {
 		}
 	}
 
-	private void registerBackKeyBinding() {
+	protected void registerBackKeyBinding() {
 		final String actionName = "back";
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), actionName);
@@ -177,10 +168,23 @@ public abstract class AbstractMagicPanel extends JPanel {
 		toolBar.add(backButton);
 	}
 	
-	protected void addLogoutButton(JToolBar toolBar) {
+	protected void addUsernameFieldAndLogoutButton(MagicToolBar toolBar) {
+		if (toolBar.hasRightSideContent()) {
+			return;
+		}
+		toolBar.setRightSideContent(true);
 		toolBar.add(Box.createHorizontalGlue());
 		
 		loggedInUserField = ComponentUtil.createRightLabel(150, "");
+		addComponentListener(new ComponentAdapter() {
+			
+			@Override
+			public void componentShown(ComponentEvent e) {
+				loggedInUserField.setText("Welcome, " + 
+						loginService.getLoggedInUser().getUsername());
+			}
+		});
+		
 		toolBar.add(loggedInUserField);
 		toolBar.add(ComponentUtil.createFiller(10, 1));
 		
