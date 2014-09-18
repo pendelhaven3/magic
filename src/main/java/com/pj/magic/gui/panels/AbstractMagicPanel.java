@@ -11,10 +11,12 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.FocusManager;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -22,28 +24,49 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.model.User;
+import com.pj.magic.service.LoginService;
+import com.pj.magic.util.ComponentUtil;
 
 public abstract class AbstractMagicPanel extends JPanel {
 
-	public static final String BACK_ACTION_COMMAND_NAME = "back";
+	public static final String BACK_ACTION_COMMAND_NAME = "back"; // TODO: Remove this
+
+	@Autowired private LoginService loginService;
 	
 	private List<JComponent> focusOrder;
+	private JLabel loggedInUserField;
 	
 	@PostConstruct
 	public void initialize() {
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		registerBackKeyBinding();
+		setLoggedInUserField();
 		
 		initializeComponents();
 		layoutComponents();
 		registerKeyBindings();
 	}
 	
+	private void setLoggedInUserField() {
+		addComponentListener(new ComponentAdapter() {
+			
+			@Override
+			public void componentShown(ComponentEvent e) {
+				User user = loginService.getLoggedInUser();
+				if (user != null && loggedInUserField != null) {
+					loggedInUserField.setText("Welcome, " + user.getUsername());
+				}
+			}
+		});
+	}
+
 	protected abstract void initializeComponents();
 
 	protected abstract void layoutComponents();
@@ -144,7 +167,6 @@ public abstract class AbstractMagicPanel extends JPanel {
 	
 	protected void addBackButton(JToolBar toolBar) {
 		JButton backButton = new MagicToolBarButton("back", "Back (F9)");
-		backButton.setActionCommand(BACK_ACTION_COMMAND_NAME);
 		backButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -153,6 +175,25 @@ public abstract class AbstractMagicPanel extends JPanel {
 			}
 		});
 		toolBar.add(backButton);
+	}
+	
+	protected void addLogoutButton(JToolBar toolBar) {
+		toolBar.add(Box.createHorizontalGlue());
+		
+		loggedInUserField = ComponentUtil.createRightLabel(150, "");
+		toolBar.add(loggedInUserField);
+		toolBar.add(ComponentUtil.createFiller(10, 1));
+		
+		JButton logoutButton = new MagicToolBarButton("logout", "Logout");
+		logoutButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loginService.logout();
+				getMagicFrame().switchToLoginPanel();
+			}
+		});
+		toolBar.add(logoutButton);
 	}
 	
 }

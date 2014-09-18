@@ -177,6 +177,7 @@ public class MagicFrame extends JFrame {
 	
 	public void switchToLoginPanel() {
 		addPanelNameToTitle("Login");
+		loginPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, LOGIN_PANEL);
 	}
 	

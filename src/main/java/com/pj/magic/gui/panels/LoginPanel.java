@@ -59,6 +59,7 @@ public class LoginPanel extends AbstractMagicPanel {
 			getMagicFrame().switchToMainMenuPanel();
 		} catch (InvalidUsernamePasswordException e) {
 			showErrorMessage("Invalid username/password");
+			passwordField.setText(null);
 			usernameField.requestFocusInWindow();
 		}
 	}
@@ -155,6 +156,11 @@ public class LoginPanel extends AbstractMagicPanel {
 	@Override
 	protected void doOnBack() {
 		// do nothing
+	}
+
+	public void updateDisplay() {
+		usernameField.setText(null);
+		passwordField.setText(null);
 	}
 
 }

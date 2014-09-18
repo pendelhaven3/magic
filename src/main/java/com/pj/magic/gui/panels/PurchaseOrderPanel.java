@@ -664,6 +664,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		});
 		toolBar.add(printButton);
 		
+		addLogoutButton(toolBar);
 		return toolBar;
 	}
 	
