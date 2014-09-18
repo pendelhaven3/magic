@@ -48,4 +48,22 @@ public class ReportUtil {
 		return field(FormatterUtil.formatAmount(number), length, align);
 	}
 	
+	public static String multiline(final String text, int lineLength, int lineNumber) {
+		String line = "";
+		int lastPosition = 0;
+		for (int i = 0; i < lineNumber; i++) {
+			if (lastPosition == text.length()) {
+				line = "";
+			} else if (text.length() - lastPosition > lineLength) {
+				line = text.substring(lastPosition, lastPosition + lineLength);
+				int lastSpacePosition = line.lastIndexOf(' ');
+				line = line.substring(0, lastSpacePosition);
+				lastPosition += lastSpacePosition + 1;
+			} else {
+				line = text.substring(lastPosition);
+				lastPosition = text.length();
+			}
+		}
+		return StringUtils.rightPad(line, 40);
+	}
 }

@@ -202,6 +202,7 @@ create table PURCHASE_ORDER (
   REFERENCE_NO varchar2(30) null,
   ORDER_DT date null,
   POST_DT date null,
+  CREATED_BY integer not null,
   constraint PURCHASE_ORDER$PK primary key (ID),
   constraint PURCHASE_ORDER$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID)
 );

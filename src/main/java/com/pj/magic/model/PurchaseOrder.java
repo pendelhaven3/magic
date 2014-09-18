@@ -19,6 +19,7 @@ public class PurchaseOrder {
 	private String referenceNumber;
 	private Date orderDate;
 	private Date postDate;
+	private User createdBy;
 
 	public Long getId() {
 		return id;
@@ -164,6 +165,14 @@ public class PurchaseOrder {
 
 	public void setPostDate(Date postDate) {
 		this.postDate = postDate;
+	}
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
 	}
 	
 }

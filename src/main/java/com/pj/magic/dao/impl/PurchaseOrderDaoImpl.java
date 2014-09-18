@@ -19,6 +19,7 @@ import com.pj.magic.dao.PurchaseOrderDao;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.model.User;
 
 @Repository
 public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
@@ -26,9 +27,11 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PURCHASE_ORDER_NO, SUPPLIER_ID, POST_IND, ORDER_IND,"
 			+ " a.PAYMENT_TERM_ID, REMARKS, REFERENCE_NO, ORDER_DT, POST_DT,"
-			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME"
-			+ " from PURCHASE_ORDER a, SUPPLIER b"
-			+ " where a.SUPPLIER_ID = b.ID";
+			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME,"
+			+ " a.CREATED_BY, c.USERNAME as CREATED_BY_USERNAME"
+			+ " from PURCHASE_ORDER a, SUPPLIER b, USER c"
+			+ " where a.SUPPLIER_ID = b.ID"
+			+ " and a.CREATED_BY = c.ID";
 	
 	private PurchaseOrderRowMapper purchaseOrderRowMapper = new PurchaseOrderRowMapper();
 	
@@ -53,7 +56,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 	}
 	
 	private static final String INSERT_SQL =
-			"insert into PURCHASE_ORDER (SUPPLIER_ID, PAYMENT_TERM_ID) values (?, ?)";
+			"insert into PURCHASE_ORDER (SUPPLIER_ID, PAYMENT_TERM_ID, CREATED_BY) values (?, ?, ?)";
 	
 	private void insert(final PurchaseOrder purchaseOrder) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -69,6 +72,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 				} else {
 					ps.setNull(2, Types.INTEGER);
 				}
+				ps.setLong(3, purchaseOrder.getCreatedBy().getId());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -119,6 +123,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 			purchaseOrder.setReferenceNumber(rs.getString("REFERENCE_NO"));
 			purchaseOrder.setOrderDate(rs.getDate("ORDER_DT"));
 			purchaseOrder.setPostDate(rs.getDate("POST_DT"));
+			purchaseOrder.setCreatedBy(new User(rs.getLong("CREATED_BY"), rs.getString("CREATED_BY_USERNAME")));
 			return purchaseOrder;
 		}
 	}

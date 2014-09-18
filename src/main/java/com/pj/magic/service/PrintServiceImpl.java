@@ -31,6 +31,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int PURCHASE_ORDER_ITEMS_PER_PAGE = 44;
 	
 	@Autowired private SupplierDao supplierDao;
+	@Autowired private LoginService loginService;
 	
 	public PrintServiceImpl() {
 		Velocity.setProperty("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");

@@ -13,6 +13,7 @@ import com.pj.magic.dao.PurchaseOrderItemDao;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.service.ReceivingReceiptService;
 
@@ -23,10 +24,15 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	@Autowired private PurchaseOrderItemDao purchaseOrderItemDao;
 	@Autowired private ProductDao productDao;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
+	@Autowired private LoginService loginService;
 	
 	@Transactional
 	@Override
 	public void save(PurchaseOrder purchaseOrder) {
+		boolean inserting = (purchaseOrder.getId() == null);
+		if (inserting) {
+			purchaseOrder.setCreatedBy(loginService.getLoggedInUser());
+		}
 		purchaseOrderDao.save(purchaseOrder);
 	}
 

@@ -5,7 +5,9 @@
                               PURCHASE ORDER
 
 Supplier : $report.field($purchaseOrder.supplier.name, 30)                   P.O. # : ${purchaseOrder.purchaseOrderNumber} 
-Address  : $report.field($purchaseOrder.supplier.address, 40)         Date : $currentDate
+Address  : $report.multiline($purchaseOrder.supplier.address, 40, 1)         Date : $currentDate
+           $report.multiline($purchaseOrder.supplier.address, 40, 2)
+Fax #    : $report.field($purchaseOrder.supplier.faxNumber, 40)
 Contact #: $report.field($purchaseOrder.supplier.contactNumber, 40)
 	
          Product Description                   Unit Qty
@@ -14,12 +16,8 @@ Contact #: $report.field($purchaseOrder.supplier.contactNumber, 40)
 $report.field($item.product.description, 40)   [ ] $report.field($item.unit, 4) $report.field($item.quantity, 4, "right")
 #end
 #if($isLastPage == true)
-                                                                 ------------
+	
 Total Items => $report.field($purchaseOrder.items.size(), 3) Total Qty => $report.field($purchaseOrder.totalQuantity, 4, "right")                 
                                                      
-Prepared by : ____________________                               ------------
-                                    
-Checked by  : ____________________                               ============
-	
-Received by : ____________________         Approved by : ____________________
+Prepared by : $purchaseOrder.createdBy.username
 #end
