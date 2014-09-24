@@ -111,6 +111,7 @@ public class PurchaseOrderListPanel extends AbstractMagicPanel implements Action
 		deleteButton.addActionListener(this);
 		toolBar.add(deleteButton);
 		
+		addUsernameFieldAndLogoutButton(toolBar);
 		return toolBar;
 	}
 

@@ -1,15 +1,6 @@
 package com.pj.magic.gui.tables;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
 import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -43,15 +34,10 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 	public static final int DISCOUNTED_AMOUNT_COLUMN_INDEX = 10;
 	public static final int NET_AMOUNT_COLUMN_INDEX = 11;
 	
-	private static final String TAB_ACTION_NAME = "tab";
-	private static final String DOWN_ACTION_NAME = "down";
-
 	@Autowired private ProductService productService;
 	@Autowired private ReceivingReceiptItemsTableModel tableModel;
 	
 	private ReceivingReceipt receivingReceipt;
-	private Action originalDownAction;
-	private Action originalEscapeAction;
 	
 	@Autowired
 	public ReceivingReceiptItemsTable(ReceivingReceiptItemsTableModel tableModel) {
@@ -62,7 +48,6 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 		registerKeyBindings();
 	}
 	
-	// TODO: replace tab key simulation with table model listener
 	private void initializeColumns() {
 		TableColumnModel columnModel = getColumnModel();
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(80);
@@ -82,11 +67,6 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 		getColumnModel().getColumn(NET_AMOUNT_COLUMN_INDEX).setCellRenderer(rightRenderer);
 	}
 	
-	private Action getAction(int keyEvent) {
-		String actionName = (String)getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(KeyStroke.getKeyStroke(keyEvent, 0));
-		return getActionMap().get(actionName);
-	}
-
 	public boolean isQuantityFieldSelected() {
 		return getSelectedColumn() == QUANTITY_COLUMN_INDEX;
 	}
@@ -114,55 +94,9 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 	}
 	
 	protected void registerKeyBindings() {
-		// TODO: shift + tab
-		// TODO: Modify on other columns dont work
-		
-		originalDownAction = getAction(KeyEvent.VK_DOWN);
-		originalEscapeAction = getAction(KeyEvent.VK_ESCAPE);
-		
-		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
-		
-		ActionMap actionMap = getActionMap();
-		actionMap.put(TAB_ACTION_NAME, new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				tab();
-			}
-		});
-		actionMap.put(DOWN_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (isEditing()) {
-					getCellEditor().stopCellEditing();
-				} else {
-					originalDownAction.actionPerformed(e);
-				}
-			}
-		});
+		// none
 	}
 	
-	protected void tab() {
-		if (getSelectedRow() == -1) {
-			return;
-		}
-		
-		if (isEditing()) {
-			getCellEditor().stopCellEditing();
-		}
-		
-		int selectedColumn = getSelectedColumn();
-		int selectedRow = getSelectedRow();
-		ReceivingReceiptItemRowItem rowItem = getCurrentlySelectedRowItem();
-		
-		switch (selectedColumn) {
-		
-		}
-	}
-
 	public int getTotalNumberOfItems() {
 		return receivingReceipt.getTotalNumberOfItems();
 	}
@@ -185,7 +119,6 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				final int row = getSelectedRow();
 				final int column = e.getColumn();
 				
 				if (column == DISCOUNT_1_COLUMN_INDEX) {
@@ -193,13 +126,7 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 
 						@Override
 						public void run() {
-							if (validateDiscount1(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, DISCOUNTED_AMOUNT_COLUMN_INDEX);
-								tableModel.setValueAt("", row, NET_AMOUNT_COLUMN_INDEX);
-								changeSelection(row, DISCOUNT_2_COLUMN_INDEX, false, false);
-								editCellAt(row, DISCOUNT_2_COLUMN_INDEX);
-								getEditorComponent().requestFocusInWindow();
-							}
+							validateDiscount1(getCurrentlySelectedRowItem());
 						}
 					});
 				} else if (column == DISCOUNT_2_COLUMN_INDEX) {
@@ -207,13 +134,7 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 
 						@Override
 						public void run() {
-							if (validateDiscount2(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, DISCOUNTED_AMOUNT_COLUMN_INDEX);
-								tableModel.setValueAt("", row, NET_AMOUNT_COLUMN_INDEX);
-								changeSelection(row, DISCOUNT_3_COLUMN_INDEX, false, false);
-								editCellAt(row, DISCOUNT_3_COLUMN_INDEX);
-								getEditorComponent().requestFocusInWindow();
-							}
+							validateDiscount2(getCurrentlySelectedRowItem());
 						}
 					});
 				} else if (column == DISCOUNT_3_COLUMN_INDEX) {
@@ -221,13 +142,7 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 
 						@Override
 						public void run() {
-							if (validateDiscount3(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, DISCOUNTED_AMOUNT_COLUMN_INDEX);
-								tableModel.setValueAt("", row, NET_AMOUNT_COLUMN_INDEX);
-								changeSelection(row, FLAT_RATE_COLUMN_INDEX, false, false);
-								editCellAt(row, FLAT_RATE_COLUMN_INDEX);
-								getEditorComponent().requestFocusInWindow();
-							}
+							validateDiscount3(getCurrentlySelectedRowItem());
 						}
 					});
 				} else if (column == FLAT_RATE_COLUMN_INDEX) {
@@ -235,14 +150,7 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 
 						@Override
 						public void run() {
-							if (validateFlatRate(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, DISCOUNTED_AMOUNT_COLUMN_INDEX);
-								tableModel.setValueAt("", row, NET_AMOUNT_COLUMN_INDEX);
-								if (!isLastRowSelected()) {
-									changeSelection(row + 1, DISCOUNT_1_COLUMN_INDEX, false, false);
-									editCellAtCurrentRow(DISCOUNT_1_COLUMN_INDEX);
-								}
-							}
+							validateFlatRate(getCurrentlySelectedRowItem());
 						}
 					});
 				}
@@ -250,61 +158,33 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 		});
 	}
 	
-	private boolean validateDiscount1(ReceivingReceiptItemRowItem rowItem) {
-		boolean valid = false;
+	private void validateDiscount1(ReceivingReceiptItemRowItem rowItem) {
 		if (!StringUtils.isEmpty(rowItem.getDiscount1()) && !NumberUtil.isAmount(rowItem.getDiscount1())) {
 			showErrorMessage("Discount 1 must be a valid amount");
-		} else {
-			valid = true;
-		}
-		
-		if (!valid) {
 			editCellAtCurrentRow(DISCOUNT_1_COLUMN_INDEX);
 		}
-		return valid;
 	}
 	
-	private boolean validateDiscount2(ReceivingReceiptItemRowItem rowItem) {
-		boolean valid = false;
+	private void validateDiscount2(ReceivingReceiptItemRowItem rowItem) {
 		if (!StringUtils.isEmpty(rowItem.getDiscount2()) && !NumberUtil.isAmount(rowItem.getDiscount2())) {
 			showErrorMessage("Discount 2 must be a valid amount");
-		} else {
-			valid = true;
-		}
-		
-		if (!valid) {
 			editCellAtCurrentRow(DISCOUNT_2_COLUMN_INDEX);
 		}
-		return valid;
 	}
 	
-	private boolean validateDiscount3(ReceivingReceiptItemRowItem rowItem) {
-		boolean valid = false;
+	private void validateDiscount3(ReceivingReceiptItemRowItem rowItem) {
 		if (!StringUtils.isEmpty(rowItem.getDiscount3()) && !NumberUtil.isAmount(rowItem.getDiscount3())) {
 			showErrorMessage("Discount 3 must be a valid amount");
-		} else {
-			valid = true;
-		}
-		
-		if (!valid) {
 			editCellAtCurrentRow(DISCOUNT_3_COLUMN_INDEX);
 		}
-		return valid;
 	}
 	
-	private boolean validateFlatRate(ReceivingReceiptItemRowItem rowItem) {
-		boolean valid = false;
+	private void validateFlatRate(ReceivingReceiptItemRowItem rowItem) {
 		if (!StringUtils.isEmpty(rowItem.getFlatRateDiscount()) 
 				&& !NumberUtil.isAmount(rowItem.getFlatRateDiscount())) {
 			showErrorMessage("Flat Rate Discount must be a valid amount");
-		} else {
-			valid = true;
-		}
-		
-		if (!valid) {
 			editCellAtCurrentRow(FLAT_RATE_COLUMN_INDEX);
 		}
-		return valid;
 	}
 	
 }

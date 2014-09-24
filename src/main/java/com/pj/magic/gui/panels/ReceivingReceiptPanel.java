@@ -385,7 +385,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 	}
 	
 	private JToolBar createToolBar() {
-		JToolBar toolBar = new MagicToolBar();
+		MagicToolBar toolBar = new MagicToolBar();
 		addBackButton(toolBar);
 		
 		postButton = new MagicToolBarButton("post", "Post");
@@ -398,6 +398,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		});
 		toolBar.add(postButton);
 		
+		addUsernameFieldAndLogoutButton(toolBar);
 		return toolBar;
 	}
 	

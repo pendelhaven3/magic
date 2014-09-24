@@ -25,7 +25,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, RECEIVING_RECEIPT_NO, SUPPLIER_ID, POST_IND, "
-			+ " a.PAYMENT_TERM_ID, c.NAME as PAYMENT_TERM_NAME, REMARKS, REFERENCE_NO, RECEIVED_DT, "
+			+ " a.PAYMENT_TERM_ID, c.NAME as PAYMENT_TERM_NAME, a.REMARKS, REFERENCE_NO, RECEIVED_DT, "
 			+ " ORDER_DT, b.NAME as SUPPLIER_NAME"
 			+ " from RECEIVING_RECEIPT a, SUPPLIER b, PAYMENT_TERM c"
 			+ " where a.SUPPLIER_ID = b.ID"

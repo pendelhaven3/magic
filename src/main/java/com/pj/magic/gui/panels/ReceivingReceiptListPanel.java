@@ -83,6 +83,7 @@ public class ReceivingReceiptListPanel extends AbstractMagicPanel {
 	private JToolBar createToolBar() {
 		MagicToolBar toolBar = new MagicToolBar();
 		addBackButton(toolBar);
+		addUsernameFieldAndLogoutButton(toolBar);
 		return toolBar;
 	}
 
