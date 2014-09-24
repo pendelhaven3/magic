@@ -23,8 +23,9 @@ import com.pj.magic.model.Supplier;
 @Repository
 public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	
-	private static final String BASE_SELECT_SQL = "select a.ID, CODE, a.NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON,"
-			+ " FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME, b.NUMBER_OF_DAYS"
+	private static final String BASE_SELECT_SQL = "select a.ID, CODE, a.NAME, ADDRESS, CONTACT_NUMBER, "
+			+ " CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID, REMARKS,"
+			+ " b.NAME as PAYMENT_TERM_NAME, b.NUMBER_OF_DAYS"
 			+ " from SUPPLIER a"
 			+ " left join PAYMENT_TERM b"
 			+ " 	on b.ID = a.PAYMENT_TERM_ID";
@@ -41,8 +42,9 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	}
 
 	private static final String INSERT_SQL = "insert into SUPPLIER"
-			+ " (CODE, NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " (CODE, NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, "
+			+ "  TIN, PAYMENT_TERM_ID, REMARKS)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Supplier supplier) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -65,6 +67,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 				} else {
 					ps.setNull(9, Types.INTEGER);
 				}
+				ps.setString(10, supplier.getRemarks());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -74,7 +77,8 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 
 	private static final String UPDATE_SQL = "update SUPPLIER"
 			+ " set CODE = ?, NAME = ?, ADDRESS = ?, CONTACT_NUMBER = ?, CONTACT_PERSON = ?,"
-			+ " FAX_NUMBER = ?, EMAIL_ADDRESS = ?, TIN = ?, PAYMENT_TERM_ID = ? where ID = ?";
+			+ " FAX_NUMBER = ?, EMAIL_ADDRESS = ?, TIN = ?, PAYMENT_TERM_ID = ?, REMARKS = ?"
+			+ " where ID = ?";
 	
 	private void update(Supplier supplier) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -87,6 +91,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 				supplier.getEmailAddress(),
 				supplier.getTin(),
 				(supplier.getPaymentTerm() != null) ? supplier.getPaymentTerm().getId() : null,
+				supplier.getRemarks(),
 				supplier.getId());
 	}
 
@@ -129,6 +134,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 				supplier.setPaymentTerm(paymentTerm);
 			}
 			supplier.setTin(rs.getString("TIN"));
+			supplier.setRemarks(rs.getString("REMARKS"));
 			return supplier;
 		}
 		

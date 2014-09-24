@@ -129,6 +129,7 @@ create table SUPPLIER (
   EMAIL_ADDRESS varchar2(50) null,
   TIN varchar2(20) null,
   PAYMENT_TERM_ID integer null,
+  REMARKS varchar2(200) null,
   constraint SUPPLIER$PK primary key (ID),
   constraint SUPPLIER$UK unique (NAME)
 );

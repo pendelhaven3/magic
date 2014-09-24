@@ -1,20 +1,21 @@
 package com.pj.magic.model;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class Supplier {
 
-	@Id
-	@GeneratedValue
 	private Long id;
 	private String code;
 	private String name;
 	private String address;
+	private String remarks;
+	private String contactNumber;
+	private String contactPerson;
+	private String emailAddress;
+	private String faxNumber;
+	private String tin;
+	private PaymentTerm paymentTerm;
 	
 	public Supplier() {
 		// default constructor
@@ -25,21 +26,6 @@ public class Supplier {
 		this.name = name;
 	}
 
-	@Column(name="CONTACT_NUMBER")
-	private String contactNumber;
-	
-	@Column(name="CONTACT_PERSON")
-	private String contactPerson;
-
-	@Column(name="FAX_NUMBER")
-	private String faxNumber;
-	
-	@Column(name="EMAIL_ADDRESS")
-	private String emailAddress;
-
-	private String tin;
-	private PaymentTerm paymentTerm;
-	
 	public Long getId() {
 		return id;
 	}
@@ -144,6 +130,14 @@ public class Supplier {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 	
 }

@@ -50,6 +50,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 	private MagicTextField faxNumberField;
 	private MagicTextField emailAddressField;
 	private MagicTextField tinField;
+	private MagicTextField remarksField;
 	private JComboBox<PaymentTerm> paymentTermComboBox; 
 	private JButton saveButton;
 	
@@ -79,6 +80,9 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		tinField = new MagicTextField();
 		tinField.setMaximumLength(20);
 		
+		remarksField = new MagicTextField();
+		remarksField.setMaximumLength(200);
+		
 		paymentTermComboBox = new JComboBox<>(); 
 		
 		saveButton = new JButton("Save");
@@ -104,6 +108,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		focusOrder.add(emailAddressField);
 		focusOrder.add(tinField);
 		focusOrder.add(paymentTermComboBox); 
+		focusOrder.add(remarksField); 
 		focusOrder.add(saveButton);
 	}
 	
@@ -123,6 +128,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 			supplier.setEmailAddress(emailAddressField.getText());
 			supplier.setTin(tinField.getText());
 			supplier.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
+			supplier.setRemarks(remarksField.getText());
 			
 			try {
 				supplierService.save(supplier);
@@ -162,11 +168,11 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createLabel(120, "Code: "), c);
 		
@@ -193,7 +199,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(120, "Name: "), c);
+		add(ComponentUtil.createLabel(120, "Business Name: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -325,6 +331,23 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(100, "Remarks: "), c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		remarksField.setPreferredSize(new Dimension(300, 20));
+		add(remarksField, c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.NONE;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
 		c.gridx = 0;
@@ -414,6 +437,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		} else {
 			paymentTermComboBox.setSelectedItem(null);
 		}
+		remarksField.setText(supplier.getRemarks());
 	}
 
 	private void clearDisplay() {
@@ -426,6 +450,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		emailAddressField.setText(null);
 		tinField.setText(null);
 		paymentTermComboBox.setSelectedItem(null);
+		remarksField.setText(null);
 	}
 
 	@Override

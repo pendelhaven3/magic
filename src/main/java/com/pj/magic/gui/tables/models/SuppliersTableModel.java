@@ -15,7 +15,7 @@ public class SuppliersTableModel extends AbstractTableModel {
 	public static final int CODE_COLUMN_INDEX = 0;
 	public static final int NAME_COLUMN_INDEX = 1;
 	
-	private static final String[] columnNames = {"Code", "Name"};
+	private static final String[] columnNames = {"Code", "Business Name"};
 	
 	private List<Supplier> suppliers = new ArrayList<>();
 	
