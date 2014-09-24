@@ -68,14 +68,30 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 			return FormatterUtil.formatAmount(product.getGrossCost(unit));
 		case EditProductPriceTable.FINAL_COST_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(product.getFinalCost(unit));
-		case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
-			return sellingPrice;
-		case EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX:
-			return percentProfit;
-		case EditProductPriceTable.FLAT_PROFIT_COLUMN_INDEX:
-			return flatProfit;
-		default:
-			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
+		}
+		
+		if (rowIndex == 0) {
+			switch (columnIndex) {
+			case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
+				return sellingPrice;
+			case EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX:
+				return percentProfit;
+			case EditProductPriceTable.FLAT_PROFIT_COLUMN_INDEX:
+				return flatProfit;
+			default:
+				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
+			}
+		} else {
+			switch (columnIndex) {
+			case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(product.getUnitPrice(unit));
+			case EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(product.getPercentProfit(unit));
+			case EditProductPriceTable.FLAT_PROFIT_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(product.getFlatProfit(unit));
+			default:
+				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
+			}
 		}
 	}
 	
@@ -88,6 +104,10 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		if (rowIndex != 0) {
+			throw new RuntimeException("Cannot directly update prices for smaller units of product");
+		}
+		
 		String val = (String)value;
 		switch (columnIndex) {
 		case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
@@ -120,6 +140,13 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 			fireTableCellUpdated(rowIndex, EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX);
 			fireTableCellUpdated(rowIndex, EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX);
 			fireTableCellUpdated(rowIndex, EditProductPriceTable.FLAT_PROFIT_COLUMN_INDEX);
+			
+			if (product.getUnits().size() > 1) {
+				product.autoCalculatePricesOfSmallerUnits();
+				for (int i = 1; i < product.getUnits().size(); i++) {
+					fireTableCellUpdated(i, EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX);
+				}
+			}
 		} else {
 			fireTableCellUpdated(rowIndex, columnIndex);
 		}

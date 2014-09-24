@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.springframework.beans.BeanUtils;
 
 import com.pj.magic.Constants;
 
@@ -335,6 +334,26 @@ public class Product implements Comparable<Product> {
 	public void setFlatProfit(String unit, BigDecimal profit) {
 		BigDecimal unitPrice = getFinalCost(unit).add(profit);
 		setUnitPrice(unit, unitPrice);
+	}
+
+	public void autoCalculatePricesOfSmallerUnits() {
+		Collections.sort(units, new Comparator<String>() {
+
+			@Override
+			public int compare(String unit1, String unit2) {
+				return Unit.compare(unit1, unit2) * -1;
+			}
+		});
+		
+		String maxUnit = units.get(0);
+		BigDecimal priceOfMaxUnit = getUnitPrice(maxUnit);
+		int conversionOfMaxUnit = getUnitConversion(maxUnit);
+		for (int i = 1; i < units.size(); i++) {
+			String unit = units.get(i);
+			BigDecimal unitPrice = priceOfMaxUnit.divide(new BigDecimal(conversionOfMaxUnit / getUnitConversion(unit)), 
+					2, RoundingMode.HALF_UP);
+			setUnitPrice(unit, unitPrice);
+		}
 	}
 	
 }
