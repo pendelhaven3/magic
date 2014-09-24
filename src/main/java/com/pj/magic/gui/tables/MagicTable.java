@@ -4,16 +4,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
+// TODO: This is not really ItemsTable
 /*
  * [PJ 8/27/2014] 
  * ItemsTable has 2 modes: edit (default) and add (allows adding blank rows after the last row).
  * 
  */
-public abstract class ItemsTable extends JTable {
+public abstract class MagicTable extends JTable {
 
 	protected boolean addMode;
 	
-	public ItemsTable(TableModel tableModel) {
+	public MagicTable(TableModel tableModel) {
 		super(tableModel);
 	}
 	

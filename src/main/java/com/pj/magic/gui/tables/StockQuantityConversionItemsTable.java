@@ -43,7 +43,7 @@ import com.pj.magic.util.KeyUtil;
  */
 
 @Component
-public class StockQuantityConversionItemsTable extends ItemsTable {
+public class StockQuantityConversionItemsTable extends MagicTable {
 	
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;

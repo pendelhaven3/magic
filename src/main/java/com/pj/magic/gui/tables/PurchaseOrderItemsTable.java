@@ -44,7 +44,7 @@ import com.pj.magic.util.NumberUtil;
  */
 
 @Component
-public class PurchaseOrderItemsTable extends ItemsTable {
+public class PurchaseOrderItemsTable extends MagicTable {
 	
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;

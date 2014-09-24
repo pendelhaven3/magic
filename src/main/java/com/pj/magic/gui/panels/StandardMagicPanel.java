@@ -45,7 +45,7 @@ public abstract class StandardMagicPanel extends AbstractMagicPanel {
 		return panel;
 	}
 
-	protected abstract void layoutMainPanel(JPanel panel);
+	protected abstract void layoutMainPanel(JPanel mainPanel);
 
 	private MagicToolBar createToolBar() {
 		MagicToolBar toolBar = new MagicToolBar();

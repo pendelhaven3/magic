@@ -8,5 +8,5 @@ public interface ProductPriceDao {
 	void save(Product product);
 
 	void updateUnitPrices(Product product, PricingScheme pricingScheme);
-	
+
 }

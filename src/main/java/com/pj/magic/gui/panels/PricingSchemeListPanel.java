@@ -16,6 +16,7 @@ import javax.swing.KeyStroke;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.models.PricingSchemesTableModel;
 import com.pj.magic.model.PricingScheme;
@@ -54,10 +55,23 @@ public class PricingSchemeListPanel extends StandardMagicPanel implements Action
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				PricingScheme pricingScheme = tableModel.getPricingScheme(table.getSelectedRow());
-				getMagicFrame().switchToEditPricingSchemePanel(pricingScheme);
+				selectPricingScheme();
 			}
 		});
+		
+		table.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				selectPricingScheme();
+			}
+		});
+		
+	}
+
+	protected void selectPricingScheme() {
+		PricingScheme pricingScheme = tableModel.getPricingScheme(table.getSelectedRow());
+		getMagicFrame().switchToEditPricingSchemePanel(pricingScheme);
 	}
 
 	@Override

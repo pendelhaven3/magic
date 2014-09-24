@@ -1,6 +1,7 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,6 +9,8 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import com.pj.magic.Constants;
 
 public class Product implements Comparable<Product> {
 
@@ -311,6 +314,26 @@ public class Product implements Comparable<Product> {
 		} else {
 			return maximumStockLevel - currentQuantity;
 		}
+	}
+
+	public BigDecimal getPercentProfit(String unit) {
+		return getFlatProfit(unit)
+				.divide(getGrossCost(unit), 4, RoundingMode.HALF_UP).multiply(Constants.ONE_HUNDRED);
+	}
+
+	public BigDecimal getFlatProfit(String unit) {
+		return getUnitPrice(unit).subtract(getFinalCost(unit));
+	}
+
+	public void setPercentProfit(String unit, BigDecimal profit) {
+		BigDecimal unitPrice = getGrossCost(unit).multiply(profit.divide(Constants.ONE_HUNDRED, 4, RoundingMode.HALF_UP))
+				.setScale(2, RoundingMode.HALF_UP).add(getFinalCost(unit));
+		setUnitPrice(unit, unitPrice);
+	}
+
+	public void setFlatProfit(String unit, BigDecimal profit) {
+		BigDecimal unitPrice = getFinalCost(unit).add(profit);
+		setUnitPrice(unit, unitPrice);
 	}
 	
 }

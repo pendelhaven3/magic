@@ -28,7 +28,7 @@ import com.pj.magic.service.ProductService;
 import com.pj.magic.util.NumberUtil;
 
 @Component
-public class ReceivingReceiptItemsTable extends ItemsTable {
+public class ReceivingReceiptItemsTable extends MagicTable {
 	
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;

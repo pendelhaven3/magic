@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
@@ -26,7 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.EditProductPriceDialog;
 import com.pj.magic.gui.tables.models.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
@@ -35,7 +38,7 @@ import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class MaintainPricingSchemePanel extends AbstractMagicPanel {
+public class MaintainPricingSchemePanel extends StandardMagicPanel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MaintainPricingSchemePanel.class);
 	private static final String NEXT_FIELD_ACTION_NAME = "nextField";
@@ -105,90 +108,6 @@ public class MaintainPricingSchemePanel extends AbstractMagicPanel {
 		return true;
 	}
 
-	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		int currentRow = 0;
-		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Name: "), c);
-		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		nameField.setPreferredSize(new Dimension(200, 20));
-		add(nameField, c);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0; // right space filler
-		c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
-		
-		currentRow++;
-		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 20), c);
-		
-		currentRow++;
-		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.EAST;
-		saveButton.setPreferredSize(new Dimension(100, 20));
-		add(saveButton, c);
-		
-		currentRow++;
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(10, 10), c);
-		
-		currentRow++;
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 3;
-		c.anchor = GridBagConstraints.CENTER;
-		add(new JSeparator(), c);
-		
-		currentRow++;
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(10, 10), c);
-		
-		currentRow++;
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 1.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		layoutPricesTable();
-		add(new JScrollPane(pricesTable), c);
-	}
-
 	private void layoutPricesTable() {
 		TableColumnModel columnModel = pricesTable.getColumnModel();
 		columnModel.getColumn(ProductPricesTableModel.CODE_COLUMN_INDEX).setPreferredWidth(50);
@@ -239,6 +158,15 @@ public class MaintainPricingSchemePanel extends AbstractMagicPanel {
 				selectProductPrice();
 			}
 		});
+		
+		pricesTable.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				selectProductPrice();
+			}
+		});
+		
 	}
 
 	protected void selectProductPrice() {
@@ -268,6 +196,98 @@ public class MaintainPricingSchemePanel extends AbstractMagicPanel {
 	@Override
 	protected void doOnBack() {
 		getMagicFrame().switchToPricingSchemeListPanel();
+	}
+
+	@Override
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		int currentRow = 0;
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Name: "), c);
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		nameField.setPreferredSize(new Dimension(200, 20));
+		mainPanel.add(nameField, c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 1.0; // right space filler
+		c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.EAST;
+		saveButton.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(saveButton, c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(10, 10), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 3;
+		c.anchor = GridBagConstraints.CENTER;
+		mainPanel.add(new JSeparator(), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(10, 10), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		layoutPricesTable();
+		JScrollPane pricesTableScrollPane = new JScrollPane(pricesTable);
+		pricesTableScrollPane.setPreferredSize(new Dimension(600, 100));
+		mainPanel.add(pricesTableScrollPane, c);
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

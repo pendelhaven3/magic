@@ -1,5 +1,6 @@
 package com.pj.magic.gui.dialog;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -12,12 +13,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
+import javax.swing.JPanel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.tables.EditProductPriceTable;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
@@ -30,6 +32,7 @@ public class EditProductPriceDialog extends MagicDialog {
 	private static final String SAVE_ACTION_COMMAND_NAME = "save";
 
 	@Autowired private ProductService productService;
+	@Autowired private EditProductPriceTable table;
 
 	private PricingScheme pricingScheme;
 	private Product product;
@@ -44,7 +47,7 @@ public class EditProductPriceDialog extends MagicDialog {
 	private JButton saveButton;
 	
 	public EditProductPriceDialog() {
-		setSize(600, 500);
+		setSize(600, 300);
 		setLocationRelativeTo(null);
 		setTitle("Edit Product Price");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
@@ -54,6 +57,7 @@ public class EditProductPriceDialog extends MagicDialog {
 	public void initialize() {
 		initializeComponents();
 		registerKeyBindings();
+		layoutComponents();
 	}
 
 	private void initializeComponents() {
@@ -195,116 +199,15 @@ public class EditProductPriceDialog extends MagicDialog {
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 3;
-		c.anchor = GridBagConstraints.CENTER;
-		add(new JSeparator(), c);
+		c.fill = GridBagConstraints.HORIZONTAL;
 		
-		currentRow++;
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(10, 10), c);
-		
-		if (product.hasUnit(Unit.CASE)) {
-			currentRow++;
-			
-			c.weightx = c.weighty = 0.0;
-			c.fill = GridBagConstraints.NONE;
-			c.gridx = 0;
-			c.gridy = currentRow;
-			c.anchor = GridBagConstraints.WEST;
-			add(ComponentUtil.createRightLabel(100, Unit.CASE), c);
-
-			c.weightx = c.weighty = 0.0;
-			c.fill = GridBagConstraints.NONE;
-			c.gridx = 1;
-			c.gridy = currentRow;
-			c.anchor = GridBagConstraints.WEST;
-			caseUnitPriceField.setPreferredSize(new Dimension(80, 20));
-			add(caseUnitPriceField, c);
-		}
-		
-		if (product.hasUnit(Unit.TIE)) {
-			currentRow++;
-			
-			c.weightx = c.weighty = 0.0;
-			c.fill = GridBagConstraints.NONE;
-			c.gridx = 0;
-			c.gridy = currentRow;
-			c.anchor = GridBagConstraints.WEST;
-			add(ComponentUtil.createRightLabel(100, Unit.TIE), c);
-
-			c.weightx = c.weighty = 0.0;
-			c.fill = GridBagConstraints.NONE;
-			c.gridx = 1;
-			c.gridy = currentRow;
-			c.anchor = GridBagConstraints.WEST;
-			tieUnitPriceField.setPreferredSize(new Dimension(80, 20));
-			add(tieUnitPriceField, c);
-		}
-		
-		if (product.hasUnit(Unit.CARTON)) {
-			currentRow++;
-			
-			c.weightx = c.weighty = 0.0;
-			c.fill = GridBagConstraints.NONE;
-			c.gridx = 0;
-			c.gridy = currentRow;
-			c.anchor = GridBagConstraints.WEST;
-			add(ComponentUtil.createRightLabel(100, Unit.CARTON), c);
-
-			c.weightx = c.weighty = 0.0;
-			c.fill = GridBagConstraints.NONE;
-			c.gridx = 1;
-			c.gridy = currentRow;
-			c.anchor = GridBagConstraints.WEST;
-			cartonUnitPriceField.setPreferredSize(new Dimension(80, 20));
-			add(cartonUnitPriceField, c);
-		}
-		
-		if (product.hasUnit(Unit.DOZEN)) {
-			currentRow++;
-			
-			c.weightx = c.weighty = 0.0;
-			c.fill = GridBagConstraints.NONE;
-			c.gridx = 0;
-			c.gridy = currentRow;
-			c.anchor = GridBagConstraints.WEST;
-			add(ComponentUtil.createRightLabel(100, Unit.DOZEN), c);
-
-			c.weightx = c.weighty = 0.0;
-			c.fill = GridBagConstraints.NONE;
-			c.gridx = 1;
-			c.gridy = currentRow;
-			c.anchor = GridBagConstraints.WEST;
-			dozenUnitPriceField.setPreferredSize(new Dimension(80, 20));
-			add(dozenUnitPriceField, c);
-		}
-		
-		if (product.hasUnit(Unit.PIECES)) {
-			currentRow++;
-			
-			c.weightx = c.weighty = 0.0;
-			c.fill = GridBagConstraints.NONE;
-			c.gridx = 0;
-			c.gridy = currentRow;
-			c.anchor = GridBagConstraints.WEST;
-			add(ComponentUtil.createRightLabel(100, Unit.PIECES), c);
-
-			c.weightx = c.weighty = 0.0;
-			c.fill = GridBagConstraints.NONE;
-			c.gridx = 1;
-			c.gridy = currentRow;
-			c.anchor = GridBagConstraints.WEST;
-			piecesUnitPriceField.setPreferredSize(new Dimension(80, 20));
-			add(piecesUnitPriceField, c);
-		}
+		add(createTablePanel(), c);
 		
 		currentRow++;
 		
@@ -315,16 +218,15 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.CENTER;
-		add(ComponentUtil.createFiller(1, 5), c);
+		add(ComponentUtil.createFiller(1, 20), c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridx = 1;
+		c = new GridBagConstraints();
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.EAST;
+		c.gridwidth = 3;
+		c.anchor = GridBagConstraints.CENTER;
 		saveButton.setPreferredSize(new Dimension(100, 20));
 		add(saveButton, c);
 		
@@ -338,42 +240,35 @@ public class EditProductPriceDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(1, 1), c);
 	}
 	
+	private JPanel createTablePanel() {
+		JPanel panel = new JPanel();
+		panel.setBorder(BorderFactory.createLineBorder(Color.black));
+		panel.setLayout(new GridBagLayout());
+		
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.weightx = 1.0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(table.getTableHeader(), c);
+		
+		c.weightx = c.weighty = 1.0;
+		c.gridy = 1;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		panel.add(table, c);
+
+		return panel;
+	}
+
 	public void updateDisplay(Product product, PricingScheme pricingScheme) {
 		this.product = product;
 		this.pricingScheme = pricingScheme;
-		
-		getContentPane().removeAll();
-		layoutComponents();
 		
 		productCodeLabel.setText(product.getCode());
 		productDescriptionLabel.setText(product.getDescription());
 		pricingSchemeNameLabel.setText(pricingScheme.getName());
 		
-		if (product.hasUnit(Unit.CASE)) {
-			caseUnitPriceField.setText(product.getUnitPrice(Unit.CASE).toString());
-		} else {
-			caseUnitPriceField.setText(null);
-		}
-		if (product.hasUnit(Unit.TIE)) {
-			tieUnitPriceField.setText(product.getUnitPrice(Unit.TIE).toString());
-		} else {
-			tieUnitPriceField.setText(null);
-		}
-		if (product.hasUnit(Unit.CARTON)) {
-			cartonUnitPriceField.setText(product.getUnitPrice(Unit.CARTON).toString());
-		} else {
-			cartonUnitPriceField.setText(null);
-		}
-		if (product.hasUnit(Unit.DOZEN)) {
-			dozenUnitPriceField.setText(product.getUnitPrice(Unit.DOZEN).toString());
-		} else {
-			dozenUnitPriceField.setText(null);
-		}
-		if (product.hasUnit(Unit.PIECES)) {
-			piecesUnitPriceField.setText(product.getUnitPrice(Unit.PIECES).toString());
-		} else {
-			piecesUnitPriceField.setText(null);
-		}
+		table.setProduct(product);
+		table.highlight();
 	}
 
 }

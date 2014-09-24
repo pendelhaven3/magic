@@ -1,24 +1,31 @@
 package com.pj.magic.util;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 
 import org.springframework.util.StringUtils;
 
+import com.pj.magic.Constants;
+
 public class NumberUtil {
 
-	private static final String AMOUNT_FORMAT = "#,##0.00";
-	
 	public static boolean isAmount(String value) {
 		if (StringUtils.isEmpty(value)) {
 			return false;
 		}
 		
+		ParsePosition pos = new ParsePosition(0);
+		new DecimalFormat(Constants.AMOUNT_FORMAT).parse(value, pos);
+		return pos.getIndex() == value.length();
+	}
+	
+	public static BigDecimal toBigDecimal(String value) {
 		try {
-			new DecimalFormat(AMOUNT_FORMAT).parse(value);
-			return true;
+			return new BigDecimal(new DecimalFormat(Constants.AMOUNT_FORMAT).parse(value).doubleValue());
 		} catch (ParseException e) {
-			return false;
+			throw new RuntimeException(e);
 		}
 	}
 	

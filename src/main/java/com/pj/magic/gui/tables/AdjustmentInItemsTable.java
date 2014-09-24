@@ -38,7 +38,7 @@ import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class AdjustmentInItemsTable extends ItemsTable {
+public class AdjustmentInItemsTable extends MagicTable {
 	
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
