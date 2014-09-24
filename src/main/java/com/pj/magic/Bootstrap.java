@@ -18,7 +18,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -29,7 +28,6 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ProductService;
 
-@Component
 public class Bootstrap {
 
 	@Autowired private DataSource dataSource;

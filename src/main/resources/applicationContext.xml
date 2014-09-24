@@ -14,13 +14,6 @@
 	
 	<tx:annotation-driven />
 
-	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
-		<property name="driverClassName" value="org.h2.Driver" />
-		<property name="url" value="jdbc:h2:mem:magic" />
-		<property name="username" value="sa" />
-		<property name="password" value="sa" />
-	</bean>
-	
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="dataSource" ref="dataSource" />
         <property name="entityManagerFactory" ref="entityManagerFactory" />
