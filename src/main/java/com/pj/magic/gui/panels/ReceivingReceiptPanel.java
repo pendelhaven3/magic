@@ -9,6 +9,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.event.TableModelEvent;
@@ -283,60 +284,73 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 4;
+		c = new GridBagConstraints();
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Total Amount:"), c);
+		c.gridwidth = 7;
+		c.anchor = GridBagConstraints.EAST;
+		add(createTotalsPanel(), c);
+	}
+	
+	private JPanel createTotalsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		int currentRow = 0;
 		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 5;
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		totalAmountField = ComponentUtil.createRightLabel(70, "");
-		add(totalAmountField, c);
+		panel.add(totalAmountField, c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		panel.add(ComponentUtil.createFiller(50, 1), c);
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 4;
+		c = new GridBagConstraints();
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Total Disc. Amount:"), c);
+		panel.add(ComponentUtil.createLabel(120, "Total Disc. Amount:"), c);
 		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 5;
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		totalDiscountedAmountField = ComponentUtil.createRightLabel(70, "");
-		add(totalDiscountedAmountField, c);
+		panel.add(totalDiscountedAmountField, c);
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 4;
+		c = new GridBagConstraints();
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Total Net Amount:"), c);
+		panel.add(ComponentUtil.createLabel(120, "Total Net Amount:"), c);
 		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 5;
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		totalNetAmountField = ComponentUtil.createRightLabel(70, "");
-		add(totalNetAmountField, c);
+		panel.add(totalNetAmountField, c);
 		
+		return panel;
 	}
-	
+
 	private JToolBar createToolBar() {
 		MagicToolBar toolBar = new MagicToolBar();
 		addBackButton(toolBar);

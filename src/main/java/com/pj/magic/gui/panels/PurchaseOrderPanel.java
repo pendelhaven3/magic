@@ -496,41 +496,53 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 4;
+		c = new GridBagConstraints();
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		c.gridwidth = 6;
+		c.anchor = GridBagConstraints.EAST;
+		add(createTotalsPanel(), c);
+	}
+	
+	private JPanel createTotalsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
 		
+		GridBagConstraints c = new GridBagConstraints();
+		int currentRow = 0;
+		
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 5;
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		totalItemsField = ComponentUtil.createLabel(150, "");
-		add(totalItemsField, c);
+		panel.add(totalItemsField, c);
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 4;
+		c = new GridBagConstraints();
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		panel.add(ComponentUtil.createLabel(100, "Total Amount:"), c);
 		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 5;
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		totalAmountField = ComponentUtil.createLabel(150, "");
-		add(totalAmountField, c);
+		panel.add(totalAmountField, c);
+		
+		return panel;
 	}
-	
+
 	private JPanel createSupplierPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
