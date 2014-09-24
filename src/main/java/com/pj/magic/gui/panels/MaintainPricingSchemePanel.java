@@ -35,6 +35,7 @@ import com.pj.magic.gui.tables.models.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.PricingSchemeService;
+import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
@@ -47,6 +48,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private EditProductPriceDialog editProductPriceDialog;
+	@Autowired private ProductService productService;
 	
 	private PricingScheme pricingScheme;
 	private MagicTextField nameField;
@@ -174,6 +176,10 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		Product product = pricesTableModel.getProduct(selectedRow);
 		editProductPriceDialog.updateDisplay(product, pricingScheme);
 		editProductPriceDialog.setVisible(true);
+		
+		Product updatedProduct = productService.getProduct(product.getId(), pricingScheme);
+		product.setUnitPrices(updatedProduct.getUnitPrices());
+		pricesTableModel.fireTableRowsUpdated(selectedRow, selectedRow);
 	}
 
 	public void updateDisplay(PricingScheme pricingScheme) {

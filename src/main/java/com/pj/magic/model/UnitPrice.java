@@ -8,9 +8,13 @@ public class UnitPrice {
 	private BigDecimal price;
 
 	public UnitPrice(String unit, BigDecimal price) {
-		super();
 		this.unit = unit;
 		this.price = price;
+	}
+
+	public UnitPrice(UnitPrice unitPrice) {
+		unit = unitPrice.getUnit();
+		price = unitPrice.getPrice();
 	}
 
 	public String getUnit() {

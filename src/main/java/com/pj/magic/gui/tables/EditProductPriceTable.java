@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.models.EditProductPriceTableModel;
-import com.pj.magic.gui.tables.rowitems.PurchaseOrderItemRowItem;
 import com.pj.magic.model.Product;
 import com.pj.magic.util.NumberUtil;
 

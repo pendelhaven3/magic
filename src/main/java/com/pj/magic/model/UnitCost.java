@@ -17,6 +17,12 @@ public class UnitCost {
 		this.grossCost = grossCost;
 		this.finalCost = finalCost;
 	}
+	
+	public UnitCost(UnitCost unitCost) {
+		unit = unitCost.getUnit();
+		grossCost = unitCost.getGrossCost();
+		finalCost = unitCost.getFinalCost();
+	}
 
 	public String getUnit() {
 		return unit;

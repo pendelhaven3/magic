@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -341,6 +342,19 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.getFinalCost(Unit.DOZEN),
 				product.getFinalCost(Unit.PIECES),
 				product.getId());
+	}
+
+	private static final String FIND_BY_ID_AND_PRICING_SCHEME_SQL = BASE_SELECT_SQL
+			+ " and a.ID = ? and b.PRICING_SCHEME_ID = ?";
+	
+	@Override
+	public Product findByIdAndPricingScheme(long id, PricingScheme pricingScheme) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_ID_AND_PRICING_SCHEME_SQL,
+					productRowMapper, id, pricingScheme.getId());
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
 	}
 
 }

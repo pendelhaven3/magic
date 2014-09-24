@@ -16,6 +16,8 @@ public interface ProductService {
 	
 	Product getProduct(long id);
 
+	Product getProduct(long id, PricingScheme pricingScheme);
+
 	void save(Product createProductFromRow);
 	
 	Product findFirstProductWithCodeLike(String code);

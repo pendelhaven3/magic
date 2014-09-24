@@ -92,5 +92,10 @@ public class ProductServiceImpl implements ProductService {
 	public List<Product> getAllActiveProductsBySupplier(Supplier supplier) {
 		return productDao.findAllActiveBySupplier(supplier);
 	}
+
+	@Override
+	public Product getProduct(long id, PricingScheme pricingScheme) {
+		return productDao.findByIdAndPricingScheme(id, pricingScheme);
+	}
 	
 }

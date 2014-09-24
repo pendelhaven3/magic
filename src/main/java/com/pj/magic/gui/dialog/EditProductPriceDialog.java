@@ -6,7 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.math.BigDecimal;
 
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
@@ -14,22 +13,20 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.EditProductPriceTable;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.Unit;
+import com.pj.magic.model.UnitPrice;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class EditProductPriceDialog extends MagicDialog {
-
-	private static final String SAVE_ACTION_COMMAND_NAME = "save";
 
 	@Autowired private ProductService productService;
 	@Autowired private EditProductPriceTable table;
@@ -39,11 +36,6 @@ public class EditProductPriceDialog extends MagicDialog {
 	private JLabel productCodeLabel;
 	private JLabel productDescriptionLabel;
 	private JLabel pricingSchemeNameLabel;
-	private MagicTextField caseUnitPriceField;
-	private MagicTextField tieUnitPriceField;
-	private MagicTextField cartonUnitPriceField;
-	private MagicTextField dozenUnitPriceField;
-	private MagicTextField piecesUnitPriceField;
 	private JButton saveButton;
 	
 	public EditProductPriceDialog() {
@@ -64,14 +56,8 @@ public class EditProductPriceDialog extends MagicDialog {
 		productCodeLabel = new JLabel();
 		productDescriptionLabel = new JLabel();
 		pricingSchemeNameLabel = new JLabel();
-		caseUnitPriceField = new MagicTextField();
-		tieUnitPriceField = new MagicTextField();
-		cartonUnitPriceField = new MagicTextField();
-		dozenUnitPriceField = new MagicTextField();
-		piecesUnitPriceField = new MagicTextField();
 		
 		saveButton = new JButton("Save");
-		saveButton.setActionCommand(SAVE_ACTION_COMMAND_NAME);
 		saveButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -82,22 +68,6 @@ public class EditProductPriceDialog extends MagicDialog {
 	}
 
 	private void saveUnitPrices() {
-		if (product.hasUnit(Unit.CASE)) {
-			product.setUnitPrice(Unit.CASE, new BigDecimal(caseUnitPriceField.getText()));
-		}
-		if (product.hasUnit(Unit.TIE)) {
-			product.setUnitPrice(Unit.TIE, new BigDecimal(tieUnitPriceField.getText()));
-		}
-		if (product.hasUnit(Unit.CARTON)) {
-			product.setUnitPrice(Unit.CARTON, new BigDecimal(cartonUnitPriceField.getText()));
-		}
-		if (product.hasUnit(Unit.DOZEN)) {
-			product.setUnitPrice(Unit.DOZEN, new BigDecimal(dozenUnitPriceField.getText()));
-		}
-		if (product.hasUnit(Unit.PIECES)) {
-			product.setUnitPrice(Unit.PIECES, new BigDecimal(piecesUnitPriceField.getText()));
-		}
-		
 		productService.saveUnitPrices(product, pricingScheme);
 		JOptionPane.showMessageDialog(this, "Saved!");
 	}
@@ -126,6 +96,9 @@ public class EditProductPriceDialog extends MagicDialog {
 
 	@Override
 	protected void doWhenEscapeKeyPressed() {
+		if (table.isEditing()) {
+			table.getCellEditor().cancelCellEditing();
+		}
 	}
 	
 	private void layoutComponents() {
@@ -260,15 +233,27 @@ public class EditProductPriceDialog extends MagicDialog {
 	}
 
 	public void updateDisplay(Product product, PricingScheme pricingScheme) {
-		this.product = product;
+		this.product = clone(product);
 		this.pricingScheme = pricingScheme;
 		
 		productCodeLabel.setText(product.getCode());
 		productDescriptionLabel.setText(product.getDescription());
 		pricingSchemeNameLabel.setText(pricingScheme.getName());
 		
-		table.setProduct(product);
+		table.setProduct(this.product);
 		table.highlight();
+	}
+
+	private Product clone(Product product) {
+		Product clone = new Product();
+		clone.setId(product.getId());
+		clone.getUnits().addAll(product.getUnits());
+		for (UnitPrice unitPrice : product.getUnitPrices()) {
+			clone.getUnitPrices().add(new UnitPrice(unitPrice));
+		}
+		clone.getUnitCosts().addAll(product.getUnitCosts());
+		clone.getUnitConversions().addAll(product.getUnitConversions());
+		return clone;
 	}
 
 }
