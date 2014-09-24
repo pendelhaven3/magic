@@ -78,6 +78,9 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 			Product product = productDao.get(item.getProduct().getId());
 			product.setGrossCost(item.getUnit(), item.getCost());
 			product.setFinalCost(item.getUnit(), item.getFinalCost());
+			if (item.getProduct().getUnits().size() > 1) {
+				product.autoCalculateCostsOfSmallerUnits();
+			}
 			productDao.updateCosts(product);
 			
 			product.addUnitQuantity(item.getUnit(), item.getQuantity());
