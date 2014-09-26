@@ -11,5 +11,7 @@ public interface PricingSchemeDao {
 	List<PricingScheme> getAll();
 	
 	PricingScheme get(long id);
+
+	void createProductPrices(PricingScheme pricingScheme);
 	
 }

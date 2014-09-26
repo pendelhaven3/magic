@@ -6,18 +6,19 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
@@ -66,13 +67,13 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveCustomer();
+				savePricingScheme();
 			}
 		});
 		
 		pricesTable = new JTable(pricesTableModel);
 		
-		focusOnComponentWhenThisPanelIsDisplayed(pricesTable);
+//		focusOnComponentWhenThisPanelIsDisplayed(pricesTable);
 	}
 
 	@Override
@@ -81,19 +82,18 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		focusOrder.add(saveButton);
 	}
 	
-	protected void saveCustomer() {
+	protected void savePricingScheme() {
 		if (!validatePricingScheme()) {
 			return;
 		}
 		
-		int confirm = showConfirmMessage("Save?");
-		if (confirm == JOptionPane.OK_OPTION) {
+		if (confirm("Save?")) {
 			pricingScheme.setName(nameField.getText());
 			
 			try {
 				pricingSchemeService.save(pricingScheme);
 				showMessage("Saved!");
-				nameField.requestFocusInWindow();
+				updateDisplay(pricingScheme);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
@@ -147,7 +147,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveCustomer();
+				savePricingScheme();
 			}
 		});
 		
@@ -193,10 +193,29 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		nameField.setText(pricingScheme.getName());
 		pricesTableModel.setProducts(pricingScheme.getProducts());
 		pricesTable.changeSelection(0, 0, false, false);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				pricesTable.requestFocusInWindow();
+			}
+		});
 	}
 
 	private void clearDisplay() {
 		nameField.setText(null);
+
+		List<Product> products = Collections.emptyList();
+		pricesTableModel.setProducts(products);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				nameField.requestFocusInWindow();
+			}
+		});
 	}
 
 	@Override

@@ -18,16 +18,16 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.models.PricingSchemesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class PricingSchemeListPanel extends StandardMagicPanel implements ActionListener {
+public class PricingSchemeListPanel extends StandardMagicPanel {
 
 	private static final String EDIT_PRICING_SCHEME_ACTION_NAME = "editPricingScheme";
-	private static final String NEW_PRICING_SCHEME_ACTION_NAME = "newPricingScheme";
 	
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private PricingSchemesTableModel tableModel;
@@ -74,15 +74,6 @@ public class PricingSchemeListPanel extends StandardMagicPanel implements Action
 		getMagicFrame().switchToEditPricingSchemePanel(pricingScheme);
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case NEW_PRICING_SCHEME_ACTION_NAME:
-			switchToNewPricingSchemePanel();
-			break;
-		}
-	}
-
 	private void switchToNewPricingSchemePanel() {
 		getMagicFrame().switchToAddNewPricingSchemePanel();
 	}
@@ -94,6 +85,16 @@ public class PricingSchemeListPanel extends StandardMagicPanel implements Action
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		MagicToolBarButton addButton = new MagicToolBarButton("plus", "New");
+		addButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switchToNewPricingSchemePanel();
+			}
+		});
+		
+		toolBar.add(addButton);
 	}
 
 	@Override

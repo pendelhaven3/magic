@@ -87,4 +87,12 @@ public class PricingSchemeDaoImpl extends MagicDao implements PricingSchemeDao {
 		}
 	}
 
+	private static final String CREATE_PRODUCT_PRICES_SQL =
+			"insert into PRODUCT_PRICE (PRICING_SCHEME_ID, PRODUCT_ID) select ?, ID from PRODUCT";
+	
+	@Override
+	public void createProductPrices(PricingScheme pricingScheme) {
+		getJdbcTemplate().update(CREATE_PRODUCT_PRICES_SQL, pricingScheme.getId());
+	}
+
 }

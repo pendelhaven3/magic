@@ -25,7 +25,11 @@ public class PricingSchemeServiceImpl implements PricingSchemeService {
 	@Transactional
 	@Override
 	public void save(PricingScheme pricingScheme) {
+		boolean inserting = (pricingScheme.getId() == null);
 		pricingSchemeDao.save(pricingScheme);
+		if (inserting) {
+			pricingSchemeDao.createProductPrices(pricingScheme);
+		}
 	}
 
 	@Override
