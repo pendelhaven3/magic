@@ -83,7 +83,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	
 	private static final String UPDATE_SQL =
 			"update RECEIVING_RECEIPT set SUPPLIER_ID = ?, POST_IND = ?, "
-			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?"
+			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?, RECEIVED_DT = ?"
 			+ " where ID = ?";
 	
 	private void update(ReceivingReceipt receivingReceipt) {
@@ -93,6 +93,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				receivingReceipt.getPaymentTerm().getId(),
 				receivingReceipt.getRemarks(),
 				receivingReceipt.getReferenceNumber(),
+				receivingReceipt.getReceivedDate(),
 				receivingReceipt.getId());
 	}
 	

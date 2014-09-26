@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,11 +17,17 @@ import javax.swing.JToolBar;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.ReceivingReceiptItemsTable;
@@ -48,7 +56,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 	private JLabel supplierField;
 	private JLabel orderDateField;
 	private JLabel paymentTermField;
-	private JLabel receivedDateField;
+	private UtilCalendarModel receivedDateModel;
 	private JLabel referenceNumberField;
 	private JLabel totalAmountField;
 	private JLabel totalDiscountedAmountField;
@@ -60,6 +68,17 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		supplierField = new JLabel();
 		paymentTermField = new JLabel();
 		referenceNumberField = new JLabel();
+		receivedDateModel = new UtilCalendarModel();
+		receivedDateModel.addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("value".equals(evt.getPropertyName()) && evt.getOldValue() != null 
+						&& evt.getNewValue() != null) {
+					receivingReceiptService.save(receivingReceipt);
+				}
+			}
+		});
 		
 		focusOnItemsTableWhenThisPanelIsDisplayed();
 		updateTotalAmountFieldWhenItemsTableChanges();
@@ -108,7 +127,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		supplierField.setText(receivingReceipt.getSupplier().getName());
 		orderDateField.setText(FormatterUtil.formatDate(receivingReceipt.getOrderDate()));
 		paymentTermField.setText(receivingReceipt.getPaymentTerm().getName());
-		receivedDateField.setText(FormatterUtil.formatDate(receivingReceipt.getReceivedDate()));
+		updateReceivedDateField();
 		referenceNumberField.setText(receivingReceipt.getReferenceNumber());
 		totalAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalAmount()));
 		totalDiscountedAmountField.setText(
@@ -117,6 +136,11 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		itemsTable.setReceivingReceipt(receivingReceipt);
 		
 		postButton.setEnabled(!receivingReceipt.isPosted());
+	}
+
+	private void updateReceivedDateField() {
+		receivedDateModel.setValue(null); // set to null first to prevent property change listener from triggering
+		receivedDateModel.setValue(DateUtils.toCalendar(receivingReceipt.getReceivedDate()));
 	}
 
 	@Override
@@ -169,7 +193,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Related PO No.:"), c);
+		add(ComponentUtil.createLabel(120, "Related PO No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 5;
@@ -205,7 +229,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Order Date:"), c);
+		add(ComponentUtil.createLabel(120, "Order Date:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -235,15 +259,17 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Received Date:"), c);
+		add(ComponentUtil.createLabel(120, "Received Date:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		receivedDateField = ComponentUtil.createLabel(100, "");
-		add(receivedDateField, c);
+
+		JDatePanelImpl datePanel = new JDatePanelImpl(receivedDateModel);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		add(datePicker, c);
 		
 		currentRow++;
 		
@@ -258,7 +284,7 @@ public class ReceivingReceiptPanel extends AbstractMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		referenceNumberField = ComponentUtil.createLabel(100, "");
+		referenceNumberField = ComponentUtil.createLabel(150, "");
 		add(referenceNumberField, c);
 
 		currentRow++;
