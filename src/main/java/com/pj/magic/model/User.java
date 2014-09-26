@@ -1,5 +1,8 @@
 package com.pj.magic.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class User {
 
 	private Long id;
@@ -43,4 +46,25 @@ public class User {
 		this.password = password;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof User)) {
+            return false;
+        }
+        User other = (User)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+	
 }

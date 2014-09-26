@@ -21,6 +21,13 @@ public class Supplier {
 		// default constructor
 	}
 	
+	public Supplier(Long id) {
+		super();
+		this.id = id;
+	}
+
+
+
 	public Supplier(Long id, String name) {
 		this.id = id;
 		this.name = name;
