@@ -10,9 +10,9 @@ import java.math.BigDecimal;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -35,10 +35,8 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class SalesInvoicePanel extends AbstractMagicPanel implements ActionListener {
+public class SalesInvoicePanel extends StandardMagicPanel {
 
-	private static final String PRINT_ACTION_COMMAND = "print";
-	
 	@Autowired private SalesInvoiceItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private PrintService printService;
@@ -82,161 +80,6 @@ public class SalesInvoicePanel extends AbstractMagicPanel implements ActionListe
 		getMagicFrame().switchToSalesInvoicesListPanel();
 	}
 	
-	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		int currentRow = 0;
-
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 5;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++; // first row
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 30), c);
-
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "SI No.:"), c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		salesInvoiceNumberField = ComponentUtil.createLabel(200, "");
-		add(salesInvoiceNumberField, c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Post Date:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		createDateField = ComponentUtil.createLabel(150, "");
-		add(createDateField, c);
-		
-		currentRow++; // second row
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Customer Name:"), c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		customerNameField = ComponentUtil.createLabel(300, "");
-		add(customerNameField, c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Posted By:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		encoderField = ComponentUtil.createLabel(150, "");
-		add(encoderField, c);
-		
-		currentRow++; // third row
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 10), c);
-		
-		currentRow++; // fourth row
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 1.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 5;
-		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
-		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
-		add(itemsTableScrollPane, c);
-
-		currentRow++; // fifth row
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 5;
-		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
-		infoTableScrollPane.setPreferredSize(new Dimension(500, 45));
-		add(infoTableScrollPane, c);
-		
-		currentRow++; // sixth row
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Total Items:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		totalItemsField = ComponentUtil.createLabel(150, "");
-		add(totalItemsField, c);
-		
-		currentRow++; // seventh row
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Total Amount:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createLabel(150, "");
-		add(totalAmountField, c);
-	}
-	
 	private void initializeUnitPricesAndQuantitiesTable() {
 		itemsTable.getModel().addTableModelListener(new TableModelListener() {
 			
@@ -271,18 +114,6 @@ public class SalesInvoicePanel extends AbstractMagicPanel implements ActionListe
 		} else {
 			unitPricesAndQuantitiesTableModel.setProduct(null);
 		}
-	}
-	
-	private JToolBar createToolBar() {
-		JToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		JButton printButton = new MagicToolBarButton("print", "Print");
-		printButton.setActionCommand(PRINT_ACTION_COMMAND);
-		printButton.addActionListener(this);
-		toolBar.add(printButton);
-		
-		return toolBar;
 	}
 	
 	private class UnitPricesAndQuantitiesTable extends JTable {
@@ -402,12 +233,160 @@ public class SalesInvoicePanel extends AbstractMagicPanel implements ActionListe
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case PRINT_ACTION_COMMAND:
-			printService.print(salesInvoice);
-			break;
-		}
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		int currentRow = 0;
+
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createFiller(50, 30), c);
+
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "SI No.:"), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		salesInvoiceNumberField = ComponentUtil.createLabel(200, "");
+		mainPanel.add(salesInvoiceNumberField, c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Post Date:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		createDateField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(createDateField, c);
+		
+		currentRow++; // second row
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Customer Name:"), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		customerNameField = ComponentUtil.createLabel(300, "");
+		mainPanel.add(customerNameField, c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Posted By:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		encoderField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(encoderField, c);
+		
+		currentRow++; // third row
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createFiller(50, 10), c);
+		
+		currentRow++; // fourth row
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		c.anchor = GridBagConstraints.CENTER;
+		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
+		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
+		mainPanel.add(itemsTableScrollPane, c);
+
+		currentRow++; // fifth row
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		c.anchor = GridBagConstraints.CENTER;
+		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
+		infoTableScrollPane.setPreferredSize(new Dimension(500, 45));
+		mainPanel.add(infoTableScrollPane, c);
+		
+		currentRow++; // sixth row
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalItemsField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(totalItemsField, c);
+		
+		currentRow++; // seventh row
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAmountField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(totalAmountField, c);
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(salesInvoice);
+			}
+		});
+		toolBar.add(printButton);
 	}
 
 }

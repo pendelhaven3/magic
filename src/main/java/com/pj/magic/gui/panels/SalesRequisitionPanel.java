@@ -22,7 +22,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -35,9 +34,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.exception.NoSellingPriceException;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.ValidationException;
-import com.pj.magic.exception.NoSellingPriceException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -59,14 +58,13 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionListener {
+public class SalesRequisitionPanel extends StandardMagicPanel {
 
 	private static final String SAVE_CUSTOMER_ACTION_NAME = "saveCustomer";
 	private static final String SAVE_PRICING_SCHEME_ACTION_NAME = "savePricingScheme";
 	private static final String SAVE_MODE_ACTION_NAME = "saveMode";
 	private static final String SAVE_REMARKS_ACTION_NAME = "saveRemarks";
 	private static final String OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME = "openSelectCustomerDialog";
-	private static final String POST_ACTION_COMMAND = "post";
 	
 	@Autowired private SalesRequisitionItemsTable itemsTable;
 	@Autowired private ProductService productService;
@@ -351,211 +349,6 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		itemsTable.setSalesRequisition(salesRequisition);
 	}
 
-	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		int currentRow = 0;
-
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 5;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 30), c);
-
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "SR No.:"), c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		salesRequisitionNumberField = ComponentUtil.createLabel(200, "");
-		add(salesRequisitionNumberField, c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Create Date:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		createDateField = ComponentUtil.createLabel(150, "");
-		add(createDateField, c);
-		
-		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Customer Name:"), c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		
-		customerCodeField.setPreferredSize(new Dimension(100, 20));
-		customerNameField = ComponentUtil.createLabel(190, "");
-		
-		add(createCustomerNamePanel(), c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Encoder:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		encoderField = ComponentUtil.createLabel(180, "");
-		add(encoderField, c);
-		
-		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Pricing Scheme:"), c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		pricingSchemeComboBox.setPreferredSize(new Dimension(100, 20));
-		add(pricingSchemeComboBox, c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Mode:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		modeComboBox.setPreferredSize(new Dimension(100, 20));
-		add(modeComboBox, c);
-		
-		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Remarks:"), c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		remarksField.setPreferredSize(new Dimension(250, 20));
-		add(remarksField, c);
-
-		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 10), c);
-		
-		currentRow++;
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 1.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 5;
-		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
-		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
-		add(itemsTableScrollPane, c);
-
-		currentRow++;
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 5;
-		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
-		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
-		add(infoTableScrollPane, c);
-		
-		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Total Items:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		totalItemsField = ComponentUtil.createLabel(150, "");
-		add(totalItemsField, c);
-		
-		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Total Amount:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createLabel(150, "");
-		add(totalAmountField, c);
-	}
-	
 	private java.awt.Component createCustomerNamePanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
@@ -626,18 +419,6 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		} else {
 			unitPricesAndQuantitiesTableModel.setProduct(null);
 		}
-	}
-	
-	private JToolBar createToolBar() {
-		JToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		JButton postButton = new MagicToolBarButton("post", "Post");
-		postButton.setActionCommand(POST_ACTION_COMMAND);
-		postButton.addActionListener(this);
-		
-		toolBar.add(postButton);
-		return toolBar;
 	}
 	
 	private class UnitPricesAndQuantitiesTable extends JTable {
@@ -780,15 +561,6 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 		
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		switch (event.getActionCommand()) {
-		case POST_ACTION_COMMAND:
-			postSalesRequisition();
-			break;
-		}
-	}
-
 	private void postSalesRequisition() {
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();
@@ -819,6 +591,214 @@ public class SalesRequisitionPanel extends AbstractMagicPanel implements ActionL
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}
+	}
+
+	@Override
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		int currentRow = 0;
+
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createFiller(50, 30), c);
+
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "SR No.:"), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		salesRequisitionNumberField = ComponentUtil.createLabel(200, "");
+		mainPanel.add(salesRequisitionNumberField, c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Create Date:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		createDateField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(createDateField, c);
+		
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Customer Name:"), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		customerCodeField.setPreferredSize(new Dimension(100, 20));
+		customerNameField = ComponentUtil.createLabel(190, "");
+		
+		mainPanel.add(createCustomerNamePanel(), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Encoder:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		encoderField = ComponentUtil.createLabel(180, "");
+		mainPanel.add(encoderField, c);
+		
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Pricing Scheme:"), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		pricingSchemeComboBox.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(pricingSchemeComboBox, c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Mode:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		modeComboBox.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(modeComboBox, c);
+		
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Remarks:"), c);
+		
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		remarksField.setPreferredSize(new Dimension(250, 20));
+		mainPanel.add(remarksField, c);
+
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createFiller(50, 10), c);
+		
+		currentRow++;
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		c.anchor = GridBagConstraints.CENTER;
+		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
+		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
+		mainPanel.add(itemsTableScrollPane, c);
+
+		currentRow++;
+		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		c.anchor = GridBagConstraints.CENTER;
+		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
+		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
+		mainPanel.add(infoTableScrollPane, c);
+		
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalItemsField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(totalItemsField, c);
+		
+		currentRow++;
+		
+		c.weightx = c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAmountField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(totalAmountField, c);
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton postButton = new MagicToolBarButton("post", "Post");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				postSalesRequisition();
+			}
+		});
+		
+		toolBar.add(postButton);
 	}
 
 }
