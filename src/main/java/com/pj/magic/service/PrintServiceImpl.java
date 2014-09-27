@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.pj.magic.dao.SupplierDao;
+import com.pj.magic.dao.UserDao;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
@@ -35,7 +36,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int RECEIVING_RECEIPT_ITEMS_PER_PAGE = 44;
 	
 	@Autowired private SupplierDao supplierDao;
-	@Autowired private LoginService loginService;
+	@Autowired private UserDao userDao;
 	
 	public PrintServiceImpl() {
 		Velocity.setProperty("file.resource.loader.class", 
@@ -101,6 +102,7 @@ public class PrintServiceImpl implements PrintService {
 	@Override
 	public void print(ReceivingReceipt receivingReceipt, boolean includeDiscountDetails) {
 		receivingReceipt.setSupplier(supplierDao.get(receivingReceipt.getSupplier().getId()));
+		receivingReceipt.setReceivedBy(userDao.get(receivingReceipt.getReceivedBy().getId()));
 		
 		Collections.sort(receivingReceipt.getItems());
 		

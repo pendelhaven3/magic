@@ -231,8 +231,9 @@ create table RECEIVING_RECEIPT (
   REMARKS varchar2(100) null,
   REFERENCE_NO varchar2(30) null,
   RECEIVED_DT date not null,
-  RECEIVED_BY integer null,
+  RECEIVED_BY integer not null,
   ORDER_DT date not null,
+  RELATED_PURCHASE_ORDER_NO integer not null,
   constraint RECEIVING_RECEIPT$PK primary key (ID),
   constraint RECEIVING_RECEIPT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID)
 );

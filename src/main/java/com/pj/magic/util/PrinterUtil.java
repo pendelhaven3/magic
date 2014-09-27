@@ -18,7 +18,8 @@ public class PrinterUtil {
 	private static String EPSON_PRINTER = "EPSON LX-300+ /II";
 
 	public static void print(String data) throws PrintException {
-		print(data.getBytes());
+//		print(data.getBytes());
+		System.out.println(data);
 	}
 
 	public static void print(byte[] data) throws PrintException {

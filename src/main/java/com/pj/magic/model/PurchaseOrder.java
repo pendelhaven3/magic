@@ -115,6 +115,7 @@ public class PurchaseOrder {
 		receivingReceipt.setPaymentTerm(paymentTerm);
 		receivingReceipt.setReferenceNumber(referenceNumber);
 		receivingReceipt.setRemarks(remarks);
+		receivingReceipt.setRelatedPurchaseOrderNumber(purchaseOrderNumber);
 		
 		for (PurchaseOrderItem item : items) {
 			if (item.getActualQuantity() > 0) {

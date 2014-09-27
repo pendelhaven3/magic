@@ -78,6 +78,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 		purchaseOrderDao.save(updated);
 
 		ReceivingReceipt receivingReceipt = updated.createReceivingReceipt();
+		receivingReceipt.setReceivedBy(loginService.getLoggedInUser());
 		receivingReceiptService.save(receivingReceipt);
 		return receivingReceipt;
 	}

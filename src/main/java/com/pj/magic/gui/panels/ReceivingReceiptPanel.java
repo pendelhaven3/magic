@@ -126,6 +126,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		receivingReceipt = this.receivingReceipt;
 		
 		receivingReceiptNumberField.setText(receivingReceipt.getReceivingReceiptNumber().toString());
+		relatedPurchaseOrderNumberField.setText(receivingReceipt.getRelatedPurchaseOrderNumber().toString());
 		supplierField.setText(receivingReceipt.getSupplier().getName());
 		orderDateField.setText(FormatterUtil.formatDate(receivingReceipt.getOrderDate()));
 		paymentTermField.setText(receivingReceipt.getPaymentTerm().getName());
