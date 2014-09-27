@@ -19,6 +19,7 @@ public class ReceivingReceipt {
 	private List<ReceivingReceiptItem> items = new ArrayList<>();
 	private boolean posted;
 	private String remarks;
+	private Long relatedPurchaseOrderNumber;
 
 	public Long getId() {
 		return id;
@@ -138,6 +139,22 @@ public class ReceivingReceipt {
 			totalNetAmount = totalNetAmount.add(item.getNetAmount());
 		}
 		return totalNetAmount.setScale(2, RoundingMode.HALF_UP);
+	}
+
+	public Long getRelatedPurchaseOrderNumber() {
+		return relatedPurchaseOrderNumber;
+	}
+
+	public void setRelatedPurchaseOrderNumber(Long relatedPurchaseOrderNumber) {
+		this.relatedPurchaseOrderNumber = relatedPurchaseOrderNumber;
+	}
+	
+	public int getTotalQuantity() {
+		int totalQuantity = 0;
+		for (ReceivingReceiptItem item : items) {
+			totalQuantity += item.getQuantity();
+		}
+		return totalQuantity;
 	}
 	
 }

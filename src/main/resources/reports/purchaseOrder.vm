@@ -4,7 +4,7 @@
 
                               PURCHASE ORDER
 
-Supplier : $report.field($purchaseOrder.supplier.name, 30)                   P.O. # : ${purchaseOrder.purchaseOrderNumber} 
+Supplier : $report.field($purchaseOrder.supplier.name, 40)         P.O. # : ${purchaseOrder.purchaseOrderNumber} 
 Address  : $report.multiline($purchaseOrder.supplier.address, 40, 1)         Date : $currentDate
            $report.multiline($purchaseOrder.supplier.address, 40, 2)
 Fax #    : $report.field($purchaseOrder.supplier.faxNumber, 40)

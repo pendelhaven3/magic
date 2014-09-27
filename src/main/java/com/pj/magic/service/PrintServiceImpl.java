@@ -19,6 +19,8 @@ import com.google.common.collect.Lists;
 import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
+import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.util.FormatterUtil;
@@ -28,13 +30,16 @@ import com.pj.magic.util.ReportUtil;
 @Service 
 public class PrintServiceImpl implements PrintService {
 
+	private static final int SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	private static final int PURCHASE_ORDER_ITEMS_PER_PAGE = 44;
+	private static final int RECEIVING_RECEIPT_ITEMS_PER_PAGE = 44;
 	
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private LoginService loginService;
 	
 	public PrintServiceImpl() {
-		Velocity.setProperty("file.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+		Velocity.setProperty("file.resource.loader.class", 
+				"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 		Velocity.init();
 	}
 	
@@ -44,7 +49,8 @@ public class PrintServiceImpl implements PrintService {
 		
 		String currentDate = FormatterUtil.formatDate(new Date());
 		
-		List<List<SalesInvoiceItem>> pageItems = Lists.partition(salesInvoice.getItems(), PURCHASE_ORDER_ITEMS_PER_PAGE);
+		List<List<SalesInvoiceItem>> pageItems = Lists.partition(salesInvoice.getItems(), 
+				SALES_INVOICE_ITEMS_PER_PAGE);
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("salesInvoice", salesInvoice);
@@ -78,7 +84,8 @@ public class PrintServiceImpl implements PrintService {
 		
 		String currentDate = FormatterUtil.formatDate(new Date());
 		
-		List<List<PurchaseOrderItem>> pageItems = Lists.partition(purchaseOrder.getItems(), PURCHASE_ORDER_ITEMS_PER_PAGE);
+		List<List<PurchaseOrderItem>> pageItems = Lists.partition(purchaseOrder.getItems(), 
+				PURCHASE_ORDER_ITEMS_PER_PAGE);
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("purchaseOrder", purchaseOrder);
@@ -88,6 +95,32 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
 			printReport("reports/purchaseOrder.vm", reportData);
+		}
+	}
+
+	@Override
+	public void print(ReceivingReceipt receivingReceipt, boolean includeDiscountDetails) {
+		receivingReceipt.setSupplier(supplierDao.get(receivingReceipt.getSupplier().getId()));
+		
+		Collections.sort(receivingReceipt.getItems());
+		
+		String receivedDate = FormatterUtil.formatDate(receivingReceipt.getReceivedDate());
+		
+		List<List<ReceivingReceiptItem>> pageItems = Lists.partition(receivingReceipt.getItems(), 
+				RECEIVING_RECEIPT_ITEMS_PER_PAGE);
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("receivingReceipt", receivingReceipt);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("receivedDate", receivedDate);
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			if (includeDiscountDetails) {
+				printReport("reports/receivingReceipt.vm", reportData);
+			} else {
+				printReport("reports/receivingReceipt-noDiscountDetails.vm", reportData);
+			}
 		}
 	}
 	

@@ -5,7 +5,7 @@ import java.math.RoundingMode;
 
 import com.pj.magic.util.Percentage;
 
-public class ReceivingReceiptItem {
+public class ReceivingReceiptItem implements Comparable<ReceivingReceiptItem> {
 
 	private Long id;
 	private ReceivingReceipt parent;
@@ -125,6 +125,16 @@ public class ReceivingReceiptItem {
 
 	public BigDecimal getFinalCost() {
 		return getNetAmount().divide(new BigDecimal(quantity), 2, RoundingMode.HALF_UP);
+	}
+
+	@Override
+	public int compareTo(ReceivingReceiptItem o) {
+		int result = product.compareTo(o.getProduct());
+		if (result == 0) {
+			return Unit.compare(unit, o.getUnit());
+		} else {
+			return result;
+		}
 	}
 	
 }

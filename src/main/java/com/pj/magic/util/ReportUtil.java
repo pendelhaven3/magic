@@ -49,6 +49,10 @@ public class ReportUtil {
 	}
 	
 	public static String multiline(final String text, int lineLength, int lineNumber) {
+		if (StringUtils.isEmpty(text)) {
+			return "";
+		}
+		
 		String line = "";
 		int lastPosition = 0;
 		for (int i = 0; i < lineNumber; i++) {
