@@ -32,6 +32,7 @@ import com.pj.magic.model.util.ProductSearchCriteria;
 @Repository
 public class ProductDaoImpl extends MagicDao implements ProductDao {
 	
+	// TODO: Review base SQL for being tied with pricing scheme
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, CODE, DESCRIPTION, MAX_STOCK_LEVEL, MIN_STOCK_LEVEL, ACTIVE_IND,"
 			+ " UNIT_IND_CSE, UNIT_IND_TIE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
@@ -51,14 +52,11 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ "		on d.ID = a.CATEGORY_ID"
 			+ " where 1 = 1";
 	
-	private static final String GET_ALL_SQL = BASE_SELECT_SQL
-			+ " order by a.CODE";
-
 	private ProductRowMapper productRowMapper = new ProductRowMapper();
 	
 	@Override
 	public List<Product> getAll() {
-		return getJdbcTemplate().query(GET_ALL_SQL, productRowMapper);
+		return findAllByPricingScheme(new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID));
 	}
 
 	@Override
@@ -270,19 +268,6 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		product.setId(holder.getKey().longValue());
 	}
 
-	private static final String FIND_FIRST_WITH_CODE_LIKE_SQL = BASE_SELECT_SQL
-			+ " and CODE like ? limit 1";
-			
-	
-	@Override
-	public Product findFirstWithCodeLike(String code) {
-		try {
-			return getJdbcTemplate().queryForObject(FIND_FIRST_WITH_CODE_LIKE_SQL, productRowMapper, code + "%");
-		} catch (IncorrectResultSizeDataAccessException e) {
-			return null;
-		}
-	}
-
 	@Override
 	public List<Product> search(ProductSearchCriteria criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
@@ -300,13 +285,14 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			" and b.PRICING_SCHEME_ID = ? order by a.CODE";
 	
 	@Override
-	public List<Product> findAllWithPricingScheme(PricingScheme pricingScheme) {
+	public List<Product> findAllByPricingScheme(PricingScheme pricingScheme) {
 		return getJdbcTemplate().query(FIND_ALL_WITH_PRICING_SCHEME_SQL, productRowMapper, pricingScheme.getId());
 	}
 
 	private static final String FIND_ALL_ACTIVE_BY_SUPPLIER_SQL = BASE_SELECT_SQL +
 			" and a.ACTIVE_IND = 'Y'"
 			+ " and exists(select 1 from SUPPLIER_PRODUCT sp where sp.PRODUCT_ID = a.ID and sp.SUPPLIER_ID = ?)"
+			+ " and b.PRICING_SCHEME_ID = 1"
 			+ " order by a.CODE";
 			
 	

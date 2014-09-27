@@ -17,6 +17,8 @@ public interface ProductService {
 	
 	Product findProductByCode(String code);
 	
+	Product findProductByCodeAndPricingScheme(String code, PricingScheme pricingScheme);
+	
 	Product getProduct(long id);
 
 	Product getProduct(long id, PricingScheme pricingScheme);

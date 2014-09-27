@@ -19,11 +19,9 @@ public interface ProductDao {
 	
 	void save(Product product);
 	
-	Product findFirstWithCodeLike(String code);
-
 	List<Product> search(ProductSearchCriteria criteria);
 	
-	List<Product> findAllWithPricingScheme(PricingScheme pricingScheme);
+	List<Product> findAllByPricingScheme(PricingScheme pricingScheme);
 	
 	List<Product> findAllActiveBySupplier(Supplier supplier);
 

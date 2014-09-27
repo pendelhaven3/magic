@@ -25,6 +25,7 @@ insert into SUPPLIER (CODE, NAME) values ('KSERVICO', 'K SERVICO TRADE, INC.');
 insert into SUPPLIER (CODE, NAME) values ('PHILGROCER', 'PHILGROCER');
 
 insert into PRICING_SCHEME (NAME) values ('CANVASSER');
+insert into PRICING_SCHEME (NAME) values ('MARKETING');
 
 insert into PAYMENT_TERM (NAME, NUMBER_OF_DAYS) values ('COD', 0);
 insert into PAYMENT_TERM (NAME, NUMBER_OF_DAYS) values ('7 DAYS', 7);

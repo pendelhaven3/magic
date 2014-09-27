@@ -33,6 +33,11 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public Product findProductByCodeAndPricingScheme(String code, PricingScheme pricingScheme) {
+		return productDao.findByCodeAndPricingScheme(code, pricingScheme);
+	}
+
+	@Override
 	public Product getProduct(long id) {
 		return productDao.get(id);
 	}

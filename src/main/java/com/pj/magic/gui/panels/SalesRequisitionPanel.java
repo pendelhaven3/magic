@@ -415,8 +415,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		
 		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
 		if (product != null && product.isValid()) {
-			unitPricesAndQuantitiesTableModel.setProduct(
-					productService.getProduct(product.getId(), salesRequisition.getPricingScheme()));
+			unitPricesAndQuantitiesTableModel.setProduct(product);
 		} else {
 			unitPricesAndQuantitiesTableModel.setProduct(null);
 		}
@@ -505,7 +504,8 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 				}
 			}
 			
-			product = productService.findProductByCode(product.getCode());
+			product = productService.findProductByCodeAndPricingScheme(
+					product.getCode(), salesRequisition.getPricingScheme());
 			
 			if (rowIndex == 0) {
 				switch (columnIndex) {

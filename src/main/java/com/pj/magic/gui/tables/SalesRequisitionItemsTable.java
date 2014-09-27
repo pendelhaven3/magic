@@ -256,7 +256,7 @@ public class SalesRequisitionItemsTable extends JTable {
 		clearSelection();
 		addMode = false;
 		this.salesRequisition = salesRequisition;
-		getItemsTableModel().setItems(salesRequisition.getItems());
+		getItemsTableModel().setSalesRequisition(salesRequisition);
 	}
 	
 	private SalesRequisitionItem createBlankItem() {

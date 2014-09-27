@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesRequisitionService;
@@ -32,6 +34,12 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 	@Autowired private SalesRequisitionService salesRequisitionService;
 	
 	private List<SalesRequisitionItem> items = new ArrayList<>();
+	private PricingScheme pricingScheme;
+	
+	public void setSalesRequisition(SalesRequisition salesRequisition) {
+		setItems(salesRequisition.getItems());
+		pricingScheme = salesRequisition.getPricingScheme();
+	}
 	
 	@Override
 	public int getColumnCount() {
@@ -98,7 +106,7 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		String val = (String)value;
 		switch (columnIndex) {
 		case SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			Product product = productService.findProductByCode(val);
+			Product product = productService.findProductByCodeAndPricingScheme(val, pricingScheme);
 			if (product == null) {
 				product = new Product();
 				product.setCode(val);

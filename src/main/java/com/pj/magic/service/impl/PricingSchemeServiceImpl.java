@@ -35,7 +35,7 @@ public class PricingSchemeServiceImpl implements PricingSchemeService {
 	@Override
 	public PricingScheme get(long id) {
 		PricingScheme pricingScheme = pricingSchemeDao.get(id);
-		pricingScheme.setProducts(productDao.findAllWithPricingScheme(pricingScheme));
+		pricingScheme.setProducts(productDao.findAllByPricingScheme(pricingScheme));
 		return pricingScheme;
 	}
 
