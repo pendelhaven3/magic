@@ -31,3 +31,8 @@ version 0.8
 1. Added Receiving Receipt
 2. Added Adjustment In
 3. Added Adjustment Out
+
+version 0.9
+1. Added editing of prices (with relation to gross/final cost)
+2. Allow adding new pricing schemes
+3. Added Receiving Receipt reports
