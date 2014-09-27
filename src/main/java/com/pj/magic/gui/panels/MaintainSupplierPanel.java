@@ -14,7 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import javax.swing.JToolBar;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class MaintainSupplierPanel extends AbstractMagicPanel {
+public class MaintainSupplierPanel extends StandardMagicPanel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MaintainSupplierPanel.class);
 	private static final String NEXT_FIELD_ACTION_NAME = "nextField";
@@ -151,30 +151,19 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 	}
 
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 3;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-		
-		currentRow++;
-		
 		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(120, "Code: "), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Code: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -182,14 +171,14 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		codeField.setPreferredSize(new Dimension(100, 20));
-		add(codeField, c);
+		mainPanel.add(codeField, c);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 1.0; // right space filler
 		c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
 		
 		currentRow++;
 		
@@ -199,7 +188,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(120, "Business Name: "), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Business Name: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -207,7 +196,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		nameField.setPreferredSize(new Dimension(300, 20));
-		add(nameField, c);
+		mainPanel.add(nameField, c);
 		
 		currentRow++;
 		
@@ -216,7 +205,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Address: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Address: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -224,7 +213,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		addressField.setPreferredSize(new Dimension(300, 20));
-		add(addressField, c);
+		mainPanel.add(addressField, c);
 		
 		currentRow++;
 		
@@ -233,7 +222,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Contact Number: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Contact Number: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -241,7 +230,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		contactNumberField.setPreferredSize(new Dimension(200, 20));
-		add(contactNumberField, c);
+		mainPanel.add(contactNumberField, c);
 		
 		currentRow++;
 		
@@ -250,7 +239,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Contact Person: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Contact Person: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -258,7 +247,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		contactPersonField.setPreferredSize(new Dimension(200, 20));
-		add(contactPersonField, c);
+		mainPanel.add(contactPersonField, c);
 		
 		currentRow++;
 		
@@ -267,7 +256,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Fax Number: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Fax Number: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -275,7 +264,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		faxNumberField.setPreferredSize(new Dimension(200, 20));
-		add(faxNumberField, c);
+		mainPanel.add(faxNumberField, c);
 		
 		currentRow++;
 		
@@ -284,7 +273,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Email Address: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Email Address: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -292,7 +281,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		emailAddressField.setPreferredSize(new Dimension(200, 20));
-		add(emailAddressField, c);
+		mainPanel.add(emailAddressField, c);
 		
 		currentRow++;
 		
@@ -301,7 +290,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "TIN: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "TIN: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -309,7 +298,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		tinField.setPreferredSize(new Dimension(100, 20));
-		add(tinField, c);
+		mainPanel.add(tinField, c);
 		
 		currentRow++;
 		
@@ -318,7 +307,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Payment Term: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Payment Term: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -326,7 +315,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		paymentTermComboBox.setPreferredSize(new Dimension(100, 20));
-		add(paymentTermComboBox, c);
+		mainPanel.add(paymentTermComboBox, c);
 		
 		currentRow++;
 		
@@ -335,7 +324,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Remarks: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Remarks: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -343,7 +332,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		remarksField.setPreferredSize(new Dimension(300, 20));
-		add(remarksField, c);
+		mainPanel.add(remarksField, c);
 		
 		currentRow++;
 		
@@ -352,7 +341,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 20), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
 		
 		currentRow++;
 		
@@ -363,7 +352,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
 		saveButton.setPreferredSize(new Dimension(100, 20));
-		add(saveButton, c);
+		mainPanel.add(saveButton, c);
 		
 		currentRow++;
 		
@@ -372,13 +361,7 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
-	}
-
-	private JToolBar createToolBar() {
-		MagicToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		return toolBar;
+		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
 	}
 
 	@Override
@@ -456,6 +439,11 @@ public class MaintainSupplierPanel extends AbstractMagicPanel {
 	@Override
 	protected void doOnBack() {
 		getMagicFrame().switchToSupplierListPanel();
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		// none
 	}
 
 }

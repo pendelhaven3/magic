@@ -3,8 +3,8 @@ package com.pj.magic.gui.panels;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class ReceivingReceiptListPanel extends AbstractMagicPanel {
+public class ReceivingReceiptListPanel extends StandardMagicPanel {
 	
 	@Autowired private ReceivingReceiptsTable table;
 	
@@ -34,26 +34,16 @@ public class ReceivingReceiptListPanel extends AbstractMagicPanel {
 	}
 	
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		int currentRow = 0;
 		GridBagConstraints c = new GridBagConstraints();
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
 		
 		currentRow++;
 		
@@ -63,7 +53,7 @@ public class ReceivingReceiptListPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
-		add(scrollPane, c);
+		mainPanel.add(scrollPane, c);
 	}
 	
 	@Override
@@ -80,15 +70,13 @@ public class ReceivingReceiptListPanel extends AbstractMagicPanel {
 		getMagicFrame().switchToMainMenuPanel();
 	}
 	
-	private JToolBar createToolBar() {
-		MagicToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		addUsernameFieldAndLogoutButton(toolBar);
-		return toolBar;
-	}
-
 	public void displayReceivingReceiptDetails(ReceivingReceipt receivingReceipt) {
 		getMagicFrame().switchToReceivingReceiptPanel(receivingReceipt);
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		// none
 	}
 
 }
