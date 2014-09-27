@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.models.ProductsTableModel;
 import com.pj.magic.gui.tables.models.UnitCostsAndQuantitiesTableModel;
 import com.pj.magic.gui.tables.models.UnitPricesAndQuantitiesTableModel;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.service.ProductService;
@@ -171,15 +172,37 @@ public class SelectProductDialog extends MagicDialog {
 		return infoTablePanel;
 	}
 
+	// TODO: Review references to this
 	public void searchProducts(String productCode) {
 		List<Product> products = productService.getAllActiveProducts();
 		productsTableModel.setProducts(products);
 		
 		int selectedRow = 0;
 		if (!StringUtils.isEmpty(productCode)) {
-			Product selectedProduct = productService.findFirstProductWithCodeLike(productCode);
-			if (selectedProduct != null) {
-				selectedRow = products.indexOf(selectedProduct);
+			for (int i = 0; i < products.size(); i++) {
+				if (products.get(i).getCode().startsWith(productCode)) {
+					selectedRow = i;
+					break;
+				}
+			}
+		}
+		if (!products.isEmpty()) {
+			productsTable.changeSelection(selectedRow, 0, false, false);
+		}
+		((CardLayout)infoTablePanel.getLayout()).show(infoTablePanel, UNIT_PRICE_INFO_TABLE);
+	}
+
+	public void searchProducts(String productCode, PricingScheme pricingScheme) {
+		List<Product> products = productService.getAllActiveProducts(pricingScheme);
+		productsTableModel.setProducts(products);
+		
+		int selectedRow = 0;
+		if (!StringUtils.isEmpty(productCode)) {
+			for (int i = 0; i < products.size(); i++) {
+				if (products.get(i).getCode().startsWith(productCode)) {
+					selectedRow = i;
+					break;
+				}
 			}
 		}
 		if (!products.isEmpty()) {

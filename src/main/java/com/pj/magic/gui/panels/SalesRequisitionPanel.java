@@ -415,7 +415,8 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		
 		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
 		if (product != null && product.isValid()) {
-			unitPricesAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
+			unitPricesAndQuantitiesTableModel.setProduct(
+					productService.getProduct(product.getId(), salesRequisition.getPricingScheme()));
 		} else {
 			unitPricesAndQuantitiesTableModel.setProduct(null);
 		}

@@ -48,7 +48,8 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	private void loadSalesRequisitionDetails(SalesRequisition salesRequisition) {
 		salesRequisition.setItems(salesRequisitionItemDao.findAllBySalesRequisition(salesRequisition));
 		for (SalesRequisitionItem item : salesRequisition.getItems()) {
-			item.setProduct(productDao.get(item.getProduct().getId()));
+			item.setProduct(productDao.findByIdAndPricingScheme(
+					item.getProduct().getId(), salesRequisition.getPricingScheme()));
 		}
 		if (salesRequisition.getCustomer() != null) {
 			salesRequisition.setCustomer(customerDao.get(salesRequisition.getCustomer().getId()));

@@ -10,7 +10,10 @@ public interface ProductService {
 
 	List<Product> getAllProducts();
 	
+	// TODO: Review references to this
 	List<Product> getAllActiveProducts();
+	
+	List<Product> getAllActiveProducts(PricingScheme pricingScheme);
 	
 	Product findProductByCode(String code);
 	
@@ -20,8 +23,6 @@ public interface ProductService {
 
 	void save(Product createProductFromRow);
 	
-	Product findFirstProductWithCodeLike(String code);
-
 	void addProductSupplier(Product product, Supplier supplier);
 
 	List<Supplier> getProductSuppliers(Product product);

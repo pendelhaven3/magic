@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.List;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,6 +15,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.pj.magic.Constants;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.PricingScheme;
@@ -27,6 +27,7 @@ import com.pj.magic.model.UnitConversion;
 import com.pj.magic.model.UnitCost;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.model.UnitQuantity;
+import com.pj.magic.model.util.ProductSearchCriteria;
 
 @Repository
 public class ProductDaoImpl extends MagicDao implements ProductDao {
@@ -53,12 +54,6 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	private static final String GET_ALL_SQL = BASE_SELECT_SQL
 			+ " order by a.CODE";
 
-	private static final String FIND_BY_CODE_SQL = BASE_SELECT_SQL
-			+ " and a.CODE = ?";
-
-	private static final String FIND_BY_ID_SQL = BASE_SELECT_SQL
-			+ " and a.ID = ?";
-
 	private ProductRowMapper productRowMapper = new ProductRowMapper();
 	
 	@Override
@@ -68,16 +63,13 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 
 	@Override
 	public Product findByCode(String code) {
-		try {
-			return getJdbcTemplate().queryForObject(FIND_BY_CODE_SQL, productRowMapper, code);
-		} catch (IncorrectResultSizeDataAccessException e) {
-			return null;
-		}
+		return findByCodeAndPricingScheme(code, new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID));
 	}
 	
 	@Override
 	public Product get(long id) {
-		return getJdbcTemplate().queryForObject(FIND_BY_ID_SQL, productRowMapper, id);
+		return getJdbcTemplate().queryForObject(
+				FIND_BY_ID_AND_PRICING_SCHEME_SQL, productRowMapper, id, Constants.CANVASSER_PRICING_SCHEME_ID);
 	}
 
 	private class ProductRowMapper implements RowMapper<Product> {
@@ -292,13 +284,16 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	}
 
 	@Override
-	public List<Product> search(Product criteria) {
+	public List<Product> search(ProductSearchCriteria criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
 		sql.append(" and ACTIVE_IND = ?");
-		sql.append(" order by CODE"); // TODO: change to be more flexible when the need arises
+		sql.append(" and b.PRICING_SCHEME_ID = ?");
+		sql.append(" order by CODE");
 		
 		return getJdbcTemplate().query(sql.toString(), productRowMapper,
-				criteria.isActive() ? "Y" : "N");
+				criteria.isActive() ? "Y" : "N",
+				criteria.getPricingScheme().getId()
+		);
 	}
 
 	private static final String FIND_ALL_WITH_PRICING_SCHEME_SQL = BASE_SELECT_SQL +
@@ -352,6 +347,19 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		try {
 			return getJdbcTemplate().queryForObject(FIND_BY_ID_AND_PRICING_SCHEME_SQL,
 					productRowMapper, id, pricingScheme.getId());
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
+
+	private static final String FIND_BY_CODE_AND_PRICING_SCHEME_SQL = BASE_SELECT_SQL
+			+ " and a.CODE = ? and b.PRICING_SCHEME_ID = ?";
+	
+	@Override
+	public Product findByCodeAndPricingScheme(String code, PricingScheme pricingScheme) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_CODE_AND_PRICING_SCHEME_SQL,
+					productRowMapper, code, pricingScheme.getId());
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}

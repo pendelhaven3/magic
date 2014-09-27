@@ -12,6 +12,7 @@ import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.model.util.ProductSearchCriteria;
 import com.pj.magic.service.ProductService;
 
 @Service
@@ -46,15 +47,9 @@ public class ProductServiceImpl implements ProductService {
 		}
 	}
 
-	// TODO: Deprecate this one
-	@Override
-	public Product findFirstProductWithCodeLike(String code) {
-		return productDao.findFirstWithCodeLike(code);
-	}
-
 	@Override
 	public List<Product> getAllActiveProducts() {
-		Product criteria = new Product();
+		ProductSearchCriteria criteria = new ProductSearchCriteria();
 		criteria.setActive(true);
 
 		return productDao.search(criteria);
@@ -96,6 +91,15 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Product getProduct(long id, PricingScheme pricingScheme) {
 		return productDao.findByIdAndPricingScheme(id, pricingScheme);
+	}
+
+	@Override
+	public List<Product> getAllActiveProducts(PricingScheme pricingScheme) {
+		ProductSearchCriteria criteria = new ProductSearchCriteria();
+		criteria.setActive(true);
+		criteria.setPricingScheme(pricingScheme);
+		
+		return productDao.search(criteria);
 	}
 	
 }
