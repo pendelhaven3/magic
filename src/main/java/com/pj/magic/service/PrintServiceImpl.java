@@ -26,6 +26,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.PrinterUtil;
+import com.pj.magic.util.ReceivingReceiptReportUtil;
 import com.pj.magic.util.ReportUtil;
 
 @Service 
@@ -68,7 +69,11 @@ public class PrintServiceImpl implements PrintService {
 		Template template = Velocity.getTemplate(templateName);
 		StringWriter writer = new StringWriter();
 		VelocityContext context = new VelocityContext(reportData);
-		context.put("report", ReportUtil.class);
+		if (reportData.containsKey("reportUtil")) {
+			context.put("report", reportData.get("reportUtil"));
+		} else {
+			context.put("report", ReportUtil.class);
+		}
 		template.merge(context, writer);
 		try {
 			PrinterUtil.print(writer.toString());
@@ -119,6 +124,7 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
 			if (includeDiscountDetails) {
+				reportData.put("reportUtil", ReceivingReceiptReportUtil.class);
 				printReport("reports/receivingReceipt.vm", reportData);
 			} else {
 				printReport("reports/receivingReceipt-noDiscountDetails.vm", reportData);
