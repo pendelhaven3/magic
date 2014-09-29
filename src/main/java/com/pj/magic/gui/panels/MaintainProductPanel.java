@@ -20,7 +20,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
@@ -44,7 +43,7 @@ import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class MaintainProductPanel extends AbstractMagicPanel {
+public class MaintainProductPanel extends StandardMagicPanel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MaintainProductPanel.class);
 	private static final String NEXT_FIELD_ACTION_NAME = "nextField";
@@ -330,22 +329,11 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	}
 
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 5;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-		
-		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -353,7 +341,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Code: "), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Code: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -361,28 +349,28 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		codeField.setPreferredSize(new Dimension(100, 20));
-		add(codeField, c);
+		mainPanel.add(codeField, c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 20), c);
+		mainPanel.add(ComponentUtil.createFiller(50, 20), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Suppliers:"), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Suppliers:"), c);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 1.0; // right space filler
 		c.weighty = 0.0;
 		c.gridx = 4;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
 		
 		currentRow++;
 		
@@ -390,7 +378,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createLabel(100, "Description: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Description: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = 0.0;
@@ -399,7 +387,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		descriptionField.setPreferredSize(new Dimension(300, 20));
-		add(descriptionField, c);
+		mainPanel.add(descriptionField, c);
 
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -410,7 +398,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.anchor = GridBagConstraints.NORTHWEST;
 		JScrollPane scrollPane = new JScrollPane(productSuppliersTable);
 		scrollPane.setPreferredSize(new Dimension(350, 110));
-		add(scrollPane, c);
+		mainPanel.add(scrollPane, c);
 		
 		currentRow++;
 		
@@ -420,7 +408,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.gridheight = 1;
-		add(ComponentUtil.createLabel(100, "Category: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Category: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = 0.0;
@@ -429,7 +417,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		categoryComboBox.setPreferredSize(new Dimension(300, 20));
-		add(categoryComboBox, c);
+		mainPanel.add(categoryComboBox, c);
 
 		currentRow++;
 		
@@ -437,7 +425,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createLabel(150, "Maximum Stock Level: "), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Maximum Stock Level: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = 0.0;
@@ -446,7 +434,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		maximumStockLevelField.setPreferredSize(new Dimension(50, 20));
-		add(maximumStockLevelField, c);
+		mainPanel.add(maximumStockLevelField, c);
 
 		currentRow++;
 		
@@ -454,7 +442,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createLabel(150, "Minimum Stock Level: "), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Minimum Stock Level: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -462,7 +450,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		minimumStockLevelField.setPreferredSize(new Dimension(50, 20));
-		add(minimumStockLevelField, c);
+		mainPanel.add(minimumStockLevelField, c);
 
 		currentRow++;
 		
@@ -470,14 +458,14 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createLabel(150, "Active? "), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Active? "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(activeIndicatorCheckBox, c);
+		mainPanel.add(activeIndicatorCheckBox, c);
 
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -485,7 +473,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.EAST;
-		add(addSupplierButton, c);
+		mainPanel.add(addSupplierButton, c);
 		
 		currentRow++;
 		
@@ -493,7 +481,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createLabel(150, "Manufacturer:"), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Manufacturer:"), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -501,7 +489,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		manufacturerComboBox.setPreferredSize(new Dimension(300, 20));
-		add(manufacturerComboBox, c);
+		mainPanel.add(manufacturerComboBox, c);
 
 		currentRow++;
 		
@@ -509,7 +497,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(10, 10), c);
+		mainPanel.add(ComponentUtil.createFiller(10, 10), c);
 		
 		currentRow++;
 		
@@ -519,7 +507,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 2;
 		c.anchor = GridBagConstraints.CENTER;
-		add(new JSeparator(), c);
+		mainPanel.add(new JSeparator(), c);
 		
 		currentRow++;
 		
@@ -527,7 +515,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(10, 10), c);
+		mainPanel.add(ComponentUtil.createFiller(10, 10), c);
 		
 		currentRow++;
 		
@@ -537,7 +525,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.NORTHWEST;
-		add(ComponentUtil.createLabel(100, "Units: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Units: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = 0.0;
@@ -546,7 +534,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		
-		add(createUnitsPanel(), c);
+		mainPanel.add(createUnitsPanel(), c);
 
 		currentRow++;
 		
@@ -555,7 +543,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 20), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
 		
 		currentRow++;
 		
@@ -566,7 +554,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
 		saveButton.setPreferredSize(new Dimension(100, 20));
-		add(saveButton, c);
+		mainPanel.add(saveButton, c);
 		
 		currentRow++;
 		
@@ -575,13 +563,7 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
-	}
-
-	private java.awt.Component createToolBar() {
-		JToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		return toolBar;
+		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
 	}
 
 	private java.awt.Component createUnitsPanel() {
@@ -894,6 +876,11 @@ public class MaintainProductPanel extends AbstractMagicPanel {
 	@Override
 	protected void doOnBack() {
 		getMagicFrame().switchToProductListPanel();
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		// none
 	}
 
 }

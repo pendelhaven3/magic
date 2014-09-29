@@ -8,8 +8,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +22,8 @@ import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class PurchaseOrderListPanel extends AbstractMagicPanel implements ActionListener {
+public class PurchaseOrderListPanel extends StandardMagicPanel {
 	
-	private static final String NEW_PURCHASE_ORDER_ACTION_NAME = "newPurchaseOrder";
 	private static final String DELETE_PURCHASE_ORDER_ACTION_NAME = "deletePurchaseOrder";
 	
 	@Autowired private PurchaseOrdersTable table;
@@ -43,26 +42,16 @@ public class PurchaseOrderListPanel extends AbstractMagicPanel implements Action
 	}
 	
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		int currentRow = 0;
 		GridBagConstraints c = new GridBagConstraints();
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
 		
 		currentRow++;
 		
@@ -72,7 +61,7 @@ public class PurchaseOrderListPanel extends AbstractMagicPanel implements Action
 		c.gridy = currentRow;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
-		add(scrollPane, c);
+		mainPanel.add(scrollPane, c);
 	}
 	
 	@Override
@@ -97,36 +86,6 @@ public class PurchaseOrderListPanel extends AbstractMagicPanel implements Action
 		getMagicFrame().switchToMainMenuPanel();
 	}
 	
-	private JToolBar createToolBar() {
-		MagicToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		JButton addButton = new MagicToolBarButton("plus", "New");
-		addButton.setActionCommand(NEW_PURCHASE_ORDER_ACTION_NAME);
-		addButton.addActionListener(this);
-		toolBar.add(addButton);
-		
-		JButton deleteButton = new MagicToolBarButton("minus", "Delete (F3)");
-		deleteButton.setActionCommand(DELETE_PURCHASE_ORDER_ACTION_NAME);
-		deleteButton.addActionListener(this);
-		toolBar.add(deleteButton);
-		
-		addUsernameFieldAndLogoutButton(toolBar);
-		return toolBar;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case NEW_PURCHASE_ORDER_ACTION_NAME:
-			switchToNewPurchaseOrderPanel();
-			break;
-		case DELETE_PURCHASE_ORDER_ACTION_NAME:
-			deletePurchaseOrder();
-			break;
-		}
-	}
-
 	private void deletePurchaseOrder() {
 		if (table.getSelectedRow() != -1) {
 			PurchaseOrder selected = table.getCurrentlySelectedPurchaseOrder();
@@ -138,6 +97,29 @@ public class PurchaseOrderListPanel extends AbstractMagicPanel implements Action
 				table.removeCurrentlySelectedRow();
 			}
 		}
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton addButton = new MagicToolBarButton("plus", "New");
+		addButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switchToNewPurchaseOrderPanel();
+			}
+		});
+		toolBar.add(addButton);
+		
+		JButton deleteButton = new MagicToolBarButton("minus", "Delete (F3)");
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deletePurchaseOrder();
+			}
+		});
+		toolBar.add(deleteButton);
 	}
 
 }

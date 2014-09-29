@@ -9,9 +9,9 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +28,7 @@ import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class ProductListPanel extends AbstractMagicPanel {
+public class ProductListPanel extends StandardMagicPanel {
 
 	private static final String EDIT_PRODUCT_ACTION_NAME = "editProduct";
 	
@@ -53,27 +53,17 @@ public class ProductListPanel extends AbstractMagicPanel {
 	}
 
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++; // first row
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
 		
 		currentRow++; // first row
 		
@@ -81,34 +71,7 @@ public class ProductListPanel extends AbstractMagicPanel {
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(new JScrollPane(table), c);
-	}
-
-	private JToolBar createToolBar() {
-		JToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		JButton postButton = new MagicToolBarButton("plus", "New");
-		postButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getMagicFrame().switchToAddNewProductListPanel();
-			}
-		});
-		toolBar.add(postButton);
-		
-		JButton searchButton = new MagicToolBarButton("search", "Search");
-		searchButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				searchProduct();
-			}
-		});
-		
-		toolBar.add(searchButton);
-		return toolBar;
+		mainPanel.add(new JScrollPane(table), c);
 	}
 
 	protected void searchProduct() {
@@ -160,6 +123,30 @@ public class ProductListPanel extends AbstractMagicPanel {
 	@Override
 	protected void doOnBack() {
 		getMagicFrame().switchToMainMenuPanel();
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton postButton = new MagicToolBarButton("plus", "New");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getMagicFrame().switchToAddNewProductListPanel();
+			}
+		});
+		toolBar.add(postButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchProduct();
+			}
+		});
+		
+		toolBar.add(searchButton);
 	}
 	
 }

@@ -11,9 +11,9 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +27,9 @@ import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class PaymentTermListPanel extends AbstractMagicPanel implements ActionListener {
+public class PaymentTermListPanel extends StandardMagicPanel {
 
 	private static final String EDIT_PAYMENT_TERM_ACTION_NAME = "editPaymentTerm";
-	private static final String NEW_PAYMENT_TERM_ACTION_NAME = "newPaymentTerm";
 	
 	@Autowired private PaymentTermService paymentTermService;
 	
@@ -52,27 +51,17 @@ public class PaymentTermListPanel extends AbstractMagicPanel implements ActionLi
 	}
 
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
 		
 		currentRow++;
 		
@@ -80,19 +69,7 @@ public class PaymentTermListPanel extends AbstractMagicPanel implements ActionLi
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(new JScrollPane(table), c);
-	}
-
-	private JToolBar createToolBar() {
-		JToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		JButton postButton = new MagicToolBarButton("plus", "New");
-		postButton.setActionCommand(NEW_PAYMENT_TERM_ACTION_NAME);
-		postButton.addActionListener(this);
-		toolBar.add(postButton);
-		
-		return toolBar;
+		mainPanel.add(new JScrollPane(table), c);
 	}
 
 	@Override
@@ -122,18 +99,6 @@ public class PaymentTermListPanel extends AbstractMagicPanel implements ActionLi
 		getMagicFrame().switchToEditPaymentTermPanel(paymentTerm);
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case NEW_PAYMENT_TERM_ACTION_NAME:
-			switchToNewPaymentTermPanel();
-			break;
-		case BACK_ACTION_COMMAND_NAME:
-			doOnBack();
-			break;
-		}
-	}
-
 	private void switchToNewPaymentTermPanel() {
 		getMagicFrame().switchToAddNewPaymentTermPanel();
 	}
@@ -141,6 +106,19 @@ public class PaymentTermListPanel extends AbstractMagicPanel implements ActionLi
 	@Override
 	protected void doOnBack() {
 		getMagicFrame().switchToMainMenuPanel();
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton postButton = new MagicToolBarButton("plus", "New");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switchToNewPaymentTermPanel();
+			}
+		});
+		toolBar.add(postButton);
 	}
 	
 }

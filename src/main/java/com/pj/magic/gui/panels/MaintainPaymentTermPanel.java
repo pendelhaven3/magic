@@ -12,6 +12,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
@@ -21,12 +22,13 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class MaintainPaymentTermPanel extends AbstractMagicPanel {
+public class MaintainPaymentTermPanel extends StandardMagicPanel {
 
 	private static final Logger logger = LoggerFactory.getLogger(MaintainPaymentTermPanel.class);
 	private static final String NEXT_FIELD_ACTION_NAME = "nextField";
@@ -97,8 +99,8 @@ public class MaintainPaymentTermPanel extends AbstractMagicPanel {
 	}
 
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
@@ -108,7 +110,7 @@ public class MaintainPaymentTermPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Name: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Name: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -116,14 +118,14 @@ public class MaintainPaymentTermPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		nameField.setPreferredSize(new Dimension(200, 20));
-		add(nameField, c);
+		mainPanel.add(nameField, c);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 1.0; // right space filler
 		c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
 		
 		currentRow++;
 		
@@ -132,7 +134,7 @@ public class MaintainPaymentTermPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Number of Days: "), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Number of Days: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
@@ -140,7 +142,7 @@ public class MaintainPaymentTermPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		numberOfDaysField.setPreferredSize(new Dimension(50, 20));
-		add(numberOfDaysField, c);
+		mainPanel.add(numberOfDaysField, c);
 		
 		currentRow++;
 		
@@ -149,7 +151,7 @@ public class MaintainPaymentTermPanel extends AbstractMagicPanel {
 		c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 20), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
 		
 		currentRow++;
 		
@@ -160,7 +162,7 @@ public class MaintainPaymentTermPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
 		saveButton.setPreferredSize(new Dimension(100, 20));
-		add(saveButton, c);
+		mainPanel.add(saveButton, c);
 		
 		currentRow++;
 		
@@ -169,7 +171,7 @@ public class MaintainPaymentTermPanel extends AbstractMagicPanel {
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
 	}
 
 	@Override
@@ -211,6 +213,11 @@ public class MaintainPaymentTermPanel extends AbstractMagicPanel {
 	@Override
 	protected void doOnBack() {
 		getMagicFrame().switchToPaymentTermListPanel();
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		// none
 	}
 
 }

@@ -8,8 +8,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +23,9 @@ import com.pj.magic.service.AdjustmentOutService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class AdjustmentOutListPanel extends AbstractMagicPanel implements ActionListener {
+public class AdjustmentOutListPanel extends StandardMagicPanel {
 	
 	private static final String NEW_ADJUSTMENT_OUT_ACTION_NAME = "newAdjustmentOut";
-	private static final String NEW_ADJUSTMENT_OUT_ACTION_COMMAND_NAME = "newAdjustmentOut";
 	
 	@Autowired private AdjustmentOutsTable table;
 	@Autowired private AdjustmentOutService AdjustmentOutService;
@@ -45,26 +44,16 @@ public class AdjustmentOutListPanel extends AbstractMagicPanel implements Action
 	}
 	
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		int currentRow = 0;
 		GridBagConstraints c = new GridBagConstraints();
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
 		
 		currentRow++;
 		
@@ -74,7 +63,7 @@ public class AdjustmentOutListPanel extends AbstractMagicPanel implements Action
 		c.gridy = currentRow;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
-		add(scrollPane, c);
+		mainPanel.add(scrollPane, c);
 	}
 	
 	@Override
@@ -99,25 +88,17 @@ public class AdjustmentOutListPanel extends AbstractMagicPanel implements Action
 		getMagicFrame().switchToMainMenuPanel();
 	}
 	
-	private JToolBar createToolBar() {
-		MagicToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		JButton postButton = new MagicToolBarButton("plus", "New (F4)");
-		postButton.setActionCommand(NEW_ADJUSTMENT_OUT_ACTION_COMMAND_NAME);
-		postButton.addActionListener(this);
-		
-		toolBar.add(postButton);
-		return toolBar;
-	}
-
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case NEW_ADJUSTMENT_OUT_ACTION_COMMAND_NAME:
-			switchToNewAdjustmentOutPanel();
-			break;
-		}
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton addButton = new MagicToolBarButton("plus", "New");
+		addButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switchToNewAdjustmentOutPanel();
+			}
+		});
+		toolBar.add(addButton);
 	}
 
 }

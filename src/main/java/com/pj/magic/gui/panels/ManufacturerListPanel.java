@@ -9,14 +9,15 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.models.ManufacturersTableModel;
@@ -25,10 +26,9 @@ import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class ManufacturerListPanel extends AbstractMagicPanel implements ActionListener {
+public class ManufacturerListPanel extends StandardMagicPanel {
 
 	private static final String EDIT_MANUFACTURER_ACTION_NAME = "editManufacturer";
-	private static final String NEW_MANUFACTURER_ACTION_NAME = "newManufacturer";
 	
 	@Autowired private ManufacturerService manufacturerService;
 	
@@ -50,27 +50,17 @@ public class ManufacturerListPanel extends AbstractMagicPanel implements ActionL
 	}
 
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++; // first row
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
 		
 		currentRow++; // first row
 		
@@ -78,19 +68,7 @@ public class ManufacturerListPanel extends AbstractMagicPanel implements ActionL
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(new JScrollPane(table), c);
-	}
-
-	private JToolBar createToolBar() {
-		JToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		JButton postButton = new MagicToolBarButton("plus", "New");
-		postButton.setActionCommand(NEW_MANUFACTURER_ACTION_NAME);
-		postButton.addActionListener(this);
-		
-		toolBar.add(postButton);
-		return toolBar;
+		mainPanel.add(new JScrollPane(table), c);
 	}
 
 	@Override
@@ -100,19 +78,22 @@ public class ManufacturerListPanel extends AbstractMagicPanel implements ActionL
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Manufacturer manufacturer = tableModel.getManufacturer(table.getSelectedRow());
-				getMagicFrame().switchToEditManufacturerPanel(manufacturer);
+				selectManufacturer();
+			}
+		});
+		
+		table.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				selectManufacturer();
 			}
 		});
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case NEW_MANUFACTURER_ACTION_NAME:
-			switchToNewManufacturerPanel();
-			break;
-		}
+	protected void selectManufacturer() {
+		Manufacturer manufacturer = tableModel.getManufacturer(table.getSelectedRow());
+		getMagicFrame().switchToEditManufacturerPanel(manufacturer);
 	}
 
 	private void switchToNewManufacturerPanel() {
@@ -122,6 +103,19 @@ public class ManufacturerListPanel extends AbstractMagicPanel implements ActionL
 	@Override
 	protected void doOnBack() {
 		getMagicFrame().switchToMainMenuPanel();
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton postButton = new MagicToolBarButton("plus", "New");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switchToNewManufacturerPanel();
+			}
+		});
+		toolBar.add(postButton);
 	}
 	
 }

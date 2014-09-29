@@ -8,8 +8,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import com.pj.magic.service.StockQuantityConversionService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class StockQuantityConversionListPanel extends AbstractMagicPanel implements ActionListener {
+public class StockQuantityConversionListPanel extends StandardMagicPanel {
 	
 	private static final String NEW_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "newStockQuantityConversion";
 	private static final String DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "deleteStockQuantityConversion";
@@ -45,26 +45,16 @@ public class StockQuantityConversionListPanel extends AbstractMagicPanel impleme
 	}
 	
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		int currentRow = 0;
 		GridBagConstraints c = new GridBagConstraints();
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
 		
 		currentRow++;
 		
@@ -74,7 +64,7 @@ public class StockQuantityConversionListPanel extends AbstractMagicPanel impleme
 		c.gridy = currentRow;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
-		add(scrollPane, c);
+		mainPanel.add(scrollPane, c);
 	}
 	
 	@Override
@@ -112,35 +102,6 @@ public class StockQuantityConversionListPanel extends AbstractMagicPanel impleme
 		getMagicFrame().switchToMainMenuPanel();
 	}
 	
-	private JToolBar createToolBar() {
-		MagicToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		JButton addButton = new MagicToolBarButton("plus", "New (F4)");
-		addButton.setActionCommand(NEW_STOCK_QUANTITY_CONVERSION_ACTION_NAME);
-		addButton.addActionListener(this);
-		toolBar.add(addButton);
-		
-		JButton deleteButton = new MagicToolBarButton("minus", "Delete (F3)");
-		deleteButton.setActionCommand(DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME);
-		deleteButton.addActionListener(this);
-		toolBar.add(deleteButton);
-		
-		return toolBar;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case NEW_STOCK_QUANTITY_CONVERSION_ACTION_NAME:
-			switchToNewStockQuantityConversionPanel();
-			break;
-		case DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME:
-			deleteStockQuantityConversion();
-			break;
-		}
-	}
-
 	private void deleteStockQuantityConversion() {
 		if (table.getSelectedRow() != -1) {
 			StockQuantityConversion selected = table.getCurrentlySelectedStockQuantityConversion();
@@ -152,6 +113,29 @@ public class StockQuantityConversionListPanel extends AbstractMagicPanel impleme
 				table.removeCurrentlySelectedRow();
 			}
 		}
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton addButton = new MagicToolBarButton("plus", "New");
+		addButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switchToNewStockQuantityConversionPanel();
+			}
+		});
+		toolBar.add(addButton);
+		
+		JButton deleteButton = new MagicToolBarButton("minus", "Delete");
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteStockQuantityConversion();
+			}
+		});
+		toolBar.add(deleteButton);
 	}
 
 }

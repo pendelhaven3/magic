@@ -19,7 +19,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -46,7 +45,7 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class AdjustmentInPanel extends AbstractMagicPanel {
+public class AdjustmentInPanel extends StandardMagicPanel {
 
 	private static final Logger logger = LoggerFactory.getLogger(AdjustmentInPanel.class);
 	
@@ -182,56 +181,45 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 	}
 
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 6;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++;
-		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 30), c);
+		mainPanel.add(ComponentUtil.createFiller(50, 30), c);
 
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Adj. In No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Adj. In No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		adjustmentInNumberField = ComponentUtil.createLabel(200, "");
-		add(adjustmentInNumberField, c);
+		mainPanel.add(adjustmentInNumberField, c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 1), c);
+		mainPanel.add(ComponentUtil.createFiller(50, 1), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Status:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Status:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -239,7 +227,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		statusField = ComponentUtil.createLabel(100, "");
-		add(statusField, c);
+		mainPanel.add(statusField, c);
 		
 		currentRow++;
 		
@@ -248,20 +236,20 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Remarks:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Remarks:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		remarksField.setPreferredSize(new Dimension(200, 20));
-		add(remarksField, c);
+		mainPanel.add(remarksField, c);
 
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Post Date:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Post Date:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -269,7 +257,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		postDateField = ComponentUtil.createLabel(100, "");
-		add(postDateField, c);
+		mainPanel.add(postDateField, c);
 		
 		currentRow++;
 		
@@ -277,7 +265,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Posted By:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Posted By:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -285,7 +273,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		postedByField = ComponentUtil.createLabel(100, "");
-		add(postedByField, c);
+		mainPanel.add(postedByField, c);
 		
 		currentRow++;
 		
@@ -294,7 +282,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 10), c);
+		mainPanel.add(ComponentUtil.createFiller(50, 10), c);
 		
 		currentRow++;
 		
@@ -305,7 +293,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 6;
 		c.anchor = GridBagConstraints.WEST;
-		add(createItemsTableToolBar(), c);
+		mainPanel.add(createItemsTableToolBar(), c);
 
 		currentRow++;
 		
@@ -317,7 +305,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
-		add(itemsTableScrollPane, c);
+		mainPanel.add(itemsTableScrollPane, c);
 
 		currentRow++;
 		
@@ -329,7 +317,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
 		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
-		add(infoTableScrollPane, c);
+		mainPanel.add(infoTableScrollPane, c);
 		
 		currentRow++;
 		
@@ -339,7 +327,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -347,7 +335,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		totalItemsField = ComponentUtil.createLabel(150, "");
-		add(totalItemsField, c);
+		mainPanel.add(totalItemsField, c);
 		
 		currentRow++;
 		
@@ -357,7 +345,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Total Amount:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -365,7 +353,7 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		totalAmountField = ComponentUtil.createLabel(150, "");
-		add(totalAmountField, c);
+		mainPanel.add(totalAmountField, c);
 	}
 	
 	private JPanel createItemsTableToolBar() {
@@ -428,23 +416,6 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 		} else {
 			unitPricesAndQuantitiesTableModel.setProduct(null);
 		}
-	}
-	
-	private JToolBar createToolBar() {
-		JToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		postButton = new MagicToolBarButton("post", "Post");
-		postButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				postAdjustmentIn();
-			}
-		});
-		
-		toolBar.add(postButton);
-		return toolBar;
 	}
 	
 	private class UnitPricesAndQuantitiesTable extends JTable {
@@ -608,6 +579,19 @@ public class AdjustmentInPanel extends AbstractMagicPanel {
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		postButton = new MagicToolBarButton("post", "Post");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				postAdjustmentIn();
+			}
+		});
+		toolBar.add(postButton);
 	}
 
 }

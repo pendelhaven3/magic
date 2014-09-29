@@ -8,8 +8,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import com.pj.magic.service.AdjustmentInService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class AdjustmentInListPanel extends AbstractMagicPanel implements ActionListener {
+public class AdjustmentInListPanel extends StandardMagicPanel {
 	
 	private static final String NEW_ADJUSTMENT_IN_ACTION_NAME = "newAdjustmentIn";
 	private static final String NEW_ADJUSTMENT_IN_ACTION_COMMAND_NAME = "newAdjustmentIn";
@@ -45,26 +45,16 @@ public class AdjustmentInListPanel extends AbstractMagicPanel implements ActionL
 	}
 	
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		int currentRow = 0;
 		GridBagConstraints c = new GridBagConstraints();
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
 		
 		currentRow++;
 		
@@ -74,7 +64,7 @@ public class AdjustmentInListPanel extends AbstractMagicPanel implements ActionL
 		c.gridy = currentRow;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
-		add(scrollPane, c);
+		mainPanel.add(scrollPane, c);
 	}
 	
 	@Override
@@ -99,25 +89,18 @@ public class AdjustmentInListPanel extends AbstractMagicPanel implements ActionL
 		getMagicFrame().switchToMainMenuPanel();
 	}
 	
-	private JToolBar createToolBar() {
-		MagicToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		JButton postButton = new MagicToolBarButton("plus", "New (F4)");
-		postButton.setActionCommand(NEW_ADJUSTMENT_IN_ACTION_COMMAND_NAME);
-		postButton.addActionListener(this);
-		
-		toolBar.add(postButton);
-		return toolBar;
-	}
-
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case NEW_ADJUSTMENT_IN_ACTION_COMMAND_NAME:
-			switchToNewAdjustmentInPanel();
-			break;
-		}
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton addButton = new MagicToolBarButton("plus", "New");
+		addButton.setActionCommand(NEW_ADJUSTMENT_IN_ACTION_COMMAND_NAME);
+		addButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switchToNewAdjustmentInPanel();
+			}
+		});
+		toolBar.add(addButton);
 	}
 
 }

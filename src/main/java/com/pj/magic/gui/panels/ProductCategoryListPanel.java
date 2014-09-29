@@ -9,14 +9,15 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.models.ProductCategoriesTableModel;
@@ -25,10 +26,9 @@ import com.pj.magic.service.ProductCategoryService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class ProductCategoryListPanel extends AbstractMagicPanel implements ActionListener {
+public class ProductCategoryListPanel extends StandardMagicPanel {
 
 	private static final String EDIT_PRODUCT_CATEGORY_ACTION_NAME = "editProductCategory";
-	private static final String NEW_PRODUCT_CATEGORY_ACTION_NAME = "newProductCategory";
 	
 	@Autowired private ProductCategoryService productCategoryService;
 	
@@ -50,27 +50,17 @@ public class ProductCategoryListPanel extends AbstractMagicPanel implements Acti
 	}
 
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
 		
 		currentRow++;
 		
@@ -78,19 +68,7 @@ public class ProductCategoryListPanel extends AbstractMagicPanel implements Acti
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(new JScrollPane(table), c);
-	}
-
-	private JToolBar createToolBar() {
-		JToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		JButton postButton = new MagicToolBarButton("plus", "New");
-		postButton.setActionCommand(NEW_PRODUCT_CATEGORY_ACTION_NAME);
-		postButton.addActionListener(this);
-		
-		toolBar.add(postButton);
-		return toolBar;
+		mainPanel.add(new JScrollPane(table), c);
 	}
 
 	@Override
@@ -100,19 +78,22 @@ public class ProductCategoryListPanel extends AbstractMagicPanel implements Acti
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ProductCategory category = tableModel.getProductCategory(table.getSelectedRow());
-				getMagicFrame().switchToEditProductCategoryPanel(category);
+				selectProductCategory();
+			}
+		});
+		
+		table.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				selectProductCategory();
 			}
 		});
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case NEW_PRODUCT_CATEGORY_ACTION_NAME:
-			switchToNewProductCategoryPanel();
-			break;
-		}
+	protected void selectProductCategory() {
+		ProductCategory category = tableModel.getProductCategory(table.getSelectedRow());
+		getMagicFrame().switchToEditProductCategoryPanel(category);
 	}
 
 	private void switchToNewProductCategoryPanel() {
@@ -122,6 +103,19 @@ public class ProductCategoryListPanel extends AbstractMagicPanel implements Acti
 	@Override
 	protected void doOnBack() {
 		getMagicFrame().switchToMainMenuPanel();
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton postButton = new MagicToolBarButton("plus", "New");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switchToNewProductCategoryPanel();
+			}
+		});
+		toolBar.add(postButton);
 	}
 	
 }

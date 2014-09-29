@@ -21,7 +21,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -57,7 +56,7 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class PurchaseOrderPanel extends AbstractMagicPanel {
+public class PurchaseOrderPanel extends StandardMagicPanel {
 
 	private static final String OPEN_SELECT_SUPPLIER_DIALOG_ACTION_NAME = "openSelectSupplierDialog";
 	private static final String FOCUS_NEXT_FIELD_ACTION_NAME = "focusNextField";
@@ -329,56 +328,45 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 	}
 
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 6;
-		c.anchor = GridBagConstraints.WEST;
-		add(createToolBar(), c);
-
-		currentRow++;
-		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 30), c);
+		mainPanel.add(ComponentUtil.createFiller(50, 30), c);
 
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(120, "PO No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "PO No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		purchaseOrderNumberField = ComponentUtil.createLabel(200, "");
-		add(purchaseOrderNumberField, c);
+		mainPanel.add(purchaseOrderNumberField, c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 1), c);
+		mainPanel.add(ComponentUtil.createFiller(50, 1), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Status:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Status:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -386,7 +374,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		statusField = ComponentUtil.createLabel(100, "");
-		add(statusField, c);
+		mainPanel.add(statusField, c);
 		
 		currentRow++;
 		
@@ -395,20 +383,20 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Supplier:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Supplier:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(createSupplierPanel(), c);
+		mainPanel.add(createSupplierPanel(), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Reference No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Reference No.:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -416,7 +404,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		referenceNumberField.setPreferredSize(new Dimension(100, 20));
-		add(referenceNumberField, c);
+		mainPanel.add(referenceNumberField, c);
 		
 		currentRow++;
 		
@@ -425,14 +413,14 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Payment Terms:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Payment Terms:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		paymentTermComboBox.setPreferredSize(new Dimension(100, 20));
-		add(paymentTermComboBox, c);
+		mainPanel.add(paymentTermComboBox, c);
 		
 		currentRow++;
 		
@@ -441,14 +429,14 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Remarks:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Remarks:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		remarksField.setPreferredSize(new Dimension(200, 20));
-		add(remarksField, c);
+		mainPanel.add(remarksField, c);
 
 		currentRow++;
 		
@@ -457,7 +445,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createFiller(50, 10), c);
+		mainPanel.add(ComponentUtil.createFiller(50, 10), c);
 		
 		currentRow++;
 		
@@ -468,7 +456,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 6;
 		c.anchor = GridBagConstraints.WEST;
-		add(createItemsTableToolBar(), c);
+		mainPanel.add(createItemsTableToolBar(), c);
 
 		currentRow++;
 		
@@ -480,7 +468,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
-		add(itemsTableScrollPane, c);
+		mainPanel.add(itemsTableScrollPane, c);
 
 		currentRow++;
 		
@@ -492,7 +480,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
 		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
-		add(infoTableScrollPane, c);
+		mainPanel.add(infoTableScrollPane, c);
 		
 		currentRow++;
 		
@@ -501,7 +489,7 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 6;
 		c.anchor = GridBagConstraints.EAST;
-		add(createTotalsPanel(), c);
+		mainPanel.add(createTotalsPanel(), c);
 	}
 	
 	private JPanel createTotalsPanel() {
@@ -640,44 +628,6 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 		} else {
 			unitPricesAndQuantitiesTableModel.setProduct(null);
 		}
-	}
-	
-	private JToolBar createToolBar() {
-		MagicToolBar toolBar = new MagicToolBar();
-		addBackButton(toolBar);
-		
-		orderButton = new MagicToolBarButton("order", "Order");
-		orderButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				orderPurchaseOrder();
-			}
-		});
-		toolBar.add(orderButton);
-		
-		postButton = new MagicToolBarButton("post", "Post");
-		postButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				postPurchaseOrder();
-			}
-		});
-		toolBar.add(postButton);
-		
-		printButton = new MagicToolBarButton("print", "Print");
-		printButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				printService.print(purchaseOrder);
-			}
-		});
-		toolBar.add(printButton);
-		
-		addUsernameFieldAndLogoutButton(toolBar);
-		return toolBar;
 	}
 	
 	private class UnitPricesAndQuantitiesTable extends JTable {
@@ -852,6 +802,39 @@ public class PurchaseOrderPanel extends AbstractMagicPanel {
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		orderButton = new MagicToolBarButton("order", "Order");
+		orderButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				orderPurchaseOrder();
+			}
+		});
+		toolBar.add(orderButton);
+		
+		postButton = new MagicToolBarButton("post", "Post");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				postPurchaseOrder();
+			}
+		});
+		toolBar.add(postButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(purchaseOrder);
+			}
+		});
+		toolBar.add(printButton);
 	}
 
 }
