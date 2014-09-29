@@ -7,6 +7,6 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 		"classpath:applicationContext.xml",
 		"classpath:datasource-test.xml"
 		})
-public abstract class DaoTest extends AbstractTransactionalJUnit4SpringContextTests {
+public abstract class IntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 }

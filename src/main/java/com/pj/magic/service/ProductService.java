@@ -23,7 +23,7 @@ public interface ProductService {
 
 	Product getProduct(long id, PricingScheme pricingScheme);
 
-	void save(Product createProductFromRow);
+	void save(Product product);
 	
 	void addProductSupplier(Product product, Supplier supplier);
 

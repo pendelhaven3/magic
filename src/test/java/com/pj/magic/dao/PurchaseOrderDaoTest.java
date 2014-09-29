@@ -11,7 +11,7 @@ import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
 
-public class PurchaseOrderDaoTest extends DaoTest {
+public class PurchaseOrderDaoTest extends IntegrationTest {
 
 	@Autowired private PurchaseOrderDao purchaseOrderDao;
 	

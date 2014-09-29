@@ -1,5 +1,8 @@
 package com.pj.magic.model;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class UnitConversion {
 
 	private String unit;
@@ -30,4 +33,27 @@ public class UnitConversion {
 		this.unit = unit;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(unit)
+			.append(quantity)
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof UnitConversion)) {
+            return false;
+        }
+        UnitConversion other = (UnitConversion)obj;		
+		return new EqualsBuilder()
+			.append(unit, other.getUnit())
+			.append(quantity, other.getQuantity())
+			.isEquals();
+	}
+	
 }

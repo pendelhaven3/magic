@@ -1,11 +1,14 @@
 package com.pj.magic.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pj.magic.Constants;
+import com.pj.magic.dao.PricingSchemeDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ProductPriceDao;
 import com.pj.magic.dao.SupplierDao;
@@ -21,6 +24,7 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired private ProductDao productDao;
 	@Autowired private ProductPriceDao productPriceDao;
 	@Autowired private SupplierDao supplierDao;
+	@Autowired private PricingSchemeDao pricingSchemeDao;
 	
 	@Override
 	public List<Product> getAllProducts() {
@@ -46,10 +50,30 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public void save(Product product) {
 		boolean inserting = (product.getId() == null);
-		productDao.save(product);
 		if (inserting) {
-			productPriceDao.save(product);
+			productDao.save(product);
+			productPriceDao.createUnitPrices(product);
+			productPriceDao.updateUnitPrices(product, new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID));
+		} else {
+			boolean updateCostAndPrice = hasUnitConversionChange(product);
+			productDao.save(product);
+			if (updateCostAndPrice) {
+				product.autoCalculateCostsOfSmallerUnits();
+				productDao.updateCosts(product);
+			}
+			if (updateCostAndPrice) {
+				for (PricingScheme pricingScheme : pricingSchemeDao.getAll()) {
+					Product p = productDao.findByIdAndPricingScheme(product.getId(), pricingScheme);
+					p.autoCalculatePricesOfSmallerUnits();
+					productPriceDao.updateUnitPrices(p, pricingScheme);
+				}
+			}
 		}
+	}
+
+	private boolean hasUnitConversionChange(Product product) {
+		Product fromDb = productDao.get(product.getId());
+		return !new HashSet<>(product.getUnitConversions()).equals(new HashSet<>(fromDb.getUnitConversions()));
 	}
 
 	@Override
@@ -106,5 +130,5 @@ public class ProductServiceImpl implements ProductService {
 		
 		return productDao.search(criteria);
 	}
-	
+
 }

@@ -10,22 +10,6 @@ import com.pj.magic.model.Unit;
 @Repository
 public class ProductPriceDaoImpl extends MagicDao implements ProductPriceDao {
 
-	@Override
-	public void save(Product product) {
-		insert(product);
-	}
-
-	private static final String INSERT_SQL =
-			"insert into PRODUCT_PRICE (PRODUCT_ID, UNIT_PRICE_CSE, UNIT_PRICE_TIE, UNIT_PRICE_CTN,"
-			+ " UNIT_PRICE_DOZ, UNIT_PRICE_PCS) values (?, ?, ?, ?, ?, ?)";
-	
-	private void insert(final Product product) {
-		getJdbcTemplate().update(INSERT_SQL, product.getId(),
-				product.getUnitPrice(Unit.CASE), 
-				product.getUnitPrice(Unit.TIE), product.getUnitPrice(Unit.CARTON),
-				product.getUnitPrice(Unit.DOZEN), product.getUnitPrice(Unit.PIECES));
-	}
-
 	private static final String UPDATE_UNIT_PRICES_SQL =
 			"update PRODUCT_PRICE"
 			+ " set UNIT_PRICE_CSE = ?, UNIT_PRICE_TIE = ?, UNIT_PRICE_CTN = ?,"
@@ -43,6 +27,14 @@ public class ProductPriceDaoImpl extends MagicDao implements ProductPriceDao {
 				product.getId(),
 				pricingScheme.getId()
 		);
+	}
+
+	private static final String CREATE_UNIT_PRICES_SQL =
+			"insert into PRODUCT_PRICE (PRICING_SCHEME_ID, PRODUCT_ID) select ID, ? from PRICING_SCHEME";
+	
+	@Override
+	public void createUnitPrices(Product product) {
+		getJdbcTemplate().update(CREATE_UNIT_PRICES_SQL, product.getId());
 	}
 
 }
