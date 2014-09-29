@@ -27,5 +27,5 @@ insert into SUPPLIER (CODE, NAME, ADDRESS, PAYMENT_TERM_ID) values ('ABENSON', '
 insert into SUPPLIER (CODE, NAME) values ('KSERVICO', 'K SERVICO TRADE, INC.');
 insert into SUPPLIER (CODE, NAME) values ('PHILGROCER', 'PHILGROCER');
 
-insert into PRICING_SCHEME (NAME) values ('CANVASSER');
-insert into PRICING_SCHEME (NAME) values ('MARKETING');
+insert into PRICING_SCHEME (ID, NAME) values (1, 'CANVASSER');
+insert into PRICING_SCHEME (ID, NAME) values (2, 'MARKETING');

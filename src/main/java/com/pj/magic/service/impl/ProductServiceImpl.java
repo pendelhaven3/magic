@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pj.magic.Constants;
 import com.pj.magic.dao.PricingSchemeDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ProductPriceDao;
@@ -53,7 +52,6 @@ public class ProductServiceImpl implements ProductService {
 		if (inserting) {
 			productDao.save(product);
 			productPriceDao.createUnitPrices(product);
-			productPriceDao.updateUnitPrices(product, new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID));
 		} else {
 			boolean updateCostAndPrice = hasUnitConversionChange(product);
 			productDao.save(product);

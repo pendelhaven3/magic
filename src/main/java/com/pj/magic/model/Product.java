@@ -317,8 +317,13 @@ public class Product implements Comparable<Product> {
 	}
 
 	public BigDecimal getPercentProfit(String unit) {
-		return getFlatProfit(unit)
-				.divide(getGrossCost(unit), 4, RoundingMode.HALF_UP).multiply(Constants.ONE_HUNDRED);
+		BigDecimal grossCost = getGrossCost(unit);
+		if (grossCost.equals(BigDecimal.ZERO.setScale(2))) {
+			return new BigDecimal("100.00");
+		} else {
+			return getFlatProfit(unit)
+					.divide(grossCost, 4, RoundingMode.HALF_UP).multiply(Constants.ONE_HUNDRED);
+		}
 	}
 
 	public BigDecimal getFlatProfit(String unit) {

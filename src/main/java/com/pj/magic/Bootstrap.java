@@ -23,7 +23,9 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.pj.magic.dao.CustomerDao;
+import com.pj.magic.dao.ProductPriceDao;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ProductService;
@@ -34,6 +36,7 @@ public class Bootstrap {
 	@Autowired private ProductService productService;
 	@Autowired private CustomerDao customerDao;
 	@Autowired private TransactionTemplate transactionTemplate;
+	@Autowired private ProductPriceDao productPriceDao;
 	
 	private ResourceBundle resources = ResourceBundle.getBundle("application");
 
@@ -82,7 +85,9 @@ public class Bootstrap {
 						Row row = rows.next();
 						Cell cell = row.getCell(0);
 						if (cell != null) {
-							productService.save(createProductFromRow(row));
+							Product product = createProductFromRow(row);
+							productService.save(product);
+							productPriceDao.updateUnitPrices(product, new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID));
 						}
 					}
 				}
