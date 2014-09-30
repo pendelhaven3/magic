@@ -302,8 +302,9 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		
 		orderButton.setEnabled(!purchaseOrder.isOrdered());
 		postButton.setEnabled(purchaseOrder.isOrdered() && !purchaseOrder.isPosted());
-		addItemButton.setEnabled(true);
-		deleteItemButton.setEnabled(true);
+		addItemButton.setEnabled(!purchaseOrder.isPosted());
+		deleteItemButton.setEnabled(!purchaseOrder.isPosted());
+		printButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -325,6 +326,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		postButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
+		printButton.setEnabled(false);
 	}
 
 	@Override
