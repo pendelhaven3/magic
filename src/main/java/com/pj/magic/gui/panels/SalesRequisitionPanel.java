@@ -774,39 +774,12 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
+		c = new GridBagConstraints();
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		totalItemsField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(totalItemsField, c);
-		
-		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Total Amount:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(totalAmountField, c);
+		c.gridwidth = 5;
+		c.anchor = GridBagConstraints.EAST;
+		mainPanel.add(createTotalsPanel(), c);
 	}
 
 	@Override
@@ -845,6 +818,45 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			}
 		});
 		panel.add(deleteItemButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+	
+	private JPanel createTotalsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(120, "Total Items:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalItemsField = ComponentUtil.createLabel(120, "");
+		panel.add(totalItemsField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAmountField = ComponentUtil.createLabel(120, "");
+		panel.add(totalAmountField, c);
 		
 		return panel;
 	}

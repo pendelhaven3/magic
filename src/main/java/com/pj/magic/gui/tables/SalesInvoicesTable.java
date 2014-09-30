@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.tables.models.SalesInvoicesTableModel;
 import com.pj.magic.model.SalesInvoice;
@@ -67,10 +68,22 @@ public class SalesInvoicesTable extends JTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (getSelectedRow() != -1) {
-					displaySalesInvoiceDetails(getCurrentlySelectedSalesInvoice());
+					selectSalesInvoice();
 				}
 			}
 		});
+		
+		addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				selectSalesInvoice();
+			}
+		});
+	}
+
+	protected void selectSalesInvoice() {
+		displaySalesInvoiceDetails(getCurrentlySelectedSalesInvoice());
 	}
 	
 }
