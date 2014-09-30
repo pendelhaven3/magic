@@ -1,6 +1,7 @@
 package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
-import com.pj.magic.gui.component.AbstractKeyListener;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
@@ -101,7 +101,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		
 		MagicTextField productCodeTextField = new MagicTextField();
 		productCodeTextField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
-		productCodeTextField.addKeyListener(new AbstractKeyListener() {
+		productCodeTextField.addKeyListener(new KeyAdapter() {
 			
 			@Override
 			public void keyReleased(KeyEvent event) {
@@ -125,7 +125,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		
 		MagicTextField unitTextField = new MagicTextField();
 		unitTextField.setMaximumLength(Constants.UNIT_MAXIMUM_LENGTH);
-		unitTextField.addKeyListener(new AbstractKeyListener() {
+		unitTextField.addKeyListener(new KeyAdapter() {
 			
 			@Override
 			public void keyReleased(KeyEvent event) {
