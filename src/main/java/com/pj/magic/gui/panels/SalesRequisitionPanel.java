@@ -1,5 +1,6 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -86,6 +87,9 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	private JButton selectCustomerButton;
+	private MagicToolBarButton addItemButton;
+	private MagicToolBarButton deleteItemButton;
+	private MagicToolBarButton postButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -330,6 +334,10 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		totalItemsField.setText(String.valueOf(salesRequisition.getTotalNumberOfItems()));
 		totalAmountField.setText(salesRequisition.getTotalAmount().toString());
 		itemsTable.setSalesRequisition(salesRequisition);
+		
+		postButton.setEnabled(!salesRequisition.isPosted());
+		addItemButton.setEnabled(!salesRequisition.isPosted());
+		deleteItemButton.setEnabled(!salesRequisition.isPosted());
 	}
 
 	private void clearDisplay() {
@@ -347,6 +355,10 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		totalItemsField.setText(null);
 		totalAmountField.setText(null);
 		itemsTable.setSalesRequisition(salesRequisition);
+		
+		postButton.setEnabled(false);
+		addItemButton.setEnabled(false);
+		deleteItemButton.setEnabled(false);
 	}
 
 	private java.awt.Component createCustomerNamePanel() {
@@ -729,6 +741,15 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(createItemsTableToolBar(), c);
+
+		currentRow++;
+		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
@@ -790,7 +811,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		JButton postButton = new MagicToolBarButton("post", "Post");
+		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -802,4 +823,30 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		toolBar.add(postButton);
 	}
 
+	private JPanel createItemsTableToolBar() {
+		JPanel panel = new JPanel();
+		
+		addItemButton = new MagicToolBarButton("plus_small", "Add Item", true);
+		addItemButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.switchToAddMode();
+			}
+		});
+		panel.add(addItemButton, BorderLayout.WEST);
+		
+		deleteItemButton = new MagicToolBarButton("minus_small", "Delete Item", true);
+		deleteItemButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.removeCurrentlySelectedRow();
+			}
+		});
+		panel.add(deleteItemButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+	
 }
