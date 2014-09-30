@@ -16,6 +16,7 @@ public class Supplier {
 	private String faxNumber;
 	private String tin;
 	private PaymentTerm paymentTerm;
+	private String discount;
 	
 	public Supplier() {
 		// default constructor
@@ -145,6 +146,14 @@ public class Supplier {
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+	public String getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(String discount) {
+		this.discount = discount;
 	}
 	
 }

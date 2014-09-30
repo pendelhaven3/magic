@@ -51,6 +51,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 	private MagicTextField emailAddressField;
 	private MagicTextField tinField;
 	private MagicTextField remarksField;
+	private MagicTextField discountField;
 	private JComboBox<PaymentTerm> paymentTermComboBox; 
 	private JButton saveButton;
 	
@@ -83,6 +84,9 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 		remarksField = new MagicTextField();
 		remarksField.setMaximumLength(200);
 		
+		discountField = new MagicTextField();
+		discountField.setMaximumLength(200);
+		
 		paymentTermComboBox = new JComboBox<>(); 
 		
 		saveButton = new JButton("Save");
@@ -109,6 +113,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 		focusOrder.add(tinField);
 		focusOrder.add(paymentTermComboBox); 
 		focusOrder.add(remarksField); 
+		focusOrder.add(discountField); 
 		focusOrder.add(saveButton);
 	}
 	
@@ -129,6 +134,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 			supplier.setTin(tinField.getText());
 			supplier.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
 			supplier.setRemarks(remarksField.getText());
+			supplier.setDiscount(discountField.getText());
 			
 			try {
 				supplierService.save(supplier);
@@ -143,7 +149,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 	private boolean validateSupplier() {
 		try {
 			validateMandatoryField(codeField, "Code");
-			validateMandatoryField(nameField, "Name");
+			validateMandatoryField(nameField, "Business Name");
 		} catch (ValidationException e) {
 			return false;
 		}
@@ -319,6 +325,21 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Discount: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		discountField.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(discountField, c);
+		
+		currentRow++;
+		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
@@ -421,6 +442,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 			paymentTermComboBox.setSelectedItem(null);
 		}
 		remarksField.setText(supplier.getRemarks());
+		discountField.setText(supplier.getDiscount());
 	}
 
 	private void clearDisplay() {
@@ -434,6 +456,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 		tinField.setText(null);
 		paymentTermComboBox.setSelectedItem(null);
 		remarksField.setText(null);
+		discountField.setText(null);
 	}
 
 	@Override

@@ -130,6 +130,7 @@ create table SUPPLIER (
   TIN varchar2(20) null,
   PAYMENT_TERM_ID integer null,
   REMARKS varchar2(200) null,
+  DISCOUNT varchar2(30) null,
   constraint SUPPLIER$PK primary key (ID),
   constraint SUPPLIER$UK unique (NAME)
 );

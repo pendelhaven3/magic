@@ -24,7 +24,7 @@ import com.pj.magic.model.Supplier;
 public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	
 	private static final String BASE_SELECT_SQL = "select a.ID, CODE, a.NAME, ADDRESS, CONTACT_NUMBER, "
-			+ " CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID, REMARKS,"
+			+ " CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID, REMARKS, DISCOUNT,"
 			+ " b.NAME as PAYMENT_TERM_NAME, b.NUMBER_OF_DAYS"
 			+ " from SUPPLIER a"
 			+ " left join PAYMENT_TERM b"
@@ -43,8 +43,8 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 
 	private static final String INSERT_SQL = "insert into SUPPLIER"
 			+ " (CODE, NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, "
-			+ "  TIN, PAYMENT_TERM_ID, REMARKS)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "  TIN, PAYMENT_TERM_ID, REMARKS, DISCOUNT)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Supplier supplier) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -68,6 +68,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 					ps.setNull(9, Types.INTEGER);
 				}
 				ps.setString(10, supplier.getRemarks());
+				ps.setString(11, supplier.getDiscount());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -77,7 +78,8 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 
 	private static final String UPDATE_SQL = "update SUPPLIER"
 			+ " set CODE = ?, NAME = ?, ADDRESS = ?, CONTACT_NUMBER = ?, CONTACT_PERSON = ?,"
-			+ " FAX_NUMBER = ?, EMAIL_ADDRESS = ?, TIN = ?, PAYMENT_TERM_ID = ?, REMARKS = ?"
+			+ " FAX_NUMBER = ?, EMAIL_ADDRESS = ?, TIN = ?, PAYMENT_TERM_ID = ?, REMARKS = ?,"
+			+ " DISCOUNT = ?"
 			+ " where ID = ?";
 	
 	private void update(Supplier supplier) {
@@ -92,6 +94,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 				supplier.getTin(),
 				(supplier.getPaymentTerm() != null) ? supplier.getPaymentTerm().getId() : null,
 				supplier.getRemarks(),
+				supplier.getDiscount(),
 				supplier.getId());
 	}
 
@@ -135,6 +138,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 			}
 			supplier.setTin(rs.getString("TIN"));
 			supplier.setRemarks(rs.getString("REMARKS"));
+			supplier.setDiscount(rs.getString("DISCOUNT"));
 			return supplier;
 		}
 		
