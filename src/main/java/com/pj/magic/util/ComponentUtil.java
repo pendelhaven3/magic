@@ -12,6 +12,10 @@ public class ComponentUtil {
 		return label;
 	}
 	
+	public static final JLabel createLabel(int width) {
+		return createLabel(width, "");
+	}
+	
 	public static final JLabel createLabel(int width, String text) {
 		JLabel label = new JLabel(text);
 		label.setPreferredSize(new Dimension(width, 30));

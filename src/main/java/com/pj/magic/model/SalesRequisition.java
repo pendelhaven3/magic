@@ -109,9 +109,11 @@ public class SalesRequisition {
 	public SalesInvoice createSalesInvoice() {
 		SalesInvoice salesInvoice = new SalesInvoice();
 		salesInvoice.setCustomer(customer);
+		salesInvoice.setPricingScheme(pricingScheme);
+		salesInvoice.setMode(mode);
+		salesInvoice.setRemarks(remarks);
 		salesInvoice.setPostDate(new Date());
-		salesInvoice.setPostedBy("PJ POST"); // TODO: to be implemented
-		salesInvoice.setOrigin(this);
+		salesInvoice.setRelatedSalesRequisitionNumber(salesRequisitionNumber);
 		
 		for (SalesRequisitionItem item : items) {
 			SalesInvoiceItem invoiceItem = new SalesInvoiceItem();

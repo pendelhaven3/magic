@@ -9,6 +9,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.Unit;
+import com.pj.magic.model.User;
 
 public class PrintServiceTest {
 
@@ -18,7 +19,7 @@ public class PrintServiceTest {
 	public void printSalesInvoice() {
 		SalesInvoice salesInvoice = new SalesInvoice();
 		salesInvoice.setSalesInvoiceNumber(45514L);
-		salesInvoice.setEncodedBy("ENCODER");
+		salesInvoice.setPostedBy(new User(1L, "PJ"));
 		
 		Customer customer = new Customer();
 		customer.setName("XX");

@@ -63,6 +63,21 @@ create table CUSTOMER (
   constraint CUSTOMER$UK unique (CODE)
 );
 
+create table PRICING_SCHEME (
+  ID integer auto_increment,
+  NAME varchar2(30),
+  constraint PRICING_SCHEME$PK primary key (ID),
+  constraint PRICING_SCHEME$UK unique (NAME)
+);
+
+create table USER (
+  ID integer auto_increment,
+  USERNAME varchar2(15) not null,
+  PASSWORD varchar2(100) not null,
+  constraint USER$PK primary key (ID),
+  constraint USER$UK unique (USERNAME)
+);
+
 create table SALES_REQUISITION (
   ID integer auto_increment,
   SALES_REQUISITION_NO integer auto_increment,
@@ -74,7 +89,10 @@ create table SALES_REQUISITION (
   MODE varchar2(10) null,
   REMARKS varchar2(100) null,
   constraint SALES_REQUISITION$PK primary key (ID),
-  constraint SALES_REQUISITION$UK unique (SALES_REQUISITION_NO)
+  constraint SALES_REQUISITION$UK unique (SALES_REQUISITION_NO),
+  constraint SALES_REQUISITION$FK1 foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID),
+  constraint SALES_REQUISITION$FK2 foreign key (CUSTOMER_ID) references CUSTOMER (ID),
+  constraint SALES_REQUISITION$FK3 foreign key (ENCODER_ID) references USER (ID)
 );
 
 create table SALES_REQUISITION_ITEM (
@@ -93,9 +111,14 @@ create table SALES_INVOICE (
   SALES_INVOICE_NO integer auto_increment,
   CUSTOMER_ID integer not null,
   POST_DT date not null,
-  POSTED_BY varchar2(30),
-  SALES_INVOICE_ID integer not null,
-  constraint SALES_INVOICE$PK primary key (ID)
+  POSTED_BY varchar2(30) not null,
+  RELATED_SALES_REQUISITION_NO integer not null,
+  PRICING_SCHEME_ID integer not null,
+  MODE varchar2(10) not null,
+  REMARKS varchar2(100) null,
+  constraint SALES_INVOICE$PK primary key (ID),
+  constraint SALES_INVOICE$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
+  constraint SALES_INVOICE$FK2 foreign key (POSTED_BY) references USER (ID)
 );
 
 create table SALES_INVOICE_ITEM (
@@ -108,14 +131,6 @@ create table SALES_INVOICE_ITEM (
   constraint SALES_INVOICE_ITEM$PK primary key (ID),
   constraint SALES_INVOICE_ITEM$FK foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID),
   constraint SALES_INVOICE_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
-);
-
-create table USER (
-  ID integer auto_increment,
-  USERNAME varchar2(15) not null,
-  PASSWORD varchar2(100) not null,
-  constraint USER$PK primary key (ID),
-  constraint USER$UK unique (USERNAME)
 );
 
 create table SUPPLIER (
@@ -149,13 +164,6 @@ create table PAYMENT_TERM (
   NUMBER_OF_DAYS integer(3),
   constraint PAYMENT_TERM$PK primary key (ID),
   constraint PAYMENT_tERM$UK unique (NAME)
-);
-
-create table PRICING_SCHEME (
-  ID integer auto_increment,
-  NAME varchar2(30),
-  constraint PRICING_SCHEME$PK primary key (ID),
-  constraint PRICING_SCHEME$UK unique (NAME)
 );
 
 create table PRODUCT_PRICE (

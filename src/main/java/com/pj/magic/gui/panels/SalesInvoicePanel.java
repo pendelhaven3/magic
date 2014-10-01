@@ -31,6 +31,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -40,12 +41,16 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	@Autowired private SalesInvoiceItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private PrintService printService;
+	@Autowired private SalesInvoiceService salesInvoiceService;
 	
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
 	private JLabel customerNameField;
-	private JLabel createDateField;
+	private JLabel postDateField;
 	private JLabel encoderField;
+	private JLabel pricingSchemeNameField;
+	private JLabel modeField;
+	private JLabel remarksField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
@@ -57,11 +62,16 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay(SalesInvoice salesInvoice) {
-		this.salesInvoice = salesInvoice;
+		this.salesInvoice = salesInvoiceService.get(salesInvoice.getId());
+		salesInvoice = this.salesInvoice;
+		
 		salesInvoiceNumberField.setText(salesInvoice.getSalesInvoiceNumber().toString());
 		customerNameField.setText(salesInvoice.getCustomer().getCode() + " - " + salesInvoice.getCustomer().getName());
-		createDateField.setText(FormatterUtil.formatDate(salesInvoice.getPostDate()));
-		encoderField.setText(salesInvoice.getPostedBy());
+		postDateField.setText(FormatterUtil.formatDate(salesInvoice.getPostDate()));
+		encoderField.setText(salesInvoice.getPostedBy().getUsername());
+		pricingSchemeNameField.setText(salesInvoice.getPricingScheme().getName());
+		modeField.setText(salesInvoice.getMode());
+		remarksField.setText(salesInvoice.getRemarks());
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
 		totalAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalAmount()));
 		itemsTable.setSalesInvoice(salesInvoice);
@@ -272,10 +282,10 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		createDateField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(createDateField, c);
+		postDateField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(postDateField, c);
 		
-		currentRow++; // second row
+		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -306,7 +316,51 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		encoderField = ComponentUtil.createLabel(150, "");
 		mainPanel.add(encoderField, c);
 		
-		currentRow++; // third row
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Pricing Scheme:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		pricingSchemeNameField = ComponentUtil.createLabel(100);
+		mainPanel.add(pricingSchemeNameField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Mode:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		modeField = ComponentUtil.createLabel(100);
+		mainPanel.add(modeField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Remarks:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		remarksField = ComponentUtil.createLabel(200);
+		mainPanel.add(remarksField, c);
+		
+		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -315,7 +369,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createFiller(50, 10), c);
 		
-		currentRow++; // fourth row
+		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
@@ -327,7 +381,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
 		mainPanel.add(itemsTableScrollPane, c);
 
-		currentRow++; // fifth row
+		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 0.0;

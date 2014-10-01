@@ -435,7 +435,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	}
 	
 	public boolean validateQuantity(SalesRequisitionItemRowItem rowItem) {
-		if (rowItem.getQuantity() == null) {
+		if (StringUtils.isEmpty(rowItem.getQuantity())) {
 			showErrorMessage("Quantity must be specified");
 			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
 			return false;

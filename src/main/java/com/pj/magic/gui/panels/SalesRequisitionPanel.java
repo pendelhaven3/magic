@@ -32,6 +32,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -61,6 +63,8 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class SalesRequisitionPanel extends StandardMagicPanel {
 
+	private static final Logger logger = LoggerFactory.getLogger(SalesRequisitionPanel.class);
+	
 	private static final String SAVE_CUSTOMER_ACTION_NAME = "saveCustomer";
 	private static final String SAVE_PRICING_SCHEME_ACTION_NAME = "savePricingScheme";
 	private static final String SAVE_MODE_ACTION_NAME = "saveMode";
@@ -601,6 +605,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 				itemsTable.highlightColumn(e.getSalesRequisitionItem(), 
 						SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX);
 			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}

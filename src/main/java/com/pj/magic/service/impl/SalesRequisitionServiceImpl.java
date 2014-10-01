@@ -13,12 +13,13 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.UserDao;
-import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.NoSellingPriceException;
+import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesRequisitionService;
 
@@ -31,6 +32,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private CustomerDao customerDao;
 	@Autowired private UserDao userDao;
+	@Autowired private LoginService loginService;
 	
 	@Transactional
 	@Override
@@ -52,7 +54,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 					item.getProduct().getId(), salesRequisition.getPricingScheme()));
 		}
 		if (salesRequisition.getCustomer() != null) {
-			salesRequisition.setCustomer(customerDao.get(salesRequisition.getCustomer().getId()));
+			salesRequisition.setCustomer(customerDao.get(salesRequisition.getCustomer().getId())); // TODO: Review this
 		}
 		salesRequisition.setEncoder(userDao.get(salesRequisition.getEncoder().getId()));
 	}
@@ -100,6 +102,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		salesRequisitionDao.save(updated);
 
 		SalesInvoice salesInvoice = updated.createSalesInvoice();
+		salesInvoice.setPostedBy(loginService.getLoggedInUser());
 		salesInvoiceService.save(salesInvoice);
 		return salesInvoice;
 	}

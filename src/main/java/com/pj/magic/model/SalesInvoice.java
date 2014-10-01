@@ -11,13 +11,12 @@ public class SalesInvoice {
 	private Long salesInvoiceNumber;
 	private Customer customer;
 	private Date postDate;
-	private String postedBy;
-	private SalesRequisition origin;
+	private User postedBy;
 	private List<SalesInvoiceItem> items = new ArrayList<>();
-	private String mode = "WALK-IN"; // TODO: replace with actual value
-	private String remarks = "DUMMY REMARKS"; // TODO: replace with actual value
-	private PricingScheme pricingScheme = new PricingScheme(); // TODO: replace with actual value
-	private String encodedBy;
+	private String mode;
+	private String remarks;
+	private PricingScheme pricingScheme;
+	private Long relatedSalesRequisitionNumber;
 
 	public Long getId() {
 		return id;
@@ -51,11 +50,11 @@ public class SalesInvoice {
 		this.postDate = postDate;
 	}
 
-	public String getPostedBy() {
+	public User getPostedBy() {
 		return postedBy;
 	}
 
-	public void setPostedBy(String postedBy) {
+	public void setPostedBy(User postedBy) {
 		this.postedBy = postedBy;
 	}
 
@@ -83,12 +82,12 @@ public class SalesInvoice {
 		return !items.isEmpty();
 	}
 
-	public SalesRequisition getOrigin() {
-		return origin;
+	public Long getRelatedSalesRequisitionNumber() {
+		return relatedSalesRequisitionNumber;
 	}
 
-	public void setOrigin(SalesRequisition origin) {
-		this.origin = origin;
+	public void setRelatedSalesRequisitionNumber(Long relatedSalesRequisitionNumber) {
+		this.relatedSalesRequisitionNumber = relatedSalesRequisitionNumber;
 	}
 
 	public String getMode() {
@@ -127,15 +126,8 @@ public class SalesInvoice {
 		return BigDecimal.ZERO; // TODO: add implementation
 	}
 
-	public String getEncodedBy() {
-		return encodedBy;
-	}
-
-	public void setEncodedBy(String encodedBy) {
-		this.encodedBy = encodedBy;
-	}
-	
 	public BigDecimal getTotalNetAmount() {
 		return getTotalAmount(); // TODO: add correct implementation
 	}
+
 }

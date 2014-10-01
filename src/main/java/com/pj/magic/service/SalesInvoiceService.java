@@ -9,5 +9,7 @@ public interface SalesInvoiceService {
 	List<SalesInvoice> getAllSalesInvoices();
 	
 	void save(SalesInvoice salesInvoice);
+
+	SalesInvoice get(long id);
 	
 }

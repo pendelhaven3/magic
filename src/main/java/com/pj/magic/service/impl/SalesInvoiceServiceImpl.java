@@ -48,4 +48,11 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		salesInvoice.setCustomer(customerDao.get(salesInvoice.getCustomer().getId()));
 	}
 
+	@Override
+	public SalesInvoice get(long id) {
+		SalesInvoice salesInvoice = salesInvoiceDao.get(id);
+		loadSalesInvoiceDetails(salesInvoice);
+		return salesInvoice;
+	}
+
 }

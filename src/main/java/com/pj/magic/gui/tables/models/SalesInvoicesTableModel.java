@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.pj.magic.gui.tables.SalesInvoicesTable;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.util.FormatterUtil;
@@ -40,7 +38,7 @@ public class SalesInvoicesTableModel extends AbstractTableModel {
 			Date date = salesInvoice.getPostDate();
 			return (date != null) ? FormatterUtil.formatDate(date) : "";
 		case SalesInvoicesTable.POSTED_BY_COLUMN_INDEX:
-			return StringUtils.defaultString(salesInvoice.getPostedBy());
+			return salesInvoice.getPostedBy().getUsername();
 		case SalesInvoicesTable.TOTAL_AMOUNT_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(salesInvoice.getTotalAmount());
 		default:
