@@ -106,6 +106,7 @@ public class Bootstrap {
 			product.setUnitPrice(Unit.CASE, new BigDecimal(row.getCell(10).getNumericCellValue()));
 			product.setFinalCost(Unit.CASE, new BigDecimal(row.getCell(14).getNumericCellValue()));
 			product.setGrossCost(Unit.CASE, new BigDecimal(row.getCell(18).getNumericCellValue()));
+			product.setUnitConversion(Unit.CASE, (int)row.getCell(22).getNumericCellValue());
 		}
 		if (row.getCell(3) != null && "Y".equals(row.getCell(3).getStringCellValue())) {
 			product.getUnits().add(Unit.CARTON);
@@ -113,6 +114,7 @@ public class Bootstrap {
 			product.setUnitPrice(Unit.CARTON, new BigDecimal(row.getCell(11).getNumericCellValue()));
 			product.setFinalCost(Unit.CARTON, new BigDecimal(row.getCell(15).getNumericCellValue()));
 			product.setGrossCost(Unit.CARTON, new BigDecimal(row.getCell(19).getNumericCellValue()));
+			product.setUnitConversion(Unit.CARTON, (int)row.getCell(23).getNumericCellValue());
 		}
 		if (row.getCell(4) != null && "Y".equals(row.getCell(4).getStringCellValue())) {
 			product.getUnits().add(Unit.DOZEN);
@@ -120,6 +122,7 @@ public class Bootstrap {
 			product.setUnitPrice(Unit.DOZEN, new BigDecimal(row.getCell(12).getNumericCellValue()));
 			product.setFinalCost(Unit.DOZEN, new BigDecimal(row.getCell(16).getNumericCellValue()));
 			product.setGrossCost(Unit.DOZEN, new BigDecimal(row.getCell(20).getNumericCellValue()));
+			product.setUnitConversion(Unit.DOZEN, (int)row.getCell(24).getNumericCellValue());
 		}
 		if (row.getCell(5) != null && "Y".equals(row.getCell(5).getStringCellValue())) {
 			product.getUnits().add(Unit.PIECES);
@@ -127,6 +130,7 @@ public class Bootstrap {
 			product.setUnitPrice(Unit.PIECES, new BigDecimal(row.getCell(13).getNumericCellValue()));
 			product.setFinalCost(Unit.PIECES, new BigDecimal(row.getCell(17).getNumericCellValue()));
 			product.setGrossCost(Unit.PIECES, new BigDecimal(row.getCell(21).getNumericCellValue()));
+			product.setUnitConversion(Unit.PIECES, (int)row.getCell(25).getNumericCellValue());
 		}
 		product.setActive(true);
 		return product;
