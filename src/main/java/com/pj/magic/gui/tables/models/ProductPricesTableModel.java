@@ -28,6 +28,10 @@ public class ProductPricesTableModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 	
+	public List<Product> getProducts() {
+		return products;
+	}
+	
 	@Override
 	public int getRowCount() {
 		return products.size();

@@ -22,6 +22,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,9 @@ import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.EditProductPriceDialog;
+import com.pj.magic.gui.dialog.SearchProductDialog;
 import com.pj.magic.gui.tables.models.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
@@ -50,12 +53,14 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private EditProductPriceDialog editProductPriceDialog;
 	@Autowired private ProductService productService;
+	@Autowired private SearchProductDialog searchProductDialog;
 	
 	private PricingScheme pricingScheme;
 	private MagicTextField nameField;
 	private JButton saveButton;
 	private JTable pricesTable;
 	private ProductPricesTableModel pricesTableModel = new ProductPricesTableModel();
+	private JButton searchButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -201,6 +206,8 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 				pricesTable.requestFocusInWindow();
 			}
 		});
+		
+		searchButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -216,6 +223,8 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 				nameField.requestFocusInWindow();
 			}
 		});
+		
+		searchButton.setEnabled(false);
 	}
 
 	@Override
@@ -311,8 +320,37 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// TODO Auto-generated method stub
-		
+		searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchProduct();
+			}
+		});
+		toolBar.add(searchButton);
+	}
+
+	protected void searchProduct() {
+		searchProductDialog.updateDisplay();
+		searchProductDialog.setVisible(true);
+		String productCode = searchProductDialog.getProductCodeCriteria();
+		if (!StringUtils.isEmpty(productCode)) {
+			boolean found = false;
+			List<Product> products = pricesTableModel.getProducts();
+			for (int i = 0; i < products.size(); i++) {
+				if (products.get(i).getCode().startsWith(productCode)) {
+					found = true;
+					pricesTable.changeSelection(i, 0, false, false);
+					break;
+				}
+			}
+			
+			if (!found) {
+				showErrorMessage("No matching product");
+			}
+		}
+		pricesTable.requestFocusInWindow();
 	}
 
 }
