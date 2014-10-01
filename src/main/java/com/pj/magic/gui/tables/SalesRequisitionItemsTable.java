@@ -31,6 +31,7 @@ import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.gui.tables.models.ActionsTableModel;
 import com.pj.magic.gui.tables.models.SalesRequisitionItemsTableModel;
+import com.pj.magic.gui.tables.rowitems.SalesRequisitionItemRowItem;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
@@ -44,7 +45,7 @@ import com.pj.magic.util.KeyUtil;
  */
 
 @Component
-public class SalesRequisitionItemsTable extends JTable {
+public class SalesRequisitionItemsTable extends MagicTable {
 	
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
@@ -66,6 +67,7 @@ public class SalesRequisitionItemsTable extends JTable {
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;
+	@Autowired private SalesRequisitionItemsTableModel tableModel;
 	
 	private boolean addMode;
 	private SalesRequisition salesRequisition;
@@ -153,11 +155,11 @@ public class SalesRequisitionItemsTable extends JTable {
 		}
 		
 		if (addMode) {
-			salesRequisition.getItems().addAll(getItemsTableModel().getItems());
+			salesRequisition.getItems().addAll(tableModel.getItems());
 		}
 		
 		addMode = true;
-		getItemsTableModel().clearAndAddItem(createBlankItem());
+		tableModel.clearAndAddItem(createBlankItem());
 		changeSelection(0, 0, false, false);
 		editCellAt(0, 0);
 		getEditorComponent().requestFocusInWindow();
@@ -170,7 +172,7 @@ public class SalesRequisitionItemsTable extends JTable {
 
 	public void addNewRow() {
 		int newRowIndex = getSelectedRow() + 1;
-		getItemsTableModel().addItem(createBlankItem());
+		tableModel.addItem(createBlankItem());
 		changeSelection(newRowIndex, 0, false, false);
 		editCellAt(newRowIndex, 0);
 		getEditorComponent().requestFocusInWindow();
@@ -189,14 +191,9 @@ public class SalesRequisitionItemsTable extends JTable {
 	}
 	
 	public boolean isLastRowSelected() {
-		return getSelectedRow() + 1 == getItemsTableModel().getRowCount();
+		return getSelectedRow() + 1 == tableModel.getRowCount();
 	}
 
-	// TODO: Remove this method
-	public SalesRequisitionItemsTableModel getItemsTableModel() {
-		return (SalesRequisitionItemsTableModel)super.getModel();
-	}
-	
 	public boolean isAdding() {
 		return addMode;
 	}
@@ -209,8 +206,8 @@ public class SalesRequisitionItemsTable extends JTable {
 		
 		addMode = false;
 		List<SalesRequisitionItem> items = salesRequisition.getItems();
-		items.addAll(getItemsTableModel().getItems());
-		getItemsTableModel().setItems(items);
+		items.addAll(tableModel.getItems());
+		tableModel.setItems(items);
 		
 		if (items.size() > 0) {
 			changeSelection(0, 0, false, false);
@@ -220,12 +217,12 @@ public class SalesRequisitionItemsTable extends JTable {
 	public void removeCurrentlySelectedRow() {
 		
 		int selectedRowIndex = getSelectedRow();
-		SalesRequisitionItem item = getCurrentlySelectedRowItem();
+		SalesRequisitionItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
 		salesRequisition.getItems().remove(item);
-		getItemsTableModel().removeItem(selectedRowIndex);
+		tableModel.removeItem(selectedRowIndex);
 		
-		if (getItemsTableModel().hasItems()) {
+		if (tableModel.hasItems()) {
 			if (selectedRowIndex == getModel().getRowCount()) {
 				changeSelection(selectedRowIndex - 1, 0, false, false);
 			} else {
@@ -234,8 +231,8 @@ public class SalesRequisitionItemsTable extends JTable {
 		}
 	}
 	
-	public SalesRequisitionItem getCurrentlySelectedRowItem() {
-		return getItemsTableModel().getRowItem(getSelectedRow());
+	public SalesRequisitionItemRowItem getCurrentlySelectedRowItem() {
+		return tableModel.getRowItem(getSelectedRow());
 	}
 	
 	public void editCellAtCurrentRow(int columnIndex) {
@@ -243,9 +240,13 @@ public class SalesRequisitionItemsTable extends JTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
-	private boolean hasDuplicate(SalesRequisitionItem checkItem) {
+	private boolean hasDuplicate(SalesRequisitionItemRowItem rowItem) {
+		SalesRequisitionItem checkItem = new SalesRequisitionItem();
+		checkItem.setProduct(rowItem.getProduct());
+		checkItem.setUnit(rowItem.getUnit());
+		
 		for (SalesRequisitionItem item : salesRequisition.getItems()) {
-			if (item.equals(checkItem) && item != checkItem) {
+			if (item.equals(checkItem) && item != rowItem.getItem()) {
 				return true;
 			}
 		}
@@ -256,7 +257,7 @@ public class SalesRequisitionItemsTable extends JTable {
 		clearSelection();
 		addMode = false;
 		this.salesRequisition = salesRequisition;
-		getItemsTableModel().setSalesRequisition(salesRequisition);
+		tableModel.setSalesRequisition(salesRequisition);
 	}
 	
 	private SalesRequisitionItem createBlankItem() {
@@ -309,7 +310,7 @@ public class SalesRequisitionItemsTable extends JTable {
 				
 				int selectedColumn = table.getSelectedColumn();
 				int selectedRow = table.getSelectedRow();
-				SalesRequisitionItem item = table.getCurrentlySelectedRowItem();
+				SalesRequisitionItemRowItem rowItem = table.getCurrentlySelectedRowItem();
 				
 				switch (selectedColumn) {
 				case PRODUCT_CODE_COLUMN_INDEX:
@@ -337,11 +338,11 @@ public class SalesRequisitionItemsTable extends JTable {
 						JOptionPane.showMessageDialog(table,
 								"Unit must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
 						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-					} else if (!item.getProduct().getUnits().contains(unit)) {
+					} else if (!rowItem.getProduct().getUnits().contains(unit)) {
 						JOptionPane.showMessageDialog(table,
 								"Product does not have unit specified", "Error Message", JOptionPane.ERROR_MESSAGE);
 						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-					} else if (getItemsTableModel().hasDuplicate(item) || hasDuplicate(item)) {
+					} else if (tableModel.hasDuplicate(rowItem) || hasDuplicate(rowItem)) {
 						JOptionPane.showMessageDialog(table,
 								"Duplicate item", "Error Message", JOptionPane.ERROR_MESSAGE);
 						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
@@ -421,8 +422,8 @@ public class SalesRequisitionItemsTable extends JTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.getItemsTableModel().hasItems()) {
-					if (table.getCurrentlySelectedRowItem().isFilledUp()) { // check valid row to prevent deleting the blank row
+				if (table.tableModel.hasItems()) {
+					if (table.getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
 						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?", "Select An Option", JOptionPane.YES_NO_OPTION);
 						if (confirm == JOptionPane.OK_OPTION) {
 							removeCurrentlySelectedRow();
@@ -433,17 +434,15 @@ public class SalesRequisitionItemsTable extends JTable {
 		});
 	}
 	
-	public boolean validateQuantity(SalesRequisitionItem item) {
-		if (item.getQuantity() == null) {
-			JOptionPane.showMessageDialog(this,
-					"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
+	public boolean validateQuantity(SalesRequisitionItemRowItem rowItem) {
+		if (rowItem.getQuantity() == null) {
+			showErrorMessage("Quantity must be specified");
 			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
 			return false;
 		} else {
-			Product product = productService.getProduct(item.getProduct().getId());
-			if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity().intValue())) {
-				JOptionPane.showMessageDialog(this,
-						"Not enough stocks", "Error Message", JOptionPane.ERROR_MESSAGE);
+			Product product = productService.getProduct(rowItem.getProduct().getId());
+			if (!product.hasAvailableUnitQuantity(rowItem.getUnit(), rowItem.getQuantityAsInt())) {
+				showErrorMessage("Not enough stocks");
 				editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
 				return false;
 			} else {
@@ -455,9 +454,9 @@ public class SalesRequisitionItemsTable extends JTable {
 	public BigDecimal getTotalAmount() {
 		BigDecimal totalAmount = salesRequisition.getTotalAmount();
 		if (isAdding()) {
-			for (SalesRequisitionItem item : getItemsTableModel().getItems()) {
-				if (item.isFilledUp()) {
-					totalAmount = totalAmount.add(item.getAmount());
+			for (SalesRequisitionItemRowItem rowItem : tableModel.getRowItems()) {
+				if (rowItem.isValid()) {
+					totalAmount = totalAmount.add(rowItem.getAmount());
 				}
 			}
 		}
@@ -467,7 +466,7 @@ public class SalesRequisitionItemsTable extends JTable {
 	public int getTotalNumberOfItems() {
 		int totalNumberOfItems = salesRequisition.getTotalNumberOfItems();
 		if (isAdding()) {
-			totalNumberOfItems += getItemsTableModel().getItems().size();
+			totalNumberOfItems += tableModel.getItems().size();
 		}
 		return totalNumberOfItems;
 	}
