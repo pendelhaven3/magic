@@ -773,7 +773,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		updateComboBoxes();
 		
 		this.product = product;
-		if (!product.isValid()) {
+		if (product.getId() == null) {
 			clearDisplay();
 			return;
 		}

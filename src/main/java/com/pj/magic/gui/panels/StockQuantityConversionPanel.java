@@ -256,7 +256,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		}
 		
 		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
-		if (product != null && product.isValid()) {
+		if (product != null) {
 			unitPricesAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
 		} else {
 			unitPricesAndQuantitiesTableModel.setProduct(null);

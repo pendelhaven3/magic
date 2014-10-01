@@ -14,8 +14,7 @@ public class StockQuantityConversionItem {
 	private Integer quantity;
 
 	public boolean isValid() {
-		return (product != null && product.isValid())
-				&& product.hasUnit(fromUnit) && product.hasUnit(toUnit)
+		return product != null && product.hasUnit(fromUnit) && product.hasUnit(toUnit)
 				&& (quantity != null && isQuantityValid());
 	}
 	

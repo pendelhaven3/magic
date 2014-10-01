@@ -35,11 +35,6 @@ public class Product implements Comparable<Product> {
 		this.id = id;
 	}
 	
-	// TODO: Remove this
-	public boolean isValid() {
-		return id != null;
-	}
-	
 	public boolean hasUnit(String unit) {
 		return units.contains(unit);
 	}

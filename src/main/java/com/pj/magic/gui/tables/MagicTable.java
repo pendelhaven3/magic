@@ -1,7 +1,12 @@
 package com.pj.magic.gui.tables;
 
+import java.awt.Component;
+import java.awt.event.KeyEvent;
+import java.util.EventObject;
+
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.TableModel;
 
 // TODO: This is not really ItemsTable
@@ -34,6 +39,18 @@ public abstract class MagicTable extends JTable {
 	
 	public boolean isAdding() {
 		return addMode;
+	}
+	
+	@Override
+	public boolean editCellAt(int row, int column, EventObject e) {
+		boolean result = super.editCellAt(row, column, e);
+		if (e instanceof KeyEvent) {
+			Component c = getEditorComponent();
+			if (c instanceof JTextField) {
+				((JTextField)c).setText(null);
+			}
+		}
+		return result;
 	}
 	
 }

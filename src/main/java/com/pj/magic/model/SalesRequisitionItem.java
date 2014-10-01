@@ -15,13 +15,11 @@ public class SalesRequisitionItem {
 	private Integer quantity;
 
 	public boolean isValid() {
-		return (product != null && product.isValid())
-				&& product.hasUnit(unit)
-				&& (quantity != null && isQuantityValid());
+		return product != null && product.hasUnit(unit) && (quantity != null && isQuantityValid());
 	}
 	
 	public BigDecimal getUnitPrice() {
-		if (product == null || !product.isValid() || !product.hasUnit(unit)) {
+		if (product == null || !product.hasUnit(unit)) {
 			return null;
 		}
 		
@@ -34,7 +32,7 @@ public class SalesRequisitionItem {
 	}
 	
 	public BigDecimal getAmount() {
-		if (product == null || !product.isValid() || quantity == null) {
+		if (product == null || quantity == null) {
 			return null;
 		}
 		return getUnitPrice().multiply(new BigDecimal(quantity.intValue()));
