@@ -13,12 +13,18 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerm;
 
 @Repository
 public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select ID, CODE, NAME, ADDRESS, CONTACT_PERSON, CONTACT_NUMBER from CUSTOMER";
+			"select a.ID, CODE, a.NAME, ADDRESS, CONTACT_PERSON, CONTACT_NUMBER,"
+			+ " PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME"
+			+ " from CUSTOMER a"
+			+ " left join PAYMENT_TERM b"
+			+ "   on b.ID = a.PAYMENT_TERM_ID"
+			+ " where 1 = 1";
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -27,7 +33,11 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 	
 	@Override
 	public void save(Customer customer) {
-		entityManager.persist(customer);
+		if (customer.getId() == null) {
+			entityManager.persist(customer);
+		} else {
+			entityManager.merge(customer);
+		}
 	}
 
 	@Override
@@ -46,6 +56,10 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 			customer.setAddress(rs.getString("ADDRESS"));
 			customer.setContactPerson(rs.getString("CONTACT_PERSON"));
 			customer.setContactNumber(rs.getString("CONTACT_NUMBER"));
+			if (rs.getLong("PAYMENT_TERM_ID") != 0) {
+				customer.setPaymentTerm(
+						new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
+			}
 			return customer;
 		}
 		
@@ -57,7 +71,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 	}
 
 	private static final String FIND_FIRST_WITH_CODE_LIKE_SQL =
-			BASE_SELECT_SQL + " where CODE like ? limit 1";
+			BASE_SELECT_SQL + " and a.CODE like ? limit 1";
 	
 	@Override
 	public Customer findFirstWithCodeLike(String code) {
@@ -69,7 +83,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 	}
 
 	private static final String FIND_BY_CODE_SQL =
-			BASE_SELECT_SQL + " where CODE = ?";
+			BASE_SELECT_SQL + " and a.CODE = ?";
 	
 	@Override
 	public Customer findByCode(String code) {

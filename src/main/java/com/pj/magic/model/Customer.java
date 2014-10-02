@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -18,12 +20,16 @@ public class Customer {
 	private String name;
 	private String address;
 	
-	@Column(name="CONTACT_PERSON")
+	@Column(name = "CONTACT_PERSON")
 	private String contactPerson;
 	
-	@Column(name="CONTACT_NUMBER")
+	@Column(name = "CONTACT_NUMBER")
 	private String contactNumber;
 
+	@OneToOne
+	@JoinColumn(name = "PAYMENT_TERM_ID")
+	private PaymentTerm paymentTerm;
+	
 	public Customer() {
 	}
 	
@@ -98,6 +104,14 @@ public class Customer {
 
 	public void setContactNumber(String contactNumber) {
 		this.contactNumber = contactNumber;
+	}
+
+	public PaymentTerm getPaymentTerm() {
+		return paymentTerm;
+	}
+
+	public void setPaymentTerm(PaymentTerm paymentTerm) {
+		this.paymentTerm = paymentTerm;
 	}
 	
 }

@@ -9,8 +9,6 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-// TODO: To negotiate if can do away with maintenance screen for this one
-
 @Entity
 @Table(name="PAYMENT_TERM")
 public class PaymentTerm {

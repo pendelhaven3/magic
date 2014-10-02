@@ -52,6 +52,14 @@ create table PRODUCT (
   constraint PRODUCT$FK2 foreign key (CATEGORY_ID) references PRODUCT_CATEGORY (ID)
 );
 
+create table PAYMENT_TERM (
+  ID integer auto_increment,
+  NAME varchar2(50),
+  NUMBER_OF_DAYS integer(3),
+  constraint PAYMENT_TERM$PK primary key (ID),
+  constraint PAYMENT_tERM$UK unique (NAME)
+);
+
 create table CUSTOMER (
   ID integer auto_increment,
   CODE varchar2(12) not null,
@@ -59,8 +67,10 @@ create table CUSTOMER (
   ADDRESS varchar2(100) null,
   CONTACT_PERSON varchar2(100) null,
   CONTACT_NUMBER varchar2(100) null,
+  PAYMENT_TERM_ID integer null,
   constraint CUSTOMER$PK primary key (ID),
-  constraint CUSTOMER$UK unique (CODE)
+  constraint CUSTOMER$UK unique (CODE),
+  constraint CUSTOMER$FK foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID)
 );
 
 create table PRICING_SCHEME (
@@ -158,14 +168,6 @@ create table SUPPLIER_PRODUCT (
   constraint SUPPLIER_PRODUCT$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
  
-create table PAYMENT_TERM (
-  ID integer auto_increment,
-  NAME varchar2(50),
-  NUMBER_OF_DAYS integer(3),
-  constraint PAYMENT_TERM$PK primary key (ID),
-  constraint PAYMENT_tERM$UK unique (NAME)
-);
-
 create table PRODUCT_PRICE (
   PRICING_SCHEME_ID integer default 1 not null,
   PRODUCT_ID integer not null,

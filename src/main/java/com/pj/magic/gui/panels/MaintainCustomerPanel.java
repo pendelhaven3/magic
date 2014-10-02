@@ -9,7 +9,9 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -24,7 +26,9 @@ import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.service.CustomerService;
+import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
@@ -35,6 +39,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 	private static final String SAVE_ACTION_NAME = "save";
 	
 	@Autowired private CustomerService customerService;
+	@Autowired private PaymentTermService paymentTermService;
 	
 	private Customer customer;
 	private MagicTextField codeField;
@@ -42,6 +47,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 	private MagicTextField addressField;
 	private MagicTextField contactPersonField;
 	private MagicTextField contactNumberField;
+	private JComboBox<PaymentTerm> paymentTermComboBox;
 	private JButton saveButton;
 	
 	@Override
@@ -60,6 +66,8 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		
 		contactNumberField = new MagicTextField();
 		contactNumberField.setMaximumLength(100);
+		
+		paymentTermComboBox = new JComboBox<>();
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -80,6 +88,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		focusOrder.add(addressField);
 		focusOrder.add(contactPersonField);
 		focusOrder.add(contactNumberField);
+		focusOrder.add(paymentTermComboBox);
 		focusOrder.add(saveButton);
 	}
 	
@@ -94,6 +103,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 			customer.setName(nameField.getText());
 			customer.setContactPerson(contactPersonField.getText());
 			customer.setContactNumber(contactNumberField.getText());
+			customer.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
 			
 			try {
 				customerService.save(customer);
@@ -215,6 +225,21 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Payment Term: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentTermComboBox.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(paymentTermComboBox, c);
+		
+		currentRow++;
+		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = 0.0;
 		c.weighty = 0.0;
@@ -266,6 +291,10 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay(Customer customer) {
+		List<PaymentTerm> paymentTerms = paymentTermService.getAllPaymentTerms();
+		paymentTermComboBox.setModel(
+				new DefaultComboBoxModel<>(paymentTerms.toArray(new PaymentTerm[paymentTerms.size()])));
+		
 		this.customer = customer;
 		if (customer.getId() == null) {
 			clearDisplay();
@@ -276,6 +305,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		nameField.setText(customer.getName());
 		contactPersonField.setText(customer.getContactPerson());
 		contactNumberField.setText(customer.getContactNumber());
+		paymentTermComboBox.setSelectedItem(customer.getPaymentTerm());
 	}
 
 	private void clearDisplay() {
@@ -284,6 +314,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		addressField.setText(null);
 		contactPersonField.setText(null);
 		contactNumberField.setText(null);
+		paymentTermComboBox.setSelectedItem(null);
 	}
 
 	@Override
