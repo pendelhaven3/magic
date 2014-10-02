@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.User;
@@ -25,15 +26,17 @@ import com.pj.magic.model.User;
 public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, SALES_INVOICE_NO, POST_DT, RELATED_SALES_REQUISITION_NO, MODE, REMARKS,"
+			"select a.ID, SALES_INVOICE_NO, POST_DT, RELATED_SALES_REQUISITION_NO, MODE, REMARKS, CUSTOMER_ID,"
 			+ " PRICING_SCHEME_ID, d.NAME as PRICING_SCHEME_NAME,"
 			+ " POSTED_BY, b.USERNAME as POSTED_BY_USERNAME,"
-			+ " CUSTOMER_ID"
+			+ " PAYMENT_TERM_ID, e.NAME as PAYMENT_TERM_NAME"
 			+ " from SALES_INVOICE a"
 			+ " join USER b"
 			+ "   on b.ID = a.POSTED_BY"
 			+ " join PRICING_SCHEME d"
 			+ "   on d.ID = a.PRICING_SCHEME_ID"
+			+ " join PAYMENT_TERM e"
+			+ "   on e.ID = a.PAYMENT_TERM_ID"
 			+ " where 1 = 1";
 	
 	private SalesInvoiceRowMapper salesInvoiceRowMapper = new SalesInvoiceRowMapper();
@@ -46,8 +49,8 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	private static final String INSERT_SQL =
 			"insert into SALES_INVOICE "
 			+ " (CUSTOMER_ID, POST_DT, POSTED_BY, RELATED_SALES_REQUISITION_NO,"
-			+ "  PRICING_SCHEME_ID, MODE, REMARKS)"
-			+ " values (?, ?, ?, ?, ?, ?, ?)";
+			+ "  PRICING_SCHEME_ID, MODE, REMARKS, PAYMENT_TERM_ID)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final SalesInvoice salesInvoice) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -64,6 +67,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				ps.setLong(5, salesInvoice.getPricingScheme().getId());
 				ps.setString(6, salesInvoice.getMode());
 				ps.setString(7, salesInvoice.getRemarks());
+				ps.setLong(8, salesInvoice.getPaymentTerm().getId());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -100,6 +104,8 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 					new PricingScheme(rs.getLong("PRICING_SCHEME_ID"), rs.getString("PRICING_SCHEME_NAME")));
 			salesInvoice.setMode(rs.getString("MODE"));
 			salesInvoice.setRemarks(rs.getString("REMARKS"));
+			salesInvoice.setPaymentTerm(
+					new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
 			return salesInvoice;
 		}
 		

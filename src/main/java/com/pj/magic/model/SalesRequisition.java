@@ -115,6 +115,7 @@ public class SalesRequisition {
 		salesInvoice.setRemarks(remarks);
 		salesInvoice.setPostDate(new Date());
 		salesInvoice.setRelatedSalesRequisitionNumber(salesRequisitionNumber);
+		salesInvoice.setPaymentTerm(paymentTerm);
 		
 		for (SalesRequisitionItem item : items) {
 			SalesInvoiceItem invoiceItem = new SalesInvoiceItem();

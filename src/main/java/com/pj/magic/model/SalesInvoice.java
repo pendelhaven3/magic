@@ -17,6 +17,7 @@ public class SalesInvoice {
 	private String remarks;
 	private PricingScheme pricingScheme;
 	private Long relatedSalesRequisitionNumber;
+	private PaymentTerm paymentTerm;
 
 	public Long getId() {
 		return id;
@@ -130,4 +131,12 @@ public class SalesInvoice {
 		return getTotalAmount(); // TODO: add correct implementation
 	}
 
+	public PaymentTerm getPaymentTerm() {
+		return paymentTerm;
+	}
+
+	public void setPaymentTerm(PaymentTerm paymentTerm) {
+		this.paymentTerm = paymentTerm;
+	}
+	
 }

@@ -51,6 +51,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	private JLabel pricingSchemeNameField;
 	private JLabel modeField;
 	private JLabel remarksField;
+	private JLabel paymentTermNameField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
@@ -72,6 +73,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		pricingSchemeNameField.setText(salesInvoice.getPricingScheme().getName());
 		modeField.setText(salesInvoice.getMode());
 		remarksField.setText(salesInvoice.getRemarks());
+		paymentTermNameField.setText(salesInvoice.getPaymentTerm().getName());
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
 		totalAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalAmount()));
 		itemsTable.setSalesInvoice(salesInvoice);
@@ -315,6 +317,21 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		encoderField = ComponentUtil.createLabel(150, "");
 		mainPanel.add(encoderField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Payment Term:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentTermNameField = ComponentUtil.createLabel(100);
+		mainPanel.add(paymentTermNameField, c);
 		
 		currentRow++;
 		

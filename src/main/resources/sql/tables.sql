@@ -128,9 +128,13 @@ create table SALES_INVOICE (
   PRICING_SCHEME_ID integer not null,
   MODE varchar2(10) not null,
   REMARKS varchar2(100) null,
+  PAYMENT_TERM_ID integer not null,
   constraint SALES_INVOICE$PK primary key (ID),
   constraint SALES_INVOICE$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
-  constraint SALES_INVOICE$FK2 foreign key (POSTED_BY) references USER (ID)
+  constraint SALES_INVOICE$FK2 foreign key (POSTED_BY) references USER (ID),
+  constraint SALES_INVOICE$FK3 foreign key (RELATED_SALES_REQUISITION_NO) references SALES_REQUISITION (SALES_REQUISITION_NO),
+  constraint SALES_INVOICE$FK4 foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID),
+  constraint SALES_INVOICE$FK5 foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID)
 );
 
 create table SALES_INVOICE_ITEM (

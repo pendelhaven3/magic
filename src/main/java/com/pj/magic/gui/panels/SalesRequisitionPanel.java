@@ -161,7 +161,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			saveNewSalesRequisition();
 		} else {
 			if (!salesRequisition.getMode().equals(modeComboBox.getSelectedItem())) {
-				System.out.println("Save mode");
 				salesRequisition.setMode((String)modeComboBox.getSelectedItem());
 				salesRequisitionService.save(salesRequisition);
 			}
@@ -173,7 +172,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			saveNewSalesRequisition();
 		} else {
 			if (!salesRequisition.getPricingScheme().equals(pricingSchemeComboBox.getSelectedItem())) {
-				System.out.println("save pricing scheme");
 				salesRequisition.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
 				salesRequisitionService.save(salesRequisition);
 				updateDisplay(salesRequisition);
@@ -186,7 +184,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			saveNewSalesRequisition();
 		} else {
 			if (!salesRequisition.getPaymentTerm().equals(paymentTermComboBox.getSelectedItem())) {
-				System.out.println("Save payment term");
 				salesRequisition.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
 				salesRequisitionService.save(salesRequisition);
 			}
@@ -195,7 +192,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 
 	protected void saveRemarks() {
 		if (!remarksField.getText().equals(salesRequisition.getRemarks())) {
-			System.out.println("save remarks!");
 			salesRequisition.setRemarks(remarksField.getText());
 			salesRequisitionService.save(salesRequisition);
 		}
