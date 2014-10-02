@@ -21,6 +21,7 @@ public class SalesRequisition {
 	private PricingScheme pricingScheme;
 	private String mode;
 	private String remarks;
+	private PaymentTerm paymentTerm;
 
 	public SalesRequisition() {
 	}
@@ -168,8 +169,17 @@ public class SalesRequisition {
 		this.remarks = remarks;
 	}
 	
+	// TODO: Remove this
 	public boolean hasMinimumFieldsFilledUp() {
 		return customer != null && pricingScheme != null;
+	}
+
+	public PaymentTerm getPaymentTerm() {
+		return paymentTerm;
+	}
+
+	public void setPaymentTerm(PaymentTerm paymentTerm) {
+		this.paymentTerm = paymentTerm;
 	}
 	
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.User;
@@ -26,13 +27,16 @@ import com.pj.magic.model.User;
 public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitionDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER_ID, POST_IND,"
-			+ " PRICING_SCHEME_ID, MODE, REMARKS"
-			+ " from SALES_REQUISITION";
+			"select a.ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER_ID, POST_IND,"
+			+ " PRICING_SCHEME_ID, MODE, REMARKS,"
+			+ " PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME"
+			+ " from SALES_REQUISITION a"
+			+ " join PAYMENT_TERM b"
+			+ "   on b.ID = a.PAYMENT_TERM_ID";
 	
 	private SalesRequisitionRowMapper salesRequisitionRowMapper = new SalesRequisitionRowMapper();
 	
-	private static final String GET_SQL = BASE_SELECT_SQL + " where ID = ?";
+	private static final String GET_SQL = BASE_SELECT_SQL + " where a.ID = ?";
 	
 	@Override
 	public SalesRequisition get(long id) {
@@ -54,8 +58,8 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	
 	private static final String INSERT_SQL =
 			"insert into SALES_REQUISITION"
-			+ " (CUSTOMER_ID, CREATE_DT, ENCODER_ID, PRICING_SCHEME_ID, MODE, REMARKS)"
-			+ " values (?, ?, ?, ?, ?, ?)";
+			+ " (CUSTOMER_ID, CREATE_DT, ENCODER_ID, PRICING_SCHEME_ID, MODE, REMARKS, PAYMENT_TERM_ID)"
+			+ " values (?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final SalesRequisition salesRequisition) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -75,6 +79,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 				ps.setLong(4, salesRequisition.getPricingScheme().getId());
 				ps.setString(5, salesRequisition.getMode());
 				ps.setString(6, salesRequisition.getRemarks());
+				ps.setLong(7, salesRequisition.getPaymentTerm().getId());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -86,7 +91,8 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	
 	private static final String UPDATE_SQL =
 			"update SALES_REQUISITION"
-			+ " set CUSTOMER_ID = ?, POST_IND = ?, PRICING_SCHEME_ID = ?, MODE = ?, REMARKS = ?"
+			+ " set CUSTOMER_ID = ?, POST_IND = ?, PRICING_SCHEME_ID = ?, MODE = ?, REMARKS = ?,"
+			+ " PAYMENT_TERM_ID = ?"
 			+ " where ID = ?";
 	
 	private void update(SalesRequisition salesRequisition) {
@@ -95,6 +101,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 				salesRequisition.getPricingScheme().getId(),
 				salesRequisition.getMode(),
 				salesRequisition.getRemarks(),
+				salesRequisition.getPaymentTerm().getId(),
 				salesRequisition.getId());
 	}
 	
@@ -111,13 +118,9 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			salesRequisition.setPricingScheme(new PricingScheme(rs.getLong("PRICING_SCHEME_ID")));
 			salesRequisition.setMode(rs.getString("MODE"));
 			salesRequisition.setRemarks(rs.getString("REMARKS"));
-
-			if (rs.getLong("CUSTOMER_ID") != 0) {
-				Customer customer = new Customer();
-				customer.setId(rs.getLong("CUSTOMER_ID"));
-				salesRequisition.setCustomer(customer);
-			}
-			
+			salesRequisition.setCustomer(new Customer(rs.getLong("CUSTOMER_ID")));
+			salesRequisition.setPaymentTerm(
+					new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
 			return salesRequisition;
 		}
 	}
@@ -133,7 +136,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	public List<SalesRequisition> search(SalesRequisition criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
 		sql.append(" where POST_IND = ?");
-		sql.append(" order by ID desc"); // TODO: change to be more flexible when the need arises
+		sql.append(" order by a.ID desc"); // TODO: change to be more flexible when the need arises
 		
 		return getJdbcTemplate().query(sql.toString(), salesRequisitionRowMapper,
 				criteria.isPosted() ? "Y" : "N");

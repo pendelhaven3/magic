@@ -98,11 +98,13 @@ create table SALES_REQUISITION (
   PRICING_SCHEME_ID integer not null,
   MODE varchar2(10) null,
   REMARKS varchar2(100) null,
+  PAYMENT_TERM_ID integer not null,
   constraint SALES_REQUISITION$PK primary key (ID),
   constraint SALES_REQUISITION$UK unique (SALES_REQUISITION_NO),
   constraint SALES_REQUISITION$FK1 foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID),
   constraint SALES_REQUISITION$FK2 foreign key (CUSTOMER_ID) references CUSTOMER (ID),
-  constraint SALES_REQUISITION$FK3 foreign key (ENCODER_ID) references USER (ID)
+  constraint SALES_REQUISITION$FK3 foreign key (ENCODER_ID) references USER (ID),
+  constraint SALES_REQUISITION$FK4 foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID)
 );
 
 create table SALES_REQUISITION_ITEM (

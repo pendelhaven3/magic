@@ -1,6 +1,7 @@
 package com.pj.magic.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Transactional
 	@Override
 	public void save(SalesRequisition salesRequisition) {
+		boolean isNew = (salesRequisition.getId() == null);
+		if (isNew) {
+			salesRequisition.setCreateDate(new Date());
+			salesRequisition.setEncoder(loginService.getLoggedInUser());
+		}
 		salesRequisitionDao.save(salesRequisition);
 	}
 

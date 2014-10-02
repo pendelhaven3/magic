@@ -25,6 +25,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductPriceDao;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
@@ -166,6 +167,7 @@ public class Bootstrap {
 		customer.setCode(row.getCell(0).getStringCellValue());
 		customer.setName(row.getCell(1).getStringCellValue());
 		customer.setAddress(row.getCell(2).getStringCellValue());
+		customer.setPaymentTerm(new PaymentTerm(1L));
 		return customer;
 	}
 	
