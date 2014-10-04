@@ -379,5 +379,9 @@ public class Product implements Comparable<Product> {
 			setFinalCost(unit, finalCost);
 		}
 	}
+
+	public boolean hasNoSellingPrice(String unit) {
+		return getUnitPrice(unit).equals(BigDecimal.ZERO.setScale(2));
+	}
 	
 }

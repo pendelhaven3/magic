@@ -342,6 +342,9 @@ public class SalesRequisitionItemsTable extends MagicTable {
 						JOptionPane.showMessageDialog(table,
 								"Product does not have unit specified", "Error Message", JOptionPane.ERROR_MESSAGE);
 						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
+					} else if (rowItem.getProduct().hasNoSellingPrice(unit)) {
+						showErrorMessage("No selling price");
+						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
 					} else if (tableModel.hasDuplicate(rowItem) || hasDuplicate(rowItem)) {
 						JOptionPane.showMessageDialog(table,
 								"Duplicate item", "Error Message", JOptionPane.ERROR_MESSAGE);
