@@ -29,6 +29,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -792,6 +793,12 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	private void postPurchaseOrder() {
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();
+		}
+		
+		if (StringUtils.isEmpty(referenceNumberField.getText())) {
+			showErrorMessage("Reference No. must be specified");
+			referenceNumberField.requestFocusInWindow();
+			return;
 		}
 		
 		if (confirm("Do you want to post this Purchase Order?")) {
