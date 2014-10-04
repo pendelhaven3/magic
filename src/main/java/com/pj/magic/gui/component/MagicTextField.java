@@ -17,6 +17,7 @@ public class MagicTextField extends JTextField {
 
 	private int maximumLength;
 	private boolean numbersOnly;
+	private boolean allowLowerCase;
 	
 	public MagicTextField() {
 		setDocument(new PlainDocument() {
@@ -32,10 +33,10 @@ public class MagicTextField extends JTextField {
 				
 				if (maximumLength > 0) {
 					if ((getLength() + str.length()) <= maximumLength) {
-						super.insertString(offset, str.toUpperCase(), attr);
+						super.insertString(offset, allowLowerCase ? str : str.toUpperCase(), attr);
 					}
 				} else {
-					super.insertString(offset, str.toUpperCase(), attr);
+					super.insertString(offset, allowLowerCase ? str : str.toUpperCase(), attr);
 				}
 			}
 		});
@@ -53,6 +54,10 @@ public class MagicTextField extends JTextField {
 	public void onEnterKey(Action action) {
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), Constants.ENTER_KEY_ACTION_NAME);
 		getActionMap().put(Constants.ENTER_KEY_ACTION_NAME, action);
+	}
+
+	public void setAllowLowerCase(boolean allowLowerCase) {
+		this.allowLowerCase = allowLowerCase;
 	}
 	
 }

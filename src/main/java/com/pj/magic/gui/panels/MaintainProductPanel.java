@@ -88,6 +88,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		
 		descriptionField = new MagicTextField();
 		descriptionField.setMaximumLength(50);
+		descriptionField.setAllowLowerCase(true);
 		
 		maximumStockLevelField = new MagicTextField();
 		maximumStockLevelField.setMaximumLength(4);
