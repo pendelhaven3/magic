@@ -69,6 +69,11 @@ public abstract class AbstractMagicPanel extends JPanel {
 	 */
 	protected abstract void doOnBack();
 	
+	protected final void reinitializeFocusOrder() {
+		focusOrder = new ArrayList<>();
+		initializeFocusOrder(focusOrder);
+	}
+	
 	/**
 	 * Add the components to focusOrder list in the order that you want the focus to be.
 	 * Custom focus order only used when calling focusNextField() method.
