@@ -58,6 +58,9 @@ public class EditProductPriceTable extends MagicTable {
 					@Override
 					public void run() {
 						switch (column) {
+						case FINAL_COST_COLUMN_INDEX:
+							validateAmount(FINAL_COST_COLUMN_INDEX, "Final Cost");
+							break;
 						case SELLING_PRICE_COLUMN_INDEX:
 							validateAmount(SELLING_PRICE_COLUMN_INDEX, "Selling Price");
 							break;
@@ -109,6 +112,8 @@ public class EditProductPriceTable extends MagicTable {
 		DefaultTableCellRenderer nonEditableCellRenderer = new DefaultTableCellRenderer();
 		nonEditableCellRenderer.setHorizontalAlignment(JLabel.RIGHT);
 		
+		columnModel.getColumn(FINAL_COST_COLUMN_INDEX)
+			.setCellRenderer(editableCellRenderer);
 		columnModel.getColumn(SELLING_PRICE_COLUMN_INDEX)
 			.setCellRenderer(editableCellRenderer);
 		columnModel.getColumn(PERCENT_PROFIT_COLUMN_INDEX)
@@ -117,8 +122,6 @@ public class EditProductPriceTable extends MagicTable {
 			.setCellRenderer(editableCellRenderer);
 		columnModel.getColumn(GROSS_COST_COLUMN_INDEX)
 			.setCellRenderer(nonEditableCellRenderer);
-		columnModel.getColumn(FINAL_COST_COLUMN_INDEX)
-			.setCellRenderer(nonEditableCellRenderer);
 		
 		MagicTextField textField = new MagicTextField();
 		textField.setMaximumLength(10);
@@ -126,6 +129,8 @@ public class EditProductPriceTable extends MagicTable {
 		
 		DefaultCellEditor cellEditor = new DefaultCellEditor(textField);
 		
+		columnModel.getColumn(FINAL_COST_COLUMN_INDEX)
+			.setCellEditor(cellEditor);
 		columnModel.getColumn(SELLING_PRICE_COLUMN_INDEX)
 			.setCellEditor(cellEditor);
 		columnModel.getColumn(PERCENT_PROFIT_COLUMN_INDEX)
@@ -145,8 +150,8 @@ public class EditProductPriceTable extends MagicTable {
 			@Override
 			public void run() {
 				if (!product.getUnits().isEmpty()) {
-					changeSelection(0, SELLING_PRICE_COLUMN_INDEX, false, false);
-					editCellAt(0, SELLING_PRICE_COLUMN_INDEX);
+					changeSelection(0, FINAL_COST_COLUMN_INDEX, false, false);
+					editCellAt(0, FINAL_COST_COLUMN_INDEX);
 					getEditorComponent().requestFocusInWindow();
 				}
 			}

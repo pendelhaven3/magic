@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.EditProductPriceTable;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.UnitCost;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
@@ -61,36 +62,18 @@ public class EditProductPriceDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveUnitPrices();
+				saveUnitCostsAndPrices();
 			}
 		});
 	}
 
-	private void saveUnitPrices() {
-		productService.saveUnitPrices(product, pricingScheme);
+	private void saveUnitCostsAndPrices() {
+		productService.saveUnitCostsAndPrices(product, pricingScheme);
 		JOptionPane.showMessageDialog(this, "Saved!");
 	}
 
 	private void registerKeyBindings() {
-//		productsTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_PRODUCT_ACTION_NAME);
-//		productsTable.getActionMap().put(SELECT_PRODUCT_ACTION_NAME, new AbstractAction() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				selectProduct();
-//			}
-//		});
-//		
-//		productsTable.addMouseListener(new MouseAdapter() {
-//			
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				if (e.getClickCount() == 2) {
-//					selectProduct();
-//				}
-//			}
-//		});
-//		
+		// none
 	}
 
 	@Override
@@ -250,7 +233,9 @@ public class EditProductPriceDialog extends MagicDialog {
 		for (UnitPrice unitPrice : product.getUnitPrices()) {
 			clone.getUnitPrices().add(new UnitPrice(unitPrice));
 		}
-		clone.getUnitCosts().addAll(product.getUnitCosts());
+		for (UnitCost unitCost : product.getUnitCosts()) {
+			clone.getUnitCosts().add(new UnitCost(unitCost));
+		}
 		clone.getUnitConversions().addAll(product.getUnitConversions());
 		return clone;
 	}

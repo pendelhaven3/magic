@@ -106,7 +106,10 @@ public class ProductServiceImpl implements ProductService {
 
 	@Transactional
 	@Override
-	public void saveUnitPrices(Product product, PricingScheme pricingScheme) {
+	public void saveUnitCostsAndPrices(Product product, PricingScheme pricingScheme) {
+		Product updated = productDao.get(product.getId());
+		updated.setUnitCosts(product.getUnitCosts());
+		productDao.save(updated);
 		productPriceDao.updateUnitPrices(product, pricingScheme);
 	}
 

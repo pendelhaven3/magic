@@ -33,7 +33,7 @@ public interface ProductService {
 
 	void deleteProductSupplier(Product product, Supplier supplier);
 	
-	void saveUnitPrices(Product product, PricingScheme pricingScheme);
+	void saveUnitCostsAndPrices(Product product, PricingScheme pricingScheme);
 
 	List<Product> getAllActiveProductsBySupplier(Supplier supplier);
 	

@@ -20,6 +20,7 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 		{"Unit", "Gross Cost", "Final Cost", "Selling Price", "% Profit", "Flat Profit"};
 
 	private Product product;
+	private String finalCost;
 	private String sellingPrice;
 	private String percentProfit;
 	private String flatProfit;
@@ -36,6 +37,7 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 		});
 		
 		String maxUnit = product.getUnits().get(0);
+		finalCost = FormatterUtil.formatAmount(product.getFinalCost(maxUnit));
 		sellingPrice = FormatterUtil.formatAmount(product.getUnitPrice(maxUnit));
 		percentProfit = FormatterUtil.formatAmount(product.getPercentProfit(maxUnit));
 		flatProfit = FormatterUtil.formatAmount(product.getFlatProfit(maxUnit));
@@ -66,12 +68,12 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 			return unit;
 		case EditProductPriceTable.GROSS_COST_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(product.getGrossCost(unit));
-		case EditProductPriceTable.FINAL_COST_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(product.getFinalCost(unit));
 		}
 		
 		if (rowIndex == 0) {
 			switch (columnIndex) {
+			case EditProductPriceTable.FINAL_COST_COLUMN_INDEX:
+				return finalCost;
 			case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
 				return sellingPrice;
 			case EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX:
@@ -83,6 +85,8 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 			}
 		} else {
 			switch (columnIndex) {
+			case EditProductPriceTable.FINAL_COST_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(product.getFinalCost(unit));
 			case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(product.getUnitPrice(unit));
 			case EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX:
@@ -97,7 +101,8 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return rowIndex == 0 && (columnIndex == EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX
+		return rowIndex == 0 && (columnIndex == EditProductPriceTable.FINAL_COST_COLUMN_INDEX
+				|| columnIndex == EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX
 				|| columnIndex == EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX
 				|| columnIndex == EditProductPriceTable.FLAT_PROFIT_COLUMN_INDEX);
 	}
@@ -105,11 +110,14 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		if (rowIndex != 0) {
-			throw new RuntimeException("Cannot directly update prices for smaller units of product");
+			throw new RuntimeException("Cannot directly update costs/prices for smaller units of product");
 		}
 		
 		String val = (String)value;
 		switch (columnIndex) {
+		case EditProductPriceTable.FINAL_COST_COLUMN_INDEX:
+			finalCost = val;
+			break;
 		case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
 			sellingPrice = val;
 			break;
@@ -124,6 +132,9 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 		if (NumberUtil.isAmount(val)) {
 			String unit = product.getUnits().get(rowIndex);
 			switch (columnIndex) {
+			case EditProductPriceTable.FINAL_COST_COLUMN_INDEX:
+				product.setFinalCost(unit, NumberUtil.toBigDecimal(val));
+				break;
 			case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
 				product.setUnitPrice(unit, NumberUtil.toBigDecimal(val));
 				break;
@@ -134,16 +145,20 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 				product.setFlatProfit(unit, NumberUtil.toBigDecimal(val));
 				break;
 			}
+			finalCost = FormatterUtil.formatAmount(product.getFinalCost(unit));
 			sellingPrice = FormatterUtil.formatAmount(product.getUnitPrice(unit));
 			percentProfit = FormatterUtil.formatAmount(product.getPercentProfit(unit));
 			flatProfit = FormatterUtil.formatAmount(product.getFlatProfit(unit));
+			fireTableCellUpdated(rowIndex, EditProductPriceTable.FINAL_COST_COLUMN_INDEX);
 			fireTableCellUpdated(rowIndex, EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX);
 			fireTableCellUpdated(rowIndex, EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX);
 			fireTableCellUpdated(rowIndex, EditProductPriceTable.FLAT_PROFIT_COLUMN_INDEX);
 			
 			if (product.getUnits().size() > 1) {
+				product.autoCalculateCostsOfSmallerUnits();
 				product.autoCalculatePricesOfSmallerUnits();
 				for (int i = 1; i < product.getUnits().size(); i++) {
+					fireTableCellUpdated(i, EditProductPriceTable.FINAL_COST_COLUMN_INDEX);
 					fireTableCellUpdated(i, EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX);
 				}
 			}
