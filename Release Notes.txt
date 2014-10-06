@@ -36,3 +36,14 @@ version 0.9
 1. Added editing of prices (with relation to gross/final cost)
 2. Allow adding new pricing schemes
 3. Added Receiving Receipt reports
+
+version 0.10
+1. Fixed workflow for multiple pricing schemes
+2. Sales Requisition:
+   - Added items toolbar
+   - Moved totals fields to the right
+3. Added Discount field to Supplier
+4. Added search function in Pricing Scheme page
+5. Added Payment Term field to Customer, Sales Requisition, Sales Invoice
+6. Make Final Cost editable in Edit Product Price
+7. Other fixes
