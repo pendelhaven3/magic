@@ -468,10 +468,10 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		return totalNumberOfItems;
 	}
 
-	public void highlightQuantityColumn(PurchaseOrderItem item) {
+	public void highlightColumn(PurchaseOrderItem item, int column) {
 		int row = purchaseOrder.getItems().indexOf(item);
-		changeSelection(row, QUANTITY_COLUMN_INDEX, false, false);
-		editCellAt(row, QUANTITY_COLUMN_INDEX);
+		changeSelection(row, column, false, false);
+		editCellAt(row, column);
 		getEditorComponent().requestFocusInWindow();
 	}
 	

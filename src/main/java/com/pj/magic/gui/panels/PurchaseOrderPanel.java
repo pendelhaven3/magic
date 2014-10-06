@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.exception.NoActualQuantityException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -806,8 +807,12 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 				ReceivingReceipt receivingReceipt = purchaseOrderService.post(purchaseOrder);
 				showMessage("Post successful!");
 				getMagicFrame().switchToReceivingReceiptPanel(receivingReceipt);
+			} catch (NoActualQuantityException e) {
+				showErrorMessage("Actual Quantity must be specified");
+				updateDisplay(purchaseOrder);
+				itemsTable.highlightColumn(e.getItem(), itemsTable.getActualQuantityColumnIndex());
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PurchaseOrderDao;
 import com.pj.magic.dao.PurchaseOrderItemDao;
+import com.pj.magic.exception.NoActualQuantityException;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
@@ -71,8 +72,14 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
 	@Transactional
 	@Override
-	public ReceivingReceipt post(PurchaseOrder purchaseOrder) {
+	public ReceivingReceipt post(PurchaseOrder purchaseOrder) throws NoActualQuantityException {
 		PurchaseOrder updated = getPurchaseOrder(purchaseOrder.getId());
+		for (PurchaseOrderItem item : updated.getItems()) {
+			if (item.getActualQuantity() == null) {
+				throw new NoActualQuantityException(item);
+			}
+		}
+		
 		updated.setPosted(true);
 		updated.setPostDate(new Date());
 		purchaseOrderDao.save(updated);
