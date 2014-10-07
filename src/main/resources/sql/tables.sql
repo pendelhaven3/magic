@@ -163,7 +163,8 @@ create table SUPPLIER (
   REMARKS varchar2(200) null,
   DISCOUNT varchar2(30) null,
   constraint SUPPLIER$PK primary key (ID),
-  constraint SUPPLIER$UK unique (NAME)
+  constraint SUPPLIER$UK unique (NAME),
+  constraint SUPPLIER$FK foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID)
 );
 
 create table SUPPLIER_PRODUCT (
@@ -222,7 +223,9 @@ create table PURCHASE_ORDER (
   POST_DT date null,
   CREATED_BY integer not null,
   constraint PURCHASE_ORDER$PK primary key (ID),
-  constraint PURCHASE_ORDER$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID)
+  constraint PURCHASE_ORDER$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),
+  constraint PURCHASE_ORDER$FK2 foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID),
+  constraint PURCHASE_ORDER$FK3 foreign key (CREATED_BY) references USER (ID),
 );
 
 create table PURCHASE_ORDER_ITEM (
@@ -252,7 +255,10 @@ create table RECEIVING_RECEIPT (
   ORDER_DT date not null,
   RELATED_PURCHASE_ORDER_NO integer not null,
   constraint RECEIVING_RECEIPT$PK primary key (ID),
-  constraint RECEIVING_RECEIPT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID)
+  constraint RECEIVING_RECEIPT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),
+  constraint RECEIVING_RECEIPT$FK2 foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID),
+  constraint RECEIVING_RECEIPT$FK3 foreign key (RECEIVED_BY) references USER (ID),
+  constraint RECEIVING_RECEIPT$FK4 foreign key (RELATED_PURCHASE_ORDER_NO) references PURCHASE_ORDER (PURCHASE_ORDER_NO)
 );
 
 create table RECEIVING_RECEIPT_ITEM (
@@ -279,7 +285,8 @@ create table ADJUSTMENT_OUT (
   POST_DT date null,
   POSTED_BY integer null,
   constraint ADJUSTMENT_OUT$PK primary key (ID),
-  constraint ADJUSTMENT_OUT$UK unique (ADJUSTMENT_OUT_NO)
+  constraint ADJUSTMENT_OUT$UK unique (ADJUSTMENT_OUT_NO),
+  constraint ADJUSTMENT_OUT$FK foreign key (POSTED_BY) references USER (ID)
 );
 
 create table ADJUSTMENT_OUT_ITEM (
@@ -301,7 +308,8 @@ create table ADJUSTMENT_IN (
   POST_DT date null,
   POSTED_BY integer null,
   constraint ADJUSTMENT_IN$PK primary key (ID),
-  constraint ADJUSTMENT_IN$UK unique (ADJUSTMENT_IN_NO)
+  constraint ADJUSTMENT_IN$UK unique (ADJUSTMENT_IN_NO),
+  constraint ADJUSTMENT_IN$FK foreign key (POSTED_BY) references USER (ID)
 );
 
 create table ADJUSTMENT_IN_ITEM (
