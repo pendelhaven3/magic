@@ -1,6 +1,7 @@
 package com.pj.magic.service;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ import javax.print.PrintException;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,8 @@ import com.pj.magic.util.ReportUtil;
 @Service 
 public class PrintServiceImpl implements PrintService {
 
+	private static final Logger logger = LoggerFactory.getLogger(PrintServiceImpl.class);
+	
 	private static final int SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	private static final int PURCHASE_ORDER_ITEMS_PER_PAGE = 44;
 	private static final int RECEIVING_RECEIPT_ITEMS_PER_PAGE = 44;
@@ -82,25 +87,15 @@ public class PrintServiceImpl implements PrintService {
 		}
 	}
 
+	// TODO: Modify other reports to follow this implementation structure
 	@Override
 	public void print(PurchaseOrder purchaseOrder) {
-		purchaseOrder.setSupplier(supplierDao.get(purchaseOrder.getSupplier().getId()));
-		
-		Collections.sort(purchaseOrder.getItems());
-		
-		String currentDate = FormatterUtil.formatDate(new Date());
-		
-		List<List<PurchaseOrderItem>> pageItems = Lists.partition(purchaseOrder.getItems(), 
-				PURCHASE_ORDER_ITEMS_PER_PAGE);
-		for (int i = 0; i < pageItems.size(); i++) {
-			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("purchaseOrder", purchaseOrder);
-			reportData.put("items", pageItems.get(i));
-			reportData.put("currentDate", currentDate);
-			reportData.put("currentPage", i + 1);
-			reportData.put("totalPages", pageItems.size());
-			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			printReport("reports/purchaseOrder.vm", reportData);
+		try {
+			for (String printPage : generateReportAsString(purchaseOrder)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -130,6 +125,43 @@ public class PrintServiceImpl implements PrintService {
 				printReport("reports/receivingReceipt-noDiscountDetails.vm", reportData);
 			}
 		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(PurchaseOrder purchaseOrder) {
+		purchaseOrder.setSupplier(supplierDao.get(purchaseOrder.getSupplier().getId()));
+		
+		Collections.sort(purchaseOrder.getItems());
+		
+		String currentDate = FormatterUtil.formatDate(new Date());
+		
+		List<List<PurchaseOrderItem>> pageItems = Lists.partition(purchaseOrder.getItems(), 
+				PURCHASE_ORDER_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("purchaseOrder", purchaseOrder);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentDate", currentDate);
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/purchaseOrder.vm", reportData));
+		}
+		return printPages;
+	}
+
+	private String generateReportAsString(String templateName, Map<String, Object> reportData) {
+		Template template = Velocity.getTemplate(templateName);
+		StringWriter writer = new StringWriter();
+		VelocityContext context = new VelocityContext(reportData);
+		if (reportData.containsKey("reportUtil")) {
+			context.put("report", reportData.get("reportUtil"));
+		} else {
+			context.put("report", ReportUtil.class);
+		}
+		template.merge(context, writer);
+		return writer.toString();
 	}
 	
 }

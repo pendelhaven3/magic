@@ -40,6 +40,7 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.PurchaseOrderItemsTable;
 import com.pj.magic.model.PaymentTerm;
@@ -73,6 +74,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private PrintService printService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
 	
 	private PurchaseOrder purchaseOrder;
 	private JLabel purchaseOrderNumberField;
@@ -89,6 +91,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton addItemButton;
 	private MagicToolBarButton deleteItemButton;
+	private MagicToolBarButton printPreviewButton;
 	private MagicToolBarButton printButton;
 	private JButton selectSupplierButton;
 	
@@ -840,6 +843,16 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		});
 		toolBar.add(postButton);
 		
+		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreview();
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
 		printButton = new MagicToolBarButton("print", "Print");
 		printButton.addActionListener(new ActionListener() {
 			
@@ -849,6 +862,11 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+	}
+
+	protected void printPreview() {
+		printPreviewDialog.updateDisplay(printService.generateReportAsString(purchaseOrder));
+		printPreviewDialog.setVisible(true);
 	}
 
 }
