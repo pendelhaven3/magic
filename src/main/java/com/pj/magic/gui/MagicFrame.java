@@ -462,8 +462,9 @@ public class MagicFrame extends JFrame {
 	}
 
 	public void switchToAreaInventoryReportPanel(AreaInventoryReport areaInventoryReport) {
-		// TODO Auto-generated method stub
-		
+		addPanelNameToTitle("Area Inventory Report");
+		areaInventoryReportPanel.updateDisplay(areaInventoryReport);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, AREA_INVENTORY_REPORT_PANEL);
 	}
 	
 }

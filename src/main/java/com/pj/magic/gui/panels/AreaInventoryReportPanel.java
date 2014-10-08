@@ -8,25 +8,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
+import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +30,14 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.tables.AdjustmentInItemsTable;
-import com.pj.magic.model.AdjustmentIn;
-import com.pj.magic.model.Product;
-import com.pj.magic.model.Unit;
-import com.pj.magic.service.AdjustmentInService;
+import com.pj.magic.gui.tables.AreaInventoryReportItemsTable;
+import com.pj.magic.model.AreaInventoryReport;
+import com.pj.magic.service.AreaInventoryReportService;
+import com.pj.magic.service.InventoryCheckService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.KeyUtil;
 
 @Component
 public class AreaInventoryReportPanel extends StandardMagicPanel {
@@ -51,66 +46,120 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	
 	private static final String FOCUS_NEXT_FIELD_ACTION_NAME = "focusNextField";
 	
-	@Autowired private AdjustmentInItemsTable itemsTable;
+	@Autowired private AreaInventoryReportItemsTable itemsTable;
 	@Autowired private ProductService productService;
-	@Autowired private AdjustmentInService adjustmentInService;
+	@Autowired private AreaInventoryReportService areaInventoryReportService;
+	@Autowired private InventoryCheckService inventoryCheckService;
 	
-	private AdjustmentIn adjustmentIn;
-	private JLabel adjustmentInNumberField;
-	private JLabel statusField;
-	private MagicTextField remarksField;
-	private JLabel postDateField;
-	private JLabel postedByField;
+	private AreaInventoryReport areaInventoryReport;
+	private JLabel inventoryDateField;
+	private MagicTextField reportNumberField; // TODO: change to combobox later
+	private MagicTextField areaField;
+	private MagicTextField checkerField;
+	private MagicTextField doubleCheckerField;
 	private JLabel totalItemsField;
-	private JLabel totalAmountField;
-	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
-	private JButton postButton;
+//	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	private JButton addItemButton;
 	private JButton deleteItemButton;
 	
 	@Override
 	protected void initializeComponents() {
-		remarksField = new MagicTextField();
-		remarksField.setMaximumLength(100);
-		remarksField.addFocusListener(new FocusAdapter() {
+		reportNumberField = new MagicTextField();
+		reportNumberField.setMaximumLength(2);
+		reportNumberField.setNumbersOnly(true);
+		reportNumberField.addFocusListener(new FocusAdapter() {
 			
 			@Override
 			public void focusLost(FocusEvent e) {
-				saveRemarks();
+				saveReportNumberField();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(remarksField);
-		updateTotalAmountFieldWhenItemsTableChanges();
-		initializeUnitPricesAndQuantitiesTable();
+		areaField = new MagicTextField();
+		areaField.setMaximumLength(50);
+		areaField.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				saveAreaField();
+			}
+		});
+		
+		checkerField = new MagicTextField();
+		checkerField.setMaximumLength(50);
+		checkerField.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				saveCheckerField();
+			}
+		});
+		
+		doubleCheckerField = new MagicTextField();
+		doubleCheckerField.setMaximumLength(50);
+		doubleCheckerField.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				saveDoubleChecker();
+			}
+		});
+		
+		focusOnComponentWhenThisPanelIsDisplayed(reportNumberField);
+//		updateTotalAmountFieldWhenItemsTableChanges();
+//		initializeUnitPricesAndQuantitiesTable();
+	}
+
+	protected void saveReportNumberField() {
+		if (StringUtils.isEmpty(reportNumberField.getText())) {
+			showErrorMessage("Report No. must be specified");
+			reportNumberField.requestFocusInWindow();
+			return;
+		}
+		
+		int reportNumber = Integer.parseInt(reportNumberField.getText());
+		if (areaInventoryReport.getId() == null || reportNumber != areaInventoryReport.getReportNumber()) {
+			areaInventoryReport.setReportNumber(reportNumber);
+			areaInventoryReportService.save(areaInventoryReport);
+			updateDisplay(areaInventoryReport);
+		}
+	}
+
+	protected void saveDoubleChecker() {
+		if (!doubleCheckerField.getText().equals(areaInventoryReport.getDoubleChecker())) {
+			areaInventoryReport.setDoubleChecker(doubleCheckerField.getText());
+			areaInventoryReportService.save(areaInventoryReport);
+		}
+	}
+
+	protected void saveCheckerField() {
+		if (!checkerField.getText().equals(areaInventoryReport.getChecker())) {
+			areaInventoryReport.setChecker(checkerField.getText());
+			areaInventoryReportService.save(areaInventoryReport);
+		}
+	}
+
+	protected void saveAreaField() {
+		if (!areaField.getText().equals(areaInventoryReport.getArea())) {
+			areaInventoryReport.setArea(areaField.getText());
+			areaInventoryReportService.save(areaInventoryReport);
+		}
 	}
 
 	@Override
 	protected void registerKeyBindings() {
-		remarksField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
-				FOCUS_NEXT_FIELD_ACTION_NAME);
-		remarksField.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
-			
+		setFocusOnNextFieldOnEnterKey(reportNumberField);
+		setFocusOnNextFieldOnEnterKey(areaField);
+		setFocusOnNextFieldOnEnterKey(checkerField);
+		
+		doubleCheckerField.getInputMap().put(KeyUtil.getEnterKey(), FOCUS_NEXT_FIELD_ACTION_NAME);
+		doubleCheckerField.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				itemsTable.highlight();
 			}
 		});
-		
-	}
-
-	protected void saveRemarks() {
-		if (adjustmentIn.getId() != null || !remarksField.getText().equals(adjustmentIn.getRemarks())) {
-			adjustmentIn.setRemarks(remarksField.getText());
-			try {
-				adjustmentInService.save(adjustmentIn);
-				updateDisplay(adjustmentIn);
-				itemsTable.highlight();
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-				showErrorMessage("Unexpected error on saving");
-			}
-		}
 	}
 
 	@Override
@@ -118,64 +167,62 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		if (itemsTable.isEditing()) {
 			itemsTable.getCellEditor().cancelCellEditing();
 		}
-		getMagicFrame().switchToAdjustmentInListPanel();
+		getMagicFrame().switchToAreaInventoryReportListPanel();
+	}
+	
+	@Override
+	protected void initializeFocusOrder(List<JComponent> focusOrder) {
+		focusOrder.add(reportNumberField);
+		focusOrder.add(areaField);
+		focusOrder.add(checkerField);
+		focusOrder.add(doubleCheckerField);
 	}
 	
 	private void updateTotalAmountFieldWhenItemsTableChanges() {
-		itemsTable.getModel().addTableModelListener(new TableModelListener() {
-			
-			@Override
-			public void tableChanged(TableModelEvent e) {
-				totalItemsField.setText(String.valueOf(itemsTable.getTotalNumberOfItems()));
-				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
-			}
-		});
+//		itemsTable.getModel().addTableModelListener(new TableModelListener() {
+//			
+//			@Override
+//			public void tableChanged(TableModelEvent e) {
+//				totalItemsField.setText(String.valueOf(itemsTable.getTotalNumberOfItems()));
+//				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
+//			}
+//		});
 	}
 
-	public void updateDisplay(AdjustmentIn adjustmentIn) {
-		if (adjustmentIn.getId() == null) {
-			this.adjustmentIn = adjustmentIn;
+	public void updateDisplay(AreaInventoryReport areaInventoryReport) {
+		inventoryDateField.setText(FormatterUtil.formatDate(areaInventoryReport.getParent().getInventoryDate()));
+		
+		if (areaInventoryReport.getId() == null) {
+			this.areaInventoryReport = areaInventoryReport;
 			clearDisplay();
 			return;
 		}
 		
-		this.adjustmentIn = adjustmentInService.getAdjustmentIn(adjustmentIn.getId());
-		adjustmentIn = this.adjustmentIn;
+		this.areaInventoryReport = areaInventoryReportService.getAreaInventoryReport(areaInventoryReport.getId());
+		areaInventoryReport = this.areaInventoryReport;
 		
-		adjustmentInNumberField.setText(adjustmentIn.getAdjustmentInNumber().toString());
-		statusField.setText(adjustmentIn.getStatus());
-		if (adjustmentIn.getPostDate() != null) {
-			postDateField.setText(FormatterUtil.formatDate(adjustmentIn.getPostDate()));
-		} else {
-			postDateField.setText(null);
-		}
-		if (adjustmentIn.getPostedBy() != null) {
-			postedByField.setText(adjustmentIn.getPostedBy().getUsername());
-		} else {
-			postedByField.setText(null);
-		}
-		remarksField.setEnabled(!adjustmentIn.isPosted());
-		remarksField.setText(adjustmentIn.getRemarks());
-		totalItemsField.setText(String.valueOf(adjustmentIn.getTotalNumberOfItems()));
-		totalAmountField.setText(adjustmentIn.getTotalAmount().toString());
-		postButton.setEnabled(!adjustmentIn.isPosted());
-		addItemButton.setEnabled(!adjustmentIn.isPosted());
-		deleteItemButton.setEnabled(!adjustmentIn.isPosted());
+		reportNumberField.setText(areaInventoryReport.getReportNumber().toString());
+		areaField.setEnabled(true);
+		areaField.setText(areaInventoryReport.getArea());
+		checkerField.setEnabled(true);
+		checkerField.setText(areaInventoryReport.getChecker());
+		doubleCheckerField.setEnabled(true);
+		doubleCheckerField.setText(areaInventoryReport.getDoubleChecker());
 		
-		itemsTable.setAdjustmentIn(adjustmentIn);
+		itemsTable.setAreaInventoryReport(areaInventoryReport);
+		
+		addItemButton.setEnabled(true);
+		deleteItemButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
-		adjustmentInNumberField.setText(null);
-		statusField.setText(null);
-		postDateField.setText(null);
-		postedByField.setText(null);
-		remarksField.setEnabled(true);
-		remarksField.setText(null);
-		totalItemsField.setText(null);
-		totalAmountField.setText(null);
-		itemsTable.setAdjustmentIn(adjustmentIn);
-		postButton.setEnabled(false);
+		reportNumberField.setText(null);
+		areaField.setEnabled(false);
+		areaField.setText(null);
+		checkerField.setEnabled(false);
+		checkerField.setText(null);
+		doubleCheckerField.setEnabled(false);
+		doubleCheckerField.setText(null);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
 	}
@@ -183,30 +230,27 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
+		
 		int currentRow = 0;
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createFiller(50, 30), c);
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Adj. In No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Inventory Date:"), c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		adjustmentInNumberField = ComponentUtil.createLabel(200, "");
-		mainPanel.add(adjustmentInNumberField, c);
+		inventoryDateField = ComponentUtil.createLabel(100);
+		mainPanel.add(inventoryDateField, c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -215,65 +259,63 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createFiller(50, 1), c);
 		
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Status:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 5;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		statusField = ComponentUtil.createLabel(100, "");
-		mainPanel.add(statusField, c);
-		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Remarks:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Report No.:"), c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		remarksField.setPreferredSize(new Dimension(200, 20));
-		mainPanel.add(remarksField, c);
+		reportNumberField.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(reportNumberField, c);
 
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.NONE;
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Post Date:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Area:"), c);
 		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postDateField = ComponentUtil.createLabel(100, "");
-		mainPanel.add(postDateField, c);
-		
+		areaField.setPreferredSize(new Dimension(200, 20));
+		mainPanel.add(areaField, c);
+
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Checker:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		checkerField.setPreferredSize(new Dimension(200, 20));
+		mainPanel.add(checkerField, c);
+
+		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Posted By:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Double Checker:"), c);
 		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postedByField = ComponentUtil.createLabel(100, "");
-		mainPanel.add(postedByField, c);
+		doubleCheckerField.setPreferredSize(new Dimension(200, 20));
+		mainPanel.add(doubleCheckerField, c);
 		
 		currentRow++;
 		
@@ -307,17 +349,17 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
 		mainPanel.add(itemsTableScrollPane, c);
 
-		currentRow++;
-		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 6;
-		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
-		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
-		mainPanel.add(infoTableScrollPane, c);
+//		currentRow++;
+//		
+//		c.fill = GridBagConstraints.BOTH;
+//		c.weightx = c.weighty = 0.0;
+//		c.gridx = 0;
+//		c.gridy = currentRow;
+//		c.gridwidth = 6;
+//		c.anchor = GridBagConstraints.CENTER;
+//		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
+//		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
+//		mainPanel.add(infoTableScrollPane, c);
 		
 		currentRow++;
 		
@@ -352,8 +394,8 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(totalAmountField, c);
+//		totalAmountField = ComponentUtil.createLabel(150, "");
+//		mainPanel.add(totalAmountField, c);
 	}
 	
 	private JPanel createItemsTableToolBar() {
@@ -387,7 +429,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				if (e.getColumn() == AdjustmentInItemsTable.PRODUCT_CODE_COLUMN_INDEX ||
+				if (e.getColumn() == AreaInventoryReportItemsTable.PRODUCT_CODE_COLUMN_INDEX ||
 						e.getColumn() == TableModelEvent.ALL_COLUMNS) {
 					updateUnitPricesAndQuantitiesTable();
 				}
@@ -405,193 +447,162 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	}
 	
 	private void updateUnitPricesAndQuantitiesTable() {
-		if (itemsTable.getSelectedRow() == -1) {
-			unitPricesAndQuantitiesTableModel.setProduct(null);
-			return;
-		}
-		
-		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
-		if (product != null) {
-			unitPricesAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
-		} else {
-			unitPricesAndQuantitiesTableModel.setProduct(null);
-		}
+//		if (itemsTable.getSelectedRow() == -1) {
+//			unitPricesAndQuantitiesTableModel.setProduct(null);
+//			return;
+//		}
+//		
+//		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
+//		if (product != null) {
+//			unitPricesAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
+//		} else {
+//			unitPricesAndQuantitiesTableModel.setProduct(null);
+//		}
 	}
 	
-	private class UnitPricesAndQuantitiesTable extends JTable {
-		
-		public UnitPricesAndQuantitiesTable() {
-			super(unitPricesAndQuantitiesTableModel);
-			setTableHeader(null);
-			setRowHeight(20);
-			setShowGrid(false);
-			setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-				
-				@Override
-				public java.awt.Component getTableCellRendererComponent(
-						JTable table, Object value, boolean isSelected,
-						boolean hasFocus, int row, int column) {
-					super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-							row, column);
-					setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-					return this;
-				}
-				
-			});
-		}
-		
-	}
-	
-	private class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
-
-		private Product product;
-		
-		public void setProduct(Product product) {
-			this.product = product;
-			fireTableDataChanged();
-		}
-		
-		@Override
-		public int getRowCount() {
-			return 3;
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 6;
-		}
-
-		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			switch (rowIndex) {
-			case 0:
-				if (columnIndex == 0) {
-					return Unit.CASE;
-				} else if (columnIndex == 3) {
-					return Unit.TIE;
-				}
-				break;
-			case 1:
-				if (columnIndex == 0) {
-					return Unit.CARTON;
-				} else if (columnIndex == 3) {
-					return Unit.DOZEN;
-				}
-				break;
-			case 2:
-				switch (columnIndex) {
-				case 0:
-					return Unit.PIECES;
-				case 3:
-				case 4:
-				case 5:
-					return "";
-				}
-				break;
-			}
-			
-			if (product == null) {
-				switch (columnIndex) {
-				case 1:
-				case 4:
-					return "0";
-				case 2:
-				case 5:
-					return FormatterUtil.formatAmount(BigDecimal.ZERO);
-				}
-			}
-			
-			product = productService.findProductByCode(product.getCode());
-			
-			if (rowIndex == 0) {
-				switch (columnIndex) {
-				case 1:
-					return String.valueOf(product.getUnitQuantity(Unit.CASE));
-				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CASE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				case 4:
-					return String.valueOf(product.getUnitQuantity(Unit.TIE));
-				case 5:
-					unitPrice = product.getUnitPrice(Unit.TIE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				}
-			} else if (rowIndex == 1) {
-				switch (columnIndex) {
-				case 1:
-					return String.valueOf(product.getUnitQuantity(Unit.CARTON));
-				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CARTON);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				case 4:
-					return String.valueOf(product.getUnitQuantity(Unit.DOZEN));
-				case 5:
-					unitPrice = product.getUnitPrice(Unit.DOZEN);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				}
-			} else if (rowIndex == 2) {
-				switch (columnIndex) {
-				case 1:
-					return String.valueOf(product.getUnitQuantity(Unit.PIECES));
-				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.PIECES);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				}
-			}
-			return "";
-		}
-		
-	}
-
-	private void postAdjustmentIn() {
-		if (itemsTable.isAdding()) {
-			itemsTable.switchToEditMode();
-		}
-		
-		int confirm = showConfirmMessage("Do you want to post this Adjustment In?");
-		if (confirm == JOptionPane.OK_OPTION) {
-			if (!adjustmentIn.hasItems()) {
-				showErrorMessage("Cannot post a Adjustment In with no items");
-				itemsTable.requestFocusInWindow();
-				return;
-			}
-			try {
-				adjustmentInService.post(adjustmentIn);
-				JOptionPane.showMessageDialog(this, "Post successful!");
-				updateDisplay(adjustmentIn);
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-				showErrorMessage("Unexpected error occurred during posting!");
-			}
-		}
-	}
+//	private class UnitPricesAndQuantitiesTable extends JTable {
+//		
+//		public UnitPricesAndQuantitiesTable() {
+//			super(unitPricesAndQuantitiesTableModel);
+//			setTableHeader(null);
+//			setRowHeight(20);
+//			setShowGrid(false);
+//			setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+//				
+//				@Override
+//				public java.awt.Component getTableCellRendererComponent(
+//						JTable table, Object value, boolean isSelected,
+//						boolean hasFocus, int row, int column) {
+//					super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+//							row, column);
+//					setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+//					return this;
+//				}
+//				
+//			});
+//		}
+//		
+//	}
+//	
+//	private class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
+//
+//		private Product product;
+//		
+//		public void setProduct(Product product) {
+//			this.product = product;
+//			fireTableDataChanged();
+//		}
+//		
+//		@Override
+//		public int getRowCount() {
+//			return 3;
+//		}
+//
+//		@Override
+//		public int getColumnCount() {
+//			return 6;
+//		}
+//
+//		@Override
+//		public Object getValueAt(int rowIndex, int columnIndex) {
+//			switch (rowIndex) {
+//			case 0:
+//				if (columnIndex == 0) {
+//					return Unit.CASE;
+//				} else if (columnIndex == 3) {
+//					return Unit.TIE;
+//				}
+//				break;
+//			case 1:
+//				if (columnIndex == 0) {
+//					return Unit.CARTON;
+//				} else if (columnIndex == 3) {
+//					return Unit.DOZEN;
+//				}
+//				break;
+//			case 2:
+//				switch (columnIndex) {
+//				case 0:
+//					return Unit.PIECES;
+//				case 3:
+//				case 4:
+//				case 5:
+//					return "";
+//				}
+//				break;
+//			}
+//			
+//			if (product == null) {
+//				switch (columnIndex) {
+//				case 1:
+//				case 4:
+//					return "0";
+//				case 2:
+//				case 5:
+//					return FormatterUtil.formatAmount(BigDecimal.ZERO);
+//				}
+//			}
+//			
+//			product = productService.findProductByCode(product.getCode());
+//			
+//			if (rowIndex == 0) {
+//				switch (columnIndex) {
+//				case 1:
+//					return String.valueOf(product.getUnitQuantity(Unit.CASE));
+//				case 2:
+//					BigDecimal unitPrice = product.getUnitPrice(Unit.CASE);
+//					if (unitPrice == null) {
+//						unitPrice = BigDecimal.ZERO;
+//					}
+//					return FormatterUtil.formatAmount(unitPrice);
+//				case 4:
+//					return String.valueOf(product.getUnitQuantity(Unit.TIE));
+//				case 5:
+//					unitPrice = product.getUnitPrice(Unit.TIE);
+//					if (unitPrice == null) {
+//						unitPrice = BigDecimal.ZERO;
+//					}
+//					return FormatterUtil.formatAmount(unitPrice);
+//				}
+//			} else if (rowIndex == 1) {
+//				switch (columnIndex) {
+//				case 1:
+//					return String.valueOf(product.getUnitQuantity(Unit.CARTON));
+//				case 2:
+//					BigDecimal unitPrice = product.getUnitPrice(Unit.CARTON);
+//					if (unitPrice == null) {
+//						unitPrice = BigDecimal.ZERO;
+//					}
+//					return FormatterUtil.formatAmount(unitPrice);
+//				case 4:
+//					return String.valueOf(product.getUnitQuantity(Unit.DOZEN));
+//				case 5:
+//					unitPrice = product.getUnitPrice(Unit.DOZEN);
+//					if (unitPrice == null) {
+//						unitPrice = BigDecimal.ZERO;
+//					}
+//					return FormatterUtil.formatAmount(unitPrice);
+//				}
+//			} else if (rowIndex == 2) {
+//				switch (columnIndex) {
+//				case 1:
+//					return String.valueOf(product.getUnitQuantity(Unit.PIECES));
+//				case 2:
+//					BigDecimal unitPrice = product.getUnitPrice(Unit.PIECES);
+//					if (unitPrice == null) {
+//						unitPrice = BigDecimal.ZERO;
+//					}
+//					return FormatterUtil.formatAmount(unitPrice);
+//				}
+//			}
+//			return "";
+//		}
+//		
+//	}
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		postButton = new MagicToolBarButton("post", "Post");
-		postButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				postAdjustmentIn();
-			}
-		});
-		toolBar.add(postButton);
+		// none
 	}
 
 }

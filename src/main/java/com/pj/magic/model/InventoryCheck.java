@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.pj.magic.util.FormatterUtil;
+
 public class InventoryCheck {
 
 	private Long id;
 	private Date inventoryDate;
 	private List<AreaInventoryReport> areaReports = new ArrayList<>();
+	private boolean posted;
 
 	public InventoryCheck() {
 		// default constructor
@@ -42,4 +45,17 @@ public class InventoryCheck {
 		this.areaReports = areaReports;
 	}
 
+	@Override
+	public String toString() {
+		return FormatterUtil.formatDate(inventoryDate);
+	}
+
+	public boolean isPosted() {
+		return posted;
+	}
+
+	public void setPosted(boolean posted) {
+		this.posted = posted;
+	}
+	
 }

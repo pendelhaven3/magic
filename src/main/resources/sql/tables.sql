@@ -326,6 +326,7 @@ create table ADJUSTMENT_IN_ITEM (
 create table INVENTORY_CHECK (
   ID integer auto_increment,
   INVENTORY_DT date not null,
+  POST_IND varchar2(1) default 'N' not null,
   constraint INVENTORY_CHECK$PK primary key (ID),
   constraint INVENTORY_CHECK$UK unique (INVENTORY_DT)
 );
@@ -333,11 +334,13 @@ create table INVENTORY_CHECK (
 create table AREA_INV_REPORT (
   ID integer auto_increment,
   INVENTORY_CHECK_ID integer not null,
-  AREA varchar2(50) not null,
-  CHECKER varchar2(50) not null,
-  DOUBLE_CHECKER varchar2(50) not null,
+  REPORT_NO integer not null,
+  AREA varchar2(50) null,
+  CHECKER varchar2(50) null,
+  DOUBLE_CHECKER varchar2(50) null,
   constraint AREA_INV_REPORT$PK primary key (ID),
-  constraint AREA_INV_REPORT$FK foreign key (INVENTORY_CHECK_ID) references AREA_INV_REPORT (ID),
+  constraint AREA_INV_REPORT$UK unique (INVENTORY_CHECK_ID, REPORT_NO),
+  constraint AREA_INV_REPORT$FK foreign key (INVENTORY_CHECK_ID) references AREA_INV_REPORT (ID)
 );
 
 create table AREA_INV_REPORT_ITEM (

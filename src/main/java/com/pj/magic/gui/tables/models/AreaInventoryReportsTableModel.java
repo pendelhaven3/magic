@@ -14,7 +14,7 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class AreaInventoryReportsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"Inventory Date", "Area"};
+	private static final String[] COLUMN_NAMES = {"Inventory Date", "Report No.", "Area"};
 	
 	private List<AreaInventoryReport> areaInventoryReports = new ArrayList<>();
 	
@@ -34,6 +34,8 @@ public class AreaInventoryReportsTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case AreaInventoryReportsTable.INVENTORY_DATE_COLUMN_INDEX:
 			return FormatterUtil.formatDate(areaInventoryReport.getParent().getInventoryDate());
+		case AreaInventoryReportsTable.REPORT_NUMBER_COLUMN_INDEX:
+			return areaInventoryReport.getReportNumber();
 		case AreaInventoryReportsTable.AREA_COLUMN_INDEX:
 			return areaInventoryReport.getArea();
 		default:

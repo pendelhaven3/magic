@@ -15,7 +15,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 	@Autowired private InventoryCheckDao inventoryCheckDao;
 	
 	@Override
-	public List<InventoryCheck> getAllInventoryCheck() {
+	public List<InventoryCheck> getAllInventoryChecks() {
 		return inventoryCheckDao.getAll();
 	}
 
@@ -28,6 +28,19 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 	@Override
 	public void save(InventoryCheck inventoryCheck) {
 		inventoryCheckDao.save(inventoryCheck);
+	}
+
+	@Override
+	public InventoryCheck getNonPostedInventoryCheck() {
+		List<InventoryCheck> inventoryChecks = inventoryCheckDao.search(new InventoryCheck());
+		switch (inventoryChecks.size()) {
+		case 0:
+			return null;
+		case 1:
+			return inventoryChecks.get(0);
+		default:
+			throw new RuntimeException("There should only be one non-posted inventory check at any one time");
+		}
 	}
 
 }

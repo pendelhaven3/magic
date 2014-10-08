@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -21,7 +22,7 @@ import com.pj.magic.model.InventoryCheck;
 public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventoryReportDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, INVENTORY_CHECK_ID, AREA, CHECKER, DOUBLE_CHECKER,"
+			"select a.ID, INVENTORY_CHECK_ID, REPORT_NO, AREA, CHECKER, DOUBLE_CHECKER,"
 			+ " b.INVENTORY_DT"
 			+ " from AREA_INV_REPORT a"
 			+ " join INVENTORY_CHECK b"
@@ -29,9 +30,15 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 	
 	private AreaInventoryReportRowMapper areaInventoryReportRowMapper = new AreaInventoryReportRowMapper();
 	
+	private static final String GET_SQL = BASE_SELECT_SQL + " where a.ID = ?";
+	
 	@Override
 	public AreaInventoryReport get(long id) {
-		return null;
+		try {
+			return getJdbcTemplate().queryForObject(GET_SQL, areaInventoryReportRowMapper, id);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -45,8 +52,8 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 
 	private static final String INSERT_SQL =
 			"insert into AREA_INV_REPORT"
-			+ " (INVENTORY_CHECK_ID, AREA, CHECKER, DOUBLE_CHECKER)"
-			+ " values (?, ?, ?, ?)";
+			+ " (INVENTORY_CHECK_ID, REPORT_NO, AREA, CHECKER, DOUBLE_CHECKER)"
+			+ " values (?, ?, ?, ?, ?)";
 	
 	private void insert(final AreaInventoryReport areaInventoryReport) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -57,9 +64,10 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, areaInventoryReport.getParent().getId());
-				ps.setString(2, areaInventoryReport.getArea());
-				ps.setString(3, areaInventoryReport.getChecker());
-				ps.setString(4, areaInventoryReport.getDoubleChecker());
+				ps.setInt(2, areaInventoryReport.getReportNumber());
+				ps.setString(3, areaInventoryReport.getArea());
+				ps.setString(4, areaInventoryReport.getChecker());
+				ps.setString(5, areaInventoryReport.getDoubleChecker());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -87,6 +95,7 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 			areaInventoryReport.setId(rs.getLong("ID"));
 			areaInventoryReport.setParent(new InventoryCheck(rs.getLong("INVENTORY_CHECK_ID")));
 			areaInventoryReport.getParent().setInventoryDate(rs.getDate("INVENTORY_DT"));
+			areaInventoryReport.setReportNumber(rs.getInt("REPORT_NO"));
 			areaInventoryReport.setArea(rs.getString("AREA"));
 			areaInventoryReport.setChecker(rs.getString("CHECKER"));
 			areaInventoryReport.setDoubleChecker(rs.getString("DOUBLE_CHECKER"));

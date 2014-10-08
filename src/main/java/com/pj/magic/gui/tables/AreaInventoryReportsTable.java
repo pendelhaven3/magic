@@ -2,8 +2,6 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -16,6 +14,7 @@ import javax.swing.SwingUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.panels.AreaInventoryReportListPanel;
 import com.pj.magic.gui.tables.models.AreaInventoryReportsTableModel;
 import com.pj.magic.model.AreaInventoryReport;
@@ -25,8 +24,9 @@ import com.pj.magic.service.AreaInventoryReportService;
 public class AreaInventoryReportsTable extends JTable {
 
 	public static final int INVENTORY_DATE_COLUMN_INDEX = 0;
-	public static final int AREA_COLUMN_INDEX = 1;
-	private static final String GO_TO_ADJUSTMENT_IN_ACTION_NAME = "goToAreaInventoryReport";
+	public static final int REPORT_NUMBER_COLUMN_INDEX = 1;
+	public static final int AREA_COLUMN_INDEX = 2;
+	private static final String GO_TO_AREA_INVENTORY_REPORT_ACTION_NAME = "goToAreaInventoryReport";
 	private static final String DELETE_ADJUSTMENT_IN_ACTION_NAME = "deleteAreaInventoryReport";
 
 	@Autowired private AreaInventoryReportService inventoryCheckService;
@@ -54,10 +54,10 @@ public class AreaInventoryReportsTable extends JTable {
 		return tableModel.getAreaInventoryReport(getSelectedRow());
 	}
 	
-	public void displayAreaInventoryReportDetails(AreaInventoryReport salesRequisition) {
+	public void displayAreaInventoryReportDetails(AreaInventoryReport areaInventoryReport) {
 		AreaInventoryReportListPanel panel = (AreaInventoryReportListPanel)
 				SwingUtilities.getAncestorOfClass(AreaInventoryReportListPanel.class, this);
-		panel.displayAreaInventoryReportDetails(salesRequisition);
+		panel.displayAreaInventoryReportDetails(areaInventoryReport);
 	}
 	
 	public void removeCurrentlySelectedRow() {
@@ -79,10 +79,10 @@ public class AreaInventoryReportsTable extends JTable {
 	}
 	
 	public void registerKeyBindings() {
-		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), GO_TO_ADJUSTMENT_IN_ACTION_NAME);
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), GO_TO_AREA_INVENTORY_REPORT_ACTION_NAME);
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ADJUSTMENT_IN_ACTION_NAME);
 		
-		getActionMap().put(GO_TO_ADJUSTMENT_IN_ACTION_NAME, new AbstractAction() {
+		getActionMap().put(GO_TO_AREA_INVENTORY_REPORT_ACTION_NAME, new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -104,13 +104,11 @@ public class AreaInventoryReportsTable extends JTable {
 			}
 		});
 		
-		addMouseListener(new MouseAdapter() {
+		addMouseListener(new DoubleClickMouseAdapter() {
 			
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					selectAreaInventoryReport();
-				}
+			protected void onDoubleClick() {
+				selectAreaInventoryReport();
 			}
 		});
 	}

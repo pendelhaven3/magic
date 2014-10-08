@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -22,7 +23,7 @@ import com.pj.magic.model.InventoryCheck;
 public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select ID, INVENTORY_DT from INVENTORY_CHECK";
+			"select ID, INVENTORY_DT, POST_IND from INVENTORY_CHECK";
 	
 	private InventoryCheckRowMapper inventoryCheckRowMapper = new InventoryCheckRowMapper();
 	
@@ -82,9 +83,20 @@ public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao
 			InventoryCheck inventoryCheck = new InventoryCheck();
 			inventoryCheck.setId(rs.getLong("ID"));
 			inventoryCheck.setInventoryDate(rs.getDate("INVENTORY_DT"));
+			inventoryCheck.setPosted("Y".equals(rs.getString("POST_IND")));
 			return inventoryCheck;
 		}
 		
+	}
+
+	@Override
+	public List<InventoryCheck> search(InventoryCheck criteria) {
+		List<Object> params = new ArrayList<>();
+		StringBuilder sb = new StringBuilder(BASE_SELECT_SQL);
+		sb.append(" where POST_IND = ?");
+		params.add(criteria.isPosted() ? "Y" : "N");
+		
+		return getJdbcTemplate().query(sb.toString(), inventoryCheckRowMapper, params.toArray());
 	}
 	
 }

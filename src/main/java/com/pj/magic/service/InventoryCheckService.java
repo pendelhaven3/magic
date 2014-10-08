@@ -6,10 +6,12 @@ import com.pj.magic.model.InventoryCheck;
 
 public interface InventoryCheckService {
 
-	List<InventoryCheck> getAllInventoryCheck();
+	List<InventoryCheck> getAllInventoryChecks();
 
 	void delete(InventoryCheck salesRequisition);
 
 	void save(InventoryCheck inventoryCheck);
+	
+	InventoryCheck getNonPostedInventoryCheck();
 	
 }

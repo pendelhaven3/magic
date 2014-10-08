@@ -17,13 +17,17 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.AreaInventoryReportsTable;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.service.AreaInventoryReportService;
+import com.pj.magic.service.InventoryCheckService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class AreaInventoryReportListPanel extends StandardMagicPanel {
 	
 	@Autowired private AreaInventoryReportsTable table;
-	@Autowired private AreaInventoryReportService AreaInventoryReportService;
+	@Autowired private AreaInventoryReportService areaInventoryReportService;
+	@Autowired private InventoryCheckService inventoryCheckService;
+	
+	private JButton addButton;
 	
 	@Override
 	public void initializeComponents() {
@@ -32,10 +36,11 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		table.update();
+		addButton.setEnabled(inventoryCheckService.getNonPostedInventoryCheck() != null);
 	}
 
-	public void displayAreaInventoryReportDetails(AreaInventoryReport AreaInventoryReport) {
-		getMagicFrame().switchToAreaInventoryReportPanel(AreaInventoryReport);
+	public void displayAreaInventoryReportDetails(AreaInventoryReport areaInventoryReport) {
+		getMagicFrame().switchToAreaInventoryReportPanel(areaInventoryReport);
 	}
 	
 	@Override
@@ -67,7 +72,10 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 	}
 	
 	protected void switchToNewAreaInventoryReportPanel() {
-		getMagicFrame().switchToAreaInventoryReportPanel(new AreaInventoryReport());
+		AreaInventoryReport areaInventoryReport = new AreaInventoryReport();
+		areaInventoryReport.setParent(inventoryCheckService.getNonPostedInventoryCheck());
+		
+		getMagicFrame().switchToAreaInventoryReportPanel(areaInventoryReport);
 	}
 
 	@Override
@@ -77,7 +85,7 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		JButton addButton = new MagicToolBarButton("plus", "New");
+		addButton = new MagicToolBarButton("plus", "New");
 		addButton.addActionListener(new ActionListener() {
 			
 			@Override

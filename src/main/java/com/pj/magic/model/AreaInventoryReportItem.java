@@ -1,12 +1,17 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class AreaInventoryReportItem {
 
 	private Long id;
 	private AreaInventoryReport parent;
 	private Product product;
 	private String unit;
-	private int quantity;
+	private Integer quantity;
 
 	public Long getId() {
 		return id;
@@ -40,12 +45,35 @@ public class AreaInventoryReportItem {
 		this.unit = unit;
 	}
 
-	public int getQuantity() {
+	public Integer getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(product)
+			.append(unit)
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof AreaInventoryReportItem)) {
+            return false;
+        }
+        AreaInventoryReportItem other = (AreaInventoryReportItem)obj;		
+		return new EqualsBuilder()
+			.append(product, other.getProduct())
+			.append(unit, other.getUnit())
+			.isEquals();
+	}
+	
 }

@@ -42,7 +42,7 @@ public class InventoryChecksTable extends JTable {
     }
 	
 	public void update() {
-		List<InventoryCheck> inventoryChecks = inventoryCheckService.getAllInventoryCheck();
+		List<InventoryCheck> inventoryChecks = inventoryCheckService.getAllInventoryChecks();
 		tableModel.setInventoryChecks(inventoryChecks);
 		if (!inventoryChecks.isEmpty()) {
 			changeSelection(0, 0, false, false);

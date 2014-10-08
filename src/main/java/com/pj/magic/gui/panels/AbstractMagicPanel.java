@@ -33,11 +33,12 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.KeyUtil;
 
 public abstract class AbstractMagicPanel extends JPanel {
 
-	public static final String BACK_ACTION_COMMAND_NAME = "back"; // TODO: Remove this
-
+	private static final String FOCUS_NEXT_FIELD_ACTION_NAME = "focusNextField";
+	
 	@Autowired private LoginService loginService;
 	
 	private List<JComponent> focusOrder;
@@ -205,4 +206,14 @@ public abstract class AbstractMagicPanel extends JPanel {
 		toolBar.add(logoutButton);
 	}
 	
+	protected void setFocusOnNextFieldOnEnterKey(JTextField textField) {
+		textField.getInputMap().put(KeyUtil.getEnterKey(), FOCUS_NEXT_FIELD_ACTION_NAME);
+		textField.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				focusNextField();
+			}
+		});
+	}
 }

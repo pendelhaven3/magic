@@ -7,6 +7,7 @@ public class AreaInventoryReport {
 
 	private Long id;
 	private InventoryCheck parent;
+	private Integer reportNumber;
 	private String area;
 	private String checker;
 	private String doubleChecker;
@@ -60,4 +61,16 @@ public class AreaInventoryReport {
 		this.items = items;
 	}
 
+	public boolean hasItems() {
+		return !items.isEmpty();
+	}
+
+	public Integer getReportNumber() {
+		return reportNumber;
+	}
+
+	public void setReportNumber(Integer reportNumber) {
+		this.reportNumber = reportNumber;
+	}
+	
 }
