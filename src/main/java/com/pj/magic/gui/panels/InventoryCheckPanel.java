@@ -10,6 +10,8 @@ import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.tables.models.InventoryCheckSummaryTableModel;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.service.InventoryCheckService;
 import com.pj.magic.util.ComponentUtil;
@@ -33,10 +36,12 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(InventoryCheckPanel.class);
 	
 	@Autowired private InventoryCheckService inventoryCheckService;
+	@Autowired private InventoryCheckSummaryTableModel tableModel;
 	
 	private InventoryCheck inventoryCheck;
 	private UtilCalendarModel inventoryDateModel;
 	private JButton saveButton;
+	private JTable summaryTable;
 	
 	@Override
 	protected void initializeComponents() {
@@ -50,6 +55,8 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 				saveInventoryCheck();
 			}
 		});
+		
+		summaryTable = new JTable(tableModel);
 	}
 
 	protected void saveInventoryCheck() {
@@ -140,23 +147,10 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 			return;
 		}
 
+		this.inventoryCheck = inventoryCheckService.getInventoryCheck(inventoryCheck.getId());
+		inventoryCheck = this.inventoryCheck;
 		updateInventoryDateField(inventoryCheck.getInventoryDate());
-		
-//		
-//		inventoryCheck = pricingSchemeService.get(inventoryCheck.getId());
-//		nameField.setText(inventoryCheck.getName());
-//		pricesTableModel.setProducts(inventoryCheck.getProducts());
-//		pricesTable.changeSelection(0, 0, false, false);
-//		
-//		SwingUtilities.invokeLater(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				pricesTable.requestFocusInWindow();
-//			}
-//		});
-//		
-//		searchButton.setEnabled(true);
+		tableModel.setItems(inventoryCheck.getSummaryItems());
 	}
 
 	private void updateInventoryDateField(Date inventoryDate) {
@@ -222,11 +216,11 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(10, 10), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
 		
 		currentRow++;
 		
@@ -237,9 +231,55 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 3;
 		layoutPricesTable();
-//		JScrollPane pricesTableScrollPane = new JScrollPane(pricesTable);
-//		pricesTableScrollPane.setPreferredSize(new Dimension(600, 100));
-		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
+		JScrollPane summaryTableScrollPane = new JScrollPane(summaryTable);
+		summaryTableScrollPane.setPreferredSize(new Dimension(600, 100));
+		mainPanel.add(summaryTableScrollPane, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 3;
+		c.anchor = GridBagConstraints.EAST;
+		mainPanel.add(createTotalsPanel(), c);
+	}
+
+	private JPanel createTotalsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(120, "Total Items:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createFiller(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createFiller(), c);
+		
+		return panel;
 	}
 
 	@Override

@@ -8,10 +8,12 @@ public interface InventoryCheckService {
 
 	List<InventoryCheck> getAllInventoryChecks();
 
-	void delete(InventoryCheck salesRequisition);
+	void delete(InventoryCheck inventoryCheck);
 
 	void save(InventoryCheck inventoryCheck);
 	
 	InventoryCheck getNonPostedInventoryCheck();
+	
+	InventoryCheck getInventoryCheck(long id);
 	
 }

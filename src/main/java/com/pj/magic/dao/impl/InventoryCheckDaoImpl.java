@@ -18,6 +18,9 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.InventoryCheckDao;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.InventoryCheckSummaryItem;
+import com.pj.magic.model.Product;
+import com.pj.magic.model.Unit;
 
 @Repository
 public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao {
@@ -97,6 +100,47 @@ public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao
 		params.add(criteria.isPosted() ? "Y" : "N");
 		
 		return getJdbcTemplate().query(sb.toString(), inventoryCheckRowMapper, params.toArray());
+	}
+
+	private static final String GET_SUMMARY_ITEMS_SQL =
+			"   select b.ID, b.CODE, b.DESCRIPTION, a.UNIT,"
+			+ " b.AVAIL_QTY_CSE, b.AVAIL_QTY_TIE, b.AVAIL_QTY_CTN, b.AVAIL_QTY_DOZ, b.AVAIL_QTY_PCS,"
+			+ " a.COUNTED_QTY"
+			+ " from ("
+			+ "   select airt.PRODUCT_ID, airt.UNIT, sum(airt.QUANTITY) as COUNTED_QTY"
+			+ "   from AREA_INV_REPORT air"
+			+ "   join AREA_INV_REPORT_ITEM airt"
+			+ "     on airt.AREA_INV_REPORT_ID = air.ID"
+			+ "   where air.INVENTORY_CHECK_ID = ?"
+			+ "   group by airt.PRODUCT_ID, airt.UNIT"
+			+ " ) a"
+			+ " join PRODUCT b"
+			+ "   on b.ID = a.PRODUCT_ID";
+	
+	@Override
+	public List<InventoryCheckSummaryItem> getSummaryItems(InventoryCheck inventoryCheck) {
+		return getJdbcTemplate().query(GET_SUMMARY_ITEMS_SQL, new RowMapper<InventoryCheckSummaryItem>() {
+
+			@Override
+			public InventoryCheckSummaryItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+				Product product = new Product();
+				product.setId(rs.getLong("ID"));
+				product.setCode(rs.getString("CODE"));
+				product.setDescription(rs.getString("DESCRIPTION"));
+				product.addUnitQuantity(Unit.CASE, rs.getInt("AVAIL_QTY_CSE"));
+				product.addUnitQuantity(Unit.TIE, rs.getInt("AVAIL_QTY_TIE"));
+				product.addUnitQuantity(Unit.CARTON, rs.getInt("AVAIL_QTY_CTN"));
+				product.addUnitQuantity(Unit.DOZEN, rs.getInt("AVAIL_QTY_DOZ"));
+				product.addUnitQuantity(Unit.PIECES, rs.getInt("AVAIL_QTY_PCS"));
+
+				InventoryCheckSummaryItem item = new InventoryCheckSummaryItem();
+				item.setProduct(product);
+				item.setUnit(rs.getString("UNIT"));
+				item.setQuantity(rs.getInt("COUNTED_QTY"));
+				return item;
+			}
+			
+		}, inventoryCheck.getId());
 	}
 	
 }

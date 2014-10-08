@@ -12,6 +12,7 @@ public class InventoryCheck {
 	private Date inventoryDate;
 	private List<AreaInventoryReport> areaReports = new ArrayList<>();
 	private boolean posted;
+	private List<InventoryCheckSummaryItem> summaryItems = new ArrayList<>();
 
 	public InventoryCheck() {
 		// default constructor
@@ -56,6 +57,14 @@ public class InventoryCheck {
 
 	public void setPosted(boolean posted) {
 		this.posted = posted;
+	}
+
+	public List<InventoryCheckSummaryItem> getSummaryItems() {
+		return summaryItems;
+	}
+
+	public void setSummaryItems(List<InventoryCheckSummaryItem> summaryItems) {
+		this.summaryItems = summaryItems;
 	}
 	
 }

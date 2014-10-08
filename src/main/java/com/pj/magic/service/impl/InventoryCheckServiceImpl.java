@@ -20,7 +20,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 	}
 
 	@Override
-	public void delete(InventoryCheck salesRequisition) {
+	public void delete(InventoryCheck inventoryCheck) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -41,6 +41,13 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 		default:
 			throw new RuntimeException("There should only be one non-posted inventory check at any one time");
 		}
+	}
+
+	@Override
+	public InventoryCheck getInventoryCheck(long id) {
+		InventoryCheck inventoryCheck = inventoryCheckDao.get(id);
+		inventoryCheck.setSummaryItems(inventoryCheckDao.getSummaryItems(inventoryCheck));
+		return inventoryCheck;
 	}
 
 }
