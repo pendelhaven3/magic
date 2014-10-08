@@ -15,6 +15,8 @@ import com.pj.magic.gui.panels.AdjustmentInPanel;
 import com.pj.magic.gui.panels.AdjustmentOutListPanel;
 import com.pj.magic.gui.panels.AdjustmentOutPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
+import com.pj.magic.gui.panels.InventoryCheckListPanel;
+import com.pj.magic.gui.panels.InventoryCheckPanel;
 import com.pj.magic.gui.panels.LoginPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
 import com.pj.magic.gui.panels.MaintainCustomerPanel;
@@ -43,6 +45,7 @@ import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
@@ -96,6 +99,8 @@ public class MagicFrame extends JFrame {
 	private static final String ADJUSTMENT_OUT_PANEL = "ADJUSTMENT_OUT_PANEL";
 	private static final String ADJUSTMENT_IN_LIST_PANEL = "ADJUSTMENT_IN_LIST_PANEL";
 	private static final String ADJUSTMENT_IN_PANEL = "ADJUSTMENT_IN_PANEL";
+	private static final String INVENTORY_CHECK_LIST_PANEL = "INVENTORY_CHECK_LIST_PANEL";
+	private static final String INVENTORY_CHECK_PANEL = "INVENTORY_CHECK_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -127,6 +132,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private AdjustmentOutPanel adjustmentOutPanel;
 	@Autowired private AdjustmentInListPanel adjustmentInListPanel;
 	@Autowired private AdjustmentInPanel adjustmentInPanel;
+	@Autowired private InventoryCheckListPanel inventoryCheckListPanel;
+	@Autowired private InventoryCheckPanel inventoryCheckPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -170,6 +177,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(adjustmentOutPanel, ADJUSTMENT_OUT_PANEL);
 		panelHolder.add(adjustmentInListPanel, ADJUSTMENT_IN_LIST_PANEL);
 		panelHolder.add(adjustmentInPanel, ADJUSTMENT_IN_PANEL);
+		panelHolder.add(inventoryCheckListPanel, INVENTORY_CHECK_LIST_PANEL);
+		panelHolder.add(inventoryCheckPanel, INVENTORY_CHECK_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -423,6 +432,15 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Adjustment In");
 		adjustmentInPanel.updateDisplay(adjustmentIn);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADJUSTMENT_IN_PANEL);
+	}
+
+	public void switchToInventoryCheckListPanel() {
+		addPanelNameToTitle("Inventory Check List");
+		inventoryCheckListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, INVENTORY_CHECK_LIST_PANEL);
+	}
+
+	public void switchToInventoryCheckPanel(InventoryCheck inventoryCheck) {
 	}
 	
 }

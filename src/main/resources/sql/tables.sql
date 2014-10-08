@@ -322,3 +322,31 @@ create table ADJUSTMENT_IN_ITEM (
   constraint ADJUSTMENT_IN_ITEM$FK foreign key (ADJUSTMENT_IN_ID) references ADJUSTMENT_IN (ID),
   constraint ADJUSTMENT_IN_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
+
+create table INVENTORY_CHECK (
+  ID integer auto_increment,
+  INVENTORY_DT date not null,
+  constraint INVENTORY_CHECK$PK primary key (ID),
+  constraint INVENTORY_CHECK$UK unique (INVENTORY_DT)
+);
+
+create table AREA_INV_REPORT (
+  ID integer auto_increment,
+  INVENTORY_CHECK_ID integer not null,
+  AREA varchar2(50) not null,
+  CHECKER varchar2(50) not null,
+  DOUBLE_CHECKER varchar2(50) not null,
+  constraint AREA_INV_REPORT$PK primary key (ID),
+  constraint AREA_INV_REPORT$FK foreign key (INVENTORY_CHECK_ID) references AREA_INV_REPORT (ID),
+);
+
+create table AREA_INV_REPORT_ITEM (
+  ID integer auto_increment,
+  AREA_INV_REPORT_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT varchar2(3) not null,
+  QUANTITY integer not null,
+  constraint AREA_INV_REPORT_ITEM$PK primary key (ID),
+  constraint AREA_INV_REPORT_ITEM$FK foreign key (AREA_INV_REPORT_ID) references AREA_INV_REPORT (ID),
+  constraint AREA_INV_REPORT_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);

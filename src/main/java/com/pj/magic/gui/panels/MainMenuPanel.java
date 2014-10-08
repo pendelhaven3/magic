@@ -112,6 +112,9 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		case "Adjustment Out":
 			getMagicFrame().switchToAdjustmentOutListPanel();
 			break;
+		case "Inventory Check":
+			getMagicFrame().switchToInventoryCheckListPanel();
+			break;
 		}
 	}
 
@@ -136,7 +139,8 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				{"Supplier List"},
 				{"Product Category List"},
 				{"Customer List"},
-				{"Payment Terms List"}
+				{"Payment Terms List"},
+				{"Inventory Check"}
 		};
 		
 		@Override
