@@ -441,6 +441,9 @@ public class MagicFrame extends JFrame {
 	}
 
 	public void switchToInventoryCheckPanel(InventoryCheck inventoryCheck) {
+		addPanelNameToTitle("Inventory Check");
+		inventoryCheckPanel.updateDisplay(inventoryCheck);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, INVENTORY_CHECK_PANEL);
 	}
 	
 }

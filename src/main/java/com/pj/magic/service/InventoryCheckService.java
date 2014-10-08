@@ -9,5 +9,7 @@ public interface InventoryCheckService {
 	List<InventoryCheck> getAllInventoryCheck();
 
 	void delete(InventoryCheck salesRequisition);
+
+	void save(InventoryCheck inventoryCheck);
 	
 }

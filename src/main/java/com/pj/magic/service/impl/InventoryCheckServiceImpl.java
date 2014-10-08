@@ -25,4 +25,9 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 		
 	}
 
+	@Override
+	public void save(InventoryCheck inventoryCheck) {
+		inventoryCheckDao.save(inventoryCheck);
+	}
+
 }

@@ -6,6 +6,10 @@ import javax.swing.JLabel;
 
 public class ComponentUtil {
 
+	public static final JLabel createFiller() {
+		return createFiller(1, 1);
+	}
+
 	public static final JLabel createFiller(int width, int height) {
 		JLabel label = new JLabel();
 		label.setPreferredSize(new Dimension(width, height));

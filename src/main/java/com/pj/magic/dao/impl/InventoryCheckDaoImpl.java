@@ -1,11 +1,18 @@
 package com.pj.magic.dao.impl;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.InventoryCheckDao;
@@ -30,8 +37,20 @@ public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao
 
 	private static final String INSERT_SQL = "insert into INVENTORY_CHECK (INVENTORY_DT) values (?)";
 	
-	private void insert(InventoryCheck inventoryCheck) {
-		getJdbcTemplate().update(INSERT_SQL, inventoryCheck.getId());
+	private void insert(final InventoryCheck inventoryCheck) {
+		KeyHolder holder = new GeneratedKeyHolder();
+		getJdbcTemplate().update(new PreparedStatementCreator() {
+			
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con)
+					throws SQLException {
+				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+				ps.setDate(1, new Date(inventoryCheck.getInventoryDate().getTime()));
+				return ps;
+			}
+		}, holder); // TODO: check if keyholder works with oracle db
+		
+		inventoryCheck.setId(holder.getKey().longValue());
 	}
 
 	private void update(InventoryCheck inventoryCheck) {
