@@ -41,7 +41,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(200, 250));
+		table.setPreferredSize(new Dimension(200, 260));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		add(table, c);
@@ -115,6 +115,9 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		case "Inventory Check":
 			getMagicFrame().switchToInventoryCheckListPanel();
 			break;
+		case "Area Inventory Report":
+			getMagicFrame().switchToAreaInventoryReportListPanel();
+			break;
 		}
 	}
 
@@ -140,7 +143,8 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				{"Product Category List"},
 				{"Customer List"},
 				{"Payment Terms List"},
-				{"Inventory Check"}
+				{"Inventory Check"},
+				{"Area Inventory Report"}
 		};
 		
 		@Override

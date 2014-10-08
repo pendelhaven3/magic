@@ -10,6 +10,14 @@ public class InventoryCheck {
 	private Date inventoryDate;
 	private List<AreaInventoryReport> areaReports = new ArrayList<>();
 
+	public InventoryCheck() {
+		// default constructor
+	}
+	
+	public InventoryCheck(Long id) {
+		this.id = id;
+	}
+
 	public Long getId() {
 		return id;
 	}
