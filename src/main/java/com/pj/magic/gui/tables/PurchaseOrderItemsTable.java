@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.gui.tables.models.PurchaseOrderItemsTableModel;
@@ -59,7 +58,6 @@ public class PurchaseOrderItemsTable extends MagicTable {
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 
-	@Autowired private SelectActionDialog selectActionDialog;
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;

@@ -867,7 +867,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private JPanel createItemsTableToolBar() {
 		JPanel panel = new JPanel();
 		
-		addItemButton = new MagicToolBarButton("plus_small", "Add Item", true);
+		addItemButton = new MagicToolBarButton("plus_small", "Add Item (F10)", true);
 		addItemButton.addActionListener(new ActionListener() {
 			
 			@Override

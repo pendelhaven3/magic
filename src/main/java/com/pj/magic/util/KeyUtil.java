@@ -32,5 +32,9 @@ public class KeyUtil {
 	public static KeyStroke getEnterKey() {
 		return KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 	}
+
+	public static KeyStroke getF10Key() {
+		return KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0);
+	}
 	
 }

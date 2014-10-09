@@ -25,10 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
-import com.pj.magic.gui.tables.models.ActionsTableModel;
 import com.pj.magic.gui.tables.models.StockQuantityConversionItemsTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.StockQuantityConversion;
@@ -61,7 +59,6 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 
-	@Autowired private SelectActionDialog selectActionDialog;
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;
@@ -292,12 +289,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectActionDialog.setVisible(true);
-				
-				String action = selectActionDialog.getSelectedAction();
-				if (ActionsTableModel.CREATE_ACTION.equals(action)) {
-					switchToAddMode();
-				}
+				switchToAddMode();
 			}
 		});
 		actionMap.put(TAB_ACTION_NAME, new AbstractAction() {

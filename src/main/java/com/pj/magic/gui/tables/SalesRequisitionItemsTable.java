@@ -26,10 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.gui.dialog.SelectActionDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
-import com.pj.magic.gui.tables.models.ActionsTableModel;
 import com.pj.magic.gui.tables.models.SalesRequisitionItemsTableModel;
 import com.pj.magic.gui.tables.rowitems.SalesRequisitionItemRowItem;
 import com.pj.magic.model.Product;
@@ -59,12 +57,11 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	private static final String TAB_ACTION_NAME = "tab";
 	private static final String DOWN_ACTION_NAME = "down";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
-	private static final String SHOW_SELECT_ACTION_DIALOG_ACTION_NAME = "showSelectActionDialog";
+	private static final String F10_ACTION_NAME = "F10";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
-	private static final String F4_ACTION_NAME = "f4";
+	private static final String F4_ACTION_NAME = "F4";
 
-	@Autowired private SelectActionDialog selectActionDialog;
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;
@@ -282,20 +279,15 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), F4_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), SHOW_SELECT_ACTION_DIALOG_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), F10_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
 		
 		ActionMap actionMap = getActionMap();
-		actionMap.put(SHOW_SELECT_ACTION_DIALOG_ACTION_NAME, new AbstractAction() {
+		actionMap.put(F10_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectActionDialog.setVisible(true);
-				
-				String action = selectActionDialog.getSelectedAction();
-				if (ActionsTableModel.CREATE_ACTION.equals(action)) {
-					switchToAddMode();
-				}
+				switchToAddMode();
 			}
 		});
 		actionMap.put(TAB_ACTION_NAME, new AbstractAction() {
