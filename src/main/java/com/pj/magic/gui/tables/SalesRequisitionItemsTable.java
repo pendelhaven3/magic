@@ -191,8 +191,11 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	}
 	
 	public void removeCurrentlySelectedRow() {
-		
 		int selectedRowIndex = getSelectedRow();
+		if (selectedRowIndex == -1) {
+			return;
+		}
+		
 		SalesRequisitionItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
 		salesRequisition.getItems().remove(item);
@@ -216,17 +219,14 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
-	private boolean hasDuplicate(SalesRequisitionItemRowItem rowItem) {
-		SalesRequisitionItem checkItem = new SalesRequisitionItem();
-		checkItem.setProduct(rowItem.getProduct());
-		checkItem.setUnit(rowItem.getUnit());
-		
+	private boolean hasDuplicate(String unit, SalesRequisitionItemRowItem rowItem) {
 		for (SalesRequisitionItem item : salesRequisition.getItems()) {
-			if (item.equals(checkItem) && item != rowItem.getItem()) {
+			if (item.getProduct().equals(rowItem.getProduct()) 
+					&& item.getUnit().equals(unit) && item != rowItem.getItem()) {
 				return true;
 			}
 		}
-		return false;
+		return tableModel.hasDuplicate(unit, rowItem);
 	}
 	
 	public void setSalesRequisition(SalesRequisition salesRequisition) {
@@ -270,19 +270,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 					}
 					openSelectProductDialog((String)getCellEditor().getCellEditorValue());
 				} else if (isUnitFieldSelected()) {
-					selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
-					selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
-					selectUnitDialog.setVisible(true);
-					
-					String unit = selectUnitDialog.getSelectedUnit();
-					if (unit != null) {
-						if (isEditing()) {
-							getCellEditor().cancelCellEditing();
-							requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
-						}
-						setValueAt(unit, getSelectedRow(), getSelectedColumn());
-						KeyUtil.simulateTabKey();
-					}
+					openSelectUnitDialog();
 				}
 			}
 		});
@@ -321,6 +309,22 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		});
 	}
 	
+	protected void openSelectUnitDialog() {
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), UNIT_COLUMN_INDEX);
+		}
+		
+		selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
+		selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
+		selectUnitDialog.setVisible(true);
+		
+		String unit = selectUnitDialog.getSelectedUnit();
+		if (unit != null) {
+			((JTextField)getEditorComponent()).setText(unit);
+			getCellEditor().stopCellEditing();
+		}
+	}
+
 	private void openSelectProductDialog(String productCodeCriteria) {
 		selectProductDialog.searchProducts(productCodeCriteria, salesRequisition.getPricingScheme());
 		selectProductDialog.setVisible(true);
@@ -409,7 +413,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 							break;
 						case QUANTITY_COLUMN_INDEX:
 							model.fireTableCellUpdated(row, AMOUNT_COLUMN_INDEX);
-							if (isAdding() && isLastRowSelected()) {
+							if (isAdding() && isLastRowSelected() && getCurrentlySelectedRowItem().isValid()) {
 								addNewRow();
 							}
 							break;
@@ -464,8 +468,8 @@ public class SalesRequisitionItemsTable extends MagicTable {
 				SalesRequisitionItemRowItem rowItem = getCurrentlySelectedRowItem();
 				if (!rowItem.getProduct().hasUnit(unit)) {
 					showErrorMessage("Product does not have unit specified");
-//				} else if (tableModel.hasDuplicate(rowItem) || hasDuplicate(rowItem)) {
-//					showErrorMessage("Duplicate item");
+				} else if (hasDuplicate(unit, rowItem)) {
+					showErrorMessage("Duplicate item");
 				} else if (rowItem.getProduct().hasNoSellingPrice(rowItem.getUnit())) {
 					showErrorMessage("No selling price");
 				} else {

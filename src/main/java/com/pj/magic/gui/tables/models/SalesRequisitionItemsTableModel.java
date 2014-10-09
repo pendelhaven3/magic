@@ -155,17 +155,18 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		addItem(item);
 	}
 
-	public boolean hasDuplicate(SalesRequisitionItemRowItem checkItem) {
-		for (SalesRequisitionItemRowItem item : rowItems) {
-			if (item.equals(checkItem) && item != checkItem) {
+	public List<SalesRequisitionItemRowItem> getRowItems() {
+		return rowItems;
+	}
+
+	public boolean hasDuplicate(String unit, SalesRequisitionItemRowItem checkRowItem) {
+		for (SalesRequisitionItemRowItem rowItem : rowItems) {
+			if (checkRowItem.getProduct().equals(rowItem.getProduct()) 
+					&& unit.equals(rowItem.getUnit()) && rowItem != checkRowItem) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public List<SalesRequisitionItemRowItem> getRowItems() {
-		return rowItems;
 	}
 	
 }
