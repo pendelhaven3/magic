@@ -50,7 +50,7 @@ public class Product implements Comparable<Product> {
 	
 	public BigDecimal getUnitPrice(String unit) {
 		for (UnitPrice unitPrice : unitPrices) {
-			if (unit.equals(unitPrice.getUnit())) {
+			if (unitPrice.getUnit().equals(unit)) {
 				return unitPrice.getPrice();
 			}
 		}

@@ -107,7 +107,7 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 			rowItem.setQuantity(val);
 			break;
 		}
-		if (rowItem.isValid()) { // TODO: Add other validations here
+		if (rowItem.isValid()) {
 			SalesRequisitionItem item = rowItem.getItem();
 			item.setProduct(rowItem.getProduct());
 			item.setUnit(rowItem.getUnit());
@@ -119,9 +119,17 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX
-				|| columnIndex == SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX
-				|| columnIndex == SalesRequisitionItemsTable.UNIT_COLUMN_INDEX;
+		SalesRequisitionItemRowItem rowItem = rowItems.get(rowIndex);
+		switch (columnIndex) {
+		case SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+			return true;
+		case SalesRequisitionItemsTable.UNIT_COLUMN_INDEX:
+			return rowItem.hasValidProduct();
+		case SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX:
+			return rowItem.hasValidUnit();
+		default:
+			return false;
+		}
 	}
 	
 	public SalesRequisitionItemRowItem getRowItem(int rowIndex) {

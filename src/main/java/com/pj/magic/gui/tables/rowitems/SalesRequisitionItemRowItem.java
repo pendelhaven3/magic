@@ -128,4 +128,12 @@ public class SalesRequisitionItemRowItem {
 		}
 	}
 	
+	public boolean hasValidProduct() {
+		return product != null;
+	}
+	
+	public boolean hasValidUnit() {
+		return hasValidProduct() && product.hasUnit(unit) && !product.hasNoSellingPrice(unit);
+	}
+	
 }
