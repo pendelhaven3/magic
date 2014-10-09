@@ -47,3 +47,6 @@ version 0.10
 5. Added Payment Term field to Customer, Sales Requisition, Sales Invoice
 6. Make Final Cost editable in Edit Product Price
 7. Other fixes
+
+version 0.11
+1. Added crude Inventory Check feature (not fully working)
