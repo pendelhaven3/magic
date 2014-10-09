@@ -62,6 +62,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	private static final String SHOW_SELECT_ACTION_DIALOG_ACTION_NAME = "showSelectActionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
+	private static final String F4_ACTION_NAME = "f4";
 
 	@Autowired private SelectActionDialog selectActionDialog;
 	@Autowired private SelectProductDialog selectProductDialog;
@@ -279,6 +280,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), F4_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), SHOW_SELECT_ACTION_DIALOG_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
@@ -380,19 +382,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (isProductCodeFieldSelected()) {
-					selectProductDialog.searchProducts((String)getCellEditor().getCellEditorValue(),
-							salesRequisition.getPricingScheme());
-					selectProductDialog.setVisible(true);
-					
-					String productCode = selectProductDialog.getSelectedProductCode();
-					if (productCode != null) {
-						if (isEditing()) {
-							getCellEditor().cancelCellEditing();
-							requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
-						}
-						setValueAt(productCode, getSelectedRow(), getSelectedColumn());
-						KeyUtil.simulateTabKey();
-					}
+					openSelectProductDialog((String)getCellEditor().getCellEditorValue());
 				} else if (isUnitFieldSelected()) {
 					selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
 					selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
@@ -435,8 +425,48 @@ public class SalesRequisitionItemsTable extends MagicTable {
 				}
 			}
 		});
+		
+		actionMap.put(F4_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectProductDialogUsingPreviousProductCode();
+			}
+		});
 	}
 	
+	private void openSelectProductDialog(String productCodeCriteria) {
+		selectProductDialog.searchProducts(productCodeCriteria, salesRequisition.getPricingScheme());
+		selectProductDialog.setVisible(true);
+		
+		String productCode = selectProductDialog.getSelectedProductCode();
+		if (productCode != null) {
+			if (isEditing()) {
+				getCellEditor().cancelCellEditing();
+				requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
+			}
+			setValueAt(productCode, getSelectedRow(), getSelectedColumn());
+			KeyUtil.simulateTabKey();
+		}
+	}
+	
+	protected void openSelectProductDialogUsingPreviousProductCode() {
+		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
+			return;
+		}
+		
+		if (tableModel.hasNonBlankItem()) {
+			openSelectProductDialog(getPreviousRowItem().getProductCode());
+		} else if (salesRequisition.hasItems()) {
+			List<SalesRequisitionItem> items = salesRequisition.getItems();
+			openSelectProductDialog(items.get(items.size() - 1).getProduct().getCode());
+		}
+	}
+
+	private SalesRequisitionItemRowItem getPreviousRowItem() {
+		return tableModel.getRowItem(getSelectedRow() - 1);
+	}
+
 	public boolean validateQuantity(SalesRequisitionItemRowItem rowItem) {
 		if (StringUtils.isEmpty(rowItem.getQuantity())) {
 			showErrorMessage("Quantity must be specified");

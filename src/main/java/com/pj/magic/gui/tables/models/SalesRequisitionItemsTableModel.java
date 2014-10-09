@@ -138,6 +138,10 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		return !rowItems.isEmpty();
 	}
 	
+	public boolean hasNonBlankItem() {
+		return hasItems() && rowItems.get(0).isValid();
+	}
+	
 	public void clearAndAddItem(SalesRequisitionItem item) {
 		rowItems.clear();
 		addItem(item);
