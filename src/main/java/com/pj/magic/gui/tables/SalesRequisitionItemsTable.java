@@ -280,6 +280,9 @@ public class SalesRequisitionItemsTable extends MagicTable {
 			public void actionPerformed(ActionEvent e) {
 				if (isEditing()) {
 					getCellEditor().cancelCellEditing();
+					if (getCurrentlySelectedRowItem().isUpdating()) {
+						tableModel.reset(getSelectedRow());
+					}
 				} else if (isAdding()) {
 					switchToEditMode();
 				}
@@ -404,6 +407,8 @@ public class SalesRequisitionItemsTable extends MagicTable {
 					public void run() {
 						switch (column) {
 						case PRODUCT_CODE_COLUMN_INDEX:
+							model.fireTableCellUpdated(row, UNIT_PRICE_COLUMN_INDEX);
+							model.fireTableCellUpdated(row, AMOUNT_COLUMN_INDEX);
 							selectAndEditCellAt(row, UNIT_COLUMN_INDEX);
 							break;
 						case UNIT_COLUMN_INDEX:

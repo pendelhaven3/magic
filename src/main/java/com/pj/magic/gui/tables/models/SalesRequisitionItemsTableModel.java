@@ -97,8 +97,11 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		String val = (String)value;
 		switch (columnIndex) {
 		case SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			rowItem.setProductCode(val);
+			if (rowItem.getProduct() != null && rowItem.getProduct().getCode().equals(val)) {
+				return;
+			}
 			rowItem.setProduct(productService.findProductByCodeAndPricingScheme(val, pricingScheme));
+			rowItem.setUnit(null);
 			break;
 		case SalesRequisitionItemsTable.UNIT_COLUMN_INDEX:
 			rowItem.setUnit(val);
@@ -167,6 +170,11 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 			}
 		}
 		return false;
+	}
+
+	public void reset(int row) {
+		rowItems.get(row).reset();
+		fireTableRowsUpdated(row, row);
 	}
 	
 }

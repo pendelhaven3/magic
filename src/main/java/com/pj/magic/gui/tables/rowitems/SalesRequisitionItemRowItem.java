@@ -17,7 +17,6 @@ import com.pj.magic.util.FormatterUtil;
 public class SalesRequisitionItemRowItem {
 
 	private SalesRequisitionItem item;
-	private String productCode;
 	private String unit;
 	private String quantity;
 	private Product product;
@@ -25,7 +24,6 @@ public class SalesRequisitionItemRowItem {
 	public SalesRequisitionItemRowItem(SalesRequisitionItem item) {
 		this.item = item;
 		if (item.getProduct() != null) {
-			productCode = item.getProduct().getCode();
 			product = item.getProduct();
 		}
 		unit = item.getUnit();
@@ -40,14 +38,6 @@ public class SalesRequisitionItemRowItem {
 
 	public void setItem(SalesRequisitionItem item) {
 		this.item = item;
-	}
-
-	public String getProductCode() {
-		return productCode;
-	}
-
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
 	}
 
 	public String getUnit() {
@@ -121,7 +111,6 @@ public class SalesRequisitionItemRowItem {
 
 	public void reset() {
 		if (item.getId() != null) {
-			productCode = item.getProduct().getCode();
 			product = item.getProduct();
 			unit = item.getUnit();
 			quantity = item.getQuantity().toString();
@@ -134,6 +123,14 @@ public class SalesRequisitionItemRowItem {
 	
 	public boolean hasValidUnit() {
 		return hasValidProduct() && product.hasUnit(unit) && !product.hasNoSellingPrice(unit);
+	}
+
+	public String getProductCode() {
+		return (product != null) ? product.getCode() : "";
+	}
+
+	public boolean isUpdating() {
+		return item.getId() != null;
 	}
 	
 }
