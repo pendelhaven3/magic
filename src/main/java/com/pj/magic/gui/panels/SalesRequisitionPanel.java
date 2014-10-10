@@ -16,7 +16,6 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -83,11 +82,11 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private JLabel salesRequisitionNumberField;
 	private JTextField customerCodeField;
 	private JLabel customerNameField;
-	private JComboBox<PaymentTerm> paymentTermComboBox;
+	private MagicComboBox<PaymentTerm> paymentTermComboBox;
+	private MagicComboBox<PricingScheme> pricingSchemeComboBox;
+	private MagicComboBox<String> modeComboBox;
 	private JLabel createDateField;
 	private JLabel encoderField;
-	private JComboBox<String> modeComboBox;
-	private JComboBox<PricingScheme> pricingSchemeComboBox;
 	private MagicTextField remarksField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
@@ -97,9 +96,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private MagicToolBarButton deleteItemButton;
 	private MagicToolBarButton postButton;
 	
-	// boolean flag to prevent setting combobox values from triggering db save during updateDisplay() method
-	private boolean updatingDisplay;
-	
 	@Override
 	protected void initializeComponents() {
 		customerCodeField = new MagicTextField();
@@ -108,15 +104,28 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePaymentTerm();
+				if (paymentTermComboBox.shouldTriggerCustomListeners()) {
+					if (paymentTermComboBox.getSelectedItem() == null) {
+						showErrorMessage("Payment Term must be specified");
+						return;
+					}
+					savePaymentTerm();
+				}
 			}
 		});
+		
 		pricingSchemeComboBox = new MagicComboBox<>();
 		pricingSchemeComboBox.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePricingScheme();
+				if (pricingSchemeComboBox.shouldTriggerCustomListeners()) {
+					if (pricingSchemeComboBox.getSelectedItem() == null) {
+						showErrorMessage("Pricing Scheme must be specified");
+						return;
+					}
+					savePricingScheme();
+				}
 			}
 		});
 		
@@ -126,7 +135,13 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveMode();
+				if (modeComboBox.shouldTriggerCustomListeners()) {
+					if (modeComboBox.getSelectedItem() == null) {
+						showErrorMessage("Mode must be specified");
+						return;
+					}
+					saveMode();
+				}
 			}
 		});
 		
@@ -157,37 +172,44 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	}
 
 	protected void saveMode() {
-		if (salesRequisition.getId() == null) {
-			saveNewSalesRequisition();
-		} else {
+		if (salesRequisition.getId() != null) {
 			if (!salesRequisition.getMode().equals(modeComboBox.getSelectedItem())) {
 				salesRequisition.setMode((String)modeComboBox.getSelectedItem());
 				salesRequisitionService.save(salesRequisition);
 			}
+		} else {
+			salesRequisition.setMode((String)modeComboBox.getSelectedItem());
+			salesRequisitionService.save(salesRequisition);
+			updateDisplay(salesRequisition);
 		}
+		remarksField.requestFocusInWindow();
 	}
 
 	protected void savePricingScheme() {
-		if (salesRequisition.getId() == null) {
-			saveNewSalesRequisition();
-		} else {
+		if (salesRequisition.getId() != null) {
 			if (!salesRequisition.getPricingScheme().equals(pricingSchemeComboBox.getSelectedItem())) {
 				salesRequisition.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
 				salesRequisitionService.save(salesRequisition);
 				updateDisplay(salesRequisition);
 			}
+		} else {
+			salesRequisition.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
+			modeComboBox.setEnabled(true);
 		}
+		modeComboBox.requestFocusInWindow();
 	}
 
 	protected void savePaymentTerm() {
-		if (salesRequisition.getId() == null) {
-			saveNewSalesRequisition();
-		} else {
+		if (salesRequisition.getId() != null) {
 			if (!salesRequisition.getPaymentTerm().equals(paymentTermComboBox.getSelectedItem())) {
 				salesRequisition.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
 				salesRequisitionService.save(salesRequisition);
 			}
+		} else {
+			salesRequisition.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
+			pricingSchemeComboBox.setEnabled(true);
 		}
+		pricingSchemeComboBox.requestFocusInWindow();
 	}
 
 	protected void saveRemarks() {
@@ -195,31 +217,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			salesRequisition.setRemarks(remarksField.getText());
 			salesRequisitionService.save(salesRequisition);
 		}
-	}
-
-	protected void saveNewSalesRequisition() {
-		if (updatingDisplay) {
-			return;
-		}
-		
-		if (canSaveNewSalesRequisition()) {
-			try {
-				salesRequisition.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
-				salesRequisition.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
-				salesRequisition.setMode((String)modeComboBox.getSelectedItem());
-				salesRequisitionService.save(salesRequisition);
-				updateDisplay(salesRequisition);
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-				showErrorMessage("Unexpected error occurred during saving");
-			}
-		}
-	}
-
-	private boolean canSaveNewSalesRequisition() {
-		return paymentTermComboBox.getSelectedItem() != null  
-				&& pricingSchemeComboBox.getSelectedItem() != null
-				&& modeComboBox.getSelectedItem() != null;
 	}
 
 	@Override
@@ -241,7 +238,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 				selectCustomer();
 			}
 		});
-
+		
 		remarksField.getInputMap().put(KeyUtil.getEnterKey(), "enter");
 		remarksField.getActionMap().put("enter", new AbstractAction() {
 			
@@ -269,11 +266,11 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			salesRequisition.setCustomer(customer);
 			customerCodeField.setText(customer.getCode());
 			customerNameField.setText(customer.getName());
-			pricingSchemeComboBox.setEnabled(true);
 			paymentTermComboBox.setEnabled(true);
 			paymentTermComboBox.setSelectedItem(customer.getPaymentTerm());
-			modeComboBox.setEnabled(true);
-			saveNewSalesRequisition();
+			if (salesRequisition.getId() != null) {
+				salesRequisitionService.save(salesRequisition);
+			}
 			paymentTermComboBox.requestFocusInWindow();
 		}
 	}
@@ -298,19 +295,19 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			return;
 		} else {
 			salesRequisition.setCustomer(customer);
-			if (salesRequisition.hasMinimumFieldsFilledUp()) {
-				try {
-					salesRequisitionService.save(salesRequisition);
-				} catch (Exception e) {
-					showErrorMessage("Error occurred during saving!");
-					return;
-				}
+			if (salesRequisition.getId() != null) {
+				salesRequisitionService.save(salesRequisition);
 			}
+//			if (salesRequisition.hasMinimumFieldsFilledUp()) {
+//				try {
+//				} catch (Exception e) {
+//					showErrorMessage("Error occurred during saving!");
+//					return;
+//				}
+//			}
 			customerNameField.setText(customer.getName());
 			paymentTermComboBox.setEnabled(true);
-			paymentTermComboBox.setSelectedItem(customer.getPaymentTerm());
-			modeComboBox.setEnabled(true);
-			pricingSchemeComboBox.setEnabled(true);
+			paymentTermComboBox.setSelectedItem(customer.getPaymentTerm(), false);
 			paymentTermComboBox.requestFocusInWindow();
 		}
 	}
@@ -344,8 +341,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay(SalesRequisition salesRequisition) {
-		updatingDisplay = true;
-		
 		List<PricingScheme> pricingSchemes = pricingSchemeService.getAllPricingSchemes();
 		pricingSchemeComboBox.setModel(
 				new DefaultComboBoxModel<>(pricingSchemes.toArray(new PricingScheme[pricingSchemes.size()])));
@@ -373,11 +368,11 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		createDateField.setText(FormatterUtil.formatDate(salesRequisition.getCreateDate()));
 		encoderField.setText(salesRequisition.getEncoder().getUsername());
 		pricingSchemeComboBox.setEnabled(true);
-		pricingSchemeComboBox.setSelectedItem(salesRequisition.getPricingScheme());
+		pricingSchemeComboBox.setSelectedItem(salesRequisition.getPricingScheme(), false);
 		paymentTermComboBox.setEnabled(true);
-		paymentTermComboBox.setSelectedItem(salesRequisition.getPaymentTerm());
+		paymentTermComboBox.setSelectedItem(salesRequisition.getPaymentTerm(), false);
 		modeComboBox.setEnabled(true);
-		modeComboBox.setSelectedItem(salesRequisition.getMode());
+		modeComboBox.setSelectedItem(salesRequisition.getMode(), false);
 		remarksField.setEnabled(true);
 		remarksField.setText(salesRequisition.getRemarks());
 		totalItemsField.setText(String.valueOf(salesRequisition.getTotalNumberOfItems()));
@@ -387,8 +382,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		postButton.setEnabled(!salesRequisition.isPosted());
 		addItemButton.setEnabled(!salesRequisition.isPosted());
 		deleteItemButton.setEnabled(!salesRequisition.isPosted());
-		
-		updatingDisplay = false;
 	}
 
 	private void clearDisplay() {
@@ -398,11 +391,11 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		createDateField.setText(null);
 		encoderField.setText(null);
 		pricingSchemeComboBox.setEnabled(false);
-		pricingSchemeComboBox.setSelectedItem(null);
+		pricingSchemeComboBox.setSelectedItem(null, false);
 		paymentTermComboBox.setEnabled(false);
-		paymentTermComboBox.setSelectedItem(null);
+		paymentTermComboBox.setSelectedItem(null, false);
 		modeComboBox.setEnabled(false);
-		modeComboBox.setSelectedItem(null);
+		modeComboBox.setSelectedItem(null, false);
 		remarksField.setEnabled(false);
 		remarksField.setText(null);
 		totalItemsField.setText(null);
@@ -412,8 +405,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		postButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
-		
-		updatingDisplay = false;
 	}
 
 	private java.awt.Component createCustomerNamePanel() {
