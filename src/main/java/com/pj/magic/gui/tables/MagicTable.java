@@ -9,6 +9,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableModel;
 
+import com.pj.magic.util.KeyUtil;
+
 // TODO: This is not really ItemsTable
 /*
  * [PJ 8/27/2014] 
@@ -45,9 +47,12 @@ public abstract class MagicTable extends JTable {
 	public boolean editCellAt(int row, int column, EventObject e) {
 		boolean result = super.editCellAt(row, column, e);
 		if (e instanceof KeyEvent) {
-			Component c = getEditorComponent();
-			if (c instanceof JTextField) {
-				((JTextField)c).setText(null);
+			int keyCode = ((KeyEvent) e).getKeyCode();
+			if (KeyUtil.isAlphaNumericKeyCode(keyCode)) {
+				Component c = getEditorComponent();
+				if (c instanceof JTextField) {
+					((JTextField)c).setText(null);
+				}
 			}
 		}
 		return result;
