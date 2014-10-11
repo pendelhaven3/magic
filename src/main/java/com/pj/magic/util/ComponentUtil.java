@@ -32,5 +32,16 @@ public class ComponentUtil {
 		label.setHorizontalAlignment(JLabel.RIGHT);
 		return label;
 	}
+
+	public static final JLabel createCenterLabel(int width) {
+		return createCenterLabel(width, "");
+	}
+	
+	public static final JLabel createCenterLabel(int width, String text) {
+		JLabel label = new JLabel(text);
+		label.setPreferredSize(new Dimension(width, 30));
+		label.setHorizontalAlignment(JLabel.CENTER);
+		return label;
+	}
 	
 }

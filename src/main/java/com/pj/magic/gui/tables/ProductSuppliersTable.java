@@ -1,5 +1,6 @@
 package com.pj.magic.gui.tables;
 
+import java.util.ArrayList;
 import java.util.EventObject;
 
 import javax.swing.JButton;
@@ -42,6 +43,10 @@ public class ProductSuppliersTable extends JTable {
 
 	public void updateDisplay(Product product) {
 		tableModel.setSuppliers(productService.getProductSuppliers(product));
+	}
+	
+	public void clearDisplay() {
+		tableModel.setSuppliers(new ArrayList<Supplier>());
 	}
 	
 	public Supplier getSupplier(int rowIndex) {
