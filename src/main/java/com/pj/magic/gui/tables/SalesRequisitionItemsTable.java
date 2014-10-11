@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -190,12 +189,8 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		}
 	}
 	
-	public void removeCurrentlySelectedRow() {
+	private void doDeleteCurrentlySelectedItem() {
 		int selectedRowIndex = getSelectedRow();
-		if (selectedRowIndex == -1) {
-			return;
-		}
-		
 		SalesRequisitionItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
 		salesRequisition.getItems().remove(item);
@@ -243,10 +238,8 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	}
 	
 	protected void registerKeyBindings() {
-		final SalesRequisitionItemsTable table = this;
-		
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-//		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), F4_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), F10_ACTION_NAME);
@@ -292,14 +285,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (tableModel.hasItems()) {
-					if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
-						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?", "Select An Option", JOptionPane.YES_NO_OPTION);
-						if (confirm == JOptionPane.OK_OPTION) {
-							removeCurrentlySelectedRow();
-						}
-					}
-				}
+				removeCurrentlySelectedItem();
 			}
 		});
 		
@@ -312,6 +298,16 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		});
 	}
 	
+	public void removeCurrentlySelectedItem() {
+		if (getSelectedRow() != -1) {
+			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
+				if (confirm("Do you wish to delete the selected item?")) {
+					doDeleteCurrentlySelectedItem();
+				}
+			}
+		}
+	}
+
 	protected void openSelectUnitDialog() {
 		if (!isEditing()) {
 			editCellAt(getSelectedRow(), UNIT_COLUMN_INDEX);

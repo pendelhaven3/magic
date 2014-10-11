@@ -873,7 +873,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				itemsTable.removeCurrentlySelectedRow();
+				itemsTable.removeCurrentlySelectedItem();
 			}
 		});
 		panel.add(deleteItemButton, BorderLayout.WEST);
