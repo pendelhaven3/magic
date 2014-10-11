@@ -184,6 +184,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		
 		Product updatedProduct = productService.getProduct(product.getId(), pricingScheme);
 		product.setUnitPrices(updatedProduct.getUnitPrices());
+		product.setUnitCosts(updatedProduct.getUnitCosts());
 		pricesTableModel.fireTableRowsUpdated(selectedRow, selectedRow);
 	}
 
