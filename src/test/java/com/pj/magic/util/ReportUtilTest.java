@@ -9,8 +9,8 @@ public class ReportUtilTest {
 	public void multiline() {
 		String text = "BLK. 61, LOT 11, PHASE IV-A. STO. NIÑO VILLAGE, MEYCAUAYAN, BULACAN";
 		
-		assertEquals("BLK. 61, LOT 11, PHASE IV-A. STO. NIÑO", ReportUtil.multiline(text, 40, 1));
-		assertEquals("VILLAGE, MEYCAUAYAN, BULACAN", ReportUtil.multiline(text, 40, 2));
+		assertEquals("BLK. 61, LOT 11, PHASE IV-A. STO. NIÑO  ", ReportUtil.multiline(text, 40, 1));
+		assertEquals("VILLAGE, MEYCAUAYAN, BULACAN            ", ReportUtil.multiline(text, 40, 2));
 	}
 	
 }

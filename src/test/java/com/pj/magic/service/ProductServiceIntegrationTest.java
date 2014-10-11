@@ -1,8 +1,8 @@
 package com.pj.magic.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -31,41 +31,6 @@ public class ProductServiceIntegrationTest extends IntegrationTest {
 		product = new Product();
 	}
 	
-	@Test
-	public void saveNewProduct() {
-		product.setCode("TEST");
-		product.setDescription("TEST PRODUCT DESCRIPTION");
-		product.setUnits(Arrays.asList(Unit.CASE, Unit.PIECES));
-		product.setUnitConversion(Unit.CASE, 10);
-		product.setUnitConversion(Unit.PIECES, 1);
-//		product.setFinalCost(Unit.CASE, new BigDecimal("90.00"));
-//		product.setUnitPrice(Unit.CASE, new BigDecimal("100.00"));
-
-		productService.save(product);
-		
-//		verifyCostsOfSmallerUnitsAreCalculated();
-//		verifyPricesOfSmallerUnitsAreCalculated();
-//		verifyPricesForNonCanvasserPricingSchemesAreNotSet();
-	}
-
-	private void verifyPricesForNonCanvasserPricingSchemesAreNotSet() {
-		List<Map<String, Object>> result = jdbcTemplate.query("select * from PRODUCT_PRICE where PRODUCT_ID = ? and PRICING_SCHEME_ID = ?", 
-				new ColumnMapRowMapper(), product.getId(), NON_CANVASSER_1_PRICING_SCHEME_ID);
-		assertEquals(1, result.size());
-
-		Map<String, Object> unitPrice = result.get(0);
-		assertEquals(new BigDecimal("0.00"), unitPrice.get("UNIT_PRICE_CSE"));
-		assertEquals(new BigDecimal("0.00"), unitPrice.get("UNIT_PRICE_PCS"));
-		
-		result = jdbcTemplate.query("select * from PRODUCT_PRICE where PRODUCT_ID = ? and PRICING_SCHEME_ID = ?", 
-				new ColumnMapRowMapper(), product.getId(), NON_CANVASSER_2_PRICING_SCHEME_ID);
-		assertEquals(1, result.size());
-
-		unitPrice = result.get(0);
-		assertEquals(new BigDecimal("0.00"), unitPrice.get("UNIT_PRICE_CSE"));
-		assertEquals(new BigDecimal("0.00"), unitPrice.get("UNIT_PRICE_PCS"));
-	}
-
 	private void verifyPricesOfSmallerUnitsAreCalculated() {
 		List<Map<String, Object>> result = jdbcTemplate.query("select * from PRODUCT_PRICE where PRODUCT_ID = ? and PRICING_SCHEME_ID = ?", 
 				new ColumnMapRowMapper(), product.getId(), Constants.CANVASSER_PRICING_SCHEME_ID);

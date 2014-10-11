@@ -29,4 +29,13 @@ public class NumberUtil {
 		}
 	}
 	
+	public static BigDecimal roundUpToNearestFiveCents(BigDecimal amount) {
+		BigDecimal remainder = amount.divideAndRemainder(Constants.FIVE_CENTS)[1];
+		if (remainder.equals(BigDecimal.ZERO.setScale(2))) {
+			return amount;
+		} else {
+			return amount.add(Constants.FIVE_CENTS.subtract(amount.divideAndRemainder(Constants.FIVE_CENTS)[1]));
+		}
+	}
+	
 }

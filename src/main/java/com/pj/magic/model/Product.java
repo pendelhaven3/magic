@@ -11,6 +11,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.pj.magic.Constants;
+import com.pj.magic.util.NumberUtil;
 
 public class Product implements Comparable<Product> {
 
@@ -352,7 +353,7 @@ public class Product implements Comparable<Product> {
 			String unit = units.get(i);
 			BigDecimal unitPrice = priceOfMaxUnit.divide(new BigDecimal(conversionOfMaxUnit / getUnitConversion(unit)), 
 					2, RoundingMode.HALF_UP);
-			setUnitPrice(unit, unitPrice);
+			setUnitPrice(unit, NumberUtil.roundUpToNearestFiveCents(unitPrice));
 		}
 	}
 
