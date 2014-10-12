@@ -313,13 +313,19 @@ public class Product implements Comparable<Product> {
 	}
 
 	public BigDecimal getPercentProfit(String unit) {
-		BigDecimal grossCost = getGrossCost(unit);
-		if (grossCost.equals(BigDecimal.ZERO.setScale(2))) {
-			return new BigDecimal("100.00");
-		} else {
-			return getFlatProfit(unit)
-					.divide(grossCost, 4, RoundingMode.HALF_UP).multiply(Constants.ONE_HUNDRED);
+		BigDecimal sellingPrice = getUnitPrice(unit);
+		if (sellingPrice.equals(BigDecimal.ZERO.setScale(2))) {
+			return BigDecimal.ZERO.setScale(2);
 		}
+		
+		BigDecimal finalCost = getFinalCost(unit);
+		if (finalCost.equals(BigDecimal.ZERO.setScale(2))) {
+			return Constants.ONE_HUNDRED;
+		}
+		
+		return Constants.ONE_HUNDRED.subtract(
+				(Constants.ONE_HUNDRED.multiply(finalCost)).divide(sellingPrice, 2, RoundingMode.HALF_UP));
+			
 	}
 
 	public BigDecimal getFlatProfit(String unit) {
@@ -327,9 +333,10 @@ public class Product implements Comparable<Product> {
 	}
 
 	public void setPercentProfit(String unit, BigDecimal profit) {
-		BigDecimal unitPrice = getGrossCost(unit).multiply(profit.divide(Constants.ONE_HUNDRED, 4, RoundingMode.HALF_UP))
-				.setScale(2, RoundingMode.HALF_UP).add(getFinalCost(unit));
-		setUnitPrice(unit, unitPrice);
+		BigDecimal unitPrice = getFinalCost(unit).divide(
+				(Constants.ONE_HUNDRED.subtract(profit)).divide(Constants.ONE_HUNDRED, 4, RoundingMode.HALF_UP),
+				2, RoundingMode.HALF_UP);
+		setUnitPrice(unit, NumberUtil.roundUpToNearestFiveCents(unitPrice));
 	}
 
 	public void setFlatProfit(String unit, BigDecimal profit) {
