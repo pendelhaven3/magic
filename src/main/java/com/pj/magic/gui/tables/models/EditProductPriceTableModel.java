@@ -17,7 +17,7 @@ import com.pj.magic.util.NumberUtil;
 public class EditProductPriceTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames =
-		{"Unit", "Gross Cost", "Final Cost", "Selling Price", "% Profit", "Flat Profit"};
+		{"Unit", "Final Cost", "Selling Price", "% Profit", "Flat Profit"};
 
 	private Product product;
 	private String finalCost;
@@ -66,8 +66,6 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case EditProductPriceTable.UNIT_COLUMN_INDEX:
 			return unit;
-		case EditProductPriceTable.GROSS_COST_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(product.getGrossCost(unit));
 		}
 		
 		if (rowIndex == 0) {

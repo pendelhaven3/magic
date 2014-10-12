@@ -25,11 +25,10 @@ import com.pj.magic.util.NumberUtil;
 public class EditProductPriceTable extends MagicTable {
 
 	public static final int UNIT_COLUMN_INDEX = 0;
-	public static final int GROSS_COST_COLUMN_INDEX = 1;
-	public static final int FINAL_COST_COLUMN_INDEX = 2;
-	public static final int SELLING_PRICE_COLUMN_INDEX = 3;
-	public static final int PERCENT_PROFIT_COLUMN_INDEX = 4;
-	public static final int FLAT_PROFIT_COLUMN_INDEX = 5;
+	public static final int FINAL_COST_COLUMN_INDEX = 1;
+	public static final int SELLING_PRICE_COLUMN_INDEX = 2;
+	public static final int PERCENT_PROFIT_COLUMN_INDEX = 3;
+	public static final int FLAT_PROFIT_COLUMN_INDEX = 4;
 	
 	@Autowired private EditProductPriceTableModel tableModel;
 
@@ -109,9 +108,6 @@ public class EditProductPriceTable extends MagicTable {
 		};
 		editableCellRenderer.setHorizontalAlignment(JLabel.RIGHT);
 		
-		DefaultTableCellRenderer nonEditableCellRenderer = new DefaultTableCellRenderer();
-		nonEditableCellRenderer.setHorizontalAlignment(JLabel.RIGHT);
-		
 		columnModel.getColumn(FINAL_COST_COLUMN_INDEX)
 			.setCellRenderer(editableCellRenderer);
 		columnModel.getColumn(SELLING_PRICE_COLUMN_INDEX)
@@ -120,8 +116,6 @@ public class EditProductPriceTable extends MagicTable {
 			.setCellRenderer(editableCellRenderer);
 		columnModel.getColumn(FLAT_PROFIT_COLUMN_INDEX)
 			.setCellRenderer(editableCellRenderer);
-		columnModel.getColumn(GROSS_COST_COLUMN_INDEX)
-			.setCellRenderer(nonEditableCellRenderer);
 		
 		MagicTextField textField = new MagicTextField();
 		textField.setMaximumLength(10);
