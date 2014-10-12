@@ -3,7 +3,7 @@ package com.pj.magic.model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import com.pj.magic.util.Percentage;
+import com.pj.magic.model.util.Percentage;
 
 public class ReceivingReceiptItem implements Comparable<ReceivingReceiptItem> {
 

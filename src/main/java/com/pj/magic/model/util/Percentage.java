@@ -1,4 +1,4 @@
-package com.pj.magic.util;
+package com.pj.magic.model.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

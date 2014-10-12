@@ -340,6 +340,10 @@ public class SalesRequisitionItemsTable extends MagicTable {
 			return;
 		}
 		
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), getSelectedColumn());
+		}
+		
 		if (tableModel.hasNonBlankItem()) {
 			openSelectProductDialog(getPreviousRowItem().getProductCode());
 		} else if (salesRequisition.hasItems()) {
@@ -471,7 +475,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 					showErrorMessage("Product does not have unit specified");
 				} else if (hasDuplicate(unit, rowItem)) {
 					showErrorMessage("Duplicate item");
-				} else if (rowItem.getProduct().hasNoSellingPrice(rowItem.getUnit())) {
+				} else if (rowItem.getProduct().hasNoSellingPrice(unit)) {
 					showErrorMessage("No selling price");
 				} else {
 					valid = true;

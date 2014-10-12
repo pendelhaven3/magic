@@ -56,9 +56,9 @@ public class Product implements Comparable<Product> {
 			}
 		}
 		if (hasUnit(unit)) {
-			unitPrices.add(new UnitPrice(unit, BigDecimal.ZERO));
+			unitPrices.add(new UnitPrice(unit, Constants.ZERO));
 		}
-		return BigDecimal.ZERO;
+		return Constants.ZERO;
 	}
 	
 	public boolean hasAvailableUnitQuantity(String unit, int quantity) {
@@ -389,7 +389,7 @@ public class Product implements Comparable<Product> {
 	}
 
 	public boolean hasNoSellingPrice(String unit) {
-		return getUnitPrice(unit).equals(BigDecimal.ZERO.setScale(2));
+		return getUnitPrice(unit).equals(Constants.ZERO);
 	}
 	
 }
