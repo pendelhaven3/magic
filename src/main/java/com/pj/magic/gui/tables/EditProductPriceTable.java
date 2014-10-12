@@ -3,12 +3,10 @@ package com.pj.magic.gui.tables;
 import java.awt.Color;
 
 import javax.annotation.PostConstruct;
-import javax.swing.DefaultCellEditor;
 import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
@@ -16,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.models.EditProductPriceTableModel;
 import com.pj.magic.model.Product;
@@ -42,49 +41,18 @@ public class EditProductPriceTable extends MagicTable {
 	@PostConstruct
 	public void initialize() {
 		initializeColumns();
-		initializeTableModelListener();
 	}
 	
-	private void initializeTableModelListener() {
-		tableModel.addTableModelListener(new TableModelListener() {
-			
-			@Override
-			public void tableChanged(TableModelEvent e) {
-				// TODO: Change other similar code
-				final int column = e.getColumn();
-				SwingUtilities.invokeLater(new Runnable() {
-					
-					@Override
-					public void run() {
-						switch (column) {
-						case FINAL_COST_COLUMN_INDEX:
-							validateAmount(FINAL_COST_COLUMN_INDEX, "Final Cost");
-							break;
-						case SELLING_PRICE_COLUMN_INDEX:
-							validateAmount(SELLING_PRICE_COLUMN_INDEX, "Selling Price");
-							break;
-						case PERCENT_PROFIT_COLUMN_INDEX:
-							validateAmount(PERCENT_PROFIT_COLUMN_INDEX, "Percent Profit");
-							break;
-						case FLAT_PROFIT_COLUMN_INDEX:
-							validateAmount(FLAT_PROFIT_COLUMN_INDEX, "Flat Profit");
-							break;
-						}
-					}
-				});
-			}
-		});
-	}
-
-	private void validateAmount(int columnIndex, String fieldName) {
-		String value = (String)getValueAt(0, columnIndex);
-		if (StringUtils.isEmpty(value)) {
+	private boolean validateAmount(String amount, String fieldName) {
+		boolean valid = false;
+		if (StringUtils.isEmpty(amount)) {
 			showErrorMessage(fieldName + " must be specified");
-			editCellAtCurrentRow(columnIndex);
-		} else if (!NumberUtil.isAmount(value)) {
+		} else if (!NumberUtil.isAmount(amount)) {
 			showErrorMessage(fieldName + " must be a valid amount");
-			editCellAtCurrentRow(columnIndex);
+		} else {
+			valid = true;
 		}
+		return valid;
 	}
 
 	public void initializeColumns() {
@@ -117,20 +85,19 @@ public class EditProductPriceTable extends MagicTable {
 		columnModel.getColumn(FLAT_PROFIT_COLUMN_INDEX)
 			.setCellRenderer(editableCellRenderer);
 		
+		
 		MagicTextField textField = new MagicTextField();
 		textField.setMaximumLength(10);
 		textField.setBackground(Color.yellow);
 		
-		DefaultCellEditor cellEditor = new DefaultCellEditor(textField);
-		
 		columnModel.getColumn(FINAL_COST_COLUMN_INDEX)
-			.setCellEditor(cellEditor);
+			.setCellEditor(new AmountCellEditor("Final Cost"));
 		columnModel.getColumn(SELLING_PRICE_COLUMN_INDEX)
-			.setCellEditor(cellEditor);
+			.setCellEditor(new AmountCellEditor("Selling Price"));
 		columnModel.getColumn(PERCENT_PROFIT_COLUMN_INDEX)
-			.setCellEditor(cellEditor);
+			.setCellEditor(new AmountCellEditor("Percent Profit"));
 		columnModel.getColumn(FLAT_PROFIT_COLUMN_INDEX)
-			.setCellEditor(cellEditor);
+			.setCellEditor(new AmountCellEditor("Flat Profit"));
 	}
 
 	public void setProduct(Product product) {
@@ -145,11 +112,30 @@ public class EditProductPriceTable extends MagicTable {
 			public void run() {
 				if (!product.getUnits().isEmpty()) {
 					changeSelection(0, FINAL_COST_COLUMN_INDEX, false, false);
-					editCellAt(0, FINAL_COST_COLUMN_INDEX);
-					getEditorComponent().requestFocusInWindow();
 				}
 			}
 		});
+	}
+	
+	private class AmountCellEditor extends MagicCellEditor {
+
+		private String fieldName;
+		
+		public AmountCellEditor(String fieldName) {
+			super(new MagicTextField());
+			this.fieldName = fieldName;
+			
+			MagicTextField textField = (MagicTextField)getComponent();
+			textField.setMaximumLength(10);
+			textField.setBackground(Color.yellow);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String amount = ((JTextField)getComponent()).getText();
+			return (validateAmount(amount, fieldName)) ? super.stopCellEditing() : false;
+		}
+		
 	}
 	
 }
