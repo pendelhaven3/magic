@@ -130,4 +130,9 @@ public class ProductServiceImpl implements ProductService {
 		return productDao.search(criteria);
 	}
 
+	@Override
+	public List<Product> searchProducts(ProductSearchCriteria criteria) {
+		return productDao.search(criteria);
+	}
+
 }

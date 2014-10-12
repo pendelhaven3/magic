@@ -28,7 +28,7 @@ public class SearchProductDialog extends MagicDialog {
 	private JButton searchButton;
 	
 	public SearchProductDialog() {
-		setSize(350, 120);
+		setSize(450, 120);
 		setLocationRelativeTo(null);
 		setTitle("Search Product");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
@@ -87,7 +87,7 @@ public class SearchProductDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Product Code:"), c);
+		add(ComponentUtil.createLabel(200, "Product Code or Description:"), c);
 
 		c.weightx = 1.0;
 		c.weighty = 0.0;

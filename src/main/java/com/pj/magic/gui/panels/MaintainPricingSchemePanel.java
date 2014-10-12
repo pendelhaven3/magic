@@ -38,6 +38,7 @@ import com.pj.magic.gui.dialog.SearchProductDialog;
 import com.pj.magic.gui.tables.models.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.util.ProductSearchCriteria;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
@@ -61,6 +62,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	private JTable pricesTable;
 	private ProductPricesTableModel pricesTableModel = new ProductPricesTableModel();
 	private JButton searchButton;
+	private JButton showAllButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -77,8 +79,6 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		});
 		
 		pricesTable = new JTable(pricesTableModel);
-		
-//		focusOnComponentWhenThisPanelIsDisplayed(pricesTable);
 	}
 
 	@Override
@@ -209,6 +209,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		});
 		
 		searchButton.setEnabled(true);
+		showAllButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -226,6 +227,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		});
 		
 		searchButton.setEnabled(false);
+		showAllButton.setEnabled(false);
 	}
 
 	@Override
@@ -321,37 +323,51 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		showAllButton = new MagicToolBarButton("all", "Show All");
+		showAllButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showAllProducts();
+			}
+		});
+		toolBar.add(showAllButton);
+		
 		searchButton = new MagicToolBarButton("search", "Search");
 		searchButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				searchProduct();
+				searchProducts();
 			}
 		});
 		toolBar.add(searchButton);
 	}
 
-	protected void searchProduct() {
+	protected void showAllProducts() {
+		ProductSearchCriteria criteria = new ProductSearchCriteria();
+		criteria.setPricingScheme(pricingScheme);
+		pricesTableModel.setProducts(productService.searchProducts(criteria));
+		pricesTable.changeSelection(0, 0, false, false);
+		pricesTable.requestFocusInWindow();
+	}
+
+	protected void searchProducts() {
 		searchProductDialog.updateDisplay();
 		searchProductDialog.setVisible(true);
 		String productCode = searchProductDialog.getProductCodeCriteria();
 		if (!StringUtils.isEmpty(productCode)) {
-			boolean found = false;
-			List<Product> products = pricesTableModel.getProducts();
-			for (int i = 0; i < products.size(); i++) {
-				if (products.get(i).getCode().startsWith(productCode)) {
-					found = true;
-					pricesTable.changeSelection(i, 0, false, false);
-					break;
-				}
-			}
+			ProductSearchCriteria criteria = new ProductSearchCriteria();
+			criteria.setPricingScheme(pricingScheme);
+			criteria.setCode(productCode);
 			
-			if (!found) {
-				showErrorMessage("No matching product");
+			List<Product> products = productService.searchProducts(criteria);
+			pricesTableModel.setProducts(products);
+			if (!products.isEmpty()) {
+				pricesTable.changeSelection(0, 0, false, false);
+				pricesTable.requestFocusInWindow();
 			}
 		}
-		pricesTable.requestFocusInWindow();
 	}
 
 }

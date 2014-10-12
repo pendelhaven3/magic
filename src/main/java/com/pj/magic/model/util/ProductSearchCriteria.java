@@ -5,14 +5,15 @@ import com.pj.magic.model.PricingScheme;
 
 public class ProductSearchCriteria {
 
-	private boolean active;
+	private Boolean active;
 	private PricingScheme pricingScheme = new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID);
-
-	public boolean isActive() {
+	private String code;
+	
+	public Boolean getActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 
@@ -22,6 +23,14 @@ public class ProductSearchCriteria {
 
 	public void setPricingScheme(PricingScheme pricingScheme) {
 		this.pricingScheme = pricingScheme;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 }

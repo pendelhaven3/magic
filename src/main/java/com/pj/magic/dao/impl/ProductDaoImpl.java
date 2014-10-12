@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -271,14 +272,25 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	@Override
 	public List<Product> search(ProductSearchCriteria criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
-		sql.append(" and ACTIVE_IND = ?");
-		sql.append(" and b.PRICING_SCHEME_ID = ?");
-		sql.append(" order by CODE");
+		List<Object> params = new ArrayList<>();
 		
-		return getJdbcTemplate().query(sql.toString(), productRowMapper,
-				criteria.isActive() ? "Y" : "N",
-				criteria.getPricingScheme().getId()
-		);
+		if (criteria.getActive() != null) {
+			sql.append(" and ACTIVE_IND = ?");
+			params.add(criteria.getActive() ? "Y" : "N");
+		}
+		
+		sql.append(" and b.PRICING_SCHEME_ID = ?");
+		params.add(criteria.getPricingScheme().getId());
+		
+		if (criteria.getCode() != null) {
+			sql.append(" and (CODE like ? or DESCRIPTION like ?)");
+			params.add(criteria.getCode() + "%");
+			params.add("%" + criteria.getCode() + "%");
+		}
+		
+		sql.append(" order by a.CODE");
+		
+		return getJdbcTemplate().query(sql.toString(), productRowMapper, params.toArray());
 	}
 
 	private static final String FIND_ALL_WITH_PRICING_SCHEME_SQL = BASE_SELECT_SQL +
