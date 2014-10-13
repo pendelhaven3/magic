@@ -1,8 +1,6 @@
 package com.pj.magic;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.Iterator;
@@ -11,7 +9,6 @@ import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.apache.ibatis.jdbc.ScriptRunner;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -55,16 +52,7 @@ public class Bootstrap {
 		try (
 			Connection conn = dataSource.getConnection();
 		) {
-			for (String filename : filenames) {
-				InputStream in = getClass().getClassLoader().getResourceAsStream("sql/" + filename);
-				try (
-					BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-				) {
-					ScriptRunner runner = new ScriptRunner(conn);
-					runner.setLogWriter(null);
-					runner.runScript(reader);
-				}
-			}
+			ScriptFileRunner.runScriptFiles(conn, filenames);
 		}
 	}
 	
