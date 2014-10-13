@@ -34,6 +34,7 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.EditProductPriceDialog;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SearchProductDialog;
 import com.pj.magic.gui.tables.models.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
@@ -57,6 +58,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	@Autowired private ProductService productService;
 	@Autowired private SearchProductDialog searchProductDialog;
 	@Autowired private PrintService printService;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
 	
 	private PricingScheme pricingScheme;
 	private MagicTextField nameField;
@@ -66,6 +68,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	private JButton searchButton;
 	private JButton showAllButton;
 	private JButton printButton;
+	private JButton printPreviewButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -214,6 +217,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		searchButton.setEnabled(true);
 		showAllButton.setEnabled(true);
 		printButton.setEnabled(true);
+		printPreviewButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -233,6 +237,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		searchButton.setEnabled(false);
 		showAllButton.setEnabled(false);
 		printButton.setEnabled(false);
+		printPreviewButton.setEnabled(false);
 	}
 
 	@Override
@@ -347,6 +352,16 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(searchButton);
+
+		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreviewPricingScheme();
+			}
+		});
+		toolBar.add(printPreviewButton);
 		
 		printButton = new MagicToolBarButton("print", "Print");
 		printButton.addActionListener(new ActionListener() {
@@ -357,6 +372,12 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+	}
+
+	private void printPreviewPricingScheme() {
+		printPreviewDialog.updateDisplay(
+				printService.generateReportAsString(pricingScheme, pricesTableModel.getProducts()));
+		printPreviewDialog.setVisible(true);
 	}
 
 	private void printPricingScheme() {
