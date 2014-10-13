@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.SalesInvoiceItemsTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Product;
@@ -42,6 +43,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	@Autowired private ProductService productService;
 	@Autowired private PrintService printService;
 	@Autowired private SalesInvoiceService salesInvoiceService;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
 	
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
@@ -422,6 +424,17 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreviewDialog.updateDisplay(printService.generateReportAsString(salesInvoice));
+				printPreviewDialog.setVisible(true);
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
 		JButton printButton = new MagicToolBarButton("print", "Print");
 		printButton.addActionListener(new ActionListener() {
 			

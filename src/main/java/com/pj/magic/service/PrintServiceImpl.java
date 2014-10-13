@@ -55,21 +55,12 @@ public class PrintServiceImpl implements PrintService {
 	
 	@Override
 	public void print(SalesInvoice salesInvoice) {
-		Collections.sort(salesInvoice.getItems());
-		
-		String currentDate = FormatterUtil.formatDate(new Date());
-		
-		List<List<SalesInvoiceItem>> pageItems = Lists.partition(salesInvoice.getItems(), 
-				SALES_INVOICE_ITEMS_PER_PAGE);
-		for (int i = 0; i < pageItems.size(); i++) {
-			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("salesInvoice", salesInvoice);
-			reportData.put("items", pageItems.get(i));
-			reportData.put("currentDate", currentDate);
-			reportData.put("currentPage", i + 1);
-			reportData.put("totalPages", pageItems.size());
-			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			printReport("reports/salesInvoice.vm", reportData);
+		try {
+			for (String printPage : generateReportAsString(salesInvoice)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -224,6 +215,28 @@ public class PrintServiceImpl implements PrintService {
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(SalesInvoice salesInvoice) {
+		Collections.sort(salesInvoice.getItems());
+		
+		String currentDate = FormatterUtil.formatDate(new Date());
+		
+		List<List<SalesInvoiceItem>> pageItems = Lists.partition(salesInvoice.getItems(), 
+				SALES_INVOICE_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("salesInvoice", salesInvoice);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentDate", currentDate);
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/salesInvoice.vm", reportData));
+		}
+		return printPages;
 	}
 	
 }
