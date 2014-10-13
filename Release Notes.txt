@@ -50,3 +50,15 @@ version 0.10
 
 version 0.11
 1. Added crude Inventory Check feature (not fully working)
+
+version 0.12
+1. Optimized implementation of inputting Sales Requisition items
+2. Optimized implementation of inputting values in Edit Product Price
+3. Added F4 function when inputting Sales Requisition items
+4. Revised formula for getting/setting percent profit
+5. Automatically round off selling price to nearest five cents when setting percent profit
+6. Added Pricing Scheme report
+7. Added Print Preview of Pricing Scheme report
+8. Added navigation toolbar to Print Preview
+9. Added Print Preview of Sales Invoice report
+10. Other fixes
