@@ -195,6 +195,7 @@ public class PrintServiceImpl implements PrintService {
 			if (counter + lineCount > PRICING_SCHEME_REPORT_LINES_PER_PAGE) {
 				pageItems.add(pageItem);
 				pageItem = new ArrayList<>();
+				counter = 0;
 			}
 			pageItem.add(product);
 			counter += lineCount;
@@ -207,6 +208,17 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PricingScheme pricingScheme, List<Product> products) {
 		try {
 			for (String printPage : generateReportAsString(pricingScheme, products)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public void print(List<String> printPages) {
+		try {
+			for (String printPage : printPages) {
 				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {

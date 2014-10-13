@@ -22,4 +22,6 @@ public interface PrintService {
 	
 	List<String> generateReportAsString(PricingScheme pricingScheme, List<Product> products);
 	
+	void print(List<String> printPages);
+	
 }

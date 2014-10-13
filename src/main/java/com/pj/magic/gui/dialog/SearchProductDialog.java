@@ -30,7 +30,7 @@ public class SearchProductDialog extends MagicDialog {
 	public SearchProductDialog() {
 		setSize(450, 120);
 		setLocationRelativeTo(null);
-		setTitle("Search Product");
+		setTitle("Search Products");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
 	}
 
