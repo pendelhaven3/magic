@@ -40,6 +40,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.util.ProductSearchCriteria;
 import com.pj.magic.service.PricingSchemeService;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -55,6 +56,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	@Autowired private EditProductPriceDialog editProductPriceDialog;
 	@Autowired private ProductService productService;
 	@Autowired private SearchProductDialog searchProductDialog;
+	@Autowired private PrintService printService;
 	
 	private PricingScheme pricingScheme;
 	private MagicTextField nameField;
@@ -63,6 +65,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	private ProductPricesTableModel pricesTableModel = new ProductPricesTableModel();
 	private JButton searchButton;
 	private JButton showAllButton;
+	private JButton printButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -210,6 +213,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		
 		searchButton.setEnabled(true);
 		showAllButton.setEnabled(true);
+		printButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -228,6 +232,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		
 		searchButton.setEnabled(false);
 		showAllButton.setEnabled(false);
+		printButton.setEnabled(false);
 	}
 
 	@Override
@@ -342,6 +347,20 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(searchButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPricingScheme();
+			}
+		});
+		toolBar.add(printButton);
+	}
+
+	private void printPricingScheme() {
+		printService.print(pricingScheme, pricesTableModel.getProducts());
 	}
 
 	protected void showAllProducts() {

@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.dao.UserDao;
+import com.pj.magic.model.PricingScheme;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
@@ -40,6 +42,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	private static final int PURCHASE_ORDER_ITEMS_PER_PAGE = 44;
 	private static final int RECEIVING_RECEIPT_ITEMS_PER_PAGE = 44;
+	private static final int PRICING_SCHEME_REPORT_LINES_PER_PAGE = 44;
 	
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private UserDao userDao;
@@ -162,6 +165,53 @@ public class PrintServiceImpl implements PrintService {
 		}
 		template.merge(context, writer);
 		return writer.toString();
+	}
+
+	@Override
+	public List<String> generateReportAsString(PricingScheme pricingScheme, List<Product> products) {
+		String currentDate = FormatterUtil.formatDate(new Date());
+		
+		List<List<Product>> pageItems = partitionPricingSchemeProducts(products);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("pricingScheme", pricingScheme);
+			reportData.put("products", pageItems.get(i));
+			reportData.put("currentDate", currentDate);
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/pricingScheme.vm", reportData));
+		}
+		return printPages;
+	}
+	
+	private List<List<Product>> partitionPricingSchemeProducts(List<Product> products) {
+		List<List<Product>> pageItems = new ArrayList<>();
+		List<Product> pageItem = new ArrayList<>();
+		int counter = 0;
+		for (Product product : products) {
+			int lineCount = 1 + product.getUnits().size();
+			if (counter + lineCount > PRICING_SCHEME_REPORT_LINES_PER_PAGE) {
+				pageItems.add(pageItem);
+				pageItem = new ArrayList<>();
+			}
+			pageItem.add(product);
+			counter += lineCount;
+		}
+		pageItems.add(pageItem);
+		return pageItems;
+	}
+
+	@Override
+	public void print(PricingScheme pricingScheme, List<Product> products) {
+		try {
+			for (String printPage : generateReportAsString(pricingScheme, products)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 	
 }

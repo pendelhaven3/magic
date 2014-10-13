@@ -1,8 +1,8 @@
-                         JC HARMONY SELLING INC.
-                   251 GEN.P.ALVAREZ ST.CALOOCAN CITY
-                         TEL.NO.3621785 3235946
+$report.center("JC HARMONY SELLING INC.")
+$report.center("251 GEN.P.ALVAREZ ST.CALOOCAN CITY")
+$report.center("TEL.NO.3621785 3235946")
 
-                              PURCHASE ORDER
+$report.center("PURCHASE ORDER")
 
 Supplier : $report.field($purchaseOrder.supplier.name, 40)         P.O. # : ${purchaseOrder.purchaseOrderNumber} 
 Address  : $report.multiline($purchaseOrder.supplier.address, 40, 1)         Date : $currentDate

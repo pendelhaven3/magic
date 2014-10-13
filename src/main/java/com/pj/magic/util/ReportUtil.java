@@ -8,6 +8,7 @@ public class ReportUtil {
 
 	private static final String ALIGN_LEFT = "left";
 	private static final String ALIGN_RIGHT = "right";
+	private static final int CHARACTERS_PER_LINE = 73;
 	
 	public static String field(final String text, int length) {
 		return field(text, length, ALIGN_LEFT);
@@ -68,6 +69,11 @@ public class ReportUtil {
 				lastPosition = text.length();
 			}
 		}
-		return StringUtils.rightPad(line, 40);
+		return StringUtils.rightPad(line, lineLength);
 	}
+	
+	public static String center(String text) {
+		return StringUtils.repeat(" ", (CHARACTERS_PER_LINE - text.length()) / 2) + text;
+	}
+	
 }
