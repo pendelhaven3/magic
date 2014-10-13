@@ -1,6 +1,8 @@
 package com.pj.magic.gui.tables;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +24,7 @@ public class SalesInvoiceItemsTable extends JTable {
 	public static final int AMOUNT_COLUMN_INDEX = 5;
 
 	@Autowired private ProductService productService;
-	
-	private SalesInvoice salesInvoice;
+	@Autowired private SalesInvoiceItemsTableModel tableModel;
 	
 	@Autowired
 	public SalesInvoiceItemsTable(SalesInvoiceItemsTableModel tableModel) {
@@ -39,19 +40,19 @@ public class SalesInvoiceItemsTable extends JTable {
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
 		columnModel.getColumn(UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
-	}
-	
-	public SalesInvoiceItemsTableModel getItemsTableModel() {
-		return (SalesInvoiceItemsTableModel)super.getModel();
+		
+		DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+		cellRenderer.setHorizontalAlignment(JLabel.RIGHT);
+		columnModel.getColumn(UNIT_PRICE_COLUMN_INDEX).setCellRenderer(cellRenderer);
+		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setCellRenderer(cellRenderer);
 	}
 	
 	public SalesInvoiceItem getCurrentlySelectedRowItem() {
-		return getItemsTableModel().getRowItem(getSelectedRow());
+		return tableModel.getRowItem(getSelectedRow());
 	}
 	
 	public void setSalesInvoice(SalesInvoice salesInvoice) {
-		this.salesInvoice = salesInvoice;
-		getItemsTableModel().setItems(salesInvoice.getItems());
+		tableModel.setItems(salesInvoice.getItems());
 	}
 	
 }
