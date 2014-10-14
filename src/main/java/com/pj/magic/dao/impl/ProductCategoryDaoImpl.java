@@ -23,12 +23,14 @@ public class ProductCategoryDaoImpl implements ProductCategoryDao {
 
 	@Override
 	public ProductCategory get(long id) {
-		return entityManager.find(ProductCategory.class, id);
+		ProductCategory category = entityManager.find(ProductCategory.class, id);
+		category.getSubcategories(); // force load child elements
+		return category;
 	}
 
 	@Override
 	public List<ProductCategory> getAll() {
-        return entityManager.createQuery("SELECT p FROM ProductCategory p", ProductCategory.class).getResultList();
+        return entityManager.createQuery("SELECT p FROM ProductCategory p ORDER BY p.name", ProductCategory.class).getResultList();
 	}
 
 }

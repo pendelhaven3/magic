@@ -1,23 +1,30 @@
 package com.pj.magic.dao;
 
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import com.pj.magic.model.ProductCategory;
 
-@ContextConfiguration(locations={"classpath:applicationContext.xml"})
-public class ProductCategoryDaoTest extends AbstractTransactionalJUnit4SpringContextTests {
+public class ProductCategoryDaoTest extends IntegrationTest {
 
-	@Autowired private ProductCategoryDao dao;
+	@Autowired private ProductCategoryDao productCategoryDao;
 	
 	@Test
-	public void test() {
+	public void save() {
 		ProductCategory category = new ProductCategory();
 		category.setName("FOOD");
-		dao.save(category);
-		System.out.println("x: " + category.getId());
+		productCategoryDao.save(category);
+		
+		assertNotNull(category.getId());
+	}
+	
+	@Test
+	public void get() {
+		jdbcTemplate.update("insert into PRODUCT_CATEGORY (ID, NAME) values (1, 'FOOD AND BEVERAGES')");
+		
+		ProductCategory productCategory = productCategoryDao.get(1L);
+		assertEquals("FOOD AND BEVERAGES", productCategory.getName());
 	}
 	
 }

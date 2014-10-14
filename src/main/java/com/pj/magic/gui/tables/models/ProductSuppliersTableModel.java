@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.model.Supplier;
 
+// TODO: inline this one
 @Component
 public class ProductSuppliersTableModel extends AbstractTableModel {
 

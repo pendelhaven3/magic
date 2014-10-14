@@ -12,6 +12,15 @@ create table PRODUCT_CATEGORY (
   constraint PRODUCT_CATEGORY$UK unique (NAME)
 );
 
+create table PRODUCT_SUBCATEGORY (
+  ID integer auto_increment,
+  PRODUCT_CATEGORY_ID integer not null,
+  NAME varchar2(50) not null,
+  constraint PRODUCT_SUBCATEGORY$PK primary key (ID),
+  constraint PRODUCT_SUBCATEGORY$UK unique (NAME),
+  constraint PRODUCT_SUBCATEGORY$FK foreign key (PRODUCT_CATEGORY_ID) references PRODUCT_CATEGORY (ID)
+);
+
 create table PRODUCT (
   ID integer auto_increment,
   CODE varchar2(12) not null,

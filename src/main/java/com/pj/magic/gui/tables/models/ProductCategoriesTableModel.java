@@ -12,7 +12,7 @@ import com.pj.magic.model.ProductCategory;
 @Component
 public class ProductCategoriesTableModel extends AbstractTableModel {
 
-	private static final String[] columnNames = {"Name"};
+	private static final String[] columnNames = {"Category"};
 	
 	private List<ProductCategory> categories = new ArrayList<>();
 	

@@ -1,30 +1,28 @@
 package com.pj.magic.model;
 
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
-@Table(name="PRODUCT_CATEGORY")
-public class ProductCategory {
+@Table(name="PRODUCT_SUBCATEGORY")
+public class ProductSubcategory {
 
 	@Id
 	@GeneratedValue
 	private Long id;
 	private String name;
 	
-	@OneToMany(mappedBy="parent", fetch=FetchType.EAGER)
-	@OrderBy("NAME asc")
-	private List<ProductSubcategory> subcategories;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "PRODUCT_CATEGORY_ID")
+	private ProductCategory parent;
 	
 	public Long getId() {
 		return id;
@@ -54,10 +52,10 @@ public class ProductCategory {
 		if (obj == null) {
 			return false;
 		}
-        if (!(obj instanceof ProductCategory)) {
+        if (!(obj instanceof ProductSubcategory)) {
             return false;
         }
-        ProductCategory other = (ProductCategory)obj;		
+        ProductSubcategory other = (ProductSubcategory)obj;		
 		return new EqualsBuilder()
 			.append(id, other.getId())
 			.isEquals();
@@ -68,12 +66,12 @@ public class ProductCategory {
 		return name;
 	}
 
-	public List<ProductSubcategory> getSubcategories() {
-		return subcategories;
+	public ProductCategory getParent() {
+		return parent;
 	}
 
-	public void setSubcategories(List<ProductSubcategory> subcategories) {
-		this.subcategories = subcategories;
+	public void setParent(ProductCategory parent) {
+		this.parent = parent;
 	}
 	
 }

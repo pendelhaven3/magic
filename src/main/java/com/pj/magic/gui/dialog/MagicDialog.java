@@ -9,6 +9,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 public abstract class MagicDialog extends JDialog {
@@ -51,6 +52,10 @@ public abstract class MagicDialog extends JDialog {
 				target.requestFocusInWindow();
 			}
 		});
+	}
+	
+	protected void showErrorMessage(String message) {
+		JOptionPane.showMessageDialog(this, message, "Error Message", JOptionPane.ERROR_MESSAGE);
 	}
 	
 }

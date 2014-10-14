@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -13,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
@@ -21,11 +24,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.dialog.MaintainProductSubcategoryDialog;
+import com.pj.magic.gui.tables.ProductSubcategoriesTable;
 import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.ProductSubcategory;
 import com.pj.magic.service.ProductCategoryService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.KeyUtil;
 
 @Component
 public class MaintainProductCategoryPanel extends StandardMagicPanel {
@@ -33,17 +41,21 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(MaintainProductCategoryPanel.class);
 	private static final String NEXT_FIELD_ACTION_NAME = "nextField";
 	private static final String SAVE_ACTION_NAME = "save";
+	private static final String EDIT_SUBCATEGORY_ACTION_NAME = "editSubcategory";
 	
 	@Autowired private ProductCategoryService productCategoryService;
+	@Autowired private ProductSubcategoriesTable subcategoriesTable;
+	@Autowired private MaintainProductSubcategoryDialog maintainProductSubcategoryDialog;
 	
 	private ProductCategory category;
 	private MagicTextField nameField;
 	private JButton saveButton;
+	private JButton addSubcategoryButton;
 	
 	@Override
 	protected void initializeComponents() {
 		nameField = new MagicTextField();
-		nameField.setMaximumLength(30);
+		nameField.setMaximumLength(50);
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -54,7 +66,54 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 			}
 		});
 		
+		addSubcategoryButton = new JButton("Add Subcategory");
+		addSubcategoryButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addSubcategory();
+			}
+		});
+		
+		subcategoriesTable.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (subcategoriesTable.getSelectedColumn() == ProductSubcategoriesTable.BUTTON_COLUMN_INDEX) {
+					deleteProductSubcategory();
+				}
+			}
+			
+		});
+		
 		focusOnComponentWhenThisPanelIsDisplayed(nameField);
+	}
+
+	protected void deleteProductSubcategory() {
+		int confirm = showConfirmMessage("Delete?");
+		if (confirm == JOptionPane.OK_OPTION) {
+			int selectedRow = subcategoriesTable.getSelectedRow();
+			ProductSubcategory subcategory = subcategoriesTable.getSubcategory(selectedRow);
+			productCategoryService.delete(subcategory);
+			category.getSubcategories().remove(subcategory);
+			subcategoriesTable.updateDisplay(category);
+		}
+	}
+
+	private void addSubcategory() {
+		ProductSubcategory subcategory = new ProductSubcategory();
+		subcategory.setParent(category);
+		openMaintainSubcategoryDialog(subcategory);
+	}
+	
+	private void openMaintainSubcategoryDialog(ProductSubcategory subcategory) {
+		maintainProductSubcategoryDialog.updateDisplay(subcategory);
+		maintainProductSubcategoryDialog.setVisible(true);
+		
+		if (maintainProductSubcategoryDialog.hasChanged()) {
+			category = productCategoryService.getProductCategory(category.getId());
+			subcategoriesTable.updateDisplay(category);
+		}
 	}
 
 	@Override
@@ -95,46 +154,44 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
 		
-		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Name: "), c);
+		mainPanel.add(ComponentUtil.createFiller(50, 30), c);
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		nameField.setPreferredSize(new Dimension(200, 20));
-		mainPanel.add(nameField, c);
+		mainPanel.add(ComponentUtil.createLabel(80, "Name: "), c);
 		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0; // right space filler
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
+		c.anchor = GridBagConstraints.WEST;
+		nameField.setPreferredSize(new Dimension(300, 20));
+		mainPanel.add(nameField, c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0; // right space filler
+		c.gridx = 3;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(), c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridx = 1;
+		c = new GridBagConstraints();
+		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
 		saveButton.setPreferredSize(new Dimension(100, 20));
@@ -142,8 +199,48 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(1, 30), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Subcategories: "), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.gridwidth = 2;
+		JScrollPane scrollPane = new JScrollPane(subcategoriesTable);
+		scrollPane.setPreferredSize(new Dimension(350, 110));
+		mainPanel.add(scrollPane, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(1, 8), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.EAST;
+		mainPanel.add(addSubcategoryButton, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
@@ -170,6 +267,28 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 				saveProductCategory();
 			}
 		});
+		
+		subcategoriesTable.getInputMap().put(KeyUtil.getEnterKey(), EDIT_SUBCATEGORY_ACTION_NAME);
+		subcategoriesTable.getActionMap().put(EDIT_SUBCATEGORY_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				editSubcategory();
+			}
+		});
+		
+		subcategoriesTable.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				editSubcategory();
+			}
+		});
+	}
+
+	protected void editSubcategory() {
+		ProductSubcategory subcategory = subcategoriesTable.getCurrentlySelectedSubcategory();
+		openMaintainSubcategoryDialog(subcategory);
 	}
 
 	public void updateDisplay(ProductCategory category) {
@@ -180,10 +299,14 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 		}
 		
 		nameField.setText(category.getName());
+		subcategoriesTable.updateDisplay(category);
+		addSubcategoryButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
 		nameField.setText(null);
+		subcategoriesTable.clearDisplay();
+		addSubcategoryButton.setEnabled(false);
 	}
 
 	@Override
