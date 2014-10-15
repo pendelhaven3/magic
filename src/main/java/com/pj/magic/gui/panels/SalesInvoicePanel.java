@@ -30,6 +30,7 @@ import com.pj.magic.gui.tables.SalesInvoiceItemsTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
@@ -444,6 +445,21 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+		
+		JButton copyButton = new MagicToolBarButton("copy", "Create New Sales Requisition Based On Sales Invoice");
+		copyButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createNewSalesRequisitionBasedOnSalesInvoice();
+			}
+		});
+		toolBar.add(copyButton);
+	}
+
+	private void createNewSalesRequisitionBasedOnSalesInvoice() {
+		SalesRequisition salesRequisition = salesInvoiceService.createSalesRequisitionFromSalesInvoice(salesInvoice);
+		getMagicFrame().switchToSalesRequisitionPanel(salesRequisition);
 	}
 
 	private JPanel createTotalsPanel() {

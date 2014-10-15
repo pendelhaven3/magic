@@ -139,4 +139,24 @@ public class SalesInvoice {
 		this.paymentTerm = paymentTerm;
 	}
 	
+	public SalesRequisition createSalesRequisition() {
+		SalesRequisition salesRequisition = new SalesRequisition();
+		salesRequisition.setCustomer(customer);
+		salesRequisition.setPaymentTerm(paymentTerm);
+		salesRequisition.setPricingScheme(pricingScheme);
+		salesRequisition.setMode(mode);
+		salesRequisition.setRemarks(remarks);
+		
+		for (SalesInvoiceItem invoiceItem : items) {
+			SalesRequisitionItem item = new SalesRequisitionItem();
+			item.setParent(salesRequisition);
+			item.setProduct(invoiceItem.getProduct());
+			item.setUnit(invoiceItem.getUnit());
+			item.setQuantity(invoiceItem.getQuantity());
+			salesRequisition.getItems().add(item);
+		}
+		
+		return salesRequisition;
+	}
+	
 }
