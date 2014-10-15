@@ -14,16 +14,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.SearchProductDialog;
+import com.pj.magic.gui.dialog.ProductSearchCriteriaDialog;
 import com.pj.magic.gui.tables.models.ProductsTableModel;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.util.ProductSearchCriteria;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -33,7 +33,7 @@ public class ProductListPanel extends StandardMagicPanel {
 	private static final String EDIT_PRODUCT_ACTION_NAME = "editProduct";
 	
 	@Autowired private ProductService productService;
-	@Autowired private SearchProductDialog searchProductDialog;
+	@Autowired private ProductSearchCriteriaDialog productSearchCriteriaDialog;
 	
 	private JTable table;
 	private ProductsTableModel tableModel = new ProductsTableModel();
@@ -44,6 +44,7 @@ public class ProductListPanel extends StandardMagicPanel {
 		if (!products.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
+		productSearchCriteriaDialog.clearDisplay();
 	}
 
 	@Override
@@ -74,26 +75,18 @@ public class ProductListPanel extends StandardMagicPanel {
 		mainPanel.add(new JScrollPane(table), c);
 	}
 
-	protected void searchProduct() {
-		searchProductDialog.updateDisplay();
-		searchProductDialog.setVisible(true);
-		String productCode = searchProductDialog.getProductCodeCriteria();
-		if (!StringUtils.isEmpty(productCode)) {
-			boolean found = false;
-			List<Product> products = tableModel.getProducts();
-			for (int i = 0; i < products.size(); i++) {
-				if (products.get(i).getCode().startsWith(productCode)) {
-					found = true;
-					table.changeSelection(i, 0, false, false);
-					break;
-				}
-			}
-			
-			if (!found) {
-				showErrorMessage("No matching product");
-			}
+	protected void searchProducts() {
+		productSearchCriteriaDialog.setVisible(true);
+		
+		ProductSearchCriteria criteria = productSearchCriteriaDialog.getSearchCriteria();
+		List<Product> products = productService.searchProducts(criteria);
+		tableModel.setProducts(products);
+		if (!products.isEmpty()) {
+			table.changeSelection(0, 0, false, false);
+			table.requestFocusInWindow();
+		} else {
+			showMessage("No matching records");
 		}
-		table.requestFocusInWindow();
 	}
 
 	@Override
@@ -127,26 +120,43 @@ public class ProductListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		JButton postButton = new MagicToolBarButton("plus", "New");
-		postButton.addActionListener(new ActionListener() {
+		JButton addButton = new MagicToolBarButton("plus", "New");
+		addButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				getMagicFrame().switchToAddNewProductListPanel();
 			}
 		});
-		toolBar.add(postButton);
+		toolBar.add(addButton);
+		
+		JButton showAllButton = new MagicToolBarButton("all", "Show All");
+		showAllButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showAllProducts();
+			}
+		});
+		toolBar.add(showAllButton);
 		
 		JButton searchButton = new MagicToolBarButton("search", "Search");
 		searchButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				searchProduct();
+				searchProducts();
 			}
 		});
 		
 		toolBar.add(searchButton);
+	}
+
+	private void showAllProducts() {
+		tableModel.setProducts(productService.getAllProducts());
+		table.changeSelection(0, 0, false, false);
+		table.requestFocusInWindow();
+		productSearchCriteriaDialog.clearDisplay();
 	}
 	
 }

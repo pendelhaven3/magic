@@ -35,7 +35,7 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.EditProductPriceDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
-import com.pj.magic.gui.dialog.SearchProductDialog;
+import com.pj.magic.gui.dialog.ProductSearchCriteriaDialog;
 import com.pj.magic.gui.tables.models.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
@@ -56,7 +56,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private EditProductPriceDialog editProductPriceDialog;
 	@Autowired private ProductService productService;
-	@Autowired private SearchProductDialog searchProductDialog;
+	@Autowired private ProductSearchCriteriaDialog searchProductDialog;
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	

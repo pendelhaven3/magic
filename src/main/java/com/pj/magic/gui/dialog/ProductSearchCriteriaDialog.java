@@ -17,17 +17,18 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.model.util.ProductSearchCriteria;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class SearchProductDialog extends MagicDialog {
+public class ProductSearchCriteriaDialog extends MagicDialog {
 
 	private static final String SEARCH_PRODUCT_ACTION = "search";
 	
 	private MagicTextField productCodeField;
 	private JButton searchButton;
 	
-	public SearchProductDialog() {
+	public ProductSearchCriteriaDialog() {
 		setSize(450, 120);
 		setLocationRelativeTo(null);
 		setTitle("Search Products");
@@ -130,11 +131,22 @@ public class SearchProductDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(1, 1), c);
 	}
 	
+	// TODO: remove
 	public String getProductCodeCriteria() {
 		return productCodeField.getText();
 	}
 
+	public ProductSearchCriteria getSearchCriteria() {
+		ProductSearchCriteria criteria = new ProductSearchCriteria();
+		criteria.setCode(productCodeField.getText());
+		return criteria;
+	}
+	
 	public void updateDisplay() {
+		productCodeField.setText(null);
+	}
+	
+	public void clearDisplay() {
 		productCodeField.setText(null);
 	}
 	
