@@ -237,8 +237,14 @@ public class MagicFrame extends JFrame {
 	}
 	
 	public void switchToProductListPanel() {
+		switchToProductListPanel(true);
+	}
+	
+	public void switchToProductListPanel(boolean refresh) {
 		addPanelNameToTitle("Product List");
-		productListPanel.updateDisplay();
+		if (refresh) {
+			productListPanel.updateDisplay();
+		}
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRODUCT_LIST_PANEL);
 	}
 	

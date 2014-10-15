@@ -876,7 +876,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToProductListPanel();
+		getMagicFrame().switchToProductListPanel(false);
 	}
 
 	@Override
