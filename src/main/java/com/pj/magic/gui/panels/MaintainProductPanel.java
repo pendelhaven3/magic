@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
+import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
@@ -37,6 +38,7 @@ import com.pj.magic.gui.tables.ProductSuppliersTable;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.ProductSubcategory;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ManufacturerService;
@@ -79,7 +81,8 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	private MagicTextField dozenUnitConversionField;
 	private MagicTextField piecesUnitConversionField;
 	private JComboBox<Manufacturer> manufacturerComboBox;
-	private JComboBox<ProductCategory> categoryComboBox;
+	private MagicComboBox<ProductCategory> categoryComboBox;
+	private JComboBox<ProductSubcategory> subcategoryComboBox;
 	private JButton saveButton;
 	private JButton addSupplierButton;
 	
@@ -129,7 +132,16 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		piecesUnitConversionField.setNumbersOnly(true);
 		
 		manufacturerComboBox = new JComboBox<>();
-		categoryComboBox = new JComboBox<>();
+		categoryComboBox = new MagicComboBox<>();
+		subcategoryComboBox = new JComboBox<>();
+		
+		categoryComboBox.addOnSelectListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateSubcategoryComboBox();
+			}
+		});
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -163,6 +175,18 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		focusOnComponentWhenThisPanelIsDisplayed(codeField);
 	}
 
+	private void updateSubcategoryComboBox() {
+		ProductCategory category = (ProductCategory)categoryComboBox.getSelectedItem();
+		if (category != null) {
+			category = categoryService.getProductCategory(category.getId());
+			List<ProductSubcategory> subcategories = category.getSubcategories();
+			subcategoryComboBox.setModel(
+					new DefaultComboBoxModel<>(subcategories.toArray(new ProductSubcategory[subcategories.size()])));
+		} else {
+			subcategoryComboBox.setModel(new DefaultComboBoxModel<>(new ProductSubcategory[] {}));
+		}
+	}
+
 	protected void deleteProductSupplier() {
 		int confirm = showConfirmMessage("Delete?");
 		if (confirm == JOptionPane.OK_OPTION) {
@@ -189,34 +213,20 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		focusOrder.add(codeField);
 		focusOrder.add(descriptionField);
 		focusOrder.add(categoryComboBox);
+		focusOrder.add(subcategoryComboBox);
 		focusOrder.add(maximumStockLevelField);
 		focusOrder.add(minimumStockLevelField);
 		focusOrder.add(activeIndicatorCheckBox);
 		focusOrder.add(manufacturerComboBox);
 		focusOrder.add(caseUnitIndicatorCheckBox);
-		if (product.getId() != null) {
-			focusOrder.add(caseQuantityField);
-		}
 		focusOrder.add(caseUnitConversionField);
 		focusOrder.add(tieUnitIndicatorCheckBox);
-		if (product.getId() != null) {
-			focusOrder.add(tieQuantityField);
-		}
 		focusOrder.add(tieUnitConversionField);
 		focusOrder.add(cartonUnitIndicatorCheckBox);
-		if (product.getId() != null) {
-			focusOrder.add(cartonQuantityField);
-		}
 		focusOrder.add(cartonUnitConversionField);
 		focusOrder.add(dozenUnitIndicatorCheckBox);
-		if (product.getId() != null) {
-			focusOrder.add(dozenQuantityField);
-		}
 		focusOrder.add(dozenUnitConversionField);
 		focusOrder.add(piecesUnitIndicatorCheckBox);
-		if (product.getId() != null) {
-			focusOrder.add(piecesQuantityField);
-		}
 		focusOrder.add(piecesUnitConversionField);
 		focusOrder.add(saveButton);
 	}
@@ -258,6 +268,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 			}
 			
 			product.setCategory((ProductCategory)categoryComboBox.getSelectedItem());
+			product.setSubcategory((ProductSubcategory)subcategoryComboBox.getSelectedItem());
 			product.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
 			
 			try {
@@ -402,6 +413,21 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		categoryComboBox.setPreferredSize(new Dimension(300, 20));
 		mainPanel.add(categoryComboBox, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Subcategory: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		subcategoryComboBox.setPreferredSize(new Dimension(300, 20));
+		mainPanel.add(subcategoryComboBox, c);
 
 		currentRow++;
 		
@@ -798,6 +824,12 @@ public class MaintainProductPanel extends StandardMagicPanel {
 			categoryComboBox.setSelectedItem(null);
 		}
 		
+		if (product.getSubcategory() != null) {
+			subcategoryComboBox.setSelectedItem(product.getSubcategory());
+		} else {
+			subcategoryComboBox.setSelectedItem(null);
+		}
+		
 		productSuppliersTable.updateDisplay(product);
 		addSupplierButton.setEnabled(true);
 	}
@@ -806,12 +838,10 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		List<ProductCategory> categories = categoryService.getAllProductCategories();
 		categoryComboBox.setModel(
 				new DefaultComboBoxModel<>(categories.toArray(new ProductCategory[categories.size()])));
-		categoryComboBox.insertItemAt(null, 0);
 		
 		List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
 		manufacturerComboBox.setModel(
 				new DefaultComboBoxModel<>(manufacturers.toArray(new Manufacturer[manufacturers.size()])));
-		manufacturerComboBox.insertItemAt(null, 0);
 	}
 
 	private void clearDisplay() {
@@ -836,7 +866,10 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		piecesUnitConversionField.setText(null);
 		piecesQuantityField.setText("0");
 		manufacturerComboBox.setSelectedItem(null);
-		categoryComboBox.setSelectedItem(null);
+		categoryComboBox.setSelectedItem(null, false);
+		subcategoryComboBox.setModel(
+				new DefaultComboBoxModel<>(new ProductSubcategory[]{}));
+		subcategoryComboBox.setSelectedItem(null);
 		addSupplierButton.setEnabled(false);
 		productSuppliersTable.clearDisplay();
 	}

@@ -26,6 +26,7 @@ public class Product implements Comparable<Product> {
 	private boolean active;
 	private Manufacturer manufacturer;
 	private ProductCategory category;
+	private ProductSubcategory subcategory;
 	private List<UnitConversion> unitConversions = new ArrayList<>();
 	private List<UnitCost> unitCosts = new ArrayList<>();
 
@@ -390,6 +391,14 @@ public class Product implements Comparable<Product> {
 
 	public boolean hasNoSellingPrice(String unit) {
 		return getUnitPrice(unit).equals(Constants.ZERO);
+	}
+
+	public ProductSubcategory getSubcategory() {
+		return subcategory;
+	}
+
+	public void setSubcategory(ProductSubcategory subcategory) {
+		this.subcategory = subcategory;
 	}
 	
 }

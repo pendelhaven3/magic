@@ -40,6 +40,7 @@ create table PRODUCT (
   AVAIL_QTY_PCS integer(4) default 0 not null,
   MANUFACTURER_ID integer null,
   CATEGORY_ID integer null,
+  SUBCATEGORY_ID integer null,
   UNIT_CONV_CSE integer(5) null,
   UNIT_CONV_TIE integer(5) null,
   UNIT_CONV_CTN integer(5) null,
@@ -58,7 +59,8 @@ create table PRODUCT (
   constraint PRODUCT$PK primary key (ID),
   constraint PRODUCT$CODE$UK unique (CODE),
   constraint PRODUCT$FK foreign key (MANUFACTURER_ID) references MANUFACTURER (ID),
-  constraint PRODUCT$FK2 foreign key (CATEGORY_ID) references PRODUCT_CATEGORY (ID)
+  constraint PRODUCT$FK2 foreign key (CATEGORY_ID) references PRODUCT_CATEGORY (ID),
+  constraint PRODUCT$FK3 foreign key (SUBCATEGORY_ID) references PRODUCT_SUBCATEGORY (ID)
 );
 
 create table PAYMENT_TERM (

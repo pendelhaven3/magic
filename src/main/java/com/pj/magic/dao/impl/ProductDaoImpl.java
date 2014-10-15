@@ -22,6 +22,7 @@ import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.ProductSubcategory;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.UnitConversion;
@@ -43,7 +44,8 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " GROSS_COST_CSE, GROSS_COST_TIE, GROSS_COST_CTN, GROSS_COST_DOZ, GROSS_COST_PCS,"
 			+ " FINAL_COST_CSE, FINAL_COST_TIE, FINAL_COST_CTN, FINAL_COST_DOZ, FINAL_COST_PCS,"
 			+ " MANUFACTURER_ID, c.NAME as MANUFACTURER_NAME,"
-			+ " CATEGORY_ID, d.NAME as CATEGORY_NAME"
+			+ " CATEGORY_ID, d.NAME as CATEGORY_NAME,"
+			+ " SUBCATEGORY_ID, e.NAME as SUBCATEGORY_NAME"
 			+ " from PRODUCT a"
 			+ " join PRODUCT_PRICE b"
 			+ " 	on b.PRODUCT_ID = a.ID"
@@ -51,6 +53,8 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ "		on c.ID = a.MANUFACTURER_ID"
 			+ " left join PRODUCT_CATEGORY d"
 			+ "		on d.ID = a.CATEGORY_ID"
+			+ " left join PRODUCT_SUBCATEGORY e"
+			+ "		on e.ID = a.SUBCATEGORY_ID"
 			+ " where 1 = 1";
 	
 	private ProductRowMapper productRowMapper = new ProductRowMapper();
@@ -138,6 +142,13 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.setCategory(category);
 			}
 			
+			if (rs.getLong("SUBCATEGORY_ID") != 0) {
+				ProductSubcategory subcategory = new ProductSubcategory();
+				subcategory.setId(rs.getLong("SUBCATEGORY_ID"));
+				subcategory.setName(rs.getString("SUBCATEGORY_NAME"));
+				product.setSubcategory(subcategory);
+			}
+			
 			return product;
 		}
 		
@@ -175,7 +186,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " UNIT_IND_CTN = ?, AVAIL_QTY_CTN = ?, UNIT_CONV_CTN = ?,"
 			+ " UNIT_IND_DOZ = ?, AVAIL_QTY_DOZ = ?, UNIT_CONV_DOZ = ?,"
 			+ " UNIT_IND_PCS = ?, AVAIL_QTY_PCS = ?, UNIT_CONV_PCS = ?,"
-			+ " MANUFACTURER_ID = ?, CATEGORY_ID = ? where ID = ?";
+			+ " MANUFACTURER_ID = ?, CATEGORY_ID = ?, SUBCATEGORY_ID = ? where ID = ?";
 	
 	private void update(Product product) {
 		getJdbcTemplate().update(UPDATE_SQL, 
@@ -201,6 +212,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.getUnitConversion(Unit.PIECES),
 				product.getManufacturer() != null ? product.getManufacturer().getId() : null,
 				product.getCategory() != null ? product.getCategory().getId() : null,
+				product.getSubcategory() != null ? product.getSubcategory().getId() : null,
 				product.getId());
 	}
 
@@ -211,8 +223,8 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " UNIT_CONV_CSE, UNIT_CONV_TIE, UNIT_CONV_CTN, UNIT_CONV_DOZ, UNIT_CONV_PCS,"
 			+ " GROSS_COST_CSE, GROSS_COST_TIE, GROSS_COST_CTN, GROSS_COST_DOZ, GROSS_COST_PCS,"
 			+ " FINAL_COST_CSE, FINAL_COST_TIE, FINAL_COST_CTN, FINAL_COST_DOZ, FINAL_COST_PCS,"
-			+ " MANUFACTURER_ID, CATEGORY_ID)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " MANUFACTURER_ID, CATEGORY_ID, SUBCATEGORY_ID)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Product product) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -261,6 +273,11 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 					ps.setLong(32, product.getCategory().getId());
 				} else {
 					ps.setNull(32, Types.NUMERIC);
+				}
+				if (product.getSubcategory() != null) {
+					ps.setLong(33, product.getSubcategory().getId());
+				} else {
+					ps.setNull(33, Types.NUMERIC);
 				}
 				return ps;
 			}

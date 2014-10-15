@@ -1,5 +1,8 @@
 package com.pj.magic.gui.component;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JComboBox;
 
 public class MagicComboBox<E> extends JComboBox<E> {
@@ -19,6 +22,19 @@ public class MagicComboBox<E> extends JComboBox<E> {
 	
 	public boolean shouldTriggerCustomListeners() {
 		return triggerCustomListeners;
+	}
+
+	// TODO: migrate references to this
+	public void addOnSelectListener(final ActionListener actionListener) {
+		addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (shouldTriggerCustomListeners()) {
+					actionListener.actionPerformed(e);
+				}
+			}
+		});
 	}
 	
 }
