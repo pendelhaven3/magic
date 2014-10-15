@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.NoSellingPriceException;
 import com.pj.magic.exception.NotEnoughStocksException;
+import com.pj.magic.exception.SellingPriceLessThanCostException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
@@ -634,14 +635,19 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 				JOptionPane.showMessageDialog(this, "Post successful!");
 				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
 			} catch (NotEnoughStocksException e ) {	
-				showErrorMessage("Not enough available stocks!");
+				showErrorMessage("Not enough available stocks");
 				updateDisplay(salesRequisition);
 				itemsTable.highlightColumn(e.getSalesRequisitionItem(), 
 						SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX);
 			} catch (NoSellingPriceException e) {
-				showErrorMessage("No selling price!");
+				showErrorMessage("No selling price");
 				updateDisplay(salesRequisition);
-				itemsTable.highlightColumn(e.getSalesRequisitionItem(), 
+				itemsTable.highlightColumn(e.getItem(), 
+						SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX);
+			} catch (SellingPriceLessThanCostException e) {
+				showErrorMessage("Selling price less than cost");
+				updateDisplay(salesRequisition);
+				itemsTable.highlightColumn(e.getItem(), 
 						SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);

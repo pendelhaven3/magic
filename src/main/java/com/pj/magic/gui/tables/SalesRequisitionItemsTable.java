@@ -483,6 +483,8 @@ public class SalesRequisitionItemsTable extends MagicTable {
 					showErrorMessage("Duplicate item");
 				} else if (rowItem.getProduct().hasNoSellingPrice(unit)) {
 					showErrorMessage("No selling price");
+				} else if (rowItem.getProduct().hasSellingPriceLessThanCost(unit)) {
+					showErrorMessage("Selling price less than cost");
 				} else {
 					valid = true;
 				}

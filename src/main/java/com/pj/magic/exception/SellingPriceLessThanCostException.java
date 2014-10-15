@@ -2,11 +2,11 @@ package com.pj.magic.exception;
 
 import com.pj.magic.model.SalesRequisitionItem;
 
-public class NoSellingPriceException extends RuntimeException {
+public class SellingPriceLessThanCostException extends RuntimeException {
 
 	private SalesRequisitionItem item;
 
-	public NoSellingPriceException(SalesRequisitionItem item) {
+	public SellingPriceLessThanCostException(SalesRequisitionItem item) {
 		this.item = item;
 	}
 

@@ -61,7 +61,7 @@ public class EditProductPriceTable extends MagicTable {
 		if (valid) {
 			String maxUnit = product.getUnits().get(0);
 			if (product.getFinalCost(maxUnit).compareTo(new BigDecimal(amount)) > 0) {
-				showErrorMessage("Cannot set selling price with negative profit");
+				showErrorMessage("Selling price less than cost");
 				valid = false;
 			}
 		}

@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +15,7 @@ import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.NoSellingPriceException;
 import com.pj.magic.exception.NotEnoughStocksException;
+import com.pj.magic.exception.SellingPriceLessThanCostException;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
@@ -90,8 +90,10 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 			throws NotEnoughStocksException, NoSellingPriceException {
 		SalesRequisition updated = getSalesRequisition(salesRequisition.getId());
 		for (SalesRequisitionItem item : updated.getItems()) {
-			if (item.getUnitPrice().equals(BigDecimal.ZERO.setScale(2))) {
+			if (item.getProduct().hasNoSellingPrice(item.getUnit())) {
 				throw new NoSellingPriceException(item);
+			} else if (item.getProduct().hasSellingPriceLessThanCost(item.getUnit())) {
+				throw new SellingPriceLessThanCostException(item);
 			}
 				
 			// [PJ 08/06/2014] Do not update product quantity inside sales requisition object

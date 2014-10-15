@@ -400,5 +400,9 @@ public class Product implements Comparable<Product> {
 	public void setSubcategory(ProductSubcategory subcategory) {
 		this.subcategory = subcategory;
 	}
+
+	public boolean hasSellingPriceLessThanCost(String unit) {
+		return getUnitPrice(unit).compareTo(getFinalCost(unit)) == -1;
+	}
 	
 }
