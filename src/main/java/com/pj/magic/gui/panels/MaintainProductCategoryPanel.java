@@ -134,6 +134,7 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 			try {
 				productCategoryService.save(category);
 				showMessage("Saved!");
+				updateDisplay(category);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
@@ -297,6 +298,8 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 			clearDisplay();
 			return;
 		}
+		
+		this.category = category = productCategoryService.getProductCategory(category.getId());
 		
 		nameField.setText(category.getName());
 		subcategoriesTable.updateDisplay(category);

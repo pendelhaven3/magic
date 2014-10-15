@@ -18,7 +18,11 @@ public class ProductCategoryDaoImpl implements ProductCategoryDao {
 	
 	@Override
 	public void save(ProductCategory category) {
-		entityManager.persist(category);
+		if (category.getId() == null) {
+			entityManager.persist(category);
+		} else {
+			entityManager.merge(category);
+		}
 	}
 
 	@Override
