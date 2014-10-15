@@ -76,7 +76,6 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	
 	@PostConstruct
 	public void initialize() {
-		setSurrendersFocusOnKeystroke(true);
 		initializeColumns();
 		initializeModelListener();
 		registerKeyBindings();

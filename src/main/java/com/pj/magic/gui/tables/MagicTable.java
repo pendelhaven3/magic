@@ -23,6 +23,7 @@ public abstract class MagicTable extends JTable {
 	
 	public MagicTable(TableModel tableModel) {
 		super(tableModel);
+		setSurrendersFocusOnKeystroke(true); // TODO: search other references
 	}
 	
 	protected void showErrorMessage(String message) {

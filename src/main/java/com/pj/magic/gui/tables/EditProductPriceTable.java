@@ -1,6 +1,7 @@
 package com.pj.magic.gui.tables;
 
 import java.awt.Color;
+import java.math.BigDecimal;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JLabel;
@@ -55,6 +56,18 @@ public class EditProductPriceTable extends MagicTable {
 		return valid;
 	}
 
+	private boolean validateSellingPrice(String amount) {
+		boolean valid = validateAmount(amount, "Selling Price");
+		if (valid) {
+			String maxUnit = product.getUnits().get(0);
+			if (product.getFinalCost(maxUnit).compareTo(new BigDecimal(amount)) > 0) {
+				showErrorMessage("Cannot set selling price with negative profit");
+				valid = false;
+			}
+		}
+		return valid;
+	}
+
 	public void initializeColumns() {
 		TableColumnModel columnModel = getColumnModel();
 		
@@ -93,7 +106,7 @@ public class EditProductPriceTable extends MagicTable {
 		columnModel.getColumn(FINAL_COST_COLUMN_INDEX)
 			.setCellEditor(new AmountCellEditor("Final Cost"));
 		columnModel.getColumn(SELLING_PRICE_COLUMN_INDEX)
-			.setCellEditor(new AmountCellEditor("Selling Price"));
+			.setCellEditor(new SellingPriceCellEditor());
 		columnModel.getColumn(PERCENT_PROFIT_COLUMN_INDEX)
 			.setCellEditor(new AmountCellEditor("Percent Profit"));
 		columnModel.getColumn(FLAT_PROFIT_COLUMN_INDEX)
@@ -134,6 +147,24 @@ public class EditProductPriceTable extends MagicTable {
 		public boolean stopCellEditing() {
 			String amount = ((JTextField)getComponent()).getText();
 			return (validateAmount(amount, fieldName)) ? super.stopCellEditing() : false;
+		}
+		
+	}
+	
+	private class SellingPriceCellEditor extends MagicCellEditor {
+
+		public SellingPriceCellEditor() {
+			super(new MagicTextField());
+			
+			MagicTextField textField = (MagicTextField)getComponent();
+			textField.setMaximumLength(10);
+			textField.setBackground(Color.yellow);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String amount = ((JTextField)getComponent()).getText();
+			return (validateSellingPrice(amount)) ? super.stopCellEditing() : false;
 		}
 		
 	}
