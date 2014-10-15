@@ -68,6 +68,12 @@ public class EditProductPriceDialog extends MagicDialog {
 	}
 
 	private void saveUnitCostsAndPrices() {
+		if (table.isEditing()) {
+			if (!table.getCellEditor().stopCellEditing()) {
+				table.getEditorComponent().requestFocusInWindow();
+				return;
+			}
+		}
 		productService.saveUnitCostsAndPrices(product, pricingScheme);
 		JOptionPane.showMessageDialog(this, "Saved!");
 	}
