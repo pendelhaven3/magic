@@ -22,7 +22,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +55,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private EditProductPriceDialog editProductPriceDialog;
 	@Autowired private ProductService productService;
-	@Autowired private ProductSearchCriteriaDialog searchProductDialog;
+	@Autowired private ProductSearchCriteriaDialog productSearchCriteriaDialog;
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	
@@ -195,6 +194,8 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay(PricingScheme pricingScheme) {
+		productSearchCriteriaDialog.updateDisplay();
+		
 		this.pricingScheme = pricingScheme;
 		if (pricingScheme.getId() == null) {
 			clearDisplay();
@@ -393,19 +394,16 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	}
 
 	protected void searchProducts() {
-		searchProductDialog.updateDisplay();
-		searchProductDialog.setVisible(true);
-		String productCode = searchProductDialog.getProductCodeCriteria();
-		if (!StringUtils.isEmpty(productCode)) {
-			ProductSearchCriteria criteria = new ProductSearchCriteria();
-			criteria.setPricingScheme(pricingScheme);
-			criteria.setCode(productCode);
-			
+		productSearchCriteriaDialog.setVisible(true);
+		ProductSearchCriteria criteria = productSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
 			List<Product> products = productService.searchProducts(criteria);
 			pricesTableModel.setProducts(products);
 			if (!products.isEmpty()) {
 				pricesTable.changeSelection(0, 0, false, false);
 				pricesTable.requestFocusInWindow();
+			} else {
+				showErrorMessage("No matching records");
 			}
 		}
 	}

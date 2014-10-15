@@ -177,11 +177,6 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(1, 1), c);
 	}
 	
-	// TODO: remove
-	public String getProductCodeCriteria() {
-		return productCodeField.getText();
-	}
-
 	public ProductSearchCriteria getSearchCriteria() {
 		ProductSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
