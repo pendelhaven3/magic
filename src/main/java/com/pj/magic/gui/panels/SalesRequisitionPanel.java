@@ -874,7 +874,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		});
 		panel.add(addItemButton, BorderLayout.WEST);
 		
-		deleteItemButton = new MagicToolBarButton("minus_small", "Delete Item", true);
+		deleteItemButton = new MagicToolBarButton("minus_small", "Delete Item (Delete)", true);
 		deleteItemButton.addActionListener(new ActionListener() {
 			
 			@Override
