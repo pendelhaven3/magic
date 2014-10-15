@@ -5,31 +5,38 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.KeyStroke;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.util.ProductSearchCriteria;
+import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.KeyUtil;
 
 @Component
 public class ProductSearchCriteriaDialog extends MagicDialog {
 
-	private static final String SEARCH_PRODUCT_ACTION = "search";
+	@Autowired private ManufacturerService manufacturerService;
 	
 	private MagicTextField productCodeField;
+	private MagicComboBox<Manufacturer> manufacturerComboBox;
 	private JButton searchButton;
+	private ProductSearchCriteria searchCriteria;
 	
 	public ProductSearchCriteriaDialog() {
-		setSize(450, 120);
+		setSize(480, 150);
 		setLocationRelativeTo(null);
 		setTitle("Search Products");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
@@ -46,49 +53,71 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 		productCodeField = new MagicTextField();
 		productCodeField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
 		
+		manufacturerComboBox = new MagicComboBox<>();
+		
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				returnProductCodeCriteria();
+				saveProductCodeCriteria();
 			}
 		});
 		
 		focusOnComponentWhenThisPanelIsDisplayed(productCodeField);
 	}
 
-	protected void returnProductCodeCriteria() {
+	protected void saveProductCodeCriteria() {
+		searchCriteria = new ProductSearchCriteria();
+		searchCriteria.setCode(productCodeField.getText());
+		searchCriteria.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
+		
 		setVisible(false);
 	}
 
 	private void registerKeyBindings() {
-		productCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SEARCH_PRODUCT_ACTION);
-		productCodeField.getActionMap().put(SEARCH_PRODUCT_ACTION, new AbstractAction() {
+		productCodeField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				returnProductCodeCriteria();			
+				manufacturerComboBox.requestFocusInWindow();
 			}
 		});
+		
+		manufacturerComboBox.getInputMap().put(KeyUtil.getEnterKey(), "enter");
+		manufacturerComboBox.getActionMap().put("enter", new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchButton.requestFocusInWindow();
+			}
+		});
+		
+		searchButton.getInputMap().put(KeyUtil.getEnterKey(), "enter");
+		searchButton.getActionMap().put("enter", new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveProductCodeCriteria();
+			}
+		});
+		
 	}
 
 	@Override
 	protected void doWhenEscapeKeyPressed() {
-		productCodeField.setText(null);
+		// nothing
 	}
 	
 	private void layoutComponents() {
 		setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(200, "Product Code or Description:"), c);
+		add(ComponentUtil.createLabel(120, "Code/Description:"), c);
 
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -98,6 +127,23 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 		c.anchor = GridBagConstraints.WEST;
 		productCodeField.setPreferredSize(new Dimension(150, 20));
 		add(productCodeField, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(120, "Manufacturer:"), c);
+
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.fill = GridBagConstraints.NONE;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		manufacturerComboBox.setPreferredSize(new Dimension(300, 20));
+		add(manufacturerComboBox, c);
 
 		currentRow++;
 		
@@ -137,17 +183,23 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 	}
 
 	public ProductSearchCriteria getSearchCriteria() {
-		ProductSearchCriteria criteria = new ProductSearchCriteria();
-		criteria.setCode(productCodeField.getText());
-		return criteria;
+		ProductSearchCriteria returnCriteria = searchCriteria;
+		searchCriteria = null;
+		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
+		searchCriteria = null;
 		productCodeField.setText(null);
-	}
-	
-	public void clearDisplay() {
-		productCodeField.setText(null);
+
+		List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
+		manufacturers.add(0, null);
+		manufacturerComboBox.setModel(
+				new DefaultComboBoxModel<>(manufacturers.toArray(new Manufacturer[manufacturers.size()])));
+		
+//		List<ProductCategory> categories = categoryService.getAllProductCategories();
+//		categoryComboBox.setModel(
+//				new DefaultComboBoxModel<>(categories.toArray(new ProductCategory[categories.size()])));
 	}
 	
 }

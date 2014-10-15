@@ -44,7 +44,7 @@ public class ProductListPanel extends StandardMagicPanel {
 		if (!products.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
-		productSearchCriteriaDialog.clearDisplay();
+		productSearchCriteriaDialog.updateDisplay();
 	}
 
 	@Override
@@ -79,13 +79,15 @@ public class ProductListPanel extends StandardMagicPanel {
 		productSearchCriteriaDialog.setVisible(true);
 		
 		ProductSearchCriteria criteria = productSearchCriteriaDialog.getSearchCriteria();
-		List<Product> products = productService.searchProducts(criteria);
-		tableModel.setProducts(products);
-		if (!products.isEmpty()) {
-			table.changeSelection(0, 0, false, false);
-			table.requestFocusInWindow();
-		} else {
-			showMessage("No matching records");
+		if (criteria != null) {
+			List<Product> products = productService.searchProducts(criteria);
+			tableModel.setProducts(products);
+			if (!products.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
 		}
 	}
 
@@ -156,7 +158,7 @@ public class ProductListPanel extends StandardMagicPanel {
 		tableModel.setProducts(productService.getAllProducts());
 		table.changeSelection(0, 0, false, false);
 		table.requestFocusInWindow();
-		productSearchCriteriaDialog.clearDisplay();
+		productSearchCriteriaDialog.updateDisplay();
 	}
 	
 }

@@ -305,6 +305,21 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			params.add("%" + criteria.getCode() + "%");
 		}
 		
+		if (criteria.getManufacturer() != null) {
+			sql.append(" and MANUFACTURER_ID = ?");
+			params.add(criteria.getManufacturer().getId());
+		}
+		
+		if (criteria.getCategory() != null) {
+			sql.append(" and CATEGORY_ID = ?");
+			params.add(criteria.getCategory().getId());
+		}
+		
+		if (criteria.getSubcategory() != null) {
+			sql.append(" and SUBCATEGORY_ID = ?");
+			params.add(criteria.getSubcategory().getId());
+		}
+		
 		sql.append(" order by a.CODE");
 		
 		return getJdbcTemplate().query(sql.toString(), productRowMapper, params.toArray());

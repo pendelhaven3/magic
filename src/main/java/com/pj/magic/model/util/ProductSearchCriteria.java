@@ -1,13 +1,19 @@
 package com.pj.magic.model.util;
 
 import com.pj.magic.Constants;
+import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.PricingScheme;
+import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.ProductSubcategory;
 
 public class ProductSearchCriteria {
 
 	private Boolean active;
 	private PricingScheme pricingScheme = new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID);
 	private String code;
+	private Manufacturer manufacturer;
+	private ProductCategory category;
+	private ProductSubcategory subcategory;
 	
 	public Boolean getActive() {
 		return active;
@@ -31,6 +37,30 @@ public class ProductSearchCriteria {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Manufacturer getManufacturer() {
+		return manufacturer;
+	}
+
+	public void setManufacturer(Manufacturer manufacturer) {
+		this.manufacturer = manufacturer;
+	}
+
+	public ProductCategory getCategory() {
+		return category;
+	}
+
+	public void setCategory(ProductCategory category) {
+		this.category = category;
+	}
+
+	public ProductSubcategory getSubcategory() {
+		return subcategory;
+	}
+
+	public void setSubcategory(ProductSubcategory subcategory) {
+		this.subcategory = subcategory;
 	}
 
 }
