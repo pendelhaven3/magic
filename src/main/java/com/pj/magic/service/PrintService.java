@@ -25,5 +25,7 @@ public interface PrintService {
 	void print(List<String> printPages);
 
 	List<String> generateReportAsString(SalesInvoice salesInvoice);
+
+	List<String> generateReportAsString(ReceivingReceipt receivingReceipt, boolean includeDiscountDetails);
 	
 }

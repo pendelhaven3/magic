@@ -10,6 +10,7 @@ import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.ReceivingReceiptItemsTable;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.service.PaymentTermService;
@@ -51,6 +53,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private PrintService printService;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
 	
 	private ReceivingReceipt receivingReceipt;
 	private JLabel receivingReceiptNumberField;
@@ -399,6 +402,16 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		});
 		toolBar.add(postButton);
 		
+		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreview();
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
 		MagicToolBarButton printButton = new MagicToolBarButton("print", "Print");
 		printButton.addActionListener(new ActionListener() {
 			
@@ -408,6 +421,13 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+	}
+
+	protected void printPreview() {
+		int confirm = JOptionPane.showConfirmDialog(this, "Include discount details?", "Print Receiving Receipt", JOptionPane.YES_NO_OPTION);
+		printPreviewDialog.updateDisplay(
+				printService.generateReportAsString(receivingReceipt, confirm == JOptionPane.YES_OPTION));
+		printPreviewDialog.setVisible(true);
 	}
 
 	protected void printReceivingReceipt() {

@@ -8,7 +8,7 @@ P.O. #   : $report.field($receivingReceipt.receivingReceiptNumber, 6, "right")  
                                                       Terms : $receivingReceipt.paymentTerm.name
 Supplier : $report.field($receivingReceipt.supplier.name, 35)                                
 Address  : $report.multiline($receivingReceipt.supplier.address, 35, 1)      Encoder : $receivingReceipt.receivedBy.username
-	       $report.multiline($receivingReceipt.supplier.address, 35, 2)
+           $report.multiline($receivingReceipt.supplier.address, 35, 2)
 	
                                                                                                  Discount  Discount  Final
           Description           Unit Qty    Cost      Amount   Disc. 1 Disc 2. Disc. 3 Flat Rate Amount    Given     Cost/Qty

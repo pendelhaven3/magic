@@ -64,24 +64,6 @@ public class PrintServiceImpl implements PrintService {
 		}
 	}
 
-	private void printReport(String templateName, Map<String, Object> reportData) {
-		Template template = Velocity.getTemplate(templateName);
-		StringWriter writer = new StringWriter();
-		VelocityContext context = new VelocityContext(reportData);
-		if (reportData.containsKey("reportUtil")) {
-			context.put("report", reportData.get("reportUtil"));
-		} else {
-			context.put("report", ReportUtil.class);
-		}
-		template.merge(context, writer);
-		try {
-			PrinterUtil.print(writer.toString());
-		} catch (PrintException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	// TODO: Modify other reports to follow this implementation structure
 	@Override
 	public void print(PurchaseOrder purchaseOrder) {
 		try {
@@ -95,29 +77,12 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public void print(ReceivingReceipt receivingReceipt, boolean includeDiscountDetails) {
-		receivingReceipt.setSupplier(supplierDao.get(receivingReceipt.getSupplier().getId()));
-		receivingReceipt.setReceivedBy(userDao.get(receivingReceipt.getReceivedBy().getId()));
-		
-		Collections.sort(receivingReceipt.getItems());
-		
-		String receivedDate = FormatterUtil.formatDate(receivingReceipt.getReceivedDate());
-		
-		List<List<ReceivingReceiptItem>> pageItems = Lists.partition(receivingReceipt.getItems(), 
-				RECEIVING_RECEIPT_ITEMS_PER_PAGE);
-		for (int i = 0; i < pageItems.size(); i++) {
-			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("receivingReceipt", receivingReceipt);
-			reportData.put("items", pageItems.get(i));
-			reportData.put("receivedDate", receivedDate);
-			reportData.put("currentPage", i + 1);
-			reportData.put("totalPages", pageItems.size());
-			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			if (includeDiscountDetails) {
-				reportData.put("reportUtil", ReceivingReceiptReportUtil.class);
-				printReport("reports/receivingReceipt.vm", reportData);
-			} else {
-				printReport("reports/receivingReceipt-noDiscountDetails.vm", reportData);
+		try {
+			for (String printPage : generateReportAsString(receivingReceipt, includeDiscountDetails)) {
+				PrinterUtil.print(printPage);
 			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
 		}
 	}
 
@@ -235,6 +200,38 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
 			printPages.add(generateReportAsString("reports/salesInvoice.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public List<String> generateReportAsString(ReceivingReceipt receivingReceipt,
+			boolean includeDiscountDetails) {
+		receivingReceipt.setSupplier(supplierDao.get(receivingReceipt.getSupplier().getId()));
+		receivingReceipt.setReceivedBy(userDao.get(receivingReceipt.getReceivedBy().getId()));
+		
+		Collections.sort(receivingReceipt.getItems());
+		
+		String receivedDate = FormatterUtil.formatDate(receivingReceipt.getReceivedDate());
+		
+		List<List<ReceivingReceiptItem>> pageItems = Lists.partition(receivingReceipt.getItems(), 
+				RECEIVING_RECEIPT_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("receivingReceipt", receivingReceipt);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("receivedDate", receivedDate);
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			if (includeDiscountDetails) {
+				reportData.put("reportUtil", ReceivingReceiptReportUtil.class);
+				printPages.add(generateReportAsString("reports/receivingReceipt.vm", reportData));
+			} else {
+				printPages.add(
+						generateReportAsString("reports/receivingReceipt-noDiscountDetails.vm", reportData));
+			}
 		}
 		return printPages;
 	}

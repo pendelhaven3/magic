@@ -29,6 +29,8 @@ import com.pj.magic.util.ComponentUtil;
 @Component
 public class PrintPreviewDialog extends MagicDialog {
 
+	private static final int COLUMNS_PER_LINE = 80;
+	
 	@Autowired private PrintService printService;
 	
 	private JTextArea textArea;
@@ -143,6 +145,8 @@ public class PrintPreviewDialog extends MagicDialog {
 		textArea = new JTextArea();
 		textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
 		textArea.setEditable(false);
+		textArea.setColumns(COLUMNS_PER_LINE);
+		textArea.setLineWrap(true);
 		panel.add(textArea, c);
 		
 		c = new GridBagConstraints();
