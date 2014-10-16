@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectProductDialog;
@@ -52,7 +53,6 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	public static final int QUANTITY_COLUMN_INDEX = 3;
 	public static final int UNIT_PRICE_COLUMN_INDEX = 4;
 	public static final int AMOUNT_COLUMN_INDEX = 5;
-	private static final int PRODUCT_CODE_MAXIMUM_LENGTH = 9;
 	private static final int UNIT_MAXIMUM_LENGTH = 3;
 	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
@@ -91,14 +91,14 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
 		
 		MagicTextField productCodeTextField = new MagicTextField();
-		productCodeTextField.setMaximumLength(PRODUCT_CODE_MAXIMUM_LENGTH);
+		productCodeTextField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
 		productCodeTextField.addKeyListener(new KeyAdapter() {
 			
 			@Override
 			public void keyReleased(KeyEvent event) {
 				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
 					JTextField textField = (JTextField)event.getComponent();
-					if (textField.getText().length() == PRODUCT_CODE_MAXIMUM_LENGTH) {
+					if (textField.getText().length() == Constants.PRODUCT_CODE_MAXIMUM_LENGTH) {
 						getCellEditor().stopCellEditing();
 					};
 				}
@@ -435,12 +435,6 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		});
 	}
 
-	private void selectAndEditCellAt(int row, int column) {
-		changeSelection(row, column, false, false);
-		editCellAt(row, column);
-		getEditorComponent().requestFocusInWindow();
-	}
-	
 	private class ProductCodeCellEditor extends MagicCellEditor {
 
 		public ProductCodeCellEditor(JTextField textField) {

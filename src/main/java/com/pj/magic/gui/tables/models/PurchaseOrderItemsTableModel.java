@@ -17,6 +17,7 @@ import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.NumberUtil;
 
 @Component
 public class PurchaseOrderItemsTableModel extends AbstractTableModel {
@@ -51,34 +52,30 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 		case PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 			return rowItem.getProductCode();
 		case PurchaseOrderItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
-			if (rowItem.getProduct() != null) {
-				return rowItem.getProduct().getDescription();
-			} else {
-				return "";
-			}
+			return rowItem.getProductDescription();
 		case PurchaseOrderItemsTable.UNIT_COLUMN_INDEX:
 			return StringUtils.defaultString(rowItem.getUnit());
 		case PurchaseOrderItemsTable.SUGGESTED_ORDER_COLUMN_INDEX:
 			return rowItem.getSuggestedOrder();
 		case PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX:
-			return StringUtils.defaultString(rowItem.getQuantity());
+			return rowItem.getQuantity();
 		default:
 			if (columnIndex == table.getCostColumnIndex()) {
-				if (rowItem.isValid()) {
-					return FormatterUtil.formatAmount(rowItem.getItem().getCost());
+				if (rowItem.getCost() != null) {
+					return FormatterUtil.formatAmount(rowItem.getCost());
 				} else {
-					return StringUtils.defaultString(rowItem.getCost());
+					return null;
 				}
 			} else if (columnIndex == table.getAmountColumnIndex()) {
 				if (rowItem.isValid()) {
 					return FormatterUtil.formatAmount(rowItem.getItem().getAmount());
 				} else {
-					return "";
+					return null;
 				}
 			} else if (columnIndex == table.getOrderedColumnIndex()) {
 				return rowItem.getItem().isOrdered() ? "Yes" : "No";
 			} else if (columnIndex == table.getActualQuantityColumnIndex()) {
-				return StringUtils.defaultString(rowItem.getActualQuantity());
+				return rowItem.getActualQuantity();
 			} else {
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
@@ -128,20 +125,19 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 		String val = (String)value;
 		switch (columnIndex) {
 		case PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			rowItem.setProductCode(val);
 			rowItem.setProduct(productService.findProductByCode(val));
 			break;
 		case PurchaseOrderItemsTable.UNIT_COLUMN_INDEX:
 			rowItem.setUnit(val);
 			break;
 		case PurchaseOrderItemsTable.QUANTITY_COLUMN_INDEX:
-			rowItem.setQuantity(val);
+			rowItem.setQuantity(Integer.valueOf(val));
 			break;
 		default:
 			if (columnIndex == table.getCostColumnIndex()) {
-				rowItem.setCost(val);
+				rowItem.setCost(NumberUtil.toBigDecimal(val));
 			} else if (columnIndex == table.getActualQuantityColumnIndex()) {
-				rowItem.setActualQuantity(val);
+				rowItem.setActualQuantity(Integer.valueOf(val));
 			}
 		}
 		// TODO: Save only when there is a change
@@ -150,18 +146,15 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 			item.setProduct(rowItem.getProduct());
 			item.setUnit(rowItem.getUnit());
 			item.setQuantity(Integer.valueOf(rowItem.getQuantity()));
-			if (!StringUtils.isEmpty(rowItem.getCost())) {
-				item.setCost(rowItem.getCostAsBigDecimal());
+			if (item.getCost() != null) {
+				item.setCost(rowItem.getCost());
 			} else {
 				BigDecimal originalCost = rowItem.getProduct().getGrossCost(rowItem.getUnit());
 				item.setCost(originalCost);
-				rowItem.setCost(FormatterUtil.formatAmount(originalCost));
+				rowItem.setCost(originalCost);
 			}
-			if (!StringUtils.isEmpty(rowItem.getActualQuantity())) {
-				item.setActualQuantity(Integer.valueOf(rowItem.getActualQuantity()));
-			}
+			item.setActualQuantity(rowItem.getActualQuantity());
 			purchaseOrderService.save(item);
-			rowItem.setCost(item.getCost().toString());
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
@@ -207,9 +200,10 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 		addItem(item);
 	}
 
-	public boolean hasDuplicate(PurchaseOrderItemRowItem checkItem) {
+	public boolean hasDuplicate(String unit, PurchaseOrderItemRowItem checkRowItem) {
 		for (PurchaseOrderItemRowItem rowItem : rowItems) {
-			if (rowItem.equals(checkItem) && rowItem != checkItem) {
+			if (checkRowItem.getProduct().equals(rowItem.getProduct()) 
+					&& unit.equals(rowItem.getUnit()) && rowItem != checkRowItem) {
 				return true;
 			}
 		}
@@ -233,6 +227,11 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	
 	public List<PurchaseOrderItemRowItem> getRowItems() {
 		return rowItems;
+	}
+
+	public void reset(int row) {
+		rowItems.get(row).reset();
+		fireTableRowsUpdated(row, row);
 	}
 
 }

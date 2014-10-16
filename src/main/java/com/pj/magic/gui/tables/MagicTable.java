@@ -59,4 +59,10 @@ public abstract class MagicTable extends JTable {
 		return result;
 	}
 	
+	protected void selectAndEditCellAt(int row, int column) {
+		changeSelection(row, column, false, false);
+		editCellAt(row, column);
+		getEditorComponent().requestFocusInWindow();
+	}
+	
 }

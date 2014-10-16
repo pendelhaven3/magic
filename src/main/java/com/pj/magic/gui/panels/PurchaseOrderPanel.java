@@ -593,7 +593,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				itemsTable.delete();
+				itemsTable.removeCurrentlySelectedRow();
 			}
 		});
 		panel.add(deleteItemButton, BorderLayout.WEST);

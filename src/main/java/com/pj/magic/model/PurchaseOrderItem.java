@@ -73,7 +73,11 @@ public class PurchaseOrderItem implements Comparable<PurchaseOrderItem> {
 	}
 
 	public BigDecimal getAmount() {
-		return cost.multiply(new BigDecimal(quantity.intValue()));
+		if (actualQuantity != null) {
+			return cost.multiply(new BigDecimal(actualQuantity.intValue()));
+		} else {
+			return cost.multiply(new BigDecimal(quantity.intValue()));
+		}
 	}
 
 	@Override

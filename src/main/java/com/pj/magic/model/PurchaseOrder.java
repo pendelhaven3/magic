@@ -64,7 +64,7 @@ public class PurchaseOrder {
 		if (posted) {
 			return "Posted";
 		} else if (delivered) {
-			return "Ordered";
+			return "Delivered";
 		} else {
 			return "New";
 		}

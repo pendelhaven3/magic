@@ -1,18 +1,13 @@
 package com.pj.magic.gui.tables.rowitems;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.springframework.util.StringUtils;
 
-import com.pj.magic.Constants;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrderItem;
-import com.pj.magic.util.NumberUtil;
 
 /*
  * Wrapper class to separate table gui concerns of inputting purchase order items
@@ -21,28 +16,26 @@ import com.pj.magic.util.NumberUtil;
 public class PurchaseOrderItemRowItem {
 
 	private PurchaseOrderItem item;
-	private String productCode;
 	private String unit;
-	private String quantity;
-	private String cost;
+	private Integer quantity;
+	private BigDecimal cost;
 	private Product product;
-	private String actualQuantity;
+	private Integer actualQuantity;
 
 	public PurchaseOrderItemRowItem(PurchaseOrderItem item) {
 		this.item = item;
 		if (item.getProduct() != null) {
-			productCode = item.getProduct().getCode();
 			product = item.getProduct();
 		}
 		unit = item.getUnit();
 		if (item.getQuantity() != null) {
-			quantity = item.getQuantity().toString();
+			quantity = item.getQuantity();
 		}
 		if (item.getActualQuantity() != null) {
-			actualQuantity = item.getActualQuantity().toString();
+			actualQuantity = item.getActualQuantity();
 		}
 		if (item.getCost() != null) {
-			cost = item.getCost().toString();
+			cost = item.getCost();
 		}
 	}
 	
@@ -54,14 +47,6 @@ public class PurchaseOrderItemRowItem {
 		this.item = item;
 	}
 
-	public String getProductCode() {
-		return productCode;
-	}
-
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
-	}
-
 	public String getUnit() {
 		return unit;
 	}
@@ -70,19 +55,19 @@ public class PurchaseOrderItemRowItem {
 		this.unit = unit;
 	}
 
-	public String getQuantity() {
+	public Integer getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(String quantity) {
+	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 
-	public String getCost() {
+	public BigDecimal getCost() {
 		return cost;
 	}
 
-	public void setCost(String cost) {
+	public void setCost(BigDecimal cost) {
 		this.cost = cost;
 	}
 
@@ -95,9 +80,7 @@ public class PurchaseOrderItemRowItem {
 	}
 
 	public boolean isValid() {
-		return product != null && product.hasUnit(unit) && StringUtils.isNumeric(quantity)
-				&& (NumberUtil.isAmount(cost) || StringUtils.isEmpty(cost)) 
-				&& (StringUtils.isEmpty(actualQuantity) || StringUtils.isNumeric(actualQuantity));
+		return product != null && product.hasUnit(unit) && quantity != null;
 	}
 
 	@Override
@@ -123,37 +106,46 @@ public class PurchaseOrderItemRowItem {
 			.isEquals();
 	}
 
-	public String getActualQuantity() {
+	public Integer getActualQuantity() {
 		return actualQuantity;
 	}
 
-	public void setActualQuantity(String actualQuantity) {
+	public void setActualQuantity(Integer actualQuantity) {
 		this.actualQuantity = actualQuantity;
-	}
-
-	public BigDecimal getCostAsBigDecimal() {
-		try {
-			return new BigDecimal(new DecimalFormat(Constants.AMOUNT_FORMAT).parse(cost).doubleValue())
-				.setScale(2, RoundingMode.HALF_UP);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public int getQuantityAsInt() {
-		return Integer.parseInt(quantity);
-	}
-	
-	public String getSuggestedOrder() {
-		if (product != null && product.isMaxUnit(unit)) {
-			return String.valueOf(product.getSuggestedOrder(unit));
-		} else {
-			return "";
-		}
 	}
 
 	public BigDecimal getAmount() {
 		return item.getAmount();
+	}
+
+	public boolean isUpdating() {
+		return item.getId() != null;
+	}
+
+	public void reset() {
+		if (item.getId() != null) {
+			product = item.getProduct();
+			unit = item.getUnit();
+			quantity = item.getQuantity();
+			cost = item.getCost();
+			actualQuantity = item.getActualQuantity();
+		}
+	}
+
+	public String getProductCode() {
+		return product != null ? product.getCode() : null;
+	}
+
+	public String getProductDescription() {
+		return product != null ? product.getDescription() : null;
+	}
+
+	public String getSuggestedOrder() {
+		if (product != null && !StringUtils.isEmpty(unit)) {
+			return String.valueOf(product.getSuggestedOrder(unit));
+		} else {
+			return null;
+		}
 	}
 	
 }

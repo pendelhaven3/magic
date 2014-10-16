@@ -7,9 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -18,8 +16,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
@@ -39,7 +38,7 @@ import com.pj.magic.util.KeyUtil;
 import com.pj.magic.util.NumberUtil;
 
 /*
- * PurchaseOrderItemsTable has 3 modes: New, Ordered, and Posted
+ * PurchaseOrderItemsTable has 3 modes: New, Delivered, and Posted
  */
 
 @Component
@@ -52,11 +51,10 @@ public class PurchaseOrderItemsTable extends MagicTable {
 	public static final int QUANTITY_COLUMN_INDEX = 4;
 	
 	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
-	private static final String TAB_ACTION_NAME = "tab";
-	private static final String DOWN_ACTION_NAME = "down";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
+	private static final String ADD_ITEM_ACTION_NAME = "addItem";
 
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
@@ -70,19 +68,15 @@ public class PurchaseOrderItemsTable extends MagicTable {
 	private int amountColumnIndex;
 	
 	private PurchaseOrder purchaseOrder;
-	private Action originalDownAction;
-	private Action originalEscapeAction;
 	
 	@Autowired
 	public PurchaseOrderItemsTable(PurchaseOrderItemsTableModel tableModel) {
 		super(tableModel);
 		tableModel.setTable(this);
-		setSurrendersFocusOnKeystroke(true);
-		initializeRowItemValidationBehavior();
+		initializeModelListener();
 		registerKeyBindings();
 	}
 	
-	// TODO: replace tab key simulation with table model listener
 	private void initializeColumns() {
 		TableColumnModel columnModel = getColumnModel();
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(80);
@@ -106,20 +100,12 @@ public class PurchaseOrderItemsTable extends MagicTable {
 				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
 					JTextField textField = (JTextField)event.getComponent();
 					if (textField.getText().length() == Constants.PRODUCT_CODE_MAXIMUM_LENGTH) {
-						KeyUtil.simulateTabKey();
+						getCellEditor().stopCellEditing();
 					};
 				}
 			}
-			
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateTabKey();
-				}
-			}
 		});
-		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(productCodeTextField));
+		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setCellEditor(new ProductCodeCellEditor(productCodeTextField));
 		
 		MagicTextField unitTextField = new MagicTextField();
 		unitTextField.setMaximumLength(Constants.UNIT_MAXIMUM_LENGTH);
@@ -127,33 +113,28 @@ public class PurchaseOrderItemsTable extends MagicTable {
 			
 			@Override
 			public void keyReleased(KeyEvent event) {
-				if (!KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
-					return;
-				}
-				JTextField textField = (JTextField)event.getComponent();
-				if (textField.getText().length() == Constants.UNIT_MAXIMUM_LENGTH) {
-					KeyUtil.simulateTabKey();
-				}
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateTabKey();
+				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
+					JTextField textField = (JTextField)event.getComponent();
+					if (textField.getText().length() == Constants.UNIT_MAXIMUM_LENGTH) {
+						getCellEditor().stopCellEditing();
+					};
 				}
 			}
 		});
-		TableCellEditor unitCellEditor = new DefaultCellEditor(unitTextField);
-		getColumnModel().getColumn(UNIT_COLUMN_INDEX).setCellEditor(unitCellEditor);
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setCellEditor(new UnitCellEditor(unitTextField));
 		
 		MagicTextField quantityTextField = new MagicTextField();
 		quantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
 		quantityTextField.setNumbersOnly(true);
+		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new QuantityCellEditor(quantityTextField));
 		
-		DefaultCellEditor quantityCellEditor = new DefaultCellEditor(quantityTextField);
-		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(quantityCellEditor);
-		getColumnModel().getColumn(actualQuantityColumnIndex).setCellEditor(quantityCellEditor);
+		MagicTextField actualQuantityTextField = new MagicTextField();
+		actualQuantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
+		actualQuantityTextField.setNumbersOnly(true);
+		columnModel.getColumn(actualQuantityColumnIndex)
+			.setCellEditor(new ActualQuantityCellEditor(actualQuantityTextField));
+		
+		columnModel.getColumn(costColumnIndex).setCellEditor(new CostCellEditor(new JTextField()));
 		
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
@@ -178,11 +159,6 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
-	private Action getAction(int keyEvent) {
-		String actionName = (String)getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(KeyStroke.getKeyStroke(keyEvent, 0));
-		return getActionMap().get(actionName);
-	}
-
 	public void addNewRow() {
 		int newRowIndex = getSelectedRow() + 1;
 		tableModel.addItem(createBlankItem());
@@ -223,7 +199,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		}
 	}
 	
-	public void removeCurrentlySelectedRow() {
+	public void doDeleteCurrentlySelectedRow() {
 		int selectedRowIndex = getSelectedRow();
 		PurchaseOrderItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
@@ -243,17 +219,14 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		return tableModel.getRowItem(getSelectedRow());
 	}
 	
-	private boolean hasDuplicate(PurchaseOrderItemRowItem rowItem) {
-		PurchaseOrderItem checkItem = new PurchaseOrderItem();
-		checkItem.setProduct(rowItem.getProduct());
-		checkItem.setUnit(rowItem.getUnit());
-		
+	private boolean hasDuplicate(String unit, PurchaseOrderItemRowItem rowItem) {
 		for (PurchaseOrderItem item : purchaseOrder.getItems()) {
-			if (item.equals(checkItem) && item != rowItem.getItem()) {
+			if (item.getProduct().equals(rowItem.getProduct()) 
+					&& item.getUnit().equals(unit) && item != rowItem.getItem()) {
 				return true;
 			}
 		}
-		return false;
+		return tableModel.hasDuplicate(unit, rowItem);
 	}
 	
 	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
@@ -279,38 +252,13 @@ public class PurchaseOrderItemsTable extends MagicTable {
 	}
 	
 	protected void registerKeyBindings() {
-		// TODO: shift + tab
-		// TODO: Modify on other columns dont work
-		
-		originalDownAction = getAction(KeyEvent.VK_DOWN);
-		originalEscapeAction = getAction(KeyEvent.VK_ESCAPE);
-		
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), ADD_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
 		
 		ActionMap actionMap = getActionMap();
-		actionMap.put(TAB_ACTION_NAME, new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				tab();
-			}
-		});
-		actionMap.put(DOWN_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (isEditing()) {
-					getCellEditor().stopCellEditing();
-				} else {
-					originalDownAction.actionPerformed(e);
-				}
-			}
-		});
 		actionMap.put(SHOW_SELECTION_DIALOG_ACTION_NAME, new AbstractAction() {
 
 			@Override
@@ -322,10 +270,13 @@ public class PurchaseOrderItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (isAdding()) {
+				if (isEditing()) {
+					getCellEditor().cancelCellEditing();
+					if (getCurrentlySelectedRowItem().isUpdating()) {
+						tableModel.reset(getSelectedRow());
+					}
+				} else if (isAdding()) {
 					switchToEditMode();
-				} else {
-					originalEscapeAction.actionPerformed(e);
 				}
 			}
 		});
@@ -333,72 +284,25 @@ public class PurchaseOrderItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				delete();
+				removeCurrentlySelectedRow();
+			}
+		});
+		actionMap.put(ADD_ITEM_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switchToAddMode();
 			}
 		});
 	}
 	
-	// TODO: Rename method
-	public void delete() {
+	public void removeCurrentlySelectedRow() {
 		if (tableModel.hasItems()) {
 			if (tableModel.isValid(getSelectedRow())) { // check valid row to prevent deleting the blank row
 				if (confirm("Do you wish to delete the selected item?")) {
-					removeCurrentlySelectedRow();
+					doDeleteCurrentlySelectedRow();
 				}
 			}
-		}
-	}
-
-	protected void tab() {
-		if (getSelectedRow() == -1) {
-			return;
-		}
-		
-		if (isEditing()) {
-			getCellEditor().stopCellEditing();
-		}
-		
-		int selectedColumn = getSelectedColumn();
-		int selectedRow = getSelectedRow();
-		PurchaseOrderItemRowItem rowItem = getCurrentlySelectedRowItem();
-		
-		switch (selectedColumn) {
-		case PRODUCT_CODE_COLUMN_INDEX:
-			String code = (String)getValueAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-			if (StringUtils.isEmpty(code)) {
-				showErrorMessage("Product code must be specified");
-				editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-				getEditorComponent().requestFocusInWindow();
-			} else if (productService.findProductByCode(code) == null) {
-				showErrorMessage("No product matchng code specified");
-				editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-				getEditorComponent().requestFocusInWindow();
-			} else {
-				changeSelection(selectedRow, UNIT_COLUMN_INDEX, false, false);
-				editCellAt(selectedRow, UNIT_COLUMN_INDEX);
-				getEditorComponent().requestFocusInWindow();
-			}
-			break;
-		case PurchaseOrderItemsTable.UNIT_COLUMN_INDEX:
-			String fromUnit = (String)getValueAt(selectedRow, UNIT_COLUMN_INDEX);
-			if (StringUtils.isEmpty(fromUnit)) {
-				showErrorMessage("Unit must be specified");
-				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-			} else if (!rowItem.getProduct().getUnits().contains(fromUnit)) {
-				showErrorMessage("Product does not have unit specified");
-				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-			} else if (tableModel.hasDuplicate(rowItem) || hasDuplicate(rowItem)) {
-				showErrorMessage("Duplicate item");
-				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-			} else {
-				int nextField = QUANTITY_COLUMN_INDEX;
-				if (purchaseOrder.isDelivered()) {
-					nextField = actualQuantityColumnIndex;
-				}
-				changeSelection(selectedRow, nextField, false, false);
-				editCellAtCurrentRow(nextField);
-			}
-			break;
 		}
 	}
 
@@ -434,30 +338,6 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		}
 	}
 
-	public boolean validateQuantity(PurchaseOrderItemRowItem rowItem) {
-		if (StringUtils.isEmpty(rowItem.getQuantity())) {
-			showErrorMessage("Quantity must be specified");
-			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-			return false;
-		} else if (rowItem.getQuantityAsInt() == 0) {
-			showErrorMessage("Quantity must be greater than 0");
-			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	public boolean validateActualQuantity(PurchaseOrderItemRowItem rowItem) {
-		if (StringUtils.isEmpty(rowItem.getActualQuantity())) {
-			showErrorMessage("Actual Quantity must be specified");
-			editCellAtCurrentRow(actualQuantityColumnIndex);
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
 	public int getTotalNumberOfItems() {
 		int totalNumberOfItems = purchaseOrder.getTotalNumberOfItems();
 		if (isAdding()) {
@@ -487,83 +367,53 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		}
 	}
 	
-	private void initializeRowItemValidationBehavior() {
+	private void initializeModelListener() {
 		getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				final int row = getSelectedRow();
+				final AbstractTableModel model = (AbstractTableModel)e.getSource();
+				final int row = e.getFirstRow();
 				final int column = e.getColumn();
 				
-				if (column == QUANTITY_COLUMN_INDEX) {
-					SwingUtilities.invokeLater(new Runnable() {
-
-						@Override
-						public void run() {
-							if (validateQuantity(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, amountColumnIndex);
-								changeSelection(row, costColumnIndex, false, false);
-								editCellAt(row, costColumnIndex);
-								getEditorComponent().requestFocusInWindow();
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						
+						switch (column) {
+						case PRODUCT_CODE_COLUMN_INDEX:
+							// Fire entire row. Firing single cells causes this listener to be re-triggered.
+							model.fireTableRowsUpdated(row, row);
+							selectAndEditCellAt(row, UNIT_COLUMN_INDEX);
+							break;
+						case UNIT_COLUMN_INDEX:
+							model.fireTableRowsUpdated(row, row);
+							int nextField = QUANTITY_COLUMN_INDEX;
+							if (purchaseOrder.isDelivered()) {
+								nextField = actualQuantityColumnIndex;
 							}
-						}
-					});
-				} else if (column == costColumnIndex) {
-					SwingUtilities.invokeLater(new Runnable() {
-
-						@Override
-						public void run() {
-							if (validateCost(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, amountColumnIndex);
-								if (isAdding() && isLastRowSelected()) {
+							selectAndEditCellAt(row, nextField);
+							break;
+						case QUANTITY_COLUMN_INDEX:
+							model.fireTableRowsUpdated(row, row);
+							selectAndEditCellAt(row, costColumnIndex);
+							break;
+						default:
+							if (column == costColumnIndex) {
+								model.fireTableRowsUpdated(row, row);
+								if (isAdding() && isLastRowSelected() && getCurrentlySelectedRowItem().isValid()) {
 									addNewRow();
-								} else {
-									if (!isLastRowSelected()) {
-										int nextColumn = PRODUCT_CODE_COLUMN_INDEX;
-										if (purchaseOrder.isDelivered()) {
-											nextColumn = actualQuantityColumnIndex;
-										}
-										changeSelection(row + 1, nextColumn, false, false);
-										editCellAtCurrentRow(nextColumn);
-									}
 								}
+							} else if (column == actualQuantityColumnIndex) {
+								model.fireTableRowsUpdated(row, row);
+								selectAndEditCellAt(row, costColumnIndex);
 							}
 						}
-					});
-				} else if (column == actualQuantityColumnIndex && purchaseOrder.isDelivered()) {
-					SwingUtilities.invokeLater(new Runnable() {
-
-						@Override
-						public void run() {
-							if (validateActualQuantity(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, amountColumnIndex);
-								changeSelection(row, costColumnIndex, false, false);
-								editCellAt(row, costColumnIndex);
-								getEditorComponent().requestFocusInWindow();
-							}
-						}
-					});
-				}
+					}
+				});
 			}
 		});
-	}
-	
-	private boolean validateCost(PurchaseOrderItemRowItem rowItem) {
-		boolean valid = false;
-		if (StringUtils.isEmpty(rowItem.getCost())) {
-			showErrorMessage("Cost must be specified");
-		} else if (!NumberUtil.isAmount(rowItem.getCost())){
-			showErrorMessage("Cost must be a valid amount");
-		} else if (rowItem.getCostAsBigDecimal().equals(BigDecimal.ZERO.setScale(2))){
-			showErrorMessage("Cost must not be 0");
-		} else {
-			valid = true;
-		}
-		
-		if (!valid) {
-			editCellAtCurrentRow(costColumnIndex);
-		}
-		return valid;
 	}
 	
 	public int getCostColumnIndex() {
@@ -592,6 +442,121 @@ public class PurchaseOrderItemsTable extends MagicTable {
 			}
 		}
 		return totalAmount;
+	}
+
+	private class ProductCodeCellEditor extends MagicCellEditor {
+
+		public ProductCodeCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String code = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(code)) {
+				showErrorMessage("Product code must be specified");
+			} else if (productService.findProductByCode(code) == null) {
+				showErrorMessage("No product matching code specified");
+			} else {
+				valid = true;
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+
+	}
+	
+	private class UnitCellEditor extends MagicCellEditor {
+		
+		public UnitCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String unit = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(unit)) {
+				showErrorMessage("Unit must be specified");
+			} else {
+				PurchaseOrderItemRowItem rowItem = getCurrentlySelectedRowItem();
+				if (!rowItem.getProduct().hasUnit(unit)) {
+					showErrorMessage("Product does not have unit specified");
+				} else if (hasDuplicate(unit, rowItem)) {
+					showErrorMessage("Duplicate item");
+				} else {
+					valid = true;
+				}
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
+	}
+	
+	private class QuantityCellEditor extends MagicCellEditor {
+		
+		public QuantityCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String quantity = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(quantity)) {
+				showErrorMessage("Quantity must be specified");
+			} else if (Integer.parseInt(quantity) == 0) {
+				showErrorMessage("Quantity must be greater than 0");
+			} else {
+				valid = true;
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
+	}
+	
+	private class CostCellEditor extends MagicCellEditor {
+		
+		public CostCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String cost = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(cost)) {
+				showErrorMessage("Cost must be specified");
+			} else if (!NumberUtil.isAmount(cost)){
+				showErrorMessage("Cost must be a valid amount");
+			} else if (NumberUtil.toBigDecimal(cost).equals(BigDecimal.ZERO.setScale(2))){
+				showErrorMessage("Cost must not be 0");
+			} else {
+				valid = true;
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
+	}
+	
+	private class ActualQuantityCellEditor extends MagicCellEditor {
+		
+		public ActualQuantityCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String quantity = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(quantity)) {
+				showErrorMessage("Actual Quantity must be specified");
+			} else {
+				valid = true;
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
 	}
 	
 }

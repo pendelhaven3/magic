@@ -18,7 +18,7 @@ public class SalesRequisitionItemRowItem {
 
 	private SalesRequisitionItem item;
 	private String unit;
-	private String quantity;
+	private String quantity; // TODO: change to integer
 	private Product product;
 
 	public SalesRequisitionItemRowItem(SalesRequisitionItem item) {
