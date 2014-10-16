@@ -66,6 +66,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	private JLabel totalDiscountedAmountField;
 	private JLabel totalNetAmountField;
 	private MagicToolBarButton postButton;
+	private JDatePickerImpl datePicker;
 	
 	@Override
 	protected void initializeComponents() {
@@ -140,6 +141,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		itemsTable.setReceivingReceipt(receivingReceipt);
 		
 		postButton.setEnabled(!receivingReceipt.isPosted());
+		datePicker.getComponents()[1].setEnabled(!receivingReceipt.isPosted());
 	}
 
 	private void updateReceivedDateField() {
@@ -246,7 +248,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 
 		JDatePanelImpl datePanel = new JDatePanelImpl(receivedDateModel);
-		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
 		mainPanel.add(datePicker, c);
 		
 		currentRow++;

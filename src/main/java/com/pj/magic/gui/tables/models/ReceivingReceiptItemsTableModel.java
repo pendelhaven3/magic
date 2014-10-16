@@ -29,6 +29,7 @@ public class ReceivingReceiptItemsTableModel extends AbstractTableModel {
 	@Autowired private ReceivingReceiptService receivingReceiptService;
 	
 	private List<ReceivingReceiptItemRowItem> rowItems = new ArrayList<>();
+	private boolean editable;
 	
 	@Override
 	public int getColumnCount() {
@@ -154,10 +155,10 @@ public class ReceivingReceiptItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == ReceivingReceiptItemsTable.DISCOUNT_1_COLUMN_INDEX
+		return editable && (columnIndex == ReceivingReceiptItemsTable.DISCOUNT_1_COLUMN_INDEX
 				|| columnIndex == ReceivingReceiptItemsTable.DISCOUNT_2_COLUMN_INDEX
 				|| columnIndex == ReceivingReceiptItemsTable.DISCOUNT_3_COLUMN_INDEX
-				|| columnIndex == ReceivingReceiptItemsTable.FLAT_RATE_COLUMN_INDEX;
+				|| columnIndex == ReceivingReceiptItemsTable.FLAT_RATE_COLUMN_INDEX);
 	}
 	
 	public ReceivingReceiptItemRowItem getRowItem(int rowIndex) {
@@ -174,6 +175,11 @@ public class ReceivingReceiptItemsTableModel extends AbstractTableModel {
 	
 	public void setReceivingReceipt(ReceivingReceipt receivingReceipt) {
 		setItems(receivingReceipt.getItems());
+		setEditable(!receivingReceipt.isPosted());
 	}
 
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+	}
+	
 }
