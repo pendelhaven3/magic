@@ -75,6 +75,7 @@ public class StockQuantityConversionItem {
 			.isEquals();
 	}
 	
+	// TODO: Remove this
 	public boolean isFilledUp() {
 		return product != null && !StringUtils.isEmpty(fromUnit) 
 				&& !StringUtils.isEmpty(toUnit) && quantity != null;

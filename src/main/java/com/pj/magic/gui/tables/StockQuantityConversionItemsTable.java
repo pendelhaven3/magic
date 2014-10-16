@@ -55,7 +55,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	private static final String TAB_ACTION_NAME = "tab";
 	private static final String DOWN_ACTION_NAME = "down";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
-	private static final String SHOW_SELECT_ACTION_DIALOG_ACTION_NAME = "showSelectActionDialog";
+	private static final String ADD_ITEM_ACTION_NAME = "addItem";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 
@@ -220,9 +220,19 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	}
 	
 	public void removeCurrentlySelectedRow() {
-		
+		if (tableModel.hasItems()) {
+			if (getCurrentlySelectedRowItem().isFilledUp()) { // check valid row to prevent deleting the blank row
+				if (confirm("Do you wish to delete the selected item?")) {
+					doDeleteCurrentlySelectedRow();
+				}
+			}
+		}
+	}
+	
+	public void doDeleteCurrentlySelectedRow() {
 		int selectedRowIndex = getSelectedRow();
 		StockQuantityConversionItem item = getCurrentlySelectedRowItem();
+		// TODO: review this
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
 		stockQuantityConversion.getItems().remove(item);
 		tableModel.removeItem(selectedRowIndex);
@@ -279,13 +289,13 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), SHOW_SELECT_ACTION_DIALOG_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), ADD_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
 		
 		ActionMap actionMap = getActionMap();
-		actionMap.put(SHOW_SELECT_ACTION_DIALOG_ACTION_NAME, new AbstractAction() {
+		actionMap.put(ADD_ITEM_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -332,14 +342,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.tableModel.hasItems()) {
-					if (table.getCurrentlySelectedRowItem().isFilledUp()) { // check valid row to prevent deleting the blank row
-						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?", "Select An Option", JOptionPane.YES_NO_OPTION);
-						if (confirm == JOptionPane.OK_OPTION) {
-							removeCurrentlySelectedRow();
-						}
-					}
-				}
+				removeCurrentlySelectedRow();
 			}
 		});
 	}

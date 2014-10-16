@@ -1,5 +1,6 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -159,7 +160,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createFiller(150, 1), c);
 		
-		currentRow++; // second row
+		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -175,7 +176,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		remarksField.setPreferredSize(new Dimension(200, 20));
 		mainPanel.add(remarksField, c);
 		
-		currentRow++; // third row
+		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -184,7 +185,16 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createFiller(50, 10), c);
 		
-		currentRow++; // fourth row
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(createItemsTableToolBar(), c);
+
+		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
@@ -196,7 +206,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
 		mainPanel.add(itemsTableScrollPane, c);
 
-		currentRow++; // fifth row
+		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 0.0;
@@ -208,7 +218,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
 		mainPanel.add(infoTableScrollPane, c);
 		
-		currentRow++; // sixth row
+		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -438,6 +448,33 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 				postStockQuantityConversion();
 			}
 		});
+		toolBar.add(postButton);
 	}
 
+	private JPanel createItemsTableToolBar() {
+		JPanel panel = new JPanel();
+		
+		JButton addItemButton = new MagicToolBarButton("plus_small", "Add Item (F10)", true);
+		addItemButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.switchToAddMode();
+			}
+		});
+		panel.add(addItemButton, BorderLayout.WEST);
+		
+		JButton deleteItemButton = new MagicToolBarButton("minus_small", "Delete Item (Delete)", true);
+		deleteItemButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.removeCurrentlySelectedRow();
+			}
+		});
+		panel.add(deleteItemButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+	
 }
