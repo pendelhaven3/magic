@@ -225,7 +225,7 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	}
 
 	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
-		ordered = purchaseOrder.isOrdered();
+		ordered = purchaseOrder.isDelivered();
 		posted = purchaseOrder.isPosted();
 		setItems(purchaseOrder.getItems(), false);
 		fireTableStructureChanged();

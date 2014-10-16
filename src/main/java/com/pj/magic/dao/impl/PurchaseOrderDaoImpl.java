@@ -25,8 +25,8 @@ import com.pj.magic.model.User;
 public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PURCHASE_ORDER_NO, SUPPLIER_ID, POST_IND, ORDER_IND,"
-			+ " a.PAYMENT_TERM_ID, a.REMARKS, REFERENCE_NO, ORDER_DT, POST_DT,"
+			"select a.ID, PURCHASE_ORDER_NO, SUPPLIER_ID, POST_IND, DELIVERY_IND,"
+			+ " a.PAYMENT_TERM_ID, a.REMARKS, REFERENCE_NO, POST_DT,"
 			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME,"
 			+ " a.CREATED_BY, c.USERNAME as CREATED_BY_USERNAME"
 			+ " from PURCHASE_ORDER a, SUPPLIER b, USER c"
@@ -83,19 +83,18 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 	}
 	
 	private static final String UPDATE_SQL =
-			"update PURCHASE_ORDER set SUPPLIER_ID = ?, POST_IND = ?, ORDER_IND = ?,"
-			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?, ORDER_DT = ?, POST_DT = ?"
+			"update PURCHASE_ORDER set SUPPLIER_ID = ?, POST_IND = ?, DELIVERY_IND = ?,"
+			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?, POST_DT = ?"
 			+ " where ID = ?";
 	
 	private void update(PurchaseOrder purchaseOrder) {
 		getJdbcTemplate().update(UPDATE_SQL, 
 				purchaseOrder.getSupplier().getId(),
 				purchaseOrder.isPosted() ? "Y" : "N",
-				purchaseOrder.isOrdered() ? "Y" : "N",
+				purchaseOrder.isDelivered() ? "Y" : "N",
 				purchaseOrder.getPaymentTerm() != null ? purchaseOrder.getPaymentTerm().getId() : null,
 				purchaseOrder.getRemarks(),
 				purchaseOrder.getReferenceNumber(),
-				purchaseOrder.getOrderDate(),
 				purchaseOrder.getPostDate(),
 				purchaseOrder.getId());
 	}
@@ -115,13 +114,12 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 			purchaseOrder.setSupplier(supplier);
 			
 			purchaseOrder.setPosted("Y".equals(rs.getString("POST_IND")));
-			purchaseOrder.setOrdered("Y".equals(rs.getString("ORDER_IND")));
+			purchaseOrder.setDelivered("Y".equals(rs.getString("DELIVERY_IND")));
 			if (rs.getLong("PAYMENT_TERM_ID") != 0) {
 				purchaseOrder.setPaymentTerm(new PaymentTerm(rs.getLong("PAYMENT_TERM_ID")));
 			}
 			purchaseOrder.setRemarks(rs.getString("REMARKS"));
 			purchaseOrder.setReferenceNumber(rs.getString("REFERENCE_NO"));
-			purchaseOrder.setOrderDate(rs.getDate("ORDER_DT"));
 			purchaseOrder.setPostDate(rs.getDate("POST_DT"));
 			purchaseOrder.setCreatedBy(new User(rs.getLong("CREATED_BY"), rs.getString("CREATED_BY_USERNAME")));
 			return purchaseOrder;

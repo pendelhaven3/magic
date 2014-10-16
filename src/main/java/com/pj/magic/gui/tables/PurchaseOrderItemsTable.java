@@ -92,7 +92,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(40);
 		columnModel.getColumn(costColumnIndex).setPreferredWidth(50);
 		columnModel.getColumn(amountColumnIndex).setPreferredWidth(60);
-		if (purchaseOrder.isOrdered()) {
+		if (purchaseOrder.isDelivered()) {
 			columnModel.getColumn(orderedColumnIndex).setPreferredWidth(40);
 			columnModel.getColumn(actualQuantityColumnIndex).setPreferredWidth(50);
 		}
@@ -261,7 +261,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		addMode = false;
 		this.purchaseOrder = purchaseOrder;
 		
-		if (purchaseOrder.isOrdered()) {
+		if (purchaseOrder.isDelivered()) {
 			costColumnIndex = 7;
 			amountColumnIndex = 8;
 		} else {
@@ -392,7 +392,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 				editCellAtCurrentRow(UNIT_COLUMN_INDEX);
 			} else {
 				int nextField = QUANTITY_COLUMN_INDEX;
-				if (purchaseOrder.isOrdered()) {
+				if (purchaseOrder.isDelivered()) {
 					nextField = actualQuantityColumnIndex;
 				}
 				changeSelection(selectedRow, nextField, false, false);
@@ -477,7 +477,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		if (!purchaseOrder.hasItems()) {
 			switchToAddMode();
 		} else {
-			if (purchaseOrder.isOrdered()) {
+			if (purchaseOrder.isDelivered()) {
 				changeSelection(0, actualQuantityColumnIndex, false, false);
 				editCellAtCurrentRow(actualQuantityColumnIndex);
 			} else {
@@ -520,7 +520,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 								} else {
 									if (!isLastRowSelected()) {
 										int nextColumn = PRODUCT_CODE_COLUMN_INDEX;
-										if (purchaseOrder.isOrdered()) {
+										if (purchaseOrder.isDelivered()) {
 											nextColumn = actualQuantityColumnIndex;
 										}
 										changeSelection(row + 1, nextColumn, false, false);
@@ -530,7 +530,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 							}
 						}
 					});
-				} else if (column == actualQuantityColumnIndex && purchaseOrder.isOrdered()) {
+				} else if (column == actualQuantityColumnIndex && purchaseOrder.isDelivered()) {
 					SwingUtilities.invokeLater(new Runnable() {
 
 						@Override

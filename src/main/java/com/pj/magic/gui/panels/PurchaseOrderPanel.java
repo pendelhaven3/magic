@@ -87,7 +87,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitCostsAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitCostsAndQuantitiesTableModel();
-	private MagicToolBarButton orderButton;
+	private MagicToolBarButton markAsDeliveredButton;
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton addItemButton;
 	private MagicToolBarButton deleteItemButton;
@@ -173,7 +173,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			}
 		}
 		
-		if (purchaseOrder.isOrdered()) {
+		if (purchaseOrder.isDelivered()) {
 			referenceNumberField.requestFocusInWindow();
 		} else {
 	 		paymentTermComboBox.requestFocusInWindow();
@@ -301,12 +301,12 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		paymentTermComboBox.setSelectedItem(purchaseOrder.getPaymentTerm());
 		remarksField.setEnabled(true);
 		remarksField.setText(purchaseOrder.getRemarks());
-		referenceNumberField.setEnabled(purchaseOrder.isOrdered());
+		referenceNumberField.setEnabled(purchaseOrder.isDelivered());
 		referenceNumberField.setText(purchaseOrder.getReferenceNumber());
 		itemsTable.setPurchaseOrder(purchaseOrder);
 		
-		orderButton.setEnabled(!purchaseOrder.isOrdered());
-		postButton.setEnabled(purchaseOrder.isOrdered() && !purchaseOrder.isPosted());
+		markAsDeliveredButton.setEnabled(!purchaseOrder.isDelivered());
+		postButton.setEnabled(purchaseOrder.isDelivered() && !purchaseOrder.isPosted());
 		addItemButton.setEnabled(!purchaseOrder.isPosted());
 		deleteItemButton.setEnabled(!purchaseOrder.isPosted());
 		printButton.setEnabled(true);
@@ -327,7 +327,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		totalAmountField.setText(null);
 		itemsTable.setPurchaseOrder(purchaseOrder);
 		
-		orderButton.setEnabled(false);
+		markAsDeliveredButton.setEnabled(false);
 		postButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
@@ -777,18 +777,18 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		
 	}
 
-	private void orderPurchaseOrder() {
+	private void markPurchaseOrderAsDelivered() {
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();
 		}
 		
 		if (!purchaseOrder.hasItems()) {
-			showErrorMessage("Cannot order when there are no items");
+			showErrorMessage("Cannot mark purchase order with no items");
 			return;
 		}
 		
-		if (confirm("Mark PO as ordered?")) {
-			purchaseOrderService.order(purchaseOrder);
+		if (confirm("Mark PO as delivered?")) {
+			purchaseOrderService.markAsDelivered(purchaseOrder);
 			updateDisplay(purchaseOrder);
 			referenceNumberField.requestFocusInWindow();
 		}
@@ -823,15 +823,15 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		orderButton = new MagicToolBarButton("order", "Order");
-		orderButton.addActionListener(new ActionListener() {
+		markAsDeliveredButton = new MagicToolBarButton("truck", "Mark as Delivered");
+		markAsDeliveredButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				orderPurchaseOrder();
+				markPurchaseOrderAsDelivered();
 			}
 		});
-		toolBar.add(orderButton);
+		toolBar.add(markAsDeliveredButton);
 		
 		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {

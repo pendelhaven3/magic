@@ -59,7 +59,6 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	private JLabel receivingReceiptNumberField;
 	private JLabel relatedPurchaseOrderNumberField;
 	private JLabel supplierField;
-	private JLabel orderDateField;
 	private JLabel paymentTermField;
 	private UtilCalendarModel receivedDateModel;
 	private JLabel referenceNumberField;
@@ -131,7 +130,6 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		receivingReceiptNumberField.setText(receivingReceipt.getReceivingReceiptNumber().toString());
 		relatedPurchaseOrderNumberField.setText(receivingReceipt.getRelatedPurchaseOrderNumber().toString());
 		supplierField.setText(receivingReceipt.getSupplier().getName());
-		orderDateField.setText(FormatterUtil.formatDate(receivingReceipt.getOrderDate()));
 		paymentTermField.setText(receivingReceipt.getPaymentTerm().getName());
 		updateReceivedDateField();
 		referenceNumberField.setText(receivingReceipt.getReferenceNumber());
@@ -218,21 +216,6 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(supplierField, c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Order Date:"), c);
-		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 5;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		orderDateField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(orderDateField, c);
 		
 		currentRow++;
 		

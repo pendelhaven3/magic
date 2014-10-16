@@ -104,9 +104,8 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
 	@Transactional
 	@Override
-	public void order(PurchaseOrder purchaseOrder) {
-		purchaseOrder.setOrdered(true);
-		purchaseOrder.setOrderDate(new Date());
+	public void markAsDelivered(PurchaseOrder purchaseOrder) {
+		purchaseOrder.setDelivered(true);
 		purchaseOrderDao.save(purchaseOrder);
 		purchaseOrderItemDao.updateAllByPurchaseOrderAsOrdered(purchaseOrder);
 	}

@@ -27,7 +27,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, RECEIVING_RECEIPT_NO, SUPPLIER_ID, POST_IND, "
 			+ " a.PAYMENT_TERM_ID, c.NAME as PAYMENT_TERM_NAME, a.REMARKS, REFERENCE_NO, RECEIVED_DT, "
-			+ " ORDER_DT, RELATED_PURCHASE_ORDER_NO, RECEIVED_BY, b.NAME as SUPPLIER_NAME"
+			+ " RELATED_PURCHASE_ORDER_NO, RECEIVED_BY, b.NAME as SUPPLIER_NAME"
 			+ " from RECEIVING_RECEIPT a, SUPPLIER b, PAYMENT_TERM c"
 			+ " where a.SUPPLIER_ID = b.ID"
 			+ " and a.PAYMENT_TERM_ID = c.ID";
@@ -57,8 +57,8 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	private static final String INSERT_SQL =
 			"insert into RECEIVING_RECEIPT"
 			+ " (SUPPLIER_ID, PAYMENT_TERM_ID, REFERENCE_NO, REMARKS, RECEIVED_DT, "
-			+ "  ORDER_DT, RELATED_PURCHASE_ORDER_NO, RECEIVED_BY)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "  RELATED_PURCHASE_ORDER_NO, RECEIVED_BY)"
+			+ " values (?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final ReceivingReceipt receivingReceipt) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -73,9 +73,8 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				ps.setString(3, receivingReceipt.getReferenceNumber());
 				ps.setString(4, receivingReceipt.getRemarks());
 				ps.setDate(5, new Date(receivingReceipt.getReceivedDate().getTime()));
-				ps.setDate(6,  new Date(receivingReceipt.getOrderDate().getTime()));
-				ps.setLong(7, receivingReceipt.getRelatedPurchaseOrderNumber());
-				ps.setLong(8, receivingReceipt.getReceivedBy().getId());
+				ps.setLong(6, receivingReceipt.getRelatedPurchaseOrderNumber());
+				ps.setLong(7, receivingReceipt.getReceivedBy().getId());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -115,7 +114,6 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			receivingReceipt.setRemarks(rs.getString("REMARKS"));
 			receivingReceipt.setReferenceNumber(rs.getString("REFERENCE_NO"));
 			receivingReceipt.setReceivedDate(rs.getDate("RECEIVED_DT"));
-			receivingReceipt.setOrderDate(rs.getDate("ORDER_DT"));
 			receivingReceipt.setRelatedPurchaseOrderNumber(rs.getLong("RELATED_PURCHASE_ORDER_NO"));
 			receivingReceipt.setReceivedBy(new User(rs.getLong("RECEIVED_BY")));
 			return receivingReceipt;

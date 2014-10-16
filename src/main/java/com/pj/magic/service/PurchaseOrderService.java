@@ -22,6 +22,6 @@ public interface PurchaseOrderService {
 	
 	List<PurchaseOrder> getAllNonPostedPurchaseOrders();
 
-	void order(PurchaseOrder purchaseOrder);
+	void markAsDelivered(PurchaseOrder purchaseOrder);
 	
 }

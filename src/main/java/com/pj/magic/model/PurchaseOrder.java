@@ -13,11 +13,10 @@ public class PurchaseOrder {
 	private Supplier supplier;
 	private List<PurchaseOrderItem> items = new ArrayList<>();
 	private boolean posted;
-	private boolean ordered;
+	private boolean delivered;
 	private PaymentTerm paymentTerm;
 	private String remarks;
 	private String referenceNumber;
-	private Date orderDate;
 	private Date postDate;
 	private User createdBy;
 
@@ -64,19 +63,19 @@ public class PurchaseOrder {
 	public String getStatus() {
 		if (posted) {
 			return "Posted";
-		} else if (ordered) {
+		} else if (delivered) {
 			return "Ordered";
 		} else {
 			return "New";
 		}
 	}
 
-	public boolean isOrdered() {
-		return ordered;
+	public boolean isDelivered() {
+		return delivered;
 	}
 
-	public void setOrdered(boolean ordered) {
-		this.ordered = ordered;
+	public void setDelivered(boolean delivered) {
+		this.delivered = delivered;
 	}
 
 	public boolean hasItems() {
@@ -110,7 +109,6 @@ public class PurchaseOrder {
 	public ReceivingReceipt createReceivingReceipt() {
 		ReceivingReceipt receivingReceipt = new ReceivingReceipt();
 		receivingReceipt.setSupplier(supplier);
-		receivingReceipt.setOrderDate(orderDate);
 		receivingReceipt.setReceivedDate(new Date());
 		receivingReceipt.setPaymentTerm(paymentTerm);
 		receivingReceipt.setReferenceNumber(referenceNumber);
@@ -150,14 +148,6 @@ public class PurchaseOrder {
 			total = total.add(item.getAmount());
 		}
 		return total.setScale(2, RoundingMode.HALF_UP);
-	}
-
-	public Date getOrderDate() {
-		return orderDate;
-	}
-
-	public void setOrderDate(Date orderDate) {
-		this.orderDate = orderDate;
 	}
 
 	public Date getPostDate() {
