@@ -308,32 +308,32 @@ public class PurchaseOrderItemsTable extends MagicTable {
 
 	protected void showSelectionDialog() {
 		if (isProductCodeFieldSelected()) {
+			if (!isEditing()) {
+				editCellAt(getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
+			}
+			
 			selectProductDialog.searchProducts((String)getCellEditor().getCellEditorValue(),
 					purchaseOrder.getSupplier());
 			selectProductDialog.setVisible(true);
 			
 			String productCode = selectProductDialog.getSelectedProductCode();
 			if (productCode != null) {
-				if (isEditing()) {
-					getCellEditor().cancelCellEditing();
-					requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
-				}
-				setValueAt(productCode, getSelectedRow(), getSelectedColumn());
-				KeyUtil.simulateTabKey();
+				((JTextField)getEditorComponent()).setText(productCode);
+				getCellEditor().stopCellEditing();
 			}
 		} else if (isUnitFieldSelected()) {
+			if (!isEditing()) {
+				editCellAt(getSelectedRow(), UNIT_COLUMN_INDEX);
+			}
+			
 			selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
 			selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
 			selectUnitDialog.setVisible(true);
 			
 			String unit = selectUnitDialog.getSelectedUnit();
 			if (unit != null) {
-				if (isEditing()) {
-					getCellEditor().cancelCellEditing();
-					requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
-				}
-				setValueAt(unit, getSelectedRow(), getSelectedColumn());
-				KeyUtil.simulateTabKey();
+				((JTextField)getEditorComponent()).setText(unit);
+				getCellEditor().stopCellEditing();
 			}
 		}
 	}
