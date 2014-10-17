@@ -858,13 +858,24 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				printService.print(purchaseOrder);
+				printPurchaseOrder();
 			}
-		});
+		});	
 		toolBar.add(printButton);
 	}
 
+	private void printPurchaseOrder() {
+		if (itemsTable.isEditing()) {
+			itemsTable.getCellEditor().cancelCellEditing();
+		}
+		printService.print(purchaseOrder);
+	}
+
 	protected void printPreview() {
+		if (itemsTable.isEditing()) {
+			itemsTable.getCellEditor().cancelCellEditing();
+		}
+		
 		printPreviewDialog.updateDisplay(printService.generateReportAsString(purchaseOrder));
 		printPreviewDialog.setVisible(true);
 	}

@@ -409,6 +409,10 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	}
 
 	protected void printPreview() {
+		if (itemsTable.isEditing()) {
+			itemsTable.getCellEditor().cancelCellEditing();
+		}
+		
 		int confirm = JOptionPane.showConfirmDialog(this, "Include discount details?", "Print Receiving Receipt", JOptionPane.YES_NO_OPTION);
 		printPreviewDialog.updateDisplay(
 				printService.generateReportAsString(receivingReceipt, confirm == JOptionPane.YES_OPTION));
@@ -416,6 +420,10 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	}
 
 	protected void printReceivingReceipt() {
+		if (itemsTable.isEditing()) {
+			itemsTable.getCellEditor().cancelCellEditing();
+		}
+		
 		int confirm = JOptionPane.showConfirmDialog(this, "Include discount details?", "Print Receiving Receipt", JOptionPane.YES_NO_CANCEL_OPTION);
 		if (confirm == JOptionPane.YES_OPTION) {
 			printService.print(receivingReceipt, true);
