@@ -12,7 +12,8 @@ import com.pj.magic.util.FormatterUtil;
 
 public class SalesInvoicesTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"SI No.", "Customer Name", "Post Date", "Posted By", "Total Amount"};
+	private static final String[] COLUMN_NAMES = 
+		{"SI No.", "Customer Name", "Create Date", "Created By", "Total Amount", "Status"};
 	
 	private List<SalesInvoice> salesInvoices = new ArrayList<>();
 	
@@ -34,13 +35,15 @@ public class SalesInvoicesTableModel extends AbstractTableModel {
 			return salesInvoice.getSalesInvoiceNumber().toString();
 		case SalesInvoicesTable.CUSTOMER_NAME_COLUMN_INDEX:
 			return salesInvoice.getCustomer().getName();
-		case SalesInvoicesTable.POST_DATE_COLUMN_INDEX:
-			Date date = salesInvoice.getPostDate();
+		case SalesInvoicesTable.CREATE_DATE_COLUMN_INDEX:
+			Date date = salesInvoice.getCreateDate();
 			return (date != null) ? FormatterUtil.formatDate(date) : "";
-		case SalesInvoicesTable.POSTED_BY_COLUMN_INDEX:
-			return salesInvoice.getPostedBy().getUsername();
+		case SalesInvoicesTable.CREATED_BY_COLUMN_INDEX:
+			return salesInvoice.getCreatedBy().getUsername();
 		case SalesInvoicesTable.TOTAL_AMOUNT_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(salesInvoice.getTotalAmount());
+		case SalesInvoicesTable.STATUS_COLUMN_INDEX:
+			return salesInvoice.getStatus();
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}

@@ -20,6 +20,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +42,8 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class SalesInvoicePanel extends StandardMagicPanel {
 
+	private static final Logger logger = LoggerFactory.getLogger(SalesInvoicePanel.class);
+	
 	@Autowired private SalesInvoiceItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private PrintService printService;
@@ -49,15 +53,18 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
 	private JLabel customerNameField;
-	private JLabel postDateField;
+	private JLabel createDateField;
 	private JLabel encoderField;
 	private JLabel pricingSchemeNameField;
 	private JLabel modeField;
 	private JLabel remarksField;
 	private JLabel paymentTermNameField;
+	private JLabel statusField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
+	private JButton postButton;
+	private JButton cancelButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -66,28 +73,31 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay(SalesInvoice salesInvoice) {
-		this.salesInvoice = salesInvoiceService.get(salesInvoice.getId());
-		salesInvoice = this.salesInvoice;
+		this.salesInvoice = salesInvoice = salesInvoiceService.get(salesInvoice.getId());
 		
 		salesInvoiceNumberField.setText(salesInvoice.getSalesInvoiceNumber().toString());
 		customerNameField.setText(salesInvoice.getCustomer().getCode() + " - " + salesInvoice.getCustomer().getName());
-		postDateField.setText(FormatterUtil.formatDate(salesInvoice.getPostDate()));
-		encoderField.setText(salesInvoice.getPostedBy().getUsername());
+		createDateField.setText(FormatterUtil.formatDate(salesInvoice.getCreateDate()));
+		encoderField.setText(salesInvoice.getCreatedBy().getUsername());
 		pricingSchemeNameField.setText(salesInvoice.getPricingScheme().getName());
 		modeField.setText(salesInvoice.getMode());
 		remarksField.setText(salesInvoice.getRemarks());
 		paymentTermNameField.setText(salesInvoice.getPaymentTerm().getName());
+		statusField.setText(salesInvoice.getStatus());
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
 		totalAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalAmount()));
 		itemsTable.setSalesInvoice(salesInvoice);
 		if (salesInvoice.hasItems()) {
 			itemsTable.changeSelection(0, 0, false, false);
 		}
+		
+		postButton.setEnabled(!(salesInvoice.isPosted() || salesInvoice.isCancelled()));
+		cancelButton.setEnabled(!(salesInvoice.isPosted() || salesInvoice.isCancelled()));
 	}
 
 	@Override
 	protected void registerKeyBindings() {
-		
+		// none
 	}
 	
 	@Override
@@ -280,15 +290,15 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Post Date:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Create Date:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postDateField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(postDateField, c);
+		createDateField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(createDateField, c);
 		
 		currentRow++;
 		
@@ -311,7 +321,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Posted By:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Created By:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -335,6 +345,20 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		paymentTermNameField = ComponentUtil.createLabel(100);
 		mainPanel.add(paymentTermNameField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Status:"), c);
+		
+		c.weightx = 1.0;
+		c.weighty = 0.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		statusField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(statusField, c);
 		
 		currentRow++;
 		
@@ -425,6 +449,26 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		postButton = new MagicToolBarButton("post", "Post");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				postSalesInvoice();
+			}
+		});
+		toolBar.add(postButton);
+		
+		cancelButton = new MagicToolBarButton("cancel", "Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cancelSalesInvoice();
+			}
+		});
+		toolBar.add(cancelButton);
+		
 		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {
 			
@@ -455,6 +499,32 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(copyButton);
+	}
+
+	protected void cancelSalesInvoice() {
+		if (confirm("Cancel this Sales Invoice?")) {
+			try {
+				salesInvoiceService.cancel(salesInvoice);
+				showMessage("Sales Invoice cancelled");
+				updateDisplay(salesInvoice);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred");
+			}
+		}
+	}
+
+	protected void postSalesInvoice() {
+		if (confirm("Post this Sales Invoice?")) {
+			try {
+				salesInvoiceService.post(salesInvoice);
+				showMessage("Sales Invoice posted");
+				updateDisplay(salesInvoice);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred");
+			}
+		}
 	}
 
 	private void createNewSalesRequisitionBasedOnSalesInvoice() {

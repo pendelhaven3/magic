@@ -10,6 +10,8 @@ public class SalesInvoice {
 	private Long id;
 	private Long salesInvoiceNumber;
 	private Customer customer;
+	private Date createDate;
+	private User createdBy;
 	private Date postDate;
 	private User postedBy;
 	private List<SalesInvoiceItem> items = new ArrayList<>();
@@ -18,6 +20,10 @@ public class SalesInvoice {
 	private PricingScheme pricingScheme;
 	private Long relatedSalesRequisitionNumber;
 	private PaymentTerm paymentTerm;
+	private Date cancelDate;
+	private User cancelledBy;
+	private boolean cancelled;
+	private boolean posted;
 
 	public Long getId() {
 		return id;
@@ -157,6 +163,64 @@ public class SalesInvoice {
 		}
 		
 		return salesRequisition;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Date getCancelDate() {
+		return cancelDate;
+	}
+
+	public void setCancelDate(Date cancelDate) {
+		this.cancelDate = cancelDate;
+	}
+
+	public User getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(User cancelledBy) {
+		this.cancelledBy = cancelledBy;
+	}
+
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
+
+	public boolean isPosted() {
+		return posted;
+	}
+
+	public void setPosted(boolean posted) {
+		this.posted = posted;
+	}
+
+	public String getStatus() {
+		if (posted) {
+			return "Posted";
+		} else if (cancelled) {
+			return "Cancelled";
+		} else {
+			return "Created";
+		}
 	}
 	
 }

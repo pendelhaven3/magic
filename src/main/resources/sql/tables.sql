@@ -133,19 +133,27 @@ create table SALES_INVOICE (
   ID integer auto_increment,
   SALES_INVOICE_NO integer auto_increment,
   CUSTOMER_ID integer not null,
-  POST_DT date not null,
-  POSTED_BY varchar2(30) not null,
+  CREATE_DT date not null,
+  CREATED_BY varchar2(30) not null,
   RELATED_SALES_REQUISITION_NO integer not null,
   PRICING_SCHEME_ID integer not null,
   MODE varchar2(10) not null,
   REMARKS varchar2(100) null,
   PAYMENT_TERM_ID integer not null,
+  POST_IND varchar2(1) default 'N' not null,
+  POST_DT date null,
+  POST_BY varchar2(30) null,
+  CANCEL_IND varchar2(1) default 'N' not null,
+  CANCEL_DT date null,
+  CANCEL_BY varchar2(30) null,
   constraint SALES_INVOICE$PK primary key (ID),
   constraint SALES_INVOICE$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
-  constraint SALES_INVOICE$FK2 foreign key (POSTED_BY) references USER (ID),
+  constraint SALES_INVOICE$FK2 foreign key (CREATED_BY) references USER (ID),
   constraint SALES_INVOICE$FK3 foreign key (RELATED_SALES_REQUISITION_NO) references SALES_REQUISITION (SALES_REQUISITION_NO),
   constraint SALES_INVOICE$FK4 foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID),
-  constraint SALES_INVOICE$FK5 foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID)
+  constraint SALES_INVOICE$FK5 foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID),
+  constraint SALES_INVOICE$FK6 foreign key (POST_BY) references USER (ID),
+  constraint SALES_INVOICE$FK7 foreign key (CANCEL_BY) references USER (ID)
 );
 
 create table SALES_INVOICE_ITEM (
