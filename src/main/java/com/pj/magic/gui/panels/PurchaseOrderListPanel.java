@@ -90,11 +90,13 @@ public class PurchaseOrderListPanel extends StandardMagicPanel {
 		if (table.getSelectedRow() != -1) {
 			PurchaseOrder selected = table.getCurrentlySelectedPurchaseOrder();
 			if (selected.isPosted()) {
-				showErrorMessage("Cannot delete a stock quantity conversion that is already posted!");
+				// TODO: Disable post button when Purchase Order is already posted
+				showErrorMessage("Cannot delete a Purchase Order that is already posted!");
 				return;
 			}
-			if (confirm("Are you sure you want to delete this stock quantity conversion?")) {
+			if (confirm("Delete this Purchase Order?")) {
 				table.removeCurrentlySelectedRow();
+				showMessage("Purchase Order deleted");
 			}
 		}
 	}

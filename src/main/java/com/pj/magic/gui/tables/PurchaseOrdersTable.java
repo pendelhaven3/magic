@@ -75,6 +75,9 @@ public class PurchaseOrdersTable extends JTable {
 	}
 
 	public void removeCurrentlySelectedRow() {
+		PurchaseOrder purchaseOrder = getCurrentlySelectedPurchaseOrder();
+		tableModel.remove(purchaseOrder);
+		purchaseOrderService.delete(purchaseOrder);
 	}
 	
 }

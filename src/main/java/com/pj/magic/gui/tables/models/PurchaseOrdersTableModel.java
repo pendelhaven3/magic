@@ -57,5 +57,11 @@ public class PurchaseOrdersTableModel extends AbstractTableModel {
 	public PurchaseOrder getPurchaseOrder(int row) {
 		return purchaseOrders.get(row);
 	}
+
+	public void remove(PurchaseOrder purchaseOrder) {
+		int row = purchaseOrders.indexOf(purchaseOrder);
+		purchaseOrders.remove(row);
+		fireTableRowsDeleted(row, row);
+	}
 	
 }
