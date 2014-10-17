@@ -55,6 +55,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 	private static final String ADD_ITEM_ACTION_NAME = "addItem";
+	private static final String F4_ACTION_NAME = "f4";
 
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
@@ -254,6 +255,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 	protected void registerKeyBindings() {
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), F4_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), ADD_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
@@ -294,8 +296,47 @@ public class PurchaseOrderItemsTable extends MagicTable {
 				switchToAddMode();
 			}
 		});
+		actionMap.put(F4_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectProductDialogUsingPreviousProductCode();
+			}
+		});
 	}
 	
+	protected void openSelectProductDialogUsingPreviousProductCode() {
+		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
+			return;
+		}
+		
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), getSelectedColumn());
+		}
+		
+		if (tableModel.hasNonBlankItem()) {
+			openSelectProductDialog(getPreviousRowItem().getProductCode());
+		} else if (purchaseOrder.hasItems()) {
+			List<PurchaseOrderItem> items = purchaseOrder.getItems();
+			openSelectProductDialog(items.get(items.size() - 1).getProduct().getCode());
+		}
+	}
+	
+	private void openSelectProductDialog(String productCodeCriteria) {
+		selectProductDialog.searchProducts(productCodeCriteria, purchaseOrder.getSupplier());
+		selectProductDialog.setVisible(true);
+		
+		String productCode = selectProductDialog.getSelectedProductCode();
+		if (productCode != null) {
+			((JTextField)getEditorComponent()).setText(productCode);
+			getCellEditor().stopCellEditing();
+		}
+	}
+
+	private PurchaseOrderItemRowItem getPreviousRowItem() {
+		return tableModel.getRowItem(getSelectedRow() - 1);
+	}
+
 	public void removeCurrentlySelectedRow() {
 		if (tableModel.hasItems()) {
 			if (tableModel.isValid(getSelectedRow())) { // check valid row to prevent deleting the blank row
@@ -311,16 +352,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 			if (!isEditing()) {
 				editCellAt(getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
 			}
-			
-			selectProductDialog.searchProducts((String)getCellEditor().getCellEditorValue(),
-					purchaseOrder.getSupplier());
-			selectProductDialog.setVisible(true);
-			
-			String productCode = selectProductDialog.getSelectedProductCode();
-			if (productCode != null) {
-				((JTextField)getEditorComponent()).setText(productCode);
-				getCellEditor().stopCellEditing();
-			}
+			openSelectProductDialog((String)getCellEditor().getCellEditorValue());
 		} else if (isUnitFieldSelected()) {
 			if (!isEditing()) {
 				editCellAt(getSelectedRow(), UNIT_COLUMN_INDEX);

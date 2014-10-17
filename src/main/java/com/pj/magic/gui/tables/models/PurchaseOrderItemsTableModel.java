@@ -125,7 +125,11 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 		String val = (String)value;
 		switch (columnIndex) {
 		case PurchaseOrderItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+			if (rowItem.getProduct() != null && rowItem.getProduct().getCode().equals(val)) {
+				return;
+			}
 			rowItem.setProduct(productService.findProductByCode(val));
+			rowItem.setUnit(null);
 			break;
 		case PurchaseOrderItemsTable.UNIT_COLUMN_INDEX:
 			rowItem.setUnit(val);
@@ -232,6 +236,10 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	public void reset(int row) {
 		rowItems.get(row).reset();
 		fireTableRowsUpdated(row, row);
+	}
+
+	public boolean hasNonBlankItem() {
+		return hasItems() && rowItems.get(0).isValid();
 	}
 
 }
