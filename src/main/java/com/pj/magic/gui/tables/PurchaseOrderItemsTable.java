@@ -402,8 +402,20 @@ public class PurchaseOrderItemsTable extends MagicTable {
 						default:
 							if (column == costColumnIndex) {
 								model.fireTableRowsUpdated(row, row);
-								if (isAdding() && isLastRowSelected() && getCurrentlySelectedRowItem().isValid()) {
-									addNewRow();
+								if (isAdding()) {
+									if (isLastRowSelected()) {
+										if (getCurrentlySelectedRowItem().isValid()) {
+											addNewRow();
+										}
+									} else {
+										selectAndEditCellAt(row + 1, PRODUCT_CODE_COLUMN_INDEX);
+									}
+								} else {
+									if (purchaseOrder.isDelivered()) {
+										if (!isLastRowSelected()) {
+											selectAndEditCellAt(row + 1, actualQuantityColumnIndex);
+										}
+									}
 								}
 							} else if (column == actualQuantityColumnIndex) {
 								model.fireTableRowsUpdated(row, row);
