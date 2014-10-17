@@ -62,3 +62,15 @@ version 0.12
 8. Added navigation toolbar to Print Preview
 9. Added Print Preview of Sales Invoice report
 10. Other fixes
+
+version 0.13
+1. Added Product Subcategory
+2. Prevent adding a product with negative profit to Sales Requisition
+3. Added creating a new Sales Requisition based on a Sales Invoice
+4. Added Manufacturer and Category criterias to Search Product
+5. Added Search function to Product List
+6. Fixed missing Post button in Stock Quantity Conversion
+7. Optimized implementation of inputting Purchase Order items
+8. Added F4 function when inputting Purchase Order items
+9. Added Print Preview in Receiving Receipt page
+10. Renamed Mark PO as Ordered to Mark PO as Delivered instead
