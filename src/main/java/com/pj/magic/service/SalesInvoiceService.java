@@ -18,5 +18,9 @@ public interface SalesInvoiceService {
 	void mark(SalesInvoice salesInvoice);
 	
 	void cancel(SalesInvoice salesInvoice);
+
+	List<SalesInvoice> getNewSalesInvoices();
+
+	void markOrCancelSalesInvoices(List<SalesInvoice> salesInvoices);
 	
 }

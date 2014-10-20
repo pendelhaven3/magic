@@ -41,7 +41,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(200, 260));
+		table.setPreferredSize(new Dimension(200, 300));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		add(table, c);
@@ -88,6 +88,9 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		case "Sales Invoice":
 			getMagicFrame().switchToSalesInvoicesListPanel();
 			break;
+		case "Mark Sales Invoice":
+			getMagicFrame().switchToMarkSalesInvoicesPanel();
+			break;
 		case "Customer List":
 			getMagicFrame().switchToCustomerListPanel();
 			break;
@@ -133,6 +136,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				{"Pricing Schemes"},
 				{"Sales Requisition"}, 
 				{"Sales Invoice"},
+				{"Mark Sales Invoice"},
 				{"Stock Quantity Conversion"},
 				{"Purchase Order"},
 				{"Receiving Receipt"},

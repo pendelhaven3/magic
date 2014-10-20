@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -21,6 +22,7 @@ import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.User;
+import com.pj.magic.model.util.SalesInvoiceSearchCriteria;
 
 @Repository
 public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
@@ -162,6 +164,22 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				salesInvoice.isCancelled() ? new Date(salesInvoice.getCancelDate().getTime()) : null,
 				salesInvoice.isCancelled() ? salesInvoice.getCancelledBy().getId() : null,
 				salesInvoice.getId());
+	}
+
+	@Override
+	public List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria) {
+		StringBuilder sb = new StringBuilder(BASE_SELECT_SQL);
+		List<Object> params = new ArrayList<>();
+		if (criteria.isMarked() != null) {
+			sb.append(" and MARK_IND = ?");
+			params.add(criteria.isMarked() ? "Y" : "N");
+		}
+		if (criteria.isCancelled() != null) {
+			sb.append(" and CANCEL_IND = ?");
+			params.add(criteria.isCancelled() ? "Y" : "N");
+		}
+		sb.append(" order by SALES_INVOICE_NO desc");
+		return getJdbcTemplate().query(sb.toString(), salesInvoiceRowMapper, params.toArray());
 	}
 	
 }

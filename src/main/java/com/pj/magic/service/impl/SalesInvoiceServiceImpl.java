@@ -18,6 +18,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
+import com.pj.magic.model.util.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.SalesInvoiceService;
 
@@ -103,6 +104,31 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 			Product product = productDao.get(item.getProduct().getId());
 			product.addUnitQuantity(item.getUnit(), item.getQuantity());
 			productDao.updateAvailableQuantities(product);
+		}
+	}
+
+	@Override
+	public List<SalesInvoice> getNewSalesInvoices() {
+		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
+		criteria.setMarked(false);
+		criteria.setCancelled(false);
+		
+		List<SalesInvoice> salesInvoices = salesInvoiceDao.search(criteria);
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			loadSalesInvoiceDetails(salesInvoice);
+		}
+		return salesInvoices;
+	}
+
+	@Transactional
+	@Override
+	public void markOrCancelSalesInvoices(List<SalesInvoice> salesInvoices) {
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			if (salesInvoice.isMarked()) {
+				mark(salesInvoice);
+			} else if (salesInvoice.isCancelled()) {
+				cancel(salesInvoice);
+			}
 		}
 	}
 

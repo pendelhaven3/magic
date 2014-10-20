@@ -29,6 +29,7 @@ import com.pj.magic.gui.panels.MaintainProductCategoryPanel;
 import com.pj.magic.gui.panels.MaintainProductPanel;
 import com.pj.magic.gui.panels.MaintainSupplierPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
+import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
 import com.pj.magic.gui.panels.PricingSchemeListPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
@@ -78,6 +79,7 @@ public class MagicFrame extends JFrame {
 	private static final String SALES_REQUISITION_PANEL = "SALES_REQUISITION_PANEL";
 	private static final String SALES_INVOICES_LIST_PANEL = "SALES_INVOICES_LIST_PANEL";
 	private static final String SALES_INVOICE_PANEL = "SALES_INVOICE_PANEL";
+	private static final String MARK_SALES_INVOICE_PANEL = "MARK_SALES_INVOICE_PANEL";
 	private static final String PRODUCT_LIST_PANEL = "PRODUCT_LIST_PANEL";
 	private static final String MAINTAIN_PRODUCT_PANEL = "MAINTAIN_PRODUCT_PANEL";
 	private static final String MANUFACTURER_LIST_PANEL = "MANUFACTURER_LIST_PANEL";
@@ -113,6 +115,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private SalesRequisitionPanel salesRequisitionPanel;
 	@Autowired private SalesInvoiceListPanel salesInvoicesListPanel;
 	@Autowired private SalesInvoicePanel salesInvoicePanel;
+	@Autowired private MarkSalesInvoicePanel markSalesInvoicePanel;
 	@Autowired private ProductListPanel productListPanel;
 	@Autowired private MaintainProductPanel maintainProductPanel;
 	@Autowired private ManufacturerListPanel manufacturerListPanel;
@@ -160,6 +163,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(salesRequisitionPanel, SALES_REQUISITION_PANEL);
 		panelHolder.add(salesInvoicesListPanel, SALES_INVOICES_LIST_PANEL);
 		panelHolder.add(salesInvoicePanel, SALES_INVOICE_PANEL);
+		panelHolder.add(markSalesInvoicePanel, MARK_SALES_INVOICE_PANEL);
 		panelHolder.add(productListPanel, PRODUCT_LIST_PANEL);
 		panelHolder.add(maintainProductPanel, MAINTAIN_PRODUCT_PANEL);
 		panelHolder.add(manufacturerListPanel, MANUFACTURER_LIST_PANEL);
@@ -471,6 +475,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Area Inventory Report");
 		areaInventoryReportPanel.updateDisplay(areaInventoryReport);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, AREA_INVENTORY_REPORT_PANEL);
+	}
+
+	public void switchToMarkSalesInvoicesPanel() {
+		addPanelNameToTitle("Mark Sales Invoice");
+		markSalesInvoicePanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MARK_SALES_INVOICE_PANEL);
 	}
 	
 }
