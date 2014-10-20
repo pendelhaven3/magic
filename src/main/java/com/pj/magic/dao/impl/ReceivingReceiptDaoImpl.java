@@ -31,6 +31,8 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			+ " from RECEIVING_RECEIPT a, SUPPLIER b, PAYMENT_TERM c"
 			+ " where a.SUPPLIER_ID = b.ID"
 			+ " and a.PAYMENT_TERM_ID = c.ID";
+
+	private static final String RECEIVING_RECEIPT_NUMBER_SEQUENCE = "RECEIVING_RECEIPT_NO_SEQ";
 	
 	private ReceivingReceiptRowMapper receivingReceiptRowMapper = new ReceivingReceiptRowMapper();
 	
@@ -56,9 +58,9 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	
 	private static final String INSERT_SQL =
 			"insert into RECEIVING_RECEIPT"
-			+ " (SUPPLIER_ID, PAYMENT_TERM_ID, REFERENCE_NO, REMARKS, RECEIVED_DT, "
+			+ " (RECEIVING_RECEIPT_NO, SUPPLIER_ID, PAYMENT_TERM_ID, REFERENCE_NO, REMARKS, RECEIVED_DT, "
 			+ "  RELATED_PURCHASE_ORDER_NO, RECEIVED_BY)"
-			+ " values (?, ?, ?, ?, ?, ?, ?)";
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final ReceivingReceipt receivingReceipt) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -68,13 +70,14 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setLong(1, receivingReceipt.getSupplier().getId());
-				ps.setLong(2, receivingReceipt.getPaymentTerm().getId());
-				ps.setString(3, receivingReceipt.getReferenceNumber());
-				ps.setString(4, receivingReceipt.getRemarks());
-				ps.setDate(5, new Date(receivingReceipt.getReceivedDate().getTime()));
-				ps.setLong(6, receivingReceipt.getRelatedPurchaseOrderNumber());
-				ps.setLong(7, receivingReceipt.getReceivedBy().getId());
+				ps.setLong(1, getNextReceivingReceiptNumber());
+				ps.setLong(2, receivingReceipt.getSupplier().getId());
+				ps.setLong(3, receivingReceipt.getPaymentTerm().getId());
+				ps.setString(4, receivingReceipt.getReferenceNumber());
+				ps.setString(5, receivingReceipt.getRemarks());
+				ps.setDate(6, new Date(receivingReceipt.getReceivedDate().getTime()));
+				ps.setLong(7, receivingReceipt.getRelatedPurchaseOrderNumber());
+				ps.setLong(8, receivingReceipt.getReceivedBy().getId());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -84,6 +87,10 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 		receivingReceipt.setReceivingReceiptNumber(updated.getReceivingReceiptNumber());
 	}
 	
+	private long getNextReceivingReceiptNumber() {
+		return getNextSequenceValue(RECEIVING_RECEIPT_NUMBER_SEQUENCE);
+	}
+
 	private static final String UPDATE_SQL =
 			"update RECEIVING_RECEIPT set SUPPLIER_ID = ?, POST_IND = ?, "
 			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?, RECEIVED_DT = ?"

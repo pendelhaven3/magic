@@ -34,6 +34,8 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			+ " join PAYMENT_TERM b"
 			+ "   on b.ID = a.PAYMENT_TERM_ID";
 	
+	private static final String SALES_REQUISITION_NUMBER_SEQUENCE = "SALES_REQUISITION_NO_SEQ";
+	
 	private SalesRequisitionRowMapper salesRequisitionRowMapper = new SalesRequisitionRowMapper();
 	
 	private static final String GET_SQL = BASE_SELECT_SQL + " where a.ID = ?";
@@ -58,9 +60,9 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	
 	private static final String INSERT_SQL =
 			"insert into SALES_REQUISITION"
-			+ " (CUSTOMER_ID, CREATE_DT, ENCODER, PRICING_SCHEME_ID, MODE, REMARKS, PAYMENT_TERM_ID,"
-			+ "  TRANSACTION_DT)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " (SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER, PRICING_SCHEME_ID, MODE, "
+			+ "  REMARKS, PAYMENT_TERM_ID, TRANSACTION_DT)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final SalesRequisition salesRequisition) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -70,18 +72,19 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+				ps.setLong(1, getNextSalesRequisitionNumber());
 				if (salesRequisition.getCustomer() != null) {
-					ps.setLong(1, salesRequisition.getCustomer().getId());
+					ps.setLong(2, salesRequisition.getCustomer().getId());
 				} else {
-					ps.setNull(1, Types.INTEGER);
+					ps.setNull(2, Types.INTEGER);
 				}
-				ps.setDate(2, new Date(salesRequisition.getCreateDate().getTime()));
-				ps.setLong(3, salesRequisition.getEncoder().getId());
-				ps.setLong(4, salesRequisition.getPricingScheme().getId());
-				ps.setString(5, salesRequisition.getMode());
-				ps.setString(6, salesRequisition.getRemarks());
-				ps.setLong(7, salesRequisition.getPaymentTerm().getId());
-				ps.setDate(8, new Date(salesRequisition.getTransactionDate().getTime()));
+				ps.setDate(3, new Date(salesRequisition.getCreateDate().getTime()));
+				ps.setLong(4, salesRequisition.getEncoder().getId());
+				ps.setLong(5, salesRequisition.getPricingScheme().getId());
+				ps.setString(6, salesRequisition.getMode());
+				ps.setString(7, salesRequisition.getRemarks());
+				ps.setLong(8, salesRequisition.getPaymentTerm().getId());
+				ps.setDate(9, new Date(salesRequisition.getTransactionDate().getTime()));
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -146,4 +149,8 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 				criteria.isPosted() ? "Y" : "N");
 	}
 
+	protected Long getNextSalesRequisitionNumber() {
+		return getNextSequenceValue(SALES_REQUISITION_NUMBER_SEQUENCE);
+	}
+	
 }

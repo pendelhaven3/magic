@@ -1,3 +1,11 @@
+insert into SEQUENCE (NAME) values ('SALES_REQUISITION_NO_SEQ');
+insert into SEQUENCE (NAME) values ('SALES_INVOICE_NO_SEQ');
+insert into SEQUENCE (NAME) values ('STOCK_QTY_CONV_NO_SEQ');
+insert into SEQUENCE (NAME) values ('PURCHASE_ORDER_NO_SEQ');
+insert into SEQUENCE (NAME) values ('RECEIVING_RECEIPT_NO_SEQ');
+insert into SEQUENCE (NAME) values ('ADJUSTMENT_OUT_NO_SEQ');
+insert into SEQUENCE (NAME) values ('ADJUSTMENT_IN_NO_SEQ');
+
 insert into USER (ID, USERNAME, PASSWORD) values (1, 'PJ', 'n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=');
 insert into USER (ID, USERNAME, PASSWORD) values (2, 'IRENE', 'n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=');
 insert into USER (ID, USERNAME, PASSWORD) values (3, 'JOY', 'n4bQgYhMfWWaL+qgxVrQFaO/TxsrC4Is0V1sFbDwCgg=');

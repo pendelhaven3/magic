@@ -25,6 +25,8 @@ public class AdjustmentOutDaoImpl extends MagicDao implements AdjustmentOutDao {
 			"select ID, ADJUSTMENT_OUT_NO, REMARKS, POST_IND, POST_DT, POSTED_BY"
 			+ " from ADJUSTMENT_OUT";
 	
+	private static final String ADJUSTMENT_OUT_NUMBER_SEQUENCE = "ADJUSTMENT_OUT_NO_SEQ";
+	
 	private AdjustmentOutRowMapper adjustmentOutRowMapper = new AdjustmentOutRowMapper();
 	
 	private static final String GET_SQL = BASE_SELECT_SQL + " where ID = ?";
@@ -49,8 +51,8 @@ public class AdjustmentOutDaoImpl extends MagicDao implements AdjustmentOutDao {
 	
 	private static final String INSERT_SQL =
 			"insert into ADJUSTMENT_OUT"
-			+ " (REMARKS)"
-			+ " values (?)";
+			+ " (ADJUSTMENT_OUT_NO, REMARKS)"
+			+ " values (?, ?)";
 	
 	private void insert(final AdjustmentOut adjustmentOut) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -60,7 +62,8 @@ public class AdjustmentOutDaoImpl extends MagicDao implements AdjustmentOutDao {
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setString(1, adjustmentOut.getRemarks());
+				ps.setLong(1, getNextAdjustmentOutNumber());
+				ps.setString(2, adjustmentOut.getRemarks());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -70,6 +73,10 @@ public class AdjustmentOutDaoImpl extends MagicDao implements AdjustmentOutDao {
 		adjustmentOut.setAdjustmentOutNumber(updated.getAdjustmentOutNumber());
 	}
 	
+	private long getNextAdjustmentOutNumber() {
+		return getNextSequenceValue(ADJUSTMENT_OUT_NUMBER_SEQUENCE);
+	}
+
 	private static final String UPDATE_SQL =
 			"update ADJUSTMENT_OUT"
 			+ " set REMARKS = ?, POST_IND = ?, POST_DT = ?, POSTED_BY = ?"

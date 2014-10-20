@@ -51,6 +51,8 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			+ "   on h.ID = a.CANCEL_BY"
 			+ " where 1 = 1";
 	
+	private static final String SALES_INVOICE_NUMBER_SEQUENCE = "SALES_INVOICE_NO_SEQ";
+	
 	private SalesInvoiceRowMapper salesInvoiceRowMapper = new SalesInvoiceRowMapper();
 	
 	@Override
@@ -64,9 +66,9 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 
 	private static final String INSERT_SQL =
 			"insert into SALES_INVOICE "
-			+ " (CUSTOMER_ID, CREATE_DT, TRANSACTION_DT, ENCODER, RELATED_SALES_REQUISITION_NO,"
+			+ " (SALES_INVOICE_NO, CUSTOMER_ID, CREATE_DT, TRANSACTION_DT, ENCODER, RELATED_SALES_REQUISITION_NO,"
 			+ "  PRICING_SCHEME_ID, MODE, REMARKS, PAYMENT_TERM_ID, POST_DT, POST_BY)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final SalesInvoice salesInvoice) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -76,17 +78,18 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setLong(1, salesInvoice.getCustomer().getId());
-				ps.setDate(2, new Date(salesInvoice.getCreateDate().getTime()));
-				ps.setDate(3, new Date(salesInvoice.getTransactionDate().getTime()));
-				ps.setLong(4, salesInvoice.getEncoder().getId());
-				ps.setLong(5, salesInvoice.getRelatedSalesRequisitionNumber());
-				ps.setLong(6, salesInvoice.getPricingScheme().getId());
-				ps.setString(7, salesInvoice.getMode());
-				ps.setString(8, salesInvoice.getRemarks());
-				ps.setLong(9, salesInvoice.getPaymentTerm().getId());
-				ps.setDate(10, new Date(salesInvoice.getPostDate().getTime()));
-				ps.setLong(11, salesInvoice.getPostedBy().getId());
+				ps.setLong(1, getNextSalesInvoiceNumber());
+				ps.setLong(2, salesInvoice.getCustomer().getId());
+				ps.setDate(3, new Date(salesInvoice.getCreateDate().getTime()));
+				ps.setDate(4, new Date(salesInvoice.getTransactionDate().getTime()));
+				ps.setLong(5, salesInvoice.getEncoder().getId());
+				ps.setLong(6, salesInvoice.getRelatedSalesRequisitionNumber());
+				ps.setLong(7, salesInvoice.getPricingScheme().getId());
+				ps.setString(8, salesInvoice.getMode());
+				ps.setString(9, salesInvoice.getRemarks());
+				ps.setLong(10, salesInvoice.getPaymentTerm().getId());
+				ps.setDate(11, new Date(salesInvoice.getPostDate().getTime()));
+				ps.setLong(12, salesInvoice.getPostedBy().getId());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -94,6 +97,10 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 		SalesInvoice updated = get(holder.getKey().longValue());
 		salesInvoice.setId(updated.getId());
 		salesInvoice.setSalesInvoiceNumber(updated.getSalesInvoiceNumber());
+	}
+
+	private long getNextSalesInvoiceNumber() {
+		return getNextSequenceValue(SALES_INVOICE_NUMBER_SEQUENCE);
 	}
 
 	private static final String GET_SQL = BASE_SELECT_SQL + " and a.ID = ?";

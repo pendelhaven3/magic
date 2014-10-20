@@ -33,6 +33,8 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 			+ " where a.SUPPLIER_ID = b.ID"
 			+ " and a.CREATED_BY = c.ID";
 	
+	private static final String PURCHASE_ORDER_NUMBER_SEQUENCE = "PURCHASE_ORDER_NO_SEQ";
+	
 	private PurchaseOrderRowMapper purchaseOrderRowMapper = new PurchaseOrderRowMapper();
 	
 	private static final String GET_SQL = BASE_SELECT_SQL + " and a.ID = ?";
@@ -56,7 +58,8 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 	}
 	
 	private static final String INSERT_SQL =
-			"insert into PURCHASE_ORDER (SUPPLIER_ID, PAYMENT_TERM_ID, CREATED_BY) values (?, ?, ?)";
+			"insert into PURCHASE_ORDER"
+			+ " (PURCHASE_ORDER_NO, SUPPLIER_ID, PAYMENT_TERM_ID, CREATED_BY) values (?, ?, ?, ?)";
 	
 	private void insert(final PurchaseOrder purchaseOrder) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -66,13 +69,14 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setLong(1, purchaseOrder.getSupplier().getId());
+				ps.setLong(1, getNextPurchaseOrderNumber());
+				ps.setLong(2, purchaseOrder.getSupplier().getId());
 				if (purchaseOrder.getPaymentTerm() != null) {
-					ps.setLong(2, purchaseOrder.getPaymentTerm().getId());
+					ps.setLong(3, purchaseOrder.getPaymentTerm().getId());
 				} else {
-					ps.setNull(2, Types.INTEGER);
+					ps.setNull(3, Types.INTEGER);
 				}
-				ps.setLong(3, purchaseOrder.getCreatedBy().getId());
+				ps.setLong(4, purchaseOrder.getCreatedBy().getId());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -82,6 +86,10 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 		purchaseOrder.setPurchaseOrderNumber(updated.getPurchaseOrderNumber());
 	}
 	
+	private long getNextPurchaseOrderNumber() {
+		return getNextSequenceValue(PURCHASE_ORDER_NUMBER_SEQUENCE);
+	}
+
 	private static final String UPDATE_SQL =
 			"update PURCHASE_ORDER set SUPPLIER_ID = ?, POST_IND = ?, DELIVERY_IND = ?,"
 			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?, POST_DT = ?"

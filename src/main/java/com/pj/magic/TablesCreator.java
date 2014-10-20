@@ -22,7 +22,7 @@ public class TablesCreator {
 		try (
 			Connection conn = dataSource.getConnection();
 		) {
-			ScriptFileRunner.runScriptFiles(conn, "tables.sql");
+			ScriptFileRunner.runScriptFiles(conn, "tables-mysql.sql");
 		}
 	}
 	

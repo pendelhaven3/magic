@@ -23,6 +23,8 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 	private static final String BASE_SELECT_SQL = 
 			"select ID, STOCK_QTY_CONV_NO, REMARKS, POST_IND, POST_DATE from STOCK_QTY_CONVERSION";
 	
+	private static final String STOCK_QUANTITY_CONVERSION_NUMBER_SEQUENCE = "STOCK_QTY_CONV_NO_SEQ";
+	
 	private StockQuantityConversionRowMapper stockQuantityConversionRowMapper = new StockQuantityConversionRowMapper();
 	
 	@Override
@@ -35,7 +37,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 	}
 
 	private static final String INSERT_SQL = "insert into STOCK_QTY_CONVERSION"
-			+ " (REMARKS) values (?)";
+			+ " (STOCK_QTY_CONV_NO, REMARKS) values (?, ?)";
 	
 	private void insert(final StockQuantityConversion stockQuantityConversion) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -45,7 +47,8 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setString(1, stockQuantityConversion.getRemarks());
+				ps.setLong(1, getNextStockQuantityConversionNumber());
+				ps.setString(2, stockQuantityConversion.getRemarks());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -53,6 +56,10 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		StockQuantityConversion updated = get(holder.getKey().longValue());
 		stockQuantityConversion.setId(updated.getId());
 		stockQuantityConversion.setStockQuantityConversionNumber(updated.getStockQuantityConversionNumber());
+	}
+
+	private long getNextStockQuantityConversionNumber() {
+		return getNextSequenceValue(STOCK_QUANTITY_CONVERSION_NUMBER_SEQUENCE);
 	}
 
 	private static final String UPDATE_SQL = "update STOCK_QTY_CONVERSION"
