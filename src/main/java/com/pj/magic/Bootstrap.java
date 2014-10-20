@@ -3,12 +3,16 @@ package com.pj.magic;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -20,11 +24,15 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.pj.magic.dao.CustomerDao;
+import com.pj.magic.dao.ProductCategoryDao;
 import com.pj.magic.dao.ProductPriceDao;
+import com.pj.magic.dao.ProductSubcategoryDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.ProductSubcategory;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ProductService;
 
@@ -35,6 +43,8 @@ public class Bootstrap {
 	@Autowired private CustomerDao customerDao;
 	@Autowired private TransactionTemplate transactionTemplate;
 	@Autowired private ProductPriceDao productPriceDao;
+	@Autowired private ProductCategoryDao productCategoryDao;
+	@Autowired private ProductSubcategoryDao productSubcategoryDao;
 	
 	private ResourceBundle resources = ResourceBundle.getBundle("application");
 
@@ -42,12 +52,57 @@ public class Bootstrap {
 	public void initialize() throws Exception {
 		runScriptFile("tables.sql", "data.sql");
 		if (Boolean.parseBoolean(resources.getString("development"))) {
+			loadProductCategoriesFromExcelFile();
 			loadProductsFromExcelFile();
 			loadCustomersFromExcelFile();
 			runScriptFile("data2.sql");
 		}
 	}
 	
+	private void loadProductCategoriesFromExcelFile() throws Exception {
+		try (
+				InputStream in = getClass().getClassLoader().getResourceAsStream("data/product_categories.xls"); // TODO: study XSSF
+			) {
+				Workbook workbook = new HSSFWorkbook(in);
+				Sheet sheet = workbook.getSheetAt(0);
+				final Iterator<Row> rows = sheet.iterator();
+				rows.next();
+				
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus status) {
+						List<ProductCategory> categories = new ArrayList<>();
+						while (rows.hasNext()) {
+							Row row = rows.next();
+							Cell cell = row.getCell(0);
+							if (cell != null) {
+								final String categoryName = cell.getStringCellValue();
+								ProductCategory category = (ProductCategory)CollectionUtils.find(categories, new Predicate() {
+									
+									@Override
+									public boolean evaluate(Object object) {
+										return categoryName.equals(((ProductCategory)object).getName());
+									}
+								});
+								if (category == null) {
+									category = new ProductCategory();
+									category.setName(categoryName.trim());
+									productCategoryDao.save(category);
+									categories.add(category);
+								}
+								ProductSubcategory subcategory = new ProductSubcategory();
+								subcategory.setParent(category);
+								subcategory.setName(row.getCell(1).getStringCellValue().trim());
+								productSubcategoryDao.save(subcategory);
+							}
+						}
+					}
+				});
+				
+			}
+	}
+
 	private void runScriptFile(String... filenames) throws Exception {
 		try (
 			Connection conn = dataSource.getConnection();

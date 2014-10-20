@@ -7,7 +7,7 @@ create table MANUFACTURER (
 
 create table PRODUCT_CATEGORY (
   ID integer auto_increment,
-  NAME varchar2(50) not null,
+  NAME varchar2(60) not null,
   constraint PRODUCT_CATEGORY$PK primary key (ID),
   constraint PRODUCT_CATEGORY$UK unique (NAME)
 );
@@ -15,7 +15,7 @@ create table PRODUCT_CATEGORY (
 create table PRODUCT_SUBCATEGORY (
   ID integer auto_increment,
   PRODUCT_CATEGORY_ID integer not null,
-  NAME varchar2(50) not null,
+  NAME varchar2(60) not null,
   constraint PRODUCT_SUBCATEGORY$PK primary key (ID),
   constraint PRODUCT_SUBCATEGORY$UK unique (NAME),
   constraint PRODUCT_SUBCATEGORY$FK foreign key (PRODUCT_CATEGORY_ID) references PRODUCT_CATEGORY (ID)
