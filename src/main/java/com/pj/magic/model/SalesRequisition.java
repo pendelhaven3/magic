@@ -15,6 +15,7 @@ public class SalesRequisition {
 	private Long salesRequisitionNumber;
 	private Customer customer;
 	private Date createDate;
+	private Date transactionDate;
 	private User encoder;
 	private boolean posted;
 	private List<SalesRequisitionItem> items = new ArrayList<>();
@@ -114,6 +115,7 @@ public class SalesRequisition {
 		salesInvoice.setMode(mode);
 		salesInvoice.setRemarks(remarks);
 		salesInvoice.setCreateDate(createDate);
+		salesInvoice.setTransactionDate(transactionDate);
 		salesInvoice.setEncoder(encoder);
 		salesInvoice.setRelatedSalesRequisitionNumber(salesRequisitionNumber);
 		salesInvoice.setPaymentTerm(paymentTerm);
@@ -171,17 +173,20 @@ public class SalesRequisition {
 		this.remarks = remarks;
 	}
 	
-	// TODO: Remove this
-	public boolean hasMinimumFieldsFilledUp() {
-		return customer != null && pricingScheme != null;
-	}
-
 	public PaymentTerm getPaymentTerm() {
 		return paymentTerm;
 	}
 
 	public void setPaymentTerm(PaymentTerm paymentTerm) {
 		this.paymentTerm = paymentTerm;
+	}
+	
+	public Date getTransactionDate() {
+		return transactionDate;
+	}
+	
+	public void setTransactionDate(Date transactionDate) {
+		this.transactionDate = transactionDate;
 	}
 	
 }

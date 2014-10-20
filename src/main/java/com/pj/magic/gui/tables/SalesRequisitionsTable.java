@@ -27,8 +27,9 @@ public class SalesRequisitionsTable extends JTable {
 	public static final int SALES_REQUISITION_NUMBER_COLUMN_INDEX = 0;
 	public static final int CUSTOMER_NAME_COLUMN_INDEX = 1;
 	public static final int CREATE_DATE_COLUMN_INDEX = 2;
-	public static final int ENCODER_COLUMN_INDEX = 3;
-	public static final int TOTAL_AMOUNT_COLUMN_INDEX = 4;
+	public static final int TRANSACTION_DATE_COLUMN_INDEX = 3;
+	public static final int ENCODER_COLUMN_INDEX = 4;
+	public static final int TOTAL_AMOUNT_COLUMN_INDEX = 5;
 	private static final String GO_TO_SALES_REQUISITION_ACTION_NAME = "goToSalesRequisition";
 	private static final String DELETE_SALES_REQUISITION_ACTION_NAME = "deleteSalesRequisition";
 

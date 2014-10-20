@@ -41,6 +41,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		boolean isNew = (salesRequisition.getId() == null);
 		if (isNew) {
 			salesRequisition.setCreateDate(new Date());
+			salesRequisition.setTransactionDate(salesRequisition.getCreateDate());
 			salesRequisition.setEncoder(loginService.getLoggedInUser());
 		}
 		salesRequisitionDao.save(salesRequisition);

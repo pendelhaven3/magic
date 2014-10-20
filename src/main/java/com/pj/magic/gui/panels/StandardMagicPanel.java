@@ -8,6 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.util.ComponentUtil;
 
 public abstract class StandardMagicPanel extends AbstractMagicPanel {
 
@@ -30,10 +31,15 @@ public abstract class StandardMagicPanel extends AbstractMagicPanel {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.WEST;
 		add(createToolBar(), c);
-		
+
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 1;
+		add(ComponentUtil.createFiller(1, 5), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 2;
 		c.weightx = c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
 		add(createMainPanel(), c);

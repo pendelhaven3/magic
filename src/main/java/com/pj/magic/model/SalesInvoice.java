@@ -11,6 +11,7 @@ public class SalesInvoice {
 	private Long salesInvoiceNumber;
 	private Customer customer;
 	private Date createDate;
+	private Date transactionDate;
 	private User encoder;
 	private Date postDate;
 	private User postedBy;
@@ -239,6 +240,14 @@ public class SalesInvoice {
 
 	public void setMarked(boolean marked) {
 		this.marked = marked;
+	}
+
+	public Date getTransactionDate() {
+		return transactionDate;
+	}
+
+	public void setTransactionDate(Date transactionDate) {
+		this.transactionDate = transactionDate;
 	}
 	
 }

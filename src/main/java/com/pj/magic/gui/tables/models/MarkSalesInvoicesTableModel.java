@@ -86,11 +86,15 @@ public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case MarkSalesInvoicesTable.MARK_COLUMN_INDEX:
 			salesInvoice.setMarked(!salesInvoice.isMarked());
-			salesInvoice.setCancelled(!salesInvoice.isMarked());
+			if (salesInvoice.isMarked()) {
+				salesInvoice.setCancelled(false);
+			}
 			break;
 		case MarkSalesInvoicesTable.CANCEL_COLUMN_INDEX:
 			salesInvoice.setCancelled(!salesInvoice.isCancelled());
-			salesInvoice.setMarked(!salesInvoice.isCancelled());
+			if (salesInvoice.isCancelled()) {
+				salesInvoice.setMarked(false);
+			}
 			break;
 		default:
 			throw new RuntimeException("Setting invalid column index: " + columnIndex);

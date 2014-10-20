@@ -1,7 +1,6 @@
 package com.pj.magic.gui.tables.models;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -15,7 +14,7 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class SalesRequisitionsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"SR No.", "Customer Name", "Create Date", "Encoder", "Total Amount"};
+	private static final String[] COLUMN_NAMES = {"SR No.", "Customer Name", "Create Date", "Transaction Date", "Encoder", "Total Amount"};
 	
 	private List<SalesRequisition> salesRequisitions = new ArrayList<>();
 	
@@ -34,16 +33,13 @@ public class SalesRequisitionsTableModel extends AbstractTableModel {
 		SalesRequisition salesRequisition = salesRequisitions.get(rowIndex);
 		switch (columnIndex) {
 		case SalesRequisitionsTable.SALES_REQUISITION_NUMBER_COLUMN_INDEX:
-			return salesRequisition.getSalesRequisitionNumber().toString();
+			return salesRequisition.getSalesRequisitionNumber();
 		case SalesRequisitionsTable.CUSTOMER_NAME_COLUMN_INDEX:
-			if (salesRequisition.getCustomer() != null) {
-				return salesRequisition.getCustomer().getName();
-			} else {
-				return "";
-			}
+			return salesRequisition.getCustomer().getName();
 		case SalesRequisitionsTable.CREATE_DATE_COLUMN_INDEX:
-			Date date = salesRequisition.getCreateDate();
-			return (date != null) ? FormatterUtil.formatDate(date) : "";
+			return FormatterUtil.formatDate(salesRequisition.getCreateDate());
+		case SalesRequisitionsTable.TRANSACTION_DATE_COLUMN_INDEX:
+			return FormatterUtil.formatDate(salesRequisition.getTransactionDate());
 		case SalesRequisitionsTable.ENCODER_COLUMN_INDEX:
 			return salesRequisition.getEncoder().getUsername();
 		case SalesRequisitionsTable.TOTAL_AMOUNT_COLUMN_INDEX:
@@ -75,6 +71,15 @@ public class SalesRequisitionsTableModel extends AbstractTableModel {
 	public void remove(SalesRequisition salesRequisition) {
 		salesRequisitions.remove(salesRequisition);
 		fireTableDataChanged();
+	}
+	
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		if (columnIndex == SalesRequisitionsTable.TOTAL_AMOUNT_COLUMN_INDEX) {
+			return Number.class;
+		} else {
+			return Object.class;
+		}
 	}
 	
 }

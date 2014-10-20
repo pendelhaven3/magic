@@ -186,7 +186,7 @@ public class PrintServiceImpl implements PrintService {
 	public List<String> generateReportAsString(SalesInvoice salesInvoice) {
 		Collections.sort(salesInvoice.getItems());
 		
-		String currentDate = FormatterUtil.formatDate(new Date());
+		String transactionDate = FormatterUtil.formatDate(salesInvoice.getTransactionDate());
 		
 		List<List<SalesInvoiceItem>> pageItems = Lists.partition(salesInvoice.getItems(), 
 				SALES_INVOICE_ITEMS_PER_PAGE);
@@ -195,7 +195,7 @@ public class PrintServiceImpl implements PrintService {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("salesInvoice", salesInvoice);
 			reportData.put("items", pageItems.get(i));
-			reportData.put("currentDate", currentDate);
+			reportData.put("transactionDate", transactionDate);
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());

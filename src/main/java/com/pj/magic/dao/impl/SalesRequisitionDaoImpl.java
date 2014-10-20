@@ -27,8 +27,8 @@ import com.pj.magic.model.User;
 public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitionDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER_ID, POST_IND,"
-			+ " PRICING_SCHEME_ID, MODE, REMARKS,"
+			"select a.ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER, POST_IND,"
+			+ " PRICING_SCHEME_ID, MODE, REMARKS, TRANSACTION_DT,"
 			+ " PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME"
 			+ " from SALES_REQUISITION a"
 			+ " join PAYMENT_TERM b"
@@ -58,8 +58,9 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	
 	private static final String INSERT_SQL =
 			"insert into SALES_REQUISITION"
-			+ " (CUSTOMER_ID, CREATE_DT, ENCODER_ID, PRICING_SCHEME_ID, MODE, REMARKS, PAYMENT_TERM_ID)"
-			+ " values (?, ?, ?, ?, ?, ?, ?)";
+			+ " (CUSTOMER_ID, CREATE_DT, ENCODER, PRICING_SCHEME_ID, MODE, REMARKS, PAYMENT_TERM_ID,"
+			+ "  TRANSACTION_DT)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final SalesRequisition salesRequisition) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -80,6 +81,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 				ps.setString(5, salesRequisition.getMode());
 				ps.setString(6, salesRequisition.getRemarks());
 				ps.setLong(7, salesRequisition.getPaymentTerm().getId());
+				ps.setDate(8, new Date(salesRequisition.getTransactionDate().getTime()));
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -92,7 +94,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	private static final String UPDATE_SQL =
 			"update SALES_REQUISITION"
 			+ " set CUSTOMER_ID = ?, POST_IND = ?, PRICING_SCHEME_ID = ?, MODE = ?, REMARKS = ?,"
-			+ " PAYMENT_TERM_ID = ?"
+			+ " PAYMENT_TERM_ID = ?, TRANSACTION_DT = ?"
 			+ " where ID = ?";
 	
 	private void update(SalesRequisition salesRequisition) {
@@ -102,6 +104,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 				salesRequisition.getMode(),
 				salesRequisition.getRemarks(),
 				salesRequisition.getPaymentTerm().getId(),
+				salesRequisition.getTransactionDate(),
 				salesRequisition.getId());
 	}
 	
@@ -113,7 +116,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			salesRequisition.setId(rs.getLong("ID"));
 			salesRequisition.setSalesRequisitionNumber(rs.getLong("SALES_REQUISITION_NO"));
 			salesRequisition.setCreateDate(rs.getDate("CREATE_DT"));
-			salesRequisition.setEncoder(new User(rs.getLong("ENCODER_ID")));
+			salesRequisition.setEncoder(new User(rs.getLong("ENCODER")));
 			salesRequisition.setPosted("Y".equals(rs.getString("POST_IND")));
 			salesRequisition.setPricingScheme(new PricingScheme(rs.getLong("PRICING_SCHEME_ID")));
 			salesRequisition.setMode(rs.getString("MODE"));
@@ -121,6 +124,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			salesRequisition.setCustomer(new Customer(rs.getLong("CUSTOMER_ID")));
 			salesRequisition.setPaymentTerm(
 					new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
+			salesRequisition.setTransactionDate(rs.getDate("TRANSACTION_DT"));
 			return salesRequisition;
 		}
 	}

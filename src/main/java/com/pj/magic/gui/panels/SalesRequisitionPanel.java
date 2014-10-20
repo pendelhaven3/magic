@@ -9,7 +9,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -31,7 +34,12 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +48,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.exception.NoSellingPriceException;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.SellingPriceLessThanCostException;
+import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
@@ -81,12 +90,14 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
+	private JLabel createDateField;
+	private UtilCalendarModel transactionDateModel;
+	private JDatePickerImpl transactionDatePicker;
 	private JTextField customerCodeField;
 	private JLabel customerNameField;
 	private MagicComboBox<PaymentTerm> paymentTermComboBox;
 	private MagicComboBox<PricingScheme> pricingSchemeComboBox;
 	private MagicComboBox<String> modeComboBox;
-	private JLabel createDateField;
 	private JLabel encoderField;
 	private MagicTextField remarksField;
 	private JLabel totalItemsField;
@@ -99,6 +110,19 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void initializeComponents() {
+		transactionDateModel = new UtilCalendarModel();
+		transactionDateModel.addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("value".equals(evt.getPropertyName()) && evt.getOldValue() != null 
+						&& evt.getNewValue() != null) {
+					salesRequisition.setTransactionDate(((Calendar)evt.getNewValue()).getTime());
+					salesRequisitionService.save(salesRequisition);
+				}
+			}
+		});
+		
 		customerCodeField = new MagicTextField();
 		paymentTermComboBox = new MagicComboBox<>();
 		paymentTermComboBox.addActionListener(new ActionListener() {
@@ -299,13 +323,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			if (salesRequisition.getId() != null) {
 				salesRequisitionService.save(salesRequisition);
 			}
-//			if (salesRequisition.hasMinimumFieldsFilledUp()) {
-//				try {
-//				} catch (Exception e) {
-//					showErrorMessage("Error occurred during saving!");
-//					return;
-//				}
-//			}
 			customerNameField.setText(customer.getName());
 			paymentTermComboBox.setEnabled(true);
 			paymentTermComboBox.setSelectedItem(customer.getPaymentTerm(), false);
@@ -360,13 +377,14 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		
 		salesRequisitionNumberField.setText(salesRequisition.getSalesRequisitionNumber().toString());
 		if (salesRequisition.getCustomer() == null) {
-			customerCodeField.setText("");
-			customerNameField.setText("");
+			customerCodeField.setText(null);
+			customerNameField.setText(null);
 		} else {
 			customerCodeField.setText(salesRequisition.getCustomer().getCode());
 			customerNameField.setText(salesRequisition.getCustomer().getName());
 		}
 		createDateField.setText(FormatterUtil.formatDate(salesRequisition.getCreateDate()));
+		updateTransactionDateField();
 		encoderField.setText(salesRequisition.getEncoder().getUsername());
 		pricingSchemeComboBox.setEnabled(true);
 		pricingSchemeComboBox.setSelectedItem(salesRequisition.getPricingScheme(), false);
@@ -385,11 +403,19 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		deleteItemButton.setEnabled(!salesRequisition.isPosted());
 	}
 
+	private void updateTransactionDateField() {
+		transactionDatePicker.getComponents()[1].setVisible(!salesRequisition.isPosted());
+		transactionDateModel.setValue(null); // set to null first to prevent property change listener from triggering
+		transactionDateModel.setValue(DateUtils.toCalendar(salesRequisition.getTransactionDate()));
+	}
+	
 	private void clearDisplay() {
 		salesRequisitionNumberField.setText(null);
+		createDateField.setText(null);
+		transactionDateModel.setValue(null);
+		transactionDatePicker.getComponents()[1].setVisible(false);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
-		createDateField.setText(null);
 		encoderField.setText(null);
 		pricingSchemeComboBox.setEnabled(false);
 		pricingSchemeComboBox.setSelectedItem(null, false);
@@ -659,11 +685,10 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
+		
 		int currentRow = 0;
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 1;
@@ -675,7 +700,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "SR No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "SR No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -683,20 +708,19 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		salesRequisitionNumberField = ComponentUtil.createLabel(200, "");
 		mainPanel.add(salesRequisitionNumberField, c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+
+		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Create Date:"), c);
-		
+		mainPanel.add(ComponentUtil.createLabel(120, "Create Date:"), c);
+
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		createDateField = ComponentUtil.createLabel(150, "");
+		createDateField = ComponentUtil.createLabel(100);
 		mainPanel.add(createDateField, c);
 		
 		currentRow++;
@@ -706,7 +730,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Customer Name:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Customer Name:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -739,7 +763,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Payment Term:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Payment Term:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
@@ -748,6 +772,21 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		paymentTermComboBox.setPreferredSize(new Dimension(100, 20));
 		mainPanel.add(paymentTermComboBox, c);
 		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Transaction Date:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		JDatePanelImpl datePanel = new JDatePanelImpl(transactionDateModel);
+		transactionDatePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		mainPanel.add(transactionDatePicker, c);
+		
 		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
@@ -755,7 +794,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Pricing Scheme:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Pricing Scheme:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -786,7 +825,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Remarks:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Remarks:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;

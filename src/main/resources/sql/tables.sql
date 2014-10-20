@@ -104,7 +104,8 @@ create table SALES_REQUISITION (
   SALES_REQUISITION_NO integer auto_increment,
   CUSTOMER_ID integer null,
   CREATE_DT date not null,
-  ENCODER_ID integer not null,
+  TRANSACTION_DT date not null,
+  ENCODER integer not null,
   POST_IND varchar2(1) default 'N' not null,
   PRICING_SCHEME_ID integer not null,
   MODE varchar2(10) null,
@@ -114,7 +115,7 @@ create table SALES_REQUISITION (
   constraint SALES_REQUISITION$UK unique (SALES_REQUISITION_NO),
   constraint SALES_REQUISITION$FK1 foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID),
   constraint SALES_REQUISITION$FK2 foreign key (CUSTOMER_ID) references CUSTOMER (ID),
-  constraint SALES_REQUISITION$FK3 foreign key (ENCODER_ID) references USER (ID),
+  constraint SALES_REQUISITION$FK3 foreign key (ENCODER) references USER (ID),
   constraint SALES_REQUISITION$FK4 foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID)
 );
 
@@ -134,7 +135,8 @@ create table SALES_INVOICE (
   SALES_INVOICE_NO integer auto_increment,
   CUSTOMER_ID integer not null,
   CREATE_DT date not null,
-  ENCODER varchar2(30) not null,
+  ENCODER integer not null,
+  TRANSACTION_DT date not null,
   RELATED_SALES_REQUISITION_NO integer not null,
   PRICING_SCHEME_ID integer not null,
   MODE varchar2(10) not null,

@@ -53,7 +53,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
 	private JLabel customerNameField;
-	private JLabel createDateField;
+	private JLabel transactionDateField;
 	private JLabel encoderField;
 	private JLabel pricingSchemeNameField;
 	private JLabel modeField;
@@ -77,7 +77,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		
 		salesInvoiceNumberField.setText(salesInvoice.getSalesInvoiceNumber().toString());
 		customerNameField.setText(salesInvoice.getCustomer().getCode() + " - " + salesInvoice.getCustomer().getName());
-		createDateField.setText(FormatterUtil.formatDate(salesInvoice.getCreateDate()));
+		transactionDateField.setText(FormatterUtil.formatDate(salesInvoice.getTransactionDate()));
 		encoderField.setText(salesInvoice.getEncoder().getUsername());
 		pricingSchemeNameField.setText(salesInvoice.getPricingScheme().getName());
 		modeField.setText(salesInvoice.getMode());
@@ -276,7 +276,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "SI No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "SI No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -290,15 +290,15 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Create Date:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Transaction Date:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		createDateField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(createDateField, c);
+		transactionDateField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(transactionDateField, c);
 		
 		currentRow++;
 		
@@ -307,7 +307,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Customer Name:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Customer Name:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -321,7 +321,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Created By:"), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Encoder:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -337,7 +337,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Payment Term:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Payment Term:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
@@ -366,7 +366,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Pricing Scheme:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Pricing Scheme:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
@@ -395,7 +395,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Remarks:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Remarks:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;

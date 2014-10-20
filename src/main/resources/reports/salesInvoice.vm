@@ -6,7 +6,7 @@
 	
 Customer : $report.field($salesInvoice.customer.name, 30)                   Page   :    $currentPage x $totalPages
 Address  : $report.field($salesInvoice.customer.address, 40)         D.R. # : $report.field($salesInvoice.salesInvoiceNumber, 8, "right")
-Mode     : $report.field($salesInvoice.mode, 10)                                       Date   : $currentDate
+Mode     : $report.field($salesInvoice.mode, 10)                                       Date   : $transactionDate
 Remarks  : $report.field($salesInvoice.remarks, 40)         PS     : $report.field($salesInvoice.pricingScheme.id, 8, "right")
 	
          Product Description                   Unit Qty    Price     Amount
