@@ -25,7 +25,7 @@ public class SalesInvoicesTable extends JTable {
 	public static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 0;
 	public static final int CUSTOMER_NAME_COLUMN_INDEX = 1;
 	public static final int CREATE_DATE_COLUMN_INDEX = 2;
-	public static final int CREATED_BY_COLUMN_INDEX = 3;
+	public static final int ENCODER_COLUMN_INDEX = 3;
 	public static final int TOTAL_AMOUNT_COLUMN_INDEX = 4;
 	public static final int STATUS_COLUMN_INDEX = 5;
 	private static final String GO_TO_SALES_INVOICE_ACTION_NAME = "goToSalesInvoice";

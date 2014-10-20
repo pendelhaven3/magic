@@ -35,9 +35,8 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 	@Transactional
 	@Override
 	public void save(SalesInvoice salesInvoice) {
-		// [PJ 10/17/2014] No case yet where sales invoice is updated instead
-		salesInvoice.setCreateDate(new Date());
-		salesInvoice.setCreatedBy(loginService.getLoggedInUser());
+		salesInvoice.setPostDate(new Date());
+		salesInvoice.setPostedBy(loginService.getLoggedInUser());
 		salesInvoiceDao.save(salesInvoice);
 		for (SalesInvoiceItem item : salesInvoice.getItems()) {
 			salesInvoiceItemDao.save(item);
@@ -85,10 +84,10 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 
 	@Transactional
 	@Override
-	public void post(SalesInvoice salesInvoice) {
-		salesInvoice.setPosted(true);
-		salesInvoice.setPostDate(new Date());
-		salesInvoice.setPostedBy(loginService.getLoggedInUser());
+	public void mark(SalesInvoice salesInvoice) {
+		salesInvoice.setMarked(true);
+		salesInvoice.setMarkDate(new Date());
+		salesInvoice.setMarkedBy(loginService.getLoggedInUser());
 		salesInvoiceDao.save(salesInvoice);
 	}
 

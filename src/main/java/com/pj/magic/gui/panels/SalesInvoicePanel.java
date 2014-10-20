@@ -63,7 +63,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
-	private JButton postButton;
+	private JButton markButton;
 	private JButton cancelButton;
 	
 	@Override
@@ -78,7 +78,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		salesInvoiceNumberField.setText(salesInvoice.getSalesInvoiceNumber().toString());
 		customerNameField.setText(salesInvoice.getCustomer().getCode() + " - " + salesInvoice.getCustomer().getName());
 		createDateField.setText(FormatterUtil.formatDate(salesInvoice.getCreateDate()));
-		encoderField.setText(salesInvoice.getCreatedBy().getUsername());
+		encoderField.setText(salesInvoice.getEncoder().getUsername());
 		pricingSchemeNameField.setText(salesInvoice.getPricingScheme().getName());
 		modeField.setText(salesInvoice.getMode());
 		remarksField.setText(salesInvoice.getRemarks());
@@ -91,8 +91,8 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			itemsTable.changeSelection(0, 0, false, false);
 		}
 		
-		postButton.setEnabled(!(salesInvoice.isPosted() || salesInvoice.isCancelled()));
-		cancelButton.setEnabled(!(salesInvoice.isPosted() || salesInvoice.isCancelled()));
+		markButton.setEnabled(!(salesInvoice.isMarked() || salesInvoice.isCancelled()));
+		cancelButton.setEnabled(!(salesInvoice.isMarked() || salesInvoice.isCancelled()));
 	}
 
 	@Override
@@ -449,15 +449,15 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		postButton = new MagicToolBarButton("post", "Post");
-		postButton.addActionListener(new ActionListener() {
+		markButton = new MagicToolBarButton("post", "Mark");
+		markButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				postSalesInvoice();
+				markSalesInvoice();
 			}
 		});
-		toolBar.add(postButton);
+		toolBar.add(markButton);
 		
 		cancelButton = new MagicToolBarButton("cancel", "Cancel");
 		cancelButton.addActionListener(new ActionListener() {
@@ -514,11 +514,11 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		}
 	}
 
-	protected void postSalesInvoice() {
-		if (confirm("Post this Sales Invoice?")) {
+	protected void markSalesInvoice() {
+		if (confirm("Mark this Sales Invoice?")) {
 			try {
-				salesInvoiceService.post(salesInvoice);
-				showMessage("Sales Invoice posted");
+				salesInvoiceService.mark(salesInvoice);
+				showMessage("Sales Invoice marked");
 				updateDisplay(salesInvoice);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);

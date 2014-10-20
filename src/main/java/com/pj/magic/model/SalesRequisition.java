@@ -113,7 +113,8 @@ public class SalesRequisition {
 		salesInvoice.setPricingScheme(pricingScheme);
 		salesInvoice.setMode(mode);
 		salesInvoice.setRemarks(remarks);
-		salesInvoice.setCreateDate(new Date());
+		salesInvoice.setCreateDate(createDate);
+		salesInvoice.setEncoder(encoder);
 		salesInvoice.setRelatedSalesRequisitionNumber(salesRequisitionNumber);
 		salesInvoice.setPaymentTerm(paymentTerm);
 		

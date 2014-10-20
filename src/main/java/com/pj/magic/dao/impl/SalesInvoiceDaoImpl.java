@@ -27,15 +27,16 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, SALES_INVOICE_NO, CREATE_DT, RELATED_SALES_REQUISITION_NO, MODE, REMARKS, CUSTOMER_ID,"
-			+ " POST_DT, POST_IND, CANCEL_DT, CANCEL_IND,"
+			+ " POST_DT, MARK_IND, MARK_DT, CANCEL_DT, CANCEL_IND,"
 			+ " PRICING_SCHEME_ID, d.NAME as PRICING_SCHEME_NAME,"
-			+ " CREATED_BY, b.USERNAME as CREATED_BY_USERNAME,"
+			+ " ENCODER, b.USERNAME as ENCODER_USERNAME,"
 			+ " PAYMENT_TERM_ID, e.NAME as PAYMENT_TERM_NAME,"
 			+ " POST_BY, f.USERNAME as POST_BY_USERNAME,"
-			+ " CANCEL_BY, g.USERNAME as CANCEL_BY_USERNAME"
+			+ " MARK_BY, g.USERNAME as MARK_BY_USERNAME,"
+			+ " CANCEL_BY, h.USERNAME as CANCEL_BY_USERNAME"
 			+ " from SALES_INVOICE a"
 			+ " join USER b"
-			+ "   on b.ID = a.CREATED_BY"
+			+ "   on b.ID = a.ENCODER"
 			+ " join PRICING_SCHEME d"
 			+ "   on d.ID = a.PRICING_SCHEME_ID"
 			+ " join PAYMENT_TERM e"
@@ -43,7 +44,9 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			+ " left join USER f"
 			+ "   on f.ID = a.POST_BY"
 			+ " left join USER g"
-			+ "   on g.ID = a.CANCEL_BY"
+			+ "   on g.ID = a.MARK_BY"
+			+ " left join USER h"
+			+ "   on h.ID = a.CANCEL_BY"
 			+ " where 1 = 1";
 	
 	private SalesInvoiceRowMapper salesInvoiceRowMapper = new SalesInvoiceRowMapper();
@@ -59,9 +62,9 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 
 	private static final String INSERT_SQL =
 			"insert into SALES_INVOICE "
-			+ " (CUSTOMER_ID, CREATE_DT, CREATED_BY, RELATED_SALES_REQUISITION_NO,"
-			+ "  PRICING_SCHEME_ID, MODE, REMARKS, PAYMENT_TERM_ID)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " (CUSTOMER_ID, CREATE_DT, ENCODER, RELATED_SALES_REQUISITION_NO,"
+			+ "  PRICING_SCHEME_ID, MODE, REMARKS, PAYMENT_TERM_ID, POST_DT, POST_BY)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final SalesInvoice salesInvoice) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -73,12 +76,14 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, salesInvoice.getCustomer().getId());
 				ps.setDate(2, new Date(salesInvoice.getCreateDate().getTime()));
-				ps.setLong(3, salesInvoice.getCreatedBy().getId());
+				ps.setLong(3, salesInvoice.getEncoder().getId());
 				ps.setLong(4, salesInvoice.getRelatedSalesRequisitionNumber());
 				ps.setLong(5, salesInvoice.getPricingScheme().getId());
 				ps.setString(6, salesInvoice.getMode());
 				ps.setString(7, salesInvoice.getRemarks());
 				ps.setLong(8, salesInvoice.getPaymentTerm().getId());
+				ps.setDate(9, new Date(salesInvoice.getPostDate().getTime()));
+				ps.setLong(10, salesInvoice.getPostedBy().getId());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db
@@ -107,8 +112,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			salesInvoice.setId(rs.getLong("ID"));
 			salesInvoice.setSalesInvoiceNumber(rs.getLong("SALES_INVOICE_NO"));
 			salesInvoice.setCreateDate(rs.getDate("CREATE_DT"));
-			salesInvoice.setCreatedBy(
-					new User(rs.getLong("CREATED_BY"), rs.getString("CREATED_BY_USERNAME")));
+			salesInvoice.setEncoder(new User(rs.getLong("ENCODER"), rs.getString("ENCODER_USERNAME")));
 			salesInvoice.setRelatedSalesRequisitionNumber(rs.getLong("RELATED_SALES_REQUISITION_NO"));
 			salesInvoice.setCustomer(new Customer(rs.getLong("CUSTOMER_ID")));
 			salesInvoice.setPricingScheme(
@@ -117,11 +121,13 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			salesInvoice.setRemarks(rs.getString("REMARKS"));
 			salesInvoice.setPaymentTerm(
 					new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
-			salesInvoice.setPosted("Y".equals(rs.getString("POST_IND")));
 			salesInvoice.setPostDate(rs.getDate("POST_DT"));
-			if (rs.getLong("POST_BY") != 0) {
-				salesInvoice.setPostedBy(
-						new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			salesInvoice.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			salesInvoice.setMarked("Y".equals(rs.getString("MARK_IND")));
+			salesInvoice.setMarkDate(rs.getDate("MARK_DT"));
+			if (rs.getLong("MARK_BY") != 0) {
+				salesInvoice.setMarkedBy(
+						new User(rs.getLong("MARK_BY"), rs.getString("MARK_BY_USERNAME")));
 			}
 			salesInvoice.setCancelled("Y".equals(rs.getString("CANCEL_IND")));
 			salesInvoice.setCancelDate(rs.getDate("CANCEL_DT"));
@@ -143,15 +149,15 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 
 	private static final String UPDATE_SQL =
 			"update SALES_INVOICE"
-			+ " set POST_IND = ?, POST_DT = ?, POST_BY = ?,"
+			+ " set MARK_IND = ?, MARK_DT = ?, MARK_BY = ?,"
 			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?"
 			+ " where ID = ?";
 	
 	private void update(SalesInvoice salesInvoice) {
 		getJdbcTemplate().update(UPDATE_SQL,
-				salesInvoice.isPosted() ? "Y" : "N",
-				salesInvoice.isPosted() ? new Date(salesInvoice.getPostDate().getTime()) : null,
-				salesInvoice.isPosted() ? salesInvoice.getPostedBy().getId() : null,
+				salesInvoice.isMarked() ? "Y" : "N",
+				salesInvoice.isMarked() ? new Date(salesInvoice.getMarkDate().getTime()) : null,
+				salesInvoice.isMarked() ? salesInvoice.getMarkedBy().getId() : null,
 				salesInvoice.isCancelled() ? "Y" : "N",
 				salesInvoice.isCancelled() ? new Date(salesInvoice.getCancelDate().getTime()) : null,
 				salesInvoice.isCancelled() ? salesInvoice.getCancelledBy().getId() : null,

@@ -15,7 +15,7 @@ public interface SalesInvoiceService {
 	
 	SalesRequisition createSalesRequisitionFromSalesInvoice(SalesInvoice salesInvoice);
 	
-	void post(SalesInvoice salesInvoice);
+	void mark(SalesInvoice salesInvoice);
 	
 	void cancel(SalesInvoice salesInvoice);
 	

@@ -11,7 +11,7 @@ public class SalesInvoice {
 	private Long salesInvoiceNumber;
 	private Customer customer;
 	private Date createDate;
-	private User createdBy;
+	private User encoder;
 	private Date postDate;
 	private User postedBy;
 	private List<SalesInvoiceItem> items = new ArrayList<>();
@@ -23,7 +23,9 @@ public class SalesInvoice {
 	private Date cancelDate;
 	private User cancelledBy;
 	private boolean cancelled;
-	private boolean posted;
+	private boolean marked;
+	private Date markDate;
+	private User markedBy;
 
 	public Long getId() {
 		return id;
@@ -173,12 +175,12 @@ public class SalesInvoice {
 		this.createDate = createDate;
 	}
 
-	public User getCreatedBy() {
-		return createdBy;
+	public User getEncoder() {
+		return encoder;
 	}
 
-	public void setCreatedBy(User createdBy) {
-		this.createdBy = createdBy;
+	public void setEncoder(User encoder) {
+		this.encoder = encoder;
 	}
 
 	public Date getCancelDate() {
@@ -205,22 +207,38 @@ public class SalesInvoice {
 		this.cancelled = cancelled;
 	}
 
-	public boolean isPosted() {
-		return posted;
-	}
-
-	public void setPosted(boolean posted) {
-		this.posted = posted;
-	}
-
 	public String getStatus() {
-		if (posted) {
-			return "Posted";
+		if (marked) {
+			return "Marked";
 		} else if (cancelled) {
 			return "Cancelled";
 		} else {
-			return "Created";
+			return "New";
 		}
+	}
+
+	public Date getMarkDate() {
+		return markDate;
+	}
+
+	public void setMarkDate(Date markDate) {
+		this.markDate = markDate;
+	}
+
+	public User getMarkedBy() {
+		return markedBy;
+	}
+
+	public void setMarkedBy(User markedBy) {
+		this.markedBy = markedBy;
+	}
+
+	public boolean isMarked() {
+		return marked;
+	}
+
+	public void setMarked(boolean marked) {
+		this.marked = marked;
 	}
 	
 }

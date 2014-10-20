@@ -13,7 +13,7 @@ import com.pj.magic.util.FormatterUtil;
 public class SalesInvoicesTableModel extends AbstractTableModel {
 
 	private static final String[] COLUMN_NAMES = 
-		{"SI No.", "Customer Name", "Create Date", "Created By", "Total Amount", "Status"};
+		{"SI No.", "Transaction Date", "Customer", "Encoder", "Net Amount", "Status"};
 	
 	private List<SalesInvoice> salesInvoices = new ArrayList<>();
 	
@@ -38,8 +38,8 @@ public class SalesInvoicesTableModel extends AbstractTableModel {
 		case SalesInvoicesTable.CREATE_DATE_COLUMN_INDEX:
 			Date date = salesInvoice.getCreateDate();
 			return (date != null) ? FormatterUtil.formatDate(date) : "";
-		case SalesInvoicesTable.CREATED_BY_COLUMN_INDEX:
-			return salesInvoice.getCreatedBy().getUsername();
+		case SalesInvoicesTable.ENCODER_COLUMN_INDEX:
+			return salesInvoice.getEncoder().getUsername();
 		case SalesInvoicesTable.TOTAL_AMOUNT_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(salesInvoice.getTotalAmount());
 		case SalesInvoicesTable.STATUS_COLUMN_INDEX:
