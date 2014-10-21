@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.AbstractTableModel;
@@ -19,11 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
+import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
 
 @Component
-public class MainMenuPanel extends AbstractMagicPanel {
+public class MainMenuPanel extends StandardMagicPanel {
 
 	private static final String SELECT_MENU_ITEM_ACTION_NAME = "selectMenuItem";
 	
@@ -42,8 +44,8 @@ public class MainMenuPanel extends AbstractMagicPanel {
 	}
 
 	@Override
-	protected void layoutComponents() {
-		setLayout(new GridBagLayout());
+	protected void layoutMainPanel(JPanel mainPanel) {
+		mainPanel.setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
 		
@@ -54,7 +56,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		table.setPreferredSize(new Dimension(200, 300));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
-		add(table, c);
+		mainPanel.add(table, c);
 	}
 
 	@Override
@@ -197,6 +199,11 @@ public class MainMenuPanel extends AbstractMagicPanel {
 			return menuItems.get(rowIndex);
 		}
 		
+	}
+
+	@Override
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		toolBar.removeAll();
 	}
 
 }
