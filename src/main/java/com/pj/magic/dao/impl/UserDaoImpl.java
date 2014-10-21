@@ -20,7 +20,9 @@ import com.pj.magic.model.User;
 @Repository
 public class UserDaoImpl extends MagicDao implements UserDao {
 
-	private static final String BASE_SELECT_SQL = "select ID, USERNAME, PASSWORD from USER";
+	private static final String BASE_SELECT_SQL = 
+			"select ID, USERNAME, PASSWORD, SUPERVISOR_IND"
+			+ " from USER";
 	
 	private UserRowMapper userRowMapper = new UserRowMapper();
 	
@@ -33,7 +35,8 @@ public class UserDaoImpl extends MagicDao implements UserDao {
 		}
 	}
 
-	private static final String INSERT_SQL = "insert into USER (USERNAME, PASSWORD) values (?, ?)";
+	private static final String INSERT_SQL = "insert into USER (USERNAME, PASSWORD, SUPERVISOR_IND)"
+			+ " values (?, ?, ?)";
 	
 	private void insert(final User user) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -45,6 +48,7 @@ public class UserDaoImpl extends MagicDao implements UserDao {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setString(1, user.getUsername());
 				ps.setString(2, user.getPassword());
+				ps.setString(3, user.isSupervisor() ? "Y" : "N");
 				return ps;
 			}
 		}, holder);
@@ -52,10 +56,14 @@ public class UserDaoImpl extends MagicDao implements UserDao {
 		user.setId(holder.getKey().longValue());
 	}
 
-	private static final String UPDATE_SQL = "update USER set USERNAME = ? where ID = ?";
+	private static final String UPDATE_SQL = "update USER set USERNAME = ?, SUPERVISOR_IND = ?"
+			+ " where ID = ?";
 	
 	private void update(User user) {
-		getJdbcTemplate().update(UPDATE_SQL, user.getId());
+		getJdbcTemplate().update(UPDATE_SQL, 
+				user.getUsername(),
+				user.isSupervisor() ? "Y" : "N",
+				user.getId());
 	}
 
 	private static final String GET_SQL = BASE_SELECT_SQL + " where ID = ?";
@@ -77,12 +85,12 @@ public class UserDaoImpl extends MagicDao implements UserDao {
 			user.setId(rs.getLong("ID"));
 			user.setUsername(rs.getString("USERNAME"));
 			user.setPassword(rs.getString("PASSWORD"));
+			user.setSupervisor("Y".equals(rs.getString("SUPERVISOR_IND")));
 			return user;
 		}
 	}
 
 	private static final String FIND_BY_USERNAME_SQL = BASE_SELECT_SQL + " where USERNAME = ?";
-	
 	
 	@Override
 	public User findByUsername(String username) {

@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
@@ -37,12 +38,15 @@ public class MaintainUserPanel extends StandardMagicPanel {
 	
 	private User user;
 	private MagicTextField usernameField;
+	private JCheckBox supervisorCheckbox;
 	private JButton saveButton;
 	
 	@Override
 	protected void initializeComponents() {
 		usernameField = new MagicTextField();
 		usernameField.setMaximumLength(50);
+		
+		supervisorCheckbox = new JCheckBox();
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -59,6 +63,7 @@ public class MaintainUserPanel extends StandardMagicPanel {
 	@Override
 	protected void initializeFocusOrder(List<JComponent> focusOrder) {
 		focusOrder.add(usernameField);
+		focusOrder.add(supervisorCheckbox);
 		focusOrder.add(saveButton);
 	}
 	
@@ -69,6 +74,7 @@ public class MaintainUserPanel extends StandardMagicPanel {
 		
 		if (confirm("Save?")) {
 			user.setUsername(usernameField.getText());
+			user.setSupervisor(supervisorCheckbox.isSelected());
 			
 			try {
 				userService.save(user);
@@ -132,6 +138,20 @@ public class MaintainUserPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Supervisor? "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(supervisorCheckbox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
@@ -185,10 +205,12 @@ public class MaintainUserPanel extends StandardMagicPanel {
 		}
 		
 		usernameField.setText(user.getUsername());
+		supervisorCheckbox.setSelected(user.isSupervisor());
 	}
 
 	private void clearDisplay() {
 		usernameField.setText(null);
+		supervisorCheckbox.setSelected(false);
 	}
 
 	@Override

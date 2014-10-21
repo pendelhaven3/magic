@@ -8,6 +8,7 @@ public class User {
 	private Long id;
 	private String username;
 	private String password;
+	private boolean supervisor;
 
 	public User() {
 		// default constructor
@@ -66,5 +67,13 @@ public class User {
 			.append(id, other.getId())
 			.isEquals();
 	}
-	
+
+	public boolean isSupervisor() {
+		return supervisor;
+	}
+
+	public void setSupervisor(boolean supervisor) {
+		this.supervisor = supervisor;
+	}
+
 }
