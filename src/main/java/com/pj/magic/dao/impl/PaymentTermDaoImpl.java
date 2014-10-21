@@ -18,7 +18,11 @@ public class PaymentTermDaoImpl implements PaymentTermDao {
 	
 	@Override
 	public void save(PaymentTerm paymentTerm) {
-		entityManager.persist(paymentTerm);
+		if (paymentTerm.getId() == null) {
+			entityManager.persist(paymentTerm);
+		} else {
+			entityManager.merge(paymentTerm);
+		}
 	}
 
 	@Override

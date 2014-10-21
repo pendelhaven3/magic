@@ -77,6 +77,7 @@ public class MaintainPaymentTermPanel extends StandardMagicPanel {
 		int confirm = showConfirmMessage("Save?");
 		if (confirm == JOptionPane.OK_OPTION) {
 			paymentTerm.setName(nameField.getText());
+			paymentTerm.setNumberOfDays(Integer.parseInt(numberOfDaysField.getText()));
 			
 			try {
 				paymentTermService.save(paymentTerm);
@@ -196,18 +197,20 @@ public class MaintainPaymentTermPanel extends StandardMagicPanel {
 		});
 	}
 
-	public void updateDisplay(PaymentTerm category) {
-		this.paymentTerm = category;
-		if (category.getId() == null) {
+	public void updateDisplay(PaymentTerm paymentTerm) {
+		this.paymentTerm = paymentTerm;
+		if (paymentTerm.getId() == null) {
 			clearDisplay();
 			return;
 		}
 		
-		nameField.setText(category.getName());
+		nameField.setText(paymentTerm.getName());
+		numberOfDaysField.setText(String.valueOf(paymentTerm.getNumberOfDays()));
 	}
 
 	private void clearDisplay() {
 		nameField.setText(null);
+		numberOfDaysField.setText(null);
 	}
 
 	@Override
