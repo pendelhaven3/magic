@@ -8,11 +8,7 @@ insert into SEQUENCE (NAME) values ('ADJUSTMENT_IN_NO_SEQ');
 
 insert into PRICING_SCHEME (ID, NAME) values (1, 'CANVASSER');
 
-insert into USER (ID, USERNAME, PASSWORD) values (1, 'ADMIN', '9ojpu4j2w2obEO2QfwNaL3QhuhmNpWjgONyQ6LPlUVE=');
-insert into USER (ID, USERNAME, PASSWORD) values (2, 'JOY', 'dfPVHiEZL9JCL3yB+TiMfh2e7wZ3B/aZfSMjAshy3gE=');
-insert into USER (ID, USERNAME, PASSWORD) values (3, 'IRENE', 'XnN/iR2xF1RCo5/ec+UdeBpUVQbXHJVHem3rWYi9f5o=');
-insert into USER (ID, USERNAME, PASSWORD) values (4, 'JA', 'q0XoR0JpsCb2aNSYYLNoUBIuGKUNXqOPP+/a4IJhhlw=');
-insert into USER (ID, USERNAME, PASSWORD) values (5, 'JOAN', '/HZHvucg75QBOp/wPZPXvcIx6qBy9zEuJ1WP7PXd5Sw=');
+insert into USER (ID, USERNAME, PASSWORD, SUPERVISOR_IND) values (1, 'ADMIN', 'jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=', 'Y');
 
 insert into PRODUCT_CATEGORY (ID, NAME) values (1, 'FOOD');
 insert into PRODUCT_CATEGORY (ID, NAME) values (2, 'NON-FOOD');
