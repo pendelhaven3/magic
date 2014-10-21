@@ -78,10 +78,11 @@ public class SelectSupplierDialog extends MagicDialog {
 
 	@Override
 	protected void doWhenEscapeKeyPressed() {
-		selectedSupplier = null;
+		selectedSupplier = null; // TODO: necessary?
 	}
 	
 	public void searchAvailableSuppliers(Product product) {
+		selectedSupplier = null;
 		List<Supplier> suppliers = productService.getAvailableSuppliers(product);
 		tableModel.setSuppliers(suppliers);
 		if (!suppliers.isEmpty()) {
@@ -90,6 +91,7 @@ public class SelectSupplierDialog extends MagicDialog {
 	}
 	
 	public void searchSuppliers(String supplierCode) {
+		selectedSupplier = null;
 		List<Supplier> suppliers = supplierService.getAllSuppliers();
 		tableModel.setSuppliers(suppliers);
 		
