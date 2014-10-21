@@ -214,6 +214,7 @@ public class MagicFrame extends JFrame {
 	
 	public void switchToMainMenuPanel() {
 		setTitle(constructTitle());
+		mainMenuPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAIN_MENU_PANEL);
 	}
 	

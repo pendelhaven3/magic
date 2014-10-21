@@ -5,6 +5,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -12,22 +15,29 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.AbstractTableModel;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
+import com.pj.magic.model.User;
+import com.pj.magic.service.LoginService;
 
 @Component
 public class MainMenuPanel extends AbstractMagicPanel {
 
 	private static final String SELECT_MENU_ITEM_ACTION_NAME = "selectMenuItem";
 	
+	@Autowired private LoginService loginService;
+	
 	private JTable table;
+	private MainMenuTableModel tableModel;
 	
 	@Override
 	protected void initializeComponents() {
 		table = new JTable(new MainMenuTableModel());
+		tableModel = (MainMenuTableModel)table.getModel();
+
 		table.changeSelection(0, 0, false, false);
-		
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 
@@ -65,10 +75,14 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				selectMenuItem();
 			}
 		});
-		
 	}
 
-	protected void selectMenuItem() {
+	public void updateDisplay() {
+		tableModel.setUser(loginService.getLoggedInUser());
+		table.changeSelection(0, 0, false, false);
+	}
+	
+	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
 		case "Product List":
 			getMagicFrame().switchToProductListPanel();
@@ -134,30 +148,43 @@ public class MainMenuPanel extends AbstractMagicPanel {
 
 	private class MainMenuTableModel extends AbstractTableModel {
 
-		private String[][] data = new String[][] {
-				{"Product List"},
-				{"Pricing Schemes"},
-				{"Sales Requisition"}, 
-				{"Sales Invoice"},
-				{"Mark Sales Invoice"},
-				{"Stock Quantity Conversion"},
-				{"Purchase Order"},
-				{"Receiving Receipt"},
-				{"Adjustment In"},
-				{"Adjustment Out"},
-				{"Manufacturer List"},
-				{"Supplier List"},
-				{"Product Category List"},
-				{"Customer List"},
-				{"Payment Terms List"},
-				{"Inventory Check"},
-				{"Area Inventory Report"},
-				{"User List"}
-		};
+		private final List<String> allMenuItems = Arrays.asList(
+				"Product List",
+				"Pricing Schemes",
+				"Sales Requisition", 
+				"Sales Invoice",
+				"Mark Sales Invoice",
+				"Stock Quantity Conversion",
+				"Purchase Order",
+				"Receiving Receipt",
+				"Adjustment In",
+				"Adjustment Out",
+				"Manufacturer List",
+				"Supplier List",
+				"Product Category List",
+				"Customer List",
+				"Payment Terms List",
+				"Inventory Check",
+				"Area Inventory Report",
+				"User List"
+		);
+		
+		private List<String> menuItems = new ArrayList<>();
 		
 		@Override
 		public int getRowCount() {
-			return data.length;
+			return menuItems.size();
+		}
+
+		public void setUser(User user) {
+			menuItems.clear();
+			menuItems.addAll(allMenuItems);
+			if (!user.isSupervisor()) {
+				menuItems.remove("Pricing Schemes");
+				menuItems.remove("Inventory Check");
+				menuItems.remove("User List");
+			}
+			fireTableDataChanged();
 		}
 
 		@Override
@@ -167,7 +194,7 @@ public class MainMenuPanel extends AbstractMagicPanel {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			return data[rowIndex][columnIndex];
+			return menuItems.get(rowIndex);
 		}
 		
 	}
