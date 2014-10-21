@@ -97,10 +97,10 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		int confirm = showConfirmMessage("Save?");
-		if (confirm == JOptionPane.OK_OPTION) {
+		if (confirm("Save?")) {
 			customer.setCode(codeField.getText());
 			customer.setName(nameField.getText());
+			customer.setAddress(addressField.getText());
 			customer.setContactPerson(contactPersonField.getText());
 			customer.setContactNumber(contactNumberField.getText());
 			customer.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
@@ -303,6 +303,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		
 		codeField.setText(customer.getCode());
 		nameField.setText(customer.getName());
+		addressField.setText(customer.getAddress());
 		contactPersonField.setText(customer.getContactPerson());
 		contactNumberField.setText(customer.getContactNumber());
 		paymentTermComboBox.setSelectedItem(customer.getPaymentTerm());
