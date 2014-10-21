@@ -121,6 +121,9 @@ public class MainMenuPanel extends AbstractMagicPanel {
 		case "Area Inventory Report":
 			getMagicFrame().switchToAreaInventoryReportListPanel();
 			break;
+		case "User List":
+			getMagicFrame().switchToUserListPanel();
+			break;
 		}
 	}
 
@@ -148,7 +151,8 @@ public class MainMenuPanel extends AbstractMagicPanel {
 				{"Customer List"},
 				{"Payment Terms List"},
 				{"Inventory Check"},
-				{"Area Inventory Report"}
+				{"Area Inventory Report"},
+				{"User List"}
 		};
 		
 		@Override

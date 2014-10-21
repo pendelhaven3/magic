@@ -28,6 +28,7 @@ import com.pj.magic.gui.panels.MaintainPricingSchemePanel;
 import com.pj.magic.gui.panels.MaintainProductCategoryPanel;
 import com.pj.magic.gui.panels.MaintainProductPanel;
 import com.pj.magic.gui.panels.MaintainSupplierPanel;
+import com.pj.magic.gui.panels.MaintainUserPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
 import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
@@ -45,6 +46,7 @@ import com.pj.magic.gui.panels.SalesRequisitionPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
+import com.pj.magic.gui.panels.UserListPanel;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AreaInventoryReport;
@@ -61,6 +63,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.model.User;
 
 /**
  * Main JFrame that holds all the panels.
@@ -108,6 +111,8 @@ public class MagicFrame extends JFrame {
 	private static final String INVENTORY_CHECK_PANEL = "INVENTORY_CHECK_PANEL";
 	private static final String AREA_INVENTORY_REPORT_LIST_PANEL = "AREA_INVENTORY_REPORT_LIST_PANEL";
 	private static final String AREA_INVENTORY_REPORT_PANEL = "AREA_INVENTORY_REPORT_PANEL";
+	private static final String USER_LIST_PANEL = "USER_LIST_PANEL";
+	private static final String MAINTAIN_USER_PANEL = "MAINTAIN_USER_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -144,6 +149,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private InventoryCheckPanel inventoryCheckPanel;
 	@Autowired private AreaInventoryReportListPanel areaInventoryReportListPanel;
 	@Autowired private AreaInventoryReportPanel areaInventoryReportPanel;
+	@Autowired private UserListPanel userListPanel;
+	@Autowired private MaintainUserPanel maintainUserPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -192,6 +199,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(inventoryCheckPanel, INVENTORY_CHECK_PANEL);
 		panelHolder.add(areaInventoryReportListPanel, AREA_INVENTORY_REPORT_LIST_PANEL);
 		panelHolder.add(areaInventoryReportPanel, AREA_INVENTORY_REPORT_PANEL);
+		panelHolder.add(userListPanel, USER_LIST_PANEL);
+		panelHolder.add(maintainUserPanel, MAINTAIN_USER_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -481,6 +490,27 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Mark Sales Invoice");
 		markSalesInvoicePanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MARK_SALES_INVOICE_PANEL);
+	}
+
+	public void switchToUserListPanel() {
+		addPanelNameToTitle("User List");
+		userListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, USER_LIST_PANEL);
+	}
+
+	public void switchToEditUserPanel(User user) {
+		addPanelNameToTitle("Edit User");
+		switchToMaintainUserPanel(user);
+	}
+	
+	public void switchToAddNewUserPanel() {
+		addPanelNameToTitle("Add New User");
+		switchToMaintainUserPanel(new User());
+	}
+	
+	private void switchToMaintainUserPanel(User user) {
+		maintainUserPanel.updateDisplay(user);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_USER_PANEL);
 	}
 	
 }

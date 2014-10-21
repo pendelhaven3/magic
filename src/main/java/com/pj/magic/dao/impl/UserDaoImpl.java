@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -32,7 +33,7 @@ public class UserDaoImpl extends MagicDao implements UserDao {
 		}
 	}
 
-	private static final String INSERT_SQL = "insert into USER (USERNAME) values (?)";
+	private static final String INSERT_SQL = "insert into USER (USERNAME, PASSWORD) values (?, ?)";
 	
 	private void insert(final User user) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -43,15 +44,18 @@ public class UserDaoImpl extends MagicDao implements UserDao {
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setString(1, user.getUsername());
+				ps.setString(2, user.getPassword());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		user.setId(holder.getKey().longValue());
 	}
 
+	private static final String UPDATE_SQL = "update USER set USERNAME = ? where ID = ?";
+	
 	private void update(User user) {
-		// TODO: To be implemented
+		getJdbcTemplate().update(UPDATE_SQL, user.getId());
 	}
 
 	private static final String GET_SQL = BASE_SELECT_SQL + " where ID = ?";
@@ -87,6 +91,13 @@ public class UserDaoImpl extends MagicDao implements UserDao {
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
+	}
+
+	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by USERNAME";
+	
+	@Override
+	public List<User> getAll() {
+		return getJdbcTemplate().query(GET_ALL_SQL, userRowMapper);
 	}
 
 }

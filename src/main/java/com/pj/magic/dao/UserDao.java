@@ -1,5 +1,7 @@
 package com.pj.magic.dao;
 
+import java.util.List;
+
 import com.pj.magic.model.User;
 
 public interface UserDao {
@@ -9,5 +11,7 @@ public interface UserDao {
 	User get(long id);
 	
 	User findByUsername(String username);
+
+	List<User> getAll();
 	
 }
