@@ -145,9 +145,9 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	}
 
 	private static final String FIND_ALL_BY_PRODUCT = BASE_SELECT_SQL
-			+ " join SUPPLIER_PRODUCT b"
-			+ "		on b.SUPPLIER_ID = a.ID"
-			+ " where b.PRODUCT_ID = ?"
+			+ " join SUPPLIER_PRODUCT c"
+			+ "		on c.SUPPLIER_ID = a.ID"
+			+ " where c.PRODUCT_ID = ?"
 			+ " order by a.NAME";
 	
 	@Override
