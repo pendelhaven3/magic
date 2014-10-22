@@ -143,6 +143,9 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Change Password":
 			getMagicFrame().switchToChangePasswordPanel();
 			break;
+		case "Reset Password":
+			getMagicFrame().switchToResetPasswordPanel();
+			break;
 		}
 	}
 
@@ -172,7 +175,8 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Inventory Check",
 				"Area Inventory Report",
 				"User List",
-				"Change Password"
+				"Change Password",
+				"Reset Password"
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
@@ -189,6 +193,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				menuItems.remove("Pricing Schemes");
 				menuItems.remove("Inventory Check");
 				menuItems.remove("User List");
+				menuItems.remove("Reset Password");
 			}
 			fireTableDataChanged();
 		}

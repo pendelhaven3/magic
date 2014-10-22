@@ -40,6 +40,7 @@ import com.pj.magic.gui.panels.PurchaseOrderListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderPanel;
 import com.pj.magic.gui.panels.ReceivingReceiptListPanel;
 import com.pj.magic.gui.panels.ReceivingReceiptPanel;
+import com.pj.magic.gui.panels.ResetPasswordPanel;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.panels.SalesInvoicePanel;
 import com.pj.magic.gui.panels.SalesRequisitionListPanel;
@@ -115,6 +116,7 @@ public class MagicFrame extends JFrame {
 	private static final String USER_LIST_PANEL = "USER_LIST_PANEL";
 	private static final String MAINTAIN_USER_PANEL = "MAINTAIN_USER_PANEL";
 	private static final String CHANGE_PASSWORD_PANEL = "CHANGE_PASSWORD_PANEL";
+	private static final String RESET_PASSWORD_PANEL = "RESET_PASSWORD_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -154,6 +156,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private UserListPanel userListPanel;
 	@Autowired private MaintainUserPanel maintainUserPanel;
 	@Autowired private ChangePasswordPanel changePasswordPanel;
+	@Autowired private ResetPasswordPanel resetPasswordPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -205,6 +208,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(userListPanel, USER_LIST_PANEL);
 		panelHolder.add(maintainUserPanel, MAINTAIN_USER_PANEL);
 		panelHolder.add(changePasswordPanel, CHANGE_PASSWORD_PANEL);
+		panelHolder.add(resetPasswordPanel, RESET_PASSWORD_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -522,6 +526,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Change Password");
 		changePasswordPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, CHANGE_PASSWORD_PANEL);
+	}
+
+	public void switchToResetPasswordPanel() {
+		addPanelNameToTitle("Reset Password");
+		resetPasswordPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, RESET_PASSWORD_PANEL);
 	}
 	
 }

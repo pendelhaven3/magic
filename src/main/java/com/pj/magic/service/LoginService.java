@@ -11,6 +11,4 @@ public interface LoginService {
 	
 	User getLoggedInUser();
 
-	void changePassword(User loggedInUser, String newPassword);
-	
 }

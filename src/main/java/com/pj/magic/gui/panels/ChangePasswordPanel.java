@@ -24,6 +24,7 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicPasswordField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.service.LoginService;
+import com.pj.magic.service.UserService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 import com.pj.magic.util.PasswordTransformer;
@@ -35,6 +36,7 @@ public class ChangePasswordPanel extends StandardMagicPanel {
 	private static final int PASSWORD_MINIMUM_LENGTH = 8;
 	
 	@Autowired private LoginService loginService;
+	@Autowired private UserService userService;
 	
 	private MagicPasswordField oldPasswordField;
 	private MagicPasswordField newPasswordField;
@@ -99,7 +101,7 @@ public class ChangePasswordPanel extends StandardMagicPanel {
 		}
 		
 		try {
-			loginService.changePassword(loginService.getLoggedInUser(), newPassword);
+			userService.changePassword(loginService.getLoggedInUser(), newPassword);
 			showMessage("Password changed!");
 			getMagicFrame().switchToMainMenuPanel();
 		} catch (Exception e) {

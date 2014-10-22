@@ -2,7 +2,6 @@ package com.pj.magic.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.InvalidUsernamePasswordException;
@@ -35,14 +34,6 @@ public class LoginServiceImpl implements LoginService {
 	@Override
 	public User getLoggedInUser() {
 		return loggedInUser;
-	}
-
-	@Transactional
-	@Override
-	public void changePassword(User user, String newPassword) {
-		String encryptedPassword = PasswordTransformer.transform(newPassword);
-		user.setPassword(encryptedPassword);
-		userDao.updatePassword(user, encryptedPassword);
 	}
 
 }

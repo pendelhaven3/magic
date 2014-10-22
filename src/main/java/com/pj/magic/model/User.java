@@ -85,4 +85,9 @@ public class User {
 		this.plainPassword = plainPassword;
 	}
 
+	@Override
+	public String toString() {
+		return username;
+	}
+	
 }

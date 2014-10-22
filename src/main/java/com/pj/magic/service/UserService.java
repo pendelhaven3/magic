@@ -13,5 +13,9 @@ public interface UserService {
 	User getUser(long id);
 	
 	User findUserByUsername(String username);
+
+	void changePassword(User user, String newPassword);
+	
+	void resetPassword(User user);
 	
 }
