@@ -24,6 +24,7 @@ import com.pj.magic.model.UnitCost;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class EditProductPriceDialog extends MagicDialog {
@@ -36,10 +37,11 @@ public class EditProductPriceDialog extends MagicDialog {
 	private JLabel productCodeLabel;
 	private JLabel productDescriptionLabel;
 	private JLabel pricingSchemeNameLabel;
+	private JLabel companyListPriceLabel;
 	private JButton saveButton;
 	
 	public EditProductPriceDialog() {
-		setSize(600, 300);
+		setSize(600, 330);
 		setLocationRelativeTo(null);
 		setTitle("Edit Product Price");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
@@ -56,6 +58,7 @@ public class EditProductPriceDialog extends MagicDialog {
 		productCodeLabel = new JLabel();
 		productDescriptionLabel = new JLabel();
 		pricingSchemeNameLabel = new JLabel();
+		companyListPriceLabel = new JLabel();
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -91,42 +94,51 @@ public class EditProductPriceDialog extends MagicDialog {
 	
 	private void layoutComponents() {
 		setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(130, "Pricing Scheme:"), c);
+
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		pricingSchemeNameLabel.setPreferredSize(new Dimension(100, 20));
+		add(pricingSchemeNameLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createLabel(130, "Product Code:"), c);
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		productCodeLabel.setPreferredSize(new Dimension(100, 20));
 		add(productCodeLabel, c);
 
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		add(ComponentUtil.createFiller(1, 1), c);
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createLabel(130, "Product Description:"), c);
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -135,20 +147,18 @@ public class EditProductPriceDialog extends MagicDialog {
 
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(130, "Pricing Scheme:"), c);
+		add(ComponentUtil.createLabel(130, "Company List Price:"), c);
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		pricingSchemeNameLabel.setPreferredSize(new Dimension(100, 20));
-		add(pricingSchemeNameLabel, c);
+		companyListPriceLabel.setPreferredSize(new Dimension(100, 20));
+		add(companyListPriceLabel, c);
 
 		currentRow++;
 		
@@ -227,6 +237,7 @@ public class EditProductPriceDialog extends MagicDialog {
 		productCodeLabel.setText(product.getCode());
 		productDescriptionLabel.setText(product.getDescription());
 		pricingSchemeNameLabel.setText(pricingScheme.getName());
+		companyListPriceLabel.setText(FormatterUtil.formatAmount(product.getCompanyListPrice()));
 		
 		table.setProduct(this.product);
 		table.highlight();
