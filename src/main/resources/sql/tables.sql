@@ -62,6 +62,7 @@ create table PRODUCT (
   FINAL_COST_CTN numeric(10, 2) default 0 not null,
   FINAL_COST_DOZ numeric(10, 2) default 0 not null,
   FINAL_COST_PCS numeric(10, 2) default 0 not null,
+  COMPANY_LIST_PRICE numeric(10, 2) default 0 not null,
   constraint PRODUCT$PK primary key (ID),
   constraint PRODUCT$CODE$UK unique (CODE),
   constraint PRODUCT$FK foreign key (MANUFACTURER_ID) references MANUFACTURER (ID),

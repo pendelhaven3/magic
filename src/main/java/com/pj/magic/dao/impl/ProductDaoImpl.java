@@ -43,6 +43,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " UNIT_CONV_CSE, UNIT_CONV_TIE, UNIT_CONV_CTN, UNIT_CONV_DOZ, UNIT_CONV_PCS,"
 			+ " GROSS_COST_CSE, GROSS_COST_TIE, GROSS_COST_CTN, GROSS_COST_DOZ, GROSS_COST_PCS,"
 			+ " FINAL_COST_CSE, FINAL_COST_TIE, FINAL_COST_CTN, FINAL_COST_DOZ, FINAL_COST_PCS,"
+			+ " COMPANY_LIST_PRICE,"
 			+ " MANUFACTURER_ID, c.NAME as MANUFACTURER_NAME,"
 			+ " CATEGORY_ID, d.NAME as CATEGORY_NAME,"
 			+ " SUBCATEGORY_ID, e.NAME as SUBCATEGORY_NAME"
@@ -149,6 +150,8 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.setSubcategory(subcategory);
 			}
 			
+			product.setCompanyListPrice(rs.getBigDecimal("COMPANY_LIST_PRICE"));
+			
 			return product;
 		}
 		
@@ -186,7 +189,8 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " UNIT_IND_CTN = ?, AVAIL_QTY_CTN = ?, UNIT_CONV_CTN = ?,"
 			+ " UNIT_IND_DOZ = ?, AVAIL_QTY_DOZ = ?, UNIT_CONV_DOZ = ?,"
 			+ " UNIT_IND_PCS = ?, AVAIL_QTY_PCS = ?, UNIT_CONV_PCS = ?,"
-			+ " MANUFACTURER_ID = ?, CATEGORY_ID = ?, SUBCATEGORY_ID = ? where ID = ?";
+			+ " MANUFACTURER_ID = ?, CATEGORY_ID = ?, SUBCATEGORY_ID = ?,"
+			+ " COMPANY_LIST_PRICE = ? where ID = ?";
 	
 	private void update(Product product) {
 		getJdbcTemplate().update(UPDATE_SQL, 
@@ -213,6 +217,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.getManufacturer() != null ? product.getManufacturer().getId() : null,
 				product.getCategory() != null ? product.getCategory().getId() : null,
 				product.getSubcategory() != null ? product.getSubcategory().getId() : null,
+				product.getCompanyListPrice(),
 				product.getId());
 	}
 
@@ -223,8 +228,8 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 			+ " UNIT_CONV_CSE, UNIT_CONV_TIE, UNIT_CONV_CTN, UNIT_CONV_DOZ, UNIT_CONV_PCS,"
 			+ " GROSS_COST_CSE, GROSS_COST_TIE, GROSS_COST_CTN, GROSS_COST_DOZ, GROSS_COST_PCS,"
 			+ " FINAL_COST_CSE, FINAL_COST_TIE, FINAL_COST_CTN, FINAL_COST_DOZ, FINAL_COST_PCS,"
-			+ " MANUFACTURER_ID, CATEGORY_ID, SUBCATEGORY_ID)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " MANUFACTURER_ID, CATEGORY_ID, SUBCATEGORY_ID, COMPANY_LIST_PRICE)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Product product) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -279,6 +284,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				} else {
 					ps.setNull(33, Types.NUMERIC);
 				}
+				ps.setBigDecimal(34, product.getCompanyListPrice());
 				return ps;
 			}
 		}, holder); // TODO: check if keyholder works with oracle db

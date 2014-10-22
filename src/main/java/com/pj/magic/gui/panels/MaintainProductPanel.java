@@ -24,11 +24,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
@@ -45,6 +47,8 @@ import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ProductCategoryService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.NumberUtil;
 
 @Component
 public class MaintainProductPanel extends StandardMagicPanel {
@@ -83,6 +87,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	private JComboBox<Manufacturer> manufacturerComboBox;
 	private MagicComboBox<ProductCategory> categoryComboBox;
 	private JComboBox<ProductSubcategory> subcategoryComboBox;
+	private MagicTextField companyListPriceField;
 	private JButton saveButton;
 	private JButton addSupplierButton;
 	
@@ -142,6 +147,8 @@ public class MaintainProductPanel extends StandardMagicPanel {
 				updateSubcategoryComboBox();
 			}
 		});
+		
+		companyListPriceField = new MagicTextField();
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -228,6 +235,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		focusOrder.add(dozenUnitConversionField);
 		focusOrder.add(piecesUnitIndicatorCheckBox);
 		focusOrder.add(piecesUnitConversionField);
+		focusOrder.add(companyListPriceField);
 		focusOrder.add(saveButton);
 	}
 	
@@ -236,13 +244,17 @@ public class MaintainProductPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		int confirm = showConfirmMessage("Save?");
-		if (confirm == JOptionPane.OK_OPTION) {
+		if (confirm("Save?")) {
 			product.setCode(codeField.getText());
 			product.setDescription(descriptionField.getText());
 			product.setMaximumStockLevel(Integer.parseInt(maximumStockLevelField.getText()));
 			product.setMinimumStockLevel(Integer.parseInt(minimumStockLevelField.getText()));
 			product.setActive(activeIndicatorCheckBox.isSelected());
+			if (!StringUtils.isEmpty(companyListPriceField.getText())) {
+				product.setCompanyListPrice(NumberUtil.toBigDecimal(companyListPriceField.getText()));
+			} else {
+				product.setCompanyListPrice(Constants.ZERO);
+			}
 			
 			product.getUnits().clear();
 			if (caseUnitIndicatorCheckBox.isSelected()) {
@@ -306,10 +318,20 @@ public class MaintainProductPanel extends StandardMagicPanel {
 			if (piecesUnitIndicatorCheckBox.isSelected()) {
 				validateMandatoryField(piecesUnitConversionField, "Unit Conversion (Pieces)");
 			}
+			validateCompanyListPrice();
 		} catch (ValidationException e) {
 			return false;
 		}
 		return true;
+	}
+
+	private void validateCompanyListPrice() throws ValidationException {
+		String companyListPrice = companyListPriceField.getText();
+		if (!companyListPrice.isEmpty() && !NumberUtil.isAmount(companyListPrice)) {
+			showErrorMessage("Company List Price must be a valid amount");
+			companyListPriceField.requestFocusInWindow();
+			throw new ValidationException();
+		}
 	}
 
 	private void validateStockLevel() throws ValidationException {
@@ -325,16 +347,13 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
-		mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
+		mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 		
-		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(150, "Code: "), c);
 		
@@ -360,35 +379,36 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(150, "Suppliers:"), c);
 		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0; // right space filler
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
+		mainPanel.add(ComponentUtil.createFiller(), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0; // right space filler
+		c.gridx = 5;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(), c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Description: "), c);
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		descriptionField.setPreferredSize(new Dimension(300, 20));
 		mainPanel.add(descriptionField, c);
 
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
+		c.gridwidth = 2;
 		c.gridheight = 4;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		JScrollPane scrollPane = new JScrollPane(productSuppliersTable);
@@ -397,12 +417,10 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.gridheight = 1;
+		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Category: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
@@ -462,6 +480,13 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		minimumStockLevelField.setPreferredSize(new Dimension(50, 20));
 		mainPanel.add(minimumStockLevelField, c);
 
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.gridwidth = 1;
+		c.anchor = GridBagConstraints.EAST;
+		mainPanel.add(addSupplierButton, c);
+		
 		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
@@ -477,14 +502,6 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(activeIndicatorCheckBox, c);
 
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.EAST;
-		mainPanel.add(addSupplierButton, c);
-		
 		currentRow++;
 		
 		c.fill = GridBagConstraints.NONE;
@@ -501,6 +518,19 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		manufacturerComboBox.setPreferredSize(new Dimension(300, 20));
 		mainPanel.add(manufacturerComboBox, c);
 
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Company List Price:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		companyListPriceField.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(companyListPriceField, c);
+		
 		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
@@ -745,6 +775,15 @@ public class MaintainProductPanel extends StandardMagicPanel {
 			}
 		});
 		
+		subcategoryComboBox.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), NEXT_FIELD_ACTION_NAME);
+		subcategoryComboBox.getActionMap().put(NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				focusNextField();
+			}
+		});
+		
 		saveButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_ACTION_NAME);
 		saveButton.getActionMap().put(SAVE_ACTION_NAME, new AbstractAction() {
 			
@@ -830,6 +869,8 @@ public class MaintainProductPanel extends StandardMagicPanel {
 			subcategoryComboBox.setSelectedItem(null);
 		}
 		
+		companyListPriceField.setText(FormatterUtil.formatAmount(product.getCompanyListPrice()));
+		
 		productSuppliersTable.updateDisplay(product);
 		addSupplierButton.setEnabled(true);
 	}
@@ -870,6 +911,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		subcategoryComboBox.setModel(
 				new DefaultComboBoxModel<>(new ProductSubcategory[]{}));
 		subcategoryComboBox.setSelectedItem(null);
+		companyListPriceField.setText(null);
 		addSupplierButton.setEnabled(false);
 		productSuppliersTable.clearDisplay();
 	}

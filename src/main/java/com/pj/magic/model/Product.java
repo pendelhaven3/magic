@@ -29,6 +29,7 @@ public class Product implements Comparable<Product> {
 	private ProductSubcategory subcategory;
 	private List<UnitConversion> unitConversions = new ArrayList<>();
 	private List<UnitCost> unitCosts = new ArrayList<>();
+	private BigDecimal companyListPrice;
 
 	public Product() {
 	}
@@ -403,6 +404,14 @@ public class Product implements Comparable<Product> {
 
 	public boolean hasSellingPriceLessThanCost(String unit) {
 		return getUnitPrice(unit).compareTo(getFinalCost(unit)) == -1;
+	}
+
+	public BigDecimal getCompanyListPrice() {
+		return companyListPrice;
+	}
+
+	public void setCompanyListPrice(BigDecimal companyListPrice) {
+		this.companyListPrice = companyListPrice;
 	}
 	
 }
