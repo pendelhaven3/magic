@@ -12,7 +12,10 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
@@ -76,15 +79,31 @@ public class MaintainUserPanel extends StandardMagicPanel {
 			user.setUsername(usernameField.getText());
 			user.setSupervisor(supervisorCheckbox.isSelected());
 			
+			boolean newUser = (user.getId() == null);
 			try {
 				userService.save(user);
-				showMessage("Saved!");
+				if (newUser) {
+					JOptionPane.showMessageDialog(this, createNewPasswordPanel());
+				} else {
+					showMessage("Saved!");
+				}
 				updateDisplay(user);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
 			}
 		}
+	}
+
+	private JPanel createNewPasswordPanel() {
+		JPanel panel = new JPanel();
+		panel.add(new JLabel("Saved! New user password: "));
+		
+		JTextField textField = new JTextField(user.getPlainPassword());
+		textField.setEditable(false);
+		panel.add(textField);
+		
+		return panel;
 	}
 
 	private boolean validateUser() {

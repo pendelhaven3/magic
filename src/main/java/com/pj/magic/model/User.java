@@ -9,6 +9,7 @@ public class User {
 	private String username;
 	private String password;
 	private boolean supervisor;
+	private String plainPassword; // not stored in database
 
 	public User() {
 		// default constructor
@@ -74,6 +75,14 @@ public class User {
 
 	public void setSupervisor(boolean supervisor) {
 		this.supervisor = supervisor;
+	}
+
+	public String getPlainPassword() {
+		return plainPassword;
+	}
+
+	public void setPlainPassword(String plainPassword) {
+		this.plainPassword = plainPassword;
 	}
 
 }
