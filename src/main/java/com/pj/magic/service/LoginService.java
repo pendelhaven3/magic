@@ -10,5 +10,7 @@ public interface LoginService {
 	void logout();
 	
 	User getLoggedInUser();
+
+	void changePassword(User loggedInUser, String newPassword);
 	
 }

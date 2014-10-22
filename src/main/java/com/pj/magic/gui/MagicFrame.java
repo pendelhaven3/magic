@@ -16,6 +16,7 @@ import com.pj.magic.gui.panels.AdjustmentOutListPanel;
 import com.pj.magic.gui.panels.AdjustmentOutPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportListPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportPanel;
+import com.pj.magic.gui.panels.ChangePasswordPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
 import com.pj.magic.gui.panels.InventoryCheckPanel;
@@ -113,6 +114,7 @@ public class MagicFrame extends JFrame {
 	private static final String AREA_INVENTORY_REPORT_PANEL = "AREA_INVENTORY_REPORT_PANEL";
 	private static final String USER_LIST_PANEL = "USER_LIST_PANEL";
 	private static final String MAINTAIN_USER_PANEL = "MAINTAIN_USER_PANEL";
+	private static final String CHANGE_PASSWORD_PANEL = "CHANGE_PASSWORD_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -151,6 +153,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private AreaInventoryReportPanel areaInventoryReportPanel;
 	@Autowired private UserListPanel userListPanel;
 	@Autowired private MaintainUserPanel maintainUserPanel;
+	@Autowired private ChangePasswordPanel changePasswordPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -201,6 +204,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(areaInventoryReportPanel, AREA_INVENTORY_REPORT_PANEL);
 		panelHolder.add(userListPanel, USER_LIST_PANEL);
 		panelHolder.add(maintainUserPanel, MAINTAIN_USER_PANEL);
+		panelHolder.add(changePasswordPanel, CHANGE_PASSWORD_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -512,6 +516,12 @@ public class MagicFrame extends JFrame {
 	private void switchToMaintainUserPanel(User user) {
 		maintainUserPanel.updateDisplay(user);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_USER_PANEL);
+	}
+
+	public void switchToChangePasswordPanel() {
+		addPanelNameToTitle("Change Password");
+		changePasswordPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, CHANGE_PASSWORD_PANEL);
 	}
 	
 }

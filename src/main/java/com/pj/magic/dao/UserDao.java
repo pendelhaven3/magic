@@ -13,5 +13,7 @@ public interface UserDao {
 	User findByUsername(String username);
 
 	List<User> getAll();
+
+	void updatePassword(User user, String password);
 	
 }

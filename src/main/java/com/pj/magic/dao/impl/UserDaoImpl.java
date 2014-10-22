@@ -108,4 +108,11 @@ public class UserDaoImpl extends MagicDao implements UserDao {
 		return getJdbcTemplate().query(GET_ALL_SQL, userRowMapper);
 	}
 
+	private static final String UPDATE_PASSWORD_SQL = "update USER set PASSWORD = ? where ID = ?";
+	
+	@Override
+	public void updatePassword(User user, String password) {
+		getJdbcTemplate().update(UPDATE_PASSWORD_SQL, password, user.getId());
+	}
+
 }

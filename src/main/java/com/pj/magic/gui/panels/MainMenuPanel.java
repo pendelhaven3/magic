@@ -53,7 +53,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(200, 300));
+		table.setPreferredSize(new Dimension(200, 320));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		mainPanel.add(table, c);
@@ -140,6 +140,9 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "User List":
 			getMagicFrame().switchToUserListPanel();
 			break;
+		case "Change Password":
+			getMagicFrame().switchToChangePasswordPanel();
+			break;
 		}
 	}
 
@@ -168,7 +171,8 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Payment Terms List",
 				"Inventory Check",
 				"Area Inventory Report",
-				"User List"
+				"User List",
+				"Change Password"
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
