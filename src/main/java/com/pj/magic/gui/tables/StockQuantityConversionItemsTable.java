@@ -212,7 +212,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		addMode = false;
 		List<StockQuantityConversionItem> items = stockQuantityConversion.getItems();
 		items.addAll(tableModel.getItems());
-		tableModel.setItems(items);
+		tableModel.setStockQuantityConversion(stockQuantityConversion);
 		
 		if (items.size() > 0) {
 			changeSelection(0, 0, false, false);
@@ -268,7 +268,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		clearSelection();
 		addMode = false;
 		this.stockQuantityConversion = stockQuantityConversion;
-		tableModel.setItems(stockQuantityConversion.getItems());
+		tableModel.setStockQuantityConversion(stockQuantityConversion);
 	}
 	
 	private StockQuantityConversionItem createBlankItem() {

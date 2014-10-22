@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.StockQuantityConversionItemsTable;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.StockQuantityConversionService;
@@ -30,6 +31,7 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 	@Autowired private StockQuantityConversionService stockQuantityConversionService;
 	
 	private List<StockQuantityConversionItem> items = new ArrayList<>();
+	private boolean editable;
 	
 	@Override
 	public int getColumnCount() {
@@ -77,9 +79,10 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 		return items;
 	}
 	
-	public void setItems(List<StockQuantityConversionItem> items) {
-		this.items.clear();
-		this.items.addAll(items);
+	public void setStockQuantityConversion(StockQuantityConversion stockQuantityConversion) {
+		items.clear();
+		items.addAll(stockQuantityConversion.getItems());
+		editable = !stockQuantityConversion.isPosted();
 		fireTableDataChanged();
 	}
 	
@@ -123,10 +126,10 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == StockQuantityConversionItemsTable.PRODUCT_CODE_COLUMN_INDEX
+		return editable && (columnIndex == StockQuantityConversionItemsTable.PRODUCT_CODE_COLUMN_INDEX
 				|| columnIndex == StockQuantityConversionItemsTable.FROM_UNIT_COLUMN_INDEX
 				|| columnIndex == StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX
-				|| columnIndex == StockQuantityConversionItemsTable.QUANTITY_COLUMN_INDEX;
+				|| columnIndex == StockQuantityConversionItemsTable.QUANTITY_COLUMN_INDEX);
 	}
 	
 	public StockQuantityConversionItem getRowItem(int rowIndex) {
