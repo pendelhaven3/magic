@@ -29,6 +29,8 @@ import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
+import com.pj.magic.model.StockQuantityConversion;
+import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.PrinterUtil;
 import com.pj.magic.util.ReceivingReceiptReportUtil;
@@ -40,6 +42,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final Logger logger = LoggerFactory.getLogger(PrintServiceImpl.class);
 	
 	private static final int SALES_INVOICE_ITEMS_PER_PAGE = 44;
+	private static final int STOCK_QUANTITY_CONVERSION_ITEMS_PER_PAGE = 44;
 	private static final int PURCHASE_ORDER_ITEMS_PER_PAGE = 44;
 	private static final int RECEIVING_RECEIPT_ITEMS_PER_PAGE = 44;
 	private static final int PRICING_SCHEME_REPORT_LINES_PER_PAGE = 44;
@@ -232,6 +235,39 @@ public class PrintServiceImpl implements PrintService {
 				printPages.add(
 						generateReportAsString("reports/receivingReceipt-noDiscountDetails.vm", reportData));
 			}
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(StockQuantityConversion stockQuantityConversion) {
+		try {
+			for (String printPage : generateReportAsString(stockQuantityConversion)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(StockQuantityConversion stockQuantityConversion) {
+		Collections.sort(stockQuantityConversion.getItems());
+		
+		String currentDate = FormatterUtil.formatDate(new Date());
+		
+		List<List<StockQuantityConversionItem>> pageItems = Lists.partition(stockQuantityConversion.getItems(), 
+				STOCK_QUANTITY_CONVERSION_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("stockQuantityConversion", stockQuantityConversion);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentDate", currentDate);
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/stockQuantityConversion.vm", reportData));
 		}
 		return printPages;
 	}

@@ -4,7 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.util.StringUtils;
 
-public class StockQuantityConversionItem {
+public class StockQuantityConversionItem implements Comparable<StockQuantityConversionItem> {
 
 	private Long id;
 	private StockQuantityConversion parent;
@@ -13,11 +13,13 @@ public class StockQuantityConversionItem {
 	private String toUnit;
 	private Integer quantity;
 
+	// TODO: Remove this
 	public boolean isValid() {
 		return product != null && product.hasUnit(fromUnit) && product.hasUnit(toUnit)
 				&& (quantity != null && isQuantityValid());
 	}
 	
+	// TODO: Remove this
 	public boolean isQuantityValid() {
 		return product.hasAvailableUnitQuantity(fromUnit, quantity);
 	}
@@ -99,6 +101,11 @@ public class StockQuantityConversionItem {
 
 	public int getConvertedQuantity() {
 		return product.getUnitConversion(fromUnit) / product.getUnitConversion(toUnit) * quantity;
+	}
+
+	@Override
+	public int compareTo(StockQuantityConversionItem o) {
+		return product.compareTo(o.getProduct());
 	}
 	
 }

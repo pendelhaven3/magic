@@ -33,11 +33,13 @@ import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.gui.tables.StockQuantityConversionItemsTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.Unit;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.StockQuantityConversionService;
 import com.pj.magic.util.ComponentUtil;
@@ -51,12 +53,15 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 	@Autowired private StockQuantityConversionItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private StockQuantityConversionService stockQuantityConversionService;
+	@Autowired private PrintService printService;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
 	
 	private StockQuantityConversion stockQuantityConversion;
 	private JLabel stockQuantityConversionNumberField;
 	private JTextField remarksField;
 	private JLabel totalItemsField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
+	private JButton postButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -116,6 +121,8 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		remarksField.setText(stockQuantityConversion.getRemarks());
 		totalItemsField.setText(String.valueOf(stockQuantityConversion.getTotalNumberOfItems()));
 		itemsTable.setStockQuantityConversion(stockQuantityConversion);
+		
+		postButton.setEnabled(!stockQuantityConversion.isPosted());
 	}
 
 	@Override
@@ -440,7 +447,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		JButton postButton = new MagicToolBarButton("post", "Post");
+		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -449,6 +456,34 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(postButton);
+		
+		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreview();
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		JButton printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printStockQuantityConversion();
+			}
+		});
+		toolBar.add(printButton);
+	}
+
+	protected void printStockQuantityConversion() {
+	}
+
+	protected void printPreview() {
+		printPreviewDialog.updateDisplay(printService.generateReportAsString(stockQuantityConversion));
+		printPreviewDialog.setVisible(true);
 	}
 
 	private JPanel createItemsTableToolBar() {
