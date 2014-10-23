@@ -2,7 +2,6 @@ package com.pj.magic.model;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.springframework.util.StringUtils;
 
 public class StockQuantityConversionItem implements Comparable<StockQuantityConversionItem> {
 
@@ -13,17 +12,6 @@ public class StockQuantityConversionItem implements Comparable<StockQuantityConv
 	private String toUnit;
 	private Integer quantity;
 
-	// TODO: Remove this
-	public boolean isValid() {
-		return product != null && product.hasUnit(fromUnit) && product.hasUnit(toUnit)
-				&& (quantity != null && isQuantityValid());
-	}
-	
-	// TODO: Remove this
-	public boolean isQuantityValid() {
-		return product.hasAvailableUnitQuantity(fromUnit, quantity);
-	}
-	
 	public Long getId() {
 		return id;
 	}
@@ -60,6 +48,8 @@ public class StockQuantityConversionItem implements Comparable<StockQuantityConv
 	public int hashCode() {
 		return new HashCodeBuilder()
 			.append(product)
+			.append(fromUnit)
+			.append(toUnit)
 			.toHashCode();
 	}
 
@@ -74,15 +64,11 @@ public class StockQuantityConversionItem implements Comparable<StockQuantityConv
         StockQuantityConversionItem other = (StockQuantityConversionItem)obj;		
 		return new EqualsBuilder()
 			.append(product, other.getProduct())
+			.append(fromUnit, other.getFromUnit())
+			.append(toUnit, other.getToUnit())
 			.isEquals();
 	}
 	
-	// TODO: Remove this
-	public boolean isFilledUp() {
-		return product != null && !StringUtils.isEmpty(fromUnit) 
-				&& !StringUtils.isEmpty(toUnit) && quantity != null;
-	}
-
 	public String getFromUnit() {
 		return fromUnit;
 	}

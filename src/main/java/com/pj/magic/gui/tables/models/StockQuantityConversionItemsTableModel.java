@@ -5,12 +5,11 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.StockQuantityConversionItemsTable;
-import com.pj.magic.model.Product;
+import com.pj.magic.gui.tables.rowitems.StockQuantityConversionItemRowItem;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.service.ProductService;
@@ -30,7 +29,7 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 	@Autowired private ProductService productService;
 	@Autowired private StockQuantityConversionService stockQuantityConversionService;
 	
-	private List<StockQuantityConversionItem> items = new ArrayList<>();
+	private List<StockQuantityConversionItemRowItem> rowItems = new ArrayList<>();
 	private boolean editable;
 	
 	@Override
@@ -40,25 +39,25 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public int getRowCount() {
-		return items.size();
+		return rowItems.size();
 	}
 	
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		StockQuantityConversionItem item = items.get(rowIndex);
+		StockQuantityConversionItemRowItem rowItem = rowItems.get(rowIndex);
 		switch (columnIndex) {
 		case StockQuantityConversionItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			return (item.getProduct() != null) ? item.getProduct().getCode() : "";
+			return rowItem.getProductCode();
 		case StockQuantityConversionItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
-			return (item.getProduct() != null) ? item.getProduct().getDescription() : "";
+			return rowItem.getProductDescription();
 		case StockQuantityConversionItemsTable.FROM_UNIT_COLUMN_INDEX:
-			return StringUtils.defaultString(item.getFromUnit());
+			return rowItem.getFromUnit();
 		case StockQuantityConversionItemsTable.QUANTITY_COLUMN_INDEX:
-			return (item.getQuantity() != null) ? item.getQuantity() : "";
+			return rowItem.getQuantity();
 		case StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX:
-			return StringUtils.defaultString(item.getToUnit());
+			return rowItem.getToUnit();
 		case StockQuantityConversionItemsTable.CONVERTED_QUANTITY_COLUMN_INDEX:
-			return (item.isFilledUp()) ? String.valueOf(item.getConvertedQuantity()) : "";
+			return rowItem.isValid() ? rowItem.getItem().getConvertedQuantity() : null;
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
@@ -71,54 +70,58 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 
 	public List<StockQuantityConversionItem> getItems() {
 		List<StockQuantityConversionItem> items = new ArrayList<>();
-		for (StockQuantityConversionItem item : this.items) {
-			if (item.isValid()) {
-				items.add(item);
+		for (StockQuantityConversionItemRowItem rowItem : this.rowItems) {
+			if (rowItem.isValid()) {
+				items.add(rowItem.getItem());
 			}
 		}
 		return items;
 	}
 	
 	public void setStockQuantityConversion(StockQuantityConversion stockQuantityConversion) {
-		items.clear();
-		items.addAll(stockQuantityConversion.getItems());
+		rowItems.clear();
+		for (StockQuantityConversionItem item : stockQuantityConversion.getItems()) {
+			rowItems.add(new StockQuantityConversionItemRowItem(item));
+		}
 		editable = !stockQuantityConversion.isPosted();
 		fireTableDataChanged();
 	}
 	
 	public void addItem(StockQuantityConversionItem item) {
-		items.add(item);
+		rowItems.add(new StockQuantityConversionItemRowItem(item));
 		fireTableDataChanged();
 	}
 	
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		StockQuantityConversionItem item = items.get(rowIndex);
+		StockQuantityConversionItemRowItem rowItem = rowItems.get(rowIndex);
 		String val = (String)value;
 		switch (columnIndex) {
 		case StockQuantityConversionItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			Product product = productService.findProductByCode(val);
-			if (product == null) {
-				product = new Product();
-				product.setCode(val);
+			if (rowItem.getProduct() != null && rowItem.getProduct().getCode().equals(val)) {
+				return;
 			}
-			item.setProduct(product);
+			rowItem.setProduct(productService.findProductByCode(val));
+			rowItem.setFromUnit(null);
+			rowItem.setToUnit(null);
 			break;
 		case StockQuantityConversionItemsTable.FROM_UNIT_COLUMN_INDEX:
-			item.setFromUnit(val);
+			rowItem.setFromUnit(val);
+			rowItem.setToUnit(null);
 			break;
 		case StockQuantityConversionItemsTable.QUANTITY_COLUMN_INDEX:
-			if (!StringUtils.isEmpty(val) && StringUtils.isNumeric(val)) {
-				item.setQuantity(Integer.parseInt(val));
-			} else {
-				item.setQuantity(null);
-			}
+			rowItem.setQuantity(Integer.valueOf(val));
 			break;
 		case StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX:
-			item.setToUnit(val);
+			rowItem.setToUnit(val);
 			break;
 		}
-		if (item.isValid()) {
+		if (rowItem.isValid()) {
+			StockQuantityConversionItem item = rowItem.getItem();
+			item.setProduct(rowItem.getProduct());
+			item.setFromUnit(rowItem.getFromUnit());
+			item.setQuantity(rowItem.getQuantity());
+			item.setToUnit(rowItem.getToUnit());
 			stockQuantityConversionService.save(item);
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
@@ -132,32 +135,43 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 				|| columnIndex == StockQuantityConversionItemsTable.QUANTITY_COLUMN_INDEX);
 	}
 	
-	public StockQuantityConversionItem getRowItem(int rowIndex) {
-		return items.get(rowIndex);
+	public StockQuantityConversionItemRowItem getRowItem(int rowIndex) {
+		return rowItems.get(rowIndex);
 	}
 	
 	public void removeItem(int rowIndex) {
-		StockQuantityConversionItem item = items.remove(rowIndex);
-		stockQuantityConversionService.delete(item);
+		StockQuantityConversionItemRowItem rowItem = rowItems.remove(rowIndex);
+		stockQuantityConversionService.delete(rowItem.getItem());
 		fireTableDataChanged();
 	}
 	
 	public boolean hasItems() {
-		return !items.isEmpty();
+		return !rowItems.isEmpty();
 	}
 	
 	public void clearAndAddItem(StockQuantityConversionItem item) {
-		items.clear();
+		rowItems.clear();
 		addItem(item);
 	}
 
-	public boolean hasDuplicate(StockQuantityConversionItem checkItem) {
-		for (StockQuantityConversionItem item : items) {
-			if (item.equals(checkItem) && item != checkItem) {
+	public boolean hasDuplicate(String toUnit, StockQuantityConversionItemRowItem checkRowItem) {
+		for (StockQuantityConversionItemRowItem rowItem : rowItems) {
+			if (checkRowItem.getProduct().equals(rowItem.getProduct()) 
+					&& checkRowItem.getFromUnit().equals(rowItem.getFromUnit()) 
+					&& toUnit.equals(rowItem.getToUnit()) && rowItem != checkRowItem) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
+	public boolean hasNonBlankItem() {
+		return hasItems() && rowItems.get(0).isValid();
+	}
+
+	public void reset(int row) {
+		rowItems.get(row).reset();
+		fireTableRowsUpdated(row, row);
+	}
+
 }

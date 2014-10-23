@@ -6,28 +6,27 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.TableCellEditor;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.gui.tables.models.StockQuantityConversionItemsTableModel;
+import com.pj.magic.gui.tables.rowitems.StockQuantityConversionItemRowItem;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
@@ -52,12 +51,11 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	private static final int PRODUCT_CODE_MAXIMUM_LENGTH = 9;
 	private static final int UNIT_MAXIMUM_LENGTH = 3;
 	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
-	private static final String TAB_ACTION_NAME = "tab";
-	private static final String DOWN_ACTION_NAME = "down";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String ADD_ITEM_ACTION_NAME = "addItem";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
+	private static final String F4_ACTION_NAME = "F4";
 
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
@@ -66,19 +64,15 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	
 	private boolean addMode;
 	private StockQuantityConversion stockQuantityConversion;
-	private Action originalDownAction;
-	private Action originalEscapeAction;
 	
 	@Autowired
 	public StockQuantityConversionItemsTable(StockQuantityConversionItemsTableModel tableModel) {
 		super(tableModel);
-		setSurrendersFocusOnKeystroke(true);
 		initializeColumns();
 		initializeModelListener();
 		registerKeyBindings();
 	}
 	
-	// TODO: replace tab key simulation with table model listener
 	private void initializeColumns() {
 		TableColumnModel columnModel = getColumnModel();
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(100);
@@ -97,52 +91,51 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
 					JTextField textField = (JTextField)event.getComponent();
 					if (textField.getText().length() == PRODUCT_CODE_MAXIMUM_LENGTH) {
-						KeyUtil.simulateTabKey();
+						getCellEditor().stopCellEditing();
 					};
 				}
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateTabKey();
-				}
-			}
+			}			
 		});
-		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(productCodeTextField));
+		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setCellEditor(
+				new ProductCodeCellEditor(productCodeTextField));
 		
-		MagicTextField unitTextField = new MagicTextField();
-		unitTextField.setMaximumLength(UNIT_MAXIMUM_LENGTH);
-		unitTextField.addKeyListener(new KeyAdapter() {
+		MagicTextField fromUnitTextField = new MagicTextField();
+		fromUnitTextField.setMaximumLength(UNIT_MAXIMUM_LENGTH);
+		fromUnitTextField.addKeyListener(new KeyAdapter() {
 			
 			@Override
 			public void keyReleased(KeyEvent event) {
-				if (!KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
-					return;
-				}
-				JTextField textField = (JTextField)event.getComponent();
-				if (textField.getText().length() == UNIT_MAXIMUM_LENGTH) {
-					KeyUtil.simulateTabKey();
-				}
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateTabKey();
+				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
+					JTextField textField = (JTextField)event.getComponent();
+					if (textField.getText().length() == UNIT_MAXIMUM_LENGTH) {
+						getCellEditor().stopCellEditing();
+					}
 				}
 			}
 		});
-		TableCellEditor unitCellEditor = new DefaultCellEditor(unitTextField);
-		getColumnModel().getColumn(FROM_UNIT_COLUMN_INDEX).setCellEditor(unitCellEditor);
-		getColumnModel().getColumn(TO_UNIT_COLUMN_INDEX).setCellEditor(unitCellEditor);
+		getColumnModel().getColumn(FROM_UNIT_COLUMN_INDEX).setCellEditor(new FromUnitCellEditor(fromUnitTextField));
+		
+		MagicTextField toUnitTextField = new MagicTextField();
+		toUnitTextField.setMaximumLength(UNIT_MAXIMUM_LENGTH);
+		toUnitTextField.addKeyListener(new KeyAdapter() {
+			
+			@Override
+			public void keyReleased(KeyEvent event) {
+				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
+					JTextField textField = (JTextField)event.getComponent();
+					if (textField.getText().length() == UNIT_MAXIMUM_LENGTH) {
+						getCellEditor().stopCellEditing();
+					}
+				}
+			}
+		});
+		getColumnModel().getColumn(TO_UNIT_COLUMN_INDEX).setCellEditor(new ToUnitCellEditor(toUnitTextField));
 		
 		MagicTextField quantityTextField = new MagicTextField();
 		quantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
 		quantityTextField.setNumbersOnly(true);
-		getColumnModel().getColumn(CONVERTED_QUANTITY_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(quantityTextField));
+		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX)
+			.setCellEditor(new QuantityCellEditor(quantityTextField));
 	}
 	
 	public void switchToAddMode() {
@@ -162,11 +155,6 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
-	private Action getAction(int keyEvent) {
-		String actionName = (String)getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(KeyStroke.getKeyStroke(keyEvent, 0));
-		return getActionMap().get(actionName);
-	}
-
 	public void addNewRow() {
 		int newRowIndex = getSelectedRow() + 1;
 		tableModel.addItem(createBlankItem());
@@ -221,7 +209,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	
 	public void removeCurrentlySelectedRow() {
 		if (tableModel.hasItems()) {
-			if (getCurrentlySelectedRowItem().isFilledUp()) { // check valid row to prevent deleting the blank row
+			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
 				if (confirm("Do you wish to delete the selected item?")) {
 					doDeleteCurrentlySelectedRow();
 				}
@@ -231,7 +219,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	
 	public void doDeleteCurrentlySelectedRow() {
 		int selectedRowIndex = getSelectedRow();
-		StockQuantityConversionItem item = getCurrentlySelectedRowItem();
+		StockQuantityConversionItem item = getCurrentlySelectedRowItem().getItem();
 		// TODO: review this
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
 		stockQuantityConversion.getItems().remove(item);
@@ -246,7 +234,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		}
 	}
 	
-	public StockQuantityConversionItem getCurrentlySelectedRowItem() {
+	public StockQuantityConversionItemRowItem getCurrentlySelectedRowItem() {
 		return tableModel.getRowItem(getSelectedRow());
 	}
 	
@@ -255,13 +243,14 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
-	private boolean hasDuplicate(StockQuantityConversionItem checkItem) {
+	private boolean hasDuplicate(String toUnit, StockQuantityConversionItemRowItem rowItem) {
 		for (StockQuantityConversionItem item : stockQuantityConversion.getItems()) {
-			if (item.equals(checkItem) && item != checkItem) {
+			if (item.getProduct().equals(rowItem.getProduct()) && item.getFromUnit().equals(rowItem.getFromUnit())
+					&& item.getToUnit().equals(toUnit) && item != rowItem.getItem()) {
 				return true;
 			}
 		}
-		return false;
+		return tableModel.hasDuplicate(toUnit, rowItem);
 	}
 	
 	public void setStockQuantityConversion(StockQuantityConversion stockQuantityConversion) {
@@ -278,18 +267,9 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	}
 	
 	protected void registerKeyBindings() {
-		// TODO: shift + tab
-		// TODO: Remove table references inside anonymous classes
-		// TODO: Modify on other columns dont work
-		
-		final StockQuantityConversionItemsTable table = this;
-		originalDownAction = getAction(KeyEvent.VK_DOWN);
-		originalEscapeAction = getAction(KeyEvent.VK_ESCAPE);
-		
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), F4_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), ADD_ITEM_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
@@ -300,24 +280,6 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				switchToAddMode();
-			}
-		});
-		actionMap.put(TAB_ACTION_NAME, new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				doOnTab();
-			}
-		});
-		actionMap.put(DOWN_ACTION_NAME, new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (isEditing()) {
-					getCellEditor().stopCellEditing();
-				} else {
-					originalDownAction.actionPerformed(e);
-				}
 			}
 		});
 		actionMap.put(SHOW_SELECTION_DIALOG_ACTION_NAME, new AbstractAction() {
@@ -331,10 +293,13 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.isAdding()) {
-					table.switchToEditMode();
-				} else {
-					originalEscapeAction.actionPerformed(e);
+				if (isEditing()) {
+					getCellEditor().cancelCellEditing();
+					if (getCurrentlySelectedRowItem().isUpdating()) {
+						tableModel.reset(getSelectedRow());
+					}
+				} else if (isAdding()) {
+					switchToEditMode();
 				}
 			}
 		});
@@ -345,133 +310,73 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 				removeCurrentlySelectedRow();
 			}
 		});
+		actionMap.put(F4_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectProductDialogUsingPreviousProductCode();
+			}
+		});
 	}
 	
-	protected void doOnTab() {
-		if (getSelectedRow() == -1) {
+	protected void showSelectionDialog() {
+		if (isProductCodeFieldSelected()) {
+			if (!isEditing()) {
+				editCellAt(getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
+			}
+			openSelectProductDialog((String)getCellEditor().getCellEditorValue());
+		} else if (isUnitFieldSelected()) {
+			openSelectUnitDialog();
+		}
+	}
+
+	private void openSelectUnitDialog() {
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), getSelectedColumn());
+		}
+		selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
+		selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
+		selectUnitDialog.setVisible(true);
+		
+		String unit = selectUnitDialog.getSelectedUnit();
+		if (unit != null) {
+			((JTextField)getEditorComponent()).setText(unit);
+			getCellEditor().stopCellEditing();
+		}
+	}
+
+	private void openSelectProductDialog(String productCodeCriteria) {
+		selectProductDialog.searchProducts(productCodeCriteria);
+		selectProductDialog.setVisible(true);
+		
+		String productCode = selectProductDialog.getSelectedProductCode();
+		if (productCode != null) {
+			((JTextField)getEditorComponent()).setText(productCode);
+			getCellEditor().stopCellEditing();
+		}
+	}
+
+	private void openSelectProductDialogUsingPreviousProductCode() {
+		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
 			return;
 		}
 		
-		if (isEditing()) {
-			getCellEditor().stopCellEditing();
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), getSelectedColumn());
 		}
 		
-		int selectedColumn = getSelectedColumn();
-		int selectedRow = getSelectedRow();
-		StockQuantityConversionItem item = getCurrentlySelectedRowItem();
-		
-		switch (selectedColumn) {
-		case PRODUCT_CODE_COLUMN_INDEX:
-			String code = (String)getValueAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-			if (StringUtils.isEmpty(code)) {
-				showErrorMessage("Product code must be specified");
-				editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-				getEditorComponent().requestFocusInWindow();
-			} else if (productService.findProductByCode(code) == null) {
-				showErrorMessage("No product matching code specified");
-				editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-				getEditorComponent().requestFocusInWindow();
-			} else {
-				changeSelection(selectedRow, FROM_UNIT_COLUMN_INDEX, false, false);
-				editCellAt(selectedRow, FROM_UNIT_COLUMN_INDEX);
-				getEditorComponent().requestFocusInWindow();
-			}
-			break;
-		case StockQuantityConversionItemsTable.FROM_UNIT_COLUMN_INDEX:
-			String fromUnit = (String)getValueAt(selectedRow, FROM_UNIT_COLUMN_INDEX);
-			
-			if (StringUtils.isEmpty(fromUnit)) {
-				showErrorMessage("From Unit must be specified");
-				editCellAtCurrentRow(FROM_UNIT_COLUMN_INDEX);
-			} else if (!item.getProduct().getUnits().contains(fromUnit)) {
-				showErrorMessage("Product does not have unit specified");
-				editCellAtCurrentRow(FROM_UNIT_COLUMN_INDEX);
-			} else if (tableModel.hasDuplicate(item) || hasDuplicate(item)) {
-				showErrorMessage("Duplicate item");
-				editCellAtCurrentRow(FROM_UNIT_COLUMN_INDEX);
-			} else {
-				changeSelection(selectedRow, QUANTITY_COLUMN_INDEX, false, false);
-				editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-			}
-			break;
-		case StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX:
-			if (selectedRow + 1 < getRowCount()) {
-				changeSelection(selectedRow + 1, 0, false, false);
-				editCellAt(selectedRow + 1, 0);
-				getEditorComponent().requestFocusInWindow();
-			}
-			break;
+		if (tableModel.hasNonBlankItem()) {
+			openSelectProductDialog(getPreviousRowItem().getProductCode());
+		} else if (stockQuantityConversion.hasItems()) {
+			List<StockQuantityConversionItem> items = stockQuantityConversion.getItems();
+			openSelectProductDialog(items.get(items.size() - 1).getProduct().getCode());
 		}
 	}
 
-	protected void showSelectionDialog() {
-		if (isProductCodeFieldSelected()) {
-			selectProductDialog.searchProducts((String)getCellEditor().getCellEditorValue());
-			selectProductDialog.setVisible(true);
-			
-			String productCode = selectProductDialog.getSelectedProductCode();
-			if (productCode != null) {
-				if (isEditing()) {
-					getCellEditor().cancelCellEditing();
-					requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
-				}
-				setValueAt(productCode, getSelectedRow(), getSelectedColumn());
-				KeyUtil.simulateTabKey();
-			}
-		} else if (isUnitFieldSelected()) {
-			selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
-			selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
-			selectUnitDialog.setVisible(true);
-			
-			String unit = selectUnitDialog.getSelectedUnit();
-			if (unit != null) {
-				if (isEditing()) {
-					getCellEditor().cancelCellEditing();
-					requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
-				}
-				setValueAt(unit, getSelectedRow(), getSelectedColumn());
-				KeyUtil.simulateTabKey();
-			}
-		}
+	private StockQuantityConversionItemRowItem getPreviousRowItem() {
+		return tableModel.getRowItem(getSelectedRow() - 1);
 	}
 
-	public boolean validateQuantity(StockQuantityConversionItem item) {
-		if (item.getQuantity() == null) {
-			JOptionPane.showMessageDialog(this,
-					"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-			return false;
-		} else {
-			Product product = productService.getProduct(item.getProduct().getId());
-			if (!product.hasAvailableUnitQuantity(item.getFromUnit(), item.getQuantity().intValue())) {
-				JOptionPane.showMessageDialog(this,
-						"Not enough stocks", "Error Message", JOptionPane.ERROR_MESSAGE);
-				editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-				return false;
-			} else {
-				return true;
-			}
-		}
-	}
-	
-	public boolean validateToUnit(StockQuantityConversionItem item) {
-		if (StringUtils.isEmpty(item.getToUnit())) {
-			showErrorMessage("To Unit must be specified");
-			editCellAtCurrentRow(TO_UNIT_COLUMN_INDEX);
-			return false;
-		} else if (!item.getProduct().hasUnit(item.getToUnit())) {
-			showErrorMessage("Product does not have unit specified");
-			editCellAtCurrentRow(TO_UNIT_COLUMN_INDEX);
-			return false;
-		} else if (item.getFromUnit().equals(item.getToUnit())) {
-			showErrorMessage("To Unit must be different from From Unit");
-			editCellAtCurrentRow(TO_UNIT_COLUMN_INDEX);
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
 	public int getTotalNumberOfItems() {
 		int totalNumberOfItems = stockQuantityConversion.getTotalNumberOfItems();
 		if (isAdding()) {
@@ -501,40 +406,143 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				final int row = getSelectedRow();
+				final AbstractTableModel model = (AbstractTableModel)e.getSource();
+				final int row = e.getFirstRow();
+				final int column = e.getColumn();
 				
-				switch (e.getColumn()) {
-				case QUANTITY_COLUMN_INDEX:
-					SwingUtilities.invokeLater(new Runnable() {
-
-						@Override
-						public void run() {
-							if (validateQuantity(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, CONVERTED_QUANTITY_COLUMN_INDEX);
-								changeSelection(row, TO_UNIT_COLUMN_INDEX, false, false);
-								editCellAt(row, TO_UNIT_COLUMN_INDEX);
-								getEditorComponent().requestFocusInWindow();
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						switch (column) {
+						case PRODUCT_CODE_COLUMN_INDEX:
+							// Fire entire row. Firing single cells causes this listener to be re-triggered.
+							model.fireTableRowsUpdated(row, row);
+							selectAndEditCellAt(row, FROM_UNIT_COLUMN_INDEX);
+							break;
+						case FROM_UNIT_COLUMN_INDEX:
+							model.fireTableRowsUpdated(row, row);
+							selectAndEditCellAt(row, QUANTITY_COLUMN_INDEX);
+							break;
+						case QUANTITY_COLUMN_INDEX:
+							model.fireTableRowsUpdated(row, row);
+							selectAndEditCellAt(row, TO_UNIT_COLUMN_INDEX);
+							break;
+						case TO_UNIT_COLUMN_INDEX:
+							model.fireTableCellUpdated(row, CONVERTED_QUANTITY_COLUMN_INDEX);
+							if (isAdding() && isLastRowSelected() && getCurrentlySelectedRowItem().isValid()) {
+								addNewRow();
 							}
+							break;
 						}
-					});
-					break;
-				case TO_UNIT_COLUMN_INDEX:
-					SwingUtilities.invokeLater(new Runnable() {
-
-						@Override
-						public void run() {
-							if (validateToUnit(getCurrentlySelectedRowItem())) {
-								tableModel.setValueAt("", row, CONVERTED_QUANTITY_COLUMN_INDEX);
-								if (isAdding() && isLastRowSelected()) {
-									addNewRow();
-								}
-							}
-						}
-					});
-					break;
-				}
+					}
+				});
 			}
 		});
+	}
+	
+	private class ProductCodeCellEditor extends MagicCellEditor {
+
+		public ProductCodeCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String code = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(code)) {
+				showErrorMessage("Product code must be specified");
+			} else if (productService.findProductByCode(code) == null) {
+				showErrorMessage("No product matching code specified");
+			} else {
+				valid = true;
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+
+	}
+	
+	private class FromUnitCellEditor extends MagicCellEditor {
+		
+		public FromUnitCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String unit = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(unit)) {
+				showErrorMessage("From Unit must be specified");
+			} else {
+				StockQuantityConversionItemRowItem rowItem = getCurrentlySelectedRowItem();
+				if (!rowItem.getProduct().hasUnit(unit)) {
+					showErrorMessage("Product does not have unit specified");
+				} else {
+					valid = true;
+				}
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
+	}
+	
+	private class ToUnitCellEditor extends MagicCellEditor {
+		
+		public ToUnitCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String unit = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(unit)) {
+				showErrorMessage("To Unit must be specified");
+			} else {
+				StockQuantityConversionItemRowItem rowItem = getCurrentlySelectedRowItem();
+				if (!rowItem.getProduct().hasUnit(unit)) {
+					showErrorMessage("Product does not have unit specified");
+				} else if (unit.equals(rowItem.getFromUnit())) {
+					showErrorMessage("From Unit and To Unit must not be the same");
+				} else if (hasDuplicate(unit, rowItem)) {
+					showErrorMessage("Duplicate item");
+				} else {
+					valid = true;
+				}
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
+	}
+	
+	private class QuantityCellEditor extends MagicCellEditor {
+		
+		public QuantityCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String quantity = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(quantity)) {
+				showErrorMessage("Quantity must be specified");
+			} else if (Integer.parseInt(quantity) == 0) {
+				showErrorMessage("Quantity must be greater than 0");
+			} else {
+				StockQuantityConversionItemRowItem rowItem = getCurrentlySelectedRowItem();
+				Product product = productService.getProduct(rowItem.getProduct().getId());
+				if (!product.hasAvailableUnitQuantity(rowItem.getFromUnit(), Integer.parseInt(quantity))) {
+					showErrorMessage("Not enough stocks");
+				} else {
+					valid = true;
+				}
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
 	}
 	
 }
