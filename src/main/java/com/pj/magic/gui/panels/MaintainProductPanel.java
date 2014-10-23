@@ -94,7 +94,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	@Override
 	protected void initializeComponents() {
 		codeField = new MagicTextField();
-		codeField.setMaximumLength(9);
+		codeField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
 		
 		descriptionField = new MagicTextField();
 		descriptionField.setMaximumLength(50);
