@@ -299,6 +299,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	private boolean validateProduct() {
 		try {
 			validateMandatoryField(codeField, "Code");
+			validateProductCode();
 			validateMandatoryField(descriptionField, "Description");
 			validateMandatoryField(maximumStockLevelField, "Maximum Stock Level");
 			validateMandatoryField(minimumStockLevelField, "Minimum Stock Level");
@@ -323,6 +324,16 @@ public class MaintainProductPanel extends StandardMagicPanel {
 			return false;
 		}
 		return true;
+	}
+
+	private void validateProductCode() throws ValidationException {
+		String code = codeField.getText();
+		Product existingProduct = productService.findProductByCode(code);
+		if (existingProduct != null && existingProduct.getId() != product.getId()) {
+			showErrorMessage("Code is already in use by another product");
+			codeField.requestFocusInWindow();
+			throw new ValidationException();
+		}
 	}
 
 	private void validateCompanyListPrice() throws ValidationException {
