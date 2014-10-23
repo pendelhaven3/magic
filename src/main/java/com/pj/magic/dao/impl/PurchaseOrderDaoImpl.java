@@ -134,7 +134,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 		}
 	}
 
-	private static final String DELETE_SQL = "delete PURCHASE_ORDER where ID = ?";
+	private static final String DELETE_SQL = "delete from PURCHASE_ORDER where ID = ?";
 	
 	@Override
 	public void delete(PurchaseOrder purchaseOrder) {

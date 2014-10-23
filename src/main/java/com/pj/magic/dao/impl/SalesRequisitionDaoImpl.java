@@ -132,7 +132,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 		}
 	}
 
-	private static final String DELETE_SQL = "delete SALES_REQUISITION where ID = ?";
+	private static final String DELETE_SQL = "delete from SALES_REQUISITION where ID = ?";
 	
 	@Override
 	public void delete(SalesRequisition salesRequisition) {

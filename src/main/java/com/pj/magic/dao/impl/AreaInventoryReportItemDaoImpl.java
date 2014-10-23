@@ -84,7 +84,7 @@ public class AreaInventoryReportItemDaoImpl extends MagicDao implements AreaInve
 		}, areaInventoryReport.getId());
 	}
 
-	private static final String DELETE_SQL = "delete AREA_INV_REPORT_ITEM where ID = ?";
+	private static final String DELETE_SQL = "delete from AREA_INV_REPORT_ITEM where ID = ?";
 	
 	@Override
 	public void delete(AreaInventoryReportItem item) {
@@ -92,7 +92,7 @@ public class AreaInventoryReportItemDaoImpl extends MagicDao implements AreaInve
 	}
 
 	private static final String DELETE_ALL_BY_AREA_INVENTORY_REPORT_SQL =
-			"delete AREA_INV_REPORT_ITEM where AREA_INV_REPORT_ID = ?";
+			"delete from AREA_INV_REPORT_ITEM where AREA_INV_REPORT_ID = ?";
 	
 	@Override
 	public void deleteAllByAreaInventoryReport(AreaInventoryReport areaInventoryReport) {

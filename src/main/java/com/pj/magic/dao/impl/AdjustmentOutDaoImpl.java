@@ -107,7 +107,7 @@ public class AdjustmentOutDaoImpl extends MagicDao implements AdjustmentOutDao {
 		}
 	}
 
-	private static final String DELETE_SQL = "delete ADJUSTMENT_OUT where ID = ?";
+	private static final String DELETE_SQL = "delete from ADJUSTMENT_OUT where ID = ?";
 	
 	@Override
 	public void delete(AdjustmentOut adjustmentOut) {

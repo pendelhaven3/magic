@@ -93,7 +93,7 @@ public class PurchaseOrderItemDaoImpl extends MagicDao implements PurchaseOrderI
 		}, purchaseOrder.getId());
 	}
 
-	private static final String DELETE_SQL = "delete PURCHASE_ORDER_ITEM where ID = ?";
+	private static final String DELETE_SQL = "delete from PURCHASE_ORDER_ITEM where ID = ?";
 	
 	@Override
 	public void delete(PurchaseOrderItem item) {
@@ -101,7 +101,7 @@ public class PurchaseOrderItemDaoImpl extends MagicDao implements PurchaseOrderI
 	}
 
 	private static final String DELETE_ALL_BY_STOCK_QUANTITY_CONVERSION_SQL =
-			"delete PURCHASE_ORDER_ITEM where PURCHASE_ORDER_ID = ?";
+			"delete from PURCHASE_ORDER_ITEM where PURCHASE_ORDER_ID = ?";
 	
 	@Override
 	public void deleteAllByPurchaseOrder(PurchaseOrder purchaseOrder) {

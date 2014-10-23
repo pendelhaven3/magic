@@ -84,7 +84,7 @@ public class AdjustmentInItemDaoImpl extends MagicDao implements AdjustmentInIte
 		}, adjustmentOut.getId());
 	}
 
-	private static final String DELETE_SQL = "delete ADJUSTMENT_IN_ITEM where ID = ?";
+	private static final String DELETE_SQL = "delete from ADJUSTMENT_IN_ITEM where ID = ?";
 	
 	@Override
 	public void delete(AdjustmentInItem item) {
@@ -92,7 +92,7 @@ public class AdjustmentInItemDaoImpl extends MagicDao implements AdjustmentInIte
 	}
 
 	private static final String DELETE_ALL_BY_ADJUSTMENT_IN_SQL =
-			"delete ADJUSTMENT_IN_ITEM where ADJUSTMENT_IN_ID = ?";
+			"delete from ADJUSTMENT_IN_ITEM where ADJUSTMENT_IN_ID = ?";
 	
 	@Override
 	public void deleteAllByAdjustmentIn(AdjustmentIn adjustmentOut) {

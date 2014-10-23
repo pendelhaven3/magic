@@ -84,7 +84,7 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 		}, salesRequisition.getId());
 	}
 
-	private static final String DELETE_SQL = "delete SALES_REQUISITION_ITEM where ID = ?";
+	private static final String DELETE_SQL = "delete from SALES_REQUISITION_ITEM where ID = ?";
 	
 	@Override
 	public void delete(SalesRequisitionItem item) {
@@ -92,7 +92,7 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 	}
 
 	private static final String DELETE_ALL_BY_SALES_REQUISITION_SQL =
-			"delete SALES_REQUISITION_ITEM where SALES_REQUISITION_ID = ?";
+			"delete from SALES_REQUISITION_ITEM where SALES_REQUISITION_ID = ?";
 	
 	@Override
 	public void deleteAllBySalesRequisition(SalesRequisition salesRequisition) {
