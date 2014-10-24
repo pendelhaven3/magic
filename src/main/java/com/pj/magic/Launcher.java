@@ -7,6 +7,7 @@ import com.pj.magic.gui.MagicFrame;
 public class Launcher {
 
 	public void launch() {
+		UISettings.initialize();
 		String[] configLocations = new String[] {"applicationContext.xml", "datasource.xml"};
 		
 		@SuppressWarnings("resource")
