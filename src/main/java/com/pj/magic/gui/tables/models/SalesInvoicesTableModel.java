@@ -6,10 +6,13 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.springframework.stereotype.Component;
+
 import com.pj.magic.gui.tables.SalesInvoicesTable;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.util.FormatterUtil;
 
+@Component
 public class SalesInvoicesTableModel extends AbstractTableModel {
 
 	private static final String[] COLUMN_NAMES = 
@@ -40,8 +43,8 @@ public class SalesInvoicesTableModel extends AbstractTableModel {
 			return (date != null) ? FormatterUtil.formatDate(date) : "";
 		case SalesInvoicesTable.ENCODER_COLUMN_INDEX:
 			return salesInvoice.getEncoder().getUsername();
-		case SalesInvoicesTable.TOTAL_AMOUNT_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(salesInvoice.getTotalAmount());
+		case SalesInvoicesTable.NET_AMOUNT_COLUMN_INDEX:
+			return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
 		case SalesInvoicesTable.STATUS_COLUMN_INDEX:
 			return salesInvoice.getStatus();
 		default:
@@ -68,4 +71,13 @@ public class SalesInvoicesTableModel extends AbstractTableModel {
 		return salesInvoices.get(rowIndex);
 	}
 
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		if (columnIndex == SalesInvoicesTable.NET_AMOUNT_COLUMN_INDEX) {
+			return Number.class;
+		} else {
+			return String.class;
+		}
+	}
+	
 }

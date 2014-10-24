@@ -9,7 +9,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -22,7 +21,7 @@ import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.SalesRequisitionService;
 
 @Component
-public class SalesRequisitionsTable extends JTable {
+public class SalesRequisitionsTable extends MagicListTable {
 
 	public static final int SALES_REQUISITION_NUMBER_COLUMN_INDEX = 0;
 	public static final int CUSTOMER_NAME_COLUMN_INDEX = 1;

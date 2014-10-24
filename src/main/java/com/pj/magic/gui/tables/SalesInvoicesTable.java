@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -20,19 +19,23 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.SalesInvoiceService;
 
 @Component
-public class SalesInvoicesTable extends JTable {
+public class SalesInvoicesTable extends MagicListTable {
 
 	public static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 0;
 	public static final int CUSTOMER_NAME_COLUMN_INDEX = 1;
 	public static final int CREATE_DATE_COLUMN_INDEX = 2;
 	public static final int ENCODER_COLUMN_INDEX = 3;
-	public static final int TOTAL_AMOUNT_COLUMN_INDEX = 4;
+	public static final int NET_AMOUNT_COLUMN_INDEX = 4;
 	public static final int STATUS_COLUMN_INDEX = 5;
 	private static final String GO_TO_SALES_INVOICE_ACTION_NAME = "goToSalesInvoice";
 
 	@Autowired private SalesInvoiceService salesInvoiceService;
+	@Autowired private SalesInvoicesTableModel tableModel;
 	
-	private SalesInvoicesTableModel tableModel = new SalesInvoicesTableModel();
+	@Autowired
+	public SalesInvoicesTable(SalesInvoicesTableModel tableModel) {
+		super(tableModel);
+	}
 	
 	@PostConstruct
 	public void initialize() {

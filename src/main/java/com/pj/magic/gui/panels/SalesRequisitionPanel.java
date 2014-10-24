@@ -448,6 +448,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
+		selectCustomerButton.setPreferredSize(new Dimension(30, 24));
 		panel.add(selectCustomerButton, c);
 		
 		c.weightx = 0.0;
@@ -700,7 +701,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "SR No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(130, "SR No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -737,7 +738,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		
-		customerCodeField.setPreferredSize(new Dimension(100, 20));
+		customerCodeField.setPreferredSize(new Dimension(150, 25));
 		customerNameField = ComponentUtil.createLabel(190, "");
 		
 		mainPanel.add(createCustomerNamePanel(), c);
@@ -769,14 +770,14 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		paymentTermComboBox.setPreferredSize(new Dimension(100, 20));
+		paymentTermComboBox.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(paymentTermComboBox, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Transaction Date:"), c);
+		mainPanel.add(ComponentUtil.createLabel(140, "Transaction Date:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
@@ -800,7 +801,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		pricingSchemeComboBox.setPreferredSize(new Dimension(100, 20));
+		pricingSchemeComboBox.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(pricingSchemeComboBox, c);
 
 		c.weightx = c.weighty = 0.0;
@@ -815,7 +816,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		modeComboBox.setPreferredSize(new Dimension(100, 20));
+		modeComboBox.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(modeComboBox, c);
 		
 		currentRow++;
@@ -830,14 +831,14 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
+		c.gridwidth = 2;
 		c.anchor = GridBagConstraints.WEST;
-		remarksField.setPreferredSize(new Dimension(250, 20));
+		remarksField.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(remarksField, c);
 
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
