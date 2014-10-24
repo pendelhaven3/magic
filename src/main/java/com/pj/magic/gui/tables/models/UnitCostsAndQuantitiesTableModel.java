@@ -77,4 +77,13 @@ public class UnitCostsAndQuantitiesTableModel extends AbstractTableModel {
 		return false;
 	}
 	
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		if (columnIndex == UNIT_COST_COLUMN_INDEX) {
+			return Number.class;
+		} else {
+			return Object.class;
+		}
+	}
+	
 }

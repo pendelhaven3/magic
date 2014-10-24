@@ -9,8 +9,8 @@ import com.pj.magic.model.Product;
 
 public class ProductsTableModel extends AbstractTableModel {
 
-	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
-	private static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
+	public static final int CODE_COLUMN_INDEX = 0;
+	public static final int DESCRIPTION_COLUMN_INDEX = 1;
 	private static final String[] columnNames = {"Code", "Description"};
 	
 	private List<Product> products = new ArrayList<>();
@@ -38,9 +38,9 @@ public class ProductsTableModel extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Product product = products.get(rowIndex);
 		switch (columnIndex) {
-		case PRODUCT_CODE_COLUMN_INDEX:
+		case CODE_COLUMN_INDEX:
 			return product.getCode();
-		case PRODUCT_DESCRIPTION_COLUMN_INDEX:
+		case DESCRIPTION_COLUMN_INDEX:
 			return product.getDescription();
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);

@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.tables.MagicTable;
 import com.pj.magic.gui.tables.models.ProductsTableModel;
 import com.pj.magic.gui.tables.models.UnitCostsAndQuantitiesTableModel;
 import com.pj.magic.gui.tables.models.UnitPricesAndQuantitiesTableModel;
@@ -54,16 +55,21 @@ public class SelectProductDialog extends MagicDialog {
 	private JPanel infoTablePanel;
 	
 	public SelectProductDialog() {
-		setSize(500, 400);
+		setSize(500, 450);
 		setLocationRelativeTo(null);
 		setTitle("Select Product");
 	}
 
 	@PostConstruct
 	public void initialize() {
-		productsTable = new JTable(productsTableModel);
-		unitPricesAndQuantitiesTable = new JTable(unitPricesAndQuantitiesTableModel);
-		unitCostsAndQuantitiesTable = new JTable(unitCostsAndQuantitiesTableModel);
+		productsTable = new MagicTable(productsTableModel);
+		productsTable.getColumnModel().getColumn(ProductsTableModel.CODE_COLUMN_INDEX)
+			.setPreferredWidth(150);
+		productsTable.getColumnModel().getColumn(ProductsTableModel.DESCRIPTION_COLUMN_INDEX)
+			.setPreferredWidth(300);
+		
+		unitPricesAndQuantitiesTable = new MagicTable(unitPricesAndQuantitiesTableModel);
+		unitCostsAndQuantitiesTable = new MagicTable(unitCostsAndQuantitiesTableModel);
 		
 		layoutComponents();
 		registerKeyBindings();
@@ -161,7 +167,7 @@ public class SelectProductDialog extends MagicDialog {
 	
 	private JPanel createInfoTablePanel() {
 		infoTablePanel = new JPanel(new CardLayout());
-		infoTablePanel.setPreferredSize(new Dimension(400, 103));
+		infoTablePanel.setPreferredSize(new Dimension(400, 149));
 		
 		JScrollPane unitPricesAndQuantitiesScrollPane = new JScrollPane(unitPricesAndQuantitiesTable);
 		infoTablePanel.add(unitPricesAndQuantitiesScrollPane, UNIT_PRICE_INFO_TABLE);
