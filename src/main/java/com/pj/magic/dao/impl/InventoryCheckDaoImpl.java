@@ -20,7 +20,6 @@ import com.pj.magic.dao.InventoryCheckDao;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.Unit;
 
 @Repository
 public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao {
@@ -103,19 +102,44 @@ public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao
 	}
 
 	private static final String GET_SUMMARY_ITEMS_SQL =
-			"   select b.ID, b.CODE, b.DESCRIPTION, a.UNIT,"
-			+ " b.AVAIL_QTY_CSE, b.AVAIL_QTY_TIE, b.AVAIL_QTY_CTN, b.AVAIL_QTY_DOZ, b.AVAIL_QTY_PCS,"
-			+ " a.COUNTED_QTY"
+			" select a.ID, a.CODE, a.DESCRIPTION, a.UNIT, a.BEGINNING_INV, a.FINAL_COST, b.ACTUAL_COUNT"
 			+ " from ("
-			+ "   select airt.PRODUCT_ID, airt.UNIT, sum(airt.QUANTITY) as COUNTED_QTY"
-			+ "   from AREA_INV_REPORT air"
-			+ "   join AREA_INV_REPORT_ITEM airt"
-			+ "     on airt.AREA_INV_REPORT_ID = air.ID"
-			+ "   where air.INVENTORY_CHECK_ID = ?"
-			+ "   group by airt.PRODUCT_ID, airt.UNIT"
+			+ "   select ID, CODE, DESCRIPTION, 'CSE' as UNIT,"
+			+ "   AVAIL_QTY_CSE as BEGINNING_INV, FINAL_COST_CSE as FINAL_COST"
+			+ "   from PRODUCT"
+			+ "   where UNIT_IND_CSE = 'Y'"
+			+ "   union all"
+			+ "   select ID, CODE, DESCRIPTION, 'TIE' as UNIT,"
+			+ "   AVAIL_QTY_TIE as BEGINNING_INV, FINAL_COST_TIE as FINAL_COST"
+			+ "   from PRODUCT"
+			+ "   where UNIT_IND_TIE = 'Y'"
+			+ "   union all"
+			+ "   select ID, CODE, DESCRIPTION, 'CTN' as UNIT,"
+			+ "   AVAIL_QTY_CTN as BEGINNING_INV, FINAL_COST_CTN as FINAL_COST"
+			+ "   from PRODUCT"
+			+ "   where UNIT_IND_CTN = 'Y'"
+			+ "   union all"
+			+ "   select ID, CODE, DESCRIPTION, 'DOZ' as UNIT,"
+			+ "   AVAIL_QTY_DOZ as BEGINNING_INV, FINAL_COST_DOZ as FINAL_COST"
+			+ "   from PRODUCT"
+			+ "   where UNIT_IND_DOZ = 'Y'"
+			+ "   union all"
+			+ "   select ID, CODE, DESCRIPTION, 'PCS' as UNIT,"
+			+ "   AVAIL_QTY_PCS as BEGINNING_INV, FINAL_COST_PCS as FINAL_COST"
+			+ "   from PRODUCT"
+			+ "   where UNIT_IND_PCS = 'Y'"
 			+ " ) a"
-			+ " join PRODUCT b"
-			+ "   on b.ID = a.PRODUCT_ID";
+			+ " left join ("
+			+ "   select airi.PRODUCT_ID, airi.UNIT, sum(airi.QUANTITY) as ACTUAL_COUNT"
+			+ "   from AREA_INV_REPORT air"
+			+ "   join AREA_INV_REPORT_ITEM airi"
+			+ "     on airi.AREA_INV_REPORT_ID = air.ID"
+			+ "   where air.INVENTORY_CHECK_ID = ?"
+			+ "   group by airi.PRODUCT_ID, airi.UNIT"
+			+ " ) b"
+			+ "   on b.PRODUCT_ID = a.ID"
+			+ "   and b.UNIT = a.UNIT"
+			+ " order by DESCRIPTION";
 	
 	@Override
 	public List<InventoryCheckSummaryItem> getSummaryItems(InventoryCheck inventoryCheck) {
@@ -127,16 +151,14 @@ public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao
 				product.setId(rs.getLong("ID"));
 				product.setCode(rs.getString("CODE"));
 				product.setDescription(rs.getString("DESCRIPTION"));
-				product.addUnitQuantity(Unit.CASE, rs.getInt("AVAIL_QTY_CSE"));
-				product.addUnitQuantity(Unit.TIE, rs.getInt("AVAIL_QTY_TIE"));
-				product.addUnitQuantity(Unit.CARTON, rs.getInt("AVAIL_QTY_CTN"));
-				product.addUnitQuantity(Unit.DOZEN, rs.getInt("AVAIL_QTY_DOZ"));
-				product.addUnitQuantity(Unit.PIECES, rs.getInt("AVAIL_QTY_PCS"));
+				product.addUnit(rs.getString("UNIT"));
+				product.addUnitQuantity(rs.getString("UNIT"), rs.getInt("BEGINNING_INV"));
+				product.setFinalCost(rs.getString("UNIT"), rs.getBigDecimal("FINAL_COST"));
 
 				InventoryCheckSummaryItem item = new InventoryCheckSummaryItem();
 				item.setProduct(product);
 				item.setUnit(rs.getString("UNIT"));
-				item.setQuantity(rs.getInt("COUNTED_QTY"));
+				item.setQuantity(rs.getInt("ACTUAL_COUNT"));
 				return item;
 			}
 			

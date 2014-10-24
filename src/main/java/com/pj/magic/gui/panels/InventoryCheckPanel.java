@@ -9,9 +9,9 @@ import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -25,10 +25,12 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
-import com.pj.magic.gui.tables.models.InventoryCheckSummaryTableModel;
+import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.tables.InventoryCheckSummaryTable;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.service.InventoryCheckService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class InventoryCheckPanel extends StandardMagicPanel {
@@ -36,12 +38,15 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(InventoryCheckPanel.class);
 	
 	@Autowired private InventoryCheckService inventoryCheckService;
-	@Autowired private InventoryCheckSummaryTableModel tableModel;
+	@Autowired private InventoryCheckSummaryTable summaryTable;
 	
 	private InventoryCheck inventoryCheck;
 	private UtilCalendarModel inventoryDateModel;
 	private JButton saveButton;
-	private JTable summaryTable;
+	private JDatePickerImpl datePicker;
+	private JButton postButton;
+	private JLabel totalBeginningValueField;
+	private JLabel totalActualValueField;
 	
 	@Override
 	protected void initializeComponents() {
@@ -55,8 +60,6 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 				saveInventoryCheck();
 			}
 		});
-		
-		summaryTable = new JTable(tableModel);
 	}
 
 	protected void saveInventoryCheck() {
@@ -79,65 +82,9 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		}
 	}
 
-	private void layoutPricesTable() {
-//		TableColumnModel columnModel = pricesTable.getColumnModel();
-//		columnModel.getColumn(ProductPricesTableModel.CODE_COLUMN_INDEX).setPreferredWidth(50);
-//		columnModel.getColumn(ProductPricesTableModel.DESCRIPTION_COLUMN_INDEX).setPreferredWidth(250);
-//		columnModel.getColumn(ProductPricesTableModel.CASE_UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
-//		columnModel.getColumn(ProductPricesTableModel.TIE_UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
-//		columnModel.getColumn(ProductPricesTableModel.CARTON_UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
-//		columnModel.getColumn(ProductPricesTableModel.DOZEN_UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
-//		columnModel.getColumn(ProductPricesTableModel.PIECES_UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(50);
-//		
-//		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-//		renderer.setHorizontalAlignment(JLabel.RIGHT);
-//		
-//		columnModel.getColumn(ProductPricesTableModel.CASE_UNIT_PRICE_COLUMN_INDEX).setCellRenderer(renderer);
-//		columnModel.getColumn(ProductPricesTableModel.TIE_UNIT_PRICE_COLUMN_INDEX).setCellRenderer(renderer);
-//		columnModel.getColumn(ProductPricesTableModel.CARTON_UNIT_PRICE_COLUMN_INDEX).setCellRenderer(renderer);
-//		columnModel.getColumn(ProductPricesTableModel.DOZEN_UNIT_PRICE_COLUMN_INDEX).setCellRenderer(renderer);
-//		columnModel.getColumn(ProductPricesTableModel.PIECES_UNIT_PRICE_COLUMN_INDEX).setCellRenderer(renderer);
-	}
-
 	@Override
 	protected void registerKeyBindings() {
-//		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-//				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), NEXT_FIELD_ACTION_NAME);
-//		getActionMap().put(NEXT_FIELD_ACTION_NAME, new AbstractAction() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				focusNextField();
-//			}
-//		});
-//		
-//		saveButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_ACTION_NAME);
-//		saveButton.getActionMap().put(SAVE_ACTION_NAME, new AbstractAction() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				saveInventoryCheck();
-//			}
-//		});
-//		
-//		pricesTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
-//				SELECT_PRODUCT_PRICE_ACTION_NAME);
-//		pricesTable.getActionMap().put(SELECT_PRODUCT_PRICE_ACTION_NAME, new AbstractAction() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				selectProductPrice();
-//			}
-//		});
-//		
-//		pricesTable.addMouseListener(new DoubleClickMouseAdapter() {
-//			
-//			@Override
-//			protected void onDoubleClick() {
-//				selectProductPrice();
-//			}
-//		});
-//		
+		// none
 	}
 
 	public void updateDisplay(InventoryCheck inventoryCheck) {
@@ -150,7 +97,13 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		this.inventoryCheck = inventoryCheckService.getInventoryCheck(inventoryCheck.getId());
 		inventoryCheck = this.inventoryCheck;
 		updateInventoryDateField(inventoryCheck.getInventoryDate());
-		tableModel.setItems(inventoryCheck.getSummaryItems());
+		datePicker.getComponents()[1].setVisible(false);
+		totalBeginningValueField.setText(FormatterUtil.formatAmount(inventoryCheck.getTotalBeginningValue()));
+		totalActualValueField.setText(FormatterUtil.formatAmount(inventoryCheck.getTotalActualValue()));
+		
+		summaryTable.setItems(inventoryCheck.getSummaryItems());
+		
+		postButton.setEnabled(!inventoryCheck.isPosted());
 	}
 
 	private void updateInventoryDateField(Date inventoryDate) {
@@ -160,6 +113,8 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 
 	private void clearDisplay() {
 		updateInventoryDateField(new Date());
+		datePicker.getComponents()[1].setVisible(true);
+		postButton.setEnabled(false);
 	}
 
 	@Override
@@ -178,7 +133,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Inventory Date: "), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Inventory Date: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
@@ -186,7 +141,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		
 		JDatePanelImpl datePanel = new JDatePanelImpl(inventoryDateModel);
-		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
 		mainPanel.add(datePicker, c);
 		
 		c = new GridBagConstraints();
@@ -211,7 +166,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
-		saveButton.setPreferredSize(new Dimension(100, 20));
+		saveButton.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(saveButton, c);
 		
 		currentRow++;
@@ -220,7 +175,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 30), c);
 		
 		currentRow++;
 		
@@ -230,7 +185,6 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 3;
-		layoutPricesTable();
 		JScrollPane summaryTableScrollPane = new JScrollPane(summaryTable);
 		summaryTableScrollPane.setPreferredSize(new Dimension(600, 100));
 		mainPanel.add(summaryTableScrollPane, c);
@@ -255,14 +209,20 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(120, "Total Items:"), c);
+		panel.add(ComponentUtil.createLabel(160, "Total Beginning Value:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createFiller(), c);
+		totalBeginningValueField = ComponentUtil.createRightLabel(120, "");
+		panel.add(totalBeginningValueField, c);
+		
+		c = new GridBagConstraints(); // right side space
+		c.gridx = 2;
+		c.gridy = currentRow;
+		panel.add(ComponentUtil.createFiller(10, 1), c);
 		
 		currentRow++;
 		
@@ -270,21 +230,34 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
+		panel.add(ComponentUtil.createLabel(150, "Total Actual Value:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createFiller(), c);
+		totalActualValueField = ComponentUtil.createRightLabel(120, "");
+		panel.add(totalActualValueField, c);
 		
 		return panel;
 	}
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
+		postButton = new MagicToolBarButton("post", "Post");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				postInventoryCheck();
+			}
+		});
+		
+		toolBar.add(postButton);
+	}
+
+	private void postInventoryCheck() {
 	}
 
 }

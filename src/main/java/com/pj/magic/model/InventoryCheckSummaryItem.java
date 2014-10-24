@@ -1,5 +1,7 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
+
 public class InventoryCheckSummaryItem {
 
 	private Product product;
@@ -32,6 +34,14 @@ public class InventoryCheckSummaryItem {
 
 	public int getQuantityDifference() {
 		return quantity - product.getUnitQuantity(unit);
+	}
+
+	public BigDecimal getBeginningValue() {
+		return product.getTotalValue(unit);
+	}
+	
+	public BigDecimal getActualValue() {
+		return product.getFinalCost(unit).multiply(new BigDecimal(quantity));
 	}
 
 }

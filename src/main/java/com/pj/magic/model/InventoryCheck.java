@@ -1,9 +1,11 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.pj.magic.Constants;
 import com.pj.magic.util.FormatterUtil;
 
 public class InventoryCheck {
@@ -65,6 +67,22 @@ public class InventoryCheck {
 
 	public void setSummaryItems(List<InventoryCheckSummaryItem> summaryItems) {
 		this.summaryItems = summaryItems;
+	}
+
+	public BigDecimal getTotalBeginningValue() {
+		BigDecimal totalValue = Constants.ZERO;
+		for (InventoryCheckSummaryItem summaryItem : summaryItems) {
+			totalValue = totalValue.add(summaryItem.getBeginningValue());
+		}
+		return totalValue;
+	}
+
+	public BigDecimal getTotalActualValue() {
+		BigDecimal totalValue = Constants.ZERO;
+		for (InventoryCheckSummaryItem summaryItem : summaryItems) {
+			totalValue = totalValue.add(summaryItem.getActualValue());
+		}
+		return totalValue;
 	}
 	
 }

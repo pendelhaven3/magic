@@ -413,5 +413,9 @@ public class Product implements Comparable<Product> {
 	public void setCompanyListPrice(BigDecimal companyListPrice) {
 		this.companyListPrice = companyListPrice;
 	}
+
+	public BigDecimal getTotalValue(String unit) {
+		return getFinalCost(unit).multiply(new BigDecimal(getUnitQuantity(unit)));
+	}
 	
 }
