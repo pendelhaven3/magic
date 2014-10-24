@@ -132,4 +132,9 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		}
 	}
 
+	@Override
+	public void save(SalesInvoiceItem item) {
+		salesInvoiceItemDao.save(item);
+	}
+
 }

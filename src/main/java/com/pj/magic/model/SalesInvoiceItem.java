@@ -3,6 +3,8 @@ package com.pj.magic.model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import com.pj.magic.model.util.Percentage;
+
 public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 
 	private Long id;
@@ -11,6 +13,10 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 	private String unit;
 	private Integer quantity;
 	private BigDecimal unitPrice;
+	private BigDecimal discount1 = BigDecimal.ZERO;
+	private BigDecimal discount2 = BigDecimal.ZERO; 
+	private BigDecimal discount3 = BigDecimal.ZERO;
+	private BigDecimal flatRateDiscount = BigDecimal.ZERO;
 
 	public Long getId() {
 		return id;
@@ -72,6 +78,59 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 		} else {
 			return result;
 		}
+	}
+
+	public BigDecimal getDiscount1() {
+		return discount1;
+	}
+
+	public void setDiscount1(BigDecimal discount1) {
+		this.discount1 = discount1;
+	}
+
+	public BigDecimal getDiscount2() {
+		return discount2;
+	}
+
+	public void setDiscount2(BigDecimal discount2) {
+		this.discount2 = discount2;
+	}
+
+	public BigDecimal getDiscount3() {
+		return discount3;
+	}
+
+	public void setDiscount3(BigDecimal discount3) {
+		this.discount3 = discount3;
+	}
+
+	public BigDecimal getFlatRateDiscount() {
+		return flatRateDiscount;
+	}
+
+	public void setFlatRateDiscount(BigDecimal flatRateDiscount) {
+		this.flatRateDiscount = flatRateDiscount;
+	}
+
+	public BigDecimal getDiscountedAmount() {
+		return getAmount().subtract(getNetAmount());
+	}
+
+	public BigDecimal getNetAmount() {
+		BigDecimal netAmount = getAmount();
+		if (discount1 != null && !BigDecimal.ZERO.equals(discount1)) {
+			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount1).toDecimal()));
+		}
+		if (discount2 != null && !BigDecimal.ZERO.equals(discount2)) {
+			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount2).toDecimal()));
+		}
+		if (discount3 != null && !BigDecimal.ZERO.equals(discount3)) {
+			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount3).toDecimal()));
+		}
+		if (flatRateDiscount != null) {
+			netAmount = netAmount.subtract(flatRateDiscount);
+		}
+		return netAmount;
 	}
 
 }

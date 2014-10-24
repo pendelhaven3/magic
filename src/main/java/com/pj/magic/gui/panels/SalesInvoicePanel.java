@@ -62,17 +62,27 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	private JLabel statusField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
+	private JLabel totalDiscountedAmountField;
+	private JLabel totalNetAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	private JButton markButton;
 	private JButton cancelButton;
+	private JButton showDiscountsButton;
+	private boolean showDiscounts;
 	
 	@Override
 	protected void initializeComponents() {
 		focusOnComponentWhenThisPanelIsDisplayed(itemsTable);
+		updateTotalsPanelWhenItemsTableChanges();
 		initializeUnitPricesAndQuantitiesTable();
 	}
 
 	public void updateDisplay(SalesInvoice salesInvoice) {
+		showDiscounts = false;
+		updateDisplay(salesInvoice, showDiscounts);
+	}
+	
+	public void updateDisplay(SalesInvoice salesInvoice, boolean showDiscountDetails) {
 		this.salesInvoice = salesInvoice = salesInvoiceService.get(salesInvoice.getId());
 		
 		salesInvoiceNumberField.setText(salesInvoice.getSalesInvoiceNumber().toString());
@@ -86,13 +96,18 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		statusField.setText(salesInvoice.getStatus());
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
 		totalAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalAmount()));
-		itemsTable.setSalesInvoice(salesInvoice);
-		if (salesInvoice.hasItems()) {
+		totalDiscountedAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalDiscountedAmount()));
+		totalNetAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount()));
+		
+		itemsTable.setSalesInvoice(salesInvoice, showDiscountDetails);
+		if (showDiscountDetails && salesInvoice.isNew()) {
+			itemsTable.selectAndEditCellAt(0, SalesInvoiceItemsTable.DISCOUNT_1_COLUMN_INDEX);
+		} else {
 			itemsTable.changeSelection(0, 0, false, false);
 		}
 		
-		markButton.setEnabled(!(salesInvoice.isMarked() || salesInvoice.isCancelled()));
-		cancelButton.setEnabled(!(salesInvoice.isMarked() || salesInvoice.isCancelled()));
+		markButton.setEnabled(salesInvoice.isNew());
+		cancelButton.setEnabled(salesInvoice.isNew());
 	}
 
 	@Override
@@ -276,7 +291,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "SI No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(130, "SI No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -290,7 +305,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Transaction Date:"), c);
+		mainPanel.add(ComponentUtil.createLabel(140, "Transaction Date:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -449,6 +464,17 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		showDiscountsButton = new MagicToolBarButton("discount", "Show/Hide Discount Details");
+		showDiscountsButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showDiscounts = !showDiscounts;
+				updateDisplay(salesInvoice, showDiscounts);
+			}
+		});
+		toolBar.add(showDiscountsButton);
+		
 		markButton = new MagicToolBarButton("post", "Mark");
 		markButton.addActionListener(new ActionListener() {
 			
@@ -506,7 +532,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			try {
 				salesInvoiceService.cancel(salesInvoice);
 				showMessage("Sales Invoice cancelled");
-				updateDisplay(salesInvoice);
+				updateDisplay(salesInvoice, showDiscounts);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred");
@@ -519,7 +545,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			try {
 				salesInvoiceService.mark(salesInvoice);
 				showMessage("Sales Invoice marked");
-				updateDisplay(salesInvoice);
+				updateDisplay(salesInvoice, showDiscounts);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred");
@@ -542,33 +568,86 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(120, "Total Items:"), c);
+		panel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalItemsField = ComponentUtil.createLabel(120, "");
+		totalItemsField = ComponentUtil.createLabel(60, "");
 		panel.add(totalItemsField, c);
 		
-		currentRow++;
-		
 		c = new GridBagConstraints();
-		c.gridx = 0;
+		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.gridx = 1;
+		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createLabel(120, "");
+		totalAmountField = ComponentUtil.createRightLabel(80, "");
 		panel.add(totalAmountField, c);
 		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		panel.add(ComponentUtil.createFiller(10, 1), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(140, "Total Disc. Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalDiscountedAmountField = ComponentUtil.createRightLabel(80, "");
+		panel.add(totalDiscountedAmountField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(140, "Total Net Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalNetAmountField = ComponentUtil.createRightLabel(80, "");
+		panel.add(totalNetAmountField, c);
+		
 		return panel;
+	}
+	
+	private void updateTotalsPanelWhenItemsTableChanges() {
+		itemsTable.getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				switch (e.getColumn()) {
+				case SalesInvoiceItemsTable.DISCOUNT_1_COLUMN_INDEX:
+				case SalesInvoiceItemsTable.DISCOUNT_2_COLUMN_INDEX:
+				case SalesInvoiceItemsTable.DISCOUNT_3_COLUMN_INDEX:
+				case SalesInvoiceItemsTable.FLAT_RATE_DISCOUNT_COLUMN_INDEX:
+					totalDiscountedAmountField.setText(
+							FormatterUtil.formatAmount(salesInvoice.getTotalDiscountedAmount()));
+					totalNetAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount()));
+					break;
+				}
+			}
+		});
 	}
 	
 }

@@ -3,6 +3,7 @@ package com.pj.magic.service;
 import java.util.List;
 
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesRequisition;
 
 public interface SalesInvoiceService {
@@ -22,5 +23,7 @@ public interface SalesInvoiceService {
 	List<SalesInvoice> getNewSalesInvoices();
 
 	void markOrCancelSalesInvoices(List<SalesInvoice> salesInvoices);
+
+	void save(SalesInvoiceItem item);
 	
 }

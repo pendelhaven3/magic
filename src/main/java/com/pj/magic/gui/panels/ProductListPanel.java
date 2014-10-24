@@ -21,7 +21,7 @@ import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.ProductSearchCriteriaDialog;
-import com.pj.magic.gui.tables.MagicTable;
+import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ProductsTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.util.ProductSearchCriteria;
@@ -50,7 +50,7 @@ public class ProductListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void initializeComponents() {
-		table = new MagicTable(tableModel);
+		table = new MagicListTable(tableModel);
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 

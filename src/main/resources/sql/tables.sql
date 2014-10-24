@@ -177,6 +177,10 @@ create table SALES_INVOICE_ITEM (
   UNIT char(3) not null,
   QUANTITY integer not null,
   UNIT_PRICE numeric(10, 2) not null,
+  DISCOUNT_1 numeric(4, 2) default 0 not null,
+  DISCOUNT_2 numeric(4, 2) default 0 not null,
+  DISCOUNT_3 numeric(4, 2) default 0 not null,
+  FLAT_RATE_DISCOUNT numeric(8, 2) default 0 not null,
   constraint SALES_INVOICE_ITEM$PK primary key (ID),
   constraint SALES_INVOICE_ITEM$FK foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID),
   constraint SALES_INVOICE_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)

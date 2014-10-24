@@ -1,6 +1,7 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -133,11 +134,19 @@ public class SalesInvoice {
 	}
 	
 	public BigDecimal getTotalDiscountedAmount() {
-		return BigDecimal.ZERO; // TODO: add implementation
+		BigDecimal totalDiscountedAmount = BigDecimal.ZERO;
+		for (SalesInvoiceItem item : items) {
+			totalDiscountedAmount = totalDiscountedAmount.add(item.getDiscountedAmount());
+		}
+		return totalDiscountedAmount.setScale(2, RoundingMode.HALF_UP);
 	}
 
 	public BigDecimal getTotalNetAmount() {
-		return getTotalAmount(); // TODO: add correct implementation
+		BigDecimal totalNetAmount = BigDecimal.ZERO;
+		for (SalesInvoiceItem item : items) {
+			totalNetAmount = totalNetAmount.add(item.getNetAmount());
+		}
+		return totalNetAmount.setScale(2, RoundingMode.HALF_UP);
 	}
 
 	public PaymentTerm getPaymentTerm() {
@@ -248,6 +257,10 @@ public class SalesInvoice {
 
 	public void setTransactionDate(Date transactionDate) {
 		this.transactionDate = transactionDate;
+	}
+
+	public boolean isNew() {
+		return !(marked || cancelled);
 	}
 	
 }
