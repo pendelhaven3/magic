@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.PricingSchemesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.service.PricingSchemeService;
@@ -44,7 +45,7 @@ public class PricingSchemeListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void initializeComponents() {
-		table = new JTable(tableModel);
+		table = new MagicListTable(tableModel);
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 

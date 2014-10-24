@@ -41,10 +41,10 @@ public class EditProductPriceDialog extends MagicDialog {
 	private JButton saveButton;
 	
 	public EditProductPriceDialog() {
-		setSize(600, 330);
+		setSize(600, 380);
 		setLocationRelativeTo(null);
 		setTitle("Edit Product Price");
-		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
+		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 	}
 
 	@PostConstruct
@@ -121,7 +121,7 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		productCodeLabel.setPreferredSize(new Dimension(100, 20));
+		productCodeLabel.setPreferredSize(new Dimension(150, 20));
 		add(productCodeLabel, c);
 
 		c = new GridBagConstraints();
@@ -136,7 +136,7 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(130, "Product Description:"), c);
+		add(ComponentUtil.createLabel(150, "Product Description:"), c);
 
 		c = new GridBagConstraints();
 		c.gridx = 1;
@@ -151,7 +151,7 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(130, "Company List Price:"), c);
+		add(ComponentUtil.createLabel(160, "Company List Price:"), c);
 
 		c = new GridBagConstraints();
 		c.gridx = 1;
@@ -198,7 +198,7 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.gridy = currentRow;
 		c.gridwidth = 3;
 		c.anchor = GridBagConstraints.CENTER;
-		saveButton.setPreferredSize(new Dimension(100, 20));
+		saveButton.setPreferredSize(new Dimension(100, 25));
 		add(saveButton, c);
 		
 		currentRow++;
