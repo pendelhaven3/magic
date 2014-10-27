@@ -73,4 +73,8 @@ public class AreaInventoryReport {
 		this.reportNumber = reportNumber;
 	}
 	
+	public int getTotalNumberOfItems() {
+		return items.size();
+	}
+	
 }

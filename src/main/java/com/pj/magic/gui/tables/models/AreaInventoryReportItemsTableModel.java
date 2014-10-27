@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.AreaInventoryReportItemsTable;
 import com.pj.magic.gui.tables.rowitems.AreaInventoryReportItemRowItem;
+import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.service.AreaInventoryReportService;
 import com.pj.magic.service.ProductService;
@@ -23,6 +24,12 @@ public class AreaInventoryReportItemsTableModel extends AbstractTableModel {
 	@Autowired private AreaInventoryReportService areaInventoryReportService;
 	
 	private List<AreaInventoryReportItemRowItem> rowItems = new ArrayList<>();
+	private boolean editable;
+	
+	public void setAreaInventoryReport(AreaInventoryReport areaInventoryReport) {
+		editable = !areaInventoryReport.getParent().isPosted();
+		setItems(areaInventoryReport.getItems());
+	}
 	
 	@Override
 	public int getColumnCount() {
@@ -41,7 +48,7 @@ public class AreaInventoryReportItemsTableModel extends AbstractTableModel {
 		case AreaInventoryReportItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 			return rowItem.getProductCode();
 		case AreaInventoryReportItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
-			return (rowItem.getProduct() != null) ? rowItem.getProduct().getDescription() : null;
+			return rowItem.getProductDescription();
 		case AreaInventoryReportItemsTable.UNIT_COLUMN_INDEX:
 			return rowItem.getUnit();
 		case AreaInventoryReportItemsTable.QUANTITY_COLUMN_INDEX:
@@ -85,22 +92,24 @@ public class AreaInventoryReportItemsTableModel extends AbstractTableModel {
 		String val = (String)value;
 		switch (columnIndex) {
 		case AreaInventoryReportItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			rowItem.setProductCode(val);
+			if (rowItem.getProduct() != null && rowItem.getProduct().getCode().equals(val)) {
+				return;
+			}
 			rowItem.setProduct(productService.findProductByCode(val));
+			rowItem.setUnit(null);
 			break;
 		case AreaInventoryReportItemsTable.UNIT_COLUMN_INDEX:
 			rowItem.setUnit(val);
 			break;
 		case AreaInventoryReportItemsTable.QUANTITY_COLUMN_INDEX:
-			rowItem.setQuantity(val);
+			rowItem.setQuantity(Integer.valueOf(val));
 			break;
 		}
-		// TODO: Save only when there is a change
 		if (rowItem.isValid()) {
 			AreaInventoryReportItem item = rowItem.getItem();
 			item.setProduct(rowItem.getProduct());
 			item.setUnit(rowItem.getUnit());
-			item.setQuantity(Integer.valueOf(rowItem.getQuantity()));
+			item.setQuantity(rowItem.getQuantity());
 			areaInventoryReportService.save(item);
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
@@ -108,9 +117,21 @@ public class AreaInventoryReportItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == AreaInventoryReportItemsTable.PRODUCT_CODE_COLUMN_INDEX
-				|| columnIndex == AreaInventoryReportItemsTable.QUANTITY_COLUMN_INDEX
-				|| columnIndex == AreaInventoryReportItemsTable.UNIT_COLUMN_INDEX;
+		if (!editable) {
+			return false;
+		}
+		
+		AreaInventoryReportItemRowItem rowItem = rowItems.get(rowIndex);
+		switch (columnIndex) {
+		case AreaInventoryReportItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+			return true;
+		case AreaInventoryReportItemsTable.UNIT_COLUMN_INDEX:
+			return rowItem.hasValidProduct();
+		case AreaInventoryReportItemsTable.QUANTITY_COLUMN_INDEX:
+			return rowItem.hasValidUnit();
+		default:
+			return false;
+		}
 	}
 	
 	public AreaInventoryReportItemRowItem getRowItem(int rowIndex) {
@@ -118,8 +139,8 @@ public class AreaInventoryReportItemsTableModel extends AbstractTableModel {
 	}
 	
 	public void removeItem(int rowIndex) {
-		AreaInventoryReportItemRowItem rowItem = rowItems.remove(rowIndex);
-		areaInventoryReportService.delete(rowItem.getItem());
+		AreaInventoryReportItemRowItem item = rowItems.remove(rowIndex);
+		areaInventoryReportService.delete(item.getItem());
 		fireTableDataChanged();
 	}
 	
@@ -127,22 +148,32 @@ public class AreaInventoryReportItemsTableModel extends AbstractTableModel {
 		return !rowItems.isEmpty();
 	}
 	
+	public boolean hasNonBlankItem() {
+		return hasItems() && rowItems.get(0).isValid();
+	}
+	
 	public void clearAndAddItem(AreaInventoryReportItem item) {
 		rowItems.clear();
 		addItem(item);
 	}
 
-	public boolean hasDuplicate(AreaInventoryReportItemRowItem checkItem) {
+	public List<AreaInventoryReportItemRowItem> getRowItems() {
+		return rowItems;
+	}
+
+	public boolean hasDuplicate(String unit, AreaInventoryReportItemRowItem checkRowItem) {
 		for (AreaInventoryReportItemRowItem rowItem : rowItems) {
-			if (rowItem.equals(checkItem) && rowItem != checkItem) {
+			if (checkRowItem.getProduct().equals(rowItem.getProduct()) 
+					&& unit.equals(rowItem.getUnit()) && rowItem != checkRowItem) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public boolean isValid(int rowIndex) {
-		return rowItems.get(rowIndex).isValid();
+	public void reset(int row) {
+		rowItems.get(row).reset();
+		fireTableRowsUpdated(row, row);
 	}
 	
 }

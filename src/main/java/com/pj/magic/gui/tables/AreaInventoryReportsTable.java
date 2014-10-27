@@ -7,7 +7,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -21,7 +20,7 @@ import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.service.AreaInventoryReportService;
 
 @Component
-public class AreaInventoryReportsTable extends JTable {
+public class AreaInventoryReportsTable extends MagicListTable {
 
 	public static final int INVENTORY_DATE_COLUMN_INDEX = 0;
 	public static final int REPORT_NUMBER_COLUMN_INDEX = 1;
@@ -61,7 +60,6 @@ public class AreaInventoryReportsTable extends JTable {
 	}
 	
 	public void removeCurrentlySelectedRow() {
-		
 		int selectedRowIndex = getSelectedRow();
 		AreaInventoryReport inventoryCheck = getCurrentlySelectedAreaInventoryReport();
 		inventoryCheckService.delete(inventoryCheck);
@@ -74,8 +72,6 @@ public class AreaInventoryReportsTable extends JTable {
 				changeSelection(selectedRowIndex, 0, false, false);
 			}
 		}
-		
-		// TODO: update table as well if any new SR has been created
 	}
 	
 	public void registerKeyBindings() {

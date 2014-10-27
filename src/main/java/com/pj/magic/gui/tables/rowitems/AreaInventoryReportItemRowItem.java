@@ -1,7 +1,5 @@
 package com.pj.magic.gui.tables.rowitems;
 
-import java.math.BigDecimal;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -16,20 +14,18 @@ import com.pj.magic.model.Product;
 public class AreaInventoryReportItemRowItem {
 
 	private AreaInventoryReportItem item;
-	private String productCode;
-	private String unit;
-	private String quantity;
 	private Product product;
+	private String unit;
+	private Integer quantity;
 
 	public AreaInventoryReportItemRowItem(AreaInventoryReportItem item) {
 		this.item = item;
 		if (item.getProduct() != null) {
-			productCode = item.getProduct().getCode();
 			product = item.getProduct();
 		}
 		unit = item.getUnit();
 		if (item.getQuantity() != null) {
-			quantity = item.getQuantity().toString();
+			quantity = item.getQuantity();
 		}
 	}
 	
@@ -41,14 +37,6 @@ public class AreaInventoryReportItemRowItem {
 		this.item = item;
 	}
 
-	public String getProductCode() {
-		return productCode;
-	}
-
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
-	}
-
 	public String getUnit() {
 		return unit;
 	}
@@ -57,11 +45,11 @@ public class AreaInventoryReportItemRowItem {
 		this.unit = unit;
 	}
 
-	public String getQuantity() {
+	public Integer getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(String quantity) {
+	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 
@@ -74,16 +62,7 @@ public class AreaInventoryReportItemRowItem {
 	}
 
 	public boolean isValid() {
-		return product != null && product.hasUnit(unit) 
-				&& (!StringUtils.isEmpty(quantity) && StringUtils.isNumeric(quantity));
-	}
-
-	public BigDecimal getUnitPrice() {
-		if (product != null && product.hasUnit(unit)) {
-			return product.getUnitPrice(unit);
-		} else {
-			return null;
-		}
+		return product != null && !StringUtils.isEmpty(unit) && quantity != null;
 	}
 
 	@Override
@@ -109,8 +88,32 @@ public class AreaInventoryReportItemRowItem {
 			.isEquals();
 	}
 
-	public int getQuantityAsInt() {
-		return Integer.parseInt(quantity);
+	public String getProductDescription() {
+		return (product != null) ? product.getDescription() : null;
+	}
+
+	public String getProductCode() {
+		return (product != null) ? product.getCode() : null;
+	}
+
+	public boolean isUpdating() {
+		return item.getId() != null;
+	}
+
+	public boolean hasValidProduct() {
+		return product != null;
+	}
+
+	public boolean hasValidUnit() {
+		return !StringUtils.isEmpty(unit);
+	}
+
+	public void reset() {
+		if (item.getId() != null) {
+			product = item.getProduct();
+			unit = item.getUnit();
+			quantity = item.getQuantity();
+		}
 	}
 	
 }

@@ -3,15 +3,12 @@ package com.pj.magic.gui.tables;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -25,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
@@ -32,9 +30,14 @@ import com.pj.magic.gui.tables.models.AreaInventoryReportItemsTableModel;
 import com.pj.magic.gui.tables.rowitems.AreaInventoryReportItemRowItem;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
-import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
+
+/*
+ * [PJ 7/10/2014] 
+ * ItemsTable has 2 modes: edit (default) and add (allows adding blank rows after the last row).
+ * 
+ */
 
 @Component
 public class AreaInventoryReportItemsTable extends MagicTable {
@@ -43,12 +46,13 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
 	public static final int UNIT_COLUMN_INDEX = 2;
 	public static final int QUANTITY_COLUMN_INDEX = 3;
+	private static final int UNIT_MAXIMUM_LENGTH = 3;
 	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
-	private static final String TAB_ACTION_NAME = "tab";
-	private static final String DOWN_ACTION_NAME = "down";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
+	private static final String F10_ACTION_NAME = "F10";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
+	private static final String F4_ACTION_NAME = "F4";
 
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
@@ -57,19 +61,19 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 	
 	private boolean addMode;
 	private AreaInventoryReport areaInventoryReport;
-	private Action originalDownAction;
-	private Action originalEscapeAction;
 	
 	@Autowired
 	public AreaInventoryReportItemsTable(AreaInventoryReportItemsTableModel tableModel) {
 		super(tableModel);
-		setSurrendersFocusOnKeystroke(true);
+	}
+	
+	@PostConstruct
+	public void initialize() {
 		initializeColumns();
 		initializeModelListener();
 		registerKeyBindings();
 	}
 	
-	// TODO: replace tab key simulation with table model listener
 	private void initializeColumns() {
 		TableColumnModel columnModel = getColumnModel();
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(120);
@@ -86,50 +90,33 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
 					JTextField textField = (JTextField)event.getComponent();
 					if (textField.getText().length() == Constants.PRODUCT_CODE_MAXIMUM_LENGTH) {
-						KeyUtil.simulateTabKey();
+						getCellEditor().stopCellEditing();
 					};
 				}
 			}
-			
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateTabKey();
-				}
-			}
 		});
-		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(productCodeTextField));
+		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setCellEditor(new ProductCodeCellEditor(productCodeTextField));
 		
 		MagicTextField unitTextField = new MagicTextField();
-		unitTextField.setMaximumLength(Constants.UNIT_MAXIMUM_LENGTH);
+		unitTextField.setMaximumLength(UNIT_MAXIMUM_LENGTH);
 		unitTextField.addKeyListener(new KeyAdapter() {
 			
 			@Override
 			public void keyReleased(KeyEvent event) {
-				if (!KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
-					return;
-				}
-				JTextField textField = (JTextField)event.getComponent();
-				if (textField.getText().length() == Constants.UNIT_MAXIMUM_LENGTH) {
-					KeyUtil.simulateTabKey();
-				}
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateTabKey();
+				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
+					JTextField textField = (JTextField)event.getComponent();
+					if (textField.getText().length() == UNIT_MAXIMUM_LENGTH) {
+						getCellEditor().stopCellEditing();
+					}
 				}
 			}
 		});
-		getColumnModel().getColumn(UNIT_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(unitTextField));
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setCellEditor(new UnitCellEditor(unitTextField));
 		
 		MagicTextField quantityTextField = new MagicTextField();
 		quantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
 		quantityTextField.setNumbersOnly(true);
-		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(quantityTextField));
+		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new QuantityCellEditor(quantityTextField));		
 	}
 	
 	public void switchToAddMode() {
@@ -149,14 +136,10 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
-	private Action getAction(int keyEvent) {
-		String actionName = (String)getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(KeyStroke.getKeyStroke(keyEvent, 0));
-		return getActionMap().get(actionName);
-	}
-
 	public void addNewRow() {
 		int newRowIndex = getSelectedRow() + 1;
 		tableModel.addItem(createBlankItem());
+		
 		changeSelection(newRowIndex, 0, false, false);
 		editCellAt(newRowIndex, 0);
 		getEditorComponent().requestFocusInWindow();
@@ -198,8 +181,7 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 		}
 	}
 	
-	public void removeCurrentlySelectedRow() {
-		
+	private void doDeleteCurrentlySelectedItem() {
 		int selectedRowIndex = getSelectedRow();
 		AreaInventoryReportItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
@@ -224,24 +206,21 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
-	private boolean hasDuplicate(AreaInventoryReportItemRowItem rowItem) {
-		AreaInventoryReportItem checkItem = new AreaInventoryReportItem();
-		checkItem.setProduct(rowItem.getProduct());
-		checkItem.setUnit(rowItem.getUnit());
-		
+	private boolean hasDuplicate(String unit, AreaInventoryReportItemRowItem rowItem) {
 		for (AreaInventoryReportItem item : areaInventoryReport.getItems()) {
-			if (item.equals(checkItem) && item != rowItem.getItem()) {
+			if (item.getProduct().equals(rowItem.getProduct()) 
+					&& item.getUnit().equals(unit) && item != rowItem.getItem()) {
 				return true;
 			}
 		}
-		return false;
+		return tableModel.hasDuplicate(unit, rowItem);
 	}
 	
 	public void setAreaInventoryReport(AreaInventoryReport areaInventoryReport) {
 		clearSelection();
 		addMode = false;
 		this.areaInventoryReport = areaInventoryReport;
-		tableModel.setItems(areaInventoryReport.getItems());
+		tableModel.setAreaInventoryReport(areaInventoryReport);
 	}
 	
 	private AreaInventoryReportItem createBlankItem() {
@@ -251,96 +230,19 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 	}
 	
 	protected void registerKeyBindings() {
-		// TODO: shift + tab
-		// TODO: Remove table references inside anonymous classes
-		// TODO: Modify on other columns dont work
-		
-		final AreaInventoryReportItemsTable table = this;
-		originalDownAction = getAction(KeyEvent.VK_DOWN);
-		originalEscapeAction = getAction(KeyEvent.VK_ESCAPE);
-		
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), F4_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), F10_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
 		
 		ActionMap actionMap = getActionMap();
-		actionMap.put(TAB_ACTION_NAME, new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (getSelectedRow() == -1) {
-					return;
-				}
-				
-				if (table.isEditing()) {
-					table.getCellEditor().stopCellEditing();
-				}
-				
-				int selectedColumn = table.getSelectedColumn();
-				int selectedRow = table.getSelectedRow();
-				AreaInventoryReportItemRowItem rowItem = table.getCurrentlySelectedRowItem();
-				
-				switch (selectedColumn) {
-				case PRODUCT_CODE_COLUMN_INDEX:
-					String code = (String)table.getValueAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-					if (StringUtils.isEmpty(code)) {
-						JOptionPane.showMessageDialog(table,
-								"Product code must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						table.editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-						getEditorComponent().requestFocusInWindow();
-					} else if (productService.findProductByCode(code) == null) {
-						JOptionPane.showMessageDialog(table,
-								"No product matching code specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						table.editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-						getEditorComponent().requestFocusInWindow();
-					} else {
-						table.changeSelection(selectedRow, UNIT_COLUMN_INDEX, false, false);
-						table.editCellAt(selectedRow, UNIT_COLUMN_INDEX);
-						getEditorComponent().requestFocusInWindow();
-					}
-					break;
-				case AreaInventoryReportItemsTable.UNIT_COLUMN_INDEX:
-					String unit = (String)table.getValueAt(selectedRow, UNIT_COLUMN_INDEX);
-					
-					if (StringUtils.isEmpty(unit)) {
-						JOptionPane.showMessageDialog(table,
-								"Unit must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-					} else if (!rowItem.getProduct().getUnits().contains(unit)) {
-						JOptionPane.showMessageDialog(table,
-								"Product does not have unit specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-					} else if (tableModel.hasDuplicate(rowItem) || hasDuplicate(rowItem)) {
-						JOptionPane.showMessageDialog(table,
-								"Duplicate item", "Error Message", JOptionPane.ERROR_MESSAGE);
-						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-					} else {
-						table.changeSelection(selectedRow, QUANTITY_COLUMN_INDEX, false, false);
-						editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-					}
-					break;
-				case QUANTITY_COLUMN_INDEX:
-					if (selectedRow + 1 < table.getRowCount()) {
-						table.changeSelection(selectedRow + 1, 0, false, false);
-						table.editCellAt(selectedRow + 1, 0);
-						table.getEditorComponent().requestFocusInWindow();
-					}
-					break;
-				}
-			}
-		});
-		actionMap.put(DOWN_ACTION_NAME, new AbstractAction() {
+		actionMap.put(F10_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (isEditing()) {
-					getCellEditor().stopCellEditing();
-				} else {
-					originalDownAction.actionPerformed(e);
-				}
+				switchToAddMode();
 			}
 		});
 		actionMap.put(SHOW_SELECTION_DIALOG_ACTION_NAME, new AbstractAction() {
@@ -348,32 +250,12 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (isProductCodeFieldSelected()) {
-					selectProductDialog.searchProducts((String)getCellEditor().getCellEditorValue());
-					selectProductDialog.setVisible(true);
-					
-					String productCode = selectProductDialog.getSelectedProductCode();
-					if (productCode != null) {
-						if (isEditing()) {
-							getCellEditor().cancelCellEditing();
-							requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
-						}
-						setValueAt(productCode, getSelectedRow(), getSelectedColumn());
-						KeyUtil.simulateTabKey();
+					if (!isEditing()) {
+						editCellAt(getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
 					}
+					openSelectProductDialog((String)getCellEditor().getCellEditorValue());
 				} else if (isUnitFieldSelected()) {
-					selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
-					selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
-					selectUnitDialog.setVisible(true);
-					
-					String unit = selectUnitDialog.getSelectedUnit();
-					if (unit != null) {
-						if (isEditing()) {
-							getCellEditor().cancelCellEditing();
-							requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
-						}
-						setValueAt(unit, getSelectedRow(), getSelectedColumn());
-						KeyUtil.simulateTabKey();
-					}
+					openSelectUnitDialog();
 				}
 			}
 		});
@@ -381,10 +263,13 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.isAdding()) {
-					table.switchToEditMode();
-				} else {
-					originalEscapeAction.actionPerformed(e);
+				if (isEditing()) {
+					getCellEditor().cancelCellEditing();
+					if (getCurrentlySelectedRowItem().isUpdating()) {
+						tableModel.reset(getSelectedRow());
+					}
+				} else if (isAdding()) {
+					switchToEditMode();
 				}
 			}
 		});
@@ -392,56 +277,98 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				if (table.tableModel.hasItems()) {
-//					if (table.getCurrentlySelectedRowItem().isFilledUp()) { // check valid row to prevent deleting the blank row
-//						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?", "Select An Option", JOptionPane.YES_NO_OPTION);
-//						if (confirm == JOptionPane.OK_OPTION) {
-//							removeCurrentlySelectedRow();
-//						}
-//					}
-//				}
+				removeCurrentlySelectedItem();
+			}
+		});
+		
+		actionMap.put(F4_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectProductDialogUsingPreviousProductCode();
 			}
 		});
 	}
 	
-	public boolean validateQuantity(AreaInventoryReportItem item) {
-		if (item.getQuantity() == null) {
-			JOptionPane.showMessageDialog(this,
-					"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-			return false;
-		} else {
-			Product product = productService.getProduct(item.getProduct().getId());
-			if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity().intValue())) {
-				JOptionPane.showMessageDialog(this,
-						"Not enough stocks", "Error Message", JOptionPane.ERROR_MESSAGE);
-				editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-				return false;
-			} else {
-				return true;
+	public void removeCurrentlySelectedItem() {
+		if (getSelectedRow() != -1) {
+			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
+				if (confirm("Do you wish to delete the selected item?")) {
+					doDeleteCurrentlySelectedItem();
+				}
 			}
 		}
 	}
+
+	protected void openSelectUnitDialog() {
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), UNIT_COLUMN_INDEX);
+		}
+		
+		selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
+		selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
+		selectUnitDialog.setVisible(true);
+		
+		String unit = selectUnitDialog.getSelectedUnit();
+		if (unit != null) {
+			((JTextField)getEditorComponent()).setText(unit);
+			getCellEditor().stopCellEditing();
+		}
+	}
+
+	private void openSelectProductDialog(String productCodeCriteria) {
+		selectProductDialog.searchProducts(productCodeCriteria);
+		selectProductDialog.setVisible(true);
+		
+		String productCode = selectProductDialog.getSelectedProductCode();
+		if (productCode != null) {
+			((JTextField)getEditorComponent()).setText(productCode);
+			getCellEditor().stopCellEditing();
+		}
+	}
 	
+	protected void openSelectProductDialogUsingPreviousProductCode() {
+		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
+			return;
+		}
+		
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), getSelectedColumn());
+		}
+		
+		if (tableModel.hasNonBlankItem()) {
+			openSelectProductDialog(getPreviousRowItem().getProductCode());
+		} else if (areaInventoryReport.hasItems()) {
+			List<AreaInventoryReportItem> items = areaInventoryReport.getItems();
+			openSelectProductDialog(items.get(items.size() - 1).getProduct().getCode());
+		}
+	}
+
+	private AreaInventoryReportItemRowItem getPreviousRowItem() {
+		return tableModel.getRowItem(getSelectedRow() - 1);
+	}
+
+	/*
 	public BigDecimal getTotalAmount() {
-//		BigDecimal totalAmount = areaInventoryReport.getTotalAmount();
-//		if (isAdding()) {
-//			for (AreaInventoryReportItem item : tableModel.getItems()) {
-//				totalAmount = totalAmount.add(item.getAmount());
-//			}
-//		}
-//		return totalAmount;
-		return BigDecimal.ZERO;
+		BigDecimal totalAmount = areaInventoryReport.getTotalAmount();
+		if (isAdding()) {
+			for (AreaInventoryReportItemRowItem rowItem : tableModel.getRowItems()) {
+				if (rowItem.isValid()) {
+					totalAmount = totalAmount.add(rowItem.getAmount());
+				}
+			}
+		}
+		return totalAmount;
 	}
 	
 	public int getTotalNumberOfItems() {
-//		int totalNumberOfItems = areaInventoryReport.getTotalNumberOfItems();
-//		if (isAdding()) {
-//			totalNumberOfItems += tableModel.getItems().size();
-//		}
-//		return totalNumberOfItems;
-		return 0;
+		int totalNumberOfItems = areaInventoryReport.getTotalNumberOfItems();
+		if (isAdding()) {
+			totalNumberOfItems += tableModel.getItems().size();
+		}
+		return totalNumberOfItems;
 	}
+	*/
 
 	public void highlightColumn(AreaInventoryReportItem item, int column) {
 		int row = areaInventoryReport.getItems().indexOf(item);
@@ -464,48 +391,117 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				switch (e.getColumn()) {
-				case QUANTITY_COLUMN_INDEX:
-					SwingUtilities.invokeLater(new Runnable() {
-
-						@Override
-						public void run() {
-							if (validateQuantity(getCurrentlySelectedRowItem())) {
-								if (isAdding() && isLastRowSelected()) {
-									addNewRow();
-								}
+				final int row = e.getFirstRow();
+				final int column = e.getColumn();
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						switch (column) {
+						case PRODUCT_CODE_COLUMN_INDEX:
+							selectAndEditCellAt(row, UNIT_COLUMN_INDEX);
+							break;
+						case UNIT_COLUMN_INDEX:
+							selectAndEditCellAt(row, QUANTITY_COLUMN_INDEX);
+							break;
+						case QUANTITY_COLUMN_INDEX:
+							if (isAdding() && isLastRowSelected() && getCurrentlySelectedRowItem().isValid()) {
+								addNewRow();
 							}
+							break;
 						}
-					});
-					break;
-				}
+					}
+				});
 			}
 		});
 	}
-	
-	public boolean validateQuantity(AreaInventoryReportItemRowItem rowItem) {
-		if (StringUtils.isEmpty(rowItem.getQuantity())) {
-			showErrorMessage("Quantity must be specified");
-			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-			return false;
-		} else if (rowItem.getQuantityAsInt() == 0) {
-			showErrorMessage("Quantity must be greater than 0");
-			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-			return false;
-		} else {
-			return true;
+
+	private class ProductCodeCellEditor extends MagicCellEditor {
+
+		public ProductCodeCellEditor(JTextField textField) {
+			super(textField);
 		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String code = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(code)) {
+				showErrorMessage("Product code must be specified");
+			} else if (productService.findProductByCode(code) == null) {
+				showErrorMessage("No product matching code specified");
+			} else {
+				valid = true;
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+
+	}
+	
+	private class UnitCellEditor extends MagicCellEditor {
+		
+		public UnitCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String unit = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(unit)) {
+				showErrorMessage("Unit must be specified");
+			} else {
+				AreaInventoryReportItemRowItem rowItem = getCurrentlySelectedRowItem();
+				if (!rowItem.getProduct().hasUnit(unit)) {
+					showErrorMessage("Product does not have unit specified");
+				} else if (hasDuplicate(unit, rowItem)) {
+					showErrorMessage("Duplicate item");
+				} else {
+					valid = true;
+				}
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
+	}
+	
+	private class QuantityCellEditor extends MagicCellEditor {
+		
+		public QuantityCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String quantity = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(quantity)) {
+				showErrorMessage("Quantity must be specified");
+			} else {
+				valid = true;
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
 	}
 
-	// TODO: Rename method
 	public void delete() {
-		if (tableModel.hasItems()) {
-			if (tableModel.isValid(getSelectedRow())) { // check valid row to prevent deleting the blank row
+		if (getSelectedRow() != -1) {
+			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
 				if (confirm("Do you wish to delete the selected item?")) {
-					removeCurrentlySelectedRow();
+					doDeleteCurrentlySelectedItem();
 				}
 			}
 		}
+	}
+
+	public int getTotalNumberOfItems() {
+		int totalNumberOfItems = areaInventoryReport.getTotalNumberOfItems();
+		if (isAdding()) {
+			totalNumberOfItems += tableModel.getItems().size();
+		}
+		return totalNumberOfItems;
 	}
 	
 }
