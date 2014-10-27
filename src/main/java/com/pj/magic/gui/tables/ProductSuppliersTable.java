@@ -19,7 +19,7 @@ import com.pj.magic.model.Supplier;
 import com.pj.magic.service.ProductService;
 
 @Component
-public class ProductSuppliersTable extends JTable {
+public class ProductSuppliersTable extends MagicListTable {
 
 	public static final int BUTTON_COLUMN_INDEX = 1;
 	

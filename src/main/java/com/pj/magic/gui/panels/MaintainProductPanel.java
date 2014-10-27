@@ -381,7 +381,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		codeField.setPreferredSize(new Dimension(100, 20));
+		codeField.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(codeField, c);
 		
 		c.fill = GridBagConstraints.NONE;
@@ -421,7 +421,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		descriptionField.setPreferredSize(new Dimension(300, 20));
+		descriptionField.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(descriptionField, c);
 
 		c = new GridBagConstraints();
@@ -431,7 +431,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.gridheight = 4;
 		c.anchor = GridBagConstraints.NORTHWEST;
 		JScrollPane scrollPane = new JScrollPane(productSuppliersTable);
-		scrollPane.setPreferredSize(new Dimension(350, 110));
+		scrollPane.setPreferredSize(new Dimension(400, 110));
 		mainPanel.add(scrollPane, c);
 		
 		currentRow++;
@@ -448,7 +448,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		categoryComboBox.setPreferredSize(new Dimension(300, 20));
+		categoryComboBox.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(categoryComboBox, c);
 
 		currentRow++;
@@ -463,7 +463,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		subcategoryComboBox.setPreferredSize(new Dimension(300, 20));
+		subcategoryComboBox.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(subcategoryComboBox, c);
 
 		currentRow++;
@@ -472,7 +472,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createLabel(150, "Maximum Stock Level: "), c);
+		mainPanel.add(ComponentUtil.createLabel(175, "Maximum Stock Level: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = 0.0;
@@ -480,7 +480,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		maximumStockLevelField.setPreferredSize(new Dimension(50, 20));
+		maximumStockLevelField.setPreferredSize(new Dimension(50, 25));
 		mainPanel.add(maximumStockLevelField, c);
 
 		currentRow++;
@@ -489,14 +489,14 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createLabel(150, "Minimum Stock Level: "), c);
+		mainPanel.add(ComponentUtil.createLabel(175, "Minimum Stock Level: "), c);
 		
 		c.fill = GridBagConstraints.NONE;
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		minimumStockLevelField.setPreferredSize(new Dimension(50, 20));
+		minimumStockLevelField.setPreferredSize(new Dimension(50, 25));
 		mainPanel.add(minimumStockLevelField, c);
 
 		c = new GridBagConstraints();
@@ -508,10 +508,10 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(150, "Active? "), c);
 		
 		c.fill = GridBagConstraints.NONE;
@@ -534,20 +534,20 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		manufacturerComboBox.setPreferredSize(new Dimension(300, 20));
+		manufacturerComboBox.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(manufacturerComboBox, c);
 
 		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Company List Price:"), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Company List Price:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		companyListPriceField.setPreferredSize(new Dimension(100, 20));
+		companyListPriceField.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(companyListPriceField, c);
 		
 		currentRow++;
@@ -612,7 +612,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
-		saveButton.setPreferredSize(new Dimension(100, 20));
+		saveButton.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(saveButton, c);
 		
 		currentRow++;
