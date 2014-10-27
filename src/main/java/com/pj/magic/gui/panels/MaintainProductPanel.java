@@ -329,7 +329,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	private void validateProductCode() throws ValidationException {
 		String code = codeField.getText();
 		Product existingProduct = productService.findProductByCode(code);
-		if (existingProduct != null && existingProduct.getId() != product.getId()) {
+		if (existingProduct != null && existingProduct.getId().longValue() != product.getId().longValue()) {
 			showErrorMessage("Code is already in use by another product");
 			codeField.requestFocusInWindow();
 			throw new ValidationException();
