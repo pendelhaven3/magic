@@ -49,10 +49,11 @@ public class SelectProductDialog extends MagicDialog {
 	private UnitCostsAndQuantitiesTableModel unitCostsAndQuantitiesTableModel =
 			new UnitCostsAndQuantitiesTableModel();
 	private JTable productsTable;
-	private String selectedProductCode;
+	private String selectedProductCode; // TODO: Why not use product here instead?
 	private JTable unitPricesAndQuantitiesTable;
 	private JTable unitCostsAndQuantitiesTable;
 	private JPanel infoTablePanel;
+	private Product selectedProduct;
 	
 	public SelectProductDialog() {
 		setSize(500, 450);
@@ -112,15 +113,22 @@ public class SelectProductDialog extends MagicDialog {
 
 	protected void selectProduct() {
 		selectedProductCode = (String)productsTable.getValueAt(productsTable.getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
+		selectedProduct = productsTableModel.getProduct(productsTable.getSelectedRow());
 		setVisible(false);
 	}
 
+	// TODO: Remove this
 	public String getSelectedProductCode() {
 		return selectedProductCode;
 	}
 
+	public Product getSelectedProduct() {
+		return selectedProduct;
+	}
+	
 	@Override
 	protected void doWhenEscapeKeyPressed() {
+		selectedProduct = null;
 		selectedProductCode = null;
 	}
 	

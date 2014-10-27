@@ -8,7 +8,7 @@ public class EllipsisButton extends JButton {
 
 	public EllipsisButton() {
 		setText("...");
-		setPreferredSize(new Dimension(20, 20));
+		setPreferredSize(new Dimension(30, 24));
 	}
 	
 }

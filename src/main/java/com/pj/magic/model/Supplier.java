@@ -34,6 +34,10 @@ public class Supplier {
 		this.name = name;
 	}
 
+	public Supplier(String name) {
+		this.name = name;
+	}
+
 	public Long getId() {
 		return id;
 	}

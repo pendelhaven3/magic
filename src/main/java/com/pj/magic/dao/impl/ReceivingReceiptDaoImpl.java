@@ -16,8 +16,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ReceivingReceiptDao;
+import com.pj.magic.gui.tables.models.ProductCanvassItem;
 import com.pj.magic.model.PaymentTerm;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
 
@@ -142,6 +145,39 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	@Override
 	public List<ReceivingReceipt> getAll() {
 		return getJdbcTemplate().query(GET_ALL_SQL, receivingReceiptRowMapper);
+	}
+
+	private static final String GET_PRODUCT_CANVASS_ITEMS_SQL =
+			"select b.RECEIVED_DT, b.RECEIVING_RECEIPT_NO, c.NAME as SUPPLIER_NAME, a.QUANTITY, a.COST, b.REMARKS"
+			+ " from RECEIVING_RECEIPT_ITEM a"
+			+ " join RECEIVING_RECEIPT b"
+			+ "   on b.ID = a.RECEIVING_RECEIPT_ID"
+			+ " join SUPPLIER c"
+			+ "   on c.ID = b.SUPPLIER_ID"
+			+ " where a.PRODUCT_ID = ?"
+			+ " and b.POST_IND = 'Y'"
+			+ " order by RECEIVED_DT desc";
+	
+	@Override
+	public List<ProductCanvassItem> getProductCanvassItems(Product product) {
+		return getJdbcTemplate().query(GET_PRODUCT_CANVASS_ITEMS_SQL, new RowMapper<ProductCanvassItem>() {
+
+			@Override
+			public ProductCanvassItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+				ReceivingReceiptItem item = new ReceivingReceiptItem();
+				item.setQuantity(rs.getInt("QUANTITY"));
+				item.setCost(rs.getBigDecimal("COST"));
+				
+				ProductCanvassItem canvassItem = new ProductCanvassItem();
+				canvassItem.setReceivedDate(rs.getDate("RECEIVED_DT"));
+				canvassItem.setReceivingReceiptNumber(rs.getLong("RECEIVING_RECEIPT_NO"));
+				canvassItem.setSupplier(new Supplier(rs.getString("SUPPLIER_NAME")));
+				canvassItem.setFinalCost(item.getFinalCost());
+				canvassItem.setRemarks(rs.getString("REMARKS"));
+				return canvassItem;
+			}
+			
+		}, product.getId());
 	}
 
 }

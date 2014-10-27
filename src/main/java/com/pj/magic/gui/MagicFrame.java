@@ -34,6 +34,7 @@ import com.pj.magic.gui.panels.ManufacturerListPanel;
 import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
 import com.pj.magic.gui.panels.PricingSchemeListPanel;
+import com.pj.magic.gui.panels.ProductCanvassPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderListPanel;
@@ -117,6 +118,7 @@ public class MagicFrame extends JFrame {
 	private static final String MAINTAIN_USER_PANEL = "MAINTAIN_USER_PANEL";
 	private static final String CHANGE_PASSWORD_PANEL = "CHANGE_PASSWORD_PANEL";
 	private static final String RESET_PASSWORD_PANEL = "RESET_PASSWORD_PANEL";
+	private static final String PRODUCT_CANVASS_PANEL = "PRODUCT_CANVASS_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -157,6 +159,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainUserPanel maintainUserPanel;
 	@Autowired private ChangePasswordPanel changePasswordPanel;
 	@Autowired private ResetPasswordPanel resetPasswordPanel;
+	@Autowired private ProductCanvassPanel productCanvassPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -209,6 +212,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(maintainUserPanel, MAINTAIN_USER_PANEL);
 		panelHolder.add(changePasswordPanel, CHANGE_PASSWORD_PANEL);
 		panelHolder.add(resetPasswordPanel, RESET_PASSWORD_PANEL);
+		panelHolder.add(productCanvassPanel, PRODUCT_CANVASS_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -532,6 +536,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Reset Password");
 		resetPasswordPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, RESET_PASSWORD_PANEL);
+	}
+
+	public void switchToProductCanvassPanel() {
+		addPanelNameToTitle("Product Canvass");
+		productCanvassPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRODUCT_CANVASS_PANEL);
 	}
 	
 }

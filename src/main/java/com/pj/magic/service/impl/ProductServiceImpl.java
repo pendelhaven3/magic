@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.PricingSchemeDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ProductPriceDao;
+import com.pj.magic.dao.ReceivingReceiptDao;
 import com.pj.magic.dao.SupplierDao;
+import com.pj.magic.gui.tables.models.ProductCanvassItem;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
@@ -24,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired private ProductPriceDao productPriceDao;
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private PricingSchemeDao pricingSchemeDao;
+	@Autowired private ReceivingReceiptDao receivingReceiptDao;
 	
 	@Override
 	public List<Product> getAllProducts() {
@@ -133,6 +136,11 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public List<Product> searchProducts(ProductSearchCriteria criteria) {
 		return productDao.search(criteria);
+	}
+
+	@Override
+	public List<ProductCanvassItem> getProductCanvass(Product product) {
+		return receivingReceiptDao.getProductCanvassItems(product);
 	}
 
 }

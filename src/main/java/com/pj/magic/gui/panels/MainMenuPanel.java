@@ -53,7 +53,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(200, 320));
+		table.setPreferredSize(new Dimension(250, 320));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		mainPanel.add(table, c);
@@ -146,6 +146,11 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Reset Password":
 			getMagicFrame().switchToResetPasswordPanel();
 			break;
+		case "Product Canvass":
+			getMagicFrame().switchToProductCanvassPanel();
+			break;
+		case "Stock Card Inventory Report":
+			break;
 		}
 	}
 
@@ -174,6 +179,8 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Payment Terms List",
 				"Inventory Check",
 				"Area Inventory Report",
+				"Product Canvass",
+				"Stock Card Inventory Report",
 				"User List",
 				"Change Password",
 				"Reset Password"
