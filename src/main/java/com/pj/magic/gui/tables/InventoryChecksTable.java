@@ -9,7 +9,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -22,7 +21,7 @@ import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.service.InventoryCheckService;
 
 @Component
-public class InventoryChecksTable extends JTable {
+public class InventoryChecksTable extends MagicListTable {
 
 	public static final int INVENTORY_DATE_COLUMN_INDEX = 0;
 	private static final String GO_TO_ADJUSTMENT_IN_ACTION_NAME = "goToInventoryCheck";
