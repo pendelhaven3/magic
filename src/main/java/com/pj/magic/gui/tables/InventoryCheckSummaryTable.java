@@ -22,6 +22,8 @@ public class InventoryCheckSummaryTable extends MagicListTable {
 	public static final int BEGINNING_INVENTORY_COLUMN_INDEX = 3;
 	public static final int ACTUAL_COUNT_COLUMN_INDEX = 4;
 	public static final int QUANTITY_DIFFERENCE_COLUMN_INDEX = 5;
+	public static final int COST_COLUMN_INDEX = 6;
+	public static final int ACTUAL_VALUE_COLUMN_INDEX = 7;
 
 	@Autowired private InventoryCheckSummaryTableModel tableModel;
 	
@@ -37,12 +39,14 @@ public class InventoryCheckSummaryTable extends MagicListTable {
 	
 	private void initializeColumns() {
 		TableColumnModel columnModel = getColumnModel();
-		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(130);
+		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(110);
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
-		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(40);
-		columnModel.getColumn(BEGINNING_INVENTORY_COLUMN_INDEX).setPreferredWidth(80);
-		columnModel.getColumn(ACTUAL_COUNT_COLUMN_INDEX).setPreferredWidth(80);
-		columnModel.getColumn(QUANTITY_DIFFERENCE_COLUMN_INDEX).setPreferredWidth(80);
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(30);
+		columnModel.getColumn(BEGINNING_INVENTORY_COLUMN_INDEX).setPreferredWidth(70);
+		columnModel.getColumn(ACTUAL_COUNT_COLUMN_INDEX).setPreferredWidth(70);
+		columnModel.getColumn(QUANTITY_DIFFERENCE_COLUMN_INDEX).setPreferredWidth(70);
+		columnModel.getColumn(COST_COLUMN_INDEX).setPreferredWidth(70);
+		columnModel.getColumn(ACTUAL_VALUE_COLUMN_INDEX).setPreferredWidth(70);
 	}
 
 	public void registerKeyBindings() {

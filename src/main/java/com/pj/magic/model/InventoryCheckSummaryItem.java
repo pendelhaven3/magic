@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public class InventoryCheckSummaryItem {
 
+	private InventoryCheck parent;
 	private Product product;
 	private String unit;
 	private int quantity;
@@ -42,6 +43,18 @@ public class InventoryCheckSummaryItem {
 	
 	public BigDecimal getActualValue() {
 		return product.getFinalCost(unit).multiply(new BigDecimal(quantity));
+	}
+
+	public InventoryCheck getParent() {
+		return parent;
+	}
+
+	public void setParent(InventoryCheck parent) {
+		this.parent = parent;
+	}
+
+	public BigDecimal getCost() {
+		return product.getFinalCost(unit);
 	}
 
 }

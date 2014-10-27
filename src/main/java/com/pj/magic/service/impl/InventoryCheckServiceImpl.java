@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pj.magic.dao.InventoryCheckDao;
+import com.pj.magic.dao.InventoryCheckSummaryItemDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
@@ -17,15 +18,12 @@ import com.pj.magic.service.InventoryCheckService;
 public class InventoryCheckServiceImpl implements InventoryCheckService {
 
 	@Autowired private InventoryCheckDao inventoryCheckDao;
+	@Autowired private InventoryCheckSummaryItemDao inventoryCheckSummaryItemDao;
 	@Autowired private ProductDao productDao;
 	
 	@Override
 	public List<InventoryCheck> getAllInventoryChecks() {
 		return inventoryCheckDao.getAll();
-	}
-
-	@Override
-	public void delete(InventoryCheck inventoryCheck) {
 	}
 
 	@Override
@@ -49,7 +47,12 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 	@Override
 	public InventoryCheck getInventoryCheck(long id) {
 		InventoryCheck inventoryCheck = inventoryCheckDao.get(id);
-		inventoryCheck.setSummaryItems(inventoryCheckDao.getSummaryItems(inventoryCheck));
+		if (inventoryCheck.isPosted()) {
+			inventoryCheck.setSummaryItems(
+					inventoryCheckSummaryItemDao.findAllByPostedInventoryCheck(inventoryCheck));
+		} else {
+			inventoryCheck.setSummaryItems(inventoryCheckSummaryItemDao.findAllByInventoryCheck(inventoryCheck));
+		}
 		return inventoryCheck;
 	}
 
@@ -61,9 +64,18 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 			Product product = productDao.get(item.getProduct().getId());
 			product.addUnitQuantity(item.getUnit(), item.getQuantityDifference());
 			productDao.updateAvailableQuantities(product);
+			
+			item.setParent(inventoryCheck);
+			inventoryCheckSummaryItemDao.save(item);
 		}
 		updated.setPosted(true);
 		inventoryCheckDao.save(updated);
+	}
+
+	@Override
+	public void delete(InventoryCheck inventoryCheck) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

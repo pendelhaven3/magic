@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
@@ -28,6 +29,7 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.InventoryCheckSummaryTable;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.service.InventoryCheckService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -114,6 +116,9 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	private void clearDisplay() {
 		updateInventoryDateField(new Date());
 		datePicker.getComponents()[1].setVisible(true);
+		totalBeginningValueField.setText(null);
+		totalActualValueField.setText(null);
+		summaryTable.setItems(new ArrayList<InventoryCheckSummaryItem>());
 		postButton.setEnabled(false);
 	}
 

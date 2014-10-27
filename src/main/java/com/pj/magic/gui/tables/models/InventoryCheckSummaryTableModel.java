@@ -9,12 +9,13 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.InventoryCheckSummaryTable;
 import com.pj.magic.model.InventoryCheckSummaryItem;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class InventoryCheckSummaryTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames = 
-		{"Code", "Description", "Unit", "Beginning Inv.", "Actual Count", "Difference"};
+		{"Code", "Description", "Unit", "Beginning Inv.", "Actual Count", "Difference", "Cost", "Actual Value"};
 	
 	private List<InventoryCheckSummaryItem> items = new ArrayList<>();
 	
@@ -49,6 +50,10 @@ public class InventoryCheckSummaryTableModel extends AbstractTableModel {
 			return item.getQuantity();
 		case InventoryCheckSummaryTable.QUANTITY_DIFFERENCE_COLUMN_INDEX:
 			return item.getQuantityDifference();
+		case InventoryCheckSummaryTable.COST_COLUMN_INDEX:
+			return FormatterUtil.formatAmount(item.getCost());
+		case InventoryCheckSummaryTable.ACTUAL_VALUE_COLUMN_INDEX:
+			return FormatterUtil.formatAmount(item.getActualValue());
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
