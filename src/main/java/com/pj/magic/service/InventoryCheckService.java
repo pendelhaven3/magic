@@ -15,5 +15,7 @@ public interface InventoryCheckService {
 	InventoryCheck getNonPostedInventoryCheck();
 	
 	InventoryCheck getInventoryCheck(long id);
+
+	void post(InventoryCheck inventoryCheck);
 	
 }

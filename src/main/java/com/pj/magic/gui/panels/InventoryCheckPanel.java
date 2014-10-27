@@ -258,6 +258,16 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	}
 
 	private void postInventoryCheck() {
+		if (confirm("Post Inventory Check?")) {
+			try {
+				inventoryCheckService.post(inventoryCheck);
+				showMessage("Inventory Check posted!");
+				updateDisplay(inventoryCheck);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error!");
+			}
+		}
 	}
 
 }
