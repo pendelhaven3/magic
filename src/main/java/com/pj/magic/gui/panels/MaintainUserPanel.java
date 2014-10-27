@@ -144,7 +144,7 @@ public class MaintainUserPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		usernameField.setPreferredSize(new Dimension(150, 20));
+		usernameField.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(usernameField, c);
 		
 		c = new GridBagConstraints();

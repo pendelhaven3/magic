@@ -107,7 +107,7 @@ public class ResetPasswordPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		userComboBox.setPreferredSize(new Dimension(150, 20));
+		userComboBox.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(userComboBox, c);
 		
 		c = new GridBagConstraints();
@@ -130,7 +130,7 @@ public class ResetPasswordPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
-		resetPasswordButton.setPreferredSize(new Dimension(140, 20));
+		resetPasswordButton.setPreferredSize(new Dimension(160, 25));
 		mainPanel.add(resetPasswordButton, c);
 		
 		currentRow++;

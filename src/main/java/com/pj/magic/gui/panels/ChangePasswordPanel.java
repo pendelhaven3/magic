@@ -139,7 +139,7 @@ public class ChangePasswordPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		oldPasswordField.setPreferredSize(new Dimension(100, 20));
+		oldPasswordField.setPreferredSize(new Dimension(120, 25));
 		panel.add(oldPasswordField, c);
 		
 		currentRow++;
@@ -155,7 +155,7 @@ public class ChangePasswordPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		newPasswordField.setPreferredSize(new Dimension(100, 20));
+		newPasswordField.setPreferredSize(new Dimension(120, 25));
 		panel.add(newPasswordField, c);
 
 		currentRow++;
@@ -164,14 +164,14 @@ public class ChangePasswordPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(120, "Retype Password: "), c);
+		panel.add(ComponentUtil.createLabel(140, "Retype Password: "), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		retypePasswordField.setPreferredSize(new Dimension(100, 20));
+		retypePasswordField.setPreferredSize(new Dimension(120, 25));
 		panel.add(retypePasswordField, c);
 
 		currentRow++;
