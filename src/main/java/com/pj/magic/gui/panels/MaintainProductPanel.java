@@ -244,7 +244,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		if (confirm("Save?")) {
+		if (confirm(getConfirmationQuestion())) {
 			product.setCode(codeField.getText());
 			product.setDescription(descriptionField.getText());
 			product.setMaximumStockLevel(Integer.parseInt(maximumStockLevelField.getText()));
@@ -293,6 +293,14 @@ public class MaintainProductPanel extends StandardMagicPanel {
 				showErrorMessage("Error occurred during saving!");
 			}
 			
+		}
+	}
+
+	private String getConfirmationQuestion() {
+		if (product.getId() != null && !product.getCode().equals(codeField.getText())) {
+			return "Product Code change detected. Continue save?";
+		} else {
+			return "Save?";
 		}
 	}
 
