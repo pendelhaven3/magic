@@ -150,6 +150,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 			getMagicFrame().switchToProductCanvassPanel();
 			break;
 		case "Stock Card Inventory Report":
+			getMagicFrame().switchToStockCardInventoryReportPanel();
 			break;
 		}
 	}

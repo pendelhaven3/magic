@@ -16,9 +16,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ReceivingReceiptDao;
-import com.pj.magic.gui.tables.models.ProductCanvassItem;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.ProductCanvassItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.Supplier;

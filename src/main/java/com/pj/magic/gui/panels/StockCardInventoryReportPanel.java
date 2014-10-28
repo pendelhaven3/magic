@@ -21,18 +21,20 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.SelectProductDialog;
-import com.pj.magic.gui.tables.ProductCanvassTable;
+import com.pj.magic.gui.tables.StockCardInventoryReportTable;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.ProductCanvassItem;
+import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
-public class ProductCanvassPanel extends StandardMagicPanel {
+public class StockCardInventoryReportPanel extends StandardMagicPanel {
 
 	@Autowired private ProductService productService;
+	@Autowired private ReportService reportService;
 	@Autowired private SelectProductDialog selectProductDialog;
-	@Autowired private ProductCanvassTable table;
+	@Autowired private StockCardInventoryReportTable table;
 	
 	private MagicTextField productCodeField;
 	private JButton generateButton;
@@ -58,7 +60,7 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				generateProductCanvass();
+				generateStockCardInventoryReport();
 			}
 		});
 		
@@ -75,7 +77,7 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 		}
 	}
 
-	protected void generateProductCanvass() {
+	protected void generateStockCardInventoryReport() {
 		String productCode = productCodeField.getText();
 		if (StringUtils.isEmpty(productCode)) {
 			showErrorMessage("Product Code must be specified");
@@ -88,7 +90,7 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		List<ProductCanvassItem> items = productService.getProductCanvass(product);
+		List<StockCardInventoryReportItem> items = reportService.getStockCardInventoryReport(product);
 		table.setItems(items);
 		if (items.isEmpty()) {
 			showErrorMessage("No records found");
@@ -176,7 +178,7 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		productCodeField.setText(null);
-		table.setItems(new ArrayList<ProductCanvassItem>());
+		table.setItems(new ArrayList<StockCardInventoryReportItem>());
 	}
 
 	@Override

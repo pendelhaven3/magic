@@ -46,6 +46,7 @@ import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.panels.SalesInvoicePanel;
 import com.pj.magic.gui.panels.SalesRequisitionListPanel;
 import com.pj.magic.gui.panels.SalesRequisitionPanel;
+import com.pj.magic.gui.panels.StockCardInventoryReportPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
@@ -119,6 +120,7 @@ public class MagicFrame extends JFrame {
 	private static final String CHANGE_PASSWORD_PANEL = "CHANGE_PASSWORD_PANEL";
 	private static final String RESET_PASSWORD_PANEL = "RESET_PASSWORD_PANEL";
 	private static final String PRODUCT_CANVASS_PANEL = "PRODUCT_CANVASS_PANEL";
+	private static final String STOCK_CARD_INVENTORY_REPORT_PANEL = "STOCK_CARD_INVENTORY_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -160,6 +162,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private ChangePasswordPanel changePasswordPanel;
 	@Autowired private ResetPasswordPanel resetPasswordPanel;
 	@Autowired private ProductCanvassPanel productCanvassPanel;
+	@Autowired private StockCardInventoryReportPanel stockCardInventoryReportPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -213,6 +216,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(changePasswordPanel, CHANGE_PASSWORD_PANEL);
 		panelHolder.add(resetPasswordPanel, RESET_PASSWORD_PANEL);
 		panelHolder.add(productCanvassPanel, PRODUCT_CANVASS_PANEL);
+		panelHolder.add(stockCardInventoryReportPanel, STOCK_CARD_INVENTORY_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -542,6 +546,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Product Canvass");
 		productCanvassPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRODUCT_CANVASS_PANEL);
+	}
+
+	public void switchToStockCardInventoryReportPanel() {
+		addPanelNameToTitle("Stock Card Inventory Report");
+		stockCardInventoryReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_CARD_INVENTORY_REPORT_PANEL);
 	}
 	
 }

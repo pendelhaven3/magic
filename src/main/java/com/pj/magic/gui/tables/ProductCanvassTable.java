@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.tables.models.ProductCanvassItem;
 import com.pj.magic.gui.tables.models.ProductCanvassTableModel;
+import com.pj.magic.model.ProductCanvassItem;
 
 @Component
 public class ProductCanvassTable extends MagicListTable {

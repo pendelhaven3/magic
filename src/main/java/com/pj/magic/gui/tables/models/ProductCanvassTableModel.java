@@ -8,6 +8,7 @@ import javax.swing.table.AbstractTableModel;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.ProductCanvassTable;
+import com.pj.magic.model.ProductCanvassItem;
 import com.pj.magic.util.FormatterUtil;
 
 @Component

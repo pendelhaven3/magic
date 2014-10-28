@@ -1,9 +1,7 @@
-package com.pj.magic.gui.tables.models;
+package com.pj.magic.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
-
-import com.pj.magic.model.Supplier;
 
 public class ProductCanvassItem {
 
