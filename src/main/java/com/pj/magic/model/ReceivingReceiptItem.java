@@ -17,6 +17,7 @@ public class ReceivingReceiptItem implements Comparable<ReceivingReceiptItem> {
 	private BigDecimal discount2 = BigDecimal.ZERO; 
 	private BigDecimal discount3 = BigDecimal.ZERO;
 	private BigDecimal flatRateDiscount = BigDecimal.ZERO;
+	private BigDecimal currentCost;
 
 	public Long getId() {
 		return id;
@@ -135,6 +136,14 @@ public class ReceivingReceiptItem implements Comparable<ReceivingReceiptItem> {
 		} else {
 			return result;
 		}
+	}
+
+	public BigDecimal getCurrentCost() {
+		return currentCost;
+	}
+
+	public void setCurrentCost(BigDecimal currentCost) {
+		this.currentCost = currentCost;
 	}
 	
 }

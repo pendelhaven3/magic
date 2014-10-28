@@ -41,8 +41,7 @@ public class ProductCanvassTableModel extends AbstractTableModel {
 		case ProductCanvassTable.FINAL_COST_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(item.getFinalCost());
 		case ProductCanvassTable.CURRENT_COST_COLUMN_INDEX:
-			return "-";
-//			return FormatterUtil.formatAmount(item.getCurrentCost());
+			return FormatterUtil.formatAmount(item.getCurrentCost());
 		case ProductCanvassTable.REMARKS_COLUMN_INDEX:
 			return item.getRemarks();
 		default:

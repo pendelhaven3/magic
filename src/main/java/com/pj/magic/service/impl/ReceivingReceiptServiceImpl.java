@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,8 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 		ReceivingReceipt updated = getReceivingReceipt(receivingReceipt.getId());
 		for (ReceivingReceiptItem item : updated.getItems()) {
 			Product product = productDao.get(item.getProduct().getId());
+			BigDecimal currentCost = product.getFinalCost(item.getUnit());
+			
 			product.setGrossCost(item.getUnit(), item.getCost());
 			product.setFinalCost(item.getUnit(), item.getFinalCost());
 			if (item.getProduct().getUnits().size() > 1) {
@@ -85,6 +88,9 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 			
 			product.addUnitQuantity(item.getUnit(), item.getQuantity());
 			productDao.updateAvailableQuantities(product);
+			
+			item.setCurrentCost(currentCost);
+			receivingReceiptItemDao.save(item);
 		}
 		
 		updated.setPosted(true);

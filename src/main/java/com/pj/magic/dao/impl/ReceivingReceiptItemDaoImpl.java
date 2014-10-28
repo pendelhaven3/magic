@@ -57,12 +57,13 @@ public class ReceivingReceiptItemDaoImpl extends MagicDao implements ReceivingRe
 	
 	private static final String UPDATE_SQL =
 			"update RECEIVING_RECEIPT_ITEM"
-			+ " set DISCOUNT_1 = ?, DISCOUNT_2 = ?, DISCOUNT_3 = ?, FLAT_RATE_DISCOUNT = ?"
+			+ " set DISCOUNT_1 = ?, DISCOUNT_2 = ?, DISCOUNT_3 = ?, FLAT_RATE_DISCOUNT = ?,"
+			+ " CURRENT_COST = ?"
 			+ " where ID = ?";
 	
 	private void update(ReceivingReceiptItem item) {
 		getJdbcTemplate().update(UPDATE_SQL, item.getDiscount1(), item.getDiscount2(), 
-				item.getDiscount3(), item.getFlatRateDiscount(), item.getId());
+				item.getDiscount3(), item.getFlatRateDiscount(), item.getCurrentCost(), item.getId());
 	}
 
 	private static final String FIND_ALL_BY_RECEIVING_RECEIPT_SQL =

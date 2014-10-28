@@ -148,7 +148,8 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	}
 
 	private static final String GET_PRODUCT_CANVASS_ITEMS_SQL =
-			"select b.RECEIVED_DT, b.RECEIVING_RECEIPT_NO, c.NAME as SUPPLIER_NAME, a.QUANTITY, a.COST, b.REMARKS"
+			"select b.RECEIVED_DT, b.RECEIVING_RECEIPT_NO, c.NAME as SUPPLIER_NAME, a.QUANTITY, a.COST, b.REMARKS,"
+			+ " a.CURRENT_COST, a.DISCOUNT_1, a.DISCOUNT_2, a.DISCOUNT_3, a.FLAT_RATE_DISCOUNT"
 			+ " from RECEIVING_RECEIPT_ITEM a"
 			+ " join RECEIVING_RECEIPT b"
 			+ "   on b.ID = a.RECEIVING_RECEIPT_ID"
@@ -156,7 +157,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			+ "   on c.ID = b.SUPPLIER_ID"
 			+ " where a.PRODUCT_ID = ?"
 			+ " and b.POST_IND = 'Y'"
-			+ " order by RECEIVED_DT desc";
+			+ " order by RECEIVED_DT desc, RECEIVING_RECEIPT_NO desc";
 	
 	@Override
 	public List<ProductCanvassItem> getProductCanvassItems(Product product) {
@@ -167,12 +168,17 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				ReceivingReceiptItem item = new ReceivingReceiptItem();
 				item.setQuantity(rs.getInt("QUANTITY"));
 				item.setCost(rs.getBigDecimal("COST"));
+				item.setDiscount1(rs.getBigDecimal("DISCOUNT_1"));
+				item.setDiscount2(rs.getBigDecimal("DISCOUNT_2"));
+				item.setDiscount3(rs.getBigDecimal("DISCOUNT_3"));
+				item.setFlatRateDiscount(rs.getBigDecimal("FLAT_RATE_DISCOUNT"));
 				
 				ProductCanvassItem canvassItem = new ProductCanvassItem();
 				canvassItem.setReceivedDate(rs.getDate("RECEIVED_DT"));
 				canvassItem.setReceivingReceiptNumber(rs.getLong("RECEIVING_RECEIPT_NO"));
 				canvassItem.setSupplier(new Supplier(rs.getString("SUPPLIER_NAME")));
 				canvassItem.setFinalCost(item.getFinalCost());
+				canvassItem.setCurrentCost(rs.getBigDecimal("CURRENT_COST"));
 				canvassItem.setRemarks(rs.getString("REMARKS"));
 				return canvassItem;
 			}

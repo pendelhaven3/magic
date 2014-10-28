@@ -287,7 +287,7 @@ create table RECEIVING_RECEIPT (
   PAYMENT_TERM_ID integer not null,
   REMARKS varchar(100) null,
   REFERENCE_NO varchar(30) null,
-  RECEIVED_DT date not null,
+  RECEIVED_DT datetime not null,
   RECEIVED_BY integer not null,
   RELATED_PURCHASE_ORDER_NO integer not null,
   constraint RECEIVING_RECEIPT$PK primary key (ID),
@@ -309,6 +309,7 @@ create table RECEIVING_RECEIPT_ITEM (
   DISCOUNT_2 numeric(4, 2) default 0 not null,
   DISCOUNT_3 numeric(4, 2) default 0 not null,
   FLAT_RATE_DISCOUNT numeric(8, 2) default 0 not null,
+  CURRENT_COST numeric(10, 2) null,
   constraint RECEIVING_RECEIPT_ITEM$PK primary key (ID),
   constraint RECEIVING_RECEIPT_ITEM$FK foreign key (RECEIVING_RECEIPT_ID) references RECEIVING_RECEIPT (ID),
   constraint RECEIVING_RECEIPT_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
