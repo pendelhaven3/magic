@@ -403,14 +403,14 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Reference No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(130, "Reference No.:"), c);
 		
 		c.weightx = 1.0;
 		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		referenceNumberField.setPreferredSize(new Dimension(100, 20));
+		referenceNumberField.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(referenceNumberField, c);
 		
 		currentRow++;
@@ -420,13 +420,13 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Payment Terms:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Payment Term:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		paymentTermComboBox.setPreferredSize(new Dimension(100, 20));
+		paymentTermComboBox.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(paymentTermComboBox, c);
 		
 		currentRow++;
@@ -442,7 +442,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		remarksField.setPreferredSize(new Dimension(200, 20));
+		remarksField.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(remarksField, c);
 
 		currentRow++;
@@ -525,7 +525,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
@@ -548,7 +548,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		supplierCodeField.setPreferredSize(new Dimension(100, 20));
+		supplierCodeField.setPreferredSize(new Dimension(120, 25));
 		panel.add(supplierCodeField, c);
 		
 		c.weightx = c.weighty = 0.0;

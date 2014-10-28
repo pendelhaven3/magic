@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -20,7 +19,7 @@ import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.service.PurchaseOrderService;
 
 @Component
-public class PurchaseOrdersTable extends JTable {
+public class PurchaseOrdersTable extends MagicListTable {
 
 	private static final String SELECT_PURCHASE_ORDER_ACTION = "selectPurchaseOrder";
 	
