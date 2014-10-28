@@ -3,16 +3,11 @@ package com.pj.magic;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -27,12 +22,8 @@ import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductCategoryDao;
 import com.pj.magic.dao.ProductPriceDao;
 import com.pj.magic.dao.ProductSubcategoryDao;
-import com.pj.magic.model.Customer;
-import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.ProductCategory;
-import com.pj.magic.model.ProductSubcategory;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ProductService;
 
@@ -46,63 +37,12 @@ public class Bootstrap {
 	@Autowired private ProductCategoryDao productCategoryDao;
 	@Autowired private ProductSubcategoryDao productSubcategoryDao;
 	
-	private ResourceBundle resources = ResourceBundle.getBundle("application");
-
 	@PostConstruct
 	public void initialize() throws Exception {
-		runScriptFile("tables.sql", "data.sql");
-		if (Boolean.parseBoolean(resources.getString("development"))) {
-			loadProductCategoriesFromExcelFile();
-			loadProductsFromExcelFile();
-			loadCustomersFromExcelFile();
-			runScriptFile("data2.sql");
-		}
+		runScriptFile("tables.sql", "initial_data.sql");
+		loadProductsFromExcelFile();
 	}
 	
-	private void loadProductCategoriesFromExcelFile() throws Exception {
-		try (
-				InputStream in = getClass().getClassLoader().getResourceAsStream("data/product_categories.xls"); // TODO: study XSSF
-			) {
-				Workbook workbook = new HSSFWorkbook(in);
-				Sheet sheet = workbook.getSheetAt(0);
-				final Iterator<Row> rows = sheet.iterator();
-				rows.next();
-				
-				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-					
-					@Override
-					protected void doInTransactionWithoutResult(TransactionStatus status) {
-						List<ProductCategory> categories = new ArrayList<>();
-						while (rows.hasNext()) {
-							Row row = rows.next();
-							Cell cell = row.getCell(0);
-							if (cell != null) {
-								final String categoryName = cell.getStringCellValue();
-								ProductCategory category = (ProductCategory)CollectionUtils.find(categories, new Predicate() {
-									
-									@Override
-									public boolean evaluate(Object object) {
-										return categoryName.equals(((ProductCategory)object).getName());
-									}
-								});
-								if (category == null) {
-									category = new ProductCategory();
-									category.setName(categoryName.trim());
-									productCategoryDao.save(category);
-									categories.add(category);
-								}
-								ProductSubcategory subcategory = new ProductSubcategory();
-								subcategory.setParent(category);
-								subcategory.setName(row.getCell(1).getStringCellValue().trim());
-								productSubcategoryDao.save(subcategory);
-							}
-						}
-					}
-				});
-				
-			}
-	}
-
 	private void runScriptFile(String... filenames) throws Exception {
 		try (
 			Connection conn = dataSource.getConnection();
@@ -177,41 +117,8 @@ public class Bootstrap {
 			product.setUnitConversion(Unit.PIECES, (int)row.getCell(25).getNumericCellValue());
 		}
 		product.setActive(true);
+		product.setCompanyListPrice(Constants.ZERO);
 		return product;
-	}
-	
-	private void loadCustomersFromExcelFile() throws Exception {
-		try (
-			InputStream in = getClass().getClassLoader().getResourceAsStream("data/customers.xls"); // TODO: study XSSF
-		) {
-			Workbook workbook = new HSSFWorkbook(in);
-			Sheet sheet = workbook.getSheetAt(0);
-			final Iterator<Row> rows = sheet.iterator();
-			rows.next();
-			
-			transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-
-				@Override
-				protected void doInTransactionWithoutResult(TransactionStatus status) {
-					while (rows.hasNext()) {
-						Row row = rows.next();
-						Cell cell = row.getCell(0);
-						if (cell != null) {
-							customerDao.save(createCustomerFromRow(row));
-						}
-					}
-				}
-			});
-		}
-	}
-	
-	private Customer createCustomerFromRow(Row row) {
-		Customer customer = new Customer();
-		customer.setCode(row.getCell(0).getStringCellValue());
-		customer.setName(row.getCell(1).getStringCellValue());
-		customer.setAddress(row.getCell(2).getStringCellValue());
-		customer.setPaymentTerm(new PaymentTerm(1L));
-		return customer;
 	}
 	
 }

@@ -397,7 +397,7 @@ create table INVENTORY_CHECK_SUMMARY_ITEM (
   INVENTORY_CHECK_ID integer not null,
   PRODUCT_ID integer not null,
   UNIT char(3) not null,
-  BEGINNING_INV integer(6) not null
+  BEGINNING_INV integer(6) not null,
   ACTUAL_COUNT integer(6) not null,
   COST numeric(10, 2) not null,
   constraint INVENTORY_CHECK_SUMMARY_ITEM$PK primary key (ID),
