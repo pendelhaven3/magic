@@ -128,7 +128,7 @@ public class ProductListPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				getMagicFrame().switchToAddNewProductListPanel();
+				getMagicFrame().switchToAddNewProductPanel();
 			}
 		});
 		toolBar.add(addButton);

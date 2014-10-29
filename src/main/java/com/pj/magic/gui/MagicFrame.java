@@ -288,7 +288,7 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PRODUCT_PANEL);
 	}
 
-	public void switchToAddNewProductListPanel() {
+	public void switchToAddNewProductPanel() {
 		addPanelNameToTitle("Add New Product");
 		switchToMaintainProductPanel(new Product());
 	}

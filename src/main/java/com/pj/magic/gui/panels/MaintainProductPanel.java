@@ -89,6 +89,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	private JComboBox<ProductSubcategory> subcategoryComboBox;
 	private MagicTextField companyListPriceField;
 	private JButton saveButton;
+	private JButton copyAsNewButton;
 	private JButton addSupplierButton;
 	
 	@Override
@@ -159,6 +160,15 @@ public class MaintainProductPanel extends StandardMagicPanel {
 			}
 		});
 		
+		copyAsNewButton = new JButton("Copy As New");
+		copyAsNewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				copyAsNewProduct();
+			}
+		});
+		
 		addSupplierButton = new JButton("Add Supplier");
 		addSupplierButton.addActionListener(new ActionListener() {
 			
@@ -180,6 +190,13 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		});
 		
 		focusOnComponentWhenThisPanelIsDisplayed(codeField);
+	}
+
+	private void copyAsNewProduct() {
+		getMagicFrame().setTitle("Add New Product");
+		product.setId(null);
+		productSuppliersTable.clearDisplay();
+		codeField.requestFocusInWindow();
 	}
 
 	private void updateSubcategoryComboBox() {
@@ -239,7 +256,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		focusOrder.add(saveButton);
 	}
 	
-	protected void saveProduct() {
+	private void saveProduct() {
 		if (!validateProduct()) {
 			return;
 		}
@@ -286,8 +303,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 			try {
 				productService.save(product);
 				showMessage("Saved!");
-				updateDisplay(product);
-				codeField.requestFocusInWindow();
+				getMagicFrame().switchToEditProductPanel(product);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
@@ -337,10 +353,12 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	private void validateProductCode() throws ValidationException {
 		String code = codeField.getText();
 		Product existingProduct = productService.findProductByCode(code);
-		if (existingProduct != null && existingProduct.getId().longValue() != product.getId().longValue()) {
-			showErrorMessage("Code is already in use by another product");
-			codeField.requestFocusInWindow();
-			throw new ValidationException();
+		if (existingProduct != null) {
+			if (product.getId() == null || existingProduct.getId().longValue() != product.getId().longValue()) {
+				showErrorMessage("Code is already in use by another product");
+				codeField.requestFocusInWindow();
+				throw new ValidationException();
+			}
 		}
 	}
 
@@ -606,14 +624,13 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
 		saveButton.setPreferredSize(new Dimension(100, 25));
-		mainPanel.add(saveButton, c);
+		copyAsNewButton.setPreferredSize(new Dimension(150, 25));
+		mainPanel.add(ComponentUtil.createGenericPanel(saveButton, copyAsNewButton), c);
 		
 		currentRow++;
 		
@@ -627,7 +644,6 @@ public class MaintainProductPanel extends StandardMagicPanel {
 
 	private JPanel createUnitsPanel() {
 		JPanel panel = new JPanel();
-//		panel.setPreferredSize(new Dimension(320, 200));
 		panel.setLayout(new GridBagLayout());
 		
 		int currentRow = 0;
@@ -817,12 +833,12 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		updateComboBoxes();
 		
 		this.product = product;
-		reinitializeFocusOrder();
-		
 		if (product.getId() == null) {
 			clearDisplay();
 			return;
 		}
+		
+		this.product = product = productService.getProduct(product.getId());
 		
 		codeField.setText(product.getCode());
 		descriptionField.setText(product.getDescription());

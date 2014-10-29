@@ -1,8 +1,10 @@
 package com.pj.magic.util;
 
+import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class ComponentUtil {
 
@@ -42,6 +44,14 @@ public class ComponentUtil {
 		label.setPreferredSize(new Dimension(width, 30));
 		label.setHorizontalAlignment(JLabel.CENTER);
 		return label;
+	}
+	
+	public static final JPanel createGenericPanel(Component... components) {
+		JPanel panel = new JPanel();
+		for (Component c : components) {
+			panel.add(c);
+		}
+		return panel;
 	}
 	
 }
