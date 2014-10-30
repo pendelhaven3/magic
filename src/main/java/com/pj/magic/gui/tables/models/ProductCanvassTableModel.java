@@ -15,7 +15,7 @@ import com.pj.magic.util.FormatterUtil;
 public class ProductCanvassTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames = 
-		{"Date", "RR No.", "Supplier", "Final Cost", "Current Cost", "Remarks"};
+		{"Date", "RR No.", "Supplier", "Unit", "Final Cost", "Current Cost", "Ref No."};
 	
 	private List<ProductCanvassItem> items = new ArrayList<>();
 	
@@ -39,12 +39,14 @@ public class ProductCanvassTableModel extends AbstractTableModel {
 			return item.getReceivingReceiptNumber();
 		case ProductCanvassTable.SUPPLIER_COLUMN_INDEX:
 			return item.getSupplier().getName();
+		case ProductCanvassTable.UNIT_COLUMN_INDEX:
+			return item.getUnit();
 		case ProductCanvassTable.FINAL_COST_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(item.getFinalCost());
 		case ProductCanvassTable.CURRENT_COST_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(item.getCurrentCost());
-		case ProductCanvassTable.REMARKS_COLUMN_INDEX:
-			return item.getRemarks();
+		case ProductCanvassTable.REFERENCE_NUMBER_COLUMN_INDEX:
+			return item.getReferenceNumber();
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}

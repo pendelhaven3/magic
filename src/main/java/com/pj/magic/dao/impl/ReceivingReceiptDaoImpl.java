@@ -148,8 +148,9 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	}
 
 	private static final String GET_PRODUCT_CANVASS_ITEMS_SQL =
-			"select b.RECEIVED_DT, b.RECEIVING_RECEIPT_NO, c.NAME as SUPPLIER_NAME, a.QUANTITY, a.COST, b.REMARKS,"
-			+ " a.CURRENT_COST, a.DISCOUNT_1, a.DISCOUNT_2, a.DISCOUNT_3, a.FLAT_RATE_DISCOUNT"
+			"select b.RECEIVED_DT, b.RECEIVING_RECEIPT_NO, c.NAME as SUPPLIER_NAME, a.QUANTITY, a.COST,"
+			+ " b.REFERENCE_NO, a.CURRENT_COST, a.DISCOUNT_1, a.DISCOUNT_2, a.DISCOUNT_3, a.FLAT_RATE_DISCOUNT,"
+			+ " a.UNIT"
 			+ " from RECEIVING_RECEIPT_ITEM a"
 			+ " join RECEIVING_RECEIPT b"
 			+ "   on b.ID = a.RECEIVING_RECEIPT_ID"
@@ -177,9 +178,10 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				canvassItem.setReceivedDate(rs.getDate("RECEIVED_DT"));
 				canvassItem.setReceivingReceiptNumber(rs.getLong("RECEIVING_RECEIPT_NO"));
 				canvassItem.setSupplier(new Supplier(rs.getString("SUPPLIER_NAME")));
+				canvassItem.setUnit(rs.getString("UNIT"));
 				canvassItem.setFinalCost(item.getFinalCost());
 				canvassItem.setCurrentCost(rs.getBigDecimal("CURRENT_COST"));
-				canvassItem.setRemarks(rs.getString("REMARKS"));
+				canvassItem.setReferenceNumber(rs.getString("REFERENCE_NO"));
 				return canvassItem;
 			}
 			

@@ -53,7 +53,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(250, 320));
+		table.setPreferredSize(new Dimension(250, 360));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		mainPanel.add(table, c);
