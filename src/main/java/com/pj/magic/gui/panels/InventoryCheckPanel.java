@@ -11,6 +11,7 @@ import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -277,7 +278,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				printPreview();
+				printPreviewInventoryCheck();
 			}
 		});
 		toolBar.add(printPreviewButton);
@@ -287,16 +288,30 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				printService.print(inventoryCheck);
+				print();
 			}
 		});
 		toolBar.add(printButton);
 	}
 
-	private void printPreview() {
-		printPreviewDialog.updateDisplay(printService.generateReportAsString(inventoryCheck));
+	private void print() {
+		int choice = chooseIfBeginningInventoryOrActualCount("Print Inventory Check");
+		printService.print(inventoryCheck, choice == JOptionPane.YES_OPTION);
+	}
+
+	private void printPreviewInventoryCheck() {
+		int choice = chooseIfBeginningInventoryOrActualCount("Print Preview");
+		printPreviewDialog.updateDisplay(
+				printService.generateReportAsString(inventoryCheck, choice == JOptionPane.YES_OPTION));
 		printPreviewDialog.setColumnsPerLine(PrintServiceImpl.INVENTORY_REPORT_COLUMNS_PER_LINE);
 		printPreviewDialog.setVisible(true);
+	}
+	
+	private int chooseIfBeginningInventoryOrActualCount(String dialogTitle) {
+		Object[] buttons = {"Beginning Inventory", "Actual Count"};
+		return JOptionPane.showOptionDialog(this, "Beginning inventory or actual count?", 
+				dialogTitle, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, 
+				null, buttons, buttons[0]);
 	}
 
 	private void postInventoryCheck() {

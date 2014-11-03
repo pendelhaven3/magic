@@ -34,7 +34,7 @@ public class InventoryCheckSummaryItem implements Comparable<InventoryCheckSumma
 	}
 
 	public int getQuantityDifference() {
-		return quantity - product.getUnitQuantity(unit);
+		return quantity - getBeginningInventory();
 	}
 
 	public BigDecimal getBeginningValue() {
@@ -67,4 +67,8 @@ public class InventoryCheckSummaryItem implements Comparable<InventoryCheckSumma
 		}
 	}
 
+	public int getBeginningInventory() {
+		return product.getUnitQuantity(unit);
+	}
+	
 }

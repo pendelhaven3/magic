@@ -34,8 +34,8 @@ public interface PrintService {
 
 	List<String> generateReportAsString(StockQuantityConversion stockQuantityConversion);
 
-	List<String> generateReportAsString(InventoryCheck inventoryCheck);
+	List<String> generateReportAsString(InventoryCheck inventoryCheck, boolean beginningInventory);
 
-	void print(InventoryCheck inventoryCheck);
+	void print(InventoryCheck inventoryCheck, boolean beginningInventory);
 	
 }

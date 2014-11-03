@@ -87,13 +87,24 @@ public class InventoryCheck {
 		return totalValue;
 	}
 	
-	public List<InventoryCheckSummaryItem> getSummaryItemsWithQuantitiesOnly() {
+	public List<InventoryCheckSummaryItem> getSummaryItemsWithActualCountOnly() {
 		return new ArrayList<InventoryCheckSummaryItem>(Collections2.filter(summaryItems, 
 				new Predicate<InventoryCheckSummaryItem>() {
 
 			@Override
 			public boolean apply(InventoryCheckSummaryItem input) {
 				return input.getQuantity() > 0;
+			}
+		}));
+	}
+	
+	public List<InventoryCheckSummaryItem> getSummaryItemsWithBeginningInventoriesOnly() {
+		return new ArrayList<InventoryCheckSummaryItem>(Collections2.filter(summaryItems, 
+				new Predicate<InventoryCheckSummaryItem>() {
+
+			@Override
+			public boolean apply(InventoryCheckSummaryItem input) {
+				return input.getBeginningInventory() > 0;
 			}
 		}));
 	}

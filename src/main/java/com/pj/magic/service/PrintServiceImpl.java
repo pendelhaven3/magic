@@ -33,6 +33,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
+import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.PrinterUtil;
 import com.pj.magic.util.ReceivingReceiptReportUtil;
@@ -277,32 +278,42 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public List<String> generateReportAsString(InventoryCheck inventoryCheck) {
-		List<InventoryCheckSummaryItem> items = inventoryCheck.getSummaryItemsWithQuantitiesOnly();
+	public List<String> generateReportAsString(InventoryCheck inventoryCheck, boolean beginningInventory) {
+		List<InventoryCheckSummaryItem> items = (beginningInventory) ?
+				inventoryCheck.getSummaryItemsWithBeginningInventoriesOnly() :
+				inventoryCheck.getSummaryItemsWithActualCountOnly();
 		Collections.sort(items);
 		
 		String inventoryDate = FormatterUtil.formatDate(inventoryCheck.getInventoryDate());
 		
-		List<List<InventoryCheckSummaryItem>> pageItems = Lists.partition(items, 
+		List<InventoryCheckSummaryPrintItem> printItems = new ArrayList<>();
+		for (InventoryCheckSummaryItem item : items) {
+			printItems.add(new InventoryCheckSummaryPrintItem(item, beginningInventory));
+		}
+		
+		List<List<InventoryCheckSummaryPrintItem>> pageItems = Lists.partition(printItems, 
 				INVENTORY_CHECK_SUMMARY_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("inventoryCheck", inventoryCheck);
+			reportData.put("reportType", (beginningInventory) ? "BEGINNING INVENTORY" : "ACTUAL COUNT");
 			reportData.put("items", pageItems.get(i));
 			reportData.put("inventoryDate", inventoryDate);
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			reportData.put("totalValue", (beginningInventory) ? 
+					inventoryCheck.getTotalBeginningValue() : inventoryCheck.getTotalActualValue());
 			printPages.add(generateReportAsString("reports/inventoryReport.vm", reportData));
 		}
 		return printPages;
 	}
 
 	@Override
-	public void print(InventoryCheck inventoryCheck) {
+	public void print(InventoryCheck inventoryCheck, boolean beginningInventory) {
 		try {
-			for (String printPage : generateReportAsString(inventoryCheck)) {
+			for (String printPage : generateReportAsString(inventoryCheck, beginningInventory)) {
 				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {
