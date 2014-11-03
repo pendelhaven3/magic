@@ -16,12 +16,14 @@ import com.pj.magic.gui.panels.AdjustmentOutListPanel;
 import com.pj.magic.gui.panels.AdjustmentOutPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportListPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportPanel;
+import com.pj.magic.gui.panels.AreaListPanel;
 import com.pj.magic.gui.panels.ChangePasswordPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
 import com.pj.magic.gui.panels.InventoryCheckPanel;
 import com.pj.magic.gui.panels.LoginPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
+import com.pj.magic.gui.panels.MaintainAreaPanel;
 import com.pj.magic.gui.panels.MaintainCustomerPanel;
 import com.pj.magic.gui.panels.MaintainManufacturerPanel;
 import com.pj.magic.gui.panels.MaintainPaymentTermPanel;
@@ -53,6 +55,7 @@ import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UserListPanel;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
+import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.InventoryCheck;
@@ -121,6 +124,8 @@ public class MagicFrame extends JFrame {
 	private static final String RESET_PASSWORD_PANEL = "RESET_PASSWORD_PANEL";
 	private static final String PRODUCT_CANVASS_PANEL = "PRODUCT_CANVASS_PANEL";
 	private static final String STOCK_CARD_INVENTORY_REPORT_PANEL = "STOCK_CARD_INVENTORY_REPORT_PANEL";
+	private static final String AREA_LIST_PANEL = "AREA_LIST_PANEL";
+	private static final String MAINTAIN_AREA_PANEL = "MAINTAIN_AREA_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -163,6 +168,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private ResetPasswordPanel resetPasswordPanel;
 	@Autowired private ProductCanvassPanel productCanvassPanel;
 	@Autowired private StockCardInventoryReportPanel stockCardInventoryReportPanel;
+	@Autowired private AreaListPanel areaListPanel;
+	@Autowired private MaintainAreaPanel maintainAreaPanel;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -217,6 +224,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(resetPasswordPanel, RESET_PASSWORD_PANEL);
 		panelHolder.add(productCanvassPanel, PRODUCT_CANVASS_PANEL);
 		panelHolder.add(stockCardInventoryReportPanel, STOCK_CARD_INVENTORY_REPORT_PANEL);
+		panelHolder.add(areaListPanel, AREA_LIST_PANEL);
+		panelHolder.add(maintainAreaPanel, MAINTAIN_AREA_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -552,6 +561,27 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Stock Card Inventory Report");
 		stockCardInventoryReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_CARD_INVENTORY_REPORT_PANEL);
+	}
+
+	public void switchToAreaListPanel() {
+		addPanelNameToTitle("Area List");
+		areaListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, AREA_LIST_PANEL);
+	}
+
+	public void switchToEditAreaPanel(Area area) {
+		addPanelNameToTitle("Edit Area");
+		switchToMaintainAreaPanel(area);
+	}
+	
+	public void switchToAddNewAreaPanel() {
+		addPanelNameToTitle("Add New Area");
+		switchToMaintainAreaPanel(new Area());
+	}
+	
+	private void switchToMaintainAreaPanel(Area area) {
+		maintainAreaPanel.updateDisplay(area);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_AREA_PANEL);
 	}
 	
 }

@@ -404,3 +404,10 @@ create table INVENTORY_CHECK_SUMMARY_ITEM (
   constraint INVENTORY_CHECK_SUMMARY_ITEM$FK foreign key (INVENTORY_CHECK_ID) references INVENTORY_CHECK (ID),
   constraint INVENTORY_CHECK_SUMMARY_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
+
+create table AREA (
+  ID integer auto_increment,
+  NAME varchar(50) not null,
+  constraint AREA$PK primary key (ID),
+  constraint AREA$UK unique (NAME)
+);

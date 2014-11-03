@@ -53,7 +53,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(250, 360));
+		table.setPreferredSize(new Dimension(250, 400));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		mainPanel.add(table, c);
@@ -152,6 +152,9 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Stock Card Inventory Report":
 			getMagicFrame().switchToStockCardInventoryReportPanel();
 			break;
+		case "Area List":
+			getMagicFrame().switchToAreaListPanel();
+			break;
 		}
 	}
 
@@ -178,6 +181,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Product Category List",
 				"Customer List",
 				"Payment Terms List",
+				"Area List",
 				"Inventory Check",
 				"Area Inventory Report",
 				"Product Canvass",
