@@ -11,7 +11,9 @@ import java.awt.event.FocusEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,10 +29,10 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.AreaInventoryReportItemsTable;
+import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.service.AreaInventoryReportService;
-import com.pj.magic.service.InventoryCheckService;
-import com.pj.magic.service.ProductService;
+import com.pj.magic.service.AreaService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.KeyUtil;
@@ -41,14 +43,13 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	private static final String FOCUS_NEXT_FIELD_ACTION_NAME = "focusNextField";
 	
 	@Autowired private AreaInventoryReportItemsTable itemsTable;
-	@Autowired private ProductService productService;
 	@Autowired private AreaInventoryReportService areaInventoryReportService;
-	@Autowired private InventoryCheckService inventoryCheckService;
+	@Autowired private AreaService areaService;
 	
 	private AreaInventoryReport areaInventoryReport;
 	private JLabel inventoryDateField;
 	private MagicTextField reportNumberField; // TODO: change to combobox later
-	private MagicTextField areaField;
+	private JComboBox<Area> areaComboBox;
 	private MagicTextField checkerField;
 	private MagicTextField doubleCheckerField;
 	private JLabel totalItemsField;
@@ -68,13 +69,12 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 			}
 		});
 		
-		areaField = new MagicTextField();
-		areaField.setMaximumLength(50);
-		areaField.addFocusListener(new FocusAdapter() {
+		areaComboBox = new JComboBox<>();
+		areaComboBox.addFocusListener(new FocusAdapter() {
 			
 			@Override
 			public void focusLost(FocusEvent e) {
-				saveAreaField();
+				saveArea();
 			}
 		});
 		
@@ -100,6 +100,15 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		
 		updateTotalAmountFieldWhenItemsTableChanges();
 		focusOnComponentWhenThisPanelIsDisplayed(reportNumberField);
+	}
+
+	protected void saveArea() {
+		Area selectedArea = (Area)areaComboBox.getSelectedItem();
+		if ((selectedArea != null && !selectedArea.equals(areaInventoryReport.getArea()))
+				|| (selectedArea == null && areaInventoryReport.getArea() != null))  {
+			areaInventoryReport.setArea(selectedArea);
+			areaInventoryReportService.save(areaInventoryReport);
+		}
 	}
 
 	private void updateTotalAmountFieldWhenItemsTableChanges() {
@@ -141,17 +150,10 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		}
 	}
 
-	protected void saveAreaField() {
-		if (!areaField.getText().equals(areaInventoryReport.getArea())) {
-			areaInventoryReport.setArea(areaField.getText());
-			areaInventoryReportService.save(areaInventoryReport);
-		}
-	}
-
 	@Override
 	protected void registerKeyBindings() {
 		setFocusOnNextFieldOnEnterKey(reportNumberField);
-		setFocusOnNextFieldOnEnterKey(areaField);
+		setFocusOnNextFieldOnEnterKey(areaComboBox);
 		setFocusOnNextFieldOnEnterKey(checkerField);
 		
 		doubleCheckerField.getInputMap().put(KeyUtil.getEnterKey(), FOCUS_NEXT_FIELD_ACTION_NAME);
@@ -175,7 +177,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	@Override
 	protected void initializeFocusOrder(List<JComponent> focusOrder) {
 		focusOrder.add(reportNumberField);
-		focusOrder.add(areaField);
+		focusOrder.add(areaComboBox);
 		focusOrder.add(checkerField);
 		focusOrder.add(doubleCheckerField);
 	}
@@ -189,12 +191,14 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		this.areaInventoryReport = areaInventoryReportService.getAreaInventoryReport(areaInventoryReport.getId());
-		areaInventoryReport = this.areaInventoryReport;
+		this.areaInventoryReport = areaInventoryReport 
+				= areaInventoryReportService.getAreaInventoryReport(areaInventoryReport.getId());
+		
+		updateComboBoxes();
 		
 		reportNumberField.setText(areaInventoryReport.getReportNumber().toString());
-		areaField.setEnabled(true);
-		areaField.setText(areaInventoryReport.getArea());
+		areaComboBox.setEnabled(true);
+		areaComboBox.setSelectedItem(areaInventoryReport.getArea());
 		checkerField.setEnabled(true);
 		checkerField.setText(areaInventoryReport.getChecker());
 		doubleCheckerField.setEnabled(true);
@@ -209,17 +213,24 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 
 	private void clearDisplay() {
 		reportNumberField.setText(null);
-		areaField.setEnabled(false);
-		areaField.setText(null);
+		areaComboBox.setEnabled(false);
+		areaComboBox.setSelectedItem(null);
 		checkerField.setEnabled(false);
 		checkerField.setText(null);
 		doubleCheckerField.setEnabled(false);
 		doubleCheckerField.setText(null);
 		totalItemsField.setText(null);
+		itemsTable.setAreaInventoryReport(areaInventoryReport);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
 	}
 
+	private void updateComboBoxes() {
+		List<Area> areas = areaService.getAllAreas();
+		areaComboBox.setModel(
+				new DefaultComboBoxModel<>(areas.toArray(new Area[areas.size()])));
+	}
+	
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
@@ -264,7 +275,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		reportNumberField.setPreferredSize(new Dimension(100, 20));
+		reportNumberField.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(reportNumberField, c);
 
 		c = new GridBagConstraints();
@@ -278,8 +289,8 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		areaField.setPreferredSize(new Dimension(200, 20));
-		mainPanel.add(areaField, c);
+		areaComboBox.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(areaComboBox, c);
 
 		currentRow++;
 		
@@ -293,7 +304,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		checkerField.setPreferredSize(new Dimension(200, 20));
+		checkerField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(checkerField, c);
 
 		c = new GridBagConstraints();
@@ -307,7 +318,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		doubleCheckerField.setPreferredSize(new Dimension(200, 20));
+		doubleCheckerField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(doubleCheckerField, c);
 		
 		currentRow++;

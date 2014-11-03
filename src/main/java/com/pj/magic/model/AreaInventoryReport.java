@@ -8,7 +8,7 @@ public class AreaInventoryReport {
 	private Long id;
 	private InventoryCheck parent;
 	private Integer reportNumber;
-	private String area;
+	private Area area;
 	private String checker;
 	private String doubleChecker;
 	private List<AreaInventoryReportItem> items = new ArrayList<>();
@@ -29,11 +29,11 @@ public class AreaInventoryReport {
 		this.parent = parent;
 	}
 
-	public String getArea() {
+	public Area getArea() {
 		return area;
 	}
 
-	public void setArea(String area) {
+	public void setArea(Area area) {
 		this.area = area;
 	}
 

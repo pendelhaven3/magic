@@ -201,9 +201,9 @@ public abstract class AbstractMagicPanel extends JPanel {
 		toolBar.add(logoutButton);
 	}
 	
-	protected void setFocusOnNextFieldOnEnterKey(JTextField textField) {
-		textField.getInputMap().put(KeyUtil.getEnterKey(), FOCUS_NEXT_FIELD_ACTION_NAME);
-		textField.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+	protected void setFocusOnNextFieldOnEnterKey(JComponent component) {
+		component.getInputMap().put(KeyUtil.getEnterKey(), FOCUS_NEXT_FIELD_ACTION_NAME);
+		component.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
