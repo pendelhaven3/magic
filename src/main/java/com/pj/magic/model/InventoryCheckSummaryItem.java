@@ -2,7 +2,7 @@ package com.pj.magic.model;
 
 import java.math.BigDecimal;
 
-public class InventoryCheckSummaryItem {
+public class InventoryCheckSummaryItem implements Comparable<InventoryCheckSummaryItem> {
 
 	private InventoryCheck parent;
 	private Product product;
@@ -55,6 +55,16 @@ public class InventoryCheckSummaryItem {
 
 	public BigDecimal getCost() {
 		return product.getFinalCost(unit);
+	}
+
+	@Override
+	public int compareTo(InventoryCheckSummaryItem o) {
+		int result = product.compareTo(o.getProduct());
+		if (result == 0) {
+			return -1 * Unit.compare(unit, o.getUnit());
+		} else {
+			return result;
+		}
 	}
 
 }

@@ -27,10 +27,13 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.InventoryCheckSummaryTable;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.service.InventoryCheckService;
+import com.pj.magic.service.PrintService;
+import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -41,6 +44,8 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	
 	@Autowired private InventoryCheckService inventoryCheckService;
 	@Autowired private InventoryCheckSummaryTable summaryTable;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private PrintService printService;
 	
 	private InventoryCheck inventoryCheck;
 	private UtilCalendarModel inventoryDateModel;
@@ -49,6 +54,8 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	private JButton postButton;
 	private JLabel totalBeginningValueField;
 	private JLabel totalActualValueField;
+	private JButton printPreviewButton;
+	private JButton printButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -106,6 +113,8 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		summaryTable.setItems(inventoryCheck.getSummaryItems());
 		
 		postButton.setEnabled(!inventoryCheck.isPosted());
+		printButton.setEnabled(true);
+		printPreviewButton.setEnabled(true);
 	}
 
 	private void updateInventoryDateField(Date inventoryDate) {
@@ -120,6 +129,8 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		totalActualValueField.setText(null);
 		summaryTable.setItems(new ArrayList<InventoryCheckSummaryItem>());
 		postButton.setEnabled(false);
+		printButton.setEnabled(false);
+		printPreviewButton.setEnabled(false);
 	}
 
 	@Override
@@ -260,6 +271,32 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		});
 		
 		toolBar.add(postButton);
+		
+		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreview();
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(inventoryCheck);
+			}
+		});
+		toolBar.add(printButton);
+	}
+
+	private void printPreview() {
+		printPreviewDialog.updateDisplay(printService.generateReportAsString(inventoryCheck));
+		printPreviewDialog.setColumnsPerLine(PrintServiceImpl.INVENTORY_REPORT_COLUMNS_PER_LINE);
+		printPreviewDialog.setVisible(true);
 	}
 
 	private void postInventoryCheck() {

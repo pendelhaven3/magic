@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.pj.magic.Constants;
 import com.pj.magic.util.FormatterUtil;
 
@@ -83,6 +85,17 @@ public class InventoryCheck {
 			totalValue = totalValue.add(summaryItem.getActualValue());
 		}
 		return totalValue;
+	}
+	
+	public List<InventoryCheckSummaryItem> getSummaryItemsWithQuantitiesOnly() {
+		return new ArrayList<InventoryCheckSummaryItem>(Collections2.filter(summaryItems, 
+				new Predicate<InventoryCheckSummaryItem>() {
+
+			@Override
+			public boolean apply(InventoryCheckSummaryItem input) {
+				return input.getQuantity() > 0;
+			}
+		}));
 	}
 	
 }

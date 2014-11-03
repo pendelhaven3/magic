@@ -2,6 +2,7 @@ package com.pj.magic.service;
 
 import java.util.List;
 
+import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
@@ -32,5 +33,9 @@ public interface PrintService {
 	List<String> generateReportAsString(ReceivingReceipt receivingReceipt, boolean includeDiscountDetails);
 
 	List<String> generateReportAsString(StockQuantityConversion stockQuantityConversion);
+
+	List<String> generateReportAsString(InventoryCheck inventoryCheck);
+
+	void print(InventoryCheck inventoryCheck);
 	
 }

@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.dao.UserDao;
+import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
@@ -46,6 +48,8 @@ public class PrintServiceImpl implements PrintService {
 	private static final int PURCHASE_ORDER_ITEMS_PER_PAGE = 44;
 	private static final int RECEIVING_RECEIPT_ITEMS_PER_PAGE = 44;
 	private static final int PRICING_SCHEME_REPORT_LINES_PER_PAGE = 44;
+	private static final int INVENTORY_CHECK_SUMMARY_ITEMS_PER_PAGE = 44;
+	public static final int INVENTORY_REPORT_COLUMNS_PER_LINE = 84;
 	
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private UserDao userDao;
@@ -270,6 +274,40 @@ public class PrintServiceImpl implements PrintService {
 			printPages.add(generateReportAsString("reports/stockQuantityConversion.vm", reportData));
 		}
 		return printPages;
+	}
+
+	@Override
+	public List<String> generateReportAsString(InventoryCheck inventoryCheck) {
+		List<InventoryCheckSummaryItem> items = inventoryCheck.getSummaryItemsWithQuantitiesOnly();
+		Collections.sort(items);
+		
+		String inventoryDate = FormatterUtil.formatDate(inventoryCheck.getInventoryDate());
+		
+		List<List<InventoryCheckSummaryItem>> pageItems = Lists.partition(items, 
+				INVENTORY_CHECK_SUMMARY_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("inventoryCheck", inventoryCheck);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("inventoryDate", inventoryDate);
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/inventoryReport.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(InventoryCheck inventoryCheck) {
+		try {
+			for (String printPage : generateReportAsString(inventoryCheck)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 	
 }

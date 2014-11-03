@@ -73,7 +73,11 @@ public class ReportUtil {
 	}
 	
 	public static String center(String text) {
-		return StringUtils.repeat(" ", (CHARACTERS_PER_LINE - text.length()) / 2) + text;
+		return center(text, CHARACTERS_PER_LINE);
+	}
+	
+	public static String center(String text, int charactersPerLine) {
+		return StringUtils.repeat(" ", (charactersPerLine - text.length()) / 2) + text;
 	}
 	
 }

@@ -163,6 +163,11 @@ public class PrintPreviewDialog extends MagicDialog {
 		totalPages = printPages.size();
 		displayPage(currentPage);
 		updatePageNumberLabelAndNavigation();
+		textArea.setColumns(COLUMNS_PER_LINE);
+	}
+	
+	public void setColumnsPerLine(int columnsPerLine) {
+		textArea.setColumns(columnsPerLine);
 	}
 
 	private void displayPage(int page) {
