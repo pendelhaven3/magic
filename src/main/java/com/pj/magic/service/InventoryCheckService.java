@@ -2,7 +2,9 @@ package com.pj.magic.service;
 
 import java.util.List;
 
+import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.InventoryCheckSummaryItem;
 
 public interface InventoryCheckService {
 
@@ -17,5 +19,7 @@ public interface InventoryCheckService {
 	void post(InventoryCheck inventoryCheck);
 
 	void delete(InventoryCheck inventoryCheck);
+
+	List<AreaInventoryReportItem> getItemActualCountDetails(InventoryCheckSummaryItem item);
 	
 }

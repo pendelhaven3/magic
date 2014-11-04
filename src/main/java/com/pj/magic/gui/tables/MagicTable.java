@@ -4,11 +4,14 @@ import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.util.EventObject;
 
+import javax.swing.Action;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.table.TableModel;
 
+import com.pj.magic.Constants;
 import com.pj.magic.util.KeyUtil;
 
 // TODO: This is not really ItemsTable
@@ -64,6 +67,11 @@ public class MagicTable extends JTable {
 		changeSelection(row, column, false, false);
 		editCellAt(row, column);
 		getEditorComponent().requestFocusInWindow();
+	}
+	
+	public void onEnterKey(Action action) {
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), Constants.ENTER_KEY_ACTION_NAME);
+		getActionMap().put(Constants.ENTER_KEY_ACTION_NAME, action);
 	}
 	
 }

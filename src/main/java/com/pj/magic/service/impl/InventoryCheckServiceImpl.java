@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pj.magic.dao.AreaInventoryReportItemDao;
 import com.pj.magic.dao.InventoryCheckDao;
 import com.pj.magic.dao.InventoryCheckSummaryItemDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.util.AreaInventoryReportItemSearchCriteria;
 import com.pj.magic.service.InventoryCheckService;
 
 @Service
@@ -20,6 +23,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 	@Autowired private InventoryCheckDao inventoryCheckDao;
 	@Autowired private InventoryCheckSummaryItemDao inventoryCheckSummaryItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private AreaInventoryReportItemDao areaInventoryReportItemDao;
 	
 	@Override
 	public List<InventoryCheck> getAllInventoryChecks() {
@@ -53,6 +57,11 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 		} else {
 			inventoryCheck.setSummaryItems(inventoryCheckSummaryItemDao.findAllByInventoryCheck(inventoryCheck));
 		}
+		
+		for (InventoryCheckSummaryItem item : inventoryCheck.getSummaryItems()) {
+			item.setParent(inventoryCheck);
+		}
+		
 		return inventoryCheck;
 	}
 
@@ -78,4 +87,13 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 		
 	}
 
+	@Override
+	public List<AreaInventoryReportItem> getItemActualCountDetails(InventoryCheckSummaryItem item) {
+		AreaInventoryReportItemSearchCriteria criteria = new AreaInventoryReportItemSearchCriteria();
+		criteria.setInventoryCheck(item.getParent());
+		criteria.setProduct(item.getProduct());
+		criteria.setUnit(item.getUnit());
+		return areaInventoryReportItemDao.search(criteria);
+	}
+	
 }

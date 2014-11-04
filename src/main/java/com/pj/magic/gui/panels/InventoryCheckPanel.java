@@ -8,12 +8,14 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -26,9 +28,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DatePickerFormatter;
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
+import com.pj.magic.gui.dialog.ActualCountDetailsDialog;
 import com.pj.magic.gui.tables.InventoryCheckSummaryTable;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
@@ -47,6 +51,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	@Autowired private InventoryCheckSummaryTable summaryTable;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
+	@Autowired private ActualCountDetailsDialog actualCountDetailsDialog;
 	
 	private InventoryCheck inventoryCheck;
 	private UtilCalendarModel inventoryDateModel;
@@ -94,7 +99,27 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
-		// none
+		summaryTable.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openActualCountDetailsDialog();
+			}
+		});
+		
+		summaryTable.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				openActualCountDetailsDialog();
+			}
+		});
+	}
+
+	private void openActualCountDetailsDialog() {
+		InventoryCheckSummaryItem item = summaryTable.getSelectedItem();
+		actualCountDetailsDialog.updateDisplay(inventoryCheck, item);
+		actualCountDetailsDialog.setVisible(true);
 	}
 
 	public void updateDisplay(InventoryCheck inventoryCheck) {
@@ -111,11 +136,19 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		totalBeginningValueField.setText(FormatterUtil.formatAmount(inventoryCheck.getTotalBeginningValue()));
 		totalActualValueField.setText(FormatterUtil.formatAmount(inventoryCheck.getTotalActualValue()));
 		
-		summaryTable.setItems(inventoryCheck.getSummaryItems());
-		
 		postButton.setEnabled(!inventoryCheck.isPosted());
 		printButton.setEnabled(true);
 		printPreviewButton.setEnabled(true);
+		
+		summaryTable.setItems(inventoryCheck.getSummaryItems());
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			@Override
+			public void run() {
+				summaryTable.highlight();
+			}
+		});
 	}
 
 	private void updateInventoryDateField(Date inventoryDate) {

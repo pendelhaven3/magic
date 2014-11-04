@@ -71,5 +71,14 @@ public class InventoryCheckSummaryTable extends MagicListTable {
 		}
 		return r;
 	}
+
+	public InventoryCheckSummaryItem getSelectedItem() {
+		return tableModel.getItem(getSelectedRow());
+	}
+
+	public void highlight() {
+		changeSelection(0, 0, false, false);
+		requestFocusInWindow();
+	}
 	
 }

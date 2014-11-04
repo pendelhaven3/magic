@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.models.EditProductPriceTableModel;
+import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Product;
 import com.pj.magic.util.NumberUtil;
 
@@ -167,6 +168,9 @@ public class EditProductPriceTable extends MagicTable {
 			return (validateSellingPrice(amount)) ? super.stopCellEditing() : false;
 		}
 		
+	}
+
+	public void updateDisplay(InventoryCheck inventoryCheck, Product product2) {
 	}
 	
 }
