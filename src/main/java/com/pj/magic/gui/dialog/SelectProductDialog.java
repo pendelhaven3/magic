@@ -6,8 +6,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -23,7 +21,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.tables.MagicTable;
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
+import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ProductsTableModel;
 import com.pj.magic.gui.tables.models.UnitCostsAndQuantitiesTableModel;
 import com.pj.magic.gui.tables.models.UnitPricesAndQuantitiesTableModel;
@@ -63,14 +62,14 @@ public class SelectProductDialog extends MagicDialog {
 
 	@PostConstruct
 	public void initialize() {
-		productsTable = new MagicTable(productsTableModel);
+		productsTable = new MagicListTable(productsTableModel);
 		productsTable.getColumnModel().getColumn(ProductsTableModel.CODE_COLUMN_INDEX)
 			.setPreferredWidth(150);
 		productsTable.getColumnModel().getColumn(ProductsTableModel.DESCRIPTION_COLUMN_INDEX)
 			.setPreferredWidth(300);
 		
-		unitPricesAndQuantitiesTable = new MagicTable(unitPricesAndQuantitiesTableModel);
-		unitCostsAndQuantitiesTable = new MagicTable(unitCostsAndQuantitiesTableModel);
+		unitPricesAndQuantitiesTable = new MagicListTable(unitPricesAndQuantitiesTableModel);
+		unitCostsAndQuantitiesTable = new MagicListTable(unitCostsAndQuantitiesTableModel);
 		
 		layoutComponents();
 		registerKeyBindings();
@@ -99,13 +98,11 @@ public class SelectProductDialog extends MagicDialog {
 			}
 		});
 		
-		productsTable.addMouseListener(new MouseAdapter() {
+		productsTable.addMouseListener(new DoubleClickMouseAdapter() {
 			
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					selectProduct();
-				}
+			protected void onDoubleClick() {
+				selectProduct();
 			}
 		});
 		
