@@ -25,7 +25,8 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, INVENTORY_CHECK_ID, REPORT_NO, AREA_ID, CHECKER, DOUBLE_CHECKER,"
-			+ " b.INVENTORY_DT, c.NAME as AREA_NAME"
+			+ " b.INVENTORY_DT, b.POST_IND,"
+			+ " c.NAME as AREA_NAME"
 			+ " from AREA_INV_REPORT a"
 			+ " join INVENTORY_CHECK b"
 			+ "   on b.ID = a.INVENTORY_CHECK_ID"
@@ -110,8 +111,13 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 		public AreaInventoryReport mapRow(ResultSet rs, int rowNum) throws SQLException {
 			AreaInventoryReport areaInventoryReport = new AreaInventoryReport();
 			areaInventoryReport.setId(rs.getLong("ID"));
-			areaInventoryReport.setParent(new InventoryCheck(rs.getLong("INVENTORY_CHECK_ID")));
-			areaInventoryReport.getParent().setInventoryDate(rs.getDate("INVENTORY_DT"));
+			
+			InventoryCheck parent = new InventoryCheck();
+			parent.setId(rs.getLong("INVENTORY_CHECK_ID"));
+			parent.setInventoryDate(rs.getDate("INVENTORY_DT"));
+			parent.setPosted("Y".equals(rs.getString("POST_IND")));
+			areaInventoryReport.setParent(parent);
+			
 			areaInventoryReport.setReportNumber(rs.getInt("REPORT_NO"));
 			if (rs.getLong("AREA_ID") != 0) {
 				areaInventoryReport.setArea(new Area(rs.getLong("AREA_ID"), rs.getString("AREA_NAME")));

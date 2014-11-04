@@ -196,23 +196,27 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		
 		updateComboBoxes();
 		
+		boolean posted = areaInventoryReport.getParent().isPosted();
+		
 		reportNumberField.setText(areaInventoryReport.getReportNumber().toString());
-		areaComboBox.setEnabled(true);
+		reportNumberField.setEnabled(!posted);
+		areaComboBox.setEnabled(!posted);
 		areaComboBox.setSelectedItem(areaInventoryReport.getArea());
-		checkerField.setEnabled(true);
+		checkerField.setEnabled(!posted);
 		checkerField.setText(areaInventoryReport.getChecker());
-		doubleCheckerField.setEnabled(true);
+		doubleCheckerField.setEnabled(!posted);
 		doubleCheckerField.setText(areaInventoryReport.getDoubleChecker());
 		totalItemsField.setText(String.valueOf(areaInventoryReport.getTotalNumberOfItems()));
 		
 		itemsTable.setAreaInventoryReport(areaInventoryReport);
 		
-		addItemButton.setEnabled(true);
-		deleteItemButton.setEnabled(true);
+		addItemButton.setEnabled(!posted);
+		deleteItemButton.setEnabled(!posted);
 	}
 
 	private void clearDisplay() {
 		reportNumberField.setText(null);
+		reportNumberField.setEnabled(true);
 		areaComboBox.setEnabled(false);
 		areaComboBox.setSelectedItem(null);
 		checkerField.setEnabled(false);
