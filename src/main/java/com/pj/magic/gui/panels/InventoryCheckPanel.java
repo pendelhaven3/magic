@@ -139,6 +139,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		postButton.setEnabled(!inventoryCheck.isPosted());
 		printButton.setEnabled(true);
 		printPreviewButton.setEnabled(true);
+		saveButton.setVisible(false);
 		
 		summaryTable.setItems(inventoryCheck.getSummaryItems());
 		
@@ -165,6 +166,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		postButton.setEnabled(false);
 		printButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
+		saveButton.setVisible(true);
 	}
 
 	@Override
