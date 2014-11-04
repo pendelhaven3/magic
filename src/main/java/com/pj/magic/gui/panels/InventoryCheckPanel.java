@@ -337,6 +337,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		printPreviewDialog.updateDisplay(
 				printService.generateReportAsString(inventoryCheck, choice == JOptionPane.YES_OPTION));
 		printPreviewDialog.setColumnsPerLine(PrintServiceImpl.INVENTORY_REPORT_COLUMNS_PER_LINE);
+		printPreviewDialog.setUseCondensedFontForPrinting(true);
 		printPreviewDialog.setVisible(true);
 	}
 	

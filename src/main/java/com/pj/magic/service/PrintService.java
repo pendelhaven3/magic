@@ -28,6 +28,8 @@ public interface PrintService {
 	
 	void print(List<String> printPages);
 
+	void printForCondensedFont(List<String> printPages);
+
 	List<String> generateReportAsString(SalesInvoice salesInvoice);
 
 	List<String> generateReportAsString(ReceivingReceipt receivingReceipt, boolean includeDiscountDetails);

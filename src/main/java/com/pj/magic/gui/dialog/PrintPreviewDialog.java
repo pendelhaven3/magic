@@ -41,6 +41,7 @@ public class PrintPreviewDialog extends MagicDialog {
 	private int totalPages;
 	private List<String> printPages;
 	private JLabel pageNumberLabel;
+	private boolean useCondensedFontForPrinting;
 	
 	public PrintPreviewDialog() {
 		setSize(800, 600);
@@ -118,11 +119,15 @@ public class PrintPreviewDialog extends MagicDialog {
 		return toolBar;
 	}
 
-	protected void print() {
-		printService.print(printPages);
+	private void print() {
+		if (useCondensedFontForPrinting) {
+			printService.printForCondensedFont(printPages);
+		} else {
+			printService.print(printPages);
+		}
 	}
 
-	protected void previousPage() {
+	private void previousPage() {
 		displayPage(--currentPage);
 		updatePageNumberLabelAndNavigation();
 	}
@@ -164,6 +169,7 @@ public class PrintPreviewDialog extends MagicDialog {
 		displayPage(currentPage);
 		updatePageNumberLabelAndNavigation();
 		textArea.setColumns(COLUMNS_PER_LINE);
+		useCondensedFontForPrinting = false;
 	}
 	
 	public void setColumnsPerLine(int columnsPerLine) {
@@ -185,6 +191,10 @@ public class PrintPreviewDialog extends MagicDialog {
 		pageNumberLabel.setText("Page " + (currentPage + 1) + " of " + totalPages);
 		previousButton.setEnabled(currentPage > 0);
 		nextButton.setEnabled(currentPage + 1 < totalPages);
+	}
+	
+	public void setUseCondensedFontForPrinting(boolean useCondensedFontForPrinting) {
+		this.useCondensedFontForPrinting = useCondensedFontForPrinting;
 	}
 	
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.print.PrintException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -49,8 +50,11 @@ public class PrintServiceImpl implements PrintService {
 	private static final int PURCHASE_ORDER_ITEMS_PER_PAGE = 44;
 	private static final int RECEIVING_RECEIPT_ITEMS_PER_PAGE = 44;
 	private static final int PRICING_SCHEME_REPORT_LINES_PER_PAGE = 44;
-	private static final int INVENTORY_CHECK_SUMMARY_ITEMS_PER_PAGE = 44;
+	private static final int INVENTORY_CHECK_SUMMARY_ITEMS_PER_PAGE = 52;
 	public static final int INVENTORY_REPORT_COLUMNS_PER_LINE = 84;
+	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
+	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
+			StringUtils.repeat(" ", LEFT_PADDING_SIZE_FOR_CONDENSED_FONT);
 	
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private UserDao userDao;
@@ -191,6 +195,17 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
+	public void printForCondensedFont(List<String> printPages) {
+		try {
+			for (String printPage : printPages) {
+				PrinterUtil.print(addLeftPaddingForCondensedFont(printPage));
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
 	public List<String> generateReportAsString(SalesInvoice salesInvoice) {
 		Collections.sort(salesInvoice.getItems());
 		
@@ -314,11 +329,16 @@ public class PrintServiceImpl implements PrintService {
 	public void print(InventoryCheck inventoryCheck, boolean beginningInventory) {
 		try {
 			for (String printPage : generateReportAsString(inventoryCheck, beginningInventory)) {
-				PrinterUtil.print(printPage);
+				PrinterUtil.print(addLeftPaddingForCondensedFont(printPage));
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+
+	private String addLeftPaddingForCondensedFont(String printPage) {
+		return LEFT_PADDING_FOR_CONDENSED_FONT +
+				printPage.replaceAll("\n", "\n" + LEFT_PADDING_FOR_CONDENSED_FONT);
 	}
 	
 }
