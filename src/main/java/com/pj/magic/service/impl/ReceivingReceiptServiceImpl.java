@@ -82,7 +82,7 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 			product.setGrossCost(item.getUnit(), item.getCost());
 			product.setFinalCost(item.getUnit(), item.getFinalCost());
 			if (item.getProduct().getUnits().size() > 1) {
-				product.autoCalculateCostsOfSmallerUnits();
+				product.autoCalculateCostsOfSmallerUnits(item.getUnit());
 			}
 			productDao.updateCosts(product);
 			
@@ -97,4 +97,16 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 		receivingReceiptDao.save(updated);
 	}
 
+	public void setProductDao(ProductDao productDao) {
+		this.productDao = productDao;
+	}
+	
+	public void setReceivingReceiptItemDao(ReceivingReceiptItemDao receivingReceiptItemDao) {
+		this.receivingReceiptItemDao = receivingReceiptItemDao;
+	}
+
+	public void setReceivingReceiptDao(ReceivingReceiptDao receivingReceiptDao) {
+		this.receivingReceiptDao = receivingReceiptDao;
+	}
+	
 }

@@ -366,7 +366,7 @@ public class Product implements Comparable<Product> {
 		}
 	}
 
-	public void autoCalculateCostsOfSmallerUnits() {
+	public String getMaxUnit() {
 		Collections.sort(units, new Comparator<String>() {
 
 			@Override
@@ -375,11 +375,27 @@ public class Product implements Comparable<Product> {
 			}
 		});
 		
-		String maxUnit = units.get(0);
+		return units.get(0);
+	}
+	
+	public void autoCalculateCostsOfSmallerUnits() {
+		autoCalculateCostsOfSmallerUnits(getMaxUnit());
+	}
+	
+	public void autoCalculateCostsOfSmallerUnits(String referenceUnit) {
+		Collections.sort(units, new Comparator<String>() {
+
+			@Override
+			public int compare(String unit1, String unit2) {
+				return Unit.compare(unit1, unit2) * -1;
+			}
+		});
+		
+		String maxUnit = referenceUnit;
 		BigDecimal grossCostOfMaxUnit = getGrossCost(maxUnit);
 		BigDecimal finalCostOfMaxUnit = getFinalCost(maxUnit);
 		int conversionOfMaxUnit = getUnitConversion(maxUnit);
-		for (int i = 1; i < units.size(); i++) {
+		for (int i = (units.indexOf(referenceUnit) + 1); i < units.size(); i++) {
 			String unit = units.get(i);
 			BigDecimal grossCost = grossCostOfMaxUnit.divide(new BigDecimal(conversionOfMaxUnit / getUnitConversion(unit)), 
 					2, RoundingMode.HALF_UP);
