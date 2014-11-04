@@ -13,7 +13,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
@@ -130,142 +129,130 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
 		
-		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(30, 1), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(150, "Code: "), c);
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		codeField.setPreferredSize(new Dimension(100, 20));
-		mainPanel.add(codeField, c);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0; // right space filler
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
+		c.anchor = GridBagConstraints.WEST;
+		codeField.setPreferredSize(new Dimension(100, 25));
+		mainPanel.add(codeField, c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0; // right space filler
+		c.gridx = 3;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(), c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
+		c = new GridBagConstraints();
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Name: "), c);
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 1;
+		c = new GridBagConstraints();
+		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		nameField.setPreferredSize(new Dimension(200, 20));
+		nameField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(nameField, c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
+		c = new GridBagConstraints();
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Address: "), c);
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 1;
+		c = new GridBagConstraints();
+		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		addressField.setPreferredSize(new Dimension(300, 20));
+		addressField.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(addressField, c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Contact Person: "), c);
-		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		contactPersonField.setPreferredSize(new Dimension(200, 20));
+		mainPanel.add(ComponentUtil.createLabel(130, "Contact Person: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		contactPersonField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(contactPersonField, c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Contact Number: "), c);
-		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		contactNumberField.setPreferredSize(new Dimension(200, 20));
+		mainPanel.add(ComponentUtil.createLabel(130, "Contact Number: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		contactNumberField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(contactNumberField, c);
 		
 		currentRow++;
 		
 		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Payment Term: "), c);
-		
-		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		paymentTermComboBox.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(ComponentUtil.createLabel(130, "Payment Term: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentTermComboBox.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(paymentTermComboBox, c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
+		mainPanel.add(ComponentUtil.createFiller(1, 25), c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridx = 1;
+		c = new GridBagConstraints();
+		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
-		saveButton.setPreferredSize(new Dimension(100, 20));
+		saveButton.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(saveButton, c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.0;
+		c = new GridBagConstraints();
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
+		mainPanel.add(ComponentUtil.createFiller(), c);
 	}
 
 	@Override
