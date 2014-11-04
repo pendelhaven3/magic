@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.SuppliersTableModel;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.service.SupplierService;
@@ -45,7 +46,7 @@ public class SupplierListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void initializeComponents() {
-		table = new JTable(tableModel);
+		table = new MagicListTable(tableModel);
 		
 		table.getColumnModel().getColumn(SuppliersTableModel.CODE_COLUMN_INDEX).setPreferredWidth(100);
 		table.getColumnModel().getColumn(SuppliersTableModel.NAME_COLUMN_INDEX).setPreferredWidth(500);
