@@ -62,6 +62,8 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	private JLabel totalActualValueField;
 	private JButton printPreviewButton;
 	private JButton printButton;
+	private JButton showAllButton;
+	private JButton showDiscrepanciesButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -140,6 +142,8 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		printButton.setEnabled(true);
 		printPreviewButton.setEnabled(true);
 		saveButton.setVisible(false);
+		showAllButton.setEnabled(true);
+		showDiscrepanciesButton.setEnabled(true);
 		
 		summaryTable.setItems(inventoryCheck.getSummaryItems());
 		
@@ -167,6 +171,8 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		printButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
 		saveButton.setVisible(true);
+		showAllButton.setEnabled(false);
+		showDiscrepanciesButton.setEnabled(false);
 	}
 
 	@Override
@@ -297,6 +303,27 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		showAllButton = new MagicToolBarButton("all", "Show All");
+		showAllButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showAllSummaryItems();
+			}
+		});
+		toolBar.add(showAllButton);
+		
+		showDiscrepanciesButton = new MagicToolBarButton("discrepancy", "Show Discrepancies Only");
+		showDiscrepanciesButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showSummaryItemsWithDiscrepancies();
+			}
+		});
+		
+		toolBar.add(showDiscrepanciesButton);
+		
 		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
 			
@@ -327,6 +354,14 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+	}
+
+	private void showSummaryItemsWithDiscrepancies() {
+		summaryTable.setItems(inventoryCheck.getSummaryItemsWithDiscrepancies());
+	}
+
+	private void showAllSummaryItems() {
+		summaryTable.setItems(inventoryCheck.getSummaryItems());
 	}
 
 	private void print() {
