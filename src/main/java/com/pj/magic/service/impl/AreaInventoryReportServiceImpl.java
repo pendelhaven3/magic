@@ -10,6 +10,7 @@ import com.pj.magic.dao.AreaInventoryReportItemDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
+import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.service.AreaInventoryReportService;
 
 @Service
@@ -59,6 +60,12 @@ public class AreaInventoryReportServiceImpl implements AreaInventoryReportServic
 	@Override
 	public void save(AreaInventoryReportItem item) {
 		areaInventoryReportItemDao.save(item);
+	}
+
+	@Override
+	public AreaInventoryReport findByInventoryCheckAndReportNumber(
+			InventoryCheck inventoryCheck, int reportNumber) {
+		return areaInventoryReportDao.findByInventoryCheckAndReportNumber(inventoryCheck, reportNumber);
 	}
 
 }

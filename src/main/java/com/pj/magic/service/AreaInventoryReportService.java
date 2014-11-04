@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
+import com.pj.magic.model.InventoryCheck;
 
 public interface AreaInventoryReportService {
 
@@ -18,5 +19,8 @@ public interface AreaInventoryReportService {
 	void delete(AreaInventoryReportItem item);
 
 	void save(AreaInventoryReportItem item);
+	
+	AreaInventoryReport findByInventoryCheckAndReportNumber(
+			InventoryCheck inventoryCheck, int reportNumber);
 	
 }
