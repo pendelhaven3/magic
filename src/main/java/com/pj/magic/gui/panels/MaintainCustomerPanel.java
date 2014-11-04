@@ -122,6 +122,14 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		} catch (ValidationException e) {
 			return false;
 		}
+		
+		Customer existing = customerService.findCustomerByCode(codeField.getText());
+		if (existing != null && (customer.getId() == null || !customer.getId().equals(existing.getId()))) {
+			showErrorMessage("Code is already used by another record");
+			codeField.requestFocusInWindow();
+			return false;
+		}
+		
 		return true;
 	}
 

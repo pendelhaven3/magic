@@ -131,7 +131,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		int reportNumber = Integer.parseInt(reportNumberField.getText());
 		AreaInventoryReport existing = areaInventoryReportService
 				.findByInventoryCheckAndReportNumber(areaInventoryReport.getParent(), reportNumber);
-		if (existing != null && reportNumber == existing.getReportNumber() &&
+		if (existing != null && 
 				(areaInventoryReport.getId() == null || !areaInventoryReport.getId().equals(existing.getId()))) {
 			showErrorMessage("Report No. is already used by another record");
 			reportNumberField.requestFocusInWindow();
