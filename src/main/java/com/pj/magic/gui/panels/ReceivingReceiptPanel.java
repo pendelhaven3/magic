@@ -152,68 +152,62 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createFiller(50, 30), c);
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(120, "RR No.:"), c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		receivingReceiptNumberField = ComponentUtil.createLabel(200, "");
 		mainPanel.add(receivingReceiptNumberField, c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createFiller(50, 1), c);
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(120, "Related PO No.:"), c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		relatedPurchaseOrderNumberField = ComponentUtil.createLabel(100, "");
 		mainPanel.add(relatedPurchaseOrderNumberField, c);
 		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
 		c.gridx = 6;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
+		mainPanel.add(ComponentUtil.createFiller(), c);
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Supplier:"), c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -221,28 +215,26 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Payment Term:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Payment Term:"), c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(paymentTermField, c);
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+
+		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(120, "Received Date:"), c);
 		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -253,14 +245,13 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Reference No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Reference No.:"), c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -268,9 +259,8 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		mainPanel.add(referenceNumberField, c);
 
 		currentRow++;
-		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -278,8 +268,9 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.BOTH;
+		c = new GridBagConstraints();
 		c.weightx = c.weighty = 1.0;
+		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 7;
@@ -313,7 +304,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createRightLabel(70, "");
+		totalAmountField = ComponentUtil.createRightLabel(120, "");
 		panel.add(totalAmountField, c);
 		
 		c = new GridBagConstraints();
@@ -321,21 +312,21 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		panel.add(ComponentUtil.createFiller(50, 1), c);
-		
+			
 		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(120, "Total Disc. Amount:"), c);
+		panel.add(ComponentUtil.createLabel(150, "Total Disc. Amount:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalDiscountedAmountField = ComponentUtil.createRightLabel(70, "");
+		totalDiscountedAmountField = ComponentUtil.createRightLabel(120, "");
 		panel.add(totalDiscountedAmountField, c);
 		
 		currentRow++;
@@ -344,14 +335,14 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(120, "Total Net Amount:"), c);
+		panel.add(ComponentUtil.createLabel(150, "Total Net Amount:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalNetAmountField = ComponentUtil.createRightLabel(70, "");
+		totalNetAmountField = ComponentUtil.createRightLabel(120, "");
 		panel.add(totalNetAmountField, c);
 		
 		return panel;
