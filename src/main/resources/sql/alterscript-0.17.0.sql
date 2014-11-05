@@ -4,4 +4,4 @@ create table SYSTEM_PARAMETER (
   constraint SYSTEM_PARAMETER$PK primary key (NAME)
 );
 
-insert into SYSTEM_PARAMETER (NAME, VALUE) values ('VERSION', '0.16.0');
+insert into SYSTEM_PARAMETER (NAME, VALUE) values ('VERSION', '0.17.0');

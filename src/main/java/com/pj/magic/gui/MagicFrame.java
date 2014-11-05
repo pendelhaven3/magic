@@ -2,14 +2,17 @@ package com.pj.magic.gui;
 
 import java.awt.CardLayout;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.panels.AdjustmentInListPanel;
@@ -175,6 +178,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainAreaPanel maintainAreaPanel;
 	
 	@Autowired private SystemParameterService systemParameterService;
+	@Autowired private DataSource dataSource;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -187,15 +191,28 @@ public class MagicFrame extends JFrame {
 	
 	@PostConstruct
 	public void initialize() {
-		if (isProgramVersionValid()) {
-			addPanels();
-		} else {
+		if (!isDatabaseUp()) {
+			JOptionPane.showMessageDialog(this, "Cannot connect to database", 
+					"Error Message", JOptionPane.ERROR_MESSAGE);
+			closeProgram();
+		} else if (!isProgramVersionValid()) {
 			JOptionPane.showMessageDialog(this, "Program not up-to-date", 
 					"Error Message", JOptionPane.ERROR_MESSAGE);
 			closeProgram();
+		} else {
+			addPanels();
 		}
 	}
 	
+	private boolean isDatabaseUp() {
+		try {
+			DataSourceUtils.releaseConnection(dataSource.getConnection(), dataSource);
+		} catch (SQLException e) {
+			return false;
+		}
+		return true;
+	}
+
 	private void closeProgram() {
 		processWindowEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
