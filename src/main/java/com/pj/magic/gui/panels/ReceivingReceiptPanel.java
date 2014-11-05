@@ -141,7 +141,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		itemsTable.setReceivingReceipt(receivingReceipt);
 		
 		postButton.setEnabled(!receivingReceipt.isPosted());
-		datePicker.getComponents()[1].setEnabled(!receivingReceipt.isPosted());
+		datePicker.getComponents()[1].setVisible(!receivingReceipt.isPosted());
 	}
 
 	private void updateReceivedDateField() {

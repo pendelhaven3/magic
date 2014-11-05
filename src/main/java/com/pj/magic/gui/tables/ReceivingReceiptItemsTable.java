@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.models.ReceivingReceiptItemsTableModel;
 import com.pj.magic.gui.tables.rowitems.ReceivingReceiptItemRowItem;
 import com.pj.magic.model.ReceivingReceipt;
-import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.NumberUtil;
 
@@ -101,17 +100,14 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 		return receivingReceipt.getTotalNumberOfItems();
 	}
 
-	public void highlightQuantityColumn(ReceivingReceiptItem item) {
-		int row = receivingReceipt.getItems().indexOf(item);
-		changeSelection(row, QUANTITY_COLUMN_INDEX, false, false);
-		editCellAt(row, QUANTITY_COLUMN_INDEX);
-		getEditorComponent().requestFocusInWindow();
-	}
-	
 	public void highlight() {
 		changeSelection(0, DISCOUNT_1_COLUMN_INDEX, false, false);
-		editCellAt(0, DISCOUNT_1_COLUMN_INDEX);
-		getEditorComponent().requestFocusInWindow();
+		if (receivingReceipt.isPosted()) {
+			requestFocusInWindow();
+		} else {
+			editCellAt(0, DISCOUNT_1_COLUMN_INDEX);
+			getEditorComponent().requestFocusInWindow();
+		}
 	}
 	
 	private void initializeRowItemValidationBehavior() {
