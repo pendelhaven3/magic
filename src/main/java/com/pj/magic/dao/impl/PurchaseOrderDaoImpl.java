@@ -79,7 +79,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 				ps.setLong(4, purchaseOrder.getCreatedBy().getId());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		PurchaseOrder updated = get(holder.getKey().longValue());
 		purchaseOrder.setId(updated.getId());
@@ -149,6 +149,14 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 		
 		return getJdbcTemplate().query(sql.toString(), purchaseOrderRowMapper,
 				criteria.isPosted() ? "Y" : "N");
+	}
+
+	private static final String FIND_ALL_BY_SUPPLIER_SQL =
+			BASE_SELECT_SQL + " and b.ID = ?";
+	
+	@Override
+	public List<PurchaseOrder> findAllBySupplier(Supplier supplier) {
+		return getJdbcTemplate().query(FIND_ALL_BY_SUPPLIER_SQL, purchaseOrderRowMapper, supplier.getId());
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.model.Supplier;
 
 public interface PurchaseOrderService {
 
@@ -23,5 +24,7 @@ public interface PurchaseOrderService {
 	List<PurchaseOrder> getAllNonPostedPurchaseOrders();
 
 	void markAsDelivered(PurchaseOrder purchaseOrder);
+	
+	List<PurchaseOrder> getAllPurchaseOrdersBySupplier(Supplier supplier);
 	
 }

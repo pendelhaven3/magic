@@ -14,6 +14,7 @@ import com.pj.magic.exception.NoActualQuantityException;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.service.ReceivingReceiptService;
@@ -108,6 +109,11 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 		purchaseOrder.setDelivered(true);
 		purchaseOrderDao.save(purchaseOrder);
 		purchaseOrderItemDao.updateAllByPurchaseOrderAsOrdered(purchaseOrder);
+	}
+
+	@Override
+	public List<PurchaseOrder> getAllPurchaseOrdersBySupplier(Supplier supplier) {
+		return purchaseOrderDao.findAllBySupplier(supplier);
 	}
 	
 }

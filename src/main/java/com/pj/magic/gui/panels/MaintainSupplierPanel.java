@@ -28,6 +28,7 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.service.PaymentTermService;
+import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -40,6 +41,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 	
 	@Autowired private SupplierService supplierService;
 	@Autowired private PaymentTermService paymentTermService;
+	@Autowired private PurchaseOrderService purchaseOrderService;
 	
 	private Supplier supplier;
 	private MagicTextField codeField;
@@ -445,7 +447,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		deleteButton = new MagicToolBarButton("minus", "Delete");
+		deleteButton = new MagicToolBarButton("trash", "Delete");
 		deleteButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -457,6 +459,11 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 	}
 
 	private void deleteSupplier() {
+		if (!purchaseOrderService.getAllPurchaseOrdersBySupplier(supplier).isEmpty()) {
+			showErrorMessage("Cannot delete a supplier that is already referenced by a Purchase Order");
+			return;
+		}
+		
 		if (confirm("Do you want to delete this supplier?")) {
 			supplierService.delete(supplier);
 			showMessage("Supplier deleted");
