@@ -76,7 +76,7 @@ public class ProductListPanel extends StandardMagicPanel {
 		mainPanel.add(new JScrollPane(table), c);
 	}
 
-	protected void searchProducts() {
+	private void searchProducts() {
 		productSearchCriteriaDialog.setVisible(true);
 		
 		ProductSearchCriteria criteria = productSearchCriteriaDialog.getSearchCriteria();

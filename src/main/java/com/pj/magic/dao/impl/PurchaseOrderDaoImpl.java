@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -20,6 +21,7 @@ import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
+import com.pj.magic.model.util.PurchaseOrderSearchCriteria;
 
 @Repository
 public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
@@ -142,13 +144,28 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 	}
 
 	@Override
-	public List<PurchaseOrder> search(PurchaseOrder criteria) {
+	public List<PurchaseOrder> search(PurchaseOrderSearchCriteria criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
-		sql.append(" and POST_IND = ?");
-		sql.append(" order by a.ID desc"); // TODO: change to be more flexible when the need arises
+		List<Object> params = new ArrayList<>();
 		
-		return getJdbcTemplate().query(sql.toString(), purchaseOrderRowMapper,
-				criteria.isPosted() ? "Y" : "N");
+		if (criteria.getPurchaseOrderNumber() != null) {
+			sql.append(" and a.PURCHASE_ORDER_NO = ?");
+			params.add(criteria.getPurchaseOrderNumber());
+		}
+		
+		if (criteria.getSupplier() != null) {
+			sql.append(" and b.ID = ?");
+			params.add(criteria.getSupplier().getId());
+		}
+		
+		if (criteria.getPosted() != null) {
+			sql.append(" and a.POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		sql.append(" order by a.ID desc");
+		
+		return getJdbcTemplate().query(sql.toString(), purchaseOrderRowMapper, params.toArray());
 	}
 
 	private static final String FIND_ALL_BY_SUPPLIER_SQL =

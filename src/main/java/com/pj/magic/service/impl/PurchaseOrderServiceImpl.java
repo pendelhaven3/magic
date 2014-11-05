@@ -15,6 +15,7 @@ import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.model.util.PurchaseOrderSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.service.ReceivingReceiptService;
@@ -93,7 +94,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
 	@Override
 	public List<PurchaseOrder> getAllNonPostedPurchaseOrders() {
-		PurchaseOrder criteria = new PurchaseOrder();
+		PurchaseOrderSearchCriteria criteria = new PurchaseOrderSearchCriteria();
 		criteria.setPosted(false);
 		
 		List<PurchaseOrder> purchaseOrders = purchaseOrderDao.search(criteria);
@@ -114,6 +115,11 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	@Override
 	public List<PurchaseOrder> getAllPurchaseOrdersBySupplier(Supplier supplier) {
 		return purchaseOrderDao.findAllBySupplier(supplier);
+	}
+
+	@Override
+	public List<PurchaseOrder> search(PurchaseOrderSearchCriteria criteria) {
+		return purchaseOrderDao.search(criteria);
 	}
 	
 }

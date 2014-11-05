@@ -310,6 +310,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		addItemButton.setEnabled(!purchaseOrder.isPosted());
 		deleteItemButton.setEnabled(!purchaseOrder.isPosted());
 		printButton.setEnabled(true);
+		printPreviewButton.setEnabled(false);
 	}
 
 	private void clearDisplay() {
@@ -332,6 +333,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
 		printButton.setEnabled(false);
+		printPreviewButton.setEnabled(false);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.model.util.PurchaseOrderSearchCriteria;
 
 public interface PurchaseOrderDao {
 
@@ -13,7 +14,7 @@ public interface PurchaseOrderDao {
 
 	void delete(PurchaseOrder purchaseOrder);
 
-	List<PurchaseOrder> search(PurchaseOrder criteria);
+	List<PurchaseOrder> search(PurchaseOrderSearchCriteria criteria);
 	
 	List<PurchaseOrder> findAllBySupplier(Supplier supplier);
 	

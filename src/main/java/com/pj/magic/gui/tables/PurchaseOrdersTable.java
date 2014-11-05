@@ -61,8 +61,7 @@ public class PurchaseOrdersTable extends MagicListTable {
 		panel.displayPurchaseOrderDetails(getCurrentlySelectedPurchaseOrder());
 	}
 
-	public void update() {
-		List<PurchaseOrder> purchaseOrders = purchaseOrderService.getAllNonPostedPurchaseOrders();
+	public void setPurchaseOrders(List<PurchaseOrder> purchaseOrders) {
 		tableModel.setPurchaseOrders(purchaseOrders);
 		if (!purchaseOrders.isEmpty()) {
 			changeSelection(0, 0, false, false);

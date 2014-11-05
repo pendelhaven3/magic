@@ -6,6 +6,7 @@ import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.model.util.PurchaseOrderSearchCriteria;
 
 public interface PurchaseOrderService {
 
@@ -17,7 +18,7 @@ public interface PurchaseOrderService {
 
 	void delete(PurchaseOrderItem item);
 
-	void delete(PurchaseOrder currentlySelectedPurchaseOrder);
+	void delete(PurchaseOrder purchaseOrder);
 
 	ReceivingReceipt post (PurchaseOrder purchaseOrder);
 	
@@ -26,5 +27,7 @@ public interface PurchaseOrderService {
 	void markAsDelivered(PurchaseOrder purchaseOrder);
 	
 	List<PurchaseOrder> getAllPurchaseOrdersBySupplier(Supplier supplier);
+	
+	List<PurchaseOrder> search(PurchaseOrderSearchCriteria criteria);
 	
 }

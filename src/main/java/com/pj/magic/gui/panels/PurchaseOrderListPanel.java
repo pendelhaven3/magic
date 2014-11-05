@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -17,8 +18,11 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PurchaseOrderSearchCriteriaDialog;
 import com.pj.magic.gui.tables.PurchaseOrdersTable;
 import com.pj.magic.model.PurchaseOrder;
+import com.pj.magic.model.util.PurchaseOrderSearchCriteria;
+import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
@@ -27,6 +31,8 @@ public class PurchaseOrderListPanel extends StandardMagicPanel {
 	private static final String DELETE_PURCHASE_ORDER_ACTION_NAME = "deletePurchaseOrder";
 	
 	@Autowired private PurchaseOrdersTable table;
+	@Autowired private PurchaseOrderSearchCriteriaDialog purchaseOrderSearchCriteriaDialog;
+	@Autowired private PurchaseOrderService purchaseOrderService;
 	
 	@Override
 	public void initializeComponents() {
@@ -34,7 +40,9 @@ public class PurchaseOrderListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		table.update();
+		List<PurchaseOrder> purchaseOrders = purchaseOrderService.getAllNonPostedPurchaseOrders();
+		table.setPurchaseOrders(purchaseOrders);
+		purchaseOrderSearchCriteriaDialog.updateDisplay();
 	}
 
 	public void displayPurchaseOrderDetails(PurchaseOrder stockQuantityConversion) {
@@ -121,6 +129,33 @@ public class PurchaseOrderListPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(deleteButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchPurchaseOrders();
+			}
+		});
+		
+		toolBar.add(searchButton);
+	}
+
+	private void searchPurchaseOrders() {
+		purchaseOrderSearchCriteriaDialog.setVisible(true);
+		
+		PurchaseOrderSearchCriteria criteria = purchaseOrderSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<PurchaseOrder> purchaseOrders = purchaseOrderService.search(criteria);
+			table.setPurchaseOrders(purchaseOrders);
+			if (!purchaseOrders.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
 	}
 
 }
