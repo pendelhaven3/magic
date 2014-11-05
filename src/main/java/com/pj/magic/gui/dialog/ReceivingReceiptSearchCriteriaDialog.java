@@ -21,26 +21,26 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.util.PurchaseOrderSearchCriteria;
+import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
+public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 
 	@Autowired private SupplierService supplierService;
 	
-	private MagicTextField purchaseOrderNumberField;
+	private MagicTextField receivingReceiptNumberField;
 	private MagicComboBox<Supplier> supplierComboBox;
 	private MagicComboBox<String> statusComboBox;
 	private JButton searchButton;
-	private PurchaseOrderSearchCriteria searchCriteria;
+	private ReceivingReceiptSearchCriteria searchCriteria;
 	
-	public PurchaseOrderSearchCriteriaDialog() {
+	public ReceivingReceiptSearchCriteriaDialog() {
 		setSize(530, 210);
 		setLocationRelativeTo(null);
-		setTitle("Search Purchase Orders");
+		setTitle("Search Receiving Receipts");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
 	}
 
@@ -52,8 +52,8 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		purchaseOrderNumberField = new MagicTextField();
-		purchaseOrderNumberField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
+		receivingReceiptNumberField = new MagicTextField();
+		receivingReceiptNumberField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
 		
 		supplierComboBox = new MagicComboBox<>();
 		
@@ -65,18 +65,18 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePurchaseOrderCriteria();
+				saveReceivingReceiptCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(purchaseOrderNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(receivingReceiptNumberField);
 	}
 
-	private void savePurchaseOrderCriteria() {
-		searchCriteria = new PurchaseOrderSearchCriteria();
+	private void saveReceivingReceiptCriteria() {
+		searchCriteria = new ReceivingReceiptSearchCriteria();
 		
-		if (!StringUtils.isEmpty(purchaseOrderNumberField.getText())) {
-			searchCriteria.setPurchaseOrderNumber(Long.valueOf(purchaseOrderNumberField.getText()));
+		if (!StringUtils.isEmpty(receivingReceiptNumberField.getText())) {
+			searchCriteria.setReceivingReceiptNumber(Long.valueOf(receivingReceiptNumberField.getText()));
 			
 		}
 		
@@ -90,7 +90,7 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
-		purchaseOrderNumberField.onEnterKey(new AbstractAction() {
+		receivingReceiptNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -112,7 +112,7 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePurchaseOrderCriteria();
+				saveReceivingReceiptCriteria();
 			}
 		});
 		
@@ -131,15 +131,15 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Purchase Order No.:"), c);
+		add(ComponentUtil.createLabel(170, "Receiving Receipt No.:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		purchaseOrderNumberField.setPreferredSize(new Dimension(100, 25));
-		add(purchaseOrderNumberField, c);
+		receivingReceiptNumberField.setPreferredSize(new Dimension(100, 25));
+		add(receivingReceiptNumberField, c);
 
 		currentRow++;
 		
@@ -200,15 +200,15 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(), c);
 	}
 	
-	public PurchaseOrderSearchCriteria getSearchCriteria() {
-		PurchaseOrderSearchCriteria returnCriteria = searchCriteria;
+	public ReceivingReceiptSearchCriteria getSearchCriteria() {
+		ReceivingReceiptSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
 		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		purchaseOrderNumberField.setText(null);
+		receivingReceiptNumberField.setText(null);
 
 		List<Supplier> suppliers = supplierService.getAllSuppliers();
 		suppliers.add(0, null);

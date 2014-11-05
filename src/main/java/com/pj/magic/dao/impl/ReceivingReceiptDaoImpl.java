@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -23,6 +24,7 @@ import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
+import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
 
 @Repository
 public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceiptDao {
@@ -83,7 +85,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				ps.setLong(8, receivingReceipt.getReceivedBy().getId());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		ReceivingReceipt updated = get(holder.getKey().longValue());
 		receivingReceipt.setId(updated.getId());
@@ -128,16 +130,6 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			receivingReceipt.setReceivedBy(new User(rs.getLong("RECEIVED_BY")));
 			return receivingReceipt;
 		}
-	}
-
-	@Override
-	public List<ReceivingReceipt> search(ReceivingReceipt criteria) {
-		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
-		sql.append(" and POST_IND = ?");
-		sql.append(" order by a.ID desc"); // TODO: change to be more flexible when the need arises
-		
-		return getJdbcTemplate().query(sql.toString(), receivingReceiptRowMapper,
-				criteria.isPosted() ? "Y" : "N");
 	}
 
 	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by a.ID desc";
@@ -186,6 +178,31 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			}
 			
 		}, product.getId());
+	}
+
+	@Override
+	public List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria) {
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		List<Object> params = new ArrayList<>();
+		
+		if (criteria.getReceivingReceiptNumber() != null) {
+			sql.append(" and a.RECEIVING_RECEIPT_NO = ?");
+			params.add(criteria.getReceivingReceiptNumber());
+		}
+		
+		if (criteria.getSupplier() != null) {
+			sql.append(" and b.ID = ?");
+			params.add(criteria.getSupplier().getId());
+		}
+		
+		if (criteria.getPosted() != null) {
+			sql.append(" and a.POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		sql.append(" order by a.ID desc");
+		
+		return getJdbcTemplate().query(sql.toString(), receivingReceiptRowMapper, params.toArray());
 	}
 
 }

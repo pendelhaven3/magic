@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -20,7 +19,7 @@ import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.service.ReceivingReceiptService;
 
 @Component
-public class ReceivingReceiptsTable extends JTable {
+public class ReceivingReceiptsTable extends MagicListTable {
 
 	private static final String SELECT_RECEIVING_RECEIPT_ACTION_NAME = "selectReceivingReceipt";
 	
@@ -62,8 +61,7 @@ public class ReceivingReceiptsTable extends JTable {
 		panel.displayReceivingReceiptDetails(getCurrentlySelectedReceivingReceipt());
 	}
 
-	public void update() {
-		List<ReceivingReceipt> receivingReceipts = receivingReceiptService.getAllNonPostedReceivingReceipts();
+	public void setReceivingReceipts(List<ReceivingReceipt> receivingReceipts) {
 		tableModel.setReceivingReceipts(receivingReceipts);
 		if (!receivingReceipts.isEmpty()) {
 			changeSelection(0, 0, false, false);

@@ -2,7 +2,11 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -10,15 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.ReceivingReceiptSearchCriteriaDialog;
 import com.pj.magic.gui.tables.ReceivingReceiptsTable;
-import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
+import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class ReceivingReceiptListPanel extends StandardMagicPanel {
 	
 	@Autowired private ReceivingReceiptsTable table;
+	@Autowired private ReceivingReceiptService receivingReceiptService;
+	@Autowired private ReceivingReceiptSearchCriteriaDialog receivingReceiptSearchCriteriaDialog;
 	
 	@Override
 	public void initializeComponents() {
@@ -26,13 +35,11 @@ public class ReceivingReceiptListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		table.update();
+		List<ReceivingReceipt> receivingReceipts = receivingReceiptService.getAllNonPostedReceivingReceipts();
+		table.setReceivingReceipts(receivingReceipts);
+		receivingReceiptSearchCriteriaDialog.updateDisplay();
 	}
 
-	public void displayPurchaseOrderDetails(PurchaseOrder stockQuantityConversion) {
-		getMagicFrame().switchToPurchaseOrderPanel(stockQuantityConversion);
-	}
-	
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
@@ -61,8 +68,8 @@ public class ReceivingReceiptListPanel extends StandardMagicPanel {
 		
 	}
 	
-	protected void switchToNewPurchaseOrderPanel() {
-		getMagicFrame().switchToPurchaseOrderPanel(new PurchaseOrder());
+	protected void switchToNewReceivingReceiptPanel() {
+		getMagicFrame().switchToReceivingReceiptPanel(new ReceivingReceipt());
 	}
 
 	@Override
@@ -76,7 +83,32 @@ public class ReceivingReceiptListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchReceivingReceipts();
+			}
+		});
+		
+		toolBar.add(searchButton);
+	}
+
+	private void searchReceivingReceipts() {
+		receivingReceiptSearchCriteriaDialog.setVisible(true);
+		
+		ReceivingReceiptSearchCriteria criteria = receivingReceiptSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<ReceivingReceipt> receivingReceipts = receivingReceiptService.search(criteria);
+			table.setReceivingReceipts(receivingReceipts);
+			if (!receivingReceipts.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
 	}
 
 }

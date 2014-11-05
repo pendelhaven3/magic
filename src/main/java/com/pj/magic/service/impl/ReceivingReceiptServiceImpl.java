@@ -13,6 +13,7 @@ import com.pj.magic.dao.ReceivingReceiptItemDao;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
+import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
 import com.pj.magic.service.ReceivingReceiptService;
 
 @Service
@@ -61,7 +62,7 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 
 	@Override
 	public List<ReceivingReceipt> getAllNonPostedReceivingReceipts() {
-		ReceivingReceipt criteria = new ReceivingReceipt();
+		ReceivingReceiptSearchCriteria criteria = new ReceivingReceiptSearchCriteria();
 		criteria.setPosted(false);
 		
 		List<ReceivingReceipt> receivingReceipts = receivingReceiptDao.search(criteria);
@@ -107,6 +108,11 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 
 	public void setReceivingReceiptDao(ReceivingReceiptDao receivingReceiptDao) {
 		this.receivingReceiptDao = receivingReceiptDao;
+	}
+
+	@Override
+	public List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria) {
+		return receivingReceiptDao.search(criteria);
 	}
 	
 }

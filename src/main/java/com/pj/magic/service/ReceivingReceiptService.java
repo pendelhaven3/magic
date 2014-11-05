@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
+import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
 
 public interface ReceivingReceiptService {
 
@@ -18,5 +19,7 @@ public interface ReceivingReceiptService {
 	List<ReceivingReceipt> getAllNonPostedReceivingReceipts();
 	
 	void post(ReceivingReceipt receivingReceipt);
+
+	List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria);
 	
 }
