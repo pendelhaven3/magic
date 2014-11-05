@@ -1,10 +1,12 @@
 package com.pj.magic.gui;
 
 import java.awt.CardLayout;
+import java.awt.event.WindowEvent;
 import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +73,7 @@ import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
+import com.pj.magic.service.SystemParameterService;
 
 /**
  * Main JFrame that holds all the panels.
@@ -171,6 +174,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private AreaListPanel areaListPanel;
 	@Autowired private MaintainAreaPanel maintainAreaPanel;
 	
+	@Autowired private SystemParameterService systemParameterService;
+	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
 
@@ -181,7 +186,26 @@ public class MagicFrame extends JFrame {
 	}
 	
 	@PostConstruct
-	private void addContents() {
+	public void initialize() {
+		if (isProgramVersionValid()) {
+			addPanels();
+		} else {
+			JOptionPane.showMessageDialog(this, "Program not up-to-date", 
+					"Error Message", JOptionPane.ERROR_MESSAGE);
+			closeProgram();
+		}
+	}
+	
+	private void closeProgram() {
+		processWindowEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+	}
+
+	private boolean isProgramVersionValid() {
+		return resourceBundle.getString("application.version")
+				.equals(systemParameterService.getProgramVersion());
+	}
+
+	private void addPanels() {
 		panelHolder = new JPanel(new CardLayout());
 		panelHolder.add(loginPanel, LOGIN_PANEL);
 		panelHolder.add(mainMenuPanel, MAIN_MENU_PANEL);

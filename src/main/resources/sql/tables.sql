@@ -4,6 +4,12 @@ create table SEQUENCE (
   constraint SEQUENCE$PK unique (NAME)
 );
 
+create table SYSTEM_PARAMETER (
+  NAME varchar(50) not null,
+  VALUE varchar(100) not null,
+  constraint SYSTEM_PARAMETER$PK primary key (NAME)
+);
+
 create table MANUFACTURER (
   ID integer auto_increment,
   NAME varchar(50) not null,
