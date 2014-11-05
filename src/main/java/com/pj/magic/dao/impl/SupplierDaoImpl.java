@@ -71,7 +71,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 				ps.setString(11, supplier.getDiscount());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		supplier.setId(holder.getKey().longValue());
 	}
@@ -194,6 +194,21 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
+	}
+
+	private static final String DELETE_SQL = "delete from SUPPLIER where ID = ?";
+	
+	@Override
+	public void delete(Supplier supplier) {
+		getJdbcTemplate().update(DELETE_SQL, supplier.getId());
+	}
+
+	private static final String REMOVE_ALL_PRODUCTS_FROM_SUPPLIER_SQL =
+			"delete from SUPPLIER_PRODUCT where SUPPLIER_ID = ?";
+	
+	@Override
+	public void removeAllProductsFromSupplier(Supplier supplier) {
+		getJdbcTemplate().update(REMOVE_ALL_PRODUCTS_FROM_SUPPLIER_SQL, supplier.getId());
 	}
 	
 }

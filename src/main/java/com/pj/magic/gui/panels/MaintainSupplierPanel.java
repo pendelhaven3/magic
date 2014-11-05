@@ -13,7 +13,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
@@ -25,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.service.PaymentTermService;
@@ -54,6 +54,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 	private MagicTextField discountField;
 	private JComboBox<PaymentTerm> paymentTermComboBox; 
 	private JButton saveButton;
+	private JButton deleteButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -122,8 +123,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		int confirm = showConfirmMessage("Save?");
-		if (confirm == JOptionPane.OK_OPTION) {
+		if (confirm("Save?")) {
 			supplier.setCode(codeField.getText());
 			supplier.setName(nameField.getText());
 			supplier.setAddress(addressField.getText());
@@ -139,6 +139,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 			try {
 				supplierService.save(supplier);
 				showMessage("Saved!");
+				getMagicFrame().switchToEditSupplierPanel(supplier);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
@@ -419,6 +420,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 		}
 		remarksField.setText(supplier.getRemarks());
 		discountField.setText(supplier.getDiscount());
+		deleteButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -433,6 +435,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 		paymentTermComboBox.setSelectedItem(null);
 		remarksField.setText(null);
 		discountField.setText(null);
+		deleteButton.setEnabled(false);
 	}
 
 	@Override
@@ -442,7 +445,23 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
+		deleteButton = new MagicToolBarButton("minus", "Delete");
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteSupplier();
+			}
+		});
+		toolBar.add(deleteButton);
+	}
+
+	private void deleteSupplier() {
+		if (confirm("Do you want to delete this supplier?")) {
+			supplierService.delete(supplier);
+			showMessage("Supplier deleted");
+			getMagicFrame().switchToSupplierListPanel();
+		}
 	}
 
 }

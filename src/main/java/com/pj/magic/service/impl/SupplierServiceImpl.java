@@ -36,4 +36,11 @@ public class SupplierServiceImpl implements SupplierService {
 		return supplierDao.findByCode(code);
 	}
 
+	@Transactional
+	@Override
+	public void delete(Supplier supplier) {
+		supplierDao.removeAllProductsFromSupplier(supplier);
+		supplierDao.delete(supplier);
+	}
+
 }

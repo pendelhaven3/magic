@@ -287,7 +287,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				ps.setBigDecimal(34, product.getCompanyListPrice());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		product.setId(holder.getKey().longValue());
 	}

@@ -22,5 +22,9 @@ public interface SupplierDao {
 	void deleteSupplierProduct(Supplier supplier, Product product);
 
 	Supplier findByCode(String code);
+
+	void delete(Supplier supplier);
+	
+	void removeAllProductsFromSupplier(Supplier supplier);
 	
 }

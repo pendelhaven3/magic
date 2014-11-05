@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
+import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.SuppliersTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
@@ -41,7 +42,7 @@ public class SelectSupplierDialog extends MagicDialog {
 	}
 
 	private void addContents() {
-		table = new JTable(tableModel);
+		table = new MagicListTable(tableModel);
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane);	
 	}

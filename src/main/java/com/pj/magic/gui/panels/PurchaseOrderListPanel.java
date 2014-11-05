@@ -90,7 +90,6 @@ public class PurchaseOrderListPanel extends StandardMagicPanel {
 		if (table.getSelectedRow() != -1) {
 			PurchaseOrder selected = table.getCurrentlySelectedPurchaseOrder();
 			if (selected.isPosted()) {
-				// TODO: Disable post button when Purchase Order is already posted
 				showErrorMessage("Cannot delete a Purchase Order that is already posted!");
 				return;
 			}
