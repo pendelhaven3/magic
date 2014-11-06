@@ -94,6 +94,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	private MagicToolBarButton printPreviewButton;
 	private MagicToolBarButton printButton;
 	private JButton selectSupplierButton;
+	private JButton deleteButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -296,12 +297,13 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		purchaseOrderNumberField.setText(purchaseOrder.getPurchaseOrderNumber().toString());
 		statusField.setText(purchaseOrder.getStatus());
 		supplierCodeField.setText(purchaseOrder.getSupplier().getCode());
+		supplierCodeField.setEnabled(!purchaseOrder.isPosted());
 		supplierNameField.setText(purchaseOrder.getSupplier().getName());
-		paymentTermComboBox.setEnabled(true);
+		paymentTermComboBox.setEnabled(!purchaseOrder.isPosted());
 		paymentTermComboBox.setSelectedItem(purchaseOrder.getPaymentTerm());
-		remarksField.setEnabled(true);
+		remarksField.setEnabled(!purchaseOrder.isPosted());
 		remarksField.setText(purchaseOrder.getRemarks());
-		referenceNumberField.setEnabled(purchaseOrder.isDelivered());
+		referenceNumberField.setEnabled(purchaseOrder.isDelivered() && !purchaseOrder.isPosted());
 		referenceNumberField.setText(purchaseOrder.getReferenceNumber());
 		itemsTable.setPurchaseOrder(purchaseOrder);
 		
@@ -310,7 +312,9 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		addItemButton.setEnabled(!purchaseOrder.isPosted());
 		deleteItemButton.setEnabled(!purchaseOrder.isPosted());
 		printButton.setEnabled(true);
-		printPreviewButton.setEnabled(false);
+		printPreviewButton.setEnabled(true);
+		deleteButton.setEnabled(!purchaseOrder.isPosted());
+		selectSupplierButton.setEnabled(!purchaseOrder.isPosted());
 	}
 
 	private void clearDisplay() {
@@ -334,6 +338,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		deleteItemButton.setEnabled(false);
 		printButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
+		selectSupplierButton.setEnabled(true);
 	}
 
 	@Override
@@ -825,6 +830,16 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		deleteButton = new MagicToolBarButton("trash", "Delete");
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deletePurchaseOrder();
+			}
+		});
+		toolBar.add(deleteButton);
+		
 		markAsDeliveredButton = new MagicToolBarButton("truck", "Mark as Delivered");
 		markAsDeliveredButton.addActionListener(new ActionListener() {
 			
@@ -864,6 +879,19 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			}
 		});	
 		toolBar.add(printButton);
+	}
+
+	private void deletePurchaseOrder() {
+		if (confirm("Do you really want to delete this Purchase Order?")) {
+			try {
+				purchaseOrderService.delete(purchaseOrder);
+				showMessage("Purchase Order deleted");
+				getMagicFrame().switchToPurchaseOrderListPanel();
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred when deleting");
+			}
+		}
 	}
 
 	private void printPurchaseOrder() {
