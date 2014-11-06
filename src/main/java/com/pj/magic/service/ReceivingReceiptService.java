@@ -8,8 +8,6 @@ import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
 
 public interface ReceivingReceiptService {
 
-	List<ReceivingReceipt> getAllReceivingReceipts();
-	
 	void save(ReceivingReceipt receivingReceipt);
 	
 	void save(ReceivingReceiptItem receivingReceiptItem);

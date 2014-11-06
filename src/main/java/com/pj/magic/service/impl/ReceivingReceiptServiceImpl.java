@@ -16,6 +16,8 @@ import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
 import com.pj.magic.service.ReceivingReceiptService;
 
+// TODO: No need to fetch product details for some cases
+
 @Service
 public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 
@@ -56,20 +58,11 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	}
 
 	@Override
-	public List<ReceivingReceipt> getAllReceivingReceipts() {
-		return receivingReceiptDao.getAll();
-	}
-
-	@Override
 	public List<ReceivingReceipt> getAllNonPostedReceivingReceipts() {
 		ReceivingReceiptSearchCriteria criteria = new ReceivingReceiptSearchCriteria();
 		criteria.setPosted(false);
 		
-		List<ReceivingReceipt> receivingReceipts = receivingReceiptDao.search(criteria);
-		for (ReceivingReceipt purchaseOrder : receivingReceipts) {
-			loadReceivingReceiptDetails(purchaseOrder);
-		}
-		return receivingReceipts;
+		return search(criteria);
 	}
 
 	@Transactional
@@ -112,7 +105,11 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 
 	@Override
 	public List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria) {
-		return receivingReceiptDao.search(criteria);
+		List<ReceivingReceipt> receivingReceipts = receivingReceiptDao.search(criteria);
+		for (ReceivingReceipt purchaseOrder : receivingReceipts) {
+			loadReceivingReceiptDetails(purchaseOrder);
+		}
+		return receivingReceipts;
 	}
 	
 }

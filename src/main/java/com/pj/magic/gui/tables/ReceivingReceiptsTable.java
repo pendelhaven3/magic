@@ -33,9 +33,25 @@ public class ReceivingReceiptsTable extends MagicListTable {
 
 	@PostConstruct
 	public void initialize() {
+		initializeColumns();
 		registerKeyBindings();
 	}
 	
+	private void initializeColumns() {
+		columnModel.getColumn(ReceivingReceiptsTableModel.RECEIVING_RECEIPT_NUMBER_COLUMN_INDEX)
+			.setPreferredWidth(60);
+		columnModel.getColumn(ReceivingReceiptsTableModel.RECEIVED_DATE_COLUMN_INDEX)
+			.setPreferredWidth(100);
+		columnModel.getColumn(ReceivingReceiptsTableModel.SUPPLIER_COLUMN_INDEX)
+			.setPreferredWidth(200);
+		columnModel.getColumn(ReceivingReceiptsTableModel.REFERENCE_NUMBER_COLUMN_INDEX)
+			.setPreferredWidth(120);
+		columnModel.getColumn(ReceivingReceiptsTableModel.NET_AMOUNT_COLUMN_INDEX)
+			.setPreferredWidth(100);
+		columnModel.getColumn(ReceivingReceiptsTableModel.STATUS_COLUMN_INDEX)
+			.setPreferredWidth(60);
+	}
+
 	private void registerKeyBindings() {
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECT_RECEIVING_RECEIPT_ACTION_NAME);
 		getActionMap().put(SELECT_RECEIVING_RECEIPT_ACTION_NAME, new AbstractAction() {
