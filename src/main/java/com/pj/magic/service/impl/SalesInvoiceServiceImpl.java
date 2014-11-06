@@ -74,6 +74,7 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		SalesRequisition salesRequisition = salesInvoice.createSalesRequisition();
 		salesRequisition.setCreateDate(new Date());
 		salesRequisition.setEncoder(loginService.getLoggedInUser());
+		salesRequisition.setTransactionDate(salesInvoice.getTransactionDate());
 		salesRequisitionDao.save(salesRequisition);
 		
 		for (SalesRequisitionItem item : salesRequisition.getItems()) {
