@@ -76,7 +76,7 @@ import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
-import com.pj.magic.service.SystemParameterService;
+import com.pj.magic.service.SystemService;
 
 /**
  * Main JFrame that holds all the panels.
@@ -177,7 +177,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private AreaListPanel areaListPanel;
 	@Autowired private MaintainAreaPanel maintainAreaPanel;
 	
-	@Autowired private SystemParameterService systemParameterService;
+	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
 	
 	private JPanel panelHolder;
