@@ -3,7 +3,7 @@ package com.pj.magic.dao;
 import java.util.List;
 
 import com.pj.magic.model.SalesInvoice;
-import com.pj.magic.model.util.SalesInvoiceSearchCriteria;
+import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 
 public interface SalesInvoiceDao {
 

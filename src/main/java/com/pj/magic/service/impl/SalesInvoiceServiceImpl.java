@@ -18,7 +18,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
-import com.pj.magic.model.util.SalesInvoiceSearchCriteria;
+import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.SalesInvoiceService;
 
@@ -136,6 +136,15 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 	@Override
 	public void save(SalesInvoiceItem item) {
 		salesInvoiceItemDao.save(item);
+	}
+
+	@Override
+	public List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria) {
+		List<SalesInvoice> salesInvoices = salesInvoiceDao.search(criteria);
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			loadSalesInvoiceDetails(salesInvoice);
+		}
+		return salesInvoices;
 	}
 
 }

@@ -22,7 +22,7 @@ import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.User;
-import com.pj.magic.model.util.SalesInvoiceSearchCriteria;
+import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 
 @Repository
 public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
@@ -92,7 +92,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				ps.setLong(12, salesInvoice.getPostedBy().getId());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		SalesInvoice updated = get(holder.getKey().longValue());
 		salesInvoice.setId(updated.getId());
@@ -179,14 +179,27 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	public List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria) {
 		StringBuilder sb = new StringBuilder(BASE_SELECT_SQL);
 		List<Object> params = new ArrayList<>();
+		
 		if (criteria.isMarked() != null) {
 			sb.append(" and MARK_IND = ?");
 			params.add(criteria.isMarked() ? "Y" : "N");
 		}
+		
 		if (criteria.isCancelled() != null) {
 			sb.append(" and CANCEL_IND = ?");
 			params.add(criteria.isCancelled() ? "Y" : "N");
 		}
+		
+		if (criteria.getSalesInvoiceNumber() != null) {
+			sb.append(" and SALES_INVOICE_NO = ?");
+			params.add(criteria.getSalesInvoiceNumber());
+		}
+		
+		if (criteria.getCustomer() != null) {
+			sb.append(" and CUSTOMER_ID = ?");
+			params.add(criteria.getCustomer().getId());
+		}
+		
 		sb.append(" order by SALES_INVOICE_NO desc");
 		return getJdbcTemplate().query(sb.toString(), salesInvoiceRowMapper, params.toArray());
 	}

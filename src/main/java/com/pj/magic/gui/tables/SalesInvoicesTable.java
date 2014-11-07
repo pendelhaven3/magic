@@ -43,20 +43,15 @@ public class SalesInvoicesTable extends MagicListTable {
 		registerKeyBindings();
     }
 	
-	public void update() {
-		List<SalesInvoice> salesInvoices = salesInvoiceService.getAllSalesInvoices();
+	public void setSalesInvoices(List<SalesInvoice> salesInvoices) {
 		tableModel.setSalesInvoices(salesInvoices);
 		if (!salesInvoices.isEmpty()) {
 			changeSelection(0, 0, false, false);
 		}
 	}
 	
-	public SalesInvoicesTableModel getSalesInvoicesTableModel() {
-		return (SalesInvoicesTableModel)super.getModel();
-	}
-	
 	public SalesInvoice getCurrentlySelectedSalesInvoice() {
-		return getSalesInvoicesTableModel().getSalesInvoice(getSelectedRow());
+		return tableModel.getSalesInvoice(getSelectedRow());
 	}
 	
 	public void displaySalesInvoiceDetails(SalesInvoice salesInvoice) {

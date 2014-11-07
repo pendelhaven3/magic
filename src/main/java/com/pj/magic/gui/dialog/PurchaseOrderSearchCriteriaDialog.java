@@ -17,7 +17,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Supplier;
@@ -53,7 +52,6 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 
 	private void initializeComponents() {
 		purchaseOrderNumberField = new MagicTextField();
-		purchaseOrderNumberField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
 		
 		supplierComboBox = new MagicComboBox<>();
 		

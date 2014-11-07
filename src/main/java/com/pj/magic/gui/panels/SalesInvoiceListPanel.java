@@ -2,7 +2,11 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -10,8 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SalesInvoiceSearchCriteriaDialog;
 import com.pj.magic.gui.tables.SalesInvoicesTable;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.SalesInvoiceService;
 
 @Component
@@ -19,6 +26,7 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 
 	@Autowired private SalesInvoicesTable table;
 	@Autowired private SalesInvoiceService salesInvoiceService;
+	@Autowired private SalesInvoiceSearchCriteriaDialog salesInvoiceSearchCriteriaDialog;
 	
 	@Override
 	protected void initializeComponents() {
@@ -31,7 +39,7 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	}
 	
 	public void updateDisplay() {
-		table.update();
+		table.setSalesInvoices(salesInvoiceService.getAllSalesInvoices());
 	}
 
 	public void displaySalesInvoiceDetails(SalesInvoice salesInvoice) {
@@ -59,7 +67,48 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
+		JButton showAllButton = new MagicToolBarButton("all", "Show All");
+		showAllButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showAllSalesInvoices();
+			}
+		});
+		toolBar.add(showAllButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchSalesInvoices();
+			}
+		});
+		
+		toolBar.add(searchButton);
+	}
+
+	protected void showAllSalesInvoices() {
+		updateDisplay();
+		table.requestFocusInWindow();
+		salesInvoiceSearchCriteriaDialog.updateDisplay();
+	}
+
+	private void searchSalesInvoices() {
+		salesInvoiceSearchCriteriaDialog.setVisible(true);
+		
+		SalesInvoiceSearchCriteria criteria = salesInvoiceSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
+			table.setSalesInvoices(salesInvoices);
+			if (!salesInvoices.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
 	}
 
 }

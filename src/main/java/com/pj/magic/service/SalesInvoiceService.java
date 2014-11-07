@@ -5,6 +5,7 @@ import java.util.List;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 
 public interface SalesInvoiceService {
 
@@ -25,5 +26,7 @@ public interface SalesInvoiceService {
 	void markOrCancelSalesInvoices(List<SalesInvoice> salesInvoices);
 
 	void save(SalesInvoiceItem item);
+
+	List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria);
 	
 }
