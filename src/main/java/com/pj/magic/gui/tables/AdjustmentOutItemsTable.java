@@ -9,7 +9,6 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -336,25 +335,6 @@ public class AdjustmentOutItemsTable extends MagicTable {
 		}
 	}
 
-	public boolean validateQuantity(AdjustmentOutItem item) {
-		if (item.getQuantity() == null) {
-			JOptionPane.showMessageDialog(this,
-					"Quantity must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-			return false;
-		} else {
-			Product product = productService.getProduct(item.getProduct().getId());
-			if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity().intValue())) {
-				JOptionPane.showMessageDialog(this,
-						"Not enough stocks", "Error Message", JOptionPane.ERROR_MESSAGE);
-				editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-				return false;
-			} else {
-				return true;
-			}
-		}
-	}
-	
 	public BigDecimal getTotalAmount() {
 		BigDecimal totalAmount = adjustmentOut.getTotalAmount();
 		if (isAdding()) {
