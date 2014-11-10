@@ -58,7 +58,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		nameField.setMaximumLength(50);
 		
 		addressField = new MagicTextField();
-		addressField.setMaximumLength(50);
+		addressField.setMaximumLength(100);
 		
 		contactPersonField = new MagicTextField();
 		contactPersonField.setMaximumLength(100);
