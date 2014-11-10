@@ -52,6 +52,8 @@ public class PrintServiceImpl implements PrintService {
 	private static final int PRICING_SCHEME_REPORT_LINES_PER_PAGE = 44;
 	private static final int INVENTORY_CHECK_SUMMARY_ITEMS_PER_PAGE = 52;
 	public static final int INVENTORY_REPORT_COLUMNS_PER_LINE = 84;
+	private static final int SALES_INVOICE_OFFICIAL_RECEIPT_ITEMS_PER_PAGE = 13;
+	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
 			StringUtils.repeat(" ", LEFT_PADDING_SIZE_FOR_CONDENSED_FONT);
@@ -339,6 +341,32 @@ public class PrintServiceImpl implements PrintService {
 	private String addLeftPaddingForCondensedFont(String printPage) {
 		return LEFT_PADDING_FOR_CONDENSED_FONT +
 				printPage.replaceAll("\n", "\n" + LEFT_PADDING_FOR_CONDENSED_FONT);
+	}
+
+	@Override
+	public void printOfficialReceipt(SalesInvoice salesInvoice) {
+		Collections.sort(salesInvoice.getItems());
+		
+		String transactionDate = FormatterUtil.formatDate(salesInvoice.getTransactionDate());
+		
+		List<List<SalesInvoiceItem>> pageItems = Lists.partition(salesInvoice.getItems(), 
+				SALES_INVOICE_OFFICIAL_RECEIPT_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("salesInvoice", salesInvoice);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("transactionDate", transactionDate);
+			printPages.add(generateReportAsString("reports/salesInvoiceOfficialReceipt.vm", reportData));
+		}
+		
+		try {
+			for (String printPage : printPages) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 	
 }

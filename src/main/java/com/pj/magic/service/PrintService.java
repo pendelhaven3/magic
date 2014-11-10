@@ -40,4 +40,6 @@ public interface PrintService {
 
 	void print(InventoryCheck inventoryCheck, boolean beginningInventory);
 	
+	void printOfficialReceipt(SalesInvoice salesInvoice);
+	
 }
