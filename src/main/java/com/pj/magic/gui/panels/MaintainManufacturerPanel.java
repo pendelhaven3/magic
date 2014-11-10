@@ -75,6 +75,7 @@ public class MaintainManufacturerPanel extends StandardMagicPanel {
 			try {
 				manufacturerService.save(manufacturer);
 				showMessage("Saved!");
+				getMagicFrame().switchToEditManufacturerPanel(manufacturer);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
