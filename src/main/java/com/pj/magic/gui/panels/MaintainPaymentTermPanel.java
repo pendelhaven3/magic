@@ -82,6 +82,7 @@ public class MaintainPaymentTermPanel extends StandardMagicPanel {
 			try {
 				paymentTermService.save(paymentTerm);
 				showMessage("Saved!");
+				getMagicFrame().switchToEditPaymentTermPanel(paymentTerm);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
