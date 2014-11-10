@@ -321,39 +321,55 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 4;
+		c = new GridBagConstraints();
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		c.gridwidth = 6;
+		c.anchor = GridBagConstraints.EAST;
+		mainPanel.add(createTotalsPanel(), c);
+	}
+	
+	private JPanel createTotalsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
 		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 5;
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalItemsField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(totalItemsField, c);
+		panel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalItemsField = ComponentUtil.createLabel(60);
+		panel.add(totalItemsField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		panel.add(ComponentUtil.createHorizontalFiller(10), c);
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 4;
+		c = new GridBagConstraints();
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
 		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
-		c.gridx = 5;
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(totalAmountField, c);
+		totalAmountField = ComponentUtil.createLabel(100);
+		panel.add(totalAmountField, c);
+		
+		return panel;
 	}
 	
 	private JPanel createItemsTableToolBar() {
