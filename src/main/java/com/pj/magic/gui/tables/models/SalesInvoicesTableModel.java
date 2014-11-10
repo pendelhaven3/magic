@@ -35,7 +35,7 @@ public class SalesInvoicesTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case SalesInvoicesTable.SALES_INVOICE_NUMBER_COLUMN_INDEX:
 			return salesInvoice.getSalesInvoiceNumber();
-		case SalesInvoicesTable.CUSTOMER_NAME_COLUMN_INDEX:
+		case SalesInvoicesTable.CUSTOMER_COLUMN_INDEX:
 			return salesInvoice.getCustomer().getName();
 		case SalesInvoicesTable.TRANSACTION_DATE_COLUMN_INDEX:
 			return FormatterUtil.formatDate(salesInvoice.getTransactionDate());
