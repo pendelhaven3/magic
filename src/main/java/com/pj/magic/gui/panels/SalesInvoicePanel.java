@@ -592,14 +592,14 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
+		panel.add(ComponentUtil.createLabel(150, "Total Amount:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createRightLabel(80, "");
+		totalAmountField = ComponentUtil.createRightLabel(100, "");
 		panel.add(totalAmountField, c);
 		
 		c = new GridBagConstraints();
@@ -613,14 +613,14 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(140, "Total Disc. Amount:"), c);
+		panel.add(ComponentUtil.createLabel(150, "Total Disc. Amount:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalDiscountedAmountField = ComponentUtil.createRightLabel(80, "");
+		totalDiscountedAmountField = ComponentUtil.createRightLabel(100, "");
 		panel.add(totalDiscountedAmountField, c);
 		
 		currentRow++;
@@ -636,7 +636,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalNetAmountField = ComponentUtil.createRightLabel(80, "");
+		totalNetAmountField = ComponentUtil.createRightLabel(100, "");
 		panel.add(totalNetAmountField, c);
 		
 		return panel;
