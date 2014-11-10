@@ -1,7 +1,6 @@
 package com.pj.magic.gui.tables.models;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -35,12 +34,11 @@ public class SalesInvoicesTableModel extends AbstractTableModel {
 		SalesInvoice salesInvoice = salesInvoices.get(rowIndex);
 		switch (columnIndex) {
 		case SalesInvoicesTable.SALES_INVOICE_NUMBER_COLUMN_INDEX:
-			return salesInvoice.getSalesInvoiceNumber().toString();
+			return salesInvoice.getSalesInvoiceNumber();
 		case SalesInvoicesTable.CUSTOMER_NAME_COLUMN_INDEX:
 			return salesInvoice.getCustomer().getName();
-		case SalesInvoicesTable.CREATE_DATE_COLUMN_INDEX:
-			Date date = salesInvoice.getCreateDate();
-			return (date != null) ? FormatterUtil.formatDate(date) : "";
+		case SalesInvoicesTable.TRANSACTION_DATE_COLUMN_INDEX:
+			return FormatterUtil.formatDate(salesInvoice.getTransactionDate());
 		case SalesInvoicesTable.ENCODER_COLUMN_INDEX:
 			return salesInvoice.getEncoder().getUsername();
 		case SalesInvoicesTable.NET_AMOUNT_COLUMN_INDEX:
