@@ -360,6 +360,7 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("fillerLines", createFillerLines(pageItems.get(i).size()));
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
 			printPages.add(generateReportAsString("reports/salesInvoiceOfficialReceipt.vm", reportData));
 		}
 		
