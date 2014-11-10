@@ -107,7 +107,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 			try {
 				customerService.save(customer);
 				showMessage("Saved!");
-				codeField.requestFocusInWindow();
+				getMagicFrame().switchToEditCustomerPanel(customer);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
