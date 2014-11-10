@@ -11,6 +11,7 @@ import javax.print.PrintException;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.print.SimpleDoc;
+import javax.print.attribute.standard.PrinterIsAcceptingJobs;
 
 public class PrinterUtil {
 
@@ -28,7 +29,7 @@ public class PrinterUtil {
 		PrintService[] printServices = PrintServiceLookup.lookupPrintServices(DOC_FLAVOR, null);
 		PrintService epsonPrintService = null;
 		for (PrintService printService : printServices) {
-			if (SUPPORTED_PRINTERS.contains(printService.getName())) {
+			if (SUPPORTED_PRINTERS.contains(printService.getName()) && isAcceptingJobs(printService)) {
 				epsonPrintService = printService;
 				break;
 			}
@@ -43,4 +44,9 @@ public class PrinterUtil {
 		printJob.print(doc, null);
 	}
 
+	private static boolean isAcceptingJobs(PrintService printService) {
+		return printService.getAttribute(PrinterIsAcceptingJobs.class)
+				.equals(PrinterIsAcceptingJobs.ACCEPTING_JOBS);
+	}
+	
 }
