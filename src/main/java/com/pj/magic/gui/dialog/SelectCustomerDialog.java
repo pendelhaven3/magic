@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.CustomersTableModel;
 import com.pj.magic.model.Customer;
 import com.pj.magic.service.CustomerService;
@@ -38,7 +39,7 @@ public class SelectCustomerDialog extends MagicDialog {
 	}
 
 	private void addContents() {
-		customersTable = new JTable(customersTableModel);
+		customersTable = new MagicListTable(customersTableModel);
 		
 		customersTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_CUSTOMER_ACTION_NAME);
 		customersTable.getActionMap().put(SELECT_CUSTOMER_ACTION_NAME, new AbstractAction() {
