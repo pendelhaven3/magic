@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesRequisitionService;
+import com.pj.magic.service.SystemService;
 
 @Service
 public class SalesRequisitionServiceImpl implements SalesRequisitionService {
@@ -34,6 +36,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private CustomerDao customerDao;
 	@Autowired private UserDao userDao;
 	@Autowired private LoginService loginService;
+	@Autowired private SystemService systemService;
 	
 	@Transactional
 	@Override
@@ -112,6 +115,8 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 
 		SalesInvoice salesInvoice = updated.createSalesInvoice();
 		salesInvoice.setPostedBy(loginService.getLoggedInUser());
+		salesInvoice.setVatAmount(salesInvoice.getTotalAmount().multiply(systemService.getValueAddedTaxRate())
+				.setScale(2, RoundingMode.HALF_UP));
 		salesInvoiceService.save(salesInvoice);
 		return salesInvoice;
 	}

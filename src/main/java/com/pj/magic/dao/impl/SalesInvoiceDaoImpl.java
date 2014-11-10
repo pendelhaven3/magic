@@ -29,7 +29,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, SALES_INVOICE_NO, CREATE_DT, RELATED_SALES_REQUISITION_NO, MODE, REMARKS, CUSTOMER_ID,"
-			+ " POST_DT, MARK_IND, MARK_DT, CANCEL_DT, CANCEL_IND, TRANSACTION_DT,"
+			+ " POST_DT, MARK_IND, MARK_DT, CANCEL_DT, CANCEL_IND, TRANSACTION_DT, VAT_AMOUNT,"
 			+ " PRICING_SCHEME_ID, d.NAME as PRICING_SCHEME_NAME,"
 			+ " ENCODER, b.USERNAME as ENCODER_USERNAME,"
 			+ " PAYMENT_TERM_ID, e.NAME as PAYMENT_TERM_NAME,"
@@ -67,8 +67,8 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	private static final String INSERT_SQL =
 			"insert into SALES_INVOICE "
 			+ " (SALES_INVOICE_NO, CUSTOMER_ID, CREATE_DT, TRANSACTION_DT, ENCODER, RELATED_SALES_REQUISITION_NO,"
-			+ "  PRICING_SCHEME_ID, MODE, REMARKS, PAYMENT_TERM_ID, POST_DT, POST_BY)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "  PRICING_SCHEME_ID, MODE, REMARKS, PAYMENT_TERM_ID, POST_DT, POST_BY, VAT_AMOUNT)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final SalesInvoice salesInvoice) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -90,6 +90,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				ps.setLong(10, salesInvoice.getPaymentTerm().getId());
 				ps.setDate(11, new Date(salesInvoice.getPostDate().getTime()));
 				ps.setLong(12, salesInvoice.getPostedBy().getId());
+				ps.setBigDecimal(13, salesInvoice.getVatAmount());
 				return ps;
 			}
 		}, holder);
@@ -146,6 +147,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				salesInvoice.setCancelledBy(
 						new User(rs.getLong("CANCEL_BY"), rs.getString("CANCEL_BY_USERNAME")));
 			}
+			salesInvoice.setVatAmount(rs.getBigDecimal("VAT_AMOUNT"));
 			return salesInvoice;
 		}
 		

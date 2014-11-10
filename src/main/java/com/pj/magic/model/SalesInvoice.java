@@ -28,6 +28,7 @@ public class SalesInvoice {
 	private boolean marked;
 	private Date markDate;
 	private User markedBy;
+	private BigDecimal vatAmount;
 
 	public Long getId() {
 		return id;
@@ -261,6 +262,14 @@ public class SalesInvoice {
 
 	public boolean isNew() {
 		return !(marked || cancelled);
+	}
+
+	public BigDecimal getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(BigDecimal vatAmount) {
+		this.vatAmount = vatAmount;
 	}
 	
 }
