@@ -1,7 +1,6 @@
 package com.pj.magic.gui.tables;
 
 import java.awt.Color;
-import java.math.BigDecimal;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JLabel;
@@ -61,7 +60,7 @@ public class EditProductPriceTable extends MagicTable {
 		boolean valid = validateAmount(amount, "Selling Price");
 		if (valid) {
 			String maxUnit = product.getUnits().get(0);
-			if (product.getFinalCost(maxUnit).compareTo(new BigDecimal(amount)) > 0) {
+			if (product.getFinalCost(maxUnit).compareTo(NumberUtil.toBigDecimal(amount)) > 0) {
 				showErrorMessage("Selling price less than cost");
 				valid = false;
 			}

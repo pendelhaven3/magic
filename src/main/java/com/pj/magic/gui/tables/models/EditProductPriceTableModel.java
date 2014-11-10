@@ -12,6 +12,7 @@ import com.pj.magic.gui.tables.EditProductPriceTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.NumberUtil;
 
 @Component
 public class EditProductPriceTableModel extends AbstractTableModel {
@@ -83,7 +84,7 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 			throw new RuntimeException("Cannot directly update costs/prices for smaller units of product");
 		}
 		
-		BigDecimal val = new BigDecimal((String)value);
+		BigDecimal val = NumberUtil.toBigDecimal((String)value);
 		String unit = product.getUnits().get(rowIndex);
 		switch (columnIndex) {
 		case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
