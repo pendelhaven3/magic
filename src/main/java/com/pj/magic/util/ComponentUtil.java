@@ -18,6 +18,14 @@ public class ComponentUtil {
 		return label;
 	}
 	
+	public static final JLabel createVerticalFiller(int height) {
+		return createFiller(1, height);
+	}
+	
+	public static final JLabel createHorizontalFiller(int width) {
+		return createFiller(width, 1);
+	}
+	
 	public static final JLabel createLabel(int width) {
 		return createLabel(width, "");
 	}
