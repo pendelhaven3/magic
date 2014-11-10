@@ -15,6 +15,7 @@ import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesRequisitionService;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class SalesRequisitionItemsTableModel extends AbstractTableModel {
@@ -57,7 +58,7 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		case SalesRequisitionItemsTable.UNIT_PRICE_COLUMN_INDEX:
 			return rowItem.getUnitPrice();
 		case SalesRequisitionItemsTable.AMOUNT_COLUMN_INDEX:
-			return rowItem.getAmount();
+			return FormatterUtil.formatAmount(rowItem.getAmount());
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
