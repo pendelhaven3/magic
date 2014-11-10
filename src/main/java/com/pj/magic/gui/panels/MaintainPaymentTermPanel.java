@@ -103,76 +103,70 @@ public class MaintainPaymentTermPanel extends StandardMagicPanel {
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
 		
-		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createHorizontalFiller(30), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Name: "), c);
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		nameField.setPreferredSize(new Dimension(200, 20));
-		mainPanel.add(nameField, c);
-		
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0; // right space filler
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
+		c.anchor = GridBagConstraints.WEST;
+		nameField.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(nameField, c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0; // right space filler
+		c.gridx = 3;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(), c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Number of Days: "), c);
-		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		numberOfDaysField.setPreferredSize(new Dimension(50, 20));
+		mainPanel.add(ComponentUtil.createLabel(130, "Number of Days: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		numberOfDaysField.setPreferredSize(new Dimension(50, 25));
 		mainPanel.add(numberOfDaysField, c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
+		mainPanel.add(ComponentUtil.createVerticalFiller(20), c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridx = 1;
+		c = new GridBagConstraints();
+		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
-		saveButton.setPreferredSize(new Dimension(100, 20));
+		saveButton.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(saveButton, c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.0;
+		c = new GridBagConstraints();
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 1), c);
+		mainPanel.add(ComponentUtil.createFiller(), c);
 	}
 
 	@Override
