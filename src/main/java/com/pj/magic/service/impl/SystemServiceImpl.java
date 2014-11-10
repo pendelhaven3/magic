@@ -11,7 +11,7 @@ import com.pj.magic.service.SystemService;
 @Service
 public class SystemServiceImpl implements SystemService {
 
-	private static final BigDecimal VALUE_ADDED_TAX_RATE = new BigDecimal("0.12");
+	private static final BigDecimal VAT_RATE = new BigDecimal("0.12");
 	
 	@Autowired private SystemParameterDao systemParameterDao;
 	
@@ -21,8 +21,8 @@ public class SystemServiceImpl implements SystemService {
 	}
 
 	@Override
-	public BigDecimal getValueAddedTaxRate() {
-		return VALUE_ADDED_TAX_RATE; // TODO: Make this configurable
+	public BigDecimal getVatRate() {
+		return VAT_RATE; // TODO: Make this configurable
 	}
 
 }

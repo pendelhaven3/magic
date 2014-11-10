@@ -7,6 +7,6 @@ public interface SystemService {
 
 	String getProgramVersion();
 	
-	BigDecimal getValueAddedTaxRate(); 
+	BigDecimal getVatRate(); 
 	
 }

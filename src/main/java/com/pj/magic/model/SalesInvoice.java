@@ -272,4 +272,8 @@ public class SalesInvoice {
 		this.vatAmount = vatAmount;
 	}
 	
+	public BigDecimal getVatableSales() {
+		return getTotalNetAmount().subtract(vatAmount);
+	}
+	
 }

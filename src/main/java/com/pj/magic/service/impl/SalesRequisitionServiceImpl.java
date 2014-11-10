@@ -115,7 +115,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 
 		SalesInvoice salesInvoice = updated.createSalesInvoice();
 		salesInvoice.setPostedBy(loginService.getLoggedInUser());
-		salesInvoice.setVatAmount(salesInvoice.getTotalAmount().multiply(systemService.getValueAddedTaxRate())
+		salesInvoice.setVatAmount(salesInvoice.getTotalNetAmount().multiply(systemService.getVatRate())
 				.setScale(2, RoundingMode.HALF_UP));
 		salesInvoiceService.save(salesInvoice);
 		return salesInvoice;
