@@ -17,7 +17,7 @@ import com.pj.magic.util.FormatterUtil;
 public class EditProductPriceTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames =
-		{"Unit", "Final Cost", "Selling Price", "% Profit", "Flat Profit"};
+		{"Unit", "Selling Price", "Final Cost", "% Profit", "Flat Profit"};
 
 	private Product product;
 	
@@ -56,10 +56,10 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case EditProductPriceTable.UNIT_COLUMN_INDEX:
 			return unit;
-		case EditProductPriceTable.FINAL_COST_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(product.getFinalCost(unit));
 		case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(product.getUnitPrice(unit));
+		case EditProductPriceTable.FINAL_COST_COLUMN_INDEX:
+			return FormatterUtil.formatAmount(product.getFinalCost(unit));
 		case EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(product.getPercentProfit(unit));
 		case EditProductPriceTable.FLAT_PROFIT_COLUMN_INDEX:
@@ -86,11 +86,11 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 		BigDecimal val = new BigDecimal((String)value);
 		String unit = product.getUnits().get(rowIndex);
 		switch (columnIndex) {
-		case EditProductPriceTable.FINAL_COST_COLUMN_INDEX:
-			product.setFinalCost(unit, val);
-			break;
 		case EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX:
 			product.setUnitPrice(unit, val);
+			break;
+		case EditProductPriceTable.FINAL_COST_COLUMN_INDEX:
+			product.setFinalCost(unit, val);
 			break;
 		case EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX:
 			product.setPercentProfit(unit, val);

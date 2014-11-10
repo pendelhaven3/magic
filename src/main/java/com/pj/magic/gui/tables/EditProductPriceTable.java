@@ -26,8 +26,8 @@ import com.pj.magic.util.NumberUtil;
 public class EditProductPriceTable extends MagicTable {
 
 	public static final int UNIT_COLUMN_INDEX = 0;
-	public static final int FINAL_COST_COLUMN_INDEX = 1;
-	public static final int SELLING_PRICE_COLUMN_INDEX = 2;
+	public static final int SELLING_PRICE_COLUMN_INDEX = 1;
+	public static final int FINAL_COST_COLUMN_INDEX = 2;
 	public static final int PERCENT_PROFIT_COLUMN_INDEX = 3;
 	public static final int FLAT_PROFIT_COLUMN_INDEX = 4;
 	
@@ -125,7 +125,7 @@ public class EditProductPriceTable extends MagicTable {
 			@Override
 			public void run() {
 				if (!product.getUnits().isEmpty()) {
-					changeSelection(0, FINAL_COST_COLUMN_INDEX, false, false);
+					changeSelection(0, SELLING_PRICE_COLUMN_INDEX, false, false);
 				}
 			}
 		});
