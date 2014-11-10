@@ -242,7 +242,7 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		remarksField.setPreferredSize(new Dimension(200, 20));
+		remarksField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(remarksField, c);
 
 		c.weightx = c.weighty = 0.0;

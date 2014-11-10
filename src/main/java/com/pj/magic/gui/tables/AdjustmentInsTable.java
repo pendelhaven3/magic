@@ -9,7 +9,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -22,7 +21,7 @@ import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.service.AdjustmentInService;
 
 @Component
-public class AdjustmentInsTable extends JTable {
+public class AdjustmentInsTable extends MagicListTable {
 
 	public static final int ADJUSTMENT_IN_NUMBER_COLUMN_INDEX = 0;
 	public static final int TOTAL_AMOUNT_COLUMN_INDEX = 4;
