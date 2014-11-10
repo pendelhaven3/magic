@@ -7,9 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -18,14 +16,14 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
+import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
@@ -47,11 +45,11 @@ public class AdjustmentOutItemsTable extends MagicTable {
 	public static final int UNIT_PRICE_COLUMN_INDEX = 4;
 	public static final int AMOUNT_COLUMN_INDEX = 5;
 	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
-	private static final String TAB_ACTION_NAME = "tab";
-	private static final String DOWN_ACTION_NAME = "down";
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
+	private static final String F10_ACTION_NAME = "F10";
+	private static final String F4_ACTION_NAME = "F4";
 
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
@@ -60,21 +58,16 @@ public class AdjustmentOutItemsTable extends MagicTable {
 	
 	private boolean addMode;
 	private AdjustmentOut adjustmentOut;
-	private Action originalDownAction;
-	private Action originalEscapeAction;
 	
 	@Autowired
 	public AdjustmentOutItemsTable(AdjustmentOutItemsTableModel tableModel) {
 		super(tableModel);
-		setSurrendersFocusOnKeystroke(true);
 		initializeColumns();
 		initializeModelListener();
 		registerKeyBindings();
 	}
 	
-	// TODO: replace tab key simulation with table model listener
 	private void initializeColumns() {
-		TableColumnModel columnModel = getColumnModel();
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(120);
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(70);
@@ -91,20 +84,12 @@ public class AdjustmentOutItemsTable extends MagicTable {
 				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
 					JTextField textField = (JTextField)event.getComponent();
 					if (textField.getText().length() == Constants.PRODUCT_CODE_MAXIMUM_LENGTH) {
-						KeyUtil.simulateTabKey();
+						getCellEditor().stopCellEditing();
 					};
 				}
 			}
-			
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateTabKey();
-				}
-			}
 		});
-		getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(productCodeTextField));
+		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setCellEditor(new ProductCodeCellEditor(productCodeTextField));
 		
 		MagicTextField unitTextField = new MagicTextField();
 		unitTextField.setMaximumLength(Constants.UNIT_MAXIMUM_LENGTH);
@@ -112,29 +97,20 @@ public class AdjustmentOutItemsTable extends MagicTable {
 			
 			@Override
 			public void keyReleased(KeyEvent event) {
-				if (!KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
-					return;
-				}
-				JTextField textField = (JTextField)event.getComponent();
-				if (textField.getText().length() == Constants.UNIT_MAXIMUM_LENGTH) {
-					KeyUtil.simulateTabKey();
-				}
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-					getCellEditor().stopCellEditing();
-					KeyUtil.simulateTabKey();
+				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
+					JTextField textField = (JTextField)event.getComponent();
+					if (textField.getText().length() == Constants.UNIT_MAXIMUM_LENGTH) {
+						getCellEditor().stopCellEditing();
+					}
 				}
 			}
 		});
-		getColumnModel().getColumn(UNIT_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(unitTextField));
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setCellEditor(new UnitCellEditor(unitTextField));
 		
 		MagicTextField quantityTextField = new MagicTextField();
 		quantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
 		quantityTextField.setNumbersOnly(true);
-		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(quantityTextField));
+		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new QuantityCellEditor(quantityTextField));
 	}
 	
 	public void switchToAddMode() {
@@ -154,11 +130,6 @@ public class AdjustmentOutItemsTable extends MagicTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
-	private Action getAction(int keyEvent) {
-		String actionName = (String)getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).get(KeyStroke.getKeyStroke(keyEvent, 0));
-		return getActionMap().get(actionName);
-	}
-
 	public void addNewRow() {
 		int newRowIndex = getSelectedRow() + 1;
 		tableModel.addItem(createBlankItem());
@@ -203,8 +174,7 @@ public class AdjustmentOutItemsTable extends MagicTable {
 		}
 	}
 	
-	public void removeCurrentlySelectedRow() {
-		
+	public void doDeleteCurrentlySelectedItem() {
 		int selectedRowIndex = getSelectedRow();
 		AdjustmentOutItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
@@ -224,30 +194,21 @@ public class AdjustmentOutItemsTable extends MagicTable {
 		return tableModel.getRowItem(getSelectedRow());
 	}
 	
-	public void editCellAtCurrentRow(int columnIndex) {
-		editCellAt(getSelectedRow(), columnIndex);
-		getEditorComponent().requestFocusInWindow();
-	}
-	
-	private boolean hasDuplicate(AdjustmentOutItemRowItem rowItem) {
-		AdjustmentOutItem checkItem = new AdjustmentOutItem();
-		checkItem.setProduct(rowItem.getProduct());
-		checkItem.setUnit(rowItem.getUnit());
-		
+	private boolean hasDuplicate(String unit, AdjustmentOutItemRowItem rowItem) {
 		for (AdjustmentOutItem item : adjustmentOut.getItems()) {
-			if (item.equals(checkItem) && item != rowItem.getItem()) {
+			if (item.getProduct().equals(rowItem.getProduct()) 
+					&& item.getUnit().equals(unit) && item != rowItem.getItem()) {
 				return true;
 			}
 		}
-		return false;
+		return tableModel.hasDuplicate(unit, rowItem);
 	}
 	
 	public void setAdjustmentOut(AdjustmentOut adjustmentOut) {
 		clearSelection();
 		addMode = false;
 		this.adjustmentOut = adjustmentOut;
-		tableModel.setItems(adjustmentOut.getItems());
-		tableModel.setEditable(!adjustmentOut.isPosted());
+		tableModel.setAdjustmentOut(adjustmentOut);
 	}
 	
 	private AdjustmentOutItem createBlankItem() {
@@ -257,96 +218,19 @@ public class AdjustmentOutItemsTable extends MagicTable {
 	}
 	
 	protected void registerKeyBindings() {
-		// TODO: shift + tab
-		// TODO: Remove table references inside anonymous classes
-		// TODO: Modify on other columns dont work
-		
-		final AdjustmentOutItemsTable table = this;
-		originalDownAction = getAction(KeyEvent.VK_DOWN);
-		originalEscapeAction = getAction(KeyEvent.VK_ESCAPE);
-		
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), TAB_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), DOWN_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_ITEM_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0), F4_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), SHOW_SELECTION_DIALOG_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), F10_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
 		
 		ActionMap actionMap = getActionMap();
-		actionMap.put(TAB_ACTION_NAME, new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (getSelectedRow() == -1) {
-					return;
-				}
-				
-				if (table.isEditing()) {
-					table.getCellEditor().stopCellEditing();
-				}
-				
-				int selectedColumn = table.getSelectedColumn();
-				int selectedRow = table.getSelectedRow();
-				AdjustmentOutItemRowItem rowItem = table.getCurrentlySelectedRowItem();
-				
-				switch (selectedColumn) {
-				case PRODUCT_CODE_COLUMN_INDEX:
-					String code = (String)table.getValueAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-					if (StringUtils.isEmpty(code)) {
-						JOptionPane.showMessageDialog(table,
-								"Product code must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						table.editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-						getEditorComponent().requestFocusInWindow();
-					} else if (productService.findProductByCode(code) == null) {
-						JOptionPane.showMessageDialog(table,
-								"No product matching code specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						table.editCellAt(selectedRow, PRODUCT_CODE_COLUMN_INDEX);
-						getEditorComponent().requestFocusInWindow();
-					} else {
-						table.changeSelection(selectedRow, UNIT_COLUMN_INDEX, false, false);
-						table.editCellAt(selectedRow, UNIT_COLUMN_INDEX);
-						getEditorComponent().requestFocusInWindow();
-					}
-					break;
-				case AdjustmentOutItemsTable.UNIT_COLUMN_INDEX:
-					String unit = (String)table.getValueAt(selectedRow, UNIT_COLUMN_INDEX);
-					
-					if (StringUtils.isEmpty(unit)) {
-						JOptionPane.showMessageDialog(table,
-								"Unit must be specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-					} else if (!rowItem.getProduct().getUnits().contains(unit)) {
-						JOptionPane.showMessageDialog(table,
-								"Product does not have unit specified", "Error Message", JOptionPane.ERROR_MESSAGE);
-						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-					} else if (tableModel.hasDuplicate(rowItem) || hasDuplicate(rowItem)) {
-						JOptionPane.showMessageDialog(table,
-								"Duplicate item", "Error Message", JOptionPane.ERROR_MESSAGE);
-						editCellAtCurrentRow(UNIT_COLUMN_INDEX);
-					} else {
-						table.changeSelection(selectedRow, QUANTITY_COLUMN_INDEX, false, false);
-						editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-					}
-					break;
-				case QUANTITY_COLUMN_INDEX:
-					if (selectedRow + 1 < table.getRowCount()) {
-						table.changeSelection(selectedRow + 1, 0, false, false);
-						table.editCellAt(selectedRow + 1, 0);
-						table.getEditorComponent().requestFocusInWindow();
-					}
-					break;
-				}
-			}
-		});
-		actionMap.put(DOWN_ACTION_NAME, new AbstractAction() {
+		actionMap.put(F10_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (isEditing()) {
-					getCellEditor().stopCellEditing();
-				} else {
-					originalDownAction.actionPerformed(e);
-				}
+				switchToAddMode();
 			}
 		});
 		actionMap.put(SHOW_SELECTION_DIALOG_ACTION_NAME, new AbstractAction() {
@@ -354,32 +238,12 @@ public class AdjustmentOutItemsTable extends MagicTable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (isProductCodeFieldSelected()) {
-					selectProductDialog.searchProducts((String)getCellEditor().getCellEditorValue());
-					selectProductDialog.setVisible(true);
-					
-					String productCode = selectProductDialog.getSelectedProductCode();
-					if (productCode != null) {
-						if (isEditing()) {
-							getCellEditor().cancelCellEditing();
-							requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
-						}
-						setValueAt(productCode, getSelectedRow(), getSelectedColumn());
-						KeyUtil.simulateTabKey();
+					if (!isEditing()) {
+						editCellAt(getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
 					}
+					openSelectProductDialog((String)getCellEditor().getCellEditorValue());
 				} else if (isUnitFieldSelected()) {
-					selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
-					selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
-					selectUnitDialog.setVisible(true);
-					
-					String unit = selectUnitDialog.getSelectedUnit();
-					if (unit != null) {
-						if (isEditing()) {
-							getCellEditor().cancelCellEditing();
-							requestFocusInWindow(); // cancellCellEditing moves the focus to components before table
-						}
-						setValueAt(unit, getSelectedRow(), getSelectedColumn());
-						KeyUtil.simulateTabKey();
-					}
+					openSelectUnitDialog();
 				}
 			}
 		});
@@ -387,10 +251,13 @@ public class AdjustmentOutItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (table.isAdding()) {
-					table.switchToEditMode();
-				} else {
-					originalEscapeAction.actionPerformed(e);
+				if (isEditing()) {
+					getCellEditor().cancelCellEditing();
+					if (getCurrentlySelectedRowItem().isUpdating()) {
+						tableModel.reset(getSelectedRow());
+					}
+				} else if (isAdding()) {
+					switchToEditMode();
 				}
 			}
 		});
@@ -398,18 +265,77 @@ public class AdjustmentOutItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				if (table.tableModel.hasItems()) {
-//					if (table.getCurrentlySelectedRowItem().isFilledUp()) { // check valid row to prevent deleting the blank row
-//						int confirm = JOptionPane.showConfirmDialog(table, "Do you wish to delete the selected item?", "Select An Option", JOptionPane.YES_NO_OPTION);
-//						if (confirm == JOptionPane.OK_OPTION) {
-//							removeCurrentlySelectedRow();
-//						}
-//					}
-//				}
+				removeCurrentlySelectedItem();
+			}
+		});
+		
+		actionMap.put(F4_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectProductDialogUsingPreviousProductCode();
 			}
 		});
 	}
 	
+	protected void openSelectProductDialogUsingPreviousProductCode() {
+		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
+			return;
+		}
+		
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), getSelectedColumn());
+		}
+		
+		if (tableModel.hasNonBlankItem()) {
+			openSelectProductDialog(getPreviousRowItem().getProductCode());
+		} else if (adjustmentOut.hasItems()) {
+			List<AdjustmentOutItem> items = adjustmentOut.getItems();
+			openSelectProductDialog(items.get(items.size() - 1).getProduct().getCode());
+		}
+	}
+
+	private AdjustmentOutItemRowItem getPreviousRowItem() {
+		return tableModel.getRowItem(getSelectedRow() - 1);
+	}
+
+	public void removeCurrentlySelectedItem() {
+		if (getSelectedRow() != -1) {
+			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
+				if (confirm("Do you wish to delete the selected item?")) {
+					doDeleteCurrentlySelectedItem();
+				}
+			}
+		}
+	}
+
+	protected void openSelectUnitDialog() {
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), UNIT_COLUMN_INDEX);
+		}
+		
+		selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
+		selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
+		selectUnitDialog.setVisible(true);
+		
+		String unit = selectUnitDialog.getSelectedUnit();
+		if (unit != null) {
+			((JTextField)getEditorComponent()).setText(unit);
+			getCellEditor().stopCellEditing();
+		}
+	}
+
+	private void openSelectProductDialog(String productCodeCriteria) {
+		selectProductDialog.searchProducts(productCodeCriteria);
+		selectProductDialog.setVisible(true);
+		
+		String productCode = selectProductDialog.getSelectedProductCode();
+		if (productCode != null) {
+			((JTextField)getEditorComponent()).setText(productCode);
+			getCellEditor().stopCellEditing();
+		}
+	}
+
 	public boolean validateQuantity(AdjustmentOutItem item) {
 		if (item.getQuantity() == null) {
 			JOptionPane.showMessageDialog(this,
@@ -468,62 +394,113 @@ public class AdjustmentOutItemsTable extends MagicTable {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				final TableModel model = (TableModel)e.getSource();
+				final AbstractTableModel model = (AbstractTableModel)e.getSource();
 				final int row = e.getFirstRow();
+				final int column = e.getColumn();
 				
-				switch (e.getColumn()) {
-				case UNIT_COLUMN_INDEX:
-					model.setValueAt("", row, UNIT_PRICE_COLUMN_INDEX);
-					break;
-				case QUANTITY_COLUMN_INDEX:
-					SwingUtilities.invokeLater(new Runnable() {
-
-						@Override
-						public void run() {
-							model.setValueAt("", row, AMOUNT_COLUMN_INDEX);
-							if (validateQuantity(getCurrentlySelectedRowItem())) {
-								if (isAdding() && isLastRowSelected()) {
-									addNewRow();
-								}
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						switch (column) {
+						case PRODUCT_CODE_COLUMN_INDEX:
+							model.fireTableCellUpdated(row, UNIT_PRICE_COLUMN_INDEX);
+							model.fireTableCellUpdated(row, AMOUNT_COLUMN_INDEX);
+							selectAndEditCellAt(row, UNIT_COLUMN_INDEX);
+							break;
+						case UNIT_COLUMN_INDEX:
+							model.fireTableCellUpdated(row, UNIT_PRICE_COLUMN_INDEX);
+							model.fireTableCellUpdated(row, AMOUNT_COLUMN_INDEX);
+							selectAndEditCellAt(row, QUANTITY_COLUMN_INDEX);
+							break;
+						case QUANTITY_COLUMN_INDEX:
+							model.fireTableCellUpdated(row, AMOUNT_COLUMN_INDEX);
+							if (isAdding() && isLastRowSelected() && getCurrentlySelectedRowItem().isValid()) {
+								addNewRow();
 							}
+							break;
 						}
-					});
-					break;
-				}
+					}
+				});
 			}
 		});
 	}
 	
-	public boolean validateQuantity(AdjustmentOutItemRowItem rowItem) {
-		if (StringUtils.isEmpty(rowItem.getQuantity())) {
-			showErrorMessage("Quantity must be specified");
-			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-			return false;
-		} else if (rowItem.getQuantityAsInt() == 0) {
-			showErrorMessage("Quantity must be greater than 0");
-			editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-			return false;
-		} else {
-			Product product = productService.getProduct(rowItem.getProduct().getId());
-			if (!product.hasAvailableUnitQuantity(rowItem.getUnit(), rowItem.getQuantityAsInt())) {
-				showErrorMessage("Not enough stocks");
-				editCellAtCurrentRow(QUANTITY_COLUMN_INDEX);
-				return false;
-			} else {
-				return true;
-			}
-		}
-	}
+	private class ProductCodeCellEditor extends MagicCellEditor {
 
-	// TODO: Rename method
-	public void delete() {
-		if (tableModel.hasItems()) {
-			if (tableModel.isValid(getSelectedRow())) { // check valid row to prevent deleting the blank row
-				if (confirm("Do you wish to delete the selected item?")) {
-					removeCurrentlySelectedRow();
+		public ProductCodeCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String code = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(code)) {
+				showErrorMessage("Product code must be specified");
+			} else if (productService.findProductByCode(code) == null) {
+				showErrorMessage("No product matching code specified");
+			} else {
+				valid = true;
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+
+	}
+	
+	private class UnitCellEditor extends MagicCellEditor {
+		
+		public UnitCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String unit = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(unit)) {
+				showErrorMessage("Unit must be specified");
+			} else {
+				AdjustmentOutItemRowItem rowItem = getCurrentlySelectedRowItem();
+				if (!rowItem.getProduct().hasUnit(unit)) {
+					showErrorMessage("Product does not have unit specified");
+				} else if (hasDuplicate(unit, rowItem)) {
+					showErrorMessage("Duplicate item");
+				} else {
+					valid = true;
 				}
 			}
+			return (valid) ? super.stopCellEditing() : false;
 		}
+		
+	}
+	
+	private class QuantityCellEditor extends MagicCellEditor {
+		
+		public QuantityCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String quantity = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(quantity)) {
+				showErrorMessage("Quantity must be specified");
+			} else if (Integer.parseInt(quantity) == 0) {
+				showErrorMessage("Quantity must be greater than 0");
+			} else {
+				AdjustmentOutItemRowItem rowItem = getCurrentlySelectedRowItem();
+				Product product = productService.getProduct(rowItem.getProduct().getId());
+				if (!product.hasAvailableUnitQuantity(rowItem.getUnit(), Integer.parseInt(quantity))) {
+					showErrorMessage("Not enough stocks");
+				} else {
+					valid = true;
+				}
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
 	}
 	
 }

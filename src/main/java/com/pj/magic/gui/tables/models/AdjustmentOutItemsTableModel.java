@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.AdjustmentOutItemsTable;
+import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.gui.tables.rowitems.AdjustmentOutItemRowItem;
+import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
 import com.pj.magic.service.AdjustmentOutService;
 import com.pj.magic.service.ProductService;
@@ -94,14 +96,17 @@ public class AdjustmentOutItemsTableModel extends AbstractTableModel {
 		String val = (String)value;
 		switch (columnIndex) {
 		case AdjustmentOutItemsTable.PRODUCT_CODE_COLUMN_INDEX:
-			rowItem.setProductCode(val);
+			if (rowItem.getProduct() != null && rowItem.getProduct().getCode().equals(val)) {
+				return;
+			}
 			rowItem.setProduct(productService.findProductByCode(val));
+			rowItem.setUnit(null);
 			break;
 		case AdjustmentOutItemsTable.UNIT_COLUMN_INDEX:
 			rowItem.setUnit(val);
 			break;
 		case AdjustmentOutItemsTable.QUANTITY_COLUMN_INDEX:
-			rowItem.setQuantity(val);
+			rowItem.setQuantity(Integer.valueOf(val));
 			break;
 		}
 		// TODO: Save only when there is a change
@@ -120,9 +125,17 @@ public class AdjustmentOutItemsTableModel extends AbstractTableModel {
 		if (!editable) {
 			return false;
 		} else {
-			return columnIndex == AdjustmentOutItemsTable.PRODUCT_CODE_COLUMN_INDEX
-					|| columnIndex == AdjustmentOutItemsTable.QUANTITY_COLUMN_INDEX
-					|| columnIndex == AdjustmentOutItemsTable.UNIT_COLUMN_INDEX;
+			AdjustmentOutItemRowItem rowItem = rowItems.get(rowIndex);
+			switch (columnIndex) {
+			case SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+				return true;
+			case SalesRequisitionItemsTable.UNIT_COLUMN_INDEX:
+				return rowItem.hasValidProduct();
+			case SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX:
+				return rowItem.hasValidProduct() && rowItem.hasValidUnit();
+			default:
+				return false;
+			}
 		}
 	}
 	
@@ -158,8 +171,38 @@ public class AdjustmentOutItemsTableModel extends AbstractTableModel {
 		return rowItems.get(rowIndex).isValid();
 	}
 
-	public void setEditable(boolean editable) {
-		this.editable = editable;
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		if (columnIndex == AdjustmentOutItemsTable.UNIT_PRICE_COLUMN_INDEX
+				|| columnIndex == AdjustmentOutItemsTable.AMOUNT_COLUMN_INDEX) {
+			return Number.class;
+		} else {
+			return Object.class;
+		}
+	}
+
+	public boolean hasDuplicate(String unit, AdjustmentOutItemRowItem checkRowItem) {
+		for (AdjustmentOutItemRowItem rowItem : rowItems) {
+			if (checkRowItem.getProduct().equals(rowItem.getProduct()) 
+					&& unit.equals(rowItem.getUnit()) && rowItem != checkRowItem) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void setAdjustmentOut(AdjustmentOut adjustmentOut) {
+		setItems(adjustmentOut.getItems());
+		editable = !adjustmentOut.isPosted();
+	}
+
+	public void reset(int row) {
+		rowItems.get(row).reset();
+		fireTableRowsUpdated(row, row);
+	}
+
+	public boolean hasNonBlankItem() {
+		return hasItems() && rowItems.get(0).isValid();
 	}
 	
 }

@@ -16,20 +16,18 @@ import com.pj.magic.model.Product;
 public class AdjustmentOutItemRowItem {
 
 	private AdjustmentOutItem item;
-	private String productCode;
-	private String unit;
-	private String quantity;
 	private Product product;
+	private String unit;
+	private Integer quantity;
 
 	public AdjustmentOutItemRowItem(AdjustmentOutItem item) {
 		this.item = item;
 		if (item.getProduct() != null) {
-			productCode = item.getProduct().getCode();
 			product = item.getProduct();
 		}
 		unit = item.getUnit();
 		if (item.getQuantity() != null) {
-			quantity = item.getQuantity().toString();
+			quantity = item.getQuantity();
 		}
 	}
 	
@@ -42,11 +40,7 @@ public class AdjustmentOutItemRowItem {
 	}
 
 	public String getProductCode() {
-		return productCode;
-	}
-
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
+		return (product != null) ? product.getCode() : null;
 	}
 
 	public String getUnit() {
@@ -57,11 +51,11 @@ public class AdjustmentOutItemRowItem {
 		this.unit = unit;
 	}
 
-	public String getQuantity() {
+	public Integer getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(String quantity) {
+	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
 	}
 
@@ -74,24 +68,15 @@ public class AdjustmentOutItemRowItem {
 	}
 
 	public boolean isValid() {
-		return product != null && product.hasUnit(unit) 
-				&& (!StringUtils.isEmpty(quantity) && StringUtils.isNumeric(quantity));
+		return product != null && !StringUtils.isEmpty(unit) && quantity != null;  
 	}
 
 	public BigDecimal getUnitPrice() {
-		if (product != null && product.hasUnit(unit)) {
-			return product.getUnitPrice(unit);
-		} else {
-			return null;
-		}
+		return (product != null && !StringUtils.isEmpty(unit)) ? product.getUnitPrice(unit) : null;
 	}
 
 	public BigDecimal getAmount() {
-		if (isValid()) {
-			return item.getAmount();
-		} else {
-			return null;
-		}
+		return isValid() ? item.getAmount() : null;
 	}
 	
 	@Override
@@ -117,8 +102,24 @@ public class AdjustmentOutItemRowItem {
 			.isEquals();
 	}
 
-	public int getQuantityAsInt() {
-		return Integer.parseInt(quantity);
+	public boolean isUpdating() {
+		return item.getId() != null;
+	}
+
+	public void reset() {
+		if (item.getId() != null) {
+			product = item.getProduct();
+			unit = item.getUnit();
+			quantity = item.getQuantity();
+		}
+	}
+
+	public boolean hasValidProduct() {
+		return product != null;
 	}
 	
+	public boolean hasValidUnit() {
+		return !StringUtils.isEmpty(unit);
+	}
+
 }

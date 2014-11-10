@@ -376,7 +376,7 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				itemsTable.delete();
+				itemsTable.removeCurrentlySelectedItem();
 			}
 		});
 		panel.add(deleteItemButton, BorderLayout.WEST);
