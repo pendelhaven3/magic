@@ -357,6 +357,7 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("salesInvoice", salesInvoice);
 			reportData.put("items", pageItems.get(i));
 			reportData.put("transactionDate", transactionDate);
+			reportData.put("fillerLines", createFillerLines(pageItems.get(i).size()));
 			printPages.add(generateReportAsString("reports/salesInvoiceOfficialReceipt.vm", reportData));
 		}
 		
@@ -367,6 +368,15 @@ public class PrintServiceImpl implements PrintService {
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+
+	private List<String> createFillerLines(int referenceSize) {
+		List<String> fillerLines = new ArrayList<>();
+		int numberOfLines = SALES_INVOICE_OFFICIAL_RECEIPT_ITEMS_PER_PAGE - referenceSize;
+		for (int i = 0; i < numberOfLines; i++) {
+			fillerLines.add("");
+		}
+		return fillerLines;
 	}
 	
 }
