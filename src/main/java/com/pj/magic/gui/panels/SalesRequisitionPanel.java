@@ -292,11 +292,16 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			customerCodeField.setText(customer.getCode());
 			customerNameField.setText(customer.getName());
 			paymentTermComboBox.setEnabled(true);
-			paymentTermComboBox.setSelectedItem(customer.getPaymentTerm());
-			if (salesRequisition.getId() != null) {
-				salesRequisitionService.save(salesRequisition);
+			
+			if (customer.getPaymentTerm() != null) {
+				paymentTermComboBox.setSelectedItem(customer.getPaymentTerm());
+			} else {
+				paymentTermComboBox.setSelectedItem(null, false);
+				if (salesRequisition.getId() != null) {
+					salesRequisitionService.save(salesRequisition);
+				}
+				paymentTermComboBox.requestFocusInWindow();
 			}
-			paymentTermComboBox.requestFocusInWindow();
 		}
 	}
 
