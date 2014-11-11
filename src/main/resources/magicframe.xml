@@ -4,15 +4,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
            http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<!-- 
-	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
-		<property name="driverClassName" value="org.h2.Driver" />
-		<property name="url" value="jdbc:h2:mem:magic" />
-		<property name="username" value="sa" />
-		<property name="password" value="sa" />
-	</bean>
-	-->
-
 	<bean class="com.pj.magic.gui.MagicFrame" />
 
 </beans>
