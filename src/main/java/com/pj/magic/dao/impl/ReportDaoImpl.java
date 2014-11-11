@@ -44,12 +44,35 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "     on c.ID = a.SUPPLIER_ID"
 			+ "   where b.PRODUCT_ID = ?"
 			+ "   and a.POST_IND = 'Y'"
+			+ "   union all"
+			+ "   select a.POST_DT as TRANSACTION_DT, a.ADJUSTMENT_OUT_NO as TRANSACTION_NO,"
+			+ "   null as CUSTOMER_SUPPLIER_NAME,"
+			+ "   'ADJUSTMENT OUT' as TRANSACTION_TYPE, b.QUANTITY,"
+			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
+			+ "   from ADJUSTMENT_OUT a"
+			+ "   join ADJUSTMENT_OUT_ITEM b"
+			+ "     on b.ADJUSTMENT_OUT_ID = a.ID"
+			+ "   where b.PRODUCT_ID = ?"
+			+ "   and a.POST_IND = 'Y'"
+			+ "   union all"
+			+ "   select a.POST_DT as TRANSACTION_DT, a.ADJUSTMENT_IN_NO as TRANSACTION_NO,"
+			+ "   null as CUSTOMER_SUPPLIER_NAME,"
+			+ "   'ADJUSTMENT IN' as TRANSACTION_TYPE, b.QUANTITY,"
+			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
+			+ "   from ADJUSTMENT_IN a"
+			+ "   join ADJUSTMENT_IN_ITEM b"
+			+ "     on b.ADJUSTMENT_IN_ID = a.ID"
+			+ "   where b.PRODUCT_ID = ?"
+			+ "   and a.POST_IND = 'Y'"
 			+ " ) m"
 			+ " order by TRANSACTION_DT desc";
 	
 	@Override
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(Product product) {
+		// TODO: Use named parameter
 		return getJdbcTemplate().query(GET_STOCK_CARD_INVENTORY_REPORT_ITEMS_SQL, rowMapper, 
+				product.getId(),
+				product.getId(),
 				product.getId(),
 				product.getId());
 	}
@@ -79,6 +102,12 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 				receivingReceiptItem.setQuantity(rs.getInt("QUANTITY"));
 				receivingReceiptItem.setCost(rs.getBigDecimal("UNIT_COST_OR_PRICE"));
 				item.setAmount(receivingReceiptItem.getAmount());
+				item.setAddQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "ADJUSTMENT OUT":
+				item.setLessQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "ADJUSTMENT IN":
 				item.setAddQuantity(rs.getInt("QUANTITY"));
 				break;
 			}

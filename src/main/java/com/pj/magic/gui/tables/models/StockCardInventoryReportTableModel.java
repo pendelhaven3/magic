@@ -1,5 +1,6 @@
 package com.pj.magic.gui.tables.models;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +47,11 @@ public class StockCardInventoryReportTableModel extends AbstractTableModel {
 		case StockCardInventoryReportTable.LESS_QUANTITY_COLUMN_INDEX:
 			return item.getLessQuantity();
 		case StockCardInventoryReportTable.CURRENT_COST_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(item.getCurrentCostOrSellingPrice());
+			BigDecimal costOrPrice = item.getCurrentCostOrSellingPrice();
+			return (costOrPrice != null) ? FormatterUtil.formatAmount(costOrPrice) : null;
 		case StockCardInventoryReportTable.AMOUNT_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(item.getAmount());
+			BigDecimal amount = item.getAmount();
+			return (amount != null) ? FormatterUtil.formatAmount(amount) : null;
 		case StockCardInventoryReportTable.REFERENCE_NUMBER_COLUMN_INDEX:
 			return item.getReferenceNumber();
 		default:
