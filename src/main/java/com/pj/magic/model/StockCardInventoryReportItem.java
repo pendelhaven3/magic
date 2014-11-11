@@ -6,14 +6,14 @@ import java.util.Date;
 public class StockCardInventoryReportItem {
 
 	private Date transactionDate;
-	private Long salesInvoiceNumber;
+	private Long transactionNumber;
 	private String supplierOrCustomerName;
 	private String transactionType;
 	private Integer addQuantity;
 	private Integer lessQuantity;
 	private BigDecimal currentCostOrSellingPrice;
 	private BigDecimal amount;
-	private String remarks;
+	private String referenceNumber;
 
 	public Date getTransactionDate() {
 		return transactionDate;
@@ -23,12 +23,12 @@ public class StockCardInventoryReportItem {
 		this.transactionDate = transactionDate;
 	}
 
-	public Long getSalesInvoiceNumber() {
-		return salesInvoiceNumber;
+	public Long getTransactionNumber() {
+		return transactionNumber;
 	}
 
-	public void setSalesInvoiceNumber(Long salesInvoiceNumber) {
-		this.salesInvoiceNumber = salesInvoiceNumber;
+	public void setTransactionNumber(Long transactionNumber) {
+		this.transactionNumber = transactionNumber;
 	}
 
 	public String getSupplierOrCustomerName() {
@@ -80,12 +80,12 @@ public class StockCardInventoryReportItem {
 		this.amount = amount;
 	}
 
-	public String getRemarks() {
-		return remarks;
+	public String getReferenceNumber() {
+		return referenceNumber;
 	}
 
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
+	public void setReferenceNumber(String referenceNumber) {
+		this.referenceNumber = referenceNumber;
 	}
 
 }

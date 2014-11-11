@@ -15,7 +15,7 @@ import com.pj.magic.util.FormatterUtil;
 public class StockCardInventoryReportTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames = 
-		{"Trans. Date", "SI No.", "Supplier/Customer", "Trans. Type", "Add Qty", "Less Qty", "Cost / Price", "Amount", "Remarks"};
+		{"Trans. Date", "Trans. No.", "Supplier/Customer", "Trans. Type", "Add Qty", "Less Qty", "Cost / Price", "Amount", "Ref. No."};
 	
 	private List<StockCardInventoryReportItem> items = new ArrayList<>();
 	
@@ -35,8 +35,8 @@ public class StockCardInventoryReportTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case StockCardInventoryReportTable.TRANSACTION_DATE_COLUMN_INDEX:
 			return FormatterUtil.formatDate(item.getTransactionDate());
-		case StockCardInventoryReportTable.SALES_INVOICE_NUMBER_COLUMN_INDEX:
-			return item.getSalesInvoiceNumber();
+		case StockCardInventoryReportTable.TRANSACTION_NUMBER_COLUMN_INDEX:
+			return item.getTransactionNumber();
 		case StockCardInventoryReportTable.SUPPLIER_OR_CUSTOMER_NAME_COLUMN_INDEX:
 			return item.getSupplierOrCustomerName();
 		case StockCardInventoryReportTable.TRANSACTION_TYPE_COLUMN_INDEX:
@@ -49,8 +49,8 @@ public class StockCardInventoryReportTableModel extends AbstractTableModel {
 			return FormatterUtil.formatAmount(item.getCurrentCostOrSellingPrice());
 		case StockCardInventoryReportTable.AMOUNT_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(item.getAmount());
-		case StockCardInventoryReportTable.REMARKS_COLUMN_INDEX:
-			return item.getRemarks();
+		case StockCardInventoryReportTable.REFERENCE_NUMBER_COLUMN_INDEX:
+			return item.getReferenceNumber();
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
