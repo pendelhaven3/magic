@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
-           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/jdbc
+           http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
-	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
-		<property name="driverClassName" value="org.h2.Driver" />
-		<!-- 
-		<property name="url" value="jdbc:h2:~/test" />
-		-->
-		<property name="url" value="jdbc:h2:~/test;IFEXISTS=TRUE" />
-		<property name="username" value="sa" />
-		<property name="password" value="sa" />
-	</bean>
-
+	<jdbc:embedded-database id="dataSource" type="H2">
+		<jdbc:script location="classpath:sql/tables.sql"/>
+		<jdbc:script location="classpath:sql/initial_test_data.sql"/>
+	</jdbc:embedded-database>
+	
 </beans>

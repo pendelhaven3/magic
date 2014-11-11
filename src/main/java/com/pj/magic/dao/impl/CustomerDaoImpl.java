@@ -73,6 +73,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 	private static final String FIND_FIRST_WITH_CODE_LIKE_SQL =
 			BASE_SELECT_SQL + " and a.CODE like ? limit 1";
 	
+	// TODO: Use JPA query here
 	@Override
 	public Customer findFirstWithCodeLike(String code) {
 		try {
