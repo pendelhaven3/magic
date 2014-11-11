@@ -32,6 +32,8 @@ import com.pj.magic.util.ComponentUtil;
 public class ProductListPanel extends StandardMagicPanel {
 
 	private static final String EDIT_PRODUCT_ACTION_NAME = "editProduct";
+	private static final String SCROLL_TO_TOP_ACTION_NAME = "scrollToTop";
+	private static final String SCROLL_TO_BOTTOM_ACTION_NAME = "scrollToBottom";
 	
 	@Autowired private ProductService productService;
 	@Autowired private ProductSearchCriteriaDialog productSearchCriteriaDialog;
@@ -109,6 +111,34 @@ public class ProductListPanel extends StandardMagicPanel {
 				selectProduct();
 			}
 		});
+		
+		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), SCROLL_TO_TOP_ACTION_NAME);
+		table.getActionMap().put(SCROLL_TO_TOP_ACTION_NAME, new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scrollToTop();
+			}
+			
+		});
+		
+		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), SCROLL_TO_BOTTOM_ACTION_NAME);
+		table.getActionMap().put(SCROLL_TO_BOTTOM_ACTION_NAME, new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scrollToBottom();
+			}
+			
+		});
+	}
+
+	private void scrollToBottom() {
+		table.changeSelection(table.getRowCount() - 1, 0, false, false);
+	}
+
+	private void scrollToTop() {
+		table.changeSelection(0, 0, false, false);
 	}
 
 	protected void selectProduct() {
