@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.panels.AdjustmentInListPanel;
 import com.pj.magic.gui.panels.AdjustmentInPanel;
@@ -86,7 +85,6 @@ import com.pj.magic.service.SystemService;
  *
  */
 
-@Component
 public class MagicFrame extends JFrame {
 	
 	private static final String LOGIN_PANEL = "LOGIN_PANEL";
