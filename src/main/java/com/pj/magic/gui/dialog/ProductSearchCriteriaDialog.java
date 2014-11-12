@@ -42,7 +42,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 	private ProductSearchCriteria searchCriteria;
 	
 	public ProductSearchCriteriaDialog() {
-		setSize(480, 210);
+		setSize(500, 210);
 		setLocationRelativeTo(null);
 		setTitle("Search Products");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
@@ -148,7 +148,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(120, "Code/Description:"), c);
+		add(ComponentUtil.createLabel(140, "Code/Description:"), c);
 
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -156,7 +156,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		productCodeField.setPreferredSize(new Dimension(150, 20));
+		productCodeField.setPreferredSize(new Dimension(150, 25));
 		add(productCodeField, c);
 
 		currentRow++;
@@ -173,7 +173,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		manufacturerComboBox.setPreferredSize(new Dimension(300, 20));
+		manufacturerComboBox.setPreferredSize(new Dimension(300, 25));
 		add(manufacturerComboBox, c);
 
 		currentRow++;
@@ -190,7 +190,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		categoryComboBox.setPreferredSize(new Dimension(300, 20));
+		categoryComboBox.setPreferredSize(new Dimension(300, 25));
 		add(categoryComboBox, c);
 
 		currentRow++;
@@ -207,7 +207,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		subcategoryComboBox.setPreferredSize(new Dimension(300, 20));
+		subcategoryComboBox.setPreferredSize(new Dimension(300, 25));
 		add(subcategoryComboBox, c);
 
 		currentRow++;
@@ -229,7 +229,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		searchButton.setPreferredSize(new Dimension(100, 20));
+		searchButton.setPreferredSize(new Dimension(100, 25));
 		add(searchButton, c);
 		
 		currentRow++;
