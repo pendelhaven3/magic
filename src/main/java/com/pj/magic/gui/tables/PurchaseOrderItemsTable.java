@@ -50,7 +50,6 @@ public class PurchaseOrderItemsTable extends MagicTable {
 	public static final int SUGGESTED_ORDER_COLUMN_INDEX = 3;
 	public static final int QUANTITY_COLUMN_INDEX = 4;
 	
-	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
@@ -125,12 +124,12 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setCellEditor(new UnitCellEditor(unitTextField));
 		
 		MagicTextField quantityTextField = new MagicTextField();
-		quantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
+		quantityTextField.setMaximumLength(Constants.QUANTITY_MAXIMUM_LENGTH);
 		quantityTextField.setNumbersOnly(true);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new QuantityCellEditor(quantityTextField));
 		
 		MagicTextField actualQuantityTextField = new MagicTextField();
-		actualQuantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
+		actualQuantityTextField.setMaximumLength(Constants.QUANTITY_MAXIMUM_LENGTH);
 		actualQuantityTextField.setNumbersOnly(true);
 		columnModel.getColumn(actualQuantityColumnIndex)
 			.setCellEditor(new ActualQuantityCellEditor(actualQuantityTextField));

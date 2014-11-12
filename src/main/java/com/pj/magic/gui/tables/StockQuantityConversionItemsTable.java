@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectProductDialog;
@@ -50,7 +51,6 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	public static final int CONVERTED_QUANTITY_COLUMN_INDEX = 5;
 	private static final int PRODUCT_CODE_MAXIMUM_LENGTH = 9;
 	private static final int UNIT_MAXIMUM_LENGTH = 3;
-	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String ADD_ITEM_ACTION_NAME = "addItem";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
@@ -132,7 +132,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		getColumnModel().getColumn(TO_UNIT_COLUMN_INDEX).setCellEditor(new ToUnitCellEditor(toUnitTextField));
 		
 		MagicTextField quantityTextField = new MagicTextField();
-		quantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
+		quantityTextField.setMaximumLength(Constants.QUANTITY_MAXIMUM_LENGTH);
 		quantityTextField.setNumbersOnly(true);
 		getColumnModel().getColumn(QUANTITY_COLUMN_INDEX)
 			.setCellEditor(new QuantityCellEditor(quantityTextField));

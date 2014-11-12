@@ -47,7 +47,6 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 	public static final int UNIT_COLUMN_INDEX = 2;
 	public static final int QUANTITY_COLUMN_INDEX = 3;
 	private static final int UNIT_MAXIMUM_LENGTH = 3;
-	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String F10_ACTION_NAME = "F10";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
@@ -114,7 +113,7 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setCellEditor(new UnitCellEditor(unitTextField));
 		
 		MagicTextField quantityTextField = new MagicTextField();
-		quantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
+		quantityTextField.setMaximumLength(Constants.QUANTITY_MAXIMUM_LENGTH);
 		quantityTextField.setNumbersOnly(true);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new QuantityCellEditor(quantityTextField));		
 	}

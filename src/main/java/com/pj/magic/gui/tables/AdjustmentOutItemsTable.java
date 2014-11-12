@@ -43,7 +43,6 @@ public class AdjustmentOutItemsTable extends MagicTable {
 	public static final int QUANTITY_COLUMN_INDEX = 3;
 	public static final int UNIT_PRICE_COLUMN_INDEX = 4;
 	public static final int AMOUNT_COLUMN_INDEX = 5;
-	private static final int QUANTITY_MAXIMUM_LENGTH = 3;
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
@@ -107,7 +106,7 @@ public class AdjustmentOutItemsTable extends MagicTable {
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setCellEditor(new UnitCellEditor(unitTextField));
 		
 		MagicTextField quantityTextField = new MagicTextField();
-		quantityTextField.setMaximumLength(QUANTITY_MAXIMUM_LENGTH);
+		quantityTextField.setMaximumLength(Constants.QUANTITY_MAXIMUM_LENGTH);
 		quantityTextField.setNumbersOnly(true);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setCellEditor(new QuantityCellEditor(quantityTextField));
 	}
