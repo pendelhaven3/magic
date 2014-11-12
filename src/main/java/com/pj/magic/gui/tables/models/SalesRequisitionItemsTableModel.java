@@ -1,5 +1,6 @@
 package com.pj.magic.gui.tables.models;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,8 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 		case SalesRequisitionItemsTable.UNIT_PRICE_COLUMN_INDEX:
 			return rowItem.getUnitPrice();
 		case SalesRequisitionItemsTable.AMOUNT_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(rowItem.getAmount());
+			BigDecimal amount = rowItem.getAmount();
+			return (amount != null) ? FormatterUtil.formatAmount(amount) : null;
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
