@@ -305,10 +305,10 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		sql.append(" and b.PRICING_SCHEME_ID = ?");
 		params.add(criteria.getPricingScheme().getId());
 		
-		if (criteria.getCode() != null) {
+		if (criteria.getCodeOrDescriptionLike() != null) {
 			sql.append(" and (CODE like ? or DESCRIPTION like ?)");
-			params.add(criteria.getCode() + "%");
-			params.add("%" + criteria.getCode() + "%");
+			params.add(criteria.getCodeOrDescriptionLike() + "%");
+			params.add("%" + criteria.getCodeOrDescriptionLike() + "%");
 		}
 		
 		if (criteria.getManufacturer() != null) {
@@ -324,6 +324,11 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		if (criteria.getSubcategory() != null) {
 			sql.append(" and SUBCATEGORY_ID = ?");
 			params.add(criteria.getSubcategory().getId());
+		}
+		
+		if (criteria.getSupplier() != null) {
+			sql.append(" and exists(select 1 from SUPPLIER_PRODUCT sp where sp.PRODUCT_ID = a.ID and sp.SUPPLIER_ID = ?)");
+			params.add(criteria.getSupplier().getId());
 		}
 		
 		sql.append(" order by a.CODE");

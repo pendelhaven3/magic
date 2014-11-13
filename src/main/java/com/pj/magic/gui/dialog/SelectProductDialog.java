@@ -17,10 +17,10 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ProductsTableModel;
@@ -29,6 +29,7 @@ import com.pj.magic.gui.tables.models.UnitPricesAndQuantitiesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.model.util.ProductSearchCriteria;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -183,61 +184,39 @@ public class SelectProductDialog extends MagicDialog {
 		return infoTablePanel;
 	}
 
-	// TODO: Review references to this
 	public void searchProducts(String productCode) {
-		List<Product> products = productService.getAllActiveProducts();
+		searchProducts(productCode, new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID));
+	}
+
+	public void searchProducts(String codeOrDescription, PricingScheme pricingScheme) {
+		ProductSearchCriteria criteria = new ProductSearchCriteria();
+		criteria.setActive(true);
+		criteria.setCodeOrDescriptionLike(codeOrDescription);
+		criteria.setPricingScheme(pricingScheme);
+		
+		List<Product> products = productService.searchProducts(criteria);
 		productsTableModel.setProducts(products);
 		
-		int selectedRow = 0;
-		if (!StringUtils.isEmpty(productCode)) {
-			for (int i = 0; i < products.size(); i++) {
-				if (products.get(i).getCode().startsWith(productCode)) {
-					selectedRow = i;
-					break;
-				}
-			}
-		}
 		if (!products.isEmpty()) {
-			productsTable.changeSelection(selectedRow, 0, false, false);
+			productsTable.changeSelection(0, 0, false, false);
 		}
+		
 		((CardLayout)infoTablePanel.getLayout()).show(infoTablePanel, UNIT_PRICE_INFO_TABLE);
 	}
 
-	public void searchProducts(String productCode, PricingScheme pricingScheme) {
-		List<Product> products = productService.getAllActiveProducts(pricingScheme);
+	public void searchProducts(String codeOrDescription, Supplier supplier) {
+		ProductSearchCriteria criteria = new ProductSearchCriteria();
+		criteria.setActive(true);
+		criteria.setCodeOrDescriptionLike(codeOrDescription);
+		criteria.setSupplier(supplier);
+		
+		List<Product> products = productService.searchProducts(criteria);
 		productsTableModel.setProducts(products);
 		
-		int selectedRow = 0;
-		if (!StringUtils.isEmpty(productCode)) {
-			for (int i = 0; i < products.size(); i++) {
-				if (products.get(i).getCode().startsWith(productCode)) {
-					selectedRow = i;
-					break;
-				}
-			}
-		}
 		if (!products.isEmpty()) {
-			productsTable.changeSelection(selectedRow, 0, false, false);
+			productsTable.changeSelection(0, 0, false, false);
 		}
-		((CardLayout)infoTablePanel.getLayout()).show(infoTablePanel, UNIT_PRICE_INFO_TABLE);
-	}
-
-	public void searchProducts(String productCode, Supplier supplier) {
-		List<Product> products = productService.getAllActiveProductsBySupplier(supplier);
-		productsTableModel.setProducts(products);
 		
-		int selectedRow = 0;
-		if (!StringUtils.isEmpty(productCode)) {
-			for (Product product : products) {
-				if (product.getCode().startsWith(productCode)) {
-					selectedRow = products.indexOf(product);
-					break;
-				}
-			}
-		}
-		if (!products.isEmpty()) {
-			productsTable.changeSelection(selectedRow, 0, false, false);
-		}
 		((CardLayout)infoTablePanel.getLayout()).show(infoTablePanel, UNIT_COST_INFO_TABLE);
 	}
 	

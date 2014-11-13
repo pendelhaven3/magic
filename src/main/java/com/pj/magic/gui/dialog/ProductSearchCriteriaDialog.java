@@ -34,7 +34,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 	@Autowired private ManufacturerService manufacturerService;
 	@Autowired private ProductCategoryService categoryService;
 	
-	private MagicTextField productCodeField;
+	private MagicTextField codeOrDescriptionField;
 	private MagicComboBox<Manufacturer> manufacturerComboBox;
 	private MagicComboBox<ProductCategory> categoryComboBox;
 	private MagicComboBox<ProductSubcategory> subcategoryComboBox;
@@ -56,8 +56,8 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		productCodeField = new MagicTextField();
-		productCodeField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
+		codeOrDescriptionField = new MagicTextField();
+		codeOrDescriptionField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
 		
 		manufacturerComboBox = new MagicComboBox<>();
 		categoryComboBox = new MagicComboBox<>();
@@ -80,7 +80,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(productCodeField);
+		focusOnComponentWhenThisPanelIsDisplayed(codeOrDescriptionField);
 	}
 
 	private void updateSubcategoryComboBox() {
@@ -98,7 +98,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 
 	private void saveProductCodeCriteria() {
 		searchCriteria = new ProductSearchCriteria();
-		searchCriteria.setCode(productCodeField.getText());
+		searchCriteria.setCodeOrDescriptionLike(codeOrDescriptionField.getText());
 		searchCriteria.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
 		searchCriteria.setCategory((ProductCategory)categoryComboBox.getSelectedItem());
 		searchCriteria.setSubcategory((ProductSubcategory)subcategoryComboBox.getSelectedItem());
@@ -107,7 +107,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
-		productCodeField.onEnterKey(new AbstractAction() {
+		codeOrDescriptionField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -156,8 +156,8 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		productCodeField.setPreferredSize(new Dimension(150, 25));
-		add(productCodeField, c);
+		codeOrDescriptionField.setPreferredSize(new Dimension(150, 25));
+		add(codeOrDescriptionField, c);
 
 		currentRow++;
 		
@@ -250,7 +250,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		productCodeField.setText(null);
+		codeOrDescriptionField.setText(null);
 
 		List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
 		manufacturers.add(0, null);

@@ -42,5 +42,5 @@ public interface ProductService {
 	List<Product> searchProducts(ProductSearchCriteria criteria);
 
 	List<ProductCanvassItem> getProductCanvass(Product product);
-	
+
 }
