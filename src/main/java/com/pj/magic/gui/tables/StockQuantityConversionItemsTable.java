@@ -49,7 +49,6 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	public static final int QUANTITY_COLUMN_INDEX = 3;
 	public static final int TO_UNIT_COLUMN_INDEX = 4;
 	public static final int CONVERTED_QUANTITY_COLUMN_INDEX = 5;
-	private static final int PRODUCT_CODE_MAXIMUM_LENGTH = 9;
 	private static final int UNIT_MAXIMUM_LENGTH = 3;
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String ADD_ITEM_ACTION_NAME = "addItem";
@@ -83,14 +82,14 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		columnModel.getColumn(CONVERTED_QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
 		
 		MagicTextField productCodeTextField = new MagicTextField();
-		productCodeTextField.setMaximumLength(PRODUCT_CODE_MAXIMUM_LENGTH);
+		productCodeTextField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
 		productCodeTextField.addKeyListener(new KeyAdapter() {
 			
 			@Override
 			public void keyReleased(KeyEvent event) {
 				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
 					JTextField textField = (JTextField)event.getComponent();
-					if (textField.getText().length() == PRODUCT_CODE_MAXIMUM_LENGTH) {
+					if (textField.getText().length() == Constants.PRODUCT_CODE_MAXIMUM_LENGTH) {
 						getCellEditor().stopCellEditing();
 					};
 				}
