@@ -47,7 +47,7 @@ public class SalesRequisitionServiceIntegrationTest extends AbstractTransactiona
 		Customer customer = new Customer();
 		customer.setCode("TEST");
 		customer.setName("TEST CUSTOMER");
-		customer.setAddress("TEST CUSTOMER ADDRESS");
+		customer.setBusinessAddress("TEST CUSTOMER ADDRESS");
 		customerDao.save(customer);
 		
 		User encoder = new User();

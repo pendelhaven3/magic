@@ -9,8 +9,8 @@
                 $report.field($salesInvoice.customer.name, 34)          $transactionDate
 
 
-                $report.multiline($salesInvoice.customer.address, 34, 1)
-                $report.multiline($salesInvoice.customer.address, 34, 2)
+                $report.multiline($salesInvoice.customer.businessAddress, 34, 1)
+                $report.multiline($salesInvoice.customer.businessAddress, 34, 2)
 
 
 

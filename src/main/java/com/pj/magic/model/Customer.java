@@ -18,7 +18,9 @@ public class Customer {
 	private Long id;
 	private String code;
 	private String name;
-	private String address;
+	
+	@Column(name = "BUSINESS_ADDRESS")
+	private String businessAddress;
 	
 	@Column(name = "CONTACT_PERSON")
 	private String contactPerson;
@@ -61,12 +63,12 @@ public class Customer {
 		this.name = name;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getBusinessAddress() {
+		return businessAddress;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setBusinessAddress(String businessAddress) {
+		this.businessAddress = businessAddress;
 	}
 
 	@Override

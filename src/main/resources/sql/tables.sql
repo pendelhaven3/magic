@@ -88,7 +88,7 @@ create table CUSTOMER (
   ID integer auto_increment,
   CODE varchar(12) not null,
   NAME varchar(50) not null,
-  ADDRESS varchar(100) null,
+  BUSINESS_ADDRESS varchar(100) null,
   CONTACT_PERSON varchar(100) null,
   CONTACT_NUMBER varchar(100) null,
   PAYMENT_TERM_ID integer null,

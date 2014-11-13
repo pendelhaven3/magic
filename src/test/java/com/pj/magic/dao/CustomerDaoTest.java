@@ -61,7 +61,7 @@ public class CustomerDaoTest extends IntegrationTest {
 		Customer customer = new Customer();
 		customer.setCode("TESTCUSTOMER");
 		customer.setName("TEST CUSTOMER");
-		customer.setAddress("TEST CUSTOMER ADDRESS");
+		customer.setBusinessAddress("TEST CUSTOMER ADDRESS");
 		customer.setContactPerson("TEST_CONTACT_PERSON");
 		customer.setContactNumber("TEST_CONTACT_NUMBER");
 		customer.setPaymentTerm(new PaymentTerm(1L));
@@ -71,7 +71,7 @@ public class CustomerDaoTest extends IntegrationTest {
 		assertNotNull(fromDb);
 		assertEquals(customer.getCode(), fromDb.getCode());
 		assertEquals(customer.getName(), fromDb.getName());
-		assertEquals(customer.getAddress(), fromDb.getAddress());
+		assertEquals(customer.getBusinessAddress(), fromDb.getBusinessAddress());
 		assertEquals(customer.getContactPerson(), fromDb.getContactPerson());
 		assertEquals(customer.getContactNumber(), fromDb.getContactNumber());
 		assertEquals(customer.getPaymentTerm(), fromDb.getPaymentTerm());
@@ -104,7 +104,7 @@ public class CustomerDaoTest extends IntegrationTest {
 		customer.setId(1L);
 		customer.setCode("TESTCUSTOMER2");
 		customer.setName("TEST CUSTOMER 2");
-		customer.setAddress("TEST CUSTOMER ADDRESS");
+		customer.setBusinessAddress("TEST CUSTOMER ADDRESS");
 		customer.setContactPerson("TEST_CONTACT_PERSON");
 		customer.setContactNumber("TEST_CONTACT_NUMBER");
 		customer.setPaymentTerm(new PaymentTerm(1L));
@@ -114,7 +114,7 @@ public class CustomerDaoTest extends IntegrationTest {
 		assertNotNull(fromDb);
 		assertEquals(customer.getCode(), fromDb.getCode());
 		assertEquals(customer.getName(), fromDb.getName());
-		assertEquals(customer.getAddress(), fromDb.getAddress());
+		assertEquals(customer.getBusinessAddress(), fromDb.getBusinessAddress());
 		assertEquals(customer.getContactPerson(), fromDb.getContactPerson());
 		assertEquals(customer.getContactNumber(), fromDb.getContactNumber());
 		assertEquals(customer.getPaymentTerm(), fromDb.getPaymentTerm());

@@ -28,7 +28,7 @@ public class SalesRequisitionDaoTest extends AbstractTransactionalJUnit4SpringCo
 	public void setUp() {
 		customer.setCode("TEST");
 		customer.setName("TEST CUSTOMER");
-		customer.setAddress("TEST ADDRESS");
+		customer.setBusinessAddress("TEST ADDRESS");
 		customerDao.save(customer);
 		
 		user.setUsername("TESTENCODER");

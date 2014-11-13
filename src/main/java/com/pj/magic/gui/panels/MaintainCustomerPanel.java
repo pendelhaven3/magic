@@ -99,7 +99,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		if (confirm("Save?")) {
 			customer.setCode(codeField.getText());
 			customer.setName(nameField.getText());
-			customer.setAddress(addressField.getText());
+			customer.setBusinessAddress(addressField.getText());
 			customer.setContactPerson(contactPersonField.getText());
 			customer.setContactNumber(contactNumberField.getText());
 			customer.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
@@ -298,7 +298,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		
 		codeField.setText(customer.getCode());
 		nameField.setText(customer.getName());
-		addressField.setText(customer.getAddress());
+		addressField.setText(customer.getBusinessAddress());
 		contactPersonField.setText(customer.getContactPerson());
 		contactNumberField.setText(customer.getContactNumber());
 		paymentTermComboBox.setSelectedItem(customer.getPaymentTerm());

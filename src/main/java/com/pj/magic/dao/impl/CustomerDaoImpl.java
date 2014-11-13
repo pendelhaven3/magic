@@ -19,7 +19,7 @@ import com.pj.magic.model.PaymentTerm;
 public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, CODE, a.NAME, ADDRESS, CONTACT_PERSON, CONTACT_NUMBER,"
+			"select a.ID, CODE, a.NAME, BUSINESS_ADDRESS, CONTACT_PERSON, CONTACT_NUMBER,"
 			+ " PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME"
 			+ " from CUSTOMER a"
 			+ " left join PAYMENT_TERM b"
@@ -53,7 +53,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 			customer.setCode(rs.getString("CODE"));
 			customer.setId(rs.getLong("ID"));
 			customer.setName(rs.getString("NAME"));
-			customer.setAddress(rs.getString("ADDRESS"));
+			customer.setBusinessAddress(rs.getString("BUSINESS_ADDRESS"));
 			customer.setContactPerson(rs.getString("CONTACT_PERSON"));
 			customer.setContactNumber(rs.getString("CONTACT_NUMBER"));
 			if (rs.getLong("PAYMENT_TERM_ID") != 0) {

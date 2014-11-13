@@ -23,7 +23,7 @@ public class PrintServiceTest {
 		
 		Customer customer = new Customer();
 		customer.setName("XX");
-		customer.setAddress("CALOOCAN CITY");
+		customer.setBusinessAddress("CALOOCAN CITY");
 		salesInvoice.setCustomer(customer);
 		
 		Product product = new Product();
