@@ -144,7 +144,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "SQC No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "SQC No.:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
@@ -174,13 +174,13 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Remarks:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Remarks:"), c);
 		
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		remarksField.setPreferredSize(new Dimension(200, 20));
+		remarksField.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(remarksField, c);
 		
 		currentRow++;

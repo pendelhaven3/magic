@@ -9,7 +9,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -22,7 +21,7 @@ import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.service.StockQuantityConversionService;
 
 @Component
-public class StockQuantityConversionsTable extends JTable {
+public class StockQuantityConversionsTable extends MagicListTable {
 
 	private static final String GO_TO_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "goToStockQuantityConversion";
 	private static final String DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "deleteStockQuantityConversion";
