@@ -24,6 +24,10 @@ public class MagicTable extends JTable {
 
 	protected boolean addMode; // TODO: Return back to PO panel / items table class
 	
+	public MagicTable() {
+		super();
+	}
+	
 	public MagicTable(TableModel tableModel) {
 		super(tableModel);
 		setSurrendersFocusOnKeystroke(true); // TODO: search other references

@@ -30,6 +30,14 @@ public class SalesInvoice {
 	private User markedBy;
 	private BigDecimal vatAmount;
 
+	public SalesInvoice() {
+		// default constructor
+	}
+	
+	public SalesInvoice(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}

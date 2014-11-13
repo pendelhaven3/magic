@@ -38,6 +38,8 @@ import com.pj.magic.gui.panels.MaintainSupplierPanel;
 import com.pj.magic.gui.panels.MaintainUserPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
 import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
+import com.pj.magic.gui.panels.PaymentListPanel;
+import com.pj.magic.gui.panels.PaymentPanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
 import com.pj.magic.gui.panels.PricingSchemeListPanel;
 import com.pj.magic.gui.panels.ProductCanvassPanel;
@@ -57,6 +59,7 @@ import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UserListPanel;
+import com.pj.magic.gui.panels.ViewPaymentPanel;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.Area;
@@ -64,6 +67,7 @@ import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Manufacturer;
+import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
@@ -130,6 +134,9 @@ public class MagicFrame extends JFrame {
 	private static final String STOCK_CARD_INVENTORY_REPORT_PANEL = "STOCK_CARD_INVENTORY_REPORT_PANEL";
 	private static final String AREA_LIST_PANEL = "AREA_LIST_PANEL";
 	private static final String MAINTAIN_AREA_PANEL = "MAINTAIN_AREA_PANEL";
+	private static final String PAYMENT_PANEL = "PAYMENT_PANEL";
+	private static final String VIEW_PAYMENT_PANEL = "VIEW_PAYMENT_PANEL";
+	private static final String PAYMENT_LIST_PANEL = "PAYMENT_LIST_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -174,6 +181,9 @@ public class MagicFrame extends JFrame {
 	@Autowired private StockCardInventoryReportPanel stockCardInventoryReportPanel;
 	@Autowired private AreaListPanel areaListPanel;
 	@Autowired private MaintainAreaPanel maintainAreaPanel;
+	@Autowired private PaymentPanel paymentPanel;
+	@Autowired private ViewPaymentPanel viewPaymentPanel;
+	@Autowired private PaymentListPanel paymentListPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -265,6 +275,9 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(stockCardInventoryReportPanel, STOCK_CARD_INVENTORY_REPORT_PANEL);
 		panelHolder.add(areaListPanel, AREA_LIST_PANEL);
 		panelHolder.add(maintainAreaPanel, MAINTAIN_AREA_PANEL);
+		panelHolder.add(paymentPanel, PAYMENT_PANEL);
+		panelHolder.add(viewPaymentPanel, VIEW_PAYMENT_PANEL);
+		panelHolder.add(paymentListPanel, PAYMENT_LIST_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -621,6 +634,24 @@ public class MagicFrame extends JFrame {
 	private void switchToMaintainAreaPanel(Area area) {
 		maintainAreaPanel.updateDisplay(area);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_AREA_PANEL);
+	}
+
+	public void switchToPaymentPanel() {
+		addPanelNameToTitle("Payment");
+		paymentPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAYMENT_PANEL);
+	}
+
+	public void switchToViewPaymentPanel(Payment payment) {
+		addPanelNameToTitle("View Payment");
+		viewPaymentPanel.updateDisplay(payment);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, VIEW_PAYMENT_PANEL);
+	}
+
+	public void switchToPaymentListPanel() {
+		addPanelNameToTitle("Payment List");
+		paymentListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAYMENT_LIST_PANEL);
 	}
 	
 }
