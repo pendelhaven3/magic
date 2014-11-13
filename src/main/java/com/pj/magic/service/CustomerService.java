@@ -13,5 +13,7 @@ public interface CustomerService {
 	Customer findCustomerByCode(String code);
 	
 	void save(Customer customer);
+
+	List<Customer> findAllWithNameLike(String customerCode);
 	
 }

@@ -94,5 +94,13 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 			return null;
 		}
 	}
+
+	private static final String FIND_ALL_WITH_NAME_LIKE_SQL =
+			BASE_SELECT_SQL + " and a.NAME like ? order by a.NAME";
+	
+	@Override
+	public List<Customer> findAllWithNameLike(String name) {
+		return getJdbcTemplate().query(FIND_ALL_WITH_NAME_LIKE_SQL, customerRowMapper, name + "%");
+	}
 	
 }

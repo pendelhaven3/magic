@@ -36,4 +36,9 @@ public class CustomerServiceImpl implements CustomerService {
 		customerDao.save(customer);
 	}
 
+	@Override
+	public List<Customer> findAllWithNameLike(String name) {
+		return customerDao.findAllWithNameLike(name);
+	}
+
 }

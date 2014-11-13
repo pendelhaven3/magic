@@ -11,7 +11,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -78,18 +77,13 @@ public class SelectCustomerDialog extends MagicDialog {
 		selectedCustomer = null;
 	}
 	
-	public void searchCustomers(String customerCode) {
-		List<Customer> customers = customerService.getAllCustomers();
+	public void searchCustomers(String customerName) {
+		List<Customer> customers = customerService.findAllWithNameLike(customerName);
 		customersTableModel.setCustomers(customers);
 		
-		int selectedRow = 0;
-		if (!StringUtils.isEmpty(customerCode)) {
-			Customer selectedCustomer = customerService.findFirstCustomerWithCodeLike(customerCode);
-			if (selectedCustomer != null) {
-				selectedRow = customers.indexOf(selectedCustomer);
-			}
+		if (!customers.isEmpty()) {
+			customersTable.changeSelection(0, 0, false, false);
 		}
-		customersTable.changeSelection(selectedRow, 0, false, false);
 	}
 	
 }
