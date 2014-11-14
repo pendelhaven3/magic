@@ -3,10 +3,12 @@ package com.pj.magic.gui.tables;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -63,6 +65,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	
 	private boolean addMode;
 	private StockQuantityConversion stockQuantityConversion;
+	private String previousSelectProductCriteria;
 	
 	@Autowired
 	public StockQuantityConversionItemsTable(StockQuantityConversionItemsTableModel tableModel) {
@@ -163,7 +166,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	}
 	
 	public boolean isQuantityFieldSelected() {
-		return getSelectedColumn() == CONVERTED_QUANTITY_COLUMN_INDEX;
+		return getSelectedColumn() == QUANTITY_COLUMN_INDEX;
 	}
 	
 	public boolean isProductCodeFieldSelected() {
@@ -257,6 +260,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		addMode = false;
 		this.stockQuantityConversion = stockQuantityConversion;
 		tableModel.setStockQuantityConversion(stockQuantityConversion);
+		previousSelectProductCriteria = null;
 	}
 	
 	private StockQuantityConversionItem createBlankItem() {
@@ -313,9 +317,37 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openSelectProductDialogUsingPreviousProductCode();
+				if (isProductCodeFieldSelected()) {
+					openSelectProductDialogUsingPreviousCriteria();
+				} else if (isUnitFieldSelected() || isQuantityFieldSelected()) {
+					copyValueFromPreviousRow();
+				}
 			}
 		});
+	}
+	
+	private void copyValueFromPreviousRow() {
+		if (!(isAdding() && isLastRowSelected() && tableModel.hasNonBlankItem())) {
+			return;
+		}
+		
+		int row = getSelectedRow();
+		int column = getSelectedColumn();
+		
+		if (!isEditing()) {
+			editCellAt(row, column);
+		}
+		
+		JTextField textField = (JTextField)((DefaultCellEditor)getCellEditor()).getComponent();
+		Object value = getValueAt(row - 1, column);
+		if (value instanceof String) {
+			textField.setText((String)value);
+		} else if (value instanceof Integer) {
+			textField.setText(((Integer)value).toString());
+		} else if (value instanceof BigDecimal) {
+			textField.setText(((BigDecimal)value).toString());
+		}
+		getCellEditor().stopCellEditing();
 	}
 	
 	protected void showSelectionDialog() {
@@ -344,8 +376,10 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		}
 	}
 
-	private void openSelectProductDialog(String productCodeCriteria) {
-		selectProductDialog.searchProducts(productCodeCriteria);
+	private void openSelectProductDialog(String criteria) {
+		previousSelectProductCriteria = criteria;
+		
+		selectProductDialog.searchProducts(criteria);
 		selectProductDialog.setVisible(true);
 		
 		String productCode = selectProductDialog.getSelectedProductCode();
@@ -355,25 +389,16 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		}
 	}
 
-	private void openSelectProductDialogUsingPreviousProductCode() {
-		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
+	private void openSelectProductDialogUsingPreviousCriteria() {
+		if (!(isAdding() && isLastRowSelected())) {
 			return;
 		}
 		
 		if (!isEditing()) {
 			editCellAt(getSelectedRow(), getSelectedColumn());
 		}
-		
-		if (tableModel.hasNonBlankItem()) {
-			openSelectProductDialog(getPreviousRowItem().getProductCode());
-		} else if (stockQuantityConversion.hasItems()) {
-			List<StockQuantityConversionItem> items = stockQuantityConversion.getItems();
-			openSelectProductDialog(items.get(items.size() - 1).getProduct().getCode());
-		}
-	}
 
-	private StockQuantityConversionItemRowItem getPreviousRowItem() {
-		return tableModel.getRowItem(getSelectedRow() - 1);
+		openSelectProductDialog(previousSelectProductCriteria);
 	}
 
 	public int getTotalNumberOfItems() {
