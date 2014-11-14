@@ -257,10 +257,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		c.gridheight = 3;
-		JScrollPane ownersScrollPane = new JScrollPane(ownersTextArea);
-		ownersScrollPane.setPreferredSize(new Dimension(400, 80));
-		mainPanel.add(ownersScrollPane, c);
+		mainPanel.add(ComponentUtil.createLabel(150, "(Name / Address)"), c);
 		
 		currentRow++;
 		
@@ -276,6 +273,15 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		businessAddressField.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(businessAddressField, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridheight = 3;
+		JScrollPane ownersScrollPane = new JScrollPane(ownersTextArea);
+		ownersScrollPane.setPreferredSize(new Dimension(400, 80));
+		mainPanel.add(ownersScrollPane, c);
 		
 		currentRow++;
 		
@@ -322,12 +328,6 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		contactNumberField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(contactNumberField, c);
 		
-		c = new GridBagConstraints();
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Bank References: "), c);
-		
 		currentRow++;
 		
 		c = new GridBagConstraints();
@@ -347,10 +347,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		c.gridheight = 3;
-		JScrollPane bankReferencesScrollPane = new JScrollPane(bankReferencesTextArea);
-		bankReferencesScrollPane.setPreferredSize(new Dimension(400, 80));
-		mainPanel.add(bankReferencesScrollPane, c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Bank References: "), c);
 		
 		currentRow++;
 		
@@ -366,6 +363,12 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		paymentTermComboBox.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(paymentTermComboBox, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(300, "(Bank Name / Branch / Acct Name / Acct)"), c);
 		
 		currentRow++;
 		
@@ -381,6 +384,15 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		approvedCreditLineField.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(approvedCreditLineField, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridheight = 3;
+		JScrollPane bankReferencesScrollPane = new JScrollPane(bankReferencesTextArea);
+		bankReferencesScrollPane.setPreferredSize(new Dimension(400, 80));
+		mainPanel.add(bankReferencesScrollPane, c);
 		
 		currentRow++;
 		
