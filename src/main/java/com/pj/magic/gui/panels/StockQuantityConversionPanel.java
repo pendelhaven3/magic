@@ -469,7 +469,8 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		toolBar.add(printButton);
 	}
 
-	protected void printStockQuantityConversion() {
+	private void printStockQuantityConversion() {
+		printService.print(stockQuantityConversion);
 	}
 
 	protected void printPreview() {
