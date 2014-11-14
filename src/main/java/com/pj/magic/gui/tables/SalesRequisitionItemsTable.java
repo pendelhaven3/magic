@@ -9,6 +9,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -302,31 +303,30 @@ public class SalesRequisitionItemsTable extends MagicTable {
 			public void actionPerformed(ActionEvent e) {
 				if (isProductCodeFieldSelected()) {
 					openSelectProductDialogUsingPreviousCriteria();
-				} else if (isUnitFieldSelected()) {
-					copyUnitFromPreviousRow();
+				} else if (isUnitFieldSelected() || isQuantityFieldSelected()) {
+					copyValueFromPreviousRow();
 				}
 			}
 		});
 	}
 	
-	private void copyUnitFromPreviousRow() {
+	private void copyValueFromPreviousRow() {
 		if (!(isAdding() && isLastRowSelected() && tableModel.hasNonBlankItem())) {
 			return;
 		}
 		
+		int row = getSelectedRow();
+		int column = getSelectedColumn();
+		
 		if (!isEditing()) {
-			editCellAt(getSelectedRow(), getSelectedColumn());
+			editCellAt(row, column);
 		}
 		
-		JTextField textField = (JTextField)((UnitCellEditor)getCellEditor()).getComponent();
-		textField.setText(getPreviousRowItem().getUnit());
+		JTextField textField = (JTextField)((DefaultCellEditor)getCellEditor()).getComponent();
+		textField.setText((String)getValueAt(row - 1, column));
 		getCellEditor().stopCellEditing();
 	}
 
-	private SalesRequisitionItemRowItem getPreviousRowItem() {
-		return tableModel.getRowItem(getSelectedRow() - 1);
-	}
-	
 	public void removeCurrentlySelectedItem() {
 		if (getSelectedRow() != -1) {
 			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
