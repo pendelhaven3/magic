@@ -8,12 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.springframework.stereotype.Component;
+
+import com.pj.magic.gui.tables.MagicListTable;
 
 @Component
 public class SelectUnitDialog extends MagicDialog {
@@ -33,7 +37,11 @@ public class SelectUnitDialog extends MagicDialog {
 	}
 
 	private void initialize() {
-		unitsTable = new JTable(unitsTableModel);
+		unitsTable = new MagicListTable(unitsTableModel);
+		
+		DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+		cellRenderer.setHorizontalAlignment(JLabel.CENTER);
+		unitsTable.getColumnModel().getColumn(UNIT_COLUMN_INDEX).setCellRenderer(cellRenderer);
 
 		JScrollPane scrollPane = new JScrollPane(unitsTable);
 		add(scrollPane);	
