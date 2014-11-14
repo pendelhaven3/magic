@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -68,6 +69,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 	private int amountColumnIndex;
 	
 	private PurchaseOrder purchaseOrder;
+	private String previousSelectProductCriteria;
 	
 	@Autowired
 	public PurchaseOrderItemsTable(PurchaseOrderItemsTableModel tableModel) {
@@ -243,6 +245,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		}
 		tableModel.setPurchaseOrder(purchaseOrder);
 		initializeColumns();
+		previousSelectProductCriteria = null;
 	}
 	
 	private PurchaseOrderItem createBlankItem() {
@@ -299,30 +302,66 @@ public class PurchaseOrderItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openSelectProductDialogUsingPreviousProductCode();
+				switch (getSelectedColumn()) {
+				case PRODUCT_CODE_COLUMN_INDEX:
+					openSelectProductDialogUsingPreviousCriteria();
+					break;
+				case UNIT_COLUMN_INDEX:
+				case QUANTITY_COLUMN_INDEX:
+					copyValueFromPreviousRow();
+					break;
+				default:
+					if (getSelectedColumn() == getCostColumnIndex()) {
+						copyValueFromPreviousRow();
+					} else if (getSelectedColumn() == getActualQuantityColumnIndex()
+							&& purchaseOrder.isDelivered()) {
+						copyValueFromPreviousRow();
+					}
+				}
 			}
 		});
 	}
 	
-	protected void openSelectProductDialogUsingPreviousProductCode() {
-		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
+	private void copyValueFromPreviousRow() {
+		if (!(isAdding() && isLastRowSelected() && tableModel.hasNonBlankItem())) {
+			return;
+		}
+		
+		int row = getSelectedRow();
+		int column = getSelectedColumn();
+		
+		if (!isEditing()) {
+			editCellAt(row, column);
+		}
+		
+		JTextField textField = (JTextField)((DefaultCellEditor)getCellEditor()).getComponent();
+		Object value = getValueAt(row - 1, column);
+		if (value instanceof String) {
+			textField.setText((String)value);
+		} else if (value instanceof Integer) {
+			textField.setText(((Integer)value).toString());
+		} else if (value instanceof BigDecimal) {
+			textField.setText(((BigDecimal)value).toString());
+		}
+		getCellEditor().stopCellEditing();
+	}
+	
+	private void openSelectProductDialogUsingPreviousCriteria() {
+		if (!(isAdding() && isLastRowSelected())) {
 			return;
 		}
 		
 		if (!isEditing()) {
 			editCellAt(getSelectedRow(), getSelectedColumn());
 		}
-		
-		if (tableModel.hasNonBlankItem()) {
-			openSelectProductDialog(getPreviousRowItem().getProductCode());
-		} else if (purchaseOrder.hasItems()) {
-			List<PurchaseOrderItem> items = purchaseOrder.getItems();
-			openSelectProductDialog(items.get(items.size() - 1).getProduct().getCode());
-		}
+
+		openSelectProductDialog(previousSelectProductCriteria);
 	}
 	
-	private void openSelectProductDialog(String productCodeCriteria) {
-		selectProductDialog.searchProducts(productCodeCriteria, purchaseOrder.getSupplier());
+	private void openSelectProductDialog(String criteria) {
+		previousSelectProductCriteria = criteria;
+		
+		selectProductDialog.searchProducts(criteria, purchaseOrder.getSupplier());
 		selectProductDialog.setVisible(true);
 		
 		String productCode = selectProductDialog.getSelectedProductCode();
@@ -330,10 +369,6 @@ public class PurchaseOrderItemsTable extends MagicTable {
 			((JTextField)getEditorComponent()).setText(productCode);
 			getCellEditor().stopCellEditing();
 		}
-	}
-
-	private PurchaseOrderItemRowItem getPreviousRowItem() {
-		return tableModel.getRowItem(getSelectedRow() - 1);
 	}
 
 	public void removeCurrentlySelectedRow() {
