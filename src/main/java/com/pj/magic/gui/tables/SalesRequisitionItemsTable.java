@@ -300,9 +300,31 @@ public class SalesRequisitionItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openSelectProductDialogUsingPreviousCriteria();
+				if (isProductCodeFieldSelected()) {
+					openSelectProductDialogUsingPreviousCriteria();
+				} else if (isUnitFieldSelected()) {
+					copyUnitFromPreviousRow();
+				}
 			}
 		});
+	}
+	
+	private void copyUnitFromPreviousRow() {
+		if (!(isAdding() && isLastRowSelected() && tableModel.hasNonBlankItem())) {
+			return;
+		}
+		
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), getSelectedColumn());
+		}
+		
+		JTextField textField = (JTextField)((UnitCellEditor)getCellEditor()).getComponent();
+		textField.setText(getPreviousRowItem().getUnit());
+		getCellEditor().stopCellEditing();
+	}
+
+	private SalesRequisitionItemRowItem getPreviousRowItem() {
+		return tableModel.getRowItem(getSelectedRow() - 1);
 	}
 	
 	public void removeCurrentlySelectedItem() {
@@ -345,7 +367,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	}
 	
 	protected void openSelectProductDialogUsingPreviousCriteria() {
-		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
+		if (!(isAdding() && isLastRowSelected())) {
 			return;
 		}
 		
