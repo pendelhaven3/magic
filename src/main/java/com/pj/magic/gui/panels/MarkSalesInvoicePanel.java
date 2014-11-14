@@ -86,7 +86,7 @@ public class MarkSalesInvoicePanel extends StandardMagicPanel {
 		c.weightx = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		markButton.setPreferredSize(new Dimension(200, 30));
+		markButton.setPreferredSize(new Dimension(230, 30));
 		mainPanel.add(markButton, c);
 	}
 

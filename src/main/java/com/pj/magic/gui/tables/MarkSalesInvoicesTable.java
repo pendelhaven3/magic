@@ -3,7 +3,6 @@ package com.pj.magic.gui.tables;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.swing.JTable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,7 +12,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.SalesInvoiceService;
 
 @Component
-public class MarkSalesInvoicesTable extends JTable {
+public class MarkSalesInvoicesTable extends MagicListTable {
 
 	public static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 0;
 	public static final int SALES_REQUISITION_NUMBER_COLUMN_INDEX = 1;
@@ -25,8 +24,12 @@ public class MarkSalesInvoicesTable extends JTable {
 	public static final int CANCEL_COLUMN_INDEX = 7;
 
 	@Autowired private SalesInvoiceService salesInvoiceService;
+	@Autowired private MarkSalesInvoicesTableModel tableModel;
 	
-	private MarkSalesInvoicesTableModel tableModel = new MarkSalesInvoicesTableModel();
+	@Autowired
+	public MarkSalesInvoicesTable(MarkSalesInvoicesTableModel tableModel) {
+		super(tableModel);
+	}
 	
 	@PostConstruct
 	public void initialize() {

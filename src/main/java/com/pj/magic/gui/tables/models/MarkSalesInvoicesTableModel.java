@@ -5,10 +5,13 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.springframework.stereotype.Component;
+
 import com.pj.magic.gui.tables.MarkSalesInvoicesTable;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.util.FormatterUtil;
 
+@Component
 public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 
 	private static final String[] COLUMN_NAMES = 
