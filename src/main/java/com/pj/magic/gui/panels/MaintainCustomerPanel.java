@@ -34,6 +34,7 @@ import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.KeyUtil;
 import com.pj.magic.util.NumberUtil;
 
 @Component
@@ -459,6 +460,24 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				focusNextField();
+			}
+		});
+		
+		paymentTermComboBox.getInputMap().put(KeyUtil.getEnterKey(), NEXT_FIELD_ACTION_NAME);
+		paymentTermComboBox.getActionMap().put(NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				approvedCreditLineField.requestFocusInWindow();
+			}
+		});
+		
+		businessTypeComboBox.getInputMap().put(KeyUtil.getEnterKey(), NEXT_FIELD_ACTION_NAME);
+		businessTypeComboBox.getActionMap().put(NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				holdIndicatorCheckBox.requestFocusInWindow();
 			}
 		});
 		
