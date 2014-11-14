@@ -52,7 +52,7 @@ public class UnpaidSalesInvoicesTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case UnpaidSalesInvoicesTable.SELECTION_CHECKBOX_COLUMN_INDEX:
 			if (selected.contains(rowIndex)) {
-				selected.remove(rowIndex);
+				selected.remove(selected.indexOf(rowIndex));
 			} else {
 				selected.add(rowIndex);
 			}
@@ -66,7 +66,7 @@ public class UnpaidSalesInvoicesTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return rowIndex == 0;
+		return columnIndex == UnpaidSalesInvoicesTable.SELECTION_CHECKBOX_COLUMN_INDEX;
 	}
 	
 	public void setSalesInvoices(List<SalesInvoice> salesInvoices) {
