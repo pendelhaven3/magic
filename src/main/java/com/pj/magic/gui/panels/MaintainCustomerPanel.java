@@ -11,17 +11,21 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.pj.magic.exception.ValidationException;
+import com.pj.magic.gui.component.MagicTextArea;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.model.Customer;
@@ -29,6 +33,8 @@ import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.NumberUtil;
 
 @Component
 public class MaintainCustomerPanel extends StandardMagicPanel {
@@ -43,10 +49,18 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 	private Customer customer;
 	private MagicTextField codeField;
 	private MagicTextField nameField;
-	private MagicTextField addressField;
+	private MagicTextField businessAddressField;
+	private MagicTextField deliveryAddressField;
 	private MagicTextField contactPersonField;
 	private MagicTextField contactNumberField;
+	private MagicTextField tinField;
+	private MagicTextField approvedCreditLineField;
 	private JComboBox<PaymentTerm> paymentTermComboBox;
+	private JComboBox<String> businessTypeComboBox;
+	private MagicTextArea ownersTextArea;
+	private MagicTextArea bankReferencesTextArea;
+	private JCheckBox holdIndicatorCheckBox;
+	private MagicTextField remarksField;
 	private JButton saveButton;
 	
 	@Override
@@ -57,16 +71,40 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		nameField = new MagicTextField();
 		nameField.setMaximumLength(50);
 		
-		addressField = new MagicTextField();
-		addressField.setMaximumLength(100);
+		businessAddressField = new MagicTextField();
+		businessAddressField.setMaximumLength(100);
+		
+		deliveryAddressField = new MagicTextField();
+		deliveryAddressField.setMaximumLength(100);
 		
 		contactPersonField = new MagicTextField();
 		contactPersonField.setMaximumLength(100);
 		
 		contactNumberField = new MagicTextField();
 		contactNumberField.setMaximumLength(100);
+
+		tinField = new MagicTextField();
+		tinField.setMaximumLength(20);
+		
+		approvedCreditLineField = new MagicTextField();
+		approvedCreditLineField.setMaximumLength(12);
 		
 		paymentTermComboBox = new JComboBox<>();
+
+		businessTypeComboBox = new JComboBox<>();
+		businessTypeComboBox.setModel(
+				new DefaultComboBoxModel<>(new String[] {null, "PROPRIERTORSHIP", "PARTNERSHIP", "CORPORATION"}));
+		
+		ownersTextArea = new MagicTextArea();
+		ownersTextArea.setMaximumLength(500);
+		
+		bankReferencesTextArea = new MagicTextArea();
+		bankReferencesTextArea.setMaximumLength(500);
+		
+		holdIndicatorCheckBox = new JCheckBox();
+		
+		remarksField = new MagicTextField();
+		remarksField.setMaximumLength(100);
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -84,11 +122,17 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 	protected void initializeFocusOrder(List<JComponent> focusOrder) {
 		focusOrder.add(codeField);
 		focusOrder.add(nameField);
-		focusOrder.add(addressField);
+		focusOrder.add(businessAddressField);
+		focusOrder.add(deliveryAddressField);
 		focusOrder.add(contactPersonField);
 		focusOrder.add(contactNumberField);
+		focusOrder.add(tinField);
 		focusOrder.add(paymentTermComboBox);
-		focusOrder.add(saveButton);
+		focusOrder.add(approvedCreditLineField);
+		focusOrder.add(businessTypeComboBox);
+		focusOrder.add(holdIndicatorCheckBox);
+		focusOrder.add(remarksField);
+		focusOrder.add(ownersTextArea);
 	}
 	
 	protected void saveCustomer() {
@@ -99,11 +143,22 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		if (confirm("Save?")) {
 			customer.setCode(codeField.getText());
 			customer.setName(nameField.getText());
-			customer.setBusinessAddress(addressField.getText());
+			customer.setBusinessAddress(businessAddressField.getText());
+			customer.setDeliveryAddress(deliveryAddressField.getText());
 			customer.setContactPerson(contactPersonField.getText());
 			customer.setContactNumber(contactNumberField.getText());
+			customer.setTin(tinField.getText());
 			customer.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
-			
+			if (!StringUtils.isEmpty(approvedCreditLineField.getText())) {
+				customer.setApprovedCreditLine(NumberUtil.toBigDecimal(approvedCreditLineField.getText()));
+			} else {
+				customer.setApprovedCreditLine(null);
+			}
+			customer.setBusinessType((String)businessTypeComboBox.getSelectedItem());
+			customer.setHold(holdIndicatorCheckBox.isSelected() ? "Y" : "N");
+			customer.setRemarks(remarksField.getText());
+			customer.setOwners(ownersTextArea.getText());
+			customer.setBankReferences(bankReferencesTextArea.getText());
 			try {
 				customerService.save(customer);
 				showMessage("Saved!");
@@ -130,6 +185,14 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 			return false;
 		}
 		
+		if (!StringUtils.isEmpty(approvedCreditLineField.getText())) {
+			if (!NumberUtil.isAmount(approvedCreditLineField.getText())) {
+				showErrorMessage("Approved Credit Line must be a valid amount");
+				approvedCreditLineField.requestFocusInWindow();
+				return false;
+			}
+		}
+		
 		return true;
 	}
 
@@ -154,12 +217,23 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		codeField.setPreferredSize(new Dimension(100, 25));
+		codeField.setPreferredSize(new Dimension(120, 25));
 		mainPanel.add(codeField, c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0; // right space filler
 		c.gridx = 3;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Owners: "), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0; // right space filler
+		c.gridx = 5;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createFiller(), c);
 		
@@ -169,14 +243,23 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Name: "), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Business Name: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		nameField.setPreferredSize(new Dimension(200, 25));
+		nameField.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(nameField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridheight = 3;
+		JScrollPane ownersScrollPane = new JScrollPane(ownersTextArea);
+		ownersScrollPane.setPreferredSize(new Dimension(400, 80));
+		mainPanel.add(ownersScrollPane, c);
 		
 		currentRow++;
 		
@@ -184,14 +267,29 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Address: "), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Business Address: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		addressField.setPreferredSize(new Dimension(300, 25));
-		mainPanel.add(addressField, c);
+		businessAddressField.setPreferredSize(new Dimension(300, 25));
+		mainPanel.add(businessAddressField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Delivery Address: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		deliveryAddressField.setPreferredSize(new Dimension(300, 25));
+		mainPanel.add(deliveryAddressField, c);
 		
 		currentRow++;
 		
@@ -223,6 +321,36 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		contactNumberField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(contactNumberField, c);
 		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Bank References: "), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(130, "TIN: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		tinField.setPreferredSize(new Dimension(150, 25));
+		mainPanel.add(tinField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridheight = 3;
+		JScrollPane bankReferencesScrollPane = new JScrollPane(bankReferencesTextArea);
+		bankReferencesScrollPane.setPreferredSize(new Dimension(400, 80));
+		mainPanel.add(bankReferencesScrollPane, c);
+		
 		currentRow++;
 		
 		c = new GridBagConstraints();
@@ -241,6 +369,65 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(170, "Approved Credit Line: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		approvedCreditLineField.setPreferredSize(new Dimension(100, 25));
+		mainPanel.add(approvedCreditLineField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(130, "Business Type: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		businessTypeComboBox.setPreferredSize(new Dimension(170, 25));
+		mainPanel.add(businessTypeComboBox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(130, "On-hold?: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(holdIndicatorCheckBox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(130, "Remarks: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		remarksField.setPreferredSize(new Dimension(300, 25));
+		mainPanel.add(remarksField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createFiller(1, 25), c);
@@ -248,9 +435,9 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
-		c.gridx = 2;
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.EAST;
+		c.gridwidth = 5;
 		saveButton.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(saveButton, c);
 		
@@ -298,19 +485,37 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		
 		codeField.setText(customer.getCode());
 		nameField.setText(customer.getName());
-		addressField.setText(customer.getBusinessAddress());
+		businessAddressField.setText(customer.getBusinessAddress());
+		deliveryAddressField.setText(customer.getDeliveryAddress());
 		contactPersonField.setText(customer.getContactPerson());
 		contactNumberField.setText(customer.getContactNumber());
+		tinField.setText(customer.getTin());
 		paymentTermComboBox.setSelectedItem(customer.getPaymentTerm());
+		if (customer.getApprovedCreditLine() != null) {
+			approvedCreditLineField.setText(FormatterUtil.formatAmount(customer.getApprovedCreditLine()));
+		}
+		businessTypeComboBox.setSelectedItem(customer.getBusinessType());
+		ownersTextArea.setText(customer.getOwners());
+		bankReferencesTextArea.setText(customer.getBankReferences());
+		holdIndicatorCheckBox.setSelected("Y".equals(customer.getHold()));
+		remarksField.setText(customer.getRemarks());
 	}
 
 	private void clearDisplay() {
 		codeField.setText(null);
 		nameField.setText(null);
-		addressField.setText(null);
+		businessAddressField.setText(null);
+		deliveryAddressField.setText(null);
 		contactPersonField.setText(null);
 		contactNumberField.setText(null);
+		tinField.setText(null);
 		paymentTermComboBox.setSelectedItem(null);
+		approvedCreditLineField.setText(null);
+		businessTypeComboBox.setSelectedItem(null);
+		ownersTextArea.setText(null);
+		bankReferencesTextArea.setText(null);
+		holdIndicatorCheckBox.setSelected(false);
+		remarksField.setText(null);
 	}
 
 	@Override
