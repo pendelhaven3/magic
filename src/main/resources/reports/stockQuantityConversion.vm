@@ -2,7 +2,7 @@
 	
                   STOCK QUANTITY CONVERSION REPORT
 	
-SQC Ref. # : $report.field($stockQuantityConversion.stockQuantityConversionNumber, 6, "right")                            Date Converted: $currentDate
+SQC Ref. # : $report.field($stockQuantityConversion.stockQuantityConversionNumber, 6)                            Date Converted: $currentDate
 Remarks    : $report.field($stockQuantityConversion.remarks, 40)
 	
                                         From  Qty To  To   To
