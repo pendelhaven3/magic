@@ -19,7 +19,8 @@ import com.pj.magic.model.PaymentTerm;
 public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, CODE, a.NAME, BUSINESS_ADDRESS, CONTACT_PERSON, CONTACT_NUMBER,"
+			"select a.ID, CODE, a.NAME, BUSINESS_ADDRESS, DELIVERY_ADDRESS, CONTACT_PERSON, CONTACT_NUMBER,"
+			+ " TIN, APPROVED_CREDIT_LINE, BUSINESS_TYPE, OWNERS, BANK_REFERENCES, HOLD_IND, REMARKS,"
 			+ " PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME"
 			+ " from CUSTOMER a"
 			+ " left join PAYMENT_TERM b"
@@ -54,12 +55,20 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 			customer.setId(rs.getLong("ID"));
 			customer.setName(rs.getString("NAME"));
 			customer.setBusinessAddress(rs.getString("BUSINESS_ADDRESS"));
+			customer.setDeliveryAddress(rs.getString("DELIVERY_ADDRESS"));
 			customer.setContactPerson(rs.getString("CONTACT_PERSON"));
 			customer.setContactNumber(rs.getString("CONTACT_NUMBER"));
 			if (rs.getLong("PAYMENT_TERM_ID") != 0) {
 				customer.setPaymentTerm(
 						new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
 			}
+			customer.setTin(rs.getString("TIN"));
+			customer.setApprovedCreditLine(rs.getBigDecimal("APPROVED_CREDIT_LINE"));
+			customer.setBusinessType(rs.getString("BUSINESS_TYPE"));
+			customer.setOwners(rs.getString("OWNERS"));
+			customer.setBankReferences(rs.getString("BANK_REFERENCES"));
+			customer.setHold(rs.getString("HOLD_IND"));
+			customer.setRemarks(rs.getString("REMARKS"));
 			return customer;
 		}
 		
