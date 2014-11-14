@@ -67,6 +67,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	
 	private boolean addMode;
 	private SalesRequisition salesRequisition;
+	private String previousSelectProductCriteria;
 	
 	@Autowired
 	public SalesRequisitionItemsTable(SalesRequisitionItemsTableModel tableModel) {
@@ -234,6 +235,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		addMode = false;
 		this.salesRequisition = salesRequisition;
 		tableModel.setSalesRequisition(salesRequisition);
+		previousSelectProductCriteria = null;
 	}
 	
 	private SalesRequisitionItem createBlankItem() {
@@ -298,7 +300,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openSelectProductDialogUsingPreviousProductCode();
+				openSelectProductDialogUsingPreviousCriteria();
 			}
 		});
 	}
@@ -329,8 +331,10 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		}
 	}
 
-	private void openSelectProductDialog(String productCodeCriteria) {
-		selectProductDialog.searchProducts(productCodeCriteria, salesRequisition.getPricingScheme());
+	private void openSelectProductDialog(String criteria) {
+		previousSelectProductCriteria = criteria;
+		
+		selectProductDialog.searchProducts(criteria, salesRequisition.getPricingScheme());
 		selectProductDialog.setVisible(true);
 		
 		String productCode = selectProductDialog.getSelectedProductCode();
@@ -340,7 +344,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		}
 	}
 	
-	protected void openSelectProductDialogUsingPreviousProductCode() {
+	protected void openSelectProductDialogUsingPreviousCriteria() {
 		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
 			return;
 		}
@@ -348,17 +352,8 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		if (!isEditing()) {
 			editCellAt(getSelectedRow(), getSelectedColumn());
 		}
-		
-		if (tableModel.hasNonBlankItem()) {
-			openSelectProductDialog(getPreviousRowItem().getProductCode());
-		} else if (salesRequisition.hasItems()) {
-			List<SalesRequisitionItem> items = salesRequisition.getItems();
-			openSelectProductDialog(items.get(items.size() - 1).getProduct().getCode());
-		}
-	}
 
-	private SalesRequisitionItemRowItem getPreviousRowItem() {
-		return tableModel.getRowItem(getSelectedRow() - 1);
+		openSelectProductDialog(previousSelectProductCriteria);
 	}
 
 	public BigDecimal getTotalAmount() {
