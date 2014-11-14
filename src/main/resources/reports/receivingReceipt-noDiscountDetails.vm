@@ -5,10 +5,9 @@
                              RECEIVING REPORT
 
 Supplier : $report.field($receivingReceipt.supplier.name, 40)         R.R. #   : $report.field($receivingReceipt.receivingReceiptNumber, 6, "right") 
-Address  : $report.multiline($receivingReceipt.supplier.address, 40, 1)         P.O. #   : $report.field($receivingReceipt.relatedPurchaseOrderNumber, 6, "right")
-           $report.multiline($receivingReceipt.supplier.address, 40, 2)
-                                                            Date   : $receivedDate
-Terms    : $receivingReceipt.paymentTerm.name
+P.O. #   : $report.field($receivingReceipt.relatedPurchaseOrderNumber, 6)                                           Ref. #   : $receivingReceipt.referenceNumber
+Terms    : $report.field($receivingReceipt.paymentTerm.name, 40)         Date     : $receivedDate
+
                                                     Qty
   Code                 Description             Unit Rec    Cost      Amount
 --------- ------------------------------------ ---- ---- --------- ----------

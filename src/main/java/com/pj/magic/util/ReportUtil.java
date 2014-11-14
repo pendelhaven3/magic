@@ -33,6 +33,10 @@ public class ReportUtil {
 		return value;
 	}
 	
+	public static String field(long number, int length) {
+		return field(String.valueOf(number), length, ALIGN_LEFT);
+	}
+	
 	public static String field(long number, int length, String align) {
 		return field(String.valueOf(number), length, align);
 	}
