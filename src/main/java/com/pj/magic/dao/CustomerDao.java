@@ -3,6 +3,7 @@ package com.pj.magic.dao;
 import java.util.List;
 
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.util.CustomerSearchCriteria;
 
 public interface CustomerDao {
 
@@ -17,5 +18,7 @@ public interface CustomerDao {
 	Customer findByCode(String code);
 
 	List<Customer> findAllWithNameLike(String code);
+
+	List<Customer> search(CustomerSearchCriteria criteria);
 	
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerm;
+import com.pj.magic.model.util.CustomerSearchCriteria;
 
 @Repository
 public class CustomerDaoImpl extends MagicDao implements CustomerDao {
@@ -110,6 +111,12 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 	@Override
 	public List<Customer> findAllWithNameLike(String name) {
 		return getJdbcTemplate().query(FIND_ALL_WITH_NAME_LIKE_SQL, customerRowMapper, name + "%");
+	}
+
+	@Override
+	public List<Customer> search(CustomerSearchCriteria criteria) {
+		// TODO: Put proper implementation once more criteria are added
+		return findAllWithNameLike(criteria.getNameLike());
 	}
 	
 }

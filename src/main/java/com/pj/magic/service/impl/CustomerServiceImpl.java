@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.util.CustomerSearchCriteria;
 import com.pj.magic.service.CustomerService;
 
 @Service
@@ -39,6 +40,11 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public List<Customer> findAllWithNameLike(String name) {
 		return customerDao.findAllWithNameLike(name);
+	}
+
+	@Override
+	public List<Customer> searchCustomers(CustomerSearchCriteria criteria) {
+		return customerDao.search(criteria);
 	}
 
 }

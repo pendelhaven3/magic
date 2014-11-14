@@ -20,9 +20,11 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.CustomerSearchCriteriaDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.CustomersTableModel;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.util.CustomerSearchCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -33,6 +35,7 @@ public class CustomerListPanel extends StandardMagicPanel {
 	
 	@Autowired private CustomerService customerService;
 	@Autowired private CustomersTableModel tableModel;
+	@Autowired private CustomerSearchCriteriaDialog customerSearchCriteriaDialog;
 	
 	private JTable table;
 	
@@ -118,6 +121,53 @@ public class CustomerListPanel extends StandardMagicPanel {
 		});
 		
 		toolBar.add(postButton);
+		
+		JButton showAllButton = new MagicToolBarButton("all", "Show All");
+		showAllButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showAllCustomers();
+			}
+		});
+		toolBar.add(showAllButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchCustomers();
+			}
+		});
+		
+		toolBar.add(searchButton);
+	}
+
+	private void showAllCustomers() {
+		List<Customer> customers = customerService.getAllCustomers();
+		tableModel.setCustomers(customers);
+		if (!customers.isEmpty()) {
+			table.changeSelection(0, 0, false, false);
+		}
+		table.requestFocusInWindow();
+		customerSearchCriteriaDialog.updateDisplay();
+	}
+
+	private void searchCustomers() {
+		customerSearchCriteriaDialog.setVisible(true);
+		
+		CustomerSearchCriteria criteria = customerSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<Customer> customers = customerService.searchCustomers(criteria);
+			tableModel.setCustomers(customers);
+			if (!customers.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
 	}
 	
 }
