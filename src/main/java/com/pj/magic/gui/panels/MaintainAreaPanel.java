@@ -75,6 +75,7 @@ public class MaintainAreaPanel extends StandardMagicPanel {
 			try {
 				areaService.save(area);
 				showMessage("Saved!");
+				getMagicFrame().switchToEditAreaPanel(area);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
