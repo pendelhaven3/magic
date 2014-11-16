@@ -167,13 +167,13 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(80, "Name: "), c);
+		mainPanel.add(ComponentUtil.createLabel(60, "Name: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		nameField.setPreferredSize(new Dimension(300, 20));
+		nameField.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(nameField, c);
 		
 		c = new GridBagConstraints();
@@ -195,7 +195,7 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.EAST;
-		saveButton.setPreferredSize(new Dimension(100, 20));
+		saveButton.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(saveButton, c);
 		
 		currentRow++;
@@ -211,17 +211,17 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Subcategories: "), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Subcategories: "), c);
 		
 		currentRow++;
 		
 		c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 1;
 		c.gridy = currentRow;
-		c.gridwidth = 2;
+		c.gridwidth = 3;
+		c.anchor = GridBagConstraints.WEST;
 		JScrollPane scrollPane = new JScrollPane(subcategoriesTable);
-		scrollPane.setPreferredSize(new Dimension(350, 110));
+		scrollPane.setPreferredSize(new Dimension(600, 200));
 		mainPanel.add(scrollPane, c);
 		
 		currentRow++;
@@ -229,7 +229,7 @@ public class MaintainProductCategoryPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 8), c);
+		mainPanel.add(ComponentUtil.createVerticalFiller(15), c);
 		
 		currentRow++;
 		

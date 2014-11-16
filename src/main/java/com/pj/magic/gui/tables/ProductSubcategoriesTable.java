@@ -2,13 +2,11 @@ package com.pj.magic.gui.tables;
 
 import java.util.ArrayList;
 import java.util.EventObject;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.event.CellEditorListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -16,23 +14,24 @@ import javax.swing.table.TableColumn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.tables.models.ProductSubcategoriesTableModel;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.ProductSubcategory;
 import com.pj.magic.service.ProductCategoryService;
 
 @Component
-public class ProductSubcategoriesTable extends JTable {
+public class ProductSubcategoriesTable extends MagicListTable {
 
 	public static final int BUTTON_COLUMN_INDEX = 1;
 	
 	@Autowired private ProductCategoryService productCategoryService;
+	@Autowired private ProductSubcategoriesTableModel tableModel;
 	
-	private ProductSubcategoriesTableModel tableModel;
 	private DeleteSubcategoryButton tableButton = new DeleteSubcategoryButton();
 	
-	public ProductSubcategoriesTable() {
-		setModel(new ProductSubcategoriesTableModel());
-		tableModel = (ProductSubcategoriesTableModel)getModel();
+	@Autowired
+	public ProductSubcategoriesTable(ProductSubcategoriesTableModel tableModel) {
+		super(tableModel);
 		setTableHeader(null);
 	}
 	
@@ -43,12 +42,12 @@ public class ProductSubcategoriesTable extends JTable {
 	}
 
 	private void initializeColumns() {
-		getColumnModel().getColumn(0).setPreferredWidth(270);
+		getColumnModel().getColumn(0).setPreferredWidth(300);
 
 		TableColumn buttonColumn = getColumnModel().getColumn(1);
 		buttonColumn.setCellEditor(tableButton);
 		buttonColumn.setCellRenderer(tableButton);
-		buttonColumn.setPreferredWidth(80);
+		buttonColumn.setPreferredWidth(60);
 	}
 
 	private void registerKeyBindings() {
@@ -67,36 +66,6 @@ public class ProductSubcategoriesTable extends JTable {
 		return tableModel.getSubcategory(rowIndex);
 	}
 
-	private class ProductSubcategoriesTableModel extends AbstractTableModel {
-
-		private List<ProductSubcategory> subcategories = new ArrayList<>();
-		
-		public void setSubcategories(List<ProductSubcategory> subcategories) {
-			this.subcategories = subcategories;
-			fireTableDataChanged();
-		}
-		
-		@Override
-		public Object getValueAt(int row, int column) {
-			return subcategories.get(row).getName();
-		}
-		
-		@Override
-		public int getRowCount() {
-			return subcategories.size();
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 2;
-		}
-
-		public ProductSubcategory getSubcategory(int rowIndex) {
-			return subcategories.get(rowIndex);
-		}
-		
-	}
-	
 	private class DeleteSubcategoryButton extends JButton implements TableCellEditor, TableCellRenderer {
 
 		public DeleteSubcategoryButton() {

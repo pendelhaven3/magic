@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ProductCategoriesTableModel;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.service.ProductCategoryService;
@@ -45,7 +46,7 @@ public class ProductCategoryListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void initializeComponents() {
-		table = new JTable(tableModel);
+		table = new MagicListTable(tableModel);
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 

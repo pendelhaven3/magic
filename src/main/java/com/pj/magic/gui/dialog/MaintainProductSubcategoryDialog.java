@@ -38,7 +38,7 @@ public class MaintainProductSubcategoryDialog extends MagicDialog {
 	private boolean changed;
 	
 	public MaintainProductSubcategoryDialog() {
-		setSize(450, 150);
+		setSize(480, 150);
 		setLocationRelativeTo(null);
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 5));
 	}
@@ -52,7 +52,7 @@ public class MaintainProductSubcategoryDialog extends MagicDialog {
 
 	private void initializeComponents() {
 		subcategoryField = new MagicTextField();
-		subcategoryField.setMaximumLength(50);
+		subcategoryField.setMaximumLength(60);
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -123,7 +123,7 @@ public class MaintainProductSubcategoryDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Subcategory:"), c);
+		add(ComponentUtil.createLabel(120, "Subcategory:"), c);
 
 		c.weightx = 1.0;
 		c.weighty = 0.0;
@@ -131,7 +131,7 @@ public class MaintainProductSubcategoryDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		subcategoryField.setPreferredSize(new Dimension(300, 20));
+		subcategoryField.setPreferredSize(new Dimension(300, 25));
 		add(subcategoryField, c);
 
 		currentRow++;
@@ -143,7 +143,7 @@ public class MaintainProductSubcategoryDialog extends MagicDialog {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.CENTER;
-		add(ComponentUtil.createFiller(1, 5), c);
+		add(ComponentUtil.createVerticalFiller(10), c);
 		
 		currentRow++;
 		
@@ -153,7 +153,7 @@ public class MaintainProductSubcategoryDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		saveButton.setPreferredSize(new Dimension(100, 20));
+		saveButton.setPreferredSize(new Dimension(100, 25));
 		add(saveButton, c);
 		
 		currentRow++;
