@@ -445,3 +445,10 @@ create table PAYMENT_ITEM (
   constraint PAYMENT_ITEM$FK foreign key (PAYMENT_ID) references PAYMENT (ID),
   constraint PAYMENT_ITEM$FK2 foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID)
 );
+
+create table PAYMENT_TERMINAL (
+  ID integer auto_increment,
+  NAME varchar(50) not null,
+  constraint PAYMENT_TERMINAL$PK primary key (ID),
+  constraint PAYMENT_TERMINAL$UK unique (NAME)
+);
