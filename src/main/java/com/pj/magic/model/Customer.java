@@ -3,6 +3,7 @@ package com.pj.magic.model;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -11,6 +12,8 @@ import javax.persistence.OneToOne;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import com.pj.magic.model.util.BooleanToStringConverter;
 
 @Entity
 public class Customer {
@@ -50,8 +53,9 @@ public class Customer {
 	@Column(name = "BANK_REFERENCES")
 	private String bankReferences;
 
+	@Convert(converter = BooleanToStringConverter.class)
 	@Column(name = "HOLD_IND")
-	private String hold = "N"; // TODO: Convert to boolean
+	private Boolean hold = false;
 
 	private String remarks;
 
@@ -183,11 +187,11 @@ public class Customer {
 		this.bankReferences = bankReferences;
 	}
 
-	public String getHold() {
+	public Boolean getHold() {
 		return hold;
 	}
 
-	public void setHold(String hold) {
+	public void setHold(Boolean hold) {
 		this.hold = hold;
 	}
 
@@ -199,4 +203,8 @@ public class Customer {
 		this.remarks = remarks;
 	}
 
+	public boolean isOnHold() {
+		return hold;
+	}
+	
 }

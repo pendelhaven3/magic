@@ -68,7 +68,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 			customer.setBusinessType(rs.getString("BUSINESS_TYPE"));
 			customer.setOwners(rs.getString("OWNERS"));
 			customer.setBankReferences(rs.getString("BANK_REFERENCES"));
-			customer.setHold(rs.getString("HOLD_IND"));
+			customer.setHold("Y".equals(rs.getString("HOLD_IND")));
 			customer.setRemarks(rs.getString("REMARKS"));
 			return customer;
 		}

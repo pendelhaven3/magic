@@ -156,7 +156,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 				customer.setApprovedCreditLine(null);
 			}
 			customer.setBusinessType((String)businessTypeComboBox.getSelectedItem());
-			customer.setHold(holdIndicatorCheckBox.isSelected() ? "Y" : "N");
+			customer.setHold(holdIndicatorCheckBox.isSelected());
 			customer.setRemarks(remarksField.getText());
 			customer.setOwners(ownersTextArea.getText());
 			customer.setBankReferences(bankReferencesTextArea.getText());
@@ -528,7 +528,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		businessTypeComboBox.setSelectedItem(customer.getBusinessType());
 		ownersTextArea.setText(customer.getOwners());
 		bankReferencesTextArea.setText(customer.getBankReferences());
-		holdIndicatorCheckBox.setSelected("Y".equals(customer.getHold()));
+		holdIndicatorCheckBox.setSelected(customer.isOnHold());
 		remarksField.setText(customer.getRemarks());
 	}
 
