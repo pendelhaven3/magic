@@ -2,6 +2,7 @@ package com.pj.magic.dao;
 
 import java.util.List;
 
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesRequisition;
 
 public interface SalesRequisitionDao {
@@ -13,5 +14,7 @@ public interface SalesRequisitionDao {
 	void delete(SalesRequisition salesRequisition);
 
 	List<SalesRequisition> search(SalesRequisition criteria);
+
+	List<SalesRequisition> findAllByCustomer(Customer customer);
 	
 }

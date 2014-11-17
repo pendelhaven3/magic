@@ -28,10 +28,12 @@ import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicTextArea;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.PaymentTermService;
+import com.pj.magic.service.SalesRequisitionService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.KeyUtil;
@@ -46,6 +48,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 	
 	@Autowired private CustomerService customerService;
 	@Autowired private PaymentTermService paymentTermService;
+	@Autowired private SalesRequisitionService salesRequisitionService;
 	
 	private Customer customer;
 	private MagicTextField codeField;
@@ -63,6 +66,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 	private JCheckBox holdIndicatorCheckBox;
 	private MagicTextField remarksField;
 	private JButton saveButton;
+	private JButton deleteButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -530,6 +534,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		bankReferencesTextArea.setText(customer.getBankReferences());
 		holdIndicatorCheckBox.setSelected(customer.isOnHold());
 		remarksField.setText(customer.getRemarks());
+		deleteButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -547,6 +552,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		bankReferencesTextArea.setText(null);
 		holdIndicatorCheckBox.setSelected(false);
 		remarksField.setText(null);
+		deleteButton.setEnabled(false);
 	}
 
 	@Override
@@ -556,7 +562,33 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
+		deleteButton = new MagicToolBarButton("trash", "Delete");
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteCustomer();
+			}
+		});
+		toolBar.add(deleteButton);
+	}
+
+	private void deleteCustomer() {
+		if (!customerService.canDeleteCustomer(customer)) {
+			showErrorMessage("Cannot delete Customer that is already referenced in a Sales Requisition");
+			return;
+		}
+		
+		if (confirm("Delete Customer?")) {
+			try {
+				customerService.deleteCustomer(customer);
+				showMessage("Customer deleted");
+				getMagicFrame().switchToCustomerListPanel();
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error");
+			}
+		}
 	}
 
 }

@@ -118,5 +118,12 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 		// TODO: Put proper implementation once more criteria are added
 		return findAllWithNameLike(criteria.getNameLike());
 	}
+
+	private static final String DELETE_CUSTOMER_SQL = "delete from CUSTOMER where ID = ?";
+	
+	@Override
+	public void delete(Customer customer) {
+		getJdbcTemplate().update(DELETE_CUSTOMER_SQL, customer.getId());
+	}
 	
 }

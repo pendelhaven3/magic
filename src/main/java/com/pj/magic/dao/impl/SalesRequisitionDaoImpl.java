@@ -152,5 +152,12 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	protected Long getNextSalesRequisitionNumber() {
 		return getNextSequenceValue(SALES_REQUISITION_NUMBER_SEQUENCE);
 	}
+
+	private static final String FIND_ALL_BY_CUSTOMER_SQL = BASE_SELECT_SQL + " where a.CUSTOMER_ID = ?";
+	
+	@Override
+	public List<SalesRequisition> findAllByCustomer(Customer customer) {
+		return getJdbcTemplate().query(FIND_ALL_BY_CUSTOMER_SQL, salesRequisitionRowMapper, customer.getId());
+	}
 	
 }

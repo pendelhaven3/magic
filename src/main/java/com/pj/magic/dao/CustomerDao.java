@@ -20,5 +20,7 @@ public interface CustomerDao {
 	List<Customer> findAllWithNameLike(String code);
 
 	List<Customer> search(CustomerSearchCriteria criteria);
+
+	void delete(Customer customer);
 	
 }

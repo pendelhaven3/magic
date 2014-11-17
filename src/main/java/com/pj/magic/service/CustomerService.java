@@ -18,5 +18,9 @@ public interface CustomerService {
 	List<Customer> findAllWithNameLike(String customerCode);
 
 	List<Customer> searchCustomers(CustomerSearchCriteria criteria);
+
+	void deleteCustomer(Customer customer);
+
+	boolean canDeleteCustomer(Customer customer);
 	
 }
