@@ -37,6 +37,8 @@ public class ViewPaymentPanel extends StandardMagicPanel {
 	private JLabel customerCodeField;
 	private JLabel customerNameField;
 	private JLabel paymentDateField;
+	private JLabel receivedByField;
+	private JLabel paymentTerminalField;
 	private JLabel totalAmountField;
 	private JLabel amountReceivedField;
 	private JLabel changeField;
@@ -49,6 +51,8 @@ public class ViewPaymentPanel extends StandardMagicPanel {
 		customerCodeField = new JLabel();
 		customerNameField = new JLabel();
 		paymentDateField = new JLabel();
+		receivedByField = new JLabel();
+		paymentTerminalField = new JLabel();
 		totalAmountField = new JLabel();
 		amountReceivedField = new JLabel();
 		changeField = new JLabel();
@@ -120,6 +124,36 @@ public class ViewPaymentPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		paymentDateField.setPreferredSize(new Dimension(100, 20));
 		mainPanel.add(paymentDateField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Received By:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		receivedByField.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(receivedByField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(140, "Payment Terminal:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentTerminalField.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(paymentTerminalField, c);
 		
 		currentRow++;
 		
@@ -214,6 +248,8 @@ public class ViewPaymentPanel extends StandardMagicPanel {
 		customerCodeField.setText(payment.getCustomer().getCode());
 		customerNameField.setText(payment.getCustomer().getName());
 		paymentDateField.setText(FormatterUtil.formatDate(payment.getPaymentDate()));
+		receivedByField.setText(payment.getReceivedBy().getUsername());
+		paymentTerminalField.setText(payment.getPaymentTerminal().getName());
 		totalAmountField.setText(FormatterUtil.formatAmount(payment.getTotalAmount()));
 		amountReceivedField.setText(FormatterUtil.formatAmount(payment.getAmountReceived()));
 		changeField.setText(FormatterUtil.formatAmount(payment.getChange()));

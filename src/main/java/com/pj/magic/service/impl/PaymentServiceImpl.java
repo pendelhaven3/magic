@@ -13,12 +13,16 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.PaymentDao;
 import com.pj.magic.dao.PaymentItemDao;
+import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentItem;
+import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.User;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentService;
 
 @Service
@@ -29,6 +33,8 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private PaymentDao paymentDao;
 	@Autowired private PaymentItemDao paymentItemDao;
 	@Autowired private CustomerDao customerDao;
+	@Autowired private LoginService loginService;
+	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	
 	@Override
 	public List<SalesInvoice> findAllUnpaidSalesInvoicesByCustomer(Customer customer) {
@@ -42,6 +48,14 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	@Override
 	public void save(Payment payment) {
+		User receivedBy = loginService.getLoggedInUser();
+		PaymentTerminalAssignment assignment = paymentTerminalAssignmentDao.findByUser(receivedBy);
+		if (assignment == null) {
+			throw new RuntimeException("User is not assigned!"); // TODO: Change
+		}
+		
+		payment.setReceivedBy(receivedBy);
+		payment.setPaymentTerminal(assignment.getPaymentTerminal());
 		payment.setPaymentDate(new Date());
 		paymentDao.save(payment);
 		for (PaymentItem item : payment.getItems()) {

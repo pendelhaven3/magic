@@ -3,6 +3,7 @@ package com.pj.magic.dao;
 import java.util.List;
 
 import com.pj.magic.model.PaymentTerminalAssignment;
+import com.pj.magic.model.User;
 
 public interface PaymentTerminalAssignmentDao {
 	
@@ -12,4 +13,6 @@ public interface PaymentTerminalAssignmentDao {
 
 	void delete(PaymentTerminalAssignment paymentTerminalAssignment);
 
+	PaymentTerminalAssignment findByUser(User user);
+	
 }

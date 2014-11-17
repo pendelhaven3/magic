@@ -13,6 +13,8 @@ public class Payment {
 	private Customer customer;
 	private Date paymentDate;
 	private BigDecimal amountReceived;
+	private User receivedBy;
+	private PaymentTerminal paymentTerminal;
 	private List<PaymentItem> items = new ArrayList<>();
 
 	public Long getId() {
@@ -65,6 +67,22 @@ public class Payment {
 
 	public BigDecimal getChange() {
 		return amountReceived.subtract(getTotalAmount());
+	}
+
+	public User getReceivedBy() {
+		return receivedBy;
+	}
+
+	public void setReceivedBy(User receivedBy) {
+		this.receivedBy = receivedBy;
+	}
+
+	public PaymentTerminal getPaymentTerminal() {
+		return paymentTerminal;
+	}
+
+	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
+		this.paymentTerminal = paymentTerminal;
 	}
 
 }

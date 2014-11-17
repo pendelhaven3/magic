@@ -77,7 +77,8 @@ public class PaymentTerminalAssignmentDaoImpl extends MagicDao implements Paymen
 
 	private static final String FIND_BY_USER_SQL = BASE_SELECT_SQL + " where a.USER_ID = ?";
 	
-	private PaymentTerminalAssignment findByUser(User user) {
+	@Override
+	public PaymentTerminalAssignment findByUser(User user) {
 		try {
 			return getJdbcTemplate().queryForObject(FIND_BY_USER_SQL, rowMapper, user.getId());
 		} catch (IncorrectResultSizeDataAccessException e) {

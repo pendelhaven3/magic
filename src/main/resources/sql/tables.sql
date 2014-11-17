@@ -433,8 +433,12 @@ create table PAYMENT (
   CUSTOMER_ID integer not null,
   PAYMENT_DT date not null,
   AMOUNT_RECEIVED numeric(8, 2) not null,
+  RECEIVED_BY integer not null,
+  PAYMENT_TERMINAL_ID integer not null,
   constraint PAYMENT$PK primary key (ID),
-  constraint PAYMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID)
+  constraint PAYMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
+  constraint PAYMENT$FK2 foreign key (RECEIVED_BY) references USER (ID),
+  constraint PAYMENT$FK3 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID),
 );
 
 create table PAYMENT_ITEM (
