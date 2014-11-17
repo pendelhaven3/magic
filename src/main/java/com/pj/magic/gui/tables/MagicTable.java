@@ -12,6 +12,7 @@ import javax.swing.KeyStroke;
 import javax.swing.table.TableModel;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.util.KeyUtil;
 
 // TODO: This is not really ItemsTable

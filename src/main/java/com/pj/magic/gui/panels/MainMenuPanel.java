@@ -53,7 +53,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(250, 400));
+		table.setPreferredSize(new Dimension(250, 450));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		mainPanel.add(table, c);
@@ -161,6 +161,9 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Payment List":
 			getMagicFrame().switchToPaymentListPanel();
 			break;
+		case "Payment Terminal Assignments":
+			getMagicFrame().switchToPaymentTerminalAssignmentListPanel();
+			break;
 		}
 	}
 
@@ -184,6 +187,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Adjustment Out",
 				"Payment",
 				"Payment List",
+				"Payment Terminal Assignments",
 				"Manufacturer List",
 				"Supplier List",
 				"Product Category List",

@@ -31,6 +31,7 @@ import com.pj.magic.gui.panels.MaintainAreaPanel;
 import com.pj.magic.gui.panels.MaintainCustomerPanel;
 import com.pj.magic.gui.panels.MaintainManufacturerPanel;
 import com.pj.magic.gui.panels.MaintainPaymentTermPanel;
+import com.pj.magic.gui.panels.MaintainPaymentTerminalAssignmentPanel;
 import com.pj.magic.gui.panels.MaintainPricingSchemePanel;
 import com.pj.magic.gui.panels.MaintainProductCategoryPanel;
 import com.pj.magic.gui.panels.MaintainProductPanel;
@@ -41,6 +42,7 @@ import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
 import com.pj.magic.gui.panels.PaymentListPanel;
 import com.pj.magic.gui.panels.PaymentPanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
+import com.pj.magic.gui.panels.PaymentTerminalAssignmentListPanel;
 import com.pj.magic.gui.panels.PricingSchemeListPanel;
 import com.pj.magic.gui.panels.ProductCanvassPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
@@ -69,6 +71,7 @@ import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentTerm;
+import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
@@ -137,6 +140,10 @@ public class MagicFrame extends JFrame {
 	private static final String PAYMENT_PANEL = "PAYMENT_PANEL";
 	private static final String VIEW_PAYMENT_PANEL = "VIEW_PAYMENT_PANEL";
 	private static final String PAYMENT_LIST_PANEL = "PAYMENT_LIST_PANEL";
+	private static final String PAYMENT_TERMINAL_ASSIGNMENT_LIST_PANEL = 
+			"PAYMENT_TERMINAL_ASSIGNMENT_LIST_PANEL";
+	private static final String MAINTAIN_PAYMENT_TERMINAL_ASSIGNMENT_PANEL =
+			"MAINTAIN_PAYMENT_TERMINAL_ASSIGNMENT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -184,6 +191,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private PaymentPanel paymentPanel;
 	@Autowired private ViewPaymentPanel viewPaymentPanel;
 	@Autowired private PaymentListPanel paymentListPanel;
+	@Autowired private PaymentTerminalAssignmentListPanel paymentTerminalAssignmentListPanel;
+	@Autowired private MaintainPaymentTerminalAssignmentPanel maintainPaymentTerminalAssignmentPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -278,6 +287,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(paymentPanel, PAYMENT_PANEL);
 		panelHolder.add(viewPaymentPanel, VIEW_PAYMENT_PANEL);
 		panelHolder.add(paymentListPanel, PAYMENT_LIST_PANEL);
+		panelHolder.add(paymentTerminalAssignmentListPanel, PAYMENT_TERMINAL_ASSIGNMENT_LIST_PANEL);
+		panelHolder.add(maintainPaymentTerminalAssignmentPanel, MAINTAIN_PAYMENT_TERMINAL_ASSIGNMENT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -652,6 +663,27 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Payment List");
 		paymentListPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAYMENT_LIST_PANEL);
+	}
+
+	public void switchToPaymentTerminalAssignmentListPanel() {
+		addPanelNameToTitle("Payment Terminal Assignment List");
+		paymentTerminalAssignmentListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAYMENT_TERMINAL_ASSIGNMENT_LIST_PANEL);
+	}
+
+	public void switchToAddNewPaymentTerminalAssignmentPanel() {
+		addPanelNameToTitle("Add New Payment Terminal Assignment");
+		switchToMaintainPaymentTerminalAssignmentPanel(new PaymentTerminalAssignment());
+	}
+	
+	public void switchToEditPaymentTerminalAssignmentPanel(PaymentTerminalAssignment assignment) {
+		addPanelNameToTitle("Edit Payment Terminal Assignment");
+		switchToMaintainPaymentTerminalAssignmentPanel(assignment);
+	}
+
+	private void switchToMaintainPaymentTerminalAssignmentPanel(PaymentTerminalAssignment assignment) {
+		maintainPaymentTerminalAssignmentPanel.updateDisplay(assignment);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PAYMENT_TERMINAL_ASSIGNMENT_PANEL);
 	}
 	
 }

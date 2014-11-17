@@ -18,6 +18,15 @@ public class PaymentTerminal {
 	
 	private String name;
 
+	public PaymentTerminal() {
+		// default constructor
+	}
+	
+	public PaymentTerminal(Long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public Long getId() {
 		return id;
 	}
