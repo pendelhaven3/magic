@@ -294,6 +294,11 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			paymentTermComboBox.setEnabled(true);
 			
 			if (customer.getPaymentTerm() != null) {
+				if (salesRequisition.getId() != null) {
+					if (customer.getPaymentTerm().equals((PaymentTerm)paymentTermComboBox.getSelectedItem())) {
+						salesRequisitionService.save(salesRequisition);
+					}
+				}
 				paymentTermComboBox.setSelectedItem(customer.getPaymentTerm());
 			} else {
 				paymentTermComboBox.setSelectedItem(null, false);
