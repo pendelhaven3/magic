@@ -25,6 +25,7 @@ public class AdjustmentInsTable extends MagicListTable {
 
 	public static final int ADJUSTMENT_IN_NUMBER_COLUMN_INDEX = 0;
 	public static final int REMARKS_COLUMN_INDEX = 1;
+	public static final int POSTED_COLUMN_INDEX = 2;
 	public static final int TOTAL_AMOUNT_COLUMN_INDEX = 4;
 	private static final String GO_TO_ADJUSTMENT_IN_ACTION_NAME = "goToAdjustmentIn";
 	private static final String DELETE_ADJUSTMENT_IN_ACTION_NAME = "deleteAdjustmentIn";
