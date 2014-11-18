@@ -32,7 +32,7 @@ public class AdjustmentInsTableModel extends AbstractTableModel {
 		AdjustmentIn adjustmentIn = adjustmentIns.get(rowIndex);
 		switch (columnIndex) {
 		case AdjustmentInsTable.ADJUSTMENT_IN_NUMBER_COLUMN_INDEX:
-			return adjustmentIn.getAdjustmentInNumber().toString();
+			return adjustmentIn.getAdjustmentInNumber();
 		case AdjustmentInsTable.REMARKS_COLUMN_INDEX:
 			return adjustmentIn.getRemarks();
 		case AdjustmentInsTable.POSTED_COLUMN_INDEX:

@@ -78,8 +78,6 @@ public class AdjustmentOutsTable extends MagicListTable {
 				changeSelection(selectedRowIndex, 0, false, false);
 			}
 		}
-		
-		// TODO: update table as well if any new SR has been created
 	}
 	
 	public void registerKeyBindings() {

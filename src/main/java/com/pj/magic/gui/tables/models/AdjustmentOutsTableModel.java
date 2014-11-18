@@ -13,7 +13,7 @@ import com.pj.magic.model.AdjustmentOut;
 @Component
 public class AdjustmentOutsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"Adj. Out No."};
+	private static final String[] COLUMN_NAMES = {"Adj. Out No.", "Remarks", "Posted"};
 	
 	private List<AdjustmentOut> adjustmentOuts = new ArrayList<>();
 	
@@ -32,7 +32,11 @@ public class AdjustmentOutsTableModel extends AbstractTableModel {
 		AdjustmentOut adjustmentOut = adjustmentOuts.get(rowIndex);
 		switch (columnIndex) {
 		case AdjustmentOutsTable.ADJUSTMENT_OUT_NUMBER_COLUMN_INDEX:
-			return adjustmentOut.getAdjustmentOutNumber().toString();
+			return adjustmentOut.getAdjustmentOutNumber();
+		case AdjustmentOutsTable.REMARKS_COLUMN_INDEX:
+			return adjustmentOut.getRemarks();
+		case AdjustmentOutsTable.POSTED_COLUMN_INDEX:
+			return adjustmentOut.isPosted() ? "Yes" : "No";
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
