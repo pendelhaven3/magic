@@ -66,7 +66,6 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	private JButton printPreviewButton;
 	private JButton printButton;
 	private JButton showAllButton;
-	private JButton showDiscrepanciesButton;
 	private JButton searchButton;
 	
 	@Override
@@ -147,7 +146,6 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		printPreviewButton.setEnabled(true);
 		saveButton.setVisible(false);
 		showAllButton.setEnabled(true);
-		showDiscrepanciesButton.setEnabled(true);
 		searchButton.setEnabled(true);
 		
 		summaryTable.setItems(inventoryCheck.getSummaryItems());
@@ -178,7 +176,6 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		printPreviewButton.setEnabled(false);
 		saveButton.setVisible(true);
 		showAllButton.setEnabled(false);
-		showDiscrepanciesButton.setEnabled(false);
 		searchButton.setEnabled(false);
 	}
 
@@ -320,17 +317,6 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		});
 		toolBar.add(showAllButton);
 		
-		showDiscrepanciesButton = new MagicToolBarButton("discrepancy", "Show Discrepancies Only");
-		showDiscrepanciesButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showSummaryItemsWithDiscrepancies();
-			}
-		});
-		
-		toolBar.add(showDiscrepanciesButton);
-		
 		searchButton = new MagicToolBarButton("search", "Search");
 		searchButton.addActionListener(new ActionListener() {
 			
@@ -378,11 +364,6 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		InventoryCheckSearchCriteria criteria = inventoryCheckSearchCriteriaDialog.getSearchCriteria();
 		refreshInventoryCheck();
 		summaryTable.setItems(inventoryCheck.searchSummaryItems(criteria));
-	}
-
-	private void showSummaryItemsWithDiscrepancies() {
-		refreshInventoryCheck();
-		summaryTable.setItems(inventoryCheck.getSummaryItemsWithDiscrepancies());
 	}
 
 	private void refreshInventoryCheck() {

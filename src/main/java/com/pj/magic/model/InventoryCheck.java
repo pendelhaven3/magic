@@ -124,10 +124,12 @@ public class InventoryCheck {
 	}
 
 	public List<InventoryCheckSummaryItem> searchSummaryItems(InventoryCheckSearchCriteria criteria) {
-		final String codeOrDescription = criteria.getCodeOrDescriptionLike();
-		if (StringUtils.isEmpty(codeOrDescription)) {
+		if (criteria.isEmpty()) {
 			return summaryItems;
 		}
+		
+		final String codeOrDescription = criteria.getCodeOrDescriptionLike();
+		final Boolean withDiscrepancy = criteria.getWithDiscrepancy();
 		
 		return new ArrayList<InventoryCheckSummaryItem>(Collections2.filter(summaryItems, 
 				new Predicate<InventoryCheckSummaryItem>() {
@@ -135,8 +137,22 @@ public class InventoryCheck {
 			@Override
 			public boolean apply(InventoryCheckSummaryItem input) {
 				Product product = input.getProduct();
-				return product.getCode().startsWith(codeOrDescription) ||
-						product.getDescription().toUpperCase().contains(codeOrDescription);
+				boolean include = true;
+				
+				if (!StringUtils.isEmpty(codeOrDescription)) {
+					include = include && product.getCode().startsWith(codeOrDescription) ||
+							product.getDescription().toUpperCase().contains(codeOrDescription);
+				}
+				
+				if (include && withDiscrepancy != null) {
+					if (withDiscrepancy) {
+						include = include && (input.getBeginningInventory() != input.getQuantity());
+					} else {
+						include = include && (input.getBeginningInventory() == input.getQuantity());
+					}
+				}
+				
+				return include;
 			}
 		}));
 	}
