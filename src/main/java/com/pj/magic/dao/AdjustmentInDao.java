@@ -13,8 +13,6 @@ public interface AdjustmentInDao {
 
 	void delete(AdjustmentIn adjustmentOut);
 
-	List<AdjustmentIn> search(AdjustmentIn criteria);
-
 	List<AdjustmentIn> search(AdjustmentInSearchCriteria criteria);
 	
 }

@@ -117,16 +117,6 @@ public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 	}
 
 	@Override
-	public List<AdjustmentIn> search(AdjustmentIn criteria) {
-		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
-		sql.append(" where POST_IND = ?");
-		sql.append(" order by ID desc"); // TODO: change to be more flexible when the need arises
-		
-		return getJdbcTemplate().query(sql.toString(), adjustmentInRowMapper,
-				criteria.isPosted() ? "Y" : "N");
-	}
-
-	@Override
 	public List<AdjustmentIn> search(AdjustmentInSearchCriteria criteria) {
 		List<Object> params = new ArrayList<>();
 		

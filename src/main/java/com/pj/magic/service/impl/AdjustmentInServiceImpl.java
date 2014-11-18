@@ -81,14 +81,9 @@ public class AdjustmentInServiceImpl implements AdjustmentInService {
 
 	@Override
 	public List<AdjustmentIn> getAllNonPostedAdjustmentIns() {
-		AdjustmentIn criteria = new AdjustmentIn();
+		AdjustmentInSearchCriteria criteria = new AdjustmentInSearchCriteria();
 		criteria.setPosted(false);
-		
-		List<AdjustmentIn> adjustmentIns = adjustmentInDao.search(criteria);
-		for (AdjustmentIn adjustmentIn : adjustmentIns) {
-			loadAdjustmentInDetails(adjustmentIn);
-		}
-		return adjustmentIns;
+		return search(criteria);
 	}
 
 	@Override
