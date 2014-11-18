@@ -79,7 +79,7 @@ public class ResetPasswordPanel extends StandardMagicPanel {
 		panel.add(new JLabel("Saved! New user password: "));
 		
 		JTextField textField = new JTextField(user.getPlainPassword());
-		textField.setPreferredSize(new Dimension(80, 20));
+		textField.setPreferredSize(new Dimension(90, 25));
 		textField.setEditable(false);
 		panel.add(textField);
 		
