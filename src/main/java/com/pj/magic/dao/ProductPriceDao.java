@@ -9,4 +9,6 @@ public interface ProductPriceDao {
 
 	void createUnitPrices(Product product);
 
+	void deleteAllByProduct(Product product);
+
 }

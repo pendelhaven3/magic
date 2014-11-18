@@ -37,4 +37,12 @@ public class ProductPriceDaoImpl extends MagicDao implements ProductPriceDao {
 		getJdbcTemplate().update(CREATE_UNIT_PRICES_SQL, product.getId());
 	}
 
+	private static final String DELETE_ALL_BY_PRODUCT_SQL =
+			"delete from PRODUCT_PRICE where PRODUCT_ID = ?";
+	
+	@Override
+	public void deleteAllByProduct(Product product) {
+		getJdbcTemplate().update(DELETE_ALL_BY_PRODUCT_SQL, product.getId());
+	}
+
 }

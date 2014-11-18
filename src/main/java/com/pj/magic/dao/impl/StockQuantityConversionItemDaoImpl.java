@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -21,6 +22,13 @@ import com.pj.magic.model.StockQuantityConversionItem;
 @Repository
 public class StockQuantityConversionItemDaoImpl extends MagicDao implements StockQuantityConversionItemDao {
 
+	private static final String BASE_SELECT_SQL =
+			"select ID, STOCK_QTY_CONVERSION_ID, PRODUCT_ID, FROM_UNIT, QUANTITY, TO_UNIT "
+			+ " from STOCK_QTY_CONVERSION_ITEM";
+	
+	private StockQuantityConversionItemRowMapper rowMapper =
+			new StockQuantityConversionItemRowMapper();
+	
 	@Override
 	public void save(StockQuantityConversionItem item) {
 		if (item.getId() == null) {
@@ -50,7 +58,7 @@ public class StockQuantityConversionItemDaoImpl extends MagicDao implements Stoc
 				ps.setString(5, item.getToUnit());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		item.setId(holder.getKey().longValue());
 	}
@@ -65,27 +73,18 @@ public class StockQuantityConversionItemDaoImpl extends MagicDao implements Stoc
 				item.getQuantity(), item.getToUnit(), item.getId());
 	}
 
-	private static final String FIND_ALL_BY_STOCK_QUANTITY_CONVERSION_SQL =
-			"select ID, PRODUCT_ID, FROM_UNIT, QUANTITY, TO_UNIT from STOCK_QTY_CONVERSION_ITEM"
+	private static final String FIND_ALL_BY_STOCK_QUANTITY_CONVERSION_SQL = BASE_SELECT_SQL
 			+ " where STOCK_QTY_CONVERSION_ID = ?";
 	
 	@Override
 	public List<StockQuantityConversionItem> findAllByStockQuantityConversion(
-			final StockQuantityConversion stockQuantityConversion) {
-		return getJdbcTemplate().query(FIND_ALL_BY_STOCK_QUANTITY_CONVERSION_SQL, new RowMapper<StockQuantityConversionItem>() {
-			
-			@Override
-			public StockQuantityConversionItem mapRow(ResultSet rs, int rowNum) throws SQLException {
-				StockQuantityConversionItem item = new StockQuantityConversionItem();
-				item.setId(rs.getLong("ID"));
-				item.setParent(stockQuantityConversion);
-				item.setProduct(new Product(rs.getLong("PRODUCT_ID")));
-				item.setFromUnit(rs.getString("FROM_UNIT"));
-				item.setQuantity(rs.getInt("QUANTITY"));
-				item.setToUnit(rs.getString("TO_UNIT"));
-				return item;
-			}
-		}, stockQuantityConversion.getId());
+			StockQuantityConversion stockQuantityConversion) {
+		List<StockQuantityConversionItem> items = getJdbcTemplate().query(FIND_ALL_BY_STOCK_QUANTITY_CONVERSION_SQL, 
+				rowMapper, stockQuantityConversion.getId());
+		for (StockQuantityConversionItem item : items) {
+			item.setParent(stockQuantityConversion);
+		}
+		return items;
 	}
 
 	private static final String DELETE_SQL = "delete from STOCK_QTY_CONVERSION_ITEM where ID = ?";
@@ -101,6 +100,34 @@ public class StockQuantityConversionItemDaoImpl extends MagicDao implements Stoc
 	@Override
 	public void deleteAllByStockQuantityConversion(StockQuantityConversion stockQuantityConversion) {
 		getJdbcTemplate().update(DELETE_ALL_BY_STOCK_QUANTITY_CONVERSION_SQL, stockQuantityConversion.getId());
+	}
+
+	private static final String FIND_FIRST_BY_PRODUCT_SQL = BASE_SELECT_SQL
+			+ " where PRODUCT_ID = ? limit 1";
+	
+	@Override
+	public StockQuantityConversionItem findFirstByProduct(Product product) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_FIRST_BY_PRODUCT_SQL, rowMapper, product.getId());
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
+	
+	private class StockQuantityConversionItemRowMapper implements RowMapper<StockQuantityConversionItem> {
+
+		@Override
+		public StockQuantityConversionItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+			StockQuantityConversionItem item = new StockQuantityConversionItem();
+			item.setId(rs.getLong("ID"));
+			item.setParent(new StockQuantityConversion(rs.getLong("STOCK_QTY_CONVERSION_ID")));
+			item.setProduct(new Product(rs.getLong("PRODUCT_ID")));
+			item.setFromUnit(rs.getString("FROM_UNIT"));
+			item.setQuantity(rs.getInt("QUANTITY"));
+			item.setToUnit(rs.getString("TO_UNIT"));
+			return item;
+		}
+		
 	}
 	
 }

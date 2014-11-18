@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentInItem;
+import com.pj.magic.model.Product;
 
 public interface AdjustmentInItemDao {
 
@@ -14,5 +15,7 @@ public interface AdjustmentInItemDao {
 	void delete(AdjustmentInItem item);
 
 	void deleteAllByAdjustmentIn(AdjustmentIn adjustmentIn);
+
+	AdjustmentInItem findFirstByProduct(Product product);
 	
 }

@@ -26,5 +26,7 @@ public interface SupplierDao {
 	void delete(Supplier supplier);
 	
 	void removeAllProductsFromSupplier(Supplier supplier);
+
+	void deleteAllByProduct(Product product);
 	
 }

@@ -7,10 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pj.magic.dao.AdjustmentInItemDao;
+import com.pj.magic.dao.AdjustmentOutItemDao;
+import com.pj.magic.dao.AreaInventoryReportItemDao;
 import com.pj.magic.dao.PricingSchemeDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ProductPriceDao;
+import com.pj.magic.dao.PurchaseOrderItemDao;
 import com.pj.magic.dao.ReceivingReceiptDao;
+import com.pj.magic.dao.SalesRequisitionItemDao;
+import com.pj.magic.dao.StockQuantityConversionItemDao;
 import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
@@ -27,6 +33,12 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private PricingSchemeDao pricingSchemeDao;
 	@Autowired private ReceivingReceiptDao receivingReceiptDao;
+	@Autowired private SalesRequisitionItemDao salesRequisitionItemDao;
+	@Autowired private PurchaseOrderItemDao purchaseOrderItemDao;
+	@Autowired private StockQuantityConversionItemDao stockQuantityConversionItemDao;
+	@Autowired private AdjustmentInItemDao adjustmentInItemDao;
+	@Autowired private AdjustmentOutItemDao adjustmentOutItemDao;
+	@Autowired private AreaInventoryReportItemDao areaInventoryReportItemDao;
 	
 	@Override
 	public List<Product> getAllProducts() {
@@ -141,6 +153,24 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public List<ProductCanvassItem> getProductCanvass(Product product) {
 		return receivingReceiptDao.getProductCanvassItems(product);
+	}
+
+	@Override
+	public boolean canDeleteProduct(Product product) {
+		return salesRequisitionItemDao.findFirstByProduct(product) == null &&
+				purchaseOrderItemDao.findFirstByProduct(product) == null &&
+				stockQuantityConversionItemDao.findFirstByProduct(product) == null &&
+				adjustmentInItemDao.findFirstByProduct(product) == null &&
+				adjustmentOutItemDao.findFirstByProduct(product) == null &&
+				areaInventoryReportItemDao.findFirstByProduct(product) == null;
+	}
+
+	@Transactional
+	@Override
+	public void deleteProduct(Product product) {
+		supplierDao.deleteAllByProduct(product);
+		productPriceDao.deleteAllByProduct(product);
+		productDao.delete(product);
 	}
 
 }

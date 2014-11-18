@@ -13,6 +13,14 @@ public class StockQuantityConversion {
 	private boolean posted;
 	private Date postDate;
 
+	public StockQuantityConversion() {
+		// default constructor
+	}
+	
+	public StockQuantityConversion(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}

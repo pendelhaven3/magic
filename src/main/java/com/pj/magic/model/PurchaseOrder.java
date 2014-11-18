@@ -20,6 +20,14 @@ public class PurchaseOrder {
 	private Date postDate;
 	private User createdBy;
 
+	public PurchaseOrder() {
+		// default constructor
+	}
+	
+	public PurchaseOrder(Long id) {
+		this.id = id;
+	}
+
 	public Long getId() {
 		return id;
 	}

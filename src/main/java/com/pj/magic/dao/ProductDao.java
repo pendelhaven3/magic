@@ -30,5 +30,7 @@ public interface ProductDao {
 	Product findByIdAndPricingScheme(long id, PricingScheme pricingScheme);
 	
 	Product findByCodeAndPricingScheme(String code, PricingScheme pricingScheme);
+
+	void delete(Product product);
 	
 }

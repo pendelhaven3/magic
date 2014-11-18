@@ -210,5 +210,13 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	public void removeAllProductsFromSupplier(Supplier supplier) {
 		getJdbcTemplate().update(REMOVE_ALL_PRODUCTS_FROM_SUPPLIER_SQL, supplier.getId());
 	}
+
+	private static final String DELETE_ALL_BY_PRODUCT_SQL =
+			"delete from SUPPLIER_PRODUCT where PRODUCT_ID = ?";
+	
+	@Override
+	public void deleteAllByProduct(Product product) {
+		getJdbcTemplate().update(DELETE_ALL_BY_PRODUCT_SQL, product.getId());
+	}
 	
 }

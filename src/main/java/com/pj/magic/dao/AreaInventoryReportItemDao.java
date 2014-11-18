@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.util.AreaInventoryReportItemSearchCriteria;
 
 public interface AreaInventoryReportItemDao {
@@ -17,5 +18,7 @@ public interface AreaInventoryReportItemDao {
 	void deleteAllByAreaInventoryReport(AreaInventoryReport areaInventoryReport);
 	
 	List<AreaInventoryReportItem> search(AreaInventoryReportItemSearchCriteria criteria);
+
+	AreaInventoryReportItem findFirstByProduct(Product product);
 	
 }

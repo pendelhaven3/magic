@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,13 +15,19 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.AdjustmentOutItemDao;
-import com.pj.magic.model.Product;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
+import com.pj.magic.model.Product;
 
 @Repository
 public class AdjustmentOutItemDaoImpl extends MagicDao implements AdjustmentOutItemDao {
 
+	private static final String BASE_SELECT_SQL =
+			"select ID, ADJUSTMENT_OUT_ID, PRODUCT_ID, UNIT, QUANTITY from ADJUSTMENT_OUT_ITEM";
+	
+	private AdjustmentOutItemRowMapper adjustmentOutItemRowMapper =
+			new AdjustmentOutItemRowMapper();
+	
 	@Override
 	public void save(AdjustmentOutItem item) {
 		if (item.getId() == null) {
@@ -48,7 +55,7 @@ public class AdjustmentOutItemDaoImpl extends MagicDao implements AdjustmentOutI
 				ps.setInt(4, item.getQuantity());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		item.setId(holder.getKey().longValue());
 	}
@@ -63,25 +70,17 @@ public class AdjustmentOutItemDaoImpl extends MagicDao implements AdjustmentOutI
 				item.getQuantity(), item.getId());
 	}
 
-	private static final String FIND_ALL_BY_ADJUSTMENT_OUT_SQL =
-			"select ID, PRODUCT_ID, UNIT, QUANTITY from ADJUSTMENT_OUT_ITEM"
+	private static final String FIND_ALL_BY_ADJUSTMENT_OUT_SQL = BASE_SELECT_SQL
 			+ " where ADJUSTMENT_OUT_ID = ?";
 	
 	@Override
-	public List<AdjustmentOutItem> findAllByAdjustmentOut(final AdjustmentOut adjustmentOut) {
-		return getJdbcTemplate().query(FIND_ALL_BY_ADJUSTMENT_OUT_SQL, new RowMapper<AdjustmentOutItem>() {
-			
-			@Override
-			public AdjustmentOutItem mapRow(ResultSet rs, int rowNum) throws SQLException {
-				AdjustmentOutItem item = new AdjustmentOutItem();
-				item.setId(rs.getLong("ID"));
-				item.setParent(adjustmentOut);
-				item.setProduct(new Product(rs.getLong("PRODUCT_ID")));
-				item.setUnit(rs.getString("UNIT"));
-				item.setQuantity(rs.getInt("QUANTITY"));
-				return item;
-			}
-		}, adjustmentOut.getId());
+	public List<AdjustmentOutItem> findAllByAdjustmentOut(AdjustmentOut adjustmentOut) {
+		List<AdjustmentOutItem> items = getJdbcTemplate().query(FIND_ALL_BY_ADJUSTMENT_OUT_SQL, 
+				adjustmentOutItemRowMapper, adjustmentOut.getId());
+		for (AdjustmentOutItem item : items) {
+			item.setParent(adjustmentOut);
+		}
+		return items;
 	}
 
 	private static final String DELETE_SQL = "delete from ADJUSTMENT_OUT_ITEM where ID = ?";
@@ -97,6 +96,34 @@ public class AdjustmentOutItemDaoImpl extends MagicDao implements AdjustmentOutI
 	@Override
 	public void deleteAllByAdjustmentOut(AdjustmentOut adjustmentOut) {
 		getJdbcTemplate().update(DELETE_ALL_BY_ADJUSTMENT_OUT_SQL, adjustmentOut.getId());
+	}
+
+	private static final String FIND_FIRST_BY_PRODUCT_SQL = BASE_SELECT_SQL
+			+ " where PRODUCT_ID = ? limit 1";
+	
+	@Override
+	public AdjustmentOutItem findFirstByProduct(Product product) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_FIRST_BY_PRODUCT_SQL, 
+					adjustmentOutItemRowMapper, product.getId());
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
+	
+	private class AdjustmentOutItemRowMapper implements RowMapper<AdjustmentOutItem> {
+
+		@Override
+		public AdjustmentOutItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+			AdjustmentOutItem item = new AdjustmentOutItem();
+			item.setId(rs.getLong("ID"));
+			item.setParent(new AdjustmentOut(rs.getLong("ADJUSTMENT_OUT_ID")));
+			item.setProduct(new Product(rs.getLong("PRODUCT_ID")));
+			item.setUnit(rs.getString("UNIT"));
+			item.setQuantity(rs.getInt("QUANTITY"));
+			return item;
+		}
+		
 	}
 	
 }

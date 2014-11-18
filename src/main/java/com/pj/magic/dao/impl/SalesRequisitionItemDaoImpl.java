@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -21,6 +22,12 @@ import com.pj.magic.model.SalesRequisitionItem;
 @Repository
 public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequisitionItemDao {
 
+	private static final String BASE_SELECT_SQL =
+			"select ID, SALES_REQUISITION_ID, PRODUCT_ID, UNIT, QUANTITY from SALES_REQUISITION_ITEM";
+
+	private SalesRequisitionItemRowMapper salesRequisitionItemRowMapper =
+			new SalesRequisitionItemRowMapper();
+	
 	@Override
 	public void save(SalesRequisitionItem item) {
 		if (item.getId() == null) {
@@ -48,7 +55,7 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 				ps.setInt(4, item.getQuantity());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		item.setId(holder.getKey().longValue());
 	}
@@ -63,25 +70,17 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 				item.getQuantity(), item.getId());
 	}
 
-	private static final String FIND_ALL_BY_SALES_REQUISITION_SQL =
-			"select ID, PRODUCT_ID, UNIT, QUANTITY from SALES_REQUISITION_ITEM"
+	private static final String FIND_ALL_BY_SALES_REQUISITION_SQL = BASE_SELECT_SQL
 			+ " where SALES_REQUISITION_ID = ?";
 	
 	@Override
-	public List<SalesRequisitionItem> findAllBySalesRequisition(final SalesRequisition salesRequisition) {
-		return getJdbcTemplate().query(FIND_ALL_BY_SALES_REQUISITION_SQL, new RowMapper<SalesRequisitionItem>() {
-			
-			@Override
-			public SalesRequisitionItem mapRow(ResultSet rs, int rowNum) throws SQLException {
-				SalesRequisitionItem item = new SalesRequisitionItem();
-				item.setId(rs.getLong("ID"));
-				item.setParent(salesRequisition);
-				item.setProduct(new Product(rs.getLong("PRODUCT_ID")));
-				item.setUnit(rs.getString("UNIT"));
-				item.setQuantity(rs.getInt("QUANTITY"));
-				return item;
-			}
-		}, salesRequisition.getId());
+	public List<SalesRequisitionItem> findAllBySalesRequisition(SalesRequisition salesRequisition) {
+		List<SalesRequisitionItem> items = getJdbcTemplate().query(FIND_ALL_BY_SALES_REQUISITION_SQL, 
+				salesRequisitionItemRowMapper, salesRequisition.getId());
+		for (SalesRequisitionItem item : items) {
+			item.setParent(salesRequisition);
+		}
+		return items;
 	}
 
 	private static final String DELETE_SQL = "delete from SALES_REQUISITION_ITEM where ID = ?";
@@ -97,6 +96,34 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 	@Override
 	public void deleteAllBySalesRequisition(SalesRequisition salesRequisition) {
 		getJdbcTemplate().update(DELETE_ALL_BY_SALES_REQUISITION_SQL, salesRequisition.getId());
+	}
+
+	private static final String FIND_FIRST_BY_PRODUCT_SQL = BASE_SELECT_SQL
+			+ " where PRODUCT_ID = ? limit 1";
+	
+	@Override
+	public SalesRequisitionItem findFirstByProduct(Product product) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_FIRST_BY_PRODUCT_SQL, salesRequisitionItemRowMapper,
+					product.getId());
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
+	
+	private class SalesRequisitionItemRowMapper implements RowMapper<SalesRequisitionItem> {
+
+		@Override
+		public SalesRequisitionItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+			SalesRequisitionItem item = new SalesRequisitionItem();
+			item.setId(rs.getLong("ID"));
+			item.setParent(new SalesRequisition(rs.getLong("SALES_REQUISITION_ID")));
+			item.setProduct(new Product(rs.getLong("PRODUCT_ID")));
+			item.setUnit(rs.getString("UNIT"));
+			item.setQuantity(rs.getInt("QUANTITY"));
+			return item;
+		}
+		
 	}
 	
 }

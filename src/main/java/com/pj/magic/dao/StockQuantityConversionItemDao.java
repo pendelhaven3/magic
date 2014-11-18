@@ -2,6 +2,7 @@ package com.pj.magic.dao;
 
 import java.util.List;
 
+import com.pj.magic.model.Product;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 
@@ -14,5 +15,7 @@ public interface StockQuantityConversionItemDao {
 	void delete(StockQuantityConversionItem item);
 
 	void deleteAllByStockQuantityConversion(StockQuantityConversion stockQuantityConversion);
+
+	StockQuantityConversionItem findFirstByProduct(Product product);
 	
 }

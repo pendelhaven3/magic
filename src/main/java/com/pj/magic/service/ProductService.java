@@ -43,4 +43,8 @@ public interface ProductService {
 
 	List<ProductCanvassItem> getProductCanvass(Product product);
 
+	boolean canDeleteProduct(Product product);
+
+	void deleteProduct(Product product);
+
 }

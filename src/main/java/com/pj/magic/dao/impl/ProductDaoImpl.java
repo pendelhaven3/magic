@@ -406,4 +406,11 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		}
 	}
 
+	private static final String DELETE_SQL = "delete from PRODUCT where ID = ?";
+	
+	@Override
+	public void delete(Product product) {
+		getJdbcTemplate().update(DELETE_SQL, product.getId());
+	}
+
 }

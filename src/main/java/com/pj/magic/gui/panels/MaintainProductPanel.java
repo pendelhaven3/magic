@@ -35,6 +35,7 @@ import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.ProductSuppliersTable;
 import com.pj.magic.model.Manufacturer;
@@ -91,6 +92,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	private JButton saveButton;
 	private JButton copyAsNewButton;
 	private JButton addSupplierButton;
+	private JButton deleteButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -195,6 +197,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	private void copyAsNewProduct() {
 		getMagicFrame().setTitle("Add New Product");
 		product.setId(null);
+		deleteButton.setEnabled(false);
 		productSuppliersTable.clearDisplay();
 		codeField.requestFocusInWindow();
 	}
@@ -908,6 +911,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		
 		productSuppliersTable.updateDisplay(product);
 		addSupplierButton.setEnabled(true);
+		deleteButton.setEnabled(true);
 	}
 
 	private void updateComboBoxes() {
@@ -949,6 +953,7 @@ public class MaintainProductPanel extends StandardMagicPanel {
 		companyListPriceField.setText(null);
 		addSupplierButton.setEnabled(false);
 		productSuppliersTable.clearDisplay();
+		deleteButton.setEnabled(false);
 	}
 
 	@Override
@@ -958,7 +963,33 @@ public class MaintainProductPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
+		deleteButton = new MagicToolBarButton("trash", "Delete");
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteProduct();
+			}
+		});
+		toolBar.add(deleteButton);
+	}
+
+	private void deleteProduct() {
+		if (!productService.canDeleteProduct(product)) {
+			showErrorMessage("Cannot delete Product that is already referenced");
+			return;
+		}
+		
+		if (confirm("Delete Product?")) {
+			try {
+				productService.deleteProduct(product);
+				showMessage("Product deleted");
+				getMagicFrame().switchToProductListPanel();
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error");
+			}
+		}
 	}
 
 }

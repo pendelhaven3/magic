@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -32,7 +33,7 @@ public class AreaInventoryReportItemDaoImpl extends MagicDao implements AreaInve
 			+ " from AREA_INV_REPORT_ITEM a"
 			+ " join AREA_INV_REPORT b"
 			+ "   on b.ID = a.AREA_INV_REPORT_ID"
-			+ " join AREA c"
+			+ " left join AREA c"
 			+ "   on c.ID = b.AREA_ID"
 			+ " where 1 = 1";
 
@@ -136,7 +137,9 @@ public class AreaInventoryReportItemDaoImpl extends MagicDao implements AreaInve
 			AreaInventoryReport parent = new AreaInventoryReport();
 			parent.setId(rs.getLong("AREA_INV_REPORT_ID"));
 			parent.setReportNumber(rs.getInt("REPORT_NO"));
-			parent.setArea(new Area(rs.getLong("AREA_ID"), rs.getString("AREA_NAME")));
+			if (rs.getLong("AREA_ID") != 0) {
+				parent.setArea(new Area(rs.getLong("AREA_ID"), rs.getString("AREA_NAME")));
+			}
 			item.setParent(parent);
 			
 			item.setProduct(new Product(rs.getLong("PRODUCT_ID")));
@@ -145,6 +148,19 @@ public class AreaInventoryReportItemDaoImpl extends MagicDao implements AreaInve
 			return item;
 		}
 		
+	}
+
+	private static final String FIND_FIRST_BY_PRODUCT_SQL = BASE_SELECT_SQL
+			+ " and a.PRODUCT_ID = ? limit 1";
+	
+	@Override
+	public AreaInventoryReportItem findFirstByProduct(Product product) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_FIRST_BY_PRODUCT_SQL,
+					rowMapper, product.getId());
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
 	}
 	
 }
