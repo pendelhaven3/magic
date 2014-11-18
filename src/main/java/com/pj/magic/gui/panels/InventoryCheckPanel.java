@@ -31,11 +31,13 @@ import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.ActualCountDetailsDialog;
+import com.pj.magic.gui.dialog.InventoryCheckSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.InventoryCheckSummaryTable;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
+import com.pj.magic.model.search.InventoryCheckSearchCriteria;
 import com.pj.magic.service.InventoryCheckService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
@@ -52,6 +54,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	@Autowired private ActualCountDetailsDialog actualCountDetailsDialog;
+	@Autowired private InventoryCheckSearchCriteriaDialog inventoryCheckSearchCriteriaDialog;
 	
 	private InventoryCheck inventoryCheck;
 	private UtilCalendarModel inventoryDateModel;
@@ -64,6 +67,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	private JButton printButton;
 	private JButton showAllButton;
 	private JButton showDiscrepanciesButton;
+	private JButton searchButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -144,8 +148,10 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		saveButton.setVisible(false);
 		showAllButton.setEnabled(true);
 		showDiscrepanciesButton.setEnabled(true);
+		searchButton.setEnabled(true);
 		
 		summaryTable.setItems(inventoryCheck.getSummaryItems());
+		inventoryCheckSearchCriteriaDialog.updateDisplay();
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			
@@ -173,6 +179,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		saveButton.setVisible(true);
 		showAllButton.setEnabled(false);
 		showDiscrepanciesButton.setEnabled(false);
+		searchButton.setEnabled(false);
 	}
 
 	@Override
@@ -324,6 +331,16 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		
 		toolBar.add(showDiscrepanciesButton);
 		
+		searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchSummaryItems();
+			}
+		});
+		toolBar.add(searchButton);
+		
 		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
 			
@@ -356,12 +373,26 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		toolBar.add(printButton);
 	}
 
+	private void searchSummaryItems() {
+		inventoryCheckSearchCriteriaDialog.setVisible(true);
+		InventoryCheckSearchCriteria criteria = inventoryCheckSearchCriteriaDialog.getSearchCriteria();
+		refreshInventoryCheck();
+		summaryTable.setItems(inventoryCheck.searchSummaryItems(criteria));
+	}
+
 	private void showSummaryItemsWithDiscrepancies() {
+		refreshInventoryCheck();
 		summaryTable.setItems(inventoryCheck.getSummaryItemsWithDiscrepancies());
 	}
 
+	private void refreshInventoryCheck() {
+		inventoryCheck = inventoryCheckService.getInventoryCheck(inventoryCheck.getId());
+	}
+
 	private void showAllSummaryItems() {
+		refreshInventoryCheck();
 		summaryTable.setItems(inventoryCheck.getSummaryItems());
+		inventoryCheckSearchCriteriaDialog.updateDisplay();
 	}
 
 	private void print() {

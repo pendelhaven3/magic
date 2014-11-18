@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.pj.magic.Constants;
+import com.pj.magic.model.search.InventoryCheckSearchCriteria;
 import com.pj.magic.util.FormatterUtil;
 
 public class InventoryCheck {
@@ -116,6 +119,24 @@ public class InventoryCheck {
 			@Override
 			public boolean apply(InventoryCheckSummaryItem input) {
 				return input.getBeginningInventory() != input.getQuantity();
+			}
+		}));
+	}
+
+	public List<InventoryCheckSummaryItem> searchSummaryItems(InventoryCheckSearchCriteria criteria) {
+		final String codeOrDescription = criteria.getCodeOrDescriptionLike();
+		if (StringUtils.isEmpty(codeOrDescription)) {
+			return summaryItems;
+		}
+		
+		return new ArrayList<InventoryCheckSummaryItem>(Collections2.filter(summaryItems, 
+				new Predicate<InventoryCheckSummaryItem>() {
+
+			@Override
+			public boolean apply(InventoryCheckSummaryItem input) {
+				Product product = input.getProduct();
+				return product.getCode().startsWith(codeOrDescription) ||
+						product.getDescription().toUpperCase().contains(codeOrDescription);
 			}
 		}));
 	}
