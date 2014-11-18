@@ -31,7 +31,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "   join CUSTOMER c"
 			+ "     on c.ID = a.CUSTOMER_ID"
 			+ "   where b.PRODUCT_ID = ?"
-			+ "   and a.MARK_IND = 'Y'"
+			+ "   and a.CANCEL_IND = 'N'"
 			+ "   union all"
 			+ "   select a.RECEIVED_DT as TRANSACTION_DT, a.RECEIVING_RECEIPT_NO as TRANSACTION_NO,"
 			+ "   c.NAME as CUSTOMER_SUPPLIER_NAME,"
