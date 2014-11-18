@@ -2,13 +2,11 @@
                    251 GEN.P.ALVAREZ ST.CALOOCAN CITY
                          TEL.NO.3621785 3235946
 
-                         PURCHASE ORDER DISCOUNT
+                            RECEIVING REPORT
 
-P.O. #   : $report.field($receivingReceipt.receivingReceiptNumber, 6, "right")                                     Date  : $receivedDate
-                                                      Terms : $receivingReceipt.paymentTerm.name
-Supplier : $report.field($receivingReceipt.supplier.name, 35)                                
-Address  : $report.multiline($receivingReceipt.supplier.address, 35, 1)      Encoder : $receivingReceipt.receivedBy.username
-           $report.multiline($receivingReceipt.supplier.address, 35, 2)
+Supplier : $report.field($receivingReceipt.supplier.name, 40)         R.R. #  : $receivingReceipt.receivingReceiptNumber 
+P.O. #   : $report.field($receivingReceipt.relatedPurchaseOrderNumber, 6)                                           Ref. #  : $receivingReceipt.referenceNumber
+Terms    : $report.field($receivingReceipt.paymentTerm.name, 40)         Date    : $receivedDate
 	
                                                                                                  Discount  Discount  Final
           Description           Unit Qty    Cost      Amount   Disc. 1 Disc 2. Disc. 3 Flat Rate Amount    Given     Cost/Qty

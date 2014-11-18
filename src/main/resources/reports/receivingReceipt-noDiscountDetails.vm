@@ -4,9 +4,9 @@
 
                              RECEIVING REPORT
 
-Supplier : $report.field($receivingReceipt.supplier.name, 40)         R.R. #   : $report.field($receivingReceipt.receivingReceiptNumber, 6, "right") 
-P.O. #   : $report.field($receivingReceipt.relatedPurchaseOrderNumber, 6)                                           Ref. #   : $receivingReceipt.referenceNumber
-Terms    : $report.field($receivingReceipt.paymentTerm.name, 40)         Date     : $receivedDate
+Supplier : $report.field($receivingReceipt.supplier.name, 40)         R.R. #  : $receivingReceipt.receivingReceiptNumber 
+P.O. #   : $report.field($receivingReceipt.relatedPurchaseOrderNumber, 6)                                           Ref. #  : $receivingReceipt.referenceNumber
+Terms    : $report.field($receivingReceipt.paymentTerm.name, 40)         Date    : $receivedDate
 
                                                     Qty
   Code                 Description             Unit Rec    Cost      Amount
