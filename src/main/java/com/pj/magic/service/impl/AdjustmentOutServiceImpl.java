@@ -15,9 +15,9 @@ import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.User;
 import com.pj.magic.model.search.AdjustmentOutSearchCriteria;
 import com.pj.magic.service.AdjustmentOutService;
+import com.pj.magic.service.LoginService;
 
 @Service
 public class AdjustmentOutServiceImpl implements AdjustmentOutService {
@@ -25,6 +25,7 @@ public class AdjustmentOutServiceImpl implements AdjustmentOutService {
 	@Autowired private AdjustmentOutDao adjustmentOutDao;
 	@Autowired private AdjustmentOutItemDao adjustmentOutItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private LoginService loginService;
 	
 	@Transactional
 	@Override
@@ -80,7 +81,7 @@ public class AdjustmentOutServiceImpl implements AdjustmentOutService {
 		}
 		updated.setPosted(true);
 		updated.setPostDate(new Date());
-		updated.setPostedBy(new User(1)); // TODO: Change to use actual value
+		updated.setPostedBy(loginService.getLoggedInUser());
 		adjustmentOutDao.save(updated);
 	}
 
