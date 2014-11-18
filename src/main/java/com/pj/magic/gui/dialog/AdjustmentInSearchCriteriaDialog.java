@@ -185,6 +185,7 @@ public class AdjustmentInSearchCriteriaDialog extends MagicDialog {
 	
 	public void updateDisplay() {
 		searchCriteria = null;
+		adjustmentInNumberField.setText(null);
 		statusComboBox.setSelectedIndex(1);
 	}
 	
