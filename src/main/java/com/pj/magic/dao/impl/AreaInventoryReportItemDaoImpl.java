@@ -21,7 +21,7 @@ import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.util.AreaInventoryReportItemSearchCriteria;
+import com.pj.magic.model.search.AreaInventoryReportItemSearchCriteria;
 
 @Repository
 public class AreaInventoryReportItemDaoImpl extends MagicDao implements AreaInventoryReportItemDao {

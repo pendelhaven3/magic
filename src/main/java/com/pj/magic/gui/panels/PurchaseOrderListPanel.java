@@ -18,7 +18,7 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PurchaseOrderSearchCriteriaDialog;
 import com.pj.magic.gui.tables.PurchaseOrdersTable;
 import com.pj.magic.model.PurchaseOrder;
-import com.pj.magic.model.util.PurchaseOrderSearchCriteria;
+import com.pj.magic.model.search.PurchaseOrderSearchCriteria;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.util.ComponentUtil;
 

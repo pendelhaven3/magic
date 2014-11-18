@@ -13,7 +13,7 @@ import com.pj.magic.dao.ReceivingReceiptItemDao;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
-import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
+import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 import com.pj.magic.service.ReceivingReceiptService;
 
 // TODO: No need to fetch product details for some cases

@@ -5,7 +5,7 @@ import java.util.List;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCanvassItem;
 import com.pj.magic.model.ReceivingReceipt;
-import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
+import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 
 public interface ReceivingReceiptDao {
 

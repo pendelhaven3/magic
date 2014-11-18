@@ -24,7 +24,7 @@ import com.pj.magic.gui.dialog.CustomerSearchCriteriaDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.CustomersTableModel;
 import com.pj.magic.model.Customer;
-import com.pj.magic.model.util.CustomerSearchCriteria;
+import com.pj.magic.model.search.CustomerSearchCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.util.ComponentUtil;
 

@@ -14,7 +14,7 @@ import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.util.AreaInventoryReportItemSearchCriteria;
+import com.pj.magic.model.search.AreaInventoryReportItemSearchCriteria;
 import com.pj.magic.service.InventoryCheckService;
 
 @Service

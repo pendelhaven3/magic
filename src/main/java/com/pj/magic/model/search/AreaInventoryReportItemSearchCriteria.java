@@ -1,4 +1,4 @@
-package com.pj.magic.model.util;
+package com.pj.magic.model.search;
 
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Product;

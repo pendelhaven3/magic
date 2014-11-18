@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
-import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
+import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 
 public interface ReceivingReceiptService {
 

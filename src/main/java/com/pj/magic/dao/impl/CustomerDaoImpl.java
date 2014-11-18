@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerm;
-import com.pj.magic.model.util.CustomerSearchCriteria;
+import com.pj.magic.model.search.CustomerSearchCriteria;
 
 @Repository
 public class CustomerDaoImpl extends MagicDao implements CustomerDao {

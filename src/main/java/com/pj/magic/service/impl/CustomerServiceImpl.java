@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.model.Customer;
-import com.pj.magic.model.util.CustomerSearchCriteria;
+import com.pj.magic.model.search.CustomerSearchCriteria;
 import com.pj.magic.service.CustomerService;
 
 @Service

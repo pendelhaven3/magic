@@ -18,7 +18,7 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.ReceivingReceiptSearchCriteriaDialog;
 import com.pj.magic.gui.tables.ReceivingReceiptsTable;
 import com.pj.magic.model.ReceivingReceipt;
-import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
+import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.ComponentUtil;
 

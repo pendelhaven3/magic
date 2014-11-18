@@ -15,7 +15,7 @@ import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.util.PurchaseOrderSearchCriteria;
+import com.pj.magic.model.search.PurchaseOrderSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.service.ReceivingReceiptService;

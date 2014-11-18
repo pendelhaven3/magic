@@ -29,7 +29,7 @@ import com.pj.magic.model.UnitConversion;
 import com.pj.magic.model.UnitCost;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.model.UnitQuantity;
-import com.pj.magic.model.util.ProductSearchCriteria;
+import com.pj.magic.model.search.ProductSearchCriteria;
 
 @Repository
 public class ProductDaoImpl extends MagicDao implements ProductDao {

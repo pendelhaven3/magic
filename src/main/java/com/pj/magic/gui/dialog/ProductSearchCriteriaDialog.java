@@ -22,7 +22,7 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.ProductSubcategory;
-import com.pj.magic.model.util.ProductSearchCriteria;
+import com.pj.magic.model.search.ProductSearchCriteria;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ProductCategoryService;
 import com.pj.magic.util.ComponentUtil;

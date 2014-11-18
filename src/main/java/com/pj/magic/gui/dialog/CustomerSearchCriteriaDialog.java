@@ -14,7 +14,7 @@ import javax.swing.JButton;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.model.util.CustomerSearchCriteria;
+import com.pj.magic.model.search.CustomerSearchCriteria;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 

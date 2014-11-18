@@ -38,7 +38,7 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.util.ProductSearchCriteria;
+import com.pj.magic.model.search.ProductSearchCriteria;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;

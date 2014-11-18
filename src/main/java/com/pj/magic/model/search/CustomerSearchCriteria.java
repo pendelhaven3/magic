@@ -1,4 +1,4 @@
-package com.pj.magic.model.util;
+package com.pj.magic.model.search;
 
 public class CustomerSearchCriteria {
 

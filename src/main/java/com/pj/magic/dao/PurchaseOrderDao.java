@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.util.PurchaseOrderSearchCriteria;
+import com.pj.magic.model.search.PurchaseOrderSearchCriteria;
 
 public interface PurchaseOrderDao {
 

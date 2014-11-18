@@ -21,7 +21,7 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
+import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;

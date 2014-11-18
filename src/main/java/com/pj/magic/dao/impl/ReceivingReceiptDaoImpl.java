@@ -24,7 +24,7 @@ import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
-import com.pj.magic.model.util.ReceivingReceiptSearchCriteria;
+import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 
 @Repository
 public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceiptDao {

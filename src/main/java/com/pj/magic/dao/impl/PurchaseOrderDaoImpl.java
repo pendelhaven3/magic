@@ -21,7 +21,7 @@ import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
-import com.pj.magic.model.util.PurchaseOrderSearchCriteria;
+import com.pj.magic.model.search.PurchaseOrderSearchCriteria;
 
 @Repository
 public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {

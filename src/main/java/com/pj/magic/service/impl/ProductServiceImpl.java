@@ -22,7 +22,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCanvassItem;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.util.ProductSearchCriteria;
+import com.pj.magic.model.search.ProductSearchCriteria;
 import com.pj.magic.service.ProductService;
 
 @Service

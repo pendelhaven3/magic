@@ -3,7 +3,7 @@ package com.pj.magic.service;
 import java.util.List;
 
 import com.pj.magic.model.Customer;
-import com.pj.magic.model.util.CustomerSearchCriteria;
+import com.pj.magic.model.search.CustomerSearchCriteria;
 
 public interface CustomerService {
 
