@@ -14,9 +14,9 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentInItem;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.User;
 import com.pj.magic.model.search.AdjustmentInSearchCriteria;
 import com.pj.magic.service.AdjustmentInService;
+import com.pj.magic.service.LoginService;
 
 @Service
 public class AdjustmentInServiceImpl implements AdjustmentInService {
@@ -24,6 +24,7 @@ public class AdjustmentInServiceImpl implements AdjustmentInService {
 	@Autowired private AdjustmentInDao adjustmentInDao;
 	@Autowired private AdjustmentInItemDao adjustmentInItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private LoginService loginService;
 	
 	@Transactional
 	@Override
@@ -75,7 +76,7 @@ public class AdjustmentInServiceImpl implements AdjustmentInService {
 		}
 		updated.setPosted(true);
 		updated.setPostDate(new Date());
-		updated.setPostedBy(new User(1)); // TODO: Change to use actual value
+		updated.setPostedBy(loginService.getLoggedInUser());
 		adjustmentInDao.save(updated);
 	}
 

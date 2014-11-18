@@ -24,14 +24,17 @@ import com.pj.magic.model.search.AdjustmentInSearchCriteria;
 public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select ID, ADJUSTMENT_IN_NO, REMARKS, POST_IND, POST_DT, POSTED_BY"
-			+ " from ADJUSTMENT_IN";
+			"select a.ID, ADJUSTMENT_IN_NO, a.REMARKS, POST_IND, POST_DT, POSTED_BY,"
+			+ " b.USERNAME as POSTED_BY_USERNAME"
+			+ " from ADJUSTMENT_IN a"
+			+ " left join USER b"
+			+ "   on b.ID = a.POSTED_BY";
 	
 	private static final String ADJUSTMENT_IN_NUMBER_SEQUENCE = "ADJUSTMENT_IN_NO_SEQ";
 	
 	private AdjustmentInRowMapper adjustmentInRowMapper = new AdjustmentInRowMapper();
 	
-	private static final String GET_SQL = BASE_SELECT_SQL + " where ID = ?";
+	private static final String GET_SQL = BASE_SELECT_SQL + " where a.ID = ?";
 	
 	@Override
 	public AdjustmentIn get(long id) {
@@ -102,9 +105,14 @@ public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 			adjustmentIn.setRemarks(rs.getString("REMARKS"));
 			adjustmentIn.setPosted("Y".equals(rs.getString("POST_IND")));
 			adjustmentIn.setPostDate(rs.getDate("POST_DT"));
+			
 			if (rs.getLong("POSTED_BY") != 0) {
-				adjustmentIn.setPostedBy(new User(rs.getLong("POSTED_BY")));
+				User user = new User();
+				user.setId(rs.getLong("POSTED_BY"));
+				user.setUsername(rs.getString("POSTED_BY_USERNAME"));
+				adjustmentIn.setPostedBy(user);
 			}
+			
 			return adjustmentIn;
 		}
 	}
