@@ -1,10 +1,14 @@
 package com.pj.magic.gui.tables;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.EventObject;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -12,7 +16,6 @@ import javax.swing.KeyStroke;
 import javax.swing.table.TableModel;
 
 import com.pj.magic.Constants;
-import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.util.KeyUtil;
 
 // TODO: This is not really ItemsTable
@@ -23,6 +26,9 @@ import com.pj.magic.util.KeyUtil;
  */
 public class MagicTable extends JTable {
 
+	private static final String SCROLL_TO_TOP_ACTION_NAME = "scrollToTop";
+	private static final String SCROLL_TO_BOTTOM_ACTION_NAME = "scrollToBottom";
+	
 	protected boolean addMode; // TODO: Return back to PO panel / items table class
 	
 	public MagicTable() {
@@ -33,8 +39,32 @@ public class MagicTable extends JTable {
 		super(tableModel);
 		setSurrendersFocusOnKeystroke(true); // TODO: search other references
 		setRowHeight(25);
+		registerScrollKeys();
 	}
 	
+	private void registerScrollKeys() {
+		InputMap inputMap = getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		ActionMap actionMap = getActionMap();
+		
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), SCROLL_TO_TOP_ACTION_NAME);
+		actionMap.put(SCROLL_TO_TOP_ACTION_NAME, new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scrollToTop();
+			}
+		});
+		
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_END, 0), SCROLL_TO_BOTTOM_ACTION_NAME);
+		actionMap.put(SCROLL_TO_BOTTOM_ACTION_NAME, new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				scrollToBottom();
+			}
+		});
+	}
+
 	protected void showErrorMessage(String message) {
 		JOptionPane.showMessageDialog(this, message, "Error Message", JOptionPane.ERROR_MESSAGE);
 	}
@@ -77,6 +107,14 @@ public class MagicTable extends JTable {
 	public void onEnterKey(Action action) {
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), Constants.ENTER_KEY_ACTION_NAME);
 		getActionMap().put(Constants.ENTER_KEY_ACTION_NAME, action);
+	}
+	
+	protected void scrollToBottom() {
+		changeSelection(getRowCount() - 1, 0, false, false);
+	}
+
+	protected void scrollToTop() {
+		changeSelection(0, 0, false, false);
 	}
 	
 }
