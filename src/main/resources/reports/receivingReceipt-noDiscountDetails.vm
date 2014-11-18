@@ -22,4 +22,6 @@ Total Qty Order :  $report.field($receivingReceipt.totalQuantity, 4, "right")   
 Received by :          Checked by:                 TOTAL AMOUNT P$report.field($receivingReceipt.totalNetAmount, 12, "right")
                                                                  ============
 ____________________   ____________________
+
+Remarks  : $receivingReceipt.remarks  
 #end
