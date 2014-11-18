@@ -141,7 +141,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 
 	private static final String GET_PRODUCT_CANVASS_ITEMS_SQL =
 			"select b.RECEIVED_DT, b.RECEIVING_RECEIPT_NO, c.NAME as SUPPLIER_NAME, a.QUANTITY, a.COST,"
-			+ " b.REFERENCE_NO, a.CURRENT_COST, a.DISCOUNT_1, a.DISCOUNT_2, a.DISCOUNT_3, a.FLAT_RATE_DISCOUNT,"
+			+ " b.REFERENCE_NO, a.DISCOUNT_1, a.DISCOUNT_2, a.DISCOUNT_3, a.FLAT_RATE_DISCOUNT,"
 			+ " a.UNIT"
 			+ " from RECEIVING_RECEIPT_ITEM a"
 			+ " join RECEIVING_RECEIPT b"
@@ -172,7 +172,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				canvassItem.setSupplier(new Supplier(rs.getString("SUPPLIER_NAME")));
 				canvassItem.setUnit(rs.getString("UNIT"));
 				canvassItem.setFinalCost(item.getFinalCost());
-				canvassItem.setCurrentCost(rs.getBigDecimal("CURRENT_COST"));
+				canvassItem.setGrossCost(rs.getBigDecimal("COST"));
 				canvassItem.setReferenceNumber(rs.getString("REFERENCE_NO"));
 				return canvassItem;
 			}

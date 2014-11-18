@@ -15,7 +15,7 @@ import com.pj.magic.util.FormatterUtil;
 public class ProductCanvassTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames = 
-		{"Date", "RR No.", "Supplier", "Unit", "Final Cost", "Current Cost", "Ref No."};
+		{"Date", "RR No.", "Supplier", "Unit", "Final Cost", "Gross Cost", "Ref No."};
 	
 	private List<ProductCanvassItem> items = new ArrayList<>();
 	
@@ -43,8 +43,8 @@ public class ProductCanvassTableModel extends AbstractTableModel {
 			return item.getUnit();
 		case ProductCanvassTable.FINAL_COST_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(item.getFinalCost());
-		case ProductCanvassTable.CURRENT_COST_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(item.getCurrentCost());
+		case ProductCanvassTable.GROSS_COST_COLUMN_INDEX:
+			return FormatterUtil.formatAmount(item.getGrossCost());
 		case ProductCanvassTable.REFERENCE_NUMBER_COLUMN_INDEX:
 			return item.getReferenceNumber();
 		default:
@@ -67,7 +67,7 @@ public class ProductCanvassTableModel extends AbstractTableModel {
 	public Class<?> getColumnClass(int columnIndex) {
 		switch (columnIndex) {
 		case ProductCanvassTable.FINAL_COST_COLUMN_INDEX:
-		case ProductCanvassTable.CURRENT_COST_COLUMN_INDEX:
+		case ProductCanvassTable.GROSS_COST_COLUMN_INDEX:
 			return Number.class;
 		default:
 			return Object.class;

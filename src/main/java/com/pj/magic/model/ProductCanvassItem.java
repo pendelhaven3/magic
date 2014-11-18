@@ -10,7 +10,7 @@ public class ProductCanvassItem {
 	private Supplier supplier;
 	private String unit;
 	private BigDecimal finalCost;
-	private BigDecimal currentCost;
+	private BigDecimal grossCost;
 	private String referenceNumber;
 
 	public Date getReceivedDate() {
@@ -45,12 +45,12 @@ public class ProductCanvassItem {
 		this.finalCost = finalCost;
 	}
 
-	public BigDecimal getCurrentCost() {
-		return currentCost;
+	public BigDecimal getGrossCost() {
+		return grossCost;
 	}
 
-	public void setCurrentCost(BigDecimal currentCost) {
-		this.currentCost = currentCost;
+	public void setGrossCost(BigDecimal grossCost) {
+		this.grossCost = grossCost;
 	}
 
 	public String getReferenceNumber() {

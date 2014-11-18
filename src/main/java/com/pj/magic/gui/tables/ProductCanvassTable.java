@@ -18,7 +18,7 @@ public class ProductCanvassTable extends MagicListTable {
 	public static final int SUPPLIER_COLUMN_INDEX = 2;
 	public static final int UNIT_COLUMN_INDEX = 3;
 	public static final int FINAL_COST_COLUMN_INDEX = 4;
-	public static final int CURRENT_COST_COLUMN_INDEX = 5;
+	public static final int GROSS_COST_COLUMN_INDEX = 5;
 	public static final int REFERENCE_NUMBER_COLUMN_INDEX = 6;
 	
 	@Autowired private ProductCanvassTableModel tableModel;
@@ -36,7 +36,7 @@ public class ProductCanvassTable extends MagicListTable {
 		columnModel.getColumn(SUPPLIER_COLUMN_INDEX).setPreferredWidth(200);
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(50);
 		columnModel.getColumn(FINAL_COST_COLUMN_INDEX).setPreferredWidth(100);
-		columnModel.getColumn(CURRENT_COST_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(GROSS_COST_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(REFERENCE_NUMBER_COLUMN_INDEX).setPreferredWidth(100);
 	}
 
