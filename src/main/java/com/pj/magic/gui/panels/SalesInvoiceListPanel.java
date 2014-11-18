@@ -39,7 +39,8 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	}
 	
 	public void updateDisplay() {
-		table.setSalesInvoices(salesInvoiceService.getAllSalesInvoices());
+		table.setSalesInvoices(salesInvoiceService.getAllNewSalesInvoices());
+		salesInvoiceSearchCriteriaDialog.updateDisplay();
 	}
 
 	public void displaySalesInvoiceDetails(SalesInvoice salesInvoice) {
@@ -75,7 +76,7 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 				showAllSalesInvoices();
 			}
 		});
-		toolBar.add(showAllButton);
+//		toolBar.add(showAllButton);
 		
 		JButton searchButton = new MagicToolBarButton("search", "Search");
 		searchButton.addActionListener(new ActionListener() {

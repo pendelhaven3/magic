@@ -28,5 +28,7 @@ public interface SalesInvoiceService {
 	void save(SalesInvoiceItem item);
 
 	List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria);
+
+	List<SalesInvoice> getAllNewSalesInvoices();
 	
 }

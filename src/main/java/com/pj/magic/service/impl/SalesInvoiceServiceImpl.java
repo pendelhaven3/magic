@@ -149,4 +149,17 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		return salesInvoices;
 	}
 
+	@Override
+	public List<SalesInvoice> getAllNewSalesInvoices() {
+		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
+		criteria.setMarked(false);
+		criteria.setCancelled(false);
+		
+		List<SalesInvoice> salesInvoices = salesInvoiceDao.search(criteria);
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
+		}
+		return salesInvoices;
+	}
+
 }

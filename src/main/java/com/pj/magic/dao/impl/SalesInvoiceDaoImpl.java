@@ -28,14 +28,15 @@ import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, SALES_INVOICE_NO, CREATE_DT, RELATED_SALES_REQUISITION_NO, MODE, REMARKS, CUSTOMER_ID,"
+			"select a.ID, SALES_INVOICE_NO, CREATE_DT, RELATED_SALES_REQUISITION_NO, MODE, a.REMARKS, CUSTOMER_ID,"
 			+ " POST_DT, MARK_IND, MARK_DT, CANCEL_DT, CANCEL_IND, TRANSACTION_DT, VAT_AMOUNT,"
 			+ " PRICING_SCHEME_ID, d.NAME as PRICING_SCHEME_NAME,"
 			+ " ENCODER, b.USERNAME as ENCODER_USERNAME,"
-			+ " PAYMENT_TERM_ID, e.NAME as PAYMENT_TERM_NAME,"
+			+ " a.PAYMENT_TERM_ID, e.NAME as PAYMENT_TERM_NAME,"
 			+ " POST_BY, f.USERNAME as POST_BY_USERNAME,"
 			+ " MARK_BY, g.USERNAME as MARK_BY_USERNAME,"
-			+ " CANCEL_BY, h.USERNAME as CANCEL_BY_USERNAME"
+			+ " CANCEL_BY, h.USERNAME as CANCEL_BY_USERNAME,"
+			+ " i.NAME as CUSTOMER_NAME"
 			+ " from SALES_INVOICE a"
 			+ " join USER b"
 			+ "   on b.ID = a.ENCODER"
@@ -49,6 +50,8 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			+ "   on g.ID = a.MARK_BY"
 			+ " left join USER h"
 			+ "   on h.ID = a.CANCEL_BY"
+			+ " join CUSTOMER i"
+			+ "   on i.ID = a.CUSTOMER_ID"
 			+ " where 1 = 1";
 	
 	private static final String SALES_INVOICE_NUMBER_SEQUENCE = "SALES_INVOICE_NO_SEQ";
@@ -126,7 +129,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			salesInvoice.setTransactionDate(rs.getDate("TRANSACTION_DT"));
 			salesInvoice.setEncoder(new User(rs.getLong("ENCODER"), rs.getString("ENCODER_USERNAME")));
 			salesInvoice.setRelatedSalesRequisitionNumber(rs.getLong("RELATED_SALES_REQUISITION_NO"));
-			salesInvoice.setCustomer(new Customer(rs.getLong("CUSTOMER_ID")));
+			salesInvoice.setCustomer(new Customer(rs.getLong("CUSTOMER_ID"), rs.getString("CUSTOMER_NAME")));
 			salesInvoice.setPricingScheme(
 					new PricingScheme(rs.getLong("PRICING_SCHEME_ID"), rs.getString("PRICING_SCHEME_NAME")));
 			salesInvoice.setMode(rs.getString("MODE"));

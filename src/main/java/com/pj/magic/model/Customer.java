@@ -66,6 +66,11 @@ public class Customer {
 		this.id = id;
 	}
 
+	public Customer(Long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
 	public Long getId() {
 		return id;
 	}
