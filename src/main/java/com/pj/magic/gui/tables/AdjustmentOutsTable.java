@@ -24,14 +24,12 @@ import com.pj.magic.service.AdjustmentOutService;
 public class AdjustmentOutsTable extends MagicListTable {
 
 	public static final int ADJUSTMENT_OUT_NUMBER_COLUMN_INDEX = 0;
-	public static final int CUSTOMER_NAME_COLUMN_INDEX = 1;
-	public static final int CREATE_DATE_COLUMN_INDEX = 2;
-	public static final int ENCODER_COLUMN_INDEX = 3;
-	public static final int TOTAL_AMOUNT_COLUMN_INDEX = 4;
+	public static final int REMARKS_COLUMN_INDEX = 1;
+	public static final int POSTED_COLUMN_INDEX = 2;
 	private static final String GO_TO_ADJUSTMENT_OUT_ACTION_NAME = "goToAdjustmentOut";
 	private static final String DELETE_ADJUSTMENT_OUT_ACTION_NAME = "deleteAdjustmentOut";
 
-	@Autowired private AdjustmentOutService salesRequisitionService;
+	@Autowired private AdjustmentOutService adjustmentOutService;
 	@Autowired private AdjustmentOutsTableModel tableModel;
 	
 	@Autowired
@@ -45,7 +43,7 @@ public class AdjustmentOutsTable extends MagicListTable {
     }
 	
 	public void update() {
-		List<AdjustmentOut> salesRequisitions = salesRequisitionService.getAllNonPostedAdjustmentOuts();
+		List<AdjustmentOut> salesRequisitions = adjustmentOutService.getAllNonPostedAdjustmentOuts();
 		tableModel.setAdjustmentOuts(salesRequisitions);
 		if (!salesRequisitions.isEmpty()) {
 			changeSelection(0, 0, false, false);
@@ -70,7 +68,7 @@ public class AdjustmentOutsTable extends MagicListTable {
 		
 		int selectedRowIndex = getSelectedRow();
 		AdjustmentOut salesRequisition = getCurrentlySelectedAdjustmentOut();
-		salesRequisitionService.delete(salesRequisition);
+		adjustmentOutService.delete(salesRequisition);
 		tableModel.remove(salesRequisition);
 		
 		if (tableModel.getRowCount() > 0) {
@@ -123,6 +121,13 @@ public class AdjustmentOutsTable extends MagicListTable {
 
 	protected void selectAdjustmentOut() {
 		displayAdjustmentOutDetails(getCurrentlySelectedAdjustmentOut());
+	}
+	
+	public void setAdjustmentOuts(List<AdjustmentOut> adjustmentOuts) {
+		tableModel.setAdjustmentOuts(adjustmentOuts);
+		if (!adjustmentOuts.isEmpty()) {
+			changeSelection(0, 0, false, false);
+		}
 	}
 	
 }

@@ -16,6 +16,7 @@ import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.AdjustmentOutSearchCriteria;
 import com.pj.magic.service.AdjustmentOutService;
 
 @Service
@@ -85,14 +86,14 @@ public class AdjustmentOutServiceImpl implements AdjustmentOutService {
 
 	@Override
 	public List<AdjustmentOut> getAllNonPostedAdjustmentOuts() {
-		AdjustmentOut criteria = new AdjustmentOut();
+		AdjustmentOutSearchCriteria criteria = new AdjustmentOutSearchCriteria();
 		criteria.setPosted(false);
-		
-		List<AdjustmentOut> adjustmentOuts = adjustmentOutDao.search(criteria);
-		for (AdjustmentOut adjustmentOut : adjustmentOuts) {
-			loadAdjustmentOutDetails(adjustmentOut);
-		}
-		return adjustmentOuts;
+		return search(criteria);
+	}
+
+	@Override
+	public List<AdjustmentOut> search(AdjustmentOutSearchCriteria criteria) {
+		return adjustmentOutDao.search(criteria);
 	}
 	
 }

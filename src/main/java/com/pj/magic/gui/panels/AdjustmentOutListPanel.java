@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -17,8 +18,10 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.AdjustmentOutSearchCriteriaDialog;
 import com.pj.magic.gui.tables.AdjustmentOutsTable;
 import com.pj.magic.model.AdjustmentOut;
+import com.pj.magic.model.search.AdjustmentOutSearchCriteria;
 import com.pj.magic.service.AdjustmentOutService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -28,7 +31,8 @@ public class AdjustmentOutListPanel extends StandardMagicPanel {
 	private static final String NEW_ADJUSTMENT_OUT_ACTION_NAME = "newAdjustmentOut";
 	
 	@Autowired private AdjustmentOutsTable table;
-	@Autowired private AdjustmentOutService AdjustmentOutService;
+	@Autowired private AdjustmentOutService adjustmentOutService;
+	@Autowired private AdjustmentOutSearchCriteriaDialog adjustmentOutSearchCriteriaDialog;
 	
 	@Override
 	public void initializeComponents() {
@@ -36,7 +40,8 @@ public class AdjustmentOutListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		table.update();
+		table.setAdjustmentOuts(adjustmentOutService.getAllNonPostedAdjustmentOuts());
+		adjustmentOutSearchCriteriaDialog.updateDisplay();
 	}
 
 	public void displayAdjustmentOutDetails(AdjustmentOut AdjustmentOut) {
@@ -99,6 +104,33 @@ public class AdjustmentOutListPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(addButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchAdjustmentOuts();
+			}
+		});
+		
+		toolBar.add(searchButton);
+	}
+
+	private void searchAdjustmentOuts() {
+		adjustmentOutSearchCriteriaDialog.setVisible(true);
+		
+		AdjustmentOutSearchCriteria criteria = adjustmentOutSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<AdjustmentOut> adjustmentIns = adjustmentOutService.search(criteria);
+			table.setAdjustmentOuts(adjustmentIns);
+			if (!adjustmentIns.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
 	}
 
 }

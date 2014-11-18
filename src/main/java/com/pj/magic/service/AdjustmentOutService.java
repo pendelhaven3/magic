@@ -5,6 +5,7 @@ import java.util.List;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
+import com.pj.magic.model.search.AdjustmentOutSearchCriteria;
 
 public interface AdjustmentOutService {
 
@@ -21,5 +22,7 @@ public interface AdjustmentOutService {
 	void post (AdjustmentOut adjustmentOut) throws NotEnoughStocksException;
 	
 	List<AdjustmentOut> getAllNonPostedAdjustmentOuts();
+
+	List<AdjustmentOut> search(AdjustmentOutSearchCriteria criteria);
 	
 }

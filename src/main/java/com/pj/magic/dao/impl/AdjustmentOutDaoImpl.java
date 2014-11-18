@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.AdjustmentOutDao;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.AdjustmentOutSearchCriteria;
 
 @Repository
 public class AdjustmentOutDaoImpl extends MagicDao implements AdjustmentOutDao {
@@ -66,7 +68,7 @@ public class AdjustmentOutDaoImpl extends MagicDao implements AdjustmentOutDao {
 				ps.setString(2, adjustmentOut.getRemarks());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		AdjustmentOut updated = get(holder.getKey().longValue());
 		adjustmentOut.setId(updated.getId());
@@ -115,13 +117,25 @@ public class AdjustmentOutDaoImpl extends MagicDao implements AdjustmentOutDao {
 	}
 
 	@Override
-	public List<AdjustmentOut> search(AdjustmentOut criteria) {
-		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
-		sql.append(" where POST_IND = ?");
-		sql.append(" order by ID desc"); // TODO: change to be more flexible when the need arises
+	public List<AdjustmentOut> search(AdjustmentOutSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
 		
-		return getJdbcTemplate().query(sql.toString(), adjustmentOutRowMapper,
-				criteria.isPosted() ? "Y" : "N");
+		StringBuilder sb = new StringBuilder(BASE_SELECT_SQL);
+		sb.append(" where 1 = 1");
+		
+		if (criteria.getAdjustmentOutNumber() != null) {
+			sb.append(" and ADJUSTMENT_OUT_NO = ?");
+			params.add(criteria.getAdjustmentOutNumber());
+		}
+		
+		if (criteria.getPosted() != null) {
+			sb.append(" and POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		sb.append(" order by ADJUSTMENT_OUT_NO desc");
+		
+		return getJdbcTemplate().query(sb.toString(), adjustmentOutRowMapper, params.toArray());
 	}
 
 }
