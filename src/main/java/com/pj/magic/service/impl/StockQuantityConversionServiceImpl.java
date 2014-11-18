@@ -98,4 +98,9 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 		return stockQuantityConversionDao.search(criteria);
 	}
 
+	@Override
+	public List<StockQuantityConversion> search(StockQuantityConversionSearchCriteria criteria) {
+		return stockQuantityConversionDao.search(criteria);
+	}
+
 }

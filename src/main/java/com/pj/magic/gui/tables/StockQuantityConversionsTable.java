@@ -39,15 +39,6 @@ public class StockQuantityConversionsTable extends MagicListTable {
 		registerKeyBindings();
     }
 	
-	public void updateDisplay() {
-		List<StockQuantityConversion> stockQuantityConversions = 
-				stockQuantityConversionService.getAllNonPostedStockQuantityConversions();
-		tableModel.setStockQuantityConversions(stockQuantityConversions);
-		if (!stockQuantityConversions.isEmpty()) {
-			changeSelection(0, 0, false, false);
-		}
-	}
-	
 	public StockQuantityConversion getCurrentlySelectedStockQuantityConversion() {
 		return tableModel.getStockQuantityConversion(getSelectedRow());
 	}
@@ -114,6 +105,13 @@ public class StockQuantityConversionsTable extends MagicListTable {
 
 	protected void selectStockQuantityConversion() {
 		displayStockQuantityConversionDetails(getCurrentlySelectedStockQuantityConversion());
+	}
+
+	public void setStockQuantityConversions(List<StockQuantityConversion> stockQuantityConversions) {
+		tableModel.setStockQuantityConversions(stockQuantityConversions);
+		if (!stockQuantityConversions.isEmpty()) {
+			changeSelection(0, 0, false, false);
+		}
 	}
 	
 }

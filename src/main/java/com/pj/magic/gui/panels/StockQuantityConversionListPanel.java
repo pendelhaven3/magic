@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -17,8 +18,10 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.StockQuantityConversionSearchCriteriaDialog;
 import com.pj.magic.gui.tables.StockQuantityConversionsTable;
 import com.pj.magic.model.StockQuantityConversion;
+import com.pj.magic.model.search.StockQuantityConversionSearchCriteria;
 import com.pj.magic.service.StockQuantityConversionService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -30,6 +33,7 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 	
 	@Autowired private StockQuantityConversionsTable table;
 	@Autowired private StockQuantityConversionService stockQuantityConversionService;
+	@Autowired private StockQuantityConversionSearchCriteriaDialog stockQuantityConversionSearchCriteriaDialog;
 	
 	@Override
 	public void initializeComponents() {
@@ -37,7 +41,9 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		table.updateDisplay();
+		table.setStockQuantityConversions(
+				stockQuantityConversionService.getAllNonPostedStockQuantityConversions());
+		stockQuantityConversionSearchCriteriaDialog.updateDisplay();
 	}
 
 	public void displayStockQuantityConversionDetails(StockQuantityConversion stockQuantityConversion) {
@@ -127,6 +133,7 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 		});
 		toolBar.add(addButton);
 		
+		// TODO: Move to Stock Quantity Conversion panel
 		JButton deleteButton = new MagicToolBarButton("minus", "Delete");
 		deleteButton.addActionListener(new ActionListener() {
 			
@@ -136,6 +143,35 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(deleteButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchStockQuantityConversions();
+			}
+		});
+		
+		toolBar.add(searchButton);
+	}
+
+	private void searchStockQuantityConversions() {
+		stockQuantityConversionSearchCriteriaDialog.setVisible(true);
+		
+		StockQuantityConversionSearchCriteria criteria = 
+				stockQuantityConversionSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<StockQuantityConversion> stockQuantityConversions = 
+					stockQuantityConversionService.search(criteria);
+			table.setStockQuantityConversions(stockQuantityConversions);
+			if (!stockQuantityConversions.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
+import com.pj.magic.model.search.StockQuantityConversionSearchCriteria;
 
 public interface StockQuantityConversionService {
 
@@ -22,5 +23,7 @@ public interface StockQuantityConversionService {
 	void delete(StockQuantityConversionItem item);
 
 	List<StockQuantityConversion> getAllNonPostedStockQuantityConversions();
+
+	List<StockQuantityConversion> search(StockQuantityConversionSearchCriteria criteria);
 	
 }
