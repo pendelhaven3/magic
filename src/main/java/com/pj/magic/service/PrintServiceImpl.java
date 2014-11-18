@@ -344,7 +344,7 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public void printOfficialReceipt(SalesInvoice salesInvoice) {
+	public void printBirForm(SalesInvoice salesInvoice) {
 		Collections.sort(salesInvoice.getItems());
 		
 		String transactionDate = FormatterUtil.formatDate(salesInvoice.getTransactionDate());
@@ -361,7 +361,7 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			printPages.add(generateReportAsString("reports/salesInvoiceOfficialReceipt.vm", reportData));
+			printPages.add(generateReportAsString("reports/salesInvoiceBirForm.vm", reportData));
 		}
 		
 		try {

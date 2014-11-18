@@ -517,12 +517,12 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		toolBar.add(printButton);
 		
 		JButton printOfficialReceiptButton = 
-				new MagicToolBarButton("print_official_receipt", "Print Official Receipt");
+				new MagicToolBarButton("print_bir_form", "Print BIR form");
 		printOfficialReceiptButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				printService.printOfficialReceipt(salesInvoice);
+				printService.printBirForm(salesInvoice);
 			}
 		});
 		toolBar.add(printOfficialReceiptButton);
