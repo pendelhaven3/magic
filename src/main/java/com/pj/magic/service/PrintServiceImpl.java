@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.dao.UserDao;
+import com.pj.magic.model.AreaInventoryReport;
+import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.PricingScheme;
@@ -52,7 +54,8 @@ public class PrintServiceImpl implements PrintService {
 	private static final int PRICING_SCHEME_REPORT_LINES_PER_PAGE = 44;
 	private static final int INVENTORY_CHECK_SUMMARY_ITEMS_PER_PAGE = 52;
 	public static final int INVENTORY_REPORT_COLUMNS_PER_LINE = 84;
-	private static final int SALES_INVOICE_OFFICIAL_RECEIPT_ITEMS_PER_PAGE = 13;
+	private static final int SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE = 13;
+	private static final int AREA_INVENTORY_REPORT_ITEMS_PER_PAGE = 44;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -350,7 +353,7 @@ public class PrintServiceImpl implements PrintService {
 		String transactionDate = FormatterUtil.formatDate(salesInvoice.getTransactionDate());
 		
 		List<List<SalesInvoiceItem>> pageItems = Lists.partition(salesInvoice.getItems(), 
-				SALES_INVOICE_OFFICIAL_RECEIPT_ITEMS_PER_PAGE);
+				SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
@@ -375,11 +378,49 @@ public class PrintServiceImpl implements PrintService {
 
 	private List<String> createFillerLines(int referenceSize) {
 		List<String> fillerLines = new ArrayList<>();
-		int numberOfLines = SALES_INVOICE_OFFICIAL_RECEIPT_ITEMS_PER_PAGE - referenceSize;
+		int numberOfLines = SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE - referenceSize;
 		for (int i = 0; i < numberOfLines; i++) {
 			fillerLines.add("");
 		}
 		return fillerLines;
+	}
+
+	@Override
+	public List<String> generateReportAsString(AreaInventoryReport areaInventoryReport) {
+		Collections.sort(areaInventoryReport.getItems());
+		
+		String inventoryDate = FormatterUtil.formatDate(areaInventoryReport.getParent().getInventoryDate());
+		
+		List<List<AreaInventoryReportItem>> pageItems = Lists.partition(areaInventoryReport.getItems(), 
+				AREA_INVENTORY_REPORT_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("areaInventoryReport", areaInventoryReport);
+			if (areaInventoryReport.getArea() != null) {
+				reportData.put("area", areaInventoryReport.getArea().getName());
+			} else {
+				reportData.put("area", "");
+			}
+			reportData.put("items", pageItems.get(i));
+			reportData.put("inventoryDate", inventoryDate);
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/areaInventoryReport.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(AreaInventoryReport areaInventoryReport) {
+		try {
+			for (String printPage : generateReportAsString(areaInventoryReport)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 	
 }

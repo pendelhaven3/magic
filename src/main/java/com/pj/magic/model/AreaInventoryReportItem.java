@@ -1,11 +1,9 @@
 package com.pj.magic.model;
 
-import java.math.BigDecimal;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class AreaInventoryReportItem {
+public class AreaInventoryReportItem implements Comparable<AreaInventoryReportItem> {
 
 	private Long id;
 	private AreaInventoryReport parent;
@@ -74,6 +72,16 @@ public class AreaInventoryReportItem {
 			.append(product, other.getProduct())
 			.append(unit, other.getUnit())
 			.isEquals();
+	}
+
+	@Override
+	public int compareTo(AreaInventoryReportItem o) {
+		int result = product.compareTo(o.getProduct());
+		if (result == 0) {
+			return Unit.compare(unit, o.getUnit());
+		} else {
+			return result;
+		}
 	}
 	
 }

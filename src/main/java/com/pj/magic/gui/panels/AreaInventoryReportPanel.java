@@ -28,11 +28,13 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.AreaInventoryReportItemsTable;
 import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.service.AreaInventoryReportService;
 import com.pj.magic.service.AreaService;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.KeyUtil;
@@ -45,6 +47,8 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	@Autowired private AreaInventoryReportItemsTable itemsTable;
 	@Autowired private AreaInventoryReportService areaInventoryReportService;
 	@Autowired private AreaService areaService;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private PrintService printService;
 	
 	private AreaInventoryReport areaInventoryReport;
 	private JLabel inventoryDateField;
@@ -427,7 +431,26 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
+		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreviewDialog.updateDisplay(printService.generateReportAsString(areaInventoryReport));
+				printPreviewDialog.setVisible(true);
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		JButton printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(areaInventoryReport);
+			}
+		});
+		toolBar.add(printButton);
 	}
 
 }

@@ -10,6 +10,10 @@ public class ReportUtil {
 	private static final String ALIGN_RIGHT = "right";
 	private static final int CHARACTERS_PER_LINE = 73;
 	
+	public static String field(String text) {
+		return StringUtils.defaultString(text);
+	}
+	
 	public static String field(final String text, int length) {
 		return field(text, length, ALIGN_LEFT);
 	}
