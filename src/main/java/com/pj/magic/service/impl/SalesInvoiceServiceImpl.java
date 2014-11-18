@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -58,6 +59,7 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		for (SalesInvoiceItem item : salesInvoice.getItems()) {
 			item.setProduct(productDao.get(item.getProduct().getId()));
 		}
+		Collections.sort(salesInvoice.getItems());
 		salesInvoice.setCustomer(customerDao.get(salesInvoice.getCustomer().getId()));
 	}
 

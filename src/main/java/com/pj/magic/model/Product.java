@@ -166,7 +166,7 @@ public class Product implements Comparable<Product> {
 
 	@Override
 	public int compareTo(Product o) {
-		return description.compareTo(o.getDescription());
+		return code.compareTo(o.getCode());
 	}
 
 	public boolean isActive() {
