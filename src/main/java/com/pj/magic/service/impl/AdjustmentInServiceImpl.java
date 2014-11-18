@@ -15,6 +15,7 @@ import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentInItem;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.AdjustmentInSearchCriteria;
 import com.pj.magic.service.AdjustmentInService;
 
 @Service
@@ -88,6 +89,11 @@ public class AdjustmentInServiceImpl implements AdjustmentInService {
 			loadAdjustmentInDetails(adjustmentIn);
 		}
 		return adjustmentIns;
+	}
+
+	@Override
+	public List<AdjustmentIn> search(AdjustmentInSearchCriteria criteria) {
+		return adjustmentInDao.search(criteria);
 	}
 	
 }

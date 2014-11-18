@@ -65,7 +65,6 @@ public class AdjustmentInsTable extends MagicListTable {
 	}
 	
 	public void removeCurrentlySelectedRow() {
-		
 		int selectedRowIndex = getSelectedRow();
 		AdjustmentIn salesRequisition = getCurrentlySelectedAdjustmentIn();
 		salesRequisitionService.delete(salesRequisition);
@@ -78,8 +77,6 @@ public class AdjustmentInsTable extends MagicListTable {
 				changeSelection(selectedRowIndex, 0, false, false);
 			}
 		}
-		
-		// TODO: update table as well if any new SR has been created
 	}
 	
 	public void registerKeyBindings() {
@@ -121,6 +118,13 @@ public class AdjustmentInsTable extends MagicListTable {
 
 	protected void selectAdjustmentIn() {
 		displayAdjustmentInDetails(getCurrentlySelectedAdjustmentIn());
+	}
+	
+	public void setAdjustmentIns(List<AdjustmentIn> adjustmentIns) {
+		tableModel.setAdjustmentIns(adjustmentIns);
+		if (!adjustmentIns.isEmpty()) {
+			changeSelection(0, 0, false, false);
+		}
 	}
 	
 }

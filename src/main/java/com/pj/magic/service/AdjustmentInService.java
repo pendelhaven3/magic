@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentInItem;
+import com.pj.magic.model.search.AdjustmentInSearchCriteria;
 
 public interface AdjustmentInService {
 
@@ -20,5 +21,7 @@ public interface AdjustmentInService {
 	void post (AdjustmentIn adjustmentIn);
 	
 	List<AdjustmentIn> getAllNonPostedAdjustmentIns();
+
+	List<AdjustmentIn> search(AdjustmentInSearchCriteria criteria);
 	
 }

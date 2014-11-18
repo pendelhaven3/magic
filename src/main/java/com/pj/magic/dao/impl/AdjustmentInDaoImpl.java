@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.AdjustmentInDao;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.AdjustmentInSearchCriteria;
 
 @Repository
 public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
@@ -66,7 +68,7 @@ public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 				ps.setString(2, adjustmentIn.getRemarks());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		AdjustmentIn updated = get(holder.getKey().longValue());
 		adjustmentIn.setId(updated.getId());
@@ -122,6 +124,28 @@ public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 		
 		return getJdbcTemplate().query(sql.toString(), adjustmentInRowMapper,
 				criteria.isPosted() ? "Y" : "N");
+	}
+
+	@Override
+	public List<AdjustmentIn> search(AdjustmentInSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		
+		StringBuilder sb = new StringBuilder(BASE_SELECT_SQL);
+		sb.append(" where 1 = 1");
+		
+		if (criteria.getAdjustmentInNumber() != null) {
+			sb.append(" and ADJUSTMENT_IN_NO = ?");
+			params.add(criteria.getAdjustmentInNumber());
+		}
+		
+		if (criteria.getPosted() != null) {
+			sb.append(" and POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		sb.append(" order by ADJUSTMENT_IN_NO desc");
+		
+		return getJdbcTemplate().query(sb.toString(), adjustmentInRowMapper, params.toArray());
 	}
 
 }
