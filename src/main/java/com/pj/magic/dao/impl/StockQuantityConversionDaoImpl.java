@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.model.StockQuantityConversion;
+import com.pj.magic.model.search.StockQuantityConversionSearchCriteria;
 
 @Repository
 public class StockQuantityConversionDaoImpl extends MagicDao implements StockQuantityConversionDao {
@@ -51,7 +53,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 				ps.setString(2, stockQuantityConversion.getRemarks());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		StockQuantityConversion updated = get(holder.getKey().longValue());
 		stockQuantityConversion.setId(updated.getId());
@@ -111,6 +113,23 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 	@Override
 	public void delete(StockQuantityConversion stockQuantityConversion) {
 		getJdbcTemplate().update(DELETE_SQL, stockQuantityConversion.getId());
+	}
+
+	@Override
+	public List<StockQuantityConversion> search(StockQuantityConversionSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		
+		StringBuilder sb = new StringBuilder(BASE_SELECT_SQL);
+		sb.append(" where 1 = 1");
+		
+		if (criteria.getPosted() != null) {
+			sb.append(" and POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		sb.append(" order by STOCK_QTY_CONV_NO desc");
+		
+		return getJdbcTemplate().query(sb.toString(), stockQuantityConversionRowMapper, params.toArray());
 	}
 	
 }

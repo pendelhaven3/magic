@@ -20,5 +20,7 @@ public interface StockQuantityConversionService {
 	void save(StockQuantityConversionItem item);
 
 	void delete(StockQuantityConversionItem item);
+
+	List<StockQuantityConversion> getAllNonPostedStockQuantityConversions();
 	
 }

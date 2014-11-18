@@ -37,7 +37,7 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		table.update();
+		table.updateDisplay();
 	}
 
 	public void displayStockQuantityConversionDetails(StockQuantityConversion stockQuantityConversion) {

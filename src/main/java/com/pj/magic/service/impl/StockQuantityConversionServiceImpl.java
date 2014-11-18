@@ -14,6 +14,7 @@ import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
+import com.pj.magic.model.search.StockQuantityConversionSearchCriteria;
 import com.pj.magic.service.StockQuantityConversionService;
 
 @Service
@@ -88,6 +89,13 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 	@Override
 	public void delete(StockQuantityConversionItem item) {
 		stockQuantityConversionItemDao.delete(item);
+	}
+
+	@Override
+	public List<StockQuantityConversion> getAllNonPostedStockQuantityConversions() {
+		StockQuantityConversionSearchCriteria criteria = new StockQuantityConversionSearchCriteria();
+		criteria.setPosted(false);
+		return stockQuantityConversionDao.search(criteria);
 	}
 
 }

@@ -39,8 +39,9 @@ public class StockQuantityConversionsTable extends MagicListTable {
 		registerKeyBindings();
     }
 	
-	public void update() {
-		List<StockQuantityConversion> stockQuantityConversions = stockQuantityConversionService.getAllStockQuantityConversions();
+	public void updateDisplay() {
+		List<StockQuantityConversion> stockQuantityConversions = 
+				stockQuantityConversionService.getAllNonPostedStockQuantityConversions();
 		tableModel.setStockQuantityConversions(stockQuantityConversions);
 		if (!stockQuantityConversions.isEmpty()) {
 			changeSelection(0, 0, false, false);
