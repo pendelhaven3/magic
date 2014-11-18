@@ -13,7 +13,7 @@ import com.pj.magic.model.AdjustmentIn;
 @Component
 public class AdjustmentInsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"Adj. In No."};
+	private static final String[] COLUMN_NAMES = {"Adj. In No.", "Remarks"};
 	
 	private List<AdjustmentIn> adjustmentIns = new ArrayList<>();
 	
@@ -33,6 +33,8 @@ public class AdjustmentInsTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case AdjustmentInsTable.ADJUSTMENT_IN_NUMBER_COLUMN_INDEX:
 			return adjustmentIn.getAdjustmentInNumber().toString();
+		case AdjustmentInsTable.REMARKS_COLUMN_INDEX:
+			return adjustmentIn.getRemarks();
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
