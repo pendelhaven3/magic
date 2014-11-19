@@ -377,6 +377,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		productSearchCriteriaDialog.setVisible(true);
 		ProductSearchCriteria criteria = productSearchCriteriaDialog.getSearchCriteria();
 		if (criteria != null) {
+			criteria.setPricingScheme(pricingScheme);
 			List<Product> products = productService.searchProducts(criteria);
 			pricesTableModel.setProducts(products);
 			if (!products.isEmpty()) {
