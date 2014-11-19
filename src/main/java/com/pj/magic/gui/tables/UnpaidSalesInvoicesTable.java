@@ -17,11 +17,12 @@ public class UnpaidSalesInvoicesTable extends MagicTable {
 	public static final int TRANSACTION_DATE_COLUMN_INDEX = 2;
 	public static final int NET_AMOUNT_COLUMN_INDEX = 3;
 	
-	@Autowired private UnpaidSalesInvoicesTableModel tableModel;
+	private UnpaidSalesInvoicesTableModel tableModel;
 	
 	@Autowired
 	public UnpaidSalesInvoicesTable(UnpaidSalesInvoicesTableModel tableModel) {
 		super(tableModel);
+		this.tableModel = tableModel;
 		initializeColumns();
 	}
 	

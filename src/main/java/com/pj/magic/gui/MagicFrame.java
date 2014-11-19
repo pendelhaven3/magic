@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
+import com.pj.magic.gui.panels.AccountsReceivableSummaryPanel;
 import com.pj.magic.gui.panels.AdjustmentInListPanel;
 import com.pj.magic.gui.panels.AdjustmentInPanel;
 import com.pj.magic.gui.panels.AdjustmentOutListPanel;
@@ -22,6 +23,7 @@ import com.pj.magic.gui.panels.AreaInventoryReportListPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportPanel;
 import com.pj.magic.gui.panels.AreaListPanel;
 import com.pj.magic.gui.panels.ChangePasswordPanel;
+import com.pj.magic.gui.panels.CreateAccountsReceivableSummaryPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
 import com.pj.magic.gui.panels.InventoryCheckPanel;
@@ -62,6 +64,7 @@ import com.pj.magic.gui.panels.StockQuantityConversionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UserListPanel;
 import com.pj.magic.gui.panels.ViewPaymentPanel;
+import com.pj.magic.gui.tables.models.AccountsReceivableSummary;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.Area;
@@ -144,6 +147,9 @@ public class MagicFrame extends JFrame {
 			"PAYMENT_TERMINAL_ASSIGNMENT_LIST_PANEL";
 	private static final String MAINTAIN_PAYMENT_TERMINAL_ASSIGNMENT_PANEL =
 			"MAINTAIN_PAYMENT_TERMINAL_ASSIGNMENT_PANEL";
+	private static final String CREATE_ACCOUNTS_RECEIVABLE_SUMMARY_PANEL =
+			"CREATE_SUMMARY_OF_ACCOUNTS_RECEIVABLE_PANEL";
+	private static final String ACCOUNTS_RECEIVABLE_SUMMARY_PANEL = "ACCOUNTS_RECEIVABLE_SUMMARY_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -193,6 +199,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private PaymentListPanel paymentListPanel;
 	@Autowired private PaymentTerminalAssignmentListPanel paymentTerminalAssignmentListPanel;
 	@Autowired private MaintainPaymentTerminalAssignmentPanel maintainPaymentTerminalAssignmentPanel;
+	@Autowired private CreateAccountsReceivableSummaryPanel createAccountsReceivableSummaryPanel;
+	@Autowired private AccountsReceivableSummaryPanel accountsReceivableSummaryPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -289,6 +297,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(paymentListPanel, PAYMENT_LIST_PANEL);
 		panelHolder.add(paymentTerminalAssignmentListPanel, PAYMENT_TERMINAL_ASSIGNMENT_LIST_PANEL);
 		panelHolder.add(maintainPaymentTerminalAssignmentPanel, MAINTAIN_PAYMENT_TERMINAL_ASSIGNMENT_PANEL);
+		panelHolder.add(createAccountsReceivableSummaryPanel, CREATE_ACCOUNTS_RECEIVABLE_SUMMARY_PANEL);
+		panelHolder.add(accountsReceivableSummaryPanel, ACCOUNTS_RECEIVABLE_SUMMARY_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -684,6 +694,18 @@ public class MagicFrame extends JFrame {
 	private void switchToMaintainPaymentTerminalAssignmentPanel(PaymentTerminalAssignment assignment) {
 		maintainPaymentTerminalAssignmentPanel.updateDisplay(assignment);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PAYMENT_TERMINAL_ASSIGNMENT_PANEL);
+	}
+
+	public void switchToCreateAccountsReceivableSummaryPanel() {
+		addPanelNameToTitle("Create Accounts Receivable Summary");
+		createAccountsReceivableSummaryPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, CREATE_ACCOUNTS_RECEIVABLE_SUMMARY_PANEL);
+	}
+
+	public void switchToAccountsReceivableSummaryPanel(AccountsReceivableSummary summary) {
+		addPanelNameToTitle("Accounts Receivable Summary");
+		accountsReceivableSummaryPanel.updateDisplay(summary);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ACCOUNTS_RECEIVABLE_SUMMARY_PANEL);
 	}
 	
 }

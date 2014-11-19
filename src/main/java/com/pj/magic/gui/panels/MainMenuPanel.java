@@ -53,7 +53,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(250, 450));
+		table.setPreferredSize(new Dimension(300, 450));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		mainPanel.add(table, c);
@@ -164,6 +164,9 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Payment Terminal Assignments":
 			getMagicFrame().switchToPaymentTerminalAssignmentListPanel();
 			break;
+		case "Create Accounts Receivable Summary":
+			getMagicFrame().switchToCreateAccountsReceivableSummaryPanel();
+			break;
 		}
 	}
 
@@ -188,6 +191,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Payment",
 				"Payment List",
 				"Payment Terminal Assignments",
+				"Create Accounts Receivable Summary",
 				"Manufacturer List",
 				"Supplier List",
 				"Product Category List",
@@ -218,6 +222,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				menuItems.remove("Inventory Check");
 				menuItems.remove("User List");
 				menuItems.remove("Reset Password");
+				menuItems.remove("Payment Terminal Assignments");
 			}
 			fireTableDataChanged();
 		}

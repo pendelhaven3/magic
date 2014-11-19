@@ -5,6 +5,7 @@ insert into SEQUENCE (NAME) values ('PURCHASE_ORDER_NO_SEQ');
 insert into SEQUENCE (NAME) values ('RECEIVING_RECEIPT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('ADJUSTMENT_OUT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('ADJUSTMENT_IN_NO_SEQ');
+insert into SEQUENCE (NAME) values ('ACCT_RECEIVABLE_SUMMARY_NO_SEQ');
 
 insert into SYSTEM_PARAMETER (NAME, VALUE) values ('VERSION', '0.17.0');
 
