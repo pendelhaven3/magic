@@ -3,6 +3,7 @@ package com.pj.magic.gui.tables;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
 import java.util.EventObject;
 
 import javax.swing.AbstractAction;
@@ -115,6 +116,19 @@ public class MagicTable extends JTable {
 
 	protected void scrollToTop() {
 		changeSelection(0, 0, false, false);
+	}
+
+	protected String getValueAtAsString(int row, int column) {
+		Object value = getValueAt(row, column);
+		if (value instanceof String) {
+			return (String)value;
+		} else if (value instanceof Integer) {
+			return ((Integer)value).toString();
+		} else if (value instanceof BigDecimal) {
+			return ((BigDecimal)value).toString();
+		} else {
+			return (String)value;
+		}
 	}
 	
 }
