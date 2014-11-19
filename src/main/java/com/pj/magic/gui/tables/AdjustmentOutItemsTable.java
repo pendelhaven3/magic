@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -56,6 +57,7 @@ public class AdjustmentOutItemsTable extends MagicTable {
 	
 	private boolean addMode;
 	private AdjustmentOut adjustmentOut;
+	private String previousSelectProductCriteria;
 	
 	@Autowired
 	public AdjustmentOutItemsTable(AdjustmentOutItemsTableModel tableModel) {
@@ -207,6 +209,7 @@ public class AdjustmentOutItemsTable extends MagicTable {
 		addMode = false;
 		this.adjustmentOut = adjustmentOut;
 		tableModel.setAdjustmentOut(adjustmentOut);
+		previousSelectProductCriteria = null;
 	}
 	
 	private AdjustmentOutItem createBlankItem() {
@@ -271,30 +274,42 @@ public class AdjustmentOutItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openSelectProductDialogUsingPreviousProductCode();
+				if (isProductCodeFieldSelected()) {
+					openSelectProductDialogUsingPreviousCriteria();
+				} else if (isUnitFieldSelected() || isQuantityFieldSelected()) {
+					copyValueFromPreviousRow();
+				}
 			}
 		});
 	}
 	
-	protected void openSelectProductDialogUsingPreviousProductCode() {
-		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
+	private void copyValueFromPreviousRow() {
+		if (!(isAdding() && isLastRowSelected() && tableModel.hasNonBlankItem())) {
+			return;
+		}
+		
+		int row = getSelectedRow();
+		int column = getSelectedColumn();
+		
+		if (!isEditing()) {
+			editCellAt(row, column);
+		}
+		
+		JTextField textField = (JTextField)((DefaultCellEditor)getCellEditor()).getComponent();
+		textField.setText((String)getValueAtAsString(row - 1, column));
+		getCellEditor().stopCellEditing();
+	}
+	
+	private void openSelectProductDialogUsingPreviousCriteria() {
+		if (!(isAdding() && isLastRowSelected())) {
 			return;
 		}
 		
 		if (!isEditing()) {
 			editCellAt(getSelectedRow(), getSelectedColumn());
 		}
-		
-		if (tableModel.hasNonBlankItem()) {
-			openSelectProductDialog(getPreviousRowItem().getProductCode());
-		} else if (adjustmentOut.hasItems()) {
-			List<AdjustmentOutItem> items = adjustmentOut.getItems();
-			openSelectProductDialog(items.get(items.size() - 1).getProduct().getCode());
-		}
-	}
 
-	private AdjustmentOutItemRowItem getPreviousRowItem() {
-		return tableModel.getRowItem(getSelectedRow() - 1);
+		openSelectProductDialog(previousSelectProductCriteria);
 	}
 
 	public void removeCurrentlySelectedItem() {
@@ -323,8 +338,10 @@ public class AdjustmentOutItemsTable extends MagicTable {
 		}
 	}
 
-	private void openSelectProductDialog(String productCodeCriteria) {
-		selectProductDialog.searchProducts(productCodeCriteria);
+	private void openSelectProductDialog(String criteria) {
+		previousSelectProductCriteria = criteria;
+		
+		selectProductDialog.searchProducts(criteria);
 		selectProductDialog.setVisible(true);
 		
 		String productCode = selectProductDialog.getSelectedProductCode();
