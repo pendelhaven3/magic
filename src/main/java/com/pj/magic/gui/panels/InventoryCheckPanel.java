@@ -38,6 +38,7 @@ import com.pj.magic.gui.tables.InventoryCheckSummaryTable;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.search.InventoryCheckSearchCriteria;
+import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.service.InventoryCheckService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
@@ -377,24 +378,39 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	}
 
 	private void print() {
-		int choice = chooseIfBeginningInventoryOrActualCount("Print Inventory Check");
-		printService.print(inventoryCheck, choice == JOptionPane.YES_OPTION);
+		printService.print(inventoryCheck, chooseReportType("Print Inventory Check"));
 	}
 
 	private void printPreviewInventoryCheck() {
-		int choice = chooseIfBeginningInventoryOrActualCount("Print Preview");
+		InventoryCheckReportType reportType = chooseReportType("Print Preview");
+		
 		printPreviewDialog.updateDisplay(
-				printService.generateReportAsString(inventoryCheck, choice == JOptionPane.YES_OPTION));
-		printPreviewDialog.setColumnsPerLine(PrintServiceImpl.INVENTORY_REPORT_COLUMNS_PER_LINE);
+				printService.generateReportAsString(inventoryCheck, reportType));
+		if (reportType == InventoryCheckReportType.COMPLETE) {
+			printPreviewDialog.setColumnsPerLine(PrintServiceImpl.INVENTORY_REPORT_COMPLETE_COLUMNS_PER_LINE);
+		} else {
+			printPreviewDialog.setColumnsPerLine(PrintServiceImpl.INVENTORY_REPORT_COLUMNS_PER_LINE);
+		}
 		printPreviewDialog.setUseCondensedFontForPrinting(true);
 		printPreviewDialog.setVisible(true);
 	}
 	
-	private int chooseIfBeginningInventoryOrActualCount(String dialogTitle) {
-		Object[] buttons = {"Beginning Inventory", "Actual Count"};
-		return JOptionPane.showOptionDialog(this, "Beginning inventory or actual count?", 
-				dialogTitle, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, 
+	private InventoryCheckReportType chooseReportType(String dialogTitle) {
+		Object[] buttons = {"Beginning Inventory", "Actual Count", "Complete"};
+		int choice = JOptionPane.showOptionDialog(this, "Beginning inventory or actual count?", 
+				dialogTitle, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, 
 				null, buttons, buttons[0]);
+		
+		switch (choice) {
+		case JOptionPane.YES_OPTION:
+			return InventoryCheckReportType.BEGINNING_INVENTORY;
+		case JOptionPane.NO_OPTION:
+			return InventoryCheckReportType.ACTUAL_COUNT;
+		case JOptionPane.CANCEL_OPTION:
+			return InventoryCheckReportType.COMPLETE;
+		default:
+			return null;
+		}
 	}
 
 	private void postInventoryCheck() {

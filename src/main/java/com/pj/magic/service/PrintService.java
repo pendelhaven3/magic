@@ -10,6 +10,7 @@ import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.StockQuantityConversion;
+import com.pj.magic.model.util.InventoryCheckReportType;
 
 public interface PrintService {
 
@@ -37,9 +38,9 @@ public interface PrintService {
 
 	List<String> generateReportAsString(StockQuantityConversion stockQuantityConversion);
 
-	List<String> generateReportAsString(InventoryCheck inventoryCheck, boolean beginningInventory);
+	List<String> generateReportAsString(InventoryCheck inventoryCheck, InventoryCheckReportType reportType);
 
-	void print(InventoryCheck inventoryCheck, boolean beginningInventory);
+	void print(InventoryCheck inventoryCheck, InventoryCheckReportType reportType);
 	
 	void printBirForm(SalesInvoice salesInvoice);
 

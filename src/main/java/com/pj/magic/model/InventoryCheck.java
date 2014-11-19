@@ -156,5 +156,16 @@ public class InventoryCheck {
 			}
 		}));
 	}
+
+	public List<InventoryCheckSummaryItem> getNonEmptySummaryItems() {
+		return new ArrayList<InventoryCheckSummaryItem>(Collections2.filter(summaryItems, 
+				new Predicate<InventoryCheckSummaryItem>() {
+
+			@Override
+			public boolean apply(InventoryCheckSummaryItem input) {
+				return input.getBeginningInventory() > 0 || input.getQuantity() > 0;
+			}
+		}));
+	}
 	
 }

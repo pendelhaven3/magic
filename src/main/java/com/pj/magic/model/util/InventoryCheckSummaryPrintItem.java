@@ -12,13 +12,27 @@ public class InventoryCheckSummaryPrintItem {
 	private int quantity;
 	private BigDecimal cost;
 	private BigDecimal quantityValue;
+	private InventoryCheckSummaryItem item;
 
-	public InventoryCheckSummaryPrintItem(InventoryCheckSummaryItem item, boolean beginningInventory) {
+	public InventoryCheckSummaryPrintItem(InventoryCheckSummaryItem item, InventoryCheckReportType reportType) {
 		product = item.getProduct();
 		unit = item.getUnit();
 		cost = item.getCost();
-		quantity = (beginningInventory) ? item.getBeginningInventory() : item.getQuantity();
-		quantityValue = (beginningInventory) ? item.getBeginningValue() : item.getActualValue();
+		
+		switch (reportType) {
+		case BEGINNING_INVENTORY:
+			quantity = item.getBeginningInventory();
+			quantityValue = item.getBeginningValue();
+			break;
+		case ACTUAL_COUNT:
+			quantity = item.getQuantity();
+			quantityValue = item.getActualValue();
+			break;
+		case COMPLETE:
+			this.item = item;
+			quantityValue = item.getActualValue();
+			break;
+		}
 	}
 
 	public Product getProduct() {
@@ -61,4 +75,16 @@ public class InventoryCheckSummaryPrintItem {
 		this.quantityValue = quantityValue;
 	}
 
+	public int getBeginningInventory() {
+		return item.getBeginningInventory();
+	}
+	
+	public int getActualCount() {
+		return item.getQuantity();
+	}
+	
+	public int getQuantityDifference() {
+		return item.getQuantityDifference();
+	}
+	
 }

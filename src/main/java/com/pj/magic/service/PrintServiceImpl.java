@@ -1,6 +1,7 @@
 package com.pj.magic.service;
 
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -36,6 +37,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
+import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.PrinterUtil;
@@ -54,6 +56,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int PRICING_SCHEME_REPORT_LINES_PER_PAGE = 44;
 	private static final int INVENTORY_CHECK_SUMMARY_ITEMS_PER_PAGE = 52;
 	public static final int INVENTORY_REPORT_COLUMNS_PER_LINE = 84;
+	public static final int INVENTORY_REPORT_COMPLETE_COLUMNS_PER_LINE = 96;
 	private static final int SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE = 13;
 	private static final int AREA_INVENTORY_REPORT_ITEMS_PER_PAGE = 44;
 	
@@ -298,17 +301,36 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public List<String> generateReportAsString(InventoryCheck inventoryCheck, boolean beginningInventory) {
-		List<InventoryCheckSummaryItem> items = (beginningInventory) ?
-				inventoryCheck.getSummaryItemsWithBeginningInventoriesOnly() :
-				inventoryCheck.getSummaryItemsWithActualCountOnly();
+	public List<String> generateReportAsString(InventoryCheck inventoryCheck, InventoryCheckReportType reportType) {
+		List<InventoryCheckSummaryItem> items = null;
+		String title = null;
+		BigDecimal totalValue = null;
+		
+		switch (reportType) {
+		case BEGINNING_INVENTORY:
+			items = inventoryCheck.getSummaryItemsWithBeginningInventoriesOnly();
+			title = "BEGINNING INVENTORY";
+			totalValue = inventoryCheck.getTotalBeginningValue();
+			break;
+		case ACTUAL_COUNT:
+			items = inventoryCheck.getSummaryItemsWithActualCountOnly();
+			title = "ACTUAL COUNT";
+			totalValue = inventoryCheck.getTotalActualValue();
+			break;
+		case COMPLETE:
+			items = inventoryCheck.getNonEmptySummaryItems();
+			title = "INVENTORY CHECK";
+			totalValue = inventoryCheck.getTotalActualValue();
+			break;
+		}
+		
 		Collections.sort(items);
 		
 		String inventoryDate = FormatterUtil.formatDate(inventoryCheck.getInventoryDate());
 		
 		List<InventoryCheckSummaryPrintItem> printItems = new ArrayList<>();
 		for (InventoryCheckSummaryItem item : items) {
-			printItems.add(new InventoryCheckSummaryPrintItem(item, beginningInventory));
+			printItems.add(new InventoryCheckSummaryPrintItem(item, reportType));
 		}
 		
 		List<List<InventoryCheckSummaryPrintItem>> pageItems = Lists.partition(printItems, 
@@ -317,23 +339,26 @@ public class PrintServiceImpl implements PrintService {
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("inventoryCheck", inventoryCheck);
-			reportData.put("reportType", (beginningInventory) ? "BEGINNING INVENTORY" : "ACTUAL COUNT");
+			reportData.put("reportType", title);
 			reportData.put("items", pageItems.get(i));
 			reportData.put("inventoryDate", inventoryDate);
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			reportData.put("totalValue", (beginningInventory) ? 
-					inventoryCheck.getTotalBeginningValue() : inventoryCheck.getTotalActualValue());
-			printPages.add(generateReportAsString("reports/inventoryReport.vm", reportData));
+			reportData.put("totalValue", totalValue);
+			if (reportType == InventoryCheckReportType.COMPLETE) {
+				printPages.add(generateReportAsString("reports/inventoryReport-complete.vm", reportData));
+			} else {
+				printPages.add(generateReportAsString("reports/inventoryReport.vm", reportData));
+			}
 		}
 		return printPages;
 	}
 
 	@Override
-	public void print(InventoryCheck inventoryCheck, boolean beginningInventory) {
+	public void print(InventoryCheck inventoryCheck, InventoryCheckReportType reportType) {
 		try {
-			for (String printPage : generateReportAsString(inventoryCheck, beginningInventory)) {
+			for (String printPage : generateReportAsString(inventoryCheck, reportType)) {
 				PrinterUtil.print(addLeftPaddingForCondensedFont(printPage));
 			}
 		} catch (PrintException e) {
