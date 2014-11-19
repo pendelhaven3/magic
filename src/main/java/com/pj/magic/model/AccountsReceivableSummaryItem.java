@@ -1,6 +1,5 @@
 package com.pj.magic.model;
 
-import com.pj.magic.gui.tables.models.AccountsReceivableSummary;
 
 public class AccountsReceivableSummaryItem {
 

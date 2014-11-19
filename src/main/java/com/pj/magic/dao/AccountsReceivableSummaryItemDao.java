@@ -2,7 +2,7 @@ package com.pj.magic.dao;
 
 import java.util.List;
 
-import com.pj.magic.gui.tables.models.AccountsReceivableSummary;
+import com.pj.magic.model.AccountsReceivableSummary;
 import com.pj.magic.model.AccountsReceivableSummaryItem;
 
 public interface AccountsReceivableSummaryItemDao {

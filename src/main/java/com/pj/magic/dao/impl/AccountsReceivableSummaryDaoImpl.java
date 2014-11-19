@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -14,7 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.AccountsReceivableSummaryDao;
-import com.pj.magic.gui.tables.models.AccountsReceivableSummary;
+import com.pj.magic.model.AccountsReceivableSummary;
 import com.pj.magic.model.Customer;
 
 @Repository
@@ -23,8 +24,11 @@ public class AccountsReceivableSummaryDaoImpl extends MagicDao implements Accoun
 	private static final String ACCOUNTS_RECEIVABLE_SUMMARY_NUMBER_SEQUENCE = "ACCT_RECEIVABLE_SUMMARY_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, ACCT_RECEIVABLE_SUMMARY_NO, a.CUSTOMER_ID"
-			+ " from ACCT_RECEIVABLE_SUMMARY a";
+			"select a.ID, ACCT_RECEIVABLE_SUMMARY_NO, a.CUSTOMER_ID,"
+			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME"
+			+ " from ACCT_RECEIVABLE_SUMMARY a"
+			+ " join CUSTOMER b"
+			+ "   on b.ID = a.CUSTOMER_ID";
 	
 	private AccountsReceivableSummaryRowMapper rowMapper = new AccountsReceivableSummaryRowMapper();
 	
@@ -59,7 +63,7 @@ public class AccountsReceivableSummaryDaoImpl extends MagicDao implements Accoun
 		
 		AccountsReceivableSummary updated = get(holder.getKey().longValue());
 		summary.setId(updated.getId());
-		summary.setAccountReceivableSummaryNumber(updated.getAccountReceivableSummaryNumber());
+		summary.setAccountsReceivableSummaryNumber(updated.getAccountsReceivableSummaryNumber());
 	}
 
 	private long getNextAccountsReceivableSummaryNumber() {
@@ -83,11 +87,24 @@ public class AccountsReceivableSummaryDaoImpl extends MagicDao implements Accoun
 		public AccountsReceivableSummary mapRow(ResultSet rs, int rowNum) throws SQLException {
 			AccountsReceivableSummary summary = new AccountsReceivableSummary();
 			summary.setId(rs.getLong("ID"));
-			summary.setAccountReceivableSummaryNumber(rs.getLong("ACCT_RECEIVABLE_SUMMARY_NO"));
-			summary.setCustomer(new Customer(rs.getLong("CUSTOMER_ID")));
+			summary.setAccountsReceivableSummaryNumber(rs.getLong("ACCT_RECEIVABLE_SUMMARY_NO"));
+			
+			Customer customer = new Customer();
+			customer.setId(rs.getLong("CUSTOMER_ID"));
+			customer.setCode(rs.getString("CUSTOMER_CODE"));
+			customer.setName(rs.getString("CUSTOMER_NAME"));
+			summary.setCustomer(customer);
+			
 			return summary;
 		}
 		
+	}
+
+	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by ACCT_RECEIVABLE_SUMMARY_NO desc";
+	
+	@Override
+	public List<AccountsReceivableSummary> getAll() {
+		return getJdbcTemplate().query(GET_ALL_SQL, rowMapper);
 	}
 	
 }

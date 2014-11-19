@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.AccountsReceivableSummaryItemDao;
-import com.pj.magic.gui.tables.models.AccountsReceivableSummary;
+import com.pj.magic.model.AccountsReceivableSummary;
 import com.pj.magic.model.AccountsReceivableSummaryItem;
 import com.pj.magic.model.SalesInvoice;
 

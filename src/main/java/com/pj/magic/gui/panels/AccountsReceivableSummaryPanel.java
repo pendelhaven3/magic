@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
-import com.pj.magic.gui.tables.models.AccountsReceivableSummary;
+import com.pj.magic.model.AccountsReceivableSummary;
 import com.pj.magic.model.AccountsReceivableSummaryItem;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.AccountsReceivableService;
@@ -72,7 +72,7 @@ public class AccountsReceivableSummaryPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "AR Summary No.: "), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "AR Summary No.: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
@@ -177,6 +177,7 @@ public class AccountsReceivableSummaryPanel extends StandardMagicPanel {
 	public void updateDisplay(AccountsReceivableSummary summary) {
 		this.summary = summary = accountsReceivableService.getAccountsReceivableSummary(summary.getId());
 		
+		accountsReceivableSummaryNumberField.setText(summary.getAccountsReceivableSummaryNumber().toString());
 		customerCodeField.setText(summary.getCustomer().getCode());
 		customerNameField.setText(summary.getCustomer().getName());
 		totalAmountField.setText(FormatterUtil.formatAmount(summary.getTotalAmount()));

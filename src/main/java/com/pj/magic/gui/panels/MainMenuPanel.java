@@ -53,7 +53,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(300, 450));
+		table.setPreferredSize(new Dimension(300, 480));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		mainPanel.add(table, c);
@@ -167,6 +167,9 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Create Accounts Receivable Summary":
 			getMagicFrame().switchToCreateAccountsReceivableSummaryPanel();
 			break;
+		case "Accounts Receivable Summary List":
+			getMagicFrame().switchToAccountsReceivableSummaryListPanel();
+			break;
 		}
 	}
 
@@ -191,7 +194,8 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Payment",
 				"Payment List",
 				"Payment Terminal Assignments",
-				"Create Accounts Receivable Summary",
+//				"Create Accounts Receivable Summary",
+//				"Accounts Receivable Summary List",
 				"Manufacturer List",
 				"Supplier List",
 				"Product Category List",

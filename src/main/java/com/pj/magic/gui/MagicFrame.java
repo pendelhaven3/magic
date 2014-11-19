@@ -64,7 +64,7 @@ import com.pj.magic.gui.panels.StockQuantityConversionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UserListPanel;
 import com.pj.magic.gui.panels.ViewPaymentPanel;
-import com.pj.magic.gui.tables.models.AccountsReceivableSummary;
+import com.pj.magic.model.AccountsReceivableSummary;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.Area;
@@ -706,6 +706,11 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Accounts Receivable Summary");
 		accountsReceivableSummaryPanel.updateDisplay(summary);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, ACCOUNTS_RECEIVABLE_SUMMARY_PANEL);
+	}
+
+	public void switchToAccountsReceivableSummaryListPanel() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

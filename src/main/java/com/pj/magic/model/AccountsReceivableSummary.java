@@ -1,18 +1,15 @@
-package com.pj.magic.gui.tables.models;
+package com.pj.magic.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.pj.magic.Constants;
-import com.pj.magic.model.AccountsReceivableSummaryItem;
-import com.pj.magic.model.Customer;
-import com.pj.magic.model.SalesInvoice;
 
 public class AccountsReceivableSummary {
 
 	private Long id;
-	private Long accountReceivableSummaryNumber;
+	private Long accountsReceivableSummaryNumber;
 	private Customer customer;
 	private List<AccountsReceivableSummaryItem> items = new ArrayList<>();
 
@@ -28,13 +25,13 @@ public class AccountsReceivableSummary {
 		return customer;
 	}
 
-	public Long getAccountReceivableSummaryNumber() {
-		return accountReceivableSummaryNumber;
+	public Long getAccountsReceivableSummaryNumber() {
+		return accountsReceivableSummaryNumber;
 	}
 
-	public void setAccountReceivableSummaryNumber(
-			Long accountReceivableSummaryNumber) {
-		this.accountReceivableSummaryNumber = accountReceivableSummaryNumber;
+	public void setAccountsReceivableSummaryNumber(
+			Long accountsReceivableSummaryNumber) {
+		this.accountsReceivableSummaryNumber = accountsReceivableSummaryNumber;
 	}
 
 	public void setCustomer(Customer customer) {
