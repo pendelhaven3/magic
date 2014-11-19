@@ -13,11 +13,16 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Supplier;
@@ -34,11 +39,12 @@ public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 	private MagicTextField receivingReceiptNumberField;
 	private MagicComboBox<Supplier> supplierComboBox;
 	private MagicComboBox<String> statusComboBox;
+	private UtilCalendarModel receivedDateModel;
 	private JButton searchButton;
 	private ReceivingReceiptSearchCriteria searchCriteria;
 	
 	public ReceivingReceiptSearchCriteriaDialog() {
-		setSize(530, 210);
+		setSize(530, 250);
 		setLocationRelativeTo(null);
 		setTitle("Search Receiving Receipts");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
@@ -59,6 +65,8 @@ public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 		
 		statusComboBox = new MagicComboBox<>();
 		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "Non-Posted", "Posted"}));
+		
+		receivedDateModel = new UtilCalendarModel();
 		
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ActionListener() {
@@ -84,6 +92,10 @@ public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 		
 		if (statusComboBox.getSelectedIndex() != 0) {
 			searchCriteria.setPosted(statusComboBox.getSelectedIndex() == 2);
+		}
+		
+		if (receivedDateModel.getValue() != null) {
+			searchCriteria.setReceivedDate(receivedDateModel.getValue().getTime());
 		}
 		
 		setVisible(false);
@@ -178,6 +190,24 @@ public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(120, "Received Date:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePanelImpl datePanel = new JDatePanelImpl(receivedDateModel);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		add(datePicker, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.CENTER;
 		add(ComponentUtil.createFiller(1, 5), c);
 		
@@ -216,6 +246,8 @@ public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 				new DefaultComboBoxModel<>(suppliers.toArray(new Supplier[suppliers.size()])));
 		
 		statusComboBox.setSelectedIndex(1);
+		
+		receivedDateModel.setValue(null);
 	}
 	
 }

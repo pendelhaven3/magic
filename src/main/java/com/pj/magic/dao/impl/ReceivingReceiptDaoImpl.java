@@ -25,6 +25,7 @@ import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceiptDao {
@@ -198,6 +199,12 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 		if (criteria.getPosted() != null) {
 			sql.append(" and a.POST_IND = ?");
 			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+
+		if (criteria.getReceivedDate() != null) {
+			sql.append(" and a.RECEIVED_DT = ?");
+//			params.add(criteria.getReceivedDate()); // TODO: investigate this further!
+			params.add(DbUtil.toMySqlDateString(criteria.getReceivedDate()));
 		}
 		
 		sql.append(" order by a.ID desc");

@@ -80,6 +80,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 			public void propertyChange(PropertyChangeEvent evt) {
 				if ("value".equals(evt.getPropertyName()) && evt.getOldValue() != null 
 						&& evt.getNewValue() != null) {
+					receivingReceipt.setReceivedDate(receivedDateModel.getValue().getTime());
 					receivingReceiptService.save(receivingReceipt);
 				}
 			}
