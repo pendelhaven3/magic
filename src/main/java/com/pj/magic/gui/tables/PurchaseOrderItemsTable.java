@@ -335,14 +335,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		}
 		
 		JTextField textField = (JTextField)((DefaultCellEditor)getCellEditor()).getComponent();
-		Object value = getValueAt(row - 1, column);
-		if (value instanceof String) {
-			textField.setText((String)value);
-		} else if (value instanceof Integer) {
-			textField.setText(((Integer)value).toString());
-		} else if (value instanceof BigDecimal) {
-			textField.setText(((BigDecimal)value).toString());
-		}
+		textField.setText((String)getValueAtAsString(row - 1, column));
 		getCellEditor().stopCellEditing();
 	}
 	

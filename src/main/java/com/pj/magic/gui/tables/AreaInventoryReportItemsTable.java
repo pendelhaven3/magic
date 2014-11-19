@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -60,6 +61,7 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 	
 	private boolean addMode;
 	private AreaInventoryReport areaInventoryReport;
+	private String previousSelectProductCriteria;
 	
 	@Autowired
 	public AreaInventoryReportItemsTable(AreaInventoryReportItemsTableModel tableModel) {
@@ -220,6 +222,7 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 		addMode = false;
 		this.areaInventoryReport = areaInventoryReport;
 		tableModel.setAreaInventoryReport(areaInventoryReport);
+		previousSelectProductCriteria = null;
 	}
 	
 	private AreaInventoryReportItem createBlankItem() {
@@ -284,9 +287,30 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openSelectProductDialogUsingPreviousProductCode();
+				if (isProductCodeFieldSelected()) {
+					openSelectProductDialogUsingPreviousCriteria();
+				} else if (isUnitFieldSelected() || isQuantityFieldSelected()) {
+					copyValueFromPreviousRow();
+				}
 			}
 		});
+	}
+	
+	private void copyValueFromPreviousRow() {
+		if (!(isAdding() && isLastRowSelected() && tableModel.hasNonBlankItem())) {
+			return;
+		}
+		
+		int row = getSelectedRow();
+		int column = getSelectedColumn();
+		
+		if (!isEditing()) {
+			editCellAt(row, column);
+		}
+		
+		JTextField textField = (JTextField)((DefaultCellEditor)getCellEditor()).getComponent();
+		textField.setText((String)getValueAtAsString(row - 1, column));
+		getCellEditor().stopCellEditing();
 	}
 	
 	public void removeCurrentlySelectedItem() {
@@ -315,8 +339,10 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 		}
 	}
 
-	private void openSelectProductDialog(String productCodeCriteria) {
-		selectProductDialog.searchProducts(productCodeCriteria);
+	private void openSelectProductDialog(String criteria) {
+		previousSelectProductCriteria = criteria;
+		
+		selectProductDialog.searchProducts(criteria);
 		selectProductDialog.setVisible(true);
 		
 		String productCode = selectProductDialog.getSelectedProductCode();
@@ -326,48 +352,17 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 		}
 	}
 	
-	protected void openSelectProductDialogUsingPreviousProductCode() {
-		if (!(isAdding() && isLastRowSelected() && isProductCodeFieldSelected())) {
+	private void openSelectProductDialogUsingPreviousCriteria() {
+		if (!(isAdding() && isLastRowSelected())) {
 			return;
 		}
 		
 		if (!isEditing()) {
 			editCellAt(getSelectedRow(), getSelectedColumn());
 		}
-		
-		if (tableModel.hasNonBlankItem()) {
-			openSelectProductDialog(getPreviousRowItem().getProductCode());
-		} else if (areaInventoryReport.hasItems()) {
-			List<AreaInventoryReportItem> items = areaInventoryReport.getItems();
-			openSelectProductDialog(items.get(items.size() - 1).getProduct().getCode());
-		}
-	}
 
-	private AreaInventoryReportItemRowItem getPreviousRowItem() {
-		return tableModel.getRowItem(getSelectedRow() - 1);
+		openSelectProductDialog(previousSelectProductCriteria);
 	}
-
-	/*
-	public BigDecimal getTotalAmount() {
-		BigDecimal totalAmount = areaInventoryReport.getTotalAmount();
-		if (isAdding()) {
-			for (AreaInventoryReportItemRowItem rowItem : tableModel.getRowItems()) {
-				if (rowItem.isValid()) {
-					totalAmount = totalAmount.add(rowItem.getAmount());
-				}
-			}
-		}
-		return totalAmount;
-	}
-	
-	public int getTotalNumberOfItems() {
-		int totalNumberOfItems = areaInventoryReport.getTotalNumberOfItems();
-		if (isAdding()) {
-			totalNumberOfItems += tableModel.getItems().size();
-		}
-		return totalNumberOfItems;
-	}
-	*/
 
 	public void highlightColumn(AreaInventoryReportItem item, int column) {
 		int row = areaInventoryReport.getItems().indexOf(item);
