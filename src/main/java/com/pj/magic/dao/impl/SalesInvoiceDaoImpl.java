@@ -23,6 +23,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
@@ -203,6 +204,12 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 		if (criteria.getCustomer() != null) {
 			sb.append(" and CUSTOMER_ID = ?");
 			params.add(criteria.getCustomer().getId());
+		}
+		
+		if (criteria.getTransactionDate() != null) {
+			sb.append(" and a.TRANSACTION_DT = ?");
+//			params.add(criteria.getTransactionDate()); // TODO: investigate this further!
+			params.add(DbUtil.toMySqlDateString(criteria.getTransactionDate()));
 		}
 		
 		sb.append(" order by SALES_INVOICE_NO desc");

@@ -14,11 +14,16 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
@@ -38,12 +43,13 @@ public class SalesInvoiceSearchCriteriaDialog extends MagicDialog {
 	private MagicTextField customerCodeField;
 	private JLabel customerNameField;
 	private MagicComboBox<String> statusComboBox;
+	private UtilCalendarModel transactionDateModel;
 	private JButton searchButton;
 	private SalesInvoiceSearchCriteria searchCriteria;
 	private JButton selectCustomerButton;
 	
 	public SalesInvoiceSearchCriteriaDialog() {
-		setSize(600, 210);
+		setSize(600, 250);
 		setLocationRelativeTo(null);
 		setTitle("Search Sales Invoices");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
@@ -73,6 +79,8 @@ public class SalesInvoiceSearchCriteriaDialog extends MagicDialog {
 		
 		statusComboBox = new MagicComboBox<>();
 		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Marked", "Cancelled"}));
+		
+		transactionDateModel = new UtilCalendarModel();
 		
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ActionListener() {
@@ -125,6 +133,10 @@ public class SalesInvoiceSearchCriteriaDialog extends MagicDialog {
 				searchCriteria.setCancelled(true);
 				break;
 			}
+		}
+
+		if (transactionDateModel.getValue() != null) {
+			searchCriteria.setTransactionDate(transactionDateModel.getValue().getTime());
 		}
 		
 		setVisible(false);
@@ -218,6 +230,24 @@ public class SalesInvoiceSearchCriteriaDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(140, "Transaction Date:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePanelImpl datePanel = new JDatePanelImpl(transactionDateModel);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		add(datePicker, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.CENTER;
 		add(ComponentUtil.createFiller(1, 5), c);
 		
@@ -252,6 +282,7 @@ public class SalesInvoiceSearchCriteriaDialog extends MagicDialog {
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
 		statusComboBox.setSelectedIndex(1);
+		transactionDateModel.setValue(null);
 	}
 	
 	private JPanel createCustomerPanel() {
