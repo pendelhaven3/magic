@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.pj.magic.Constants;
+
 public class SalesInvoice {
 
 	private Long id;
@@ -143,7 +145,7 @@ public class SalesInvoice {
 	}
 	
 	public BigDecimal getTotalDiscountedAmount() {
-		BigDecimal totalDiscountedAmount = BigDecimal.ZERO;
+		BigDecimal totalDiscountedAmount = Constants.ZERO;
 		for (SalesInvoiceItem item : items) {
 			totalDiscountedAmount = totalDiscountedAmount.add(item.getDiscountedAmount());
 		}

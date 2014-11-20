@@ -9,6 +9,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.SalesInvoiceReport;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.util.InventoryCheckReportType;
 
@@ -47,5 +48,9 @@ public interface PrintService {
 	List<String> generateReportAsString(AreaInventoryReport areaInventoryReport);
 
 	void print(AreaInventoryReport areaInventoryReport);
+
+	List<String> generateReportAsString(SalesInvoiceReport salesInvoiceReport);
+
+	void print(SalesInvoiceReport salesInvoiceReport);
 	
 }

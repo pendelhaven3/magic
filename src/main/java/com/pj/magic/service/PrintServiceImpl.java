@@ -4,6 +4,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
+import com.pj.magic.model.SalesInvoiceReport;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.model.util.InventoryCheckReportType;
@@ -43,6 +45,7 @@ import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.PrinterUtil;
 import com.pj.magic.util.ReceivingReceiptReportUtil;
 import com.pj.magic.util.ReportUtil;
+import com.pj.magic.util.SalesInvoiceReportReportUtil;
 
 @Service 
 public class PrintServiceImpl implements PrintService {
@@ -59,6 +62,7 @@ public class PrintServiceImpl implements PrintService {
 	public static final int INVENTORY_REPORT_COMPLETE_COLUMNS_PER_LINE = 96;
 	private static final int SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE = 13;
 	private static final int AREA_INVENTORY_REPORT_ITEMS_PER_PAGE = 44;
+	private static final int SALES_INVOICE_REPORT_ITEMS_PER_PAGE = 30;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -441,6 +445,46 @@ public class PrintServiceImpl implements PrintService {
 	public void print(AreaInventoryReport areaInventoryReport) {
 		try {
 			for (String printPage : generateReportAsString(areaInventoryReport)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(SalesInvoiceReport salesInvoiceReport) {
+		Collections.sort(salesInvoiceReport.getSalesInvoices(), new Comparator<SalesInvoice>() {
+
+			@Override
+			public int compare(SalesInvoice o1, SalesInvoice o2) {
+				return o1.getSalesInvoiceNumber().compareTo(o2.getSalesInvoiceNumber());
+			}
+		});
+		
+		String reportDate = FormatterUtil.formatDate(salesInvoiceReport.getReportDate());
+		
+		List<List<SalesInvoice>> pageItems = Lists.partition(salesInvoiceReport.getSalesInvoices(), 
+				SALES_INVOICE_REPORT_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("salesInvoiceReport", salesInvoiceReport);
+			reportData.put("salesInvoices", pageItems.get(i));
+			reportData.put("reportDate", reportDate);
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			reportData.put("reportUtil", SalesInvoiceReportReportUtil.class);
+			printPages.add(generateReportAsString("reports/salesInvoiceReport.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(SalesInvoiceReport salesInvoiceReport) {
+		try {
+			for (String printPage : generateReportAsString(salesInvoiceReport)) {
 				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {

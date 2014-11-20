@@ -6,8 +6,8 @@ import org.apache.commons.lang.StringUtils;
 
 public class ReportUtil {
 
-	private static final String ALIGN_LEFT = "left";
-	private static final String ALIGN_RIGHT = "right";
+	protected static final String ALIGN_LEFT = "left";
+	protected static final String ALIGN_RIGHT = "right";
 	private static final int CHARACTERS_PER_LINE = 73;
 	
 	public static String field(String text) {
@@ -86,4 +86,6 @@ public class ReportUtil {
 		return StringUtils.repeat(" ", (charactersPerLine - text.length()) / 2) + text;
 	}
 	
+	
+
 }

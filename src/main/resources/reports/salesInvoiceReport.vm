@@ -1,14 +1,18 @@
-DUMPLING JOY GROCERY
+$report.center("JC HARMONY SELLING INC.", 76)
 
-POSTED SALES INVOICE REPORT
-As of 11/14/14
-                                                                           Page:    1
+$report.center("POSTED SALES INVOICE REPORT", 76)
+$report.center("As of ${reportDate}", 76)
+                                                               Page: $currentPage x $totalPages
 
-                                               Sub Total     Discount
-S.I. #   Date          Customer Name           Amount        Amount      Net Amount
------- -------- ------------------------------ ------------- ---------- ------------- 
-369282 11/03/14 CAN-LIZA'S SARI-SARI STORE            816.35                 5,351.90
-                                               ------------- ---------- -------------  
-                                T O T A L S => 
-                                               ============= ========== ============= 
-                                               
+                                      Sub Total     Discount
+S.I. #        Customer Name           Amount        Amount      Net Amount
+------ ------------------------------ ------------- ---------- -------------
+##369282 CAN-LIZA'S SARI-SARI STORE            816.35                 5,351.90
+#foreach($salesInvoice in $salesInvoices)
+$report.field($salesInvoice.salesInvoiceNumber, 6, "right") $report.field($salesInvoice.customer.name, 30) $report.field($salesInvoice.totalAmount, 13, "right") $report.discount($salesInvoice.totalDiscountedAmount, 10) $report.field($salesInvoice.totalNetAmount, 13, "right")
+#end
+#if($isLastPage == true)
+                                      ------------- ---------- -------------  
+                       T O T A L S => $report.field($salesInvoiceReport.totalAmount, 13, "right") $report.field($salesInvoiceReport.totalDiscountedAmount, 10, "right") $report.field($salesInvoiceReport.totalNetAmount, 13, "right")
+                                      ============= ========== =============
+#end
