@@ -19,6 +19,7 @@ import com.pj.magic.model.search.PurchaseOrderSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.service.ReceivingReceiptService;
+import com.pj.magic.service.SystemService;
 
 @Service
 public class PurchaseOrderServiceImpl implements PurchaseOrderService {
@@ -28,6 +29,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	@Autowired private ProductDao productDao;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
 	@Autowired private LoginService loginService;
+	@Autowired private SystemService systemService;
 	
 	@Transactional
 	@Override
@@ -51,6 +53,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 		for (PurchaseOrderItem item : purchaseOrder.getItems()) {
 			item.setProduct(productDao.get(item.getProduct().getId()));
 		}
+		purchaseOrder.setVatRate(systemService.getVatRate());
 	}
 
 	@Transactional
@@ -120,6 +123,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	@Override
 	public List<PurchaseOrder> search(PurchaseOrderSearchCriteria criteria) {
 		return purchaseOrderDao.search(criteria);
+	}
+
+	@Override
+	public PurchaseOrder newPurchaseOrder() {
+		PurchaseOrder purchaseOrder = new PurchaseOrder();
+		purchaseOrder.setVatRate(systemService.getVatRate());
+		return purchaseOrder;
 	}
 	
 }

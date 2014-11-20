@@ -158,7 +158,12 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 				rowItem.setCost(originalCost);
 			}
 			item.setActualQuantity(rowItem.getActualQuantity());
+			
+			boolean newItem = (item.getId() == null);
 			purchaseOrderService.save(item);
+			if (newItem) {
+				item.getParent().getItems().add(item);
+			}
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}

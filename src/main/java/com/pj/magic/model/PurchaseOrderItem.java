@@ -13,6 +13,7 @@ public class PurchaseOrderItem implements Comparable<PurchaseOrderItem> {
 	private String unit;
 	private Integer quantity;
 	private BigDecimal cost;
+	private BigDecimal vatInclusiveCost;
 	private Integer actualQuantity;
 	private boolean ordered;
 
@@ -119,6 +120,14 @@ public class PurchaseOrderItem implements Comparable<PurchaseOrderItem> {
 		} else {
 			return result;
 		}
+	}
+
+	public BigDecimal getVatInclusiveCost() {
+		return vatInclusiveCost;
+	}
+
+	public void setVatInclusiveCost(BigDecimal vatInclusiveCost) {
+		this.vatInclusiveCost = vatInclusiveCost;
 	}
 	
 }

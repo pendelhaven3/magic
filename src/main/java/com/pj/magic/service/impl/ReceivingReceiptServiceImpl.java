@@ -1,12 +1,14 @@
 package com.pj.magic.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pj.magic.Constants;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ReceivingReceiptDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
@@ -69,12 +71,19 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	@Override
 	public void post(ReceivingReceipt receivingReceipt) {
 		ReceivingReceipt updated = getReceivingReceipt(receivingReceipt.getId());
+		BigDecimal costMultipler = Constants.ONE;
+		if (!updated.isVatInclusive()) {
+			costMultipler = Constants.ONE.add(updated.getVatRate());
+		}
+		
 		for (ReceivingReceiptItem item : updated.getItems()) {
 			Product product = productDao.get(item.getProduct().getId());
 			BigDecimal currentCost = product.getFinalCost(item.getUnit());
 			
-			product.setGrossCost(item.getUnit(), item.getCost());
-			product.setFinalCost(item.getUnit(), item.getFinalCost());
+			product.setGrossCost(item.getUnit(), 
+					item.getCost().multiply(costMultipler).setScale(2, RoundingMode.HALF_UP));
+			product.setFinalCost(item.getUnit(), 
+					item.getFinalCost().multiply(costMultipler).setScale(2, RoundingMode.HALF_UP));
 			if (item.getProduct().getUnits().size() > 1) {
 				product.autoCalculateCostsOfSmallerUnits(item.getUnit());
 			}

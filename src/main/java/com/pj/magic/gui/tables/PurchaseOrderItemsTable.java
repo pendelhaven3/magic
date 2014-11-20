@@ -193,7 +193,7 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		
 		addMode = false;
 		List<PurchaseOrderItem> items = purchaseOrder.getItems();
-		items.addAll(tableModel.getItems());
+//		items.addAll(tableModel.getItems());
 		tableModel.setItems(items);
 		
 		if (items.size() > 0) {
@@ -397,14 +397,6 @@ public class PurchaseOrderItemsTable extends MagicTable {
 		}
 	}
 
-	public int getTotalNumberOfItems() {
-		int totalNumberOfItems = purchaseOrder.getTotalNumberOfItems();
-		if (isAdding()) {
-			totalNumberOfItems += tableModel.getItems().size();
-		}
-		return totalNumberOfItems;
-	}
-
 	public void highlightColumn(PurchaseOrderItem item, int column) {
 		int row = purchaseOrder.getItems().indexOf(item);
 		changeSelection(row, column, false, false);
@@ -501,18 +493,6 @@ public class PurchaseOrderItemsTable extends MagicTable {
 	
 	public int getActualQuantityColumnIndex() {
 		return actualQuantityColumnIndex;
-	}
-
-	public BigDecimal getTotalAmount() {
-		BigDecimal totalAmount = purchaseOrder.getTotalAmount();
-		if (isAdding()) {
-			for (PurchaseOrderItemRowItem item : tableModel.getRowItems()) {
-				if (item.isValid()) {
-					totalAmount = totalAmount.add(item.getAmount());
-				}
-			}
-		}
-		return totalAmount;
 	}
 
 	private class ProductCodeCellEditor extends MagicCellEditor {

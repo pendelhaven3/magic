@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.NoActualQuantityException;
 import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.MagicCheckBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -84,7 +87,10 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	private JComboBox<PaymentTerm> paymentTermComboBox;
 	private MagicTextField remarksField;
 	private MagicTextField referenceNumberField;
+	private MagicCheckBox vatInclusiveCheckBox;
 	private JLabel totalItemsField;
+	private JLabel subTotalAmountField;
+	private JLabel vatAmountField;
 	private JLabel totalAmountField;
 	private UnitCostsAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitCostsAndQuantitiesTableModel();
 	private MagicToolBarButton markAsDeliveredButton;
@@ -128,9 +134,18 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			}
 		});
 		
+		vatInclusiveCheckBox = new MagicCheckBox();
+		vatInclusiveCheckBox.addOnClickListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				saveVatInclusive();
+			}
+		});
+		
 		focusOnComponentWhenThisPanelIsDisplayed(supplierCodeField);
 		
-		updateTotalAmountFieldWhenItemsTableChanges();
+		updateTotalsPanelWhenItemsTableChanges();
 		initializeUnitPricesAndQuantitiesTable();
 		
 		selectSupplierButton = new EllipsisButton();
@@ -142,6 +157,12 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 				selectSupplier();
 			}
 		});
+	}
+
+	private void saveVatInclusive() {
+		purchaseOrder.setVatInclusive(vatInclusiveCheckBox.isSelected());
+		purchaseOrderService.save(purchaseOrder);
+		updateTotalsPanel();
 	}
 
 	protected void selectSupplier() {
@@ -269,15 +290,21 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		getMagicFrame().switchToPurchaseOrderListPanel();
 	}
 	
-	private void updateTotalAmountFieldWhenItemsTableChanges() {
+	private void updateTotalsPanelWhenItemsTableChanges() {
 		itemsTable.getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalItemsField.setText(String.valueOf(itemsTable.getTotalNumberOfItems()));
-				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
+				updateTotalsPanel();
 			}
 		});
+	}
+
+	private void updateTotalsPanel() {
+		totalItemsField.setText(String.valueOf(purchaseOrder.getTotalNumberOfItems()));
+		subTotalAmountField.setText(FormatterUtil.formatAmount(purchaseOrder.getSubTotalAmount()));
+		vatAmountField.setText(FormatterUtil.formatAmount(purchaseOrder.getVatAmount()));
+		totalAmountField.setText(FormatterUtil.formatAmount(purchaseOrder.getTotalAmount()));
 	}
 
 	public void updateDisplay(PurchaseOrder purchaseOrder) {
@@ -305,6 +332,8 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		remarksField.setText(purchaseOrder.getRemarks());
 		referenceNumberField.setEnabled(purchaseOrder.isDelivered() && !purchaseOrder.isPosted());
 		referenceNumberField.setText(purchaseOrder.getReferenceNumber());
+		vatInclusiveCheckBox.setEnabled(!purchaseOrder.isPosted());
+		vatInclusiveCheckBox.setSelected(purchaseOrder.isVatInclusive(), false);
 		itemsTable.setPurchaseOrder(purchaseOrder);
 		
 		markAsDeliveredButton.setEnabled(!purchaseOrder.isDelivered());
@@ -328,7 +357,11 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		remarksField.setText(null);
 		referenceNumberField.setEnabled(false);
 		referenceNumberField.setText(null);
+		vatInclusiveCheckBox.setEnabled(false);
+		vatInclusiveCheckBox.setSelected(true, false);
 		totalItemsField.setText(null);
+		subTotalAmountField.setText(null);
+		vatAmountField.setText(null);
 		totalAmountField.setText(null);
 		itemsTable.setPurchaseOrder(purchaseOrder);
 		
@@ -436,6 +469,19 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		paymentTermComboBox.setPreferredSize(new Dimension(150, 25));
 		mainPanel.add(paymentTermComboBox, c);
 		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(130, "VAT Inclusive:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(vatInclusiveCheckBox, c);
+		
 		currentRow++;
 		
 		c.weightx = c.weighty = 0.0;
@@ -519,24 +565,53 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		panel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalItemsField = ComponentUtil.createLabel(150, "");
+		totalItemsField = ComponentUtil.createLabel(100, "");
 		panel.add(totalItemsField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(120, "Sub Total:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		subTotalAmountField = ComponentUtil.createLabel(150, "");
+		panel.add(subTotalAmountField, c);
 		
 		currentRow++;
 		
 		c = new GridBagConstraints();
-		c.gridx = 0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(120, "VAT Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		vatAmountField = ComponentUtil.createLabel(150, "");
+		panel.add(vatAmountField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.gridx = 1;
+		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		totalAmountField = ComponentUtil.createLabel(150, "");

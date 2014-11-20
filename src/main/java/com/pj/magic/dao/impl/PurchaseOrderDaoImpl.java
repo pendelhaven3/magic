@@ -28,7 +28,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PURCHASE_ORDER_NO, SUPPLIER_ID, POST_IND, DELIVERY_IND,"
-			+ " a.PAYMENT_TERM_ID, a.REMARKS, REFERENCE_NO, POST_DT,"
+			+ " a.PAYMENT_TERM_ID, a.REMARKS, REFERENCE_NO, POST_DT, VAT_INCLUSIVE,"
 			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME,"
 			+ " a.CREATED_BY, c.USERNAME as CREATED_BY_USERNAME"
 			+ " from PURCHASE_ORDER a, SUPPLIER b, USER c"
@@ -61,7 +61,8 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 	
 	private static final String INSERT_SQL =
 			"insert into PURCHASE_ORDER"
-			+ " (PURCHASE_ORDER_NO, SUPPLIER_ID, PAYMENT_TERM_ID, CREATED_BY) values (?, ?, ?, ?)";
+			+ " (PURCHASE_ORDER_NO, SUPPLIER_ID, PAYMENT_TERM_ID, CREATED_BY)"
+			+ " values (?, ?, ?, ?)";
 	
 	private void insert(final PurchaseOrder purchaseOrder) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -94,7 +95,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 
 	private static final String UPDATE_SQL =
 			"update PURCHASE_ORDER set SUPPLIER_ID = ?, POST_IND = ?, DELIVERY_IND = ?,"
-			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?, POST_DT = ?"
+			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?, POST_DT = ?, VAT_INCLUSIVE = ?"
 			+ " where ID = ?";
 	
 	private void update(PurchaseOrder purchaseOrder) {
@@ -106,6 +107,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 				purchaseOrder.getRemarks(),
 				purchaseOrder.getReferenceNumber(),
 				purchaseOrder.getPostDate(),
+				purchaseOrder.isVatInclusive() ? "Y" : "N",
 				purchaseOrder.getId());
 	}
 	
@@ -132,6 +134,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 			purchaseOrder.setReferenceNumber(rs.getString("REFERENCE_NO"));
 			purchaseOrder.setPostDate(rs.getDate("POST_DT"));
 			purchaseOrder.setCreatedBy(new User(rs.getLong("CREATED_BY"), rs.getString("CREATED_BY_USERNAME")));
+			purchaseOrder.setVatInclusive("Y".equals(rs.getString("VAT_INCLUSIVE")));
 			return purchaseOrder;
 		}
 	}

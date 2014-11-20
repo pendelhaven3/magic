@@ -1,5 +1,7 @@
 package com.pj.magic.dao.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -31,7 +33,7 @@ import com.pj.magic.util.DbUtil;
 public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceiptDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, RECEIVING_RECEIPT_NO, SUPPLIER_ID, POST_IND, "
+			"select a.ID, RECEIVING_RECEIPT_NO, SUPPLIER_ID, POST_IND, VAT_INCLUSIVE, VAT_RATE,"
 			+ " a.PAYMENT_TERM_ID, c.NAME as PAYMENT_TERM_NAME, a.REMARKS, REFERENCE_NO, RECEIVED_DT, "
 			+ " RELATED_PURCHASE_ORDER_NO, RECEIVED_BY, b.NAME as SUPPLIER_NAME"
 			+ " from RECEIVING_RECEIPT a, SUPPLIER b, PAYMENT_TERM c"
@@ -65,8 +67,8 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	private static final String INSERT_SQL =
 			"insert into RECEIVING_RECEIPT"
 			+ " (RECEIVING_RECEIPT_NO, SUPPLIER_ID, PAYMENT_TERM_ID, REFERENCE_NO, REMARKS, RECEIVED_DT, "
-			+ "  RELATED_PURCHASE_ORDER_NO, RECEIVED_BY)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "  RELATED_PURCHASE_ORDER_NO, RECEIVED_BY, VAT_INCLUSIVE, VAT_RATE)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final ReceivingReceipt receivingReceipt) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -84,6 +86,8 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				ps.setDate(6, new Date(receivingReceipt.getReceivedDate().getTime()));
 				ps.setLong(7, receivingReceipt.getRelatedPurchaseOrderNumber());
 				ps.setLong(8, receivingReceipt.getReceivedBy().getId());
+				ps.setString(9,  receivingReceipt.isVatInclusive() ? "Y" : "N");
+				ps.setBigDecimal(10, receivingReceipt.getVatRate());
 				return ps;
 			}
 		}, holder);
@@ -129,6 +133,8 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			receivingReceipt.setReceivedDate(rs.getDate("RECEIVED_DT"));
 			receivingReceipt.setRelatedPurchaseOrderNumber(rs.getLong("RELATED_PURCHASE_ORDER_NO"));
 			receivingReceipt.setReceivedBy(new User(rs.getLong("RECEIVED_BY")));
+			receivingReceipt.setVatInclusive("Y".equals(rs.getString("VAT_INCLUSIVE")));
+			receivingReceipt.setVatRate(rs.getBigDecimal("VAT_RATE"));
 			return receivingReceipt;
 		}
 	}
@@ -143,7 +149,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	private static final String GET_PRODUCT_CANVASS_ITEMS_SQL =
 			"select b.RECEIVED_DT, b.RECEIVING_RECEIPT_NO, c.NAME as SUPPLIER_NAME, a.QUANTITY, a.COST,"
 			+ " b.REFERENCE_NO, a.DISCOUNT_1, a.DISCOUNT_2, a.DISCOUNT_3, a.FLAT_RATE_DISCOUNT,"
-			+ " a.UNIT"
+			+ " a.UNIT, b.VAT_INCLUSIVE, b.VAT_RATE"
 			+ " from RECEIVING_RECEIPT_ITEM a"
 			+ " join RECEIVING_RECEIPT b"
 			+ "   on b.ID = a.RECEIVING_RECEIPT_ID"
@@ -167,13 +173,20 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				item.setDiscount3(rs.getBigDecimal("DISCOUNT_3"));
 				item.setFlatRateDiscount(rs.getBigDecimal("FLAT_RATE_DISCOUNT"));
 				
+				ReceivingReceipt receivingReceipt = new ReceivingReceipt();
+				receivingReceipt.setVatInclusive("Y".equals(rs.getString("VAT_INCLUSIVE")));
+				receivingReceipt.setVatRate(rs.getBigDecimal("VAT_RATE"));
+				BigDecimal costMultipler = receivingReceipt.getCostMultipler();
+				
 				ProductCanvassItem canvassItem = new ProductCanvassItem();
 				canvassItem.setReceivedDate(rs.getDate("RECEIVED_DT"));
 				canvassItem.setReceivingReceiptNumber(rs.getLong("RECEIVING_RECEIPT_NO"));
 				canvassItem.setSupplier(new Supplier(rs.getString("SUPPLIER_NAME")));
 				canvassItem.setUnit(rs.getString("UNIT"));
-				canvassItem.setFinalCost(item.getFinalCost());
-				canvassItem.setGrossCost(rs.getBigDecimal("COST"));
+				canvassItem.setFinalCost(
+						item.getFinalCost().multiply(costMultipler).setScale(2, RoundingMode.HALF_UP));
+				canvassItem.setGrossCost(
+						rs.getBigDecimal("COST").multiply(costMultipler).setScale(2, RoundingMode.HALF_UP));
 				canvassItem.setReferenceNumber(rs.getString("REFERENCE_NO"));
 				return canvassItem;
 			}

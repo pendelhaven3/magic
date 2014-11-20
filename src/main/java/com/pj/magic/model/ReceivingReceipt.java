@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.pj.magic.Constants;
+
 public class ReceivingReceipt {
 
 	private Long id;
@@ -19,6 +21,8 @@ public class ReceivingReceipt {
 	private boolean posted;
 	private String remarks;
 	private Long relatedPurchaseOrderNumber;
+	private boolean vatInclusive;
+	private BigDecimal vatRate;
 
 	public Long getId() {
 		return id;
@@ -108,28 +112,28 @@ public class ReceivingReceipt {
 		return items.size();
 	}
 
-	public BigDecimal getTotalAmount() {
-		BigDecimal totalAmount = BigDecimal.ZERO;
+	public BigDecimal getSubTotalAmount() {
+		BigDecimal subTotal = Constants.ZERO;
 		for (ReceivingReceiptItem item : items) {
-			totalAmount = totalAmount.add(item.getAmount());
+			subTotal = subTotal.add(item.getAmount());
 		}
-		return totalAmount.setScale(2, RoundingMode.HALF_UP);
+		return subTotal;
 	}
 
 	public BigDecimal getTotalDiscountedAmount() {
-		BigDecimal totalDiscountedAmount = BigDecimal.ZERO;
+		BigDecimal totalDiscountedAmount = Constants.ZERO;
 		for (ReceivingReceiptItem item : items) {
 			totalDiscountedAmount = totalDiscountedAmount.add(item.getDiscountedAmount());
 		}
-		return totalDiscountedAmount.setScale(2, RoundingMode.HALF_UP);
+		return totalDiscountedAmount;
 	}
 
 	public BigDecimal getTotalNetAmount() {
-		BigDecimal totalNetAmount = BigDecimal.ZERO;
+		BigDecimal totalNetAmount = Constants.ZERO;
 		for (ReceivingReceiptItem item : items) {
 			totalNetAmount = totalNetAmount.add(item.getNetAmount());
 		}
-		return totalNetAmount.setScale(2, RoundingMode.HALF_UP);
+		return totalNetAmount;
 	}
 
 	public Long getRelatedPurchaseOrderNumber() {
@@ -146,6 +150,42 @@ public class ReceivingReceipt {
 			totalQuantity += item.getQuantity();
 		}
 		return totalQuantity;
+	}
+
+	public boolean isVatInclusive() {
+		return vatInclusive;
+	}
+
+	public void setVatInclusive(boolean vatInclusive) {
+		this.vatInclusive = vatInclusive;
+	}
+
+	public BigDecimal getVatRate() {
+		return vatRate;
+	}
+
+	public void setVatRate(BigDecimal vatRate) {
+		this.vatRate = vatRate;
+	}
+	
+	public BigDecimal getTotalAmount() {
+		return getTotalNetAmount().add(getVatAmount());
+	}
+	
+	public BigDecimal getVatAmount() {
+		if (vatInclusive) {
+			return Constants.ZERO;
+		} else {
+			return (getTotalNetAmount().multiply(vatRate)).setScale(2, RoundingMode.HALF_UP);
+		}
+	}
+	
+	public BigDecimal getCostMultipler() {
+		if (vatInclusive) {
+			return Constants.ONE;
+		} else {
+			return Constants.ONE.add(vatRate);
+		}
 	}
 	
 }

@@ -11,6 +11,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -62,9 +63,12 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	private JLabel paymentTermField;
 	private UtilCalendarModel receivedDateModel;
 	private JLabel referenceNumberField;
-	private JLabel totalAmountField;
+	private JCheckBox vatInclusiveCheckBox;
+	private JLabel subTotalAmountField;
 	private JLabel totalDiscountedAmountField;
 	private JLabel totalNetAmountField;
+	private JLabel vatAmountField;
+	private JLabel totalAmountField;
 	private MagicToolBarButton postButton;
 	private JDatePickerImpl datePicker;
 	
@@ -73,6 +77,10 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		supplierField = new JLabel();
 		paymentTermField = new JLabel();
 		referenceNumberField = new JLabel();
+		
+		vatInclusiveCheckBox = new JCheckBox();
+		vatInclusiveCheckBox.setEnabled(false);
+		
 		receivedDateModel = new UtilCalendarModel();
 		receivedDateModel.addPropertyChangeListener(new PropertyChangeListener() {
 			
@@ -117,10 +125,12 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalAmount()));
+				subTotalAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getSubTotalAmount()));
 				totalDiscountedAmountField.setText(
 						FormatterUtil.formatAmount(receivingReceipt.getTotalDiscountedAmount()));
 				totalNetAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalNetAmount()));
+				vatAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getVatAmount()));
+				totalAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalAmount()));
 			}
 		});
 	}
@@ -135,7 +145,8 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		paymentTermField.setText(receivingReceipt.getPaymentTerm().getName());
 		updateReceivedDateField();
 		referenceNumberField.setText(receivingReceipt.getReferenceNumber());
-		totalAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalAmount()));
+		vatInclusiveCheckBox.setSelected(receivingReceipt.isVatInclusive());
+		subTotalAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getSubTotalAmount()));
 		totalDiscountedAmountField.setText(
 				FormatterUtil.formatAmount(receivingReceipt.getTotalDiscountedAmount()));
 		totalNetAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalNetAmount()));
@@ -259,6 +270,19 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		referenceNumberField = ComponentUtil.createLabel(150, "");
 		mainPanel.add(referenceNumberField, c);
 
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "VAT Inclusive:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(vatInclusiveCheckBox, c);
+
 		currentRow++;
 
 		c = new GridBagConstraints();
@@ -299,14 +323,14 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
+		panel.add(ComponentUtil.createLabel(120, "Sub Total:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createRightLabel(120, "");
-		panel.add(totalAmountField, c);
+		subTotalAmountField = ComponentUtil.createRightLabel(120, "");
+		panel.add(subTotalAmountField, c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
@@ -345,6 +369,38 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		totalNetAmountField = ComponentUtil.createRightLabel(120, "");
 		panel.add(totalNetAmountField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "VAT Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		vatAmountField = ComponentUtil.createRightLabel(120, "");
+		panel.add(vatAmountField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Total Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAmountField = ComponentUtil.createRightLabel(120, "");
+		panel.add(totalAmountField, c);
 		
 		return panel;
 	}

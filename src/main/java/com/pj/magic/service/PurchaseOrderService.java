@@ -30,4 +30,6 @@ public interface PurchaseOrderService {
 	
 	List<PurchaseOrder> search(PurchaseOrderSearchCriteria criteria);
 	
+	PurchaseOrder newPurchaseOrder();
+	
 }

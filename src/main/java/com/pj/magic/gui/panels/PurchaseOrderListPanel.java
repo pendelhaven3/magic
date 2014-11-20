@@ -72,8 +72,8 @@ public class PurchaseOrderListPanel extends StandardMagicPanel {
 		// none
 	}
 	
-	protected void switchToNewPurchaseOrderPanel() {
-		getMagicFrame().switchToPurchaseOrderPanel(new PurchaseOrder());
+	private void switchToNewPurchaseOrderPanel() {
+		getMagicFrame().switchToPurchaseOrderPanel(purchaseOrderService.newPurchaseOrder());
 	}
 
 	@Override

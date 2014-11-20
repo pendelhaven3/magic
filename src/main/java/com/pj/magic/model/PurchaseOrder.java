@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.pj.magic.Constants;
+
 public class PurchaseOrder {
 
 	private Long id;
@@ -19,6 +21,8 @@ public class PurchaseOrder {
 	private String referenceNumber;
 	private Date postDate;
 	private User createdBy;
+	private boolean vatInclusive;
+	private BigDecimal vatRate;
 
 	public PurchaseOrder() {
 		// default constructor
@@ -122,6 +126,8 @@ public class PurchaseOrder {
 		receivingReceipt.setReferenceNumber(referenceNumber);
 		receivingReceipt.setRemarks(remarks);
 		receivingReceipt.setRelatedPurchaseOrderNumber(purchaseOrderNumber);
+		receivingReceipt.setVatInclusive(vatInclusive);
+		receivingReceipt.setVatRate(vatRate);
 		
 		for (PurchaseOrderItem item : items) {
 			if (item.getActualQuantity() > 0) {
@@ -151,11 +157,7 @@ public class PurchaseOrder {
 	}
 
 	public BigDecimal getTotalAmount() {
-		BigDecimal total = BigDecimal.ZERO;
-		for (PurchaseOrderItem item : items) {
-			total = total.add(item.getAmount());
-		}
-		return total.setScale(2, RoundingMode.HALF_UP);
+		return getSubTotalAmount().add(getVatAmount());
 	}
 
 	public Date getPostDate() {
@@ -172,6 +174,38 @@ public class PurchaseOrder {
 
 	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
+	}
+
+	public boolean isVatInclusive() {
+		return vatInclusive;
+	}
+
+	public void setVatInclusive(boolean vatInclusive) {
+		this.vatInclusive = vatInclusive;
+	}
+	
+	public BigDecimal getSubTotalAmount() {
+		BigDecimal subTotal = Constants.ZERO;
+		for (PurchaseOrderItem item : items) {
+			subTotal = subTotal.add(item.getAmount());
+		}
+		return subTotal;
+	}
+
+	public BigDecimal getVatRate() {
+		return vatRate;
+	}
+
+	public void setVatRate(BigDecimal vatRate) {
+		this.vatRate = vatRate;
+	}
+	
+	public BigDecimal getVatAmount() {
+		if (vatInclusive) {
+			return Constants.ZERO;
+		} else {
+			return (getSubTotalAmount().multiply(vatRate)).setScale(2, RoundingMode.HALF_UP);
+		}
 	}
 	
 }
