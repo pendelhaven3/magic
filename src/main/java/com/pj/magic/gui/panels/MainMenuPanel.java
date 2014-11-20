@@ -53,7 +53,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		
-		table.setPreferredSize(new Dimension(300, 480));
+		table.setPreferredSize(new Dimension(320, 480));
 		table.setBorder(BorderFactory.createEmptyBorder());
 		table.setShowGrid(false);
 		mainPanel.add(table, c);
@@ -164,13 +164,13 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Payment Terminal Assignments":
 			getMagicFrame().switchToPaymentTerminalAssignmentListPanel();
 			break;
-		case "Create Accounts Receivable Summary":
+		case "Create Accounts Receivable Summary (WIP)":
 			getMagicFrame().switchToCreateAccountsReceivableSummaryPanel();
 			break;
 		case "Accounts Receivable Summary List":
 			getMagicFrame().switchToAccountsReceivableSummaryListPanel();
 			break;
-		case "Sales Return List":
+		case "Sales Return List (WIP)":
 			getMagicFrame().switchToSalesReturnListPanel();
 			break;
 		}
@@ -194,11 +194,11 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Receiving Receipt",
 				"Adjustment In",
 				"Adjustment Out",
-//				"Sales Return List",
+				"Sales Return List (WIP)",
 				"Payment",
 				"Payment List",
 				"Payment Terminal Assignments",
-//				"Create Accounts Receivable Summary",
+				"Create Accounts Receivable Summary (WIP)",
 //				"Accounts Receivable Summary List",
 				"Manufacturer List",
 				"Supplier List",
