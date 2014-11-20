@@ -99,6 +99,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		totalDiscountedAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalDiscountedAmount()));
 		totalNetAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount()));
 		
+		itemsTable.clearSelection(); // to avoid screwing product quantity/price info table listener
 		itemsTable.setSalesInvoice(salesInvoice, showDiscountDetails);
 		if (showDiscountDetails && salesInvoice.isNew()) {
 			itemsTable.selectAndEditCellAt(0, SalesInvoiceItemsTable.DISCOUNT_1_COLUMN_INDEX);
