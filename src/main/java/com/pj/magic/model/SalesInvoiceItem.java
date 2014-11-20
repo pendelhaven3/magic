@@ -3,6 +3,9 @@ package com.pj.magic.model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.pj.magic.model.util.Percentage;
 
 public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
@@ -17,6 +20,14 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 	private BigDecimal discount2 = BigDecimal.ZERO; 
 	private BigDecimal discount3 = BigDecimal.ZERO;
 	private BigDecimal flatRateDiscount = BigDecimal.ZERO;
+
+	public SalesInvoiceItem() {
+		// default constructor
+	}
+	
+	public SalesInvoiceItem(Long id) {
+		this.id = id;
+	}
 
 	public Long getId() {
 		return id;
@@ -133,4 +144,25 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 		return netAmount;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof SalesInvoiceItem)) {
+            return false;
+        }
+        SalesInvoiceItem other = (SalesInvoiceItem)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+	
 }

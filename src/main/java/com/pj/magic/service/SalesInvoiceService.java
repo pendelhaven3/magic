@@ -30,5 +30,7 @@ public interface SalesInvoiceService {
 	List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria);
 
 	List<SalesInvoice> getAllNewSalesInvoices();
+
+	SalesInvoice findBySalesInvoiceNumber(long salesInvoiceNumber);
 	
 }

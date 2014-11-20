@@ -162,4 +162,11 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		return salesInvoices;
 	}
 
+	@Override
+	public SalesInvoice findBySalesInvoiceNumber(long salesInvoiceNumber) {
+		SalesInvoice salesInvoice = salesInvoiceDao.findBySalesInvoiceNumber(salesInvoiceNumber);
+		loadSalesInvoiceDetails(salesInvoice);
+		return salesInvoice;
+	}
+
 }

@@ -170,6 +170,9 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Accounts Receivable Summary List":
 			getMagicFrame().switchToAccountsReceivableSummaryListPanel();
 			break;
+		case "Sales Return List":
+			getMagicFrame().switchToSalesReturnListPanel();
+			break;
 		}
 	}
 
@@ -191,6 +194,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Receiving Receipt",
 				"Adjustment In",
 				"Adjustment Out",
+//				"Sales Return List",
 				"Payment",
 				"Payment List",
 				"Payment Terminal Assignments",

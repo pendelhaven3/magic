@@ -17,4 +17,6 @@ public class Constants {
 	public static final long CANVASSER_PRICING_SCHEME_ID = 1L;
 	public static final int CUSTOMER_CODE_MAXIMUM_LENGTH = 12;
 	
+	public static final String UNEXPECTED_ERROR_MESSAGE = "Unexpected error occurred";
+	
 }
