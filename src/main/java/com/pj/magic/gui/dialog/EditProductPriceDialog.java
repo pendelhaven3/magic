@@ -142,7 +142,7 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		productDescriptionLabel.setPreferredSize(new Dimension(250, 20));
+		productDescriptionLabel.setPreferredSize(new Dimension(300, 20));
 		add(productDescriptionLabel, c);
 
 		currentRow++;
