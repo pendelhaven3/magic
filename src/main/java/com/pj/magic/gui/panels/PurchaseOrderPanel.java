@@ -579,12 +579,17 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		panel.add(ComponentUtil.createLabel(120, "Sub Total:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		subTotalAmountField = ComponentUtil.createLabel(150, "");
+		subTotalAmountField = ComponentUtil.createRightLabel(100, "");
 		panel.add(subTotalAmountField, c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		panel.add(ComponentUtil.createHorizontalFiller(30), c);
 		
 		currentRow++;
 		
@@ -595,11 +600,10 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		panel.add(ComponentUtil.createLabel(120, "VAT Amount:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		vatAmountField = ComponentUtil.createLabel(150, "");
+		vatAmountField = ComponentUtil.createRightLabel(100, "");
 		panel.add(vatAmountField, c);
 		
 		currentRow++;
@@ -611,11 +615,10 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField = ComponentUtil.createLabel(150, "");
+		totalAmountField = ComponentUtil.createRightLabel(100, "");
 		panel.add(totalAmountField, c);
 		
 		return panel;
