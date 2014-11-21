@@ -89,7 +89,7 @@ public class MagicTable extends JTable {
 		boolean result = super.editCellAt(row, column, e);
 		if (e instanceof KeyEvent) {
 			int keyCode = ((KeyEvent) e).getKeyCode();
-			if (KeyUtil.isAlphaNumericKeyCode(keyCode)) {
+			if (KeyUtil.isAlphaNumericKeyCode(keyCode) || KeyUtil.isNumericKeyCodeFromNumPad(keyCode)) {
 				Component c = getEditorComponent();
 				if (c instanceof JTextField) {
 					((JTextField)c).setText(null);
