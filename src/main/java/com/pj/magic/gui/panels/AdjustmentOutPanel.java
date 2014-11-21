@@ -36,11 +36,13 @@ import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.AdjustmentOutItemsTable;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.AdjustmentOutService;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -55,6 +57,8 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 	@Autowired private AdjustmentOutItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private AdjustmentOutService adjustmentOutService;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private PrintService printService;
 	
 	private AdjustmentOut adjustmentOut;
 	private JLabel adjustmentOutNumberField;
@@ -68,6 +72,8 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 	private JButton postButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
+	private JButton printPreviewButton;
+	private JButton printButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -615,6 +621,27 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(postButton);
+		
+		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreviewDialog.updateDisplay(printService.generateReportAsString(adjustmentOut));
+				printPreviewDialog.setVisible(true);
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(adjustmentOut);
+			}
+		});
+		toolBar.add(printButton);
 	}
 
 }

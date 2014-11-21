@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class AdjustmentOutItem {
+public class AdjustmentOutItem implements Comparable<AdjustmentOutItem> {
 
 	private Long id;
 	private AdjustmentOut parent;
@@ -98,6 +98,16 @@ public class AdjustmentOutItem {
 
 	public void setParent(AdjustmentOut parent) {
 		this.parent = parent;
+	}
+
+	@Override
+	public int compareTo(AdjustmentOutItem o) {
+		int result = product.compareTo(o.getProduct());
+		if (result == 0) {
+			return Unit.compare(unit, o.getUnit());
+		} else {
+			return result;
+		}
 	}
 	
 }
