@@ -351,6 +351,7 @@ create table ADJUSTMENT_OUT_ITEM (
   PRODUCT_ID integer not null,
   UNIT char(3) not null,
   QUANTITY integer not null,
+  UNIT_PRICE numeric(10, 2) null,
   constraint ADJUSTMENT_OUT_ITEM$PK primary key (ID),
   constraint ADJUSTMENT_OUT_ITEM$FK foreign key (ADJUSTMENT_OUT_ID) references ADJUSTMENT_OUT (ID),
   constraint ADJUSTMENT_OUT_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)

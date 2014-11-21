@@ -12,25 +12,18 @@ public class AdjustmentOutItem implements Comparable<AdjustmentOutItem> {
 	private Product product;
 	private String unit;
 	private Integer quantity;
+	private BigDecimal unitPrice;
 
 	public BigDecimal getUnitPrice() {
-		if (product == null || !product.hasUnit(unit)) {
-			return null;
-		}
-		
-		for (UnitPrice unitPrice : product.getUnitPrices()) {
-			if (unitPrice.getUnit().equals(unit)) {
-				return unitPrice.getPrice();
-			}
-		}
-		return null;
+		return unitPrice;
 	}
 	
 	public BigDecimal getAmount() {
 		if (product == null || quantity == null) {
 			return null;
 		}
-		return getUnitPrice().multiply(new BigDecimal(quantity.intValue()));
+		
+		return getEffectiveUnitPrice().multiply(new BigDecimal(quantity.intValue()));
 	}
 	
 	public boolean isQuantityValid() {
@@ -108,6 +101,18 @@ public class AdjustmentOutItem implements Comparable<AdjustmentOutItem> {
 		} else {
 			return result;
 		}
+	}
+
+	public void setUnitPrice(BigDecimal unitPrice) {
+		this.unitPrice = unitPrice;
+	}
+	
+	public BigDecimal getEffectiveUnitPrice() {
+		BigDecimal unitPrice = this.unitPrice;
+		if (unitPrice == null) {
+			unitPrice = product.getUnitPrice(unit);
+		}
+		return unitPrice;
 	}
 	
 }

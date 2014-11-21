@@ -72,7 +72,13 @@ public class AdjustmentOutItemRowItem {
 	}
 
 	public BigDecimal getUnitPrice() {
-		return (product != null && !StringUtils.isEmpty(unit)) ? product.getUnitPrice(unit) : null;
+		BigDecimal unitPrice = item.getUnitPrice();
+		if (unitPrice == null) {
+			if (product != null && !StringUtils.isEmpty(unit)) {
+				unitPrice = product.getUnitPrice(unit);
+			}
+		}
+		return unitPrice;
 	}
 
 	public BigDecimal getAmount() {
