@@ -1,1 +1,0 @@
-alter table ADJUSTMENT_IN_ITEM add COST numeric(10, 2) null;
