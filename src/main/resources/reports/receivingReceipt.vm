@@ -16,10 +16,13 @@ Terms    : $report.field($receivingReceipt.paymentTerm.name, 40)         Date   
 #end
 #if($isLastPage == true)
                                                  -------------
- Total Items     :  $report.field($receivingReceipt.totalNumberOfItems, 4, "right")             Sub Total : $report.field($receivingReceipt.totalAmount, 13, "right")
+ Total Items     :  $report.field($receivingReceipt.totalNumberOfItems, 4, "right")             Sub Total : $report.field($receivingReceipt.subTotalAmount, 13, "right")
  Total Qty Order :  $report.field($receivingReceipt.totalQuantity, 4, "right")              Discount : $report.field($receivingReceipt.totalDiscountedAmount, 13, "right")
                                                  -------------
-                                    Net Amount P $report.field($receivingReceipt.totalNetAmount, 13, "right")
-
+                                    Net Amount : $report.field($receivingReceipt.totalNetAmount, 13, "right")
+                                    VAT Amount : $report.field($receivingReceipt.vatAmount, 13, "right")
+                                                 -------------
+                                  Total Amount P $report.field($receivingReceipt.totalAmount, 13, "right")
+                                    
 Remarks  : $receivingReceipt.remarks  
 #end

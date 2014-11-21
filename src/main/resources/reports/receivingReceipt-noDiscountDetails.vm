@@ -16,12 +16,13 @@ $report.field($item.product.code, 9) $report.field($item.product.description, 36
 #end
 #if($isLastPage == true)
                                                                  ------------
-Total Items     :  $report.field($receivingReceipt.totalNumberOfItems, 4, "right")  Encoder : $report.field($receivingReceipt.receivedBy.username, 15)   Sub Total : $report.field($receivingReceipt.totalAmount, 12, "right")
+Total Items     :  $report.field($receivingReceipt.totalNumberOfItems, 4, "right")  Encoder : $report.field($receivingReceipt.receivedBy.username, 15)   Sub Total : $report.field($receivingReceipt.subTotalAmount, 12, "right")
 Total Qty Order :  $report.field($receivingReceipt.totalQuantity, 4, "right")                               Discount : $report.field($receivingReceipt.totalDiscountedAmount, 12, "right")
                                                                  ------------
-Received by :          Checked by:                 TOTAL AMOUNT P$report.field($receivingReceipt.totalNetAmount, 12, "right")
+Received by :          Checked by:                   Net Amount :$report.field($receivingReceipt.totalNetAmount, 12, "right")
+                                                     VAT Amount :$report.field($receivingReceipt.vatAmount, 12, "right")
+____________________   ____________________                       ------------
+                                                   TOTAL AMOUNT P$report.field($receivingReceipt.totalAmount, 12, "right")
                                                                  ============
-____________________   ____________________
-
 Remarks  : $receivingReceipt.remarks  
 #end
