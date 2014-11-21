@@ -95,9 +95,9 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public void print(PurchaseOrder purchaseOrder) {
+	public void print(PurchaseOrder purchaseOrder, boolean includeCost) {
 		try {
-			for (String printPage : generateReportAsString(purchaseOrder)) {
+			for (String printPage : generateReportAsString(purchaseOrder, includeCost)) {
 				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {
@@ -117,12 +117,14 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public List<String> generateReportAsString(PurchaseOrder purchaseOrder) {
+	public List<String> generateReportAsString(PurchaseOrder purchaseOrder, boolean includeCost) {
 		purchaseOrder.setSupplier(supplierDao.get(purchaseOrder.getSupplier().getId()));
 		
 		Collections.sort(purchaseOrder.getItems());
 		
 		String currentDate = FormatterUtil.formatDate(new Date());
+		
+		String reportFile = (includeCost) ? "purchaseOrder-withCost.vm" : "purchaseOrder.vm";
 		
 		List<List<PurchaseOrderItem>> pageItems = Lists.partition(purchaseOrder.getItems(), 
 				PURCHASE_ORDER_ITEMS_PER_PAGE);
@@ -135,7 +137,7 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			printPages.add(generateReportAsString("reports/purchaseOrder.vm", reportData));
+			printPages.add(generateReportAsString("reports/" + reportFile, reportData));
 		}
 		return printPages;
 	}

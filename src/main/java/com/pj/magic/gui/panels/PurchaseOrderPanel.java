@@ -20,6 +20,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -973,7 +974,11 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		if (itemsTable.isEditing()) {
 			itemsTable.getCellEditor().cancelCellEditing();
 		}
-		printService.print(purchaseOrder);
+		
+		int confirm = JOptionPane.showConfirmDialog(this, "Include cost?", "Print Purchase Order", JOptionPane.YES_NO_CANCEL_OPTION);
+		if (confirm == JOptionPane.YES_OPTION || confirm == JOptionPane.NO_OPTION) {
+			printService.print(purchaseOrder, confirm == JOptionPane.YES_OPTION);
+		}
 	}
 
 	protected void printPreview() {
@@ -981,8 +986,14 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			itemsTable.getCellEditor().cancelCellEditing();
 		}
 		
-		printPreviewDialog.updateDisplay(printService.generateReportAsString(purchaseOrder));
-		printPreviewDialog.setVisible(true);
+		int confirm = JOptionPane.showConfirmDialog(this, "Include cost?", "Print Preview Purchase Order", 
+				JOptionPane.YES_NO_CANCEL_OPTION);
+		if (confirm == JOptionPane.YES_OPTION || confirm == JOptionPane.NO_OPTION) {
+			printPreviewDialog.updateDisplay(
+					printService.generateReportAsString(purchaseOrder, confirm == JOptionPane.YES_OPTION));
+			printPreviewDialog.setVisible(true);
+		}
+		
 	}
 
 }

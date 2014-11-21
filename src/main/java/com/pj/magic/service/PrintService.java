@@ -19,13 +19,13 @@ public interface PrintService {
 
 	void print(SalesInvoice salesInvoice);
 
-	void print(PurchaseOrder purchaseOrder);
+	void print(PurchaseOrder purchaseOrder, boolean includeCost);
 	
 	void print(ReceivingReceipt receivingReceipt, boolean includeDiscountDetails);
 	
 	void print(StockQuantityConversion stockQuantityConversion);
 
-	List<String> generateReportAsString(PurchaseOrder purchaseOrder);
+	List<String> generateReportAsString(PurchaseOrder purchaseOrder, boolean includeCost);
 	
 	void print(PricingScheme pricingScheme, List<Product> products);
 	
