@@ -2,6 +2,7 @@ package com.pj.magic.service;
 
 import java.util.List;
 
+import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.InventoryCheck;
@@ -57,5 +58,9 @@ public interface PrintService {
 	List<String> generateReportAsString(AdjustmentOut adjustmentOut);
 
 	void print(AdjustmentOut adjustmentOut);
+
+	List<String> generateReportAsString(AdjustmentIn adjustmentIn);
+
+	void print(AdjustmentIn adjustmentIn);
 	
 }

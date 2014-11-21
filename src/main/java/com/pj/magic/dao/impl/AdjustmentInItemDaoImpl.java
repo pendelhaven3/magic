@@ -23,7 +23,7 @@ import com.pj.magic.model.Product;
 public class AdjustmentInItemDaoImpl extends MagicDao implements AdjustmentInItemDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select ID, ADJUSTMENT_IN_ID, PRODUCT_ID, UNIT, QUANTITY from ADJUSTMENT_IN_ITEM";
+			"select ID, ADJUSTMENT_IN_ID, PRODUCT_ID, UNIT, QUANTITY, COST from ADJUSTMENT_IN_ITEM";
 	
 	private AdjustmentInItemRowMapper adjustmentInItemRowMapper =
 			new AdjustmentInItemRowMapper();
@@ -62,12 +62,12 @@ public class AdjustmentInItemDaoImpl extends MagicDao implements AdjustmentInIte
 	
 	private static final String UPDATE_SQL =
 			"update ADJUSTMENT_IN_ITEM"
-			+ " set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?"
+			+ " set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, COST = ?"
 			+ " where ID = ?";
 	
 	private void update(AdjustmentInItem item) {
 		getJdbcTemplate().update(UPDATE_SQL, item.getProduct().getId(), item.getUnit(),
-				item.getQuantity(), item.getId());
+				item.getQuantity(), item.getCost(), item.getId());
 	}
 
 	private static final String FIND_ALL_BY_ADJUSTMENT_IN_SQL = BASE_SELECT_SQL 
@@ -108,6 +108,7 @@ public class AdjustmentInItemDaoImpl extends MagicDao implements AdjustmentInIte
 			item.setProduct(new Product(rs.getLong("PRODUCT_ID")));
 			item.setUnit(rs.getString("UNIT"));
 			item.setQuantity(rs.getInt("QUANTITY"));
+			item.setCost(rs.getBigDecimal("COST"));
 			return item;
 		}
 		

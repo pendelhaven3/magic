@@ -21,7 +21,7 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class AdjustmentInItemsTableModel extends AbstractTableModel {
 	
-	private static final String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
+	private static final String[] columnNames = {"Code", "Description", "Unit", "Qty", "Cost", "Amount"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private AdjustmentInService adjustmentInService;
@@ -51,9 +51,9 @@ public class AdjustmentInItemsTableModel extends AbstractTableModel {
 			return rowItem.getUnit();
 		case AdjustmentInItemsTable.QUANTITY_COLUMN_INDEX:
 			return rowItem.getQuantity();
-		case AdjustmentInItemsTable.UNIT_PRICE_COLUMN_INDEX:
-			BigDecimal unitPrice = rowItem.getUnitPrice();
-			return (unitPrice != null) ? FormatterUtil.formatAmount(unitPrice) : "";
+		case AdjustmentInItemsTable.COST_COLUMN_INDEX:
+			BigDecimal cost = rowItem.getCost();
+			return (cost != null) ? FormatterUtil.formatAmount(cost) : "";
 		case AdjustmentInItemsTable.AMOUNT_COLUMN_INDEX:
 			BigDecimal amount = rowItem.getAmount();
 			return (amount != null) ? FormatterUtil.formatAmount(amount) : "";
@@ -173,7 +173,7 @@ public class AdjustmentInItemsTableModel extends AbstractTableModel {
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex == AdjustmentInItemsTable.UNIT_PRICE_COLUMN_INDEX
+		if (columnIndex == AdjustmentInItemsTable.COST_COLUMN_INDEX
 				|| columnIndex == AdjustmentInItemsTable.AMOUNT_COLUMN_INDEX) {
 			return Number.class;
 		} else {

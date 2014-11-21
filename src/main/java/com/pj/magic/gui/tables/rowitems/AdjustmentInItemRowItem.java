@@ -71,8 +71,14 @@ public class AdjustmentInItemRowItem {
 		return product != null && !StringUtils.isEmpty(unit) && quantity != null;  
 	}
 
-	public BigDecimal getUnitPrice() {
-		return (product != null && !StringUtils.isEmpty(unit)) ? product.getUnitPrice(unit) : null;
+	public BigDecimal getCost() {
+		BigDecimal cost = item.getCost();
+		if (cost == null) {
+			if (product != null && !StringUtils.isEmpty(unit)) {
+				cost = product.getFinalCost(unit);
+			}
+		}
+		return cost;
 	}
 
 	public BigDecimal getAmount() {

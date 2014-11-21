@@ -5,40 +5,36 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class AdjustmentInItem {
+public class AdjustmentInItem implements Comparable<AdjustmentInItem> {
 
 	private Long id;
 	private AdjustmentIn parent;
 	private Product product;
 	private String unit;
 	private Integer quantity;
+	private BigDecimal cost;
 
-	public boolean isValid() {
-		return product != null && product.hasUnit(unit) && (quantity != null && isQuantityValid());
+	public BigDecimal getCost() {
+		return cost;
 	}
 	
-	public BigDecimal getUnitPrice() {
-		if (product == null || !product.hasUnit(unit)) {
-			return null;
+	public void setCost(BigDecimal cost) {
+		this.cost = cost;
+	}
+	
+	public BigDecimal getEffectiveCost() {
+		BigDecimal cost = this.cost;
+		if (cost == null) {
+			cost = product.getFinalCost(unit);
 		}
-		
-		for (UnitPrice unitPrice : product.getUnitPrices()) {
-			if (unitPrice.getUnit().equals(unit)) {
-				return unitPrice.getPrice();
-			}
-		}
-		return null;
+		return cost;
 	}
 	
 	public BigDecimal getAmount() {
 		if (product == null || quantity == null) {
 			return null;
 		}
-		return getUnitPrice().multiply(new BigDecimal(quantity.intValue()));
-	}
-	
-	public boolean isQuantityValid() {
-		return product.hasAvailableUnitQuantity(unit, quantity);
+		return getEffectiveCost().multiply(new BigDecimal(quantity.intValue()));
 	}
 	
 	public Long getId() {
@@ -102,6 +98,16 @@ public class AdjustmentInItem {
 
 	public void setParent(AdjustmentIn parent) {
 		this.parent = parent;
+	}
+
+	@Override
+	public int compareTo(AdjustmentInItem o) {
+		int result = product.compareTo(o.getProduct());
+		if (result == 0) {
+			return Unit.compare(unit, o.getUnit());
+		} else {
+			return result;
+		}
 	}
 	
 }

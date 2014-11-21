@@ -35,11 +35,13 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.AdjustmentInItemsTable;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.AdjustmentInService;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -54,6 +56,8 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 	@Autowired private AdjustmentInItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private AdjustmentInService adjustmentInService;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private PrintService printService;
 	
 	private AdjustmentIn adjustmentIn;
 	private JLabel adjustmentInNumberField;
@@ -67,6 +71,8 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 	private JButton postButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
+	private JButton printPreviewButton;
+	private JButton printButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -161,6 +167,8 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		postButton.setEnabled(!adjustmentIn.isPosted());
 		addItemButton.setEnabled(!adjustmentIn.isPosted());
 		deleteItemButton.setEnabled(!adjustmentIn.isPosted());
+		printPreviewButton.setEnabled(true);
+		printButton.setEnabled(true);
 		
 		itemsTable.setAdjustmentIn(adjustmentIn);
 	}
@@ -178,6 +186,8 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		postButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
+		printPreviewButton.setEnabled(false);
+		printButton.setEnabled(false);
 	}
 
 	@Override
@@ -608,6 +618,27 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(postButton);
+		
+		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreviewDialog.updateDisplay(printService.generateReportAsString(adjustmentIn));
+				printPreviewDialog.setVisible(true);
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(adjustmentIn);
+			}
+		});
+		toolBar.add(printButton);
 	}
 
 }

@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.dao.UserDao;
+import com.pj.magic.model.AdjustmentIn;
+import com.pj.magic.model.AdjustmentInItem;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
 import com.pj.magic.model.AreaInventoryReport;
@@ -66,6 +68,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int AREA_INVENTORY_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int SALES_INVOICE_REPORT_ITEMS_PER_PAGE = 30;
 	private static final int ADJUSTMENT_OUT_ITEMS_PER_PAGE = 44;
+	private static final int ADJUSTMENT_IN_ITEMS_PER_PAGE = 44;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -521,6 +524,39 @@ public class PrintServiceImpl implements PrintService {
 	public void print(AdjustmentOut adjustmentOut) {
 		try {
 			for (String printPage : generateReportAsString(adjustmentOut)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(AdjustmentIn adjustmentIn) {
+		Collections.sort(adjustmentIn.getItems());
+		
+		String currentDate = FormatterUtil.formatDate(new Date());
+		
+		List<List<AdjustmentInItem>> pageItems = Lists.partition(adjustmentIn.getItems(), 
+				ADJUSTMENT_IN_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("adjustmentIn", adjustmentIn);
+			reportData.put("currentDate", currentDate);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/adjustmentIn.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(AdjustmentIn adjustmentIn) {
+		try {
+			for (String printPage : generateReportAsString(adjustmentIn)) {
 				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {

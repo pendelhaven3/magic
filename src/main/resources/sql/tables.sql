@@ -375,6 +375,7 @@ create table ADJUSTMENT_IN_ITEM (
   PRODUCT_ID integer not null,
   UNIT char(3) not null,
   QUANTITY integer not null,
+  COST numeric(10, 2) null,
   constraint ADJUSTMENT_IN_ITEM$PK primary key (ID),
   constraint ADJUSTMENT_IN_ITEM$FK foreign key (ADJUSTMENT_IN_ID) references ADJUSTMENT_IN (ID),
   constraint ADJUSTMENT_IN_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)

@@ -73,6 +73,9 @@ public class AdjustmentInServiceImpl implements AdjustmentInService {
 			Product product = productDao.get(item.getProduct().getId());
 			product.addUnitQuantity(item.getUnit(), item.getQuantity());
 			productDao.updateAvailableQuantities(product);
+			
+			item.setCost(product.getFinalCost(item.getUnit()));
+			adjustmentInItemDao.save(item);
 		}
 		updated.setPosted(true);
 		updated.setPostDate(new Date());
