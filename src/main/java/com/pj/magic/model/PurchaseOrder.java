@@ -208,4 +208,12 @@ public class PurchaseOrder {
 		}
 	}
 	
+	public BigDecimal getVatMultiplier() {
+		if (vatInclusive) {
+			return Constants.ONE;
+		} else {
+			return Constants.ONE.add(vatRate);
+		}
+	}
+	
 }

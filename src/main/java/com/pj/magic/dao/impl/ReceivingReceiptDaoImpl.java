@@ -176,7 +176,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				ReceivingReceipt receivingReceipt = new ReceivingReceipt();
 				receivingReceipt.setVatInclusive("Y".equals(rs.getString("VAT_INCLUSIVE")));
 				receivingReceipt.setVatRate(rs.getBigDecimal("VAT_RATE"));
-				BigDecimal costMultipler = receivingReceipt.getCostMultipler();
+				BigDecimal costMultipler = receivingReceipt.getVatMultiplier();
 				
 				ProductCanvassItem canvassItem = new ProductCanvassItem();
 				canvassItem.setReceivedDate(rs.getDate("RECEIVED_DT"));

@@ -1,6 +1,7 @@
 package com.pj.magic.gui.tables.models;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	private PurchaseOrderItemsTable table;
 	private boolean ordered;
 	private boolean posted;
+	private PurchaseOrder purchaseOrder;
 	
 	@Override
 	public int getColumnCount() {
@@ -154,6 +156,10 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 				item.setCost(rowItem.getCost());
 			} else {
 				BigDecimal originalCost = rowItem.getProduct().getGrossCost(rowItem.getUnit());
+				if (!purchaseOrder.isVatInclusive()) {
+					originalCost = originalCost.divide(purchaseOrder.getVatMultiplier(), 2,
+							RoundingMode.HALF_UP);
+				}
 				item.setCost(originalCost);
 				rowItem.setCost(originalCost);
 			}
@@ -228,6 +234,7 @@ public class PurchaseOrderItemsTableModel extends AbstractTableModel {
 	}
 
 	public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+		this.purchaseOrder = purchaseOrder;
 		ordered = purchaseOrder.isDelivered();
 		posted = purchaseOrder.isPosted();
 		setItems(purchaseOrder.getItems(), false);

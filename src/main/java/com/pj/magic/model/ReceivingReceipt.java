@@ -180,7 +180,7 @@ public class ReceivingReceipt {
 		}
 	}
 	
-	public BigDecimal getCostMultipler() {
+	public BigDecimal getVatMultiplier() {
 		if (vatInclusive) {
 			return Constants.ONE;
 		} else {
