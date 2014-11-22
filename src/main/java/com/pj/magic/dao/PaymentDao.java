@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.search.PaymentSearchCriteria;
 
 public interface PaymentDao {
 
@@ -12,5 +13,7 @@ public interface PaymentDao {
 	Payment get(long id);
 
 	List<Payment> findAllByPaymentDate(Date truncate);
+
+	List<Payment> search(PaymentSearchCriteria criteria);
 	
 }

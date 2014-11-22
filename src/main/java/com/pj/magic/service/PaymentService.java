@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentCheckPayment;
+import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 
 public interface PaymentService {
@@ -14,6 +16,12 @@ public interface PaymentService {
 
 	Payment getPayment(long id);
 
-	List<Payment> getAllPaymentsForToday();
+	List<Payment> getAllNewPayments();
+
+	void save(PaymentSalesInvoice paymentSalesInvoice);
+	
+	List<PaymentSalesInvoice> findAllPaymentSalesInvoicesByPayment(Payment payment);
+
+	void save(PaymentCheckPayment check);
 	
 }

@@ -7,23 +7,23 @@ import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import com.pj.magic.dao.PaymentItemDao;
+import com.pj.magic.dao.PaymentSalesInvoiceDao;
 import com.pj.magic.model.Payment;
-import com.pj.magic.model.PaymentItem;
+import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 
 @Repository
-public class PaymentItemDaoImpl extends MagicDao implements PaymentItemDao {
+public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSalesInvoiceDao {
 
 	@Override
-	public void save(PaymentItem item) {
+	public void save(PaymentSalesInvoice item) {
 		insert(item);
 	}
 
 	private static final String INSERT_SQL =
-			"insert into PAYMENT_ITEM (PAYMENT_ID, SALES_INVOICE_ID) values (?, ?)";
+			"insert into PAYMENT_SALES_INVOICE (PAYMENT_ID, SALES_INVOICE_ID) values (?, ?)";
 	
-	private void insert(PaymentItem item) {
+	private void insert(PaymentSalesInvoice item) {
 		getJdbcTemplate().update(INSERT_SQL,
 				item.getParent().getId(),
 				item.getSalesInvoice().getId());
@@ -31,18 +31,18 @@ public class PaymentItemDaoImpl extends MagicDao implements PaymentItemDao {
 
 	private static final String FIND_ALL_BY_PAYMENT_SQL =
 			"   select a.ID, SALES_INVOICE_ID, b.SALES_INVOICE_NO"
-			+ " from PAYMENT_ITEM a"
+			+ " from PAYMENT_SALES_INVOICE a"
 			+ " join SALES_INVOICE b"
 			+ "   on b.ID = a.SALES_INVOICE_ID"
 			+ " where PAYMENT_ID = ?";
 	
 	@Override
-	public List<PaymentItem> findAllByPayment(final Payment payment) {
-		return getJdbcTemplate().query(FIND_ALL_BY_PAYMENT_SQL, new RowMapper<PaymentItem>() {
+	public List<PaymentSalesInvoice> findAllByPayment(final Payment payment) {
+		return getJdbcTemplate().query(FIND_ALL_BY_PAYMENT_SQL, new RowMapper<PaymentSalesInvoice>() {
 
 			@Override
-			public PaymentItem mapRow(ResultSet rs, int rowNum) throws SQLException {
-				PaymentItem item = new PaymentItem();
+			public PaymentSalesInvoice mapRow(ResultSet rs, int rowNum) throws SQLException {
+				PaymentSalesInvoice item = new PaymentSalesInvoice();
 				item.setId(rs.getLong("ID"));
 				item.setParent(payment);
 				

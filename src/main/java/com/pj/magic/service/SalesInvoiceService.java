@@ -2,6 +2,7 @@ package com.pj.magic.service;
 
 import java.util.List;
 
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesRequisition;
@@ -32,5 +33,7 @@ public interface SalesInvoiceService {
 	List<SalesInvoice> getAllNewSalesInvoices();
 
 	SalesInvoice findBySalesInvoiceNumber(long salesInvoiceNumber);
+	
+	List<SalesInvoice> findAllSalesInvoicesForPaymentByCustomer(Customer customer);
 	
 }

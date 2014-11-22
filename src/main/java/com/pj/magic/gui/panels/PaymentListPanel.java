@@ -3,10 +3,12 @@ package com.pj.magic.gui.panels;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.PaymentsTableModel;
 import com.pj.magic.model.Payment;
@@ -34,7 +37,7 @@ public class PaymentListPanel extends StandardMagicPanel {
 	private PaymentsTableModel tableModel = new PaymentsTableModel();
 	
 	public void updateDisplay() {
-		List<Payment> payments = paymentsService.getAllPaymentsForToday();
+		List<Payment> payments = paymentsService.getAllNewPayments();
 		tableModel.setPayments(payments);
 		if (!payments.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
@@ -92,7 +95,7 @@ public class PaymentListPanel extends StandardMagicPanel {
 
 	protected void selectPayment() {
 		Payment payment = tableModel.getPayment(table.getSelectedRow());
-		getMagicFrame().switchToViewPaymentPanel(payment);
+		getMagicFrame().switchToPaymentPanel2(payment);
 	}
 
 	@Override
@@ -102,15 +105,19 @@ public class PaymentListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-//		JButton postButton = new MagicToolBarButton("plus", "New");
-//		postButton.addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				switchToNewPaymentPanel();
-//			}
-//		});
-//		toolBar.add(postButton);
+		JButton addButton = new MagicToolBarButton("plus", "New");
+		addButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				switchToNewPaymentPanel();
+			}
+		});
+		toolBar.add(addButton);
+	}
+
+	private void switchToNewPaymentPanel() {
+		getMagicFrame().switchToPaymentPanel2(new Payment());
 	}
 	
 }

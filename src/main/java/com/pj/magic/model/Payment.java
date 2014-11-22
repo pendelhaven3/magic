@@ -5,17 +5,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.pj.magic.Constants;
-
 public class Payment {
 
 	private Long id;
+	private Long paymentNumber;
 	private Customer customer;
-	private Date paymentDate;
-	private BigDecimal amountReceived;
-	private User receivedBy;
-	private PaymentTerminal paymentTerminal;
-	private List<PaymentItem> items = new ArrayList<>();
+	private boolean posted;
+	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
+	private List<PaymentCheckPayment> checks = new ArrayList<>();
 
 	public Long getId() {
 		return id;
@@ -33,56 +30,36 @@ public class Payment {
 		this.customer = customer;
 	}
 
-	public Date getPaymentDate() {
-		return paymentDate;
+	public Long getPaymentNumber() {
+		return paymentNumber;
 	}
 
-	public void setPaymentDate(Date paymentDate) {
-		this.paymentDate = paymentDate;
+	public void setPaymentNumber(Long paymentNumber) {
+		this.paymentNumber = paymentNumber;
 	}
 
-	public BigDecimal getAmountReceived() {
-		return amountReceived;
+	public boolean isPosted() {
+		return posted;
 	}
 
-	public void setAmountReceived(BigDecimal amountReceived) {
-		this.amountReceived = amountReceived;
+	public void setPosted(boolean posted) {
+		this.posted = posted;
 	}
 
-	public List<PaymentItem> getItems() {
-		return items;
+	public List<PaymentSalesInvoice> getSalesInvoices() {
+		return salesInvoices;
 	}
 
-	public void setItems(List<PaymentItem> items) {
-		this.items = items;
+	public void setSalesInvoices(List<PaymentSalesInvoice> salesInvoices) {
+		this.salesInvoices = salesInvoices;
 	}
 
-	public BigDecimal getTotalAmount() {
-		BigDecimal total = Constants.ZERO;
-		for (PaymentItem item : items) {
-			total = total.add(item.getSalesInvoice().getTotalNetAmount());
-		}
-		return total;
+	public List<PaymentCheckPayment> getChecks() {
+		return checks;
 	}
 
-	public BigDecimal getChange() {
-		return amountReceived.subtract(getTotalAmount());
-	}
-
-	public User getReceivedBy() {
-		return receivedBy;
-	}
-
-	public void setReceivedBy(User receivedBy) {
-		this.receivedBy = receivedBy;
-	}
-
-	public PaymentTerminal getPaymentTerminal() {
-		return paymentTerminal;
-	}
-
-	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
-		this.paymentTerminal = paymentTerminal;
+	public void setChecks(List<PaymentCheckPayment> checks) {
+		this.checks = checks;
 	}
 
 }

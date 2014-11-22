@@ -14,6 +14,7 @@ import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
@@ -169,4 +170,9 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		return salesInvoice;
 	}
 
+	@Override
+	public List<SalesInvoice> findAllSalesInvoicesForPaymentByCustomer(Customer customer) {
+		return salesInvoiceDao.findAllForPaymentByCustomer(customer);
+	}
+	
 }

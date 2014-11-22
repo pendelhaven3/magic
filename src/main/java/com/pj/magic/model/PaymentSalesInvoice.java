@@ -1,6 +1,6 @@
 package com.pj.magic.model;
 
-public class PaymentItem {
+public class PaymentSalesInvoice {
 
 	private Long id;
 	private Payment parent;

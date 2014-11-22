@@ -1,28 +1,24 @@
 package com.pj.magic.service.impl;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.CustomerDao;
+import com.pj.magic.dao.PaymentCheckPaymentDao;
 import com.pj.magic.dao.PaymentDao;
-import com.pj.magic.dao.PaymentItemDao;
-import com.pj.magic.dao.PaymentTerminalAssignmentDao;
+import com.pj.magic.dao.PaymentSalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
-import com.pj.magic.model.PaymentItem;
-import com.pj.magic.model.PaymentTerminalAssignment;
+import com.pj.magic.model.PaymentCheckPayment;
+import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
-import com.pj.magic.model.User;
-import com.pj.magic.service.LoginService;
+import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.service.PaymentService;
 
 @Service
@@ -31,10 +27,9 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private SalesInvoiceDao salesInvoiceDao;
 	@Autowired private SalesInvoiceItemDao salesInvoiceItemDao;
 	@Autowired private PaymentDao paymentDao;
-	@Autowired private PaymentItemDao paymentItemDao;
+	@Autowired private PaymentSalesInvoiceDao paymentSalesInvoiceDao;
 	@Autowired private CustomerDao customerDao;
-	@Autowired private LoginService loginService;
-	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
+	@Autowired private PaymentCheckPaymentDao paymentCheckPaymentDao;
 	
 	@Override
 	public List<SalesInvoice> findAllUnpaidSalesInvoicesByCustomer(Customer customer) {
@@ -48,19 +43,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	@Override
 	public void save(Payment payment) {
-		User receivedBy = loginService.getLoggedInUser();
-		PaymentTerminalAssignment assignment = paymentTerminalAssignmentDao.findByUser(receivedBy);
-		if (assignment == null) {
-			throw new RuntimeException("User is not assigned!"); // TODO: Change
-		}
-		
-		payment.setReceivedBy(receivedBy);
-		payment.setPaymentTerminal(assignment.getPaymentTerminal());
-		payment.setPaymentDate(new Date());
 		paymentDao.save(payment);
-		for (PaymentItem item : payment.getItems()) {
-			paymentItemDao.save(item);
-		}
 	}
 
 	@Override
@@ -71,21 +54,34 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 	
 	private void loadPaymentDetails(Payment payment) {
-		payment.setItems(paymentItemDao.findAllByPayment(payment));
-		for (PaymentItem item : payment.getItems()) {
-			item.getSalesInvoice().setItems(
-					salesInvoiceItemDao.findAllBySalesInvoice(item.getSalesInvoice()));
-		}
+		payment.setSalesInvoices(paymentSalesInvoiceDao.findAllByPayment(payment));
+//		for (PaymentItem item : payment.getItems()) {
+//			item.getSalesInvoice().setItems(
+//					salesInvoiceItemDao.findAllBySalesInvoice(item.getSalesInvoice()));
+//		}
 		payment.setCustomer(customerDao.get(payment.getCustomer().getId()));
 	}
 
 	@Override
-	public List<Payment> getAllPaymentsForToday() {
-		List<Payment> payments = paymentDao.findAllByPaymentDate(DateUtils.truncate(new Date(), Calendar.DATE));
-		for (Payment payment : payments) {
-			loadPaymentDetails(payment);
-		}
-		return payments;
+	public List<Payment> getAllNewPayments() {
+		PaymentSearchCriteria criteria = new PaymentSearchCriteria();
+		criteria.setPosted(false);
+		return paymentDao.search(criteria);
 	}
 
+	@Override
+	public void save(PaymentSalesInvoice paymentSalesInvoice) {
+		paymentSalesInvoiceDao.save(paymentSalesInvoice);
+	}
+
+	@Override
+	public List<PaymentSalesInvoice> findAllPaymentSalesInvoicesByPayment(Payment payment) {
+		return paymentSalesInvoiceDao.findAllByPayment(payment);
+	}
+
+	@Override
+	public void save(PaymentCheckPayment check) {
+		paymentCheckPaymentDao.save(check);
+	}
+	
 }

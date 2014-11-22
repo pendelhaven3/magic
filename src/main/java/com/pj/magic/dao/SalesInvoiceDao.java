@@ -19,5 +19,7 @@ public interface SalesInvoiceDao {
 	List<SalesInvoice> findAllUnpaidByCustomer(Customer customer);
 
 	SalesInvoice findBySalesInvoiceNumber(long salesInvoiceNumber);
+
+	List<SalesInvoice> findAllForPaymentByCustomer(Customer customer);
 	
 }

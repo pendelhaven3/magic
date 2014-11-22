@@ -155,9 +155,6 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Area List":
 			getMagicFrame().switchToAreaListPanel();
 			break;
-		case "Payment":
-			getMagicFrame().switchToPaymentPanel();
-			break;
 		case "Payment List":
 			getMagicFrame().switchToPaymentListPanel();
 			break;
@@ -195,8 +192,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Adjustment In",
 				"Adjustment Out",
 				"Sales Return List (WIP)",
-//				"Payment",
-//				"Payment List",
+				"Payment List",
 //				"Payment Terminal Assignments",
 //				"Create Accounts Receivable Summary (WIP)",
 //				"Accounts Receivable Summary List",

@@ -65,7 +65,6 @@ import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UserListPanel;
-import com.pj.magic.gui.panels.ViewPaymentPanel;
 import com.pj.magic.model.AccountsReceivableSummary;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
@@ -144,7 +143,6 @@ public class MagicFrame extends JFrame {
 	private static final String AREA_LIST_PANEL = "AREA_LIST_PANEL";
 	private static final String MAINTAIN_AREA_PANEL = "MAINTAIN_AREA_PANEL";
 	private static final String PAYMENT_PANEL = "PAYMENT_PANEL";
-	private static final String VIEW_PAYMENT_PANEL = "VIEW_PAYMENT_PANEL";
 	private static final String PAYMENT_LIST_PANEL = "PAYMENT_LIST_PANEL";
 	private static final String PAYMENT_TERMINAL_ASSIGNMENT_LIST_PANEL = 
 			"PAYMENT_TERMINAL_ASSIGNMENT_LIST_PANEL";
@@ -200,7 +198,6 @@ public class MagicFrame extends JFrame {
 	@Autowired private AreaListPanel areaListPanel;
 	@Autowired private MaintainAreaPanel maintainAreaPanel;
 	@Autowired private PaymentPanel paymentPanel;
-	@Autowired private ViewPaymentPanel viewPaymentPanel;
 	@Autowired private PaymentListPanel paymentListPanel;
 	@Autowired private PaymentTerminalAssignmentListPanel paymentTerminalAssignmentListPanel;
 	@Autowired private MaintainPaymentTerminalAssignmentPanel maintainPaymentTerminalAssignmentPanel;
@@ -300,7 +297,6 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(areaListPanel, AREA_LIST_PANEL);
 		panelHolder.add(maintainAreaPanel, MAINTAIN_AREA_PANEL);
 		panelHolder.add(paymentPanel, PAYMENT_PANEL);
-		panelHolder.add(viewPaymentPanel, VIEW_PAYMENT_PANEL);
 		panelHolder.add(paymentListPanel, PAYMENT_LIST_PANEL);
 		panelHolder.add(paymentTerminalAssignmentListPanel, PAYMENT_TERMINAL_ASSIGNMENT_LIST_PANEL);
 		panelHolder.add(maintainPaymentTerminalAssignmentPanel, MAINTAIN_PAYMENT_TERMINAL_ASSIGNMENT_PANEL);
@@ -666,18 +662,6 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_AREA_PANEL);
 	}
 
-	public void switchToPaymentPanel() {
-		addPanelNameToTitle("Payment");
-		paymentPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAYMENT_PANEL);
-	}
-
-	public void switchToViewPaymentPanel(Payment payment) {
-		addPanelNameToTitle("View Payment");
-		viewPaymentPanel.updateDisplay(payment);
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, VIEW_PAYMENT_PANEL);
-	}
-
 	public void switchToPaymentListPanel() {
 		addPanelNameToTitle("Payment List");
 		paymentListPanel.updateDisplay();
@@ -730,6 +714,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Sales Return");
 		salesReturnPanel.updateDisplay(salesReturn);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_RETURN_PANEL);
+	}
+
+	public void switchToPaymentPanel2(Payment payment) {
+		addPanelNameToTitle("Payment");
+		paymentPanel.updateDisplay(payment);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAYMENT_PANEL);
 	}
 	
 }

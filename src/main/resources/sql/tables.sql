@@ -433,28 +433,6 @@ create table INVENTORY_CHECK_SUMMARY_ITEM (
   constraint INVENTORY_CHECK_SUMMARY_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
 
-create table PAYMENT (
-  ID integer auto_increment,
-  CUSTOMER_ID integer not null,
-  PAYMENT_DT date not null,
-  AMOUNT_RECEIVED numeric(8, 2) not null,
-  RECEIVED_BY integer not null,
-  PAYMENT_TERMINAL_ID integer not null,
-  constraint PAYMENT$PK primary key (ID),
-  constraint PAYMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
-  constraint PAYMENT$FK2 foreign key (RECEIVED_BY) references USER (ID),
-  constraint PAYMENT$FK3 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID),
-);
-
-create table PAYMENT_ITEM (
-  ID integer auto_increment,
-  PAYMENT_ID integer not null,
-  SALES_INVOICE_ID integer not null,
-  constraint PAYMENT_ITEM$PK primary key (ID),
-  constraint PAYMENT_ITEM$FK foreign key (PAYMENT_ID) references PAYMENT (ID),
-  constraint PAYMENT_ITEM$FK2 foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID)
-);
-
 create table PAYMENT_TERMINAL (
   ID integer auto_increment,
   NAME varchar(50) not null,
@@ -506,4 +484,33 @@ create table SALES_RETURN_ITEM (
   constraint SALES_RETURN_ITEM$PK primary key (ID),
   constraint SALES_RETURN_ITEM$FK foreign key (SALES_RETURN_ID) references SALES_RETURN (ID),
   constraint SALES_RETURN_ITEM$FK2 foreign key (SALES_INVOICE_ITEM_ID) references SALES_INVOICE_ITEM (ID)
+);
+
+create table PAYMENT (
+  ID integer auto_increment,
+  PAYMENT_NO integer not null,
+  CUSTOMER_ID integer not null,
+  POST_IND char(1) default 'N' not null,
+  constraint PAYMENT$PK primary key (ID),
+  constraint PAYMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID)
+);
+
+create table PAYMENT_SALES_INVOICE (
+  ID integer auto_increment,
+  PAYMENT_ID integer not null,
+  SALES_INVOICE_ID integer not null,
+  constraint PAYMENT_SALES_INVOICE$PK primary key (ID),
+  constraint PAYMENT_SALES_INVOICE$UK unique (SALES_INVOICE_ID),
+  constraint PAYMENT_SALES_INVOICE$FK foreign key (PAYMENT_ID) references PAYMENT (ID),
+  constraint PAYMENT_SALES_INVOICE$FK2 foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID)
+);
+
+create table PAYMENT_CHECK_PAYMENT (
+  ID integer auto_increment,
+  PAYMENT_ID integer not null,
+  BANK varchar(30) not null,
+  CHECK_NO varchar(50) not null,
+  AMOUNT numeric(10, 2) not null,
+  constraint PAYMENT_CHECK_PAYMENT$PK primary key (ID),
+  constraint PAYMENT_CHECK_PAYMENT$FK foreign key (PAYMENT_ID) references PAYMENT (ID)
 );
