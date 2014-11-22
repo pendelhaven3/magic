@@ -55,6 +55,7 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	private void loadPaymentDetails(Payment payment) {
 		payment.setSalesInvoices(paymentSalesInvoiceDao.findAllByPayment(payment));
+		payment.setChecks(paymentCheckPaymentDao.findAllByPayment(payment));
 //		for (PaymentItem item : payment.getItems()) {
 //			item.getSalesInvoice().setItems(
 //					salesInvoiceItemDao.findAllBySalesInvoice(item.getSalesInvoice()));

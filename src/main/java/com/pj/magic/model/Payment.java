@@ -1,8 +1,6 @@
 package com.pj.magic.model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Payment {
@@ -13,6 +11,14 @@ public class Payment {
 	private boolean posted;
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 	private List<PaymentCheckPayment> checks = new ArrayList<>();
+
+	public Payment() {
+		// default constructor
+	}
+	
+	public Payment(long id) {
+		this.id = id;
+	}
 
 	public Long getId() {
 		return id;

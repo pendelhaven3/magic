@@ -1,6 +1,17 @@
 package com.pj.magic.gui.tables;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.models.PaymentCheckPaymentsTableModel;
+import com.pj.magic.gui.tables.rowitems.PaymentCheckPaymentRowItem;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.util.NumberUtil;
@@ -52,6 +64,10 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 	}
 	
 	public void addNewRow() {
+		if (getRowCount() > 0 && !tableModel.getRowItem(getRowCount() - 1).isUpdating()) {
+			return;
+		}
+		
 		PaymentCheckPayment check = new PaymentCheckPayment();
 		check.setParent(payment);
 		tableModel.addItem(check);
@@ -91,34 +107,29 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 	}
 	
 	protected void registerKeyBindings() {
-		/*
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), F10_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), F10_ACTION_NAME);
+		/*
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
 		
+		*/
 		ActionMap actionMap = getActionMap();
+		actionMap.put(CANCEL_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cancelEditing();
+			}
+		});
 		actionMap.put(F10_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				switchToAddMode();
+				addNewRow();
 			}
 		});
-		actionMap.put(CANCEL_ACTION_NAME, new AbstractAction() {
-			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				if (isEditing()) {
-//					getCellEditor().cancelCellEditing();
-//					if (getCurrentlySelectedRowItem().isUpdating()) {
-//						tableModel.reset(getSelectedRow());
-//					}
-//				} else if (isAdding()) {
-//					switchToEditMode();
-//				}
-//			}
-		});
+		/*
 		actionMap.put(DELETE_ITEM_ACTION_NAME, new AbstractAction() {
 			
 			@Override
@@ -128,6 +139,26 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 		});
 		*/
 		
+	}
+	
+	private void cancelEditing() {
+		if (isEditing()) {
+			getCellEditor().cancelCellEditing();
+			if (getCurrentlySelectedRowItem().isUpdating()) {
+				tableModel.reset(getSelectedRow());
+			}
+		} else if (isLastRowSelected() && !getCurrentlySelectedRowItem().isUpdating()) {
+			int selectedRow = getSelectedRow();
+			clearSelection();
+			tableModel.removeItem(selectedRow);
+			if (getRowCount() > 0) {
+				changeSelection(getRowCount() - 1, 0, false, false);
+			}
+		}
+	}
+
+	public PaymentCheckPaymentRowItem getCurrentlySelectedRowItem() {
+		return tableModel.getRowItem(getSelectedRow());
 	}
 	
 	public void removeCurrentlySelectedItem() {
@@ -150,12 +181,10 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 	}
 	
 	private void initializeModelListener() {
-		/*
 		getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				final AbstractTableModel model = (AbstractTableModel)e.getSource();
 				final int row = e.getFirstRow();
 				final int column = e.getColumn();
 				
@@ -164,19 +193,14 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 					@Override
 					public void run() {
 						switch (column) {
-						case PRODUCT_CODE_COLUMN_INDEX:
-							model.fireTableCellUpdated(row, COST_COLUMN_INDEX);
-							model.fireTableCellUpdated(row, AMOUNT_COLUMN_INDEX);
-							selectAndEditCellAt(row, UNIT_COLUMN_INDEX);
+						case BANK_COLUMN_INDEX:
+							selectAndEditCellAt(row, CHECK_NUMBER_COLUMN_INDEX);
 							break;
-						case UNIT_COLUMN_INDEX:
-							model.fireTableCellUpdated(row, COST_COLUMN_INDEX);
-							model.fireTableCellUpdated(row, AMOUNT_COLUMN_INDEX);
-							selectAndEditCellAt(row, QUANTITY_COLUMN_INDEX);
+						case CHECK_NUMBER_COLUMN_INDEX:
+							selectAndEditCellAt(row, AMOUNT_COLUMN_INDEX);
 							break;
-						case QUANTITY_COLUMN_INDEX:
-							model.fireTableCellUpdated(row, AMOUNT_COLUMN_INDEX);
-							if (isAdding() && isLastRowSelected() && getCurrentlySelectedRowItem().isValid()) {
+						case AMOUNT_COLUMN_INDEX:
+							if (isLastRowSelected()) {
 								addNewRow();
 							}
 							break;
@@ -185,7 +209,6 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 				});
 			}
 		});
-			*/
 	}
 
 	private class RequiredFieldCellEditor extends MagicCellEditor {
@@ -223,7 +246,7 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 			boolean valid = false;
 			if (StringUtils.isEmpty(amount)) {
 				showErrorMessage("Amount must be specified");
-			} else if (NumberUtil.isAmount(amount)) {
+			} else if (!NumberUtil.isAmount(amount)) {
 				showErrorMessage("Amount must be a valid amount");
 			} else {
 				valid = true;

@@ -246,12 +246,13 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 3;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
+		customerNameField.setPreferredSize(new Dimension(300, 20));
 		panel.add(customerNameField, c);
 		
 		return panel;
 	}
 
-	private void postSalesRequisition() {
+	private void postPayment() {
 		/*
 		if (salesInvoicesTable.isAdding()) {
 			salesInvoicesTable.switchToEditMode();
@@ -364,73 +365,25 @@ public class PaymentPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createVerticalFiller(10), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 4;
+		mainPanel.add(createTotalsPanel(), c);
+				
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createFiller(), c);
-		
-		/*
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		c.gridwidth = 2;
-		mainPanel.add(ComponentUtil.createLabel(150, "Sales Invoices"), c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 4;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(createSalesInvoicesTableToolBar(), c);
-
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 4;
-		JScrollPane salesInvoicesTableScrollPane = new JScrollPane(salesInvoicesTable);
-		salesInvoicesTableScrollPane.setPreferredSize(new Dimension(600, 100));
-		mainPanel.add(salesInvoicesTableScrollPane, c);
-
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		c.gridwidth = 2;
-		mainPanel.add(ComponentUtil.createLabel(150, "Check Payments"), c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 4;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(createCheckPaymentsTableToolBar(), c);
-
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 4;
-		JScrollPane checksTableScrollPane = new JScrollPane(checksTable);
-		checksTableScrollPane.setPreferredSize(new Dimension(600, 100));
-		mainPanel.add(checksTableScrollPane, c);
-
-		*/
 	}
 
 	private JPanel createCheckPaymentsTableToolBar() {
@@ -470,7 +423,7 @@ public class PaymentPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				postSalesRequisition();
+				postPayment();
 			}
 		});
 		
@@ -523,7 +476,9 @@ public class PaymentPanel extends StandardMagicPanel {
 	private JTabbedPane createTabbedPane() {
 		JTabbedPane tabbedPane = new JTabbedPane();
 		tabbedPane.addTab("Sales Invoices", createSalesInvoicesPanel());
+		tabbedPane.addTab("Cash Payments", createCashPaymentsPanel());
 		tabbedPane.addTab("Check Payments", createCheckPaymentsPanel());
+		tabbedPane.addTab("Adjustments", createAdjustmentsPanel());
 		return tabbedPane;
 	}
 
@@ -579,6 +534,126 @@ public class PaymentPanel extends StandardMagicPanel {
 		panel.add(scrollPane, c);
 		
 		return panel;
+	}
+	
+	private JPanel createTotalsPanel() {
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+
+		currentRow++;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Total Sales Invoices:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Total Amount Due:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(160, "Total Check Payments:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Total Payment:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Total Cash Payments:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Over/Short:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Total Adjustments:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		
+		return mainPanel;
+	}
+	
+	private JPanel createCashPaymentsPanel() {
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new GridBagLayout());
+		
+		return mainPanel;
+	}
+	
+	private JPanel createAdjustmentsPanel() {
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new GridBagLayout());
+		
+		return mainPanel;
 	}
 	
 }
