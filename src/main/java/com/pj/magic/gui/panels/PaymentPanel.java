@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
@@ -350,6 +351,28 @@ public class PaymentPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 4;
+		
+		JTabbedPane tabbedPane = createTabbedPane();
+		tabbedPane.setPreferredSize(new Dimension(600, 300));
+		mainPanel.add(tabbedPane, c);
+				
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(), c);
+		
+		/*
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -407,13 +430,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		checksTableScrollPane.setPreferredSize(new Dimension(600, 100));
 		mainPanel.add(checksTableScrollPane, c);
 
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.weighty = 1.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(), c);
+		*/
 	}
 
 	private JPanel createCheckPaymentsTableToolBar() {
@@ -501,6 +518,67 @@ public class PaymentPanel extends StandardMagicPanel {
 						paymentService.findAllPaymentSalesInvoicesByPayment(payment));
 			}
 		}
+	}
+	
+	private JTabbedPane createTabbedPane() {
+		JTabbedPane tabbedPane = new JTabbedPane();
+		tabbedPane.addTab("Sales Invoices", createSalesInvoicesPanel());
+		tabbedPane.addTab("Check Payments", createCheckPaymentsPanel());
+		return tabbedPane;
+	}
+
+	private JPanel createSalesInvoicesPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(createSalesInvoicesTableToolBar(), c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		JScrollPane salesInvoicesTableScrollPane = new JScrollPane(salesInvoicesTable);
+		salesInvoicesTableScrollPane.setPreferredSize(new Dimension(600, 150));
+		panel.add(salesInvoicesTableScrollPane, c);
+		
+		return panel;
+	}
+	
+	private JPanel createCheckPaymentsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(createCheckPaymentsTableToolBar(), c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		JScrollPane scrollPane = new JScrollPane(checksTable);
+		scrollPane.setPreferredSize(new Dimension(600, 150));
+		panel.add(scrollPane, c);
+		
+		return panel;
 	}
 	
 }
