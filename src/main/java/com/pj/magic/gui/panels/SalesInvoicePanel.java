@@ -484,7 +484,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 				markSalesInvoice();
 			}
 		});
-		toolBar.add(markButton);
+//		toolBar.add(markButton);
 		
 		cancelButton = new MagicToolBarButton("cancel", "Cancel");
 		cancelButton.addActionListener(new ActionListener() {
