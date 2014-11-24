@@ -2,23 +2,25 @@ package com.pj.magic.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ReportDao;
-import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.StockCardInventoryReportItem;
+import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class ReportDaoImpl extends MagicDao implements ReportDao {
 
 	private StockCardInventoryReportItemRowMapper rowMapper = new StockCardInventoryReportItemRowMapper();
 	
-	private static final String GET_STOCK_CARD_INVENTORY_REPORT_ITEMS_SQL =
+	private static final String BASE_GET_STOCK_CARD_INVENTORY_REPORT_ITEMS_SQL =
 			"   select TRANSACTION_DT, TRANSACTION_NO, CUSTOMER_SUPPLIER_NAME, TRANSACTION_TYPE,"
 			+ " QUANTITY, UNIT_COST_OR_PRICE, REFERENCE_NO"
 			+ " from ("
@@ -64,17 +66,33 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "     on b.ADJUSTMENT_IN_ID = a.ID"
 			+ "   where b.PRODUCT_ID = ?"
 			+ "   and a.POST_IND = 'Y'"
-			+ " ) m"
-			+ " order by TRANSACTION_DT desc";
+			+ " ) m";
 	
 	@Override
-	public List<StockCardInventoryReportItem> getStockCardInventoryReport(Product product) {
-		// TODO: Use named parameter
-		return getJdbcTemplate().query(GET_STOCK_CARD_INVENTORY_REPORT_ITEMS_SQL, rowMapper, 
-				product.getId(),
-				product.getId(),
-				product.getId(),
-				product.getId());
+	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
+			StockCardInventoryReportSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		params.add(criteria.getProduct().getId());
+		params.add(criteria.getProduct().getId());
+		params.add(criteria.getProduct().getId());
+		params.add(criteria.getProduct().getId());
+		
+		StringBuilder sql = new StringBuilder(BASE_GET_STOCK_CARD_INVENTORY_REPORT_ITEMS_SQL);
+		sql.append(" where 1 = 1");
+		
+		if (criteria.getFromDate() != null) {
+			sql.append(" and TRANSACTION_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getFromDate()));
+		}
+		
+		if (criteria.getToDate() != null) {
+			sql.append(" and TRANSACTION_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
+		}
+		
+		sql.append(" order by TRANSACTION_DT desc");
+		
+		return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
 	}
 	
 	private class StockCardInventoryReportItemRowMapper implements RowMapper<StockCardInventoryReportItem> {

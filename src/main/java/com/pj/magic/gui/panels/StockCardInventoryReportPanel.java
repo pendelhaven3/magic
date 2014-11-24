@@ -12,11 +12,16 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -24,6 +29,7 @@ import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.tables.StockCardInventoryReportTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.StockCardInventoryReportItem;
+import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
@@ -37,6 +43,8 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	@Autowired private StockCardInventoryReportTable table;
 	
 	private MagicTextField productCodeField;
+	private UtilCalendarModel fromDateModel;
+	private UtilCalendarModel toDateModel;
 	private JButton generateButton;
 	private EllipsisButton selectProductButton;
 	
@@ -54,6 +62,9 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 				openSelectProductDialog();
 			}
 		});
+		
+		fromDateModel = new UtilCalendarModel();
+		toDateModel = new UtilCalendarModel();
 		
 		generateButton = new JButton("Generate");
 		generateButton.addActionListener(new ActionListener() {
@@ -90,7 +101,16 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		List<StockCardInventoryReportItem> items = reportService.getStockCardInventoryReport(product);
+		StockCardInventoryReportSearchCriteria criteria = new StockCardInventoryReportSearchCriteria();
+		criteria.setProduct(product);
+		if (fromDateModel.getValue() != null) {
+			criteria.setFromDate(fromDateModel.getValue().getTime());
+		}
+		if (toDateModel.getValue() != null) {
+			criteria.setToDate(toDateModel.getValue().getTime());
+		}
+		
+		List<StockCardInventoryReportItem> items = reportService.getStockCardInventoryReport(criteria);
 		table.setItems(items);
 		if (items.isEmpty()) {
 			showErrorMessage("No records found");
@@ -106,7 +126,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(50, 1), c);
+		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
@@ -121,24 +141,61 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		mainPanel.add(createProductPanel(), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0; // right space filler
 		c.gridx = 3;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0; // right space filler
+		c.gridx = 6;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createFiller(), c);
 		
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "From Date: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePanelImpl datePanel = new JDatePanelImpl(fromDateModel);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		mainPanel.add(datePicker, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "To Date: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		datePanel = new JDatePanelImpl(toDateModel);
+		datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		mainPanel.add(datePicker, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
+		mainPanel.add(ComponentUtil.createVerticalFiller(20), c);
 		
 		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.EAST;
+		c.gridwidth = 4;
 		generateButton.setPreferredSize(new Dimension(160, 25));
 		mainPanel.add(generateButton, c);
 		
@@ -155,7 +212,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 4;
+		c.gridwidth = 7;
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane itemsTableScrollPane = new JScrollPane(table);
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
@@ -178,6 +235,8 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		productCodeField.setText(null);
+		fromDateModel.setValue(null);
+		toDateModel.setValue(null);
 		table.setItems(new ArrayList<StockCardInventoryReportItem>());
 	}
 
