@@ -1,0 +1,50 @@
+$report.center("JC HARMONY SELLING INC.")
+$report.center("251 GEN.P.ALVAREZ ST.CALOOCAN CITY")
+$report.center("TEL.NO.3621785 3195946")
+
+$report.center("PAYMENT SUMMARY")
+
+Payment # : 21476
+Customer  : WLK-CD GIALOGO
+
+   S.I. #  Net Amount   Adj.Amount   Amount Due
+   ------ ------------  ----------  ------------
+   366237   146,906.86 ( 26,958.35)   119,948.51
+          ------------  ----------  ------------
+TOTALS =>   305,523.99 ( 26,958.35)   278,565.64
+          ============  ==========  ============
+
+Cash Payments
+
+                Rec. Date  Rec. By      Amount   
+                ---------- ---------- ----------
+                11/24/2014 IRENE       26,958.35 
+                ---------- ---------- ----------
+                            TOTALS =>  26,958.35   
+                                      ==========
+          
+Check Payments
+
+    Bank    Check Date  Check No.      Amount   
+ ---------- ---------- ------------ ------------
+ UnionBank  11/24/2014     51003734    26,958.35
+ ---------- ---------- ------------ ------------
+                          TOTALS =>    26,958.35   
+                                    ============
+
+Adjustments
+
+                    Type     Ref. No    Amount
+                ------------ -------- ----------
+                SALES RETURN    12321  26,958.35
+                                      ----------
+                          TOTALS =>    26,958.35   
+                                      ==========
+   
+                      
+                Total Amount Due  :   278,565.64
+                Total Payments    :    26,958.35
+                Total Adjustments :   -26,958.35
+                                    ------------
+                Over/Short        :   278,565.64
+                                    ============                      
