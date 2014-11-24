@@ -516,3 +516,14 @@ create table PAYMENT_CHECK_PAYMENT (
   constraint PAYMENT_CHECK_PAYMENT$PK primary key (ID),
   constraint PAYMENT_CHECK_PAYMENT$FK foreign key (PAYMENT_ID) references PAYMENT (ID)
 );
+
+create table PAYMENT_CASH_PAYMENT (
+  ID integer auto_increment,
+  PAYMENT_ID integer not null,
+  AMOUNT numeric(10, 2) not null,
+  RECEIVED_DT date not null,
+  RECEIVED_BY integer not null,
+  constraint PAYMENT_CASH_PAYMENT$PK primary key (ID),
+  constraint PAYMENT_CASH_PAYMENT$FK foreign key (PAYMENT_ID) references PAYMENT (ID),
+  constraint PAYMENT_CASH_PAYMENT$FK2 foreign key (RECEIVED_BY) references USER (ID)
+);

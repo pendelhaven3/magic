@@ -102,12 +102,17 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 		}
 		
 		if (rowItem.isValid()) {
-			PaymentCheckPayment check = rowItem.getCheck();
-			check.setBank(rowItem.getBank());
-			check.setCheckDate(rowItem.getCheckDate());
-			check.setCheckNumber(rowItem.getCheckNumber());
-			check.setAmount(rowItem.getAmount());
-			paymentService.save(check);
+			PaymentCheckPayment checkPayment = rowItem.getCheck();
+			checkPayment.setBank(rowItem.getBank());
+			checkPayment.setCheckDate(rowItem.getCheckDate());
+			checkPayment.setCheckNumber(rowItem.getCheckNumber());
+			checkPayment.setAmount(rowItem.getAmount());
+			
+			boolean newCheckPayment = (checkPayment.getId() == null);
+			paymentService.save(checkPayment);
+			if (newCheckPayment) {
+				checkPayment.getParent().getChecks().add(checkPayment);
+			}
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
@@ -152,7 +157,8 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 	}
 
 	public void removeItem(int row) {
-		rowItems.remove(row);
+		PaymentCheckPaymentRowItem rowItem= rowItems.remove(row);
+		paymentService.delete(rowItem.getCheck());
 		fireTableDataChanged();
 	}
 

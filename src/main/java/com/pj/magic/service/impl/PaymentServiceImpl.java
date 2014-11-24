@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.CustomerDao;
+import com.pj.magic.dao.PaymentCashPaymentDao;
 import com.pj.magic.dao.PaymentCheckPaymentDao;
 import com.pj.magic.dao.PaymentDao;
 import com.pj.magic.dao.PaymentSalesInvoiceDao;
@@ -15,6 +16,7 @@ import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
@@ -30,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private PaymentSalesInvoiceDao paymentSalesInvoiceDao;
 	@Autowired private CustomerDao customerDao;
 	@Autowired private PaymentCheckPaymentDao paymentCheckPaymentDao;
+	@Autowired private PaymentCashPaymentDao paymentCashPaymentDao;
 	
 	@Override
 	public List<SalesInvoice> findAllUnpaidSalesInvoicesByCustomer(Customer customer) {
@@ -59,6 +62,7 @@ public class PaymentServiceImpl implements PaymentService {
 			salesInvoice.getSalesInvoice().setItems(
 					salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice.getSalesInvoice()));
 		}
+		payment.setCashPayments(paymentCashPaymentDao.findAllByPayment(payment));
 		payment.setChecks(paymentCheckPaymentDao.findAllByPayment(payment));
 	}
 
@@ -103,6 +107,24 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public void delete(PaymentSalesInvoice paymentSalesInvoice) {
 		paymentSalesInvoiceDao.delete(paymentSalesInvoice);
+	}
+
+	@Transactional
+	@Override
+	public void save(PaymentCashPayment cashPayment) {
+		paymentCashPaymentDao.save(cashPayment);
+	}
+
+	@Transactional
+	@Override
+	public void delete(PaymentCheckPayment checkPayment) {
+		paymentCheckPaymentDao.delete(checkPayment);
+	}
+
+	@Transactional
+	@Override
+	public void delete(PaymentCashPayment cashPayment) {
+		paymentCashPaymentDao.delete(cashPayment);
 	}
 	
 }

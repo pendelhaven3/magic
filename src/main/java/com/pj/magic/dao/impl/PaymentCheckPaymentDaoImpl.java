@@ -105,5 +105,12 @@ public class PaymentCheckPaymentDaoImpl extends MagicDao implements PaymentCheck
 	public void deleteAllByPayment(Payment payment) {
 		getJdbcTemplate().update(DELETE_ALL_BY_PAYMENT_SQL, payment.getId());
 	}
+
+	private static final String DELETE_SQL = "delete from PAYMENT_CHECK_PAYMENT where ID = ?";
+	
+	@Override
+	public void delete(PaymentCheckPayment checkPayment) {
+		getJdbcTemplate().update(DELETE_SQL, checkPayment.getId());
+	}
 	
 }

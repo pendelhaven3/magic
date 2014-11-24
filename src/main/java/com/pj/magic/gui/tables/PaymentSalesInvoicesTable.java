@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +37,33 @@ public class PaymentSalesInvoicesTable extends MagicTable {
 	public PaymentSalesInvoicesTable(PaymentSalesInvoicesTableModel tableModel) {
 		super(tableModel);
 		initializeColumns();
+		initializeModelListener();
 	}
 	
+	private void initializeModelListener() {
+		getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				final AbstractTableModel model = (AbstractTableModel)e.getSource();
+				final int row = e.getFirstRow();
+				final int column = e.getColumn();
+				
+				SwingUtilities.invokeLater(new Runnable() {
+					
+					@Override
+					public void run() {
+						switch (column) {
+						case ADJUSTMENT_AMOUNT_COLUMN_INDEX:
+							model.fireTableRowsUpdated(row, row);
+							break;
+						}
+					}
+				});
+			}
+		});
+	}
+
 	private void initializeColumns() {
 		MagicTextField adjustmentAmountTextField = new MagicTextField();
 		adjustmentAmountTextField.setMaximumLength(13);

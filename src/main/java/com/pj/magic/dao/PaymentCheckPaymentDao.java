@@ -12,5 +12,7 @@ public interface PaymentCheckPaymentDao {
 	List<PaymentCheckPayment> findAllByPayment(Payment payment);
 
 	void deleteAllByPayment(Payment payment);
+
+	void delete(PaymentCheckPayment checkPayment);
 	
 }

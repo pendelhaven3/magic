@@ -14,6 +14,7 @@ public class Payment {
 	private boolean posted;
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 	private List<PaymentCheckPayment> checks = new ArrayList<>();
+	private List<PaymentCashPayment> cashPayments = new ArrayList<>();
 
 	public Payment() {
 		// default constructor
@@ -88,7 +89,7 @@ public class Payment {
 	}
 	
 	public BigDecimal getTotalPayments() {
-		return getTotalCheckPayments();
+		return getTotalCashPayments().add(getTotalCheckPayments());
 	}
 	
 	public BigDecimal getOverOrShort() {
@@ -96,11 +97,23 @@ public class Payment {
 	}
 
 	public BigDecimal getTotalCashPayments() {
-		return Constants.ZERO;
+		BigDecimal total = Constants.ZERO;
+		for (PaymentCashPayment cashPayment : cashPayments) {
+			total = total.add(cashPayment.getAmount());
+		}
+		return total;
 	}
 
 	public BigDecimal getTotalAdjustments() {
 		return Constants.ZERO;
+	}
+
+	public List<PaymentCashPayment> getCashPayments() {
+		return cashPayments;
+	}
+
+	public void setCashPayments(List<PaymentCashPayment> cashPayments) {
+		this.cashPayments = cashPayments;
 	}
 	
 }
