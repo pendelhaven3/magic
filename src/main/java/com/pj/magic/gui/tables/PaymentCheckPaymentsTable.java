@@ -8,24 +8,21 @@ import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.component.MagicCellEditor;
+import com.pj.magic.gui.component.AmountCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.RequiredFieldCellEditor;
 import com.pj.magic.gui.tables.models.PaymentCheckPaymentsTableModel;
 import com.pj.magic.gui.tables.rowitems.PaymentCheckPaymentRowItem;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCheckPayment;
-import com.pj.magic.util.NumberUtil;
 
 @Component
 public class PaymentCheckPaymentsTable extends MagicTable {
@@ -214,28 +211,6 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 				});
 			}
 		});
-	}
-
-	private class AmountCellEditor extends MagicCellEditor {
-		
-		public AmountCellEditor(JTextField textField) {
-			super(textField);
-		}
-		
-		@Override
-		public boolean stopCellEditing() {
-			String amount = ((JTextField)getComponent()).getText();
-			boolean valid = false;
-			if (StringUtils.isEmpty(amount)) {
-				showErrorMessage("Amount must be specified");
-			} else if (!NumberUtil.isAmount(amount)) {
-				showErrorMessage("Amount must be a valid amount");
-			} else {
-				valid = true;
-			}
-			return (valid) ? super.stopCellEditing() : false;
-		}
-		
 	}
 
 	public void clearDisplay() {

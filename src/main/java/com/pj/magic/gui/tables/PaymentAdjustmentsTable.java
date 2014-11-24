@@ -3,14 +3,11 @@ package com.pj.magic.gui.tables;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputMap;
-import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -21,33 +18,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.AmountCellEditor;
-import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.gui.tables.models.PaymentCashPaymentsTableModel;
-import com.pj.magic.gui.tables.rowitems.PaymentCashPaymentRowItem;
+import com.pj.magic.gui.component.RequiredFieldCellEditor;
+import com.pj.magic.gui.tables.models.PaymentAdjustmentsTableModel;
+import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
 import com.pj.magic.model.Payment;
-import com.pj.magic.model.PaymentCashPayment;
-import com.pj.magic.model.User;
-import com.pj.magic.service.UserService;
+import com.pj.magic.model.PaymentAdjustment;
 
 @Component
-public class PaymentCashPaymentsTable extends MagicTable {
+public class PaymentAdjustmentsTable extends MagicTable {
 	
-	public static final int AMOUNT_COLUMN_INDEX = 0;
-	public static final int RECEIVED_DATE_COLUMN_INDEX = 1;
-	public static final int RECEIVED_BY_COLUMN_INDEX = 2;
+	public static final int ADJUSTMENT_TYPE_COLUMN_INDEX = 0;
+	public static final int REFERENCE_NUMBER_COLUMN_INDEX = 1;
+	public static final int AMOUNT_COLUMN_INDEX = 2;
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 	private static final String F10_ACTION_NAME = "F10";
 
-	@Autowired private PaymentCashPaymentsTableModel tableModel;
-	@Autowired private UserService userService;
+	@Autowired private PaymentAdjustmentsTableModel tableModel;
 	
 	private Payment payment;
-	private JComboBox<User> receivedByComboBox;
 	
 	@Autowired
-	public PaymentCashPaymentsTable(PaymentCashPaymentsTableModel tableModel) {
+	public PaymentAdjustmentsTable(PaymentAdjustmentsTableModel tableModel) {
 		super(tableModel);
 		initializeColumns();
 		initializeModelListener();
@@ -55,18 +48,22 @@ public class PaymentCashPaymentsTable extends MagicTable {
 	}
 	
 	private void initializeColumns() {
+		MagicTextField adjustmentTypeTextField = new MagicTextField();
+		adjustmentTypeTextField.setMaximumLength(20);
+		columnModel.getColumn(ADJUSTMENT_TYPE_COLUMN_INDEX)
+			.setCellEditor(new RequiredFieldCellEditor(adjustmentTypeTextField, "Adjustment Type"));
+
+		MagicTextField referenceNumberTextField = new MagicTextField();
+		referenceNumberTextField.setMaximumLength(20);
+		columnModel.getColumn(REFERENCE_NUMBER_COLUMN_INDEX)
+			.setCellEditor(new DefaultCellEditor(referenceNumberTextField));
+		
 		MagicTextField amountTextField = new MagicTextField();
 		amountTextField.setMaximumLength(12);
 		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setCellEditor(new AmountCellEditor(amountTextField));
 
-		MagicTextField receivedDateField = new MagicTextField();
-		receivedDateField.setMaximumLength(10);
-		columnModel.getColumn(RECEIVED_DATE_COLUMN_INDEX).setCellEditor(
-				new DateCellEditor(receivedDateField, "Received Date"));
-		
-		receivedByComboBox = new MagicComboBox<>();
-		columnModel.getColumn(RECEIVED_BY_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(receivedByComboBox));
-		// combobox column always updated in setPayment
+		MagicTextField remarksTextField = new MagicTextField();
+		remarksTextField.setMaximumLength(100);
 	}
 	
 	public void addNewRow() {
@@ -74,9 +71,9 @@ public class PaymentCashPaymentsTable extends MagicTable {
 			return;
 		}
 		
-		PaymentCashPayment cash = new PaymentCashPayment();
-		cash.setParent(payment);
-		tableModel.addItem(cash);
+		PaymentAdjustment adjustment = new PaymentAdjustment();
+		adjustment.setParent(payment);
+		tableModel.addItem(adjustment);
 		selectAndEditCellAt(getRowCount() - 1, 0);
 	}
 	
@@ -86,9 +83,9 @@ public class PaymentCashPaymentsTable extends MagicTable {
 
 	public void doDeleteCurrentlySelectedItem() {
 		int selectedRowIndex = getSelectedRow();
-		PaymentCashPayment item = getCurrentlySelectedRowItem().getCashPayment();
+		PaymentAdjustment item = getCurrentlySelectedRowItem().getAdjustment();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
-		payment.getCashPayments().remove(item);
+		payment.getAdjustments().remove(item);
 		tableModel.removeItem(selectedRowIndex);
 		
 		if (tableModel.hasItems()) {
@@ -103,10 +100,7 @@ public class PaymentCashPaymentsTable extends MagicTable {
 	public void setPayment(Payment payment) {
 		clearSelection();
 		this.payment = payment;
-		tableModel.setCashPayments(payment.getCashPayments());
-		
-		List<User> users = userService.getAllUsers();
-		receivedByComboBox.setModel(new DefaultComboBoxModel<>(users.toArray(new User[users.size()])));
+		tableModel.setAdjustments(payment.getAdjustments());	
 	}
 	
 	protected void registerKeyBindings() {
@@ -160,7 +154,7 @@ public class PaymentCashPaymentsTable extends MagicTable {
 		}
 	}
 
-	public PaymentCashPaymentRowItem getCurrentlySelectedRowItem() {
+	public PaymentAdjustmentRowItem getCurrentlySelectedRowItem() {
 		return tableModel.getRowItem(getSelectedRow());
 	}
 	
@@ -174,15 +168,6 @@ public class PaymentCashPaymentsTable extends MagicTable {
 		}
 	}
 
-	public void highlight() {
-//		if (!adjustmentIn.hasItems()) {
-//			switchToAddMode();
-//		} else {
-//			changeSelection(0, 0, false, false);
-//			requestFocusInWindow();
-//		}
-	}
-	
 	private void initializeModelListener() {
 		getModel().addTableModelListener(new TableModelListener() {
 			
@@ -196,13 +181,13 @@ public class PaymentCashPaymentsTable extends MagicTable {
 					@Override
 					public void run() {
 						switch (column) {
+						case ADJUSTMENT_TYPE_COLUMN_INDEX:
+							selectAndEditCellAt(row, REFERENCE_NUMBER_COLUMN_INDEX);
+							break;
+						case REFERENCE_NUMBER_COLUMN_INDEX:
+							selectAndEditCellAt(row, AMOUNT_COLUMN_INDEX);
+							break;
 						case AMOUNT_COLUMN_INDEX:
-							selectAndEditCellAt(row, RECEIVED_DATE_COLUMN_INDEX);
-							break;
-						case RECEIVED_DATE_COLUMN_INDEX:
-							selectAndEditCellAt(row, RECEIVED_BY_COLUMN_INDEX);
-							break;
-						case RECEIVED_BY_COLUMN_INDEX:
 							if (isLastRowSelected()) {
 								addNewRow();
 							}
@@ -216,7 +201,7 @@ public class PaymentCashPaymentsTable extends MagicTable {
 
 	public void clearDisplay() {
 		payment = null;
-		tableModel.setCashPayments(new ArrayList<PaymentCashPayment>());
+		tableModel.setAdjustments(new ArrayList<PaymentAdjustment>());
 	}
 	
 }

@@ -1,18 +1,17 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class PaymentCashPayment {
+public class PaymentAdjustment {
 
 	private Long id;
 	private Payment parent;
+	private String adjustmentType;
 	private BigDecimal amount;
-	private Date receivedDate;
-	private User receivedBy;
+	private String referenceNumber;
 
 	public Long getId() {
 		return id;
@@ -20,6 +19,10 @@ public class PaymentCashPayment {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getAdjustmentType() {
+		return adjustmentType;
 	}
 
 	public Payment getParent() {
@@ -30,6 +33,10 @@ public class PaymentCashPayment {
 		this.parent = parent;
 	}
 
+	public void setAdjustmentType(String adjustmentType) {
+		this.adjustmentType = adjustmentType;
+	}
+
 	public BigDecimal getAmount() {
 		return amount;
 	}
@@ -38,20 +45,12 @@ public class PaymentCashPayment {
 		this.amount = amount;
 	}
 
-	public Date getReceivedDate() {
-		return receivedDate;
+	public String getReferenceNumber() {
+		return referenceNumber;
 	}
 
-	public void setReceivedDate(Date receivedDate) {
-		this.receivedDate = receivedDate;
-	}
-
-	public User getReceivedBy() {
-		return receivedBy;
-	}
-
-	public void setReceivedBy(User receivedBy) {
-		this.receivedBy = receivedBy;
+	public void setReferenceNumber(String referenceNumber) {
+		this.referenceNumber = referenceNumber;
 	}
 
 	@Override
@@ -66,10 +65,10 @@ public class PaymentCashPayment {
 		if (obj == null) {
 			return false;
 		}
-        if (!(obj instanceof PaymentCashPayment)) {
+        if (!(obj instanceof PaymentAdjustment)) {
             return false;
         }
-        PaymentCashPayment other = (PaymentCashPayment)obj;		
+        PaymentAdjustment other = (PaymentAdjustment)obj;		
 		return new EqualsBuilder()
 			.append(id, other.getId())
 			.isEquals();

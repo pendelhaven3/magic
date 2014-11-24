@@ -3,6 +3,9 @@ package com.pj.magic.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class PaymentCheckPayment {
 
 	private Long id;
@@ -60,4 +63,25 @@ public class PaymentCheckPayment {
 		this.checkDate = checkDate;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof PaymentCheckPayment)) {
+            return false;
+        }
+        PaymentCheckPayment other = (PaymentCheckPayment)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+	
 }

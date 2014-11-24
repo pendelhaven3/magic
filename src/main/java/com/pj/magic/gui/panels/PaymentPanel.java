@@ -31,6 +31,7 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AddSalesInvoicesToPaymentDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
+import com.pj.magic.gui.tables.PaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.PaymentCashPaymentsTable;
 import com.pj.magic.gui.tables.PaymentCheckPaymentsTable;
 import com.pj.magic.gui.tables.PaymentSalesInvoicesTable;
@@ -58,6 +59,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	@Autowired private AddSalesInvoicesToPaymentDialog addSalesInvoicesToPaymentDialog;
 	@Autowired private PaymentCheckPaymentsTable checksTable;
 	@Autowired private PaymentCashPaymentsTable cashPaymentsTable;
+	@Autowired private PaymentAdjustmentsTable adjustmentsTable;
 	
 	private Payment payment;
 	private JLabel paymentNumberField;
@@ -77,6 +79,8 @@ public class PaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton deleteCheckPaymentButton;
 	private MagicToolBarButton addCashPaymentButton;
 	private MagicToolBarButton deleteCashPaymentButton;
+	private MagicToolBarButton addAdjustmentButton;
+	private MagicToolBarButton deleteAdjustmentButton;
 	private MagicToolBarButton deleteButton;
 	private MagicToolBarButton postButton;
 	
@@ -175,6 +179,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		salesInvoicesTable.setPayment(payment);
 		checksTable.setPayment(payment);
 		cashPaymentsTable.setPayment(payment);
+		adjustmentsTable.setPayment(payment);
 		
 		deleteButton.setEnabled(!payment.isPosted());
 		postButton.setEnabled(!payment.isPosted());
@@ -189,6 +194,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		salesInvoicesTable.clearDisplay();
 		checksTable.clearDisplay();
 		cashPaymentsTable.clearDisplay();
+		adjustmentsTable.clearDisplay();
 		
 		totalAmountDueField.setText(null);
 		totalCashPaymentsField.setText(null);
@@ -681,10 +687,60 @@ public class PaymentPanel extends StandardMagicPanel {
 	}
 
 	private JPanel createAdjustmentsPanel() {
-		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new GridBagLayout());
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
 		
-		return mainPanel;
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(createAdjustmentsTableToolBar(), c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		JScrollPane scrollPane = new JScrollPane(adjustmentsTable);
+		scrollPane.setPreferredSize(new Dimension(600, 150));
+		panel.add(scrollPane, c);
+		
+		return panel;
+	}
+
+	private JPanel createAdjustmentsTableToolBar() {
+		JPanel panel = new JPanel();
+		
+		addAdjustmentButton = new MagicToolBarButton("plus_small", "Add Adjustment", true);
+		addAdjustmentButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addAdjustment();
+			}
+		});
+		panel.add(addAdjustmentButton, BorderLayout.WEST);
+		
+		deleteAdjustmentButton = new MagicToolBarButton("minus_small", "Delete Adjustment", true);
+		deleteAdjustmentButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				adjustmentsTable.removeCurrentlySelectedItem();
+			}
+		});
+		panel.add(deleteAdjustmentButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+
+	private void addAdjustment() {
+		adjustmentsTable.addNewRow();
 	}
 
 	private void initializeModelListeners() {
@@ -711,13 +767,20 @@ public class PaymentPanel extends StandardMagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				System.out.println("hark!");
 				totalCashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCashPayments()));
 				totalPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalPayments()));
 				overOrShortField.setText(FormatterUtil.formatAmount(payment.getOverOrShort()));
 			}
 		});
-		
+
+		adjustmentsTable.getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				totalAdjustmentsField.setText(FormatterUtil.formatAmount(payment.getTotalAdjustments()));
+				overOrShortField.setText(FormatterUtil.formatAmount(payment.getOverOrShort()));
+			}
+		});
 	}
 	
 }

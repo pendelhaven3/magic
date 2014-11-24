@@ -527,3 +527,13 @@ create table PAYMENT_CASH_PAYMENT (
   constraint PAYMENT_CASH_PAYMENT$FK foreign key (PAYMENT_ID) references PAYMENT (ID),
   constraint PAYMENT_CASH_PAYMENT$FK2 foreign key (RECEIVED_BY) references USER (ID)
 );
+
+create table PAYMENT_ADJUSTMENT (
+  ID integer auto_increment,
+  PAYMENT_ID integer not null,
+  ADJUSTMENT_TYPE varchar(20) not null,
+  REFERENCE_NO varchar(30) null,
+  AMOUNT numeric(10, 2) not null,
+  constraint PAYMENT_ADJUSTMENT$PK primary key (ID),
+  constraint PAYMENT_ADJUSTMENT$FK foreign key (PAYMENT_ID) references PAYMENT (ID)
+);

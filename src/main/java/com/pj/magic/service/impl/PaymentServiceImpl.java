@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.CustomerDao;
+import com.pj.magic.dao.PaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentCashPaymentDao;
 import com.pj.magic.dao.PaymentCheckPaymentDao;
 import com.pj.magic.dao.PaymentDao;
@@ -16,6 +17,7 @@ import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
@@ -33,6 +35,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private CustomerDao customerDao;
 	@Autowired private PaymentCheckPaymentDao paymentCheckPaymentDao;
 	@Autowired private PaymentCashPaymentDao paymentCashPaymentDao;
+	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
 	
 	@Override
 	public List<SalesInvoice> findAllUnpaidSalesInvoicesByCustomer(Customer customer) {
@@ -64,6 +67,7 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 		payment.setCashPayments(paymentCashPaymentDao.findAllByPayment(payment));
 		payment.setChecks(paymentCheckPaymentDao.findAllByPayment(payment));
+		payment.setAdjustments(paymentAdjustmentDao.findAllByPayment(payment));
 	}
 
 	@Override
@@ -100,6 +104,8 @@ public class PaymentServiceImpl implements PaymentService {
 	public void delete(Payment payment) {
 		paymentCheckPaymentDao.deleteAllByPayment(payment);
 		paymentSalesInvoiceDao.deleteAllByPayment(payment);
+		paymentCashPaymentDao.deleteAllByPayment(payment);
+		paymentAdjustmentDao.deleteAllByPayment(payment);
 		paymentDao.delete(payment);
 	}
 
@@ -125,6 +131,18 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public void delete(PaymentCashPayment cashPayment) {
 		paymentCashPaymentDao.delete(cashPayment);
+	}
+
+	@Transactional
+	@Override
+	public void delete(PaymentAdjustment adjustment) {
+		paymentAdjustmentDao.delete(adjustment);
+	}
+
+	@Transactional
+	@Override
+	public void save(PaymentAdjustment adjustment) {
+		paymentAdjustmentDao.save(adjustment);
 	}
 	
 }

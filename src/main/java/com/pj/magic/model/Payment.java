@@ -15,6 +15,7 @@ public class Payment {
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 	private List<PaymentCheckPayment> checks = new ArrayList<>();
 	private List<PaymentCashPayment> cashPayments = new ArrayList<>();
+	private List<PaymentAdjustment> adjustments = new ArrayList<>();
 
 	public Payment() {
 		// default constructor
@@ -93,7 +94,7 @@ public class Payment {
 	}
 	
 	public BigDecimal getOverOrShort() {
-		return getTotalPayments().subtract(getTotalAmountDue());
+		return getTotalPayments().subtract(getTotalAmountDue()).add(getTotalAdjustments());
 	}
 
 	public BigDecimal getTotalCashPayments() {
@@ -105,7 +106,11 @@ public class Payment {
 	}
 
 	public BigDecimal getTotalAdjustments() {
-		return Constants.ZERO;
+		BigDecimal total = Constants.ZERO;
+		for (PaymentAdjustment adjustment : adjustments) {
+			total = total.add(adjustment.getAmount());
+		}
+		return total;
 	}
 
 	public List<PaymentCashPayment> getCashPayments() {
@@ -115,5 +120,13 @@ public class Payment {
 	public void setCashPayments(List<PaymentCashPayment> cashPayments) {
 		this.cashPayments = cashPayments;
 	}
-	
+
+	public List<PaymentAdjustment> getAdjustments() {
+		return adjustments;
+	}
+
+	public void setAdjustments(List<PaymentAdjustment> adjustments) {
+		this.adjustments = adjustments;
+	}
+
 }

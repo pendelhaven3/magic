@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
@@ -34,5 +35,9 @@ public interface PaymentService {
 	void delete(PaymentCheckPayment checkPayment);
 
 	void delete(PaymentCashPayment cashPayment);
+
+	void delete(PaymentAdjustment adjustment);
+
+	void save(PaymentAdjustment adjustment);
 	
 }
