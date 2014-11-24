@@ -95,7 +95,7 @@ public class PaymentListPanel extends StandardMagicPanel {
 
 	protected void selectPayment() {
 		Payment payment = tableModel.getPayment(table.getSelectedRow());
-		getMagicFrame().switchToPaymentPanel2(payment);
+		getMagicFrame().switchToPaymentPanel(payment);
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class PaymentListPanel extends StandardMagicPanel {
 	}
 
 	private void switchToNewPaymentPanel() {
-		getMagicFrame().switchToPaymentPanel2(new Payment());
+		getMagicFrame().switchToPaymentPanel(new Payment());
 	}
 	
 }

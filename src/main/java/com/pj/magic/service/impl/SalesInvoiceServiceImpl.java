@@ -172,7 +172,11 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 
 	@Override
 	public List<SalesInvoice> findAllSalesInvoicesForPaymentByCustomer(Customer customer) {
-		return salesInvoiceDao.findAllForPaymentByCustomer(customer);
+		List<SalesInvoice> salesInvoices = salesInvoiceDao.findAllForPaymentByCustomer(customer);
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
+		}
+		return salesInvoices;
 	}
 	
 }

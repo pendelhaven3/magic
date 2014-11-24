@@ -716,7 +716,7 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_RETURN_PANEL);
 	}
 
-	public void switchToPaymentPanel2(Payment payment) {
+	public void switchToPaymentPanel(Payment payment) {
 		addPanelNameToTitle("Payment");
 		paymentPanel.updateDisplay(payment);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAYMENT_PANEL);

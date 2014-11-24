@@ -55,12 +55,11 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	private void loadPaymentDetails(Payment payment) {
 		payment.setSalesInvoices(paymentSalesInvoiceDao.findAllByPayment(payment));
+		for (PaymentSalesInvoice salesInvoice : payment.getSalesInvoices()) {
+			salesInvoice.getSalesInvoice().setItems(
+					salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice.getSalesInvoice()));
+		}
 		payment.setChecks(paymentCheckPaymentDao.findAllByPayment(payment));
-//		for (PaymentItem item : payment.getItems()) {
-//			item.getSalesInvoice().setItems(
-//					salesInvoiceItemDao.findAllBySalesInvoice(item.getSalesInvoice()));
-//		}
-		payment.setCustomer(customerDao.get(payment.getCustomer().getId()));
 	}
 
 	@Override
@@ -70,6 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
 		return paymentDao.search(criteria);
 	}
 
+	@Transactional
 	@Override
 	public void save(PaymentSalesInvoice paymentSalesInvoice) {
 		paymentSalesInvoiceDao.save(paymentSalesInvoice);
@@ -77,12 +77,32 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	public List<PaymentSalesInvoice> findAllPaymentSalesInvoicesByPayment(Payment payment) {
-		return paymentSalesInvoiceDao.findAllByPayment(payment);
+		List<PaymentSalesInvoice> paymentSalesInvoices = paymentSalesInvoiceDao.findAllByPayment(payment);
+		for (PaymentSalesInvoice salesInvoice : paymentSalesInvoices) {
+			salesInvoice.getSalesInvoice().setItems(
+					salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice.getSalesInvoice()));
+		}
+		return paymentSalesInvoices;
 	}
 
+	@Transactional
 	@Override
 	public void save(PaymentCheckPayment check) {
 		paymentCheckPaymentDao.save(check);
+	}
+
+	@Transactional
+	@Override
+	public void delete(Payment payment) {
+		paymentCheckPaymentDao.deleteAllByPayment(payment);
+		paymentSalesInvoiceDao.deleteAllByPayment(payment);
+		paymentDao.delete(payment);
+	}
+
+	@Transactional
+	@Override
+	public void delete(PaymentSalesInvoice paymentSalesInvoice) {
+		paymentSalesInvoiceDao.delete(paymentSalesInvoice);
 	}
 	
 }

@@ -20,4 +20,14 @@ create table PAYMENT_SALES_INVOICE (
   constraint PAYMENT_SALES_INVOICE$FK2 foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID)
 );
 
+create table PAYMENT_CHECK_PAYMENT (
+  ID integer auto_increment,
+  PAYMENT_ID integer not null,
+  BANK varchar(30) not null,
+  CHECK_NO varchar(50) not null,
+  AMOUNT numeric(10, 2) not null,
+  constraint PAYMENT_CHECK_PAYMENT$PK primary key (ID),
+  constraint PAYMENT_CHECK_PAYMENT$FK foreign key (PAYMENT_ID) references PAYMENT (ID)
+);
+
 insert into SEQUENCE (NAME) values ('PAYMENT_NO_SEQ');

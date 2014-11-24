@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class PaymentPanel extends StandardMagicPanel {
@@ -58,19 +61,24 @@ public class PaymentPanel extends StandardMagicPanel {
 	private JLabel paymentNumberField;
 	private MagicTextField customerCodeField;
 	private JLabel customerNameField;
-	private JLabel statusField;
-	private JLabel totalAmountField;
+	private JLabel postedField;
+	private JLabel totalAmountDueField;
+	private JLabel totalCashPaymentsField;
+	private JLabel totalCheckPaymentsField;
+	private JLabel totalPaymentsField;
+	private JLabel totalAdjustmentsField;
+	private JLabel overOrShortField;
 	private JButton selectCustomerButton;
 	private MagicToolBarButton addSalesInvoiceButton;
 	private MagicToolBarButton deleteSalesInvoiceButton;
 	private MagicToolBarButton addCheckPaymentButton;
 	private MagicToolBarButton deleteCheckPaymentButton;
+	private MagicToolBarButton deleteButton;
 	private MagicToolBarButton postButton;
 	
 	@Override
 	protected void initializeComponents() {
 		paymentNumberField = new JLabel();
-		statusField = new JLabel();
 		
 		customerCodeField = new MagicTextField();
 		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
@@ -87,7 +95,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		
 		focusOnComponentWhenThisPanelIsDisplayed(customerCodeField);
 		
-//		updateTotalAmountFieldWhenItemsTableChanges();
+		initializeModelListeners();
 	}
 
 	@Override
@@ -111,6 +119,11 @@ public class PaymentPanel extends StandardMagicPanel {
 		});
 	}
 
+	private void saveCustomer() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	protected void selectCustomer() {
 		selectCustomerDialog.searchCustomers(customerCodeField.getText());
 		selectCustomerDialog.setVisible(true);
@@ -125,38 +138,6 @@ public class PaymentPanel extends StandardMagicPanel {
 			paymentService.save(payment);
 			updateDisplay(payment);
 		}
-	}
-
-	protected void saveCustomer() {
-		/*
-		if (payment.getCustomer() != null) {
-			if (payment.getCustomer().getCode().equals(customerCodeField.getText())) {
-				// skip saving sales requisition since there is no change in customer
-				focusNextField();
-				return;
-			}
-		}
-		
-		if (StringUtils.isEmpty(customerCodeField.getText())) {
-			showErrorMessage("Customer must be specified");
-			return;
-		}
-		
-		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
-		if (customer == null) {
-			showErrorMessage("No customer matching code specified");
-			return;
-		} else {
-			payment.setCustomer(customer);
-			if (payment.getId() != null) {
-				paymentService.save(payment);
-			}
-			customerNameField.setText(customer.getName());
-			paymentTermComboBox.setEnabled(true);
-			paymentTermComboBox.setSelectedItem(customer.getPaymentTerm(), false);
-			paymentTermComboBox.requestFocusInWindow();
-		}
-		*/
 	}
 
 	@Override
@@ -179,23 +160,38 @@ public class PaymentPanel extends StandardMagicPanel {
 		paymentNumberField.setText(payment.getPaymentNumber().toString());
 		customerCodeField.setText(payment.getCustomer().getCode());
 		customerNameField.setText(payment.getCustomer().getName());
+		postedField.setText(payment.isPosted() ? "Yes" : "No");
+		totalAmountDueField.setText(FormatterUtil.formatAmount(payment.getTotalAmountDue()));
+		totalCashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCashPayments()));
+		totalCheckPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCheckPayments()));
+		totalPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalPayments()));
+		totalAdjustmentsField.setText(FormatterUtil.formatAmount(payment.getTotalAdjustments()));
+		overOrShortField.setText(FormatterUtil.formatAmount(payment.getOverOrShort()));
 		
-		salesInvoicesTable.setPaymentSalesInvoices(payment.getSalesInvoices());
+		salesInvoicesTable.setPayment(payment);
 		checksTable.setPayment(payment);
 		
+		deleteButton.setEnabled(!payment.isPosted());
 		postButton.setEnabled(!payment.isPosted());
-//		addItemButton.setEnabled(!payment.isPosted());
-//		deleteItemButton.setEnabled(!payment.isPosted());
 	}
 
 	private void clearDisplay() {
 		paymentNumberField.setText(null);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
+		postedField.setText(null);
 		
 		salesInvoicesTable.clearDisplay();
 		checksTable.clearDisplay();
 		
+		totalAmountDueField.setText(null);
+		totalCashPaymentsField.setText(null);
+		totalCheckPaymentsField.setText(null);
+		totalPaymentsField.setText(null);
+		totalAdjustmentsField.setText(null);
+		overOrShortField.setText(null);
+		
+		deleteButton.setEnabled(false);
 		postButton.setEnabled(false);
 	}
 
@@ -232,46 +228,6 @@ public class PaymentPanel extends StandardMagicPanel {
 		panel.add(customerNameField, c);
 		
 		return panel;
-	}
-
-	private void postPayment() {
-		/*
-		if (salesInvoicesTable.isAdding()) {
-			salesInvoicesTable.switchToEditMode();
-		}
-		
-		int confirm = showConfirmMessage("Do you want to post this sales requisition?");
-		if (confirm == JOptionPane.OK_OPTION) {
-			if (!payment.hasItems()) {
-				showErrorMessage("Cannot post a sales requisition with no items");
-				salesInvoicesTable.requestFocusInWindow();
-				return;
-			}
-			try {
-				SalesInvoice salesInvoice = paymentService.post(payment);
-				JOptionPane.showMessageDialog(this, "Post successful!");
-				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
-			} catch (NotEnoughStocksException e ) {	
-				showErrorMessage("Not enough available stocks");
-				updateDisplay(payment);
-				salesInvoicesTable.highlightColumn(e.getSalesRequisitionItem(), 
-						SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX);
-			} catch (NoSellingPriceException e) {
-				showErrorMessage("No selling price");
-				updateDisplay(payment);
-				salesInvoicesTable.highlightColumn(e.getItem(), 
-						SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX);
-			} catch (SellingPriceLessThanCostException e) {
-				showErrorMessage("Selling price less than cost");
-				updateDisplay(payment);
-				salesInvoicesTable.highlightColumn(e.getItem(), 
-						SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX);
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-				showErrorMessage("Unexpected error occurred during posting!");
-			}
-		}
-		*/
 	}
 
 	@Override
@@ -326,6 +282,21 @@ public class PaymentPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Posted:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postedField = ComponentUtil.createLabel(100, "");
+		mainPanel.add(postedField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -341,7 +312,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridwidth = 4;
 		
 		JTabbedPane tabbedPane = createTabbedPane();
-		tabbedPane.setPreferredSize(new Dimension(600, 300));
+		tabbedPane.setPreferredSize(new Dimension(600, 280));
 		mainPanel.add(tabbedPane, c);
 				
 		currentRow++;
@@ -386,7 +357,7 @@ public class PaymentPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				salesInvoicesTable.removeCurrentlySelectedItem();
+				checksTable.removeCurrentlySelectedItem();
 			}
 		});
 		panel.add(deleteCheckPaymentButton, BorderLayout.WEST);
@@ -400,6 +371,16 @@ public class PaymentPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		deleteButton = new MagicToolBarButton("trash", "Delete");
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deletePayment();
+			}
+		});
+		toolBar.add(deleteButton);
+		
 		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
 			
@@ -410,6 +391,24 @@ public class PaymentPanel extends StandardMagicPanel {
 		});
 		
 		toolBar.add(postButton);
+	}
+
+	private void postPayment() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void deletePayment() {
+		if (confirm("Delete Payment?")) {
+			try {
+				paymentService.delete(payment);
+				showMessage("Payment deleted");
+				getMagicFrame().switchToPaymentListPanel();
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+			}
+		}
 	}
 
 	private JPanel createSalesInvoicesTableToolBar() {
@@ -430,7 +429,7 @@ public class PaymentPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				salesInvoicesTable.removeCurrentlySelectedItem();
+				salesInvoicesTable.removeCurrentlySelectedItem();
 			}
 		});
 		panel.add(deleteSalesInvoiceButton, BorderLayout.WEST);
@@ -449,9 +448,9 @@ public class PaymentPanel extends StandardMagicPanel {
 				paymentSalesInvoice.setParent(payment);
 				paymentSalesInvoice.setSalesInvoice(salesInvoice);
 				paymentService.save(paymentSalesInvoice);
-				salesInvoicesTable.setPaymentSalesInvoices(
-						paymentService.findAllPaymentSalesInvoicesByPayment(payment));
 			}
+			payment.setSalesInvoices(paymentService.findAllPaymentSalesInvoicesByPayment(payment));
+			salesInvoicesTable.setPayment(payment);
 		}
 	}
 	
@@ -527,18 +526,6 @@ public class PaymentPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Total Sales Invoices:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
-		
-		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
@@ -553,7 +540,8 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		totalAmountDueField = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalAmountDueField, c);
 		
 		currentRow++;
 		
@@ -567,7 +555,8 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		totalCheckPaymentsField = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalCheckPaymentsField, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
@@ -579,7 +568,8 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		totalPaymentsField = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalPaymentsField, c);
 		
 		currentRow++;
 		
@@ -593,7 +583,23 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		totalCashPaymentsField = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalCashPaymentsField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Total Adjustments:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAdjustmentsField = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalAdjustmentsField, c);
+		
+		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
@@ -605,21 +611,8 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Total Adjustments:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createRightLabel(120, "X,XXX,XXX.XX"), c);
+		overOrShortField = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(overOrShortField, c);
 		
 		return mainPanel;
 	}
@@ -636,6 +629,28 @@ public class PaymentPanel extends StandardMagicPanel {
 		mainPanel.setLayout(new GridBagLayout());
 		
 		return mainPanel;
+	}
+
+	private void initializeModelListeners() {
+		salesInvoicesTable.getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				totalAmountDueField.setText(FormatterUtil.formatAmount(payment.getTotalAmountDue()));
+				overOrShortField.setText(FormatterUtil.formatAmount(payment.getOverOrShort()));
+			}
+		});
+		
+		checksTable.getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				totalCheckPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCheckPayments()));
+				totalPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalPayments()));
+				overOrShortField.setText(FormatterUtil.formatAmount(payment.getOverOrShort()));
+			}
+		});
+		
 	}
 	
 }

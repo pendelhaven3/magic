@@ -1,12 +1,14 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class PaymentCheckPayment {
 
 	private Long id;
 	private Payment parent;
 	private String bank;
+	private Date checkDate;
 	private String checkNumber;
 	private BigDecimal amount;
 
@@ -48,6 +50,14 @@ public class PaymentCheckPayment {
 
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
+	}
+
+	public Date getCheckDate() {
+		return checkDate;
+	}
+
+	public void setCheckDate(Date checkDate) {
+		this.checkDate = checkDate;
 	}
 
 }

@@ -1,7 +1,10 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.pj.magic.Constants;
 
 public class Payment {
 
@@ -68,4 +71,36 @@ public class Payment {
 		this.checks = checks;
 	}
 
+	public BigDecimal getTotalAmountDue() {
+		BigDecimal total = Constants.ZERO;
+		for (PaymentSalesInvoice salesInvoice : salesInvoices) {
+			total = total.add(salesInvoice.getAmountDue());
+		}
+		return total;
+	}
+
+	public BigDecimal getTotalCheckPayments() {
+		BigDecimal total = Constants.ZERO;
+		for (PaymentCheckPayment check : checks) {
+			total = total.add(check.getAmount());
+		}
+		return total;
+	}
+	
+	public BigDecimal getTotalPayments() {
+		return getTotalCheckPayments();
+	}
+	
+	public BigDecimal getOverOrShort() {
+		return getTotalPayments().subtract(getTotalAmountDue());
+	}
+
+	public BigDecimal getTotalCashPayments() {
+		return Constants.ZERO;
+	}
+
+	public BigDecimal getTotalAdjustments() {
+		return Constants.ZERO;
+	}
+	
 }

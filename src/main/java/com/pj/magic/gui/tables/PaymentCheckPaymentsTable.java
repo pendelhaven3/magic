@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.component.RequiredFieldCellEditor;
 import com.pj.magic.gui.tables.models.PaymentCheckPaymentsTableModel;
 import com.pj.magic.gui.tables.rowitems.PaymentCheckPaymentRowItem;
 import com.pj.magic.model.Payment;
@@ -30,8 +31,9 @@ import com.pj.magic.util.NumberUtil;
 public class PaymentCheckPaymentsTable extends MagicTable {
 	
 	public static final int BANK_COLUMN_INDEX = 0;
-	public static final int CHECK_NUMBER_COLUMN_INDEX = 1;
-	public static final int AMOUNT_COLUMN_INDEX = 2;
+	public static final int CHECK_DATE_COLUMN_INDEX = 1;
+	public static final int CHECK_NUMBER_COLUMN_INDEX = 2;
+	public static final int AMOUNT_COLUMN_INDEX = 3;
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 	private static final String F10_ACTION_NAME = "F10";
@@ -54,6 +56,11 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 		columnModel.getColumn(BANK_COLUMN_INDEX).setCellEditor(
 				new RequiredFieldCellEditor(bankTextField, "Bank"));
 
+		MagicTextField checkDateField = new MagicTextField();
+		checkDateField.setMaximumLength(10);
+		columnModel.getColumn(CHECK_DATE_COLUMN_INDEX).setCellEditor(
+				new DateCellEditor(checkDateField, "Check Date"));
+		
 		MagicTextField checkNumberTextField = new MagicTextField();
 		checkNumberTextField.setMaximumLength(50);
 		columnModel.getColumn(CHECK_NUMBER_COLUMN_INDEX).setCellEditor(
@@ -80,11 +87,10 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 	}
 
 	public void doDeleteCurrentlySelectedItem() {
-		/*
 		int selectedRowIndex = getSelectedRow();
-		AdjustmentInItem item = getCurrentlySelectedRowItem().getItem();
+		PaymentCheckPayment item = getCurrentlySelectedRowItem().getCheck();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
-		adjustmentIn.getItems().remove(item);
+		payment.getChecks().remove(item);
 		tableModel.removeItem(selectedRowIndex);
 		
 		if (tableModel.hasItems()) {
@@ -94,12 +100,7 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 				changeSelection(selectedRowIndex, 0, false, false);
 			}
 		}
-		*/
 	}
-	
-//	public AdjustmentInItemRowItem getCurrentlySelectedRowItem() {
-//		return tableModel.getRowItem(getSelectedRow());
-//	}
 	
 	public void setPayment(Payment payment) {
 		clearSelection();
@@ -163,13 +164,13 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 	}
 	
 	public void removeCurrentlySelectedItem() {
-//		if (getSelectedRow() != -1) {
-//			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
-//				if (confirm("Do you wish to delete the selected item?")) {
-//					doDeleteCurrentlySelectedItem();
-//				}
-//			}
-//		}
+		if (getSelectedRow() != -1) {
+			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
+				if (confirm("Do you wish to delete the selected item?")) {
+					doDeleteCurrentlySelectedItem();
+				}
+			}
+		}
 	}
 
 	public void highlight() {
@@ -195,6 +196,9 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 					public void run() {
 						switch (column) {
 						case BANK_COLUMN_INDEX:
+							selectAndEditCellAt(row, CHECK_DATE_COLUMN_INDEX);
+							break;
+						case CHECK_DATE_COLUMN_INDEX:
 							selectAndEditCellAt(row, CHECK_NUMBER_COLUMN_INDEX);
 							break;
 						case CHECK_NUMBER_COLUMN_INDEX:
@@ -210,29 +214,6 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 				});
 			}
 		});
-	}
-
-	private class RequiredFieldCellEditor extends MagicCellEditor {
-		
-		private String fieldName;
-		
-		public RequiredFieldCellEditor(JTextField textField, String fieldName) {
-			super(textField);
-			this.fieldName = fieldName;
-		}
-		
-		@Override
-		public boolean stopCellEditing() {
-			String amount = ((JTextField)getComponent()).getText();
-			boolean valid = false;
-			if (StringUtils.isEmpty(amount)) {
-				showErrorMessage(fieldName + " must be specified");
-			} else {
-				valid = true;
-			}
-			return (valid) ? super.stopCellEditing() : false;
-		}
-		
 	}
 
 	private class AmountCellEditor extends MagicCellEditor {

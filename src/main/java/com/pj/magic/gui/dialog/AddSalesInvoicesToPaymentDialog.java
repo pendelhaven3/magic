@@ -23,6 +23,7 @@ import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class AddSalesInvoicesToPaymentDialog extends MagicDialog {
@@ -173,7 +174,7 @@ public class AddSalesInvoicesToPaymentDialog extends MagicDialog {
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
 				return salesInvoice.getSalesInvoiceNumber();
 			case AMOUNT_COLUMN_INDEX:
-				return "-";
+				return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
 			default:
 				throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 			}
@@ -199,8 +200,10 @@ public class AddSalesInvoicesToPaymentDialog extends MagicDialog {
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			switch (columnIndex) {
-			case 0:
+			case SELECTION_CHECKBOX_COLUMN_INDEX:
 				return Boolean.class;
+			case AMOUNT_COLUMN_INDEX:
+				return Number.class;
 			default:
 				return Object.class;
 			}

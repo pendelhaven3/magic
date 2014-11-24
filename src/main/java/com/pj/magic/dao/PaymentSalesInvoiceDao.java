@@ -10,5 +10,9 @@ public interface PaymentSalesInvoiceDao {
 	void save(PaymentSalesInvoice paymentSalesInvoice);
 
 	List<PaymentSalesInvoice> findAllByPayment(Payment payment);
+
+	void deleteAllByPayment(Payment payment);
+
+	void delete(PaymentSalesInvoice paymentSalesInvoice);
 	
 }

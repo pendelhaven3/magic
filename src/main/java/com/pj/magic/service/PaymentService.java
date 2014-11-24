@@ -23,5 +23,9 @@ public interface PaymentService {
 	List<PaymentSalesInvoice> findAllPaymentSalesInvoicesByPayment(Payment payment);
 
 	void save(PaymentCheckPayment check);
+
+	void delete(Payment payment);
+
+	void delete(PaymentSalesInvoice paymentSalesInvoice);
 	
 }

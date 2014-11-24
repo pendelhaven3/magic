@@ -1,6 +1,7 @@
 package com.pj.magic.gui.tables.rowitems;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.springframework.util.StringUtils;
 
@@ -10,12 +11,14 @@ public class PaymentCheckPaymentRowItem {
 
 	private PaymentCheckPayment check;
 	private String bank;
+	private Date checkDate;
 	private String checkNumber;
 	private BigDecimal amount;
 
 	public PaymentCheckPaymentRowItem(PaymentCheckPayment check) {
 		this.check = check;
 		bank = check.getBank();
+		checkDate = check.getCheckDate();
 		checkNumber = check.getCheckNumber();
 		amount = check.getAmount();
 	}
@@ -64,6 +67,14 @@ public class PaymentCheckPaymentRowItem {
 
 	public boolean isUpdating() {
 		return check.getId() != null;
+	}
+
+	public Date getCheckDate() {
+		return checkDate;
+	}
+
+	public void setCheckDate(Date checkDate) {
+		this.checkDate = checkDate;
 	}
 	
 }

@@ -2,6 +2,7 @@ package com.pj.magic.gui.tables.models;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -14,13 +15,14 @@ import com.pj.magic.gui.tables.PaymentCheckPaymentsTable;
 import com.pj.magic.gui.tables.rowitems.PaymentCheckPaymentRowItem;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.service.PaymentService;
+import com.pj.magic.util.DateUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.NumberUtil;
 
 @Component
 public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 	
-	private static final String[] columnNames = {"Bank", "Check No.", "Amount"};
+	private static final String[] columnNames = {"Bank", "Check Date", "Check No.", "Amount"};
 	
 	@Autowired private PaymentService paymentService;
 	
@@ -42,6 +44,9 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case PaymentCheckPaymentsTable.BANK_COLUMN_INDEX:
 			return rowItem.getBank();
+		case PaymentCheckPaymentsTable.CHECK_DATE_COLUMN_INDEX:
+			Date checkDate = rowItem.getCheckDate();
+			return (checkDate != null) ? FormatterUtil.formatDate(checkDate) : null;
 		case PaymentCheckPaymentsTable.CHECK_NUMBER_COLUMN_INDEX:
 			return rowItem.getCheckNumber();
 		case PaymentCheckPaymentsTable.AMOUNT_COLUMN_INDEX:
@@ -76,6 +81,12 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 			}
 			rowItem.setBank(val);
 			break;
+		case PaymentCheckPaymentsTable.CHECK_DATE_COLUMN_INDEX:
+			if (DateUtil.toDate(val).equals(rowItem.getCheckDate())) {
+				return;
+			}
+			rowItem.setCheckDate(DateUtil.toDate(val));
+			break;
 		case PaymentCheckPaymentsTable.CHECK_NUMBER_COLUMN_INDEX:
 			if (val.equals(rowItem.getCheckNumber())) {
 				return;
@@ -93,6 +104,7 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 		if (rowItem.isValid()) {
 			PaymentCheckPayment check = rowItem.getCheck();
 			check.setBank(rowItem.getBank());
+			check.setCheckDate(rowItem.getCheckDate());
 			check.setCheckNumber(rowItem.getCheckNumber());
 			check.setAmount(rowItem.getAmount());
 			paymentService.save(check);
@@ -102,29 +114,29 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		PaymentCheckPaymentRowItem check = rowItems.get(rowIndex);
+		PaymentCheckPaymentRowItem rowItem = rowItems.get(rowIndex);
+		boolean editable = true;
 		switch (columnIndex) {
-		case PaymentCheckPaymentsTable.BANK_COLUMN_INDEX:
-			return true;
-		case PaymentCheckPaymentsTable.CHECK_NUMBER_COLUMN_INDEX:
-			return !StringUtils.isEmpty(check.getBank());
 		case PaymentCheckPaymentsTable.AMOUNT_COLUMN_INDEX:
-			return !StringUtils.isEmpty(check.getBank()) && !StringUtils.isEmpty(check.getCheckNumber());
+			editable = !StringUtils.isEmpty(rowItem.getCheckNumber());
+		case PaymentCheckPaymentsTable.CHECK_NUMBER_COLUMN_INDEX:
+			editable = editable && rowItem.getCheckDate() != null;
+		case PaymentCheckPaymentsTable.CHECK_DATE_COLUMN_INDEX:
+			editable = editable && !StringUtils.isEmpty(rowItem.getBank());
+		case PaymentCheckPaymentsTable.BANK_COLUMN_INDEX:
+			break;
 		}
-		return true;
+		return editable;
 	}
 	
-	/*
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex == AdjustmentInItemsTable.COST_COLUMN_INDEX
-				|| columnIndex == AdjustmentInItemsTable.AMOUNT_COLUMN_INDEX) {
+		if (columnIndex == PaymentCheckPaymentsTable.AMOUNT_COLUMN_INDEX) {
 			return Number.class;
 		} else {
 			return Object.class;
 		}
 	}
-	*/
 
 	public void addItem(PaymentCheckPayment check) {
 		rowItems.add(new PaymentCheckPaymentRowItem(check));
@@ -142,6 +154,10 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 	public void removeItem(int row) {
 		rowItems.remove(row);
 		fireTableDataChanged();
+	}
+
+	public boolean hasItems() {
+		return !rowItems.isEmpty();
 	}
 	
 }

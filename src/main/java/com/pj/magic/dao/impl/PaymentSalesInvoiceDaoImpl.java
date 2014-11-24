@@ -17,7 +17,18 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 
 	@Override
 	public void save(PaymentSalesInvoice item) {
-		insert(item);
+		if (item.getId() == null) {
+			insert(item);
+		} else {
+			update(item);
+		}
+	}
+
+	private static final String UPDATE_SQL =
+			"update PAYMENT_SALES_INVOICE set ADJUSTMENT_AMOUNT = ? where ID = ?";
+	
+	private void update(PaymentSalesInvoice item) {
+		getJdbcTemplate().update(UPDATE_SQL, item.getAdjustmentAmount(), item.getId());
 	}
 
 	private static final String INSERT_SQL =
@@ -30,7 +41,7 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 	}
 
 	private static final String FIND_ALL_BY_PAYMENT_SQL =
-			"   select a.ID, SALES_INVOICE_ID, b.SALES_INVOICE_NO"
+			"   select a.ID, SALES_INVOICE_ID, b.SALES_INVOICE_NO, ADJUSTMENT_AMOUNT"
 			+ " from PAYMENT_SALES_INVOICE a"
 			+ " join SALES_INVOICE b"
 			+ "   on b.ID = a.SALES_INVOICE_ID"
@@ -51,10 +62,27 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 				salesInvoice.setSalesInvoiceNumber(rs.getLong("SALES_INVOICE_NO"));
 				item.setSalesInvoice(salesInvoice);
 				
+				item.setAdjustmentAmount(rs.getBigDecimal("ADJUSTMENT_AMOUNT"));
+				
 				return item;
 			}
 			
 		}, payment.getId());
+	}
+
+	private static final String DELETE_ALL_BY_PAYMENT_SQL = 
+			"delete from PAYMENT_SALES_INVOICE where PAYMENT_ID = ?";
+	
+	@Override
+	public void deleteAllByPayment(Payment payment) {
+		getJdbcTemplate().update(DELETE_ALL_BY_PAYMENT_SQL, payment.getId());
+	}
+
+	private static final String DELETE_SQL = "delete from PAYMENT_SALES_INVOICE where ID = ?";
+	
+	@Override
+	public void delete(PaymentSalesInvoice paymentSalesInvoice) {
+		getJdbcTemplate().update(DELETE_SQL, paymentSalesInvoice.getId());
 	}
 	
 }

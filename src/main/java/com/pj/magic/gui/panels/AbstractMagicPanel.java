@@ -27,6 +27,7 @@ import javax.swing.SwingUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import com.pj.magic.Constants;
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -211,4 +212,9 @@ public abstract class AbstractMagicPanel extends JPanel {
 			}
 		});
 	}
+	
+	protected void showMessageForUnexpectedError() {
+		showErrorMessage(Constants.UNEXPECTED_ERROR_MESSAGE);
+	}
+	
 }

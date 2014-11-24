@@ -15,5 +15,7 @@ public interface PaymentDao {
 	List<Payment> findAllByPaymentDate(Date truncate);
 
 	List<Payment> search(PaymentSearchCriteria criteria);
+
+	void delete(Payment payment);
 	
 }
