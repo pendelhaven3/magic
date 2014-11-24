@@ -13,7 +13,7 @@ public class Payment {
 	private Customer customer;
 	private boolean posted;
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
-	private List<PaymentCheckPayment> checks = new ArrayList<>();
+	private List<PaymentCheckPayment> checkPayments = new ArrayList<>();
 	private List<PaymentCashPayment> cashPayments = new ArrayList<>();
 	private List<PaymentAdjustment> adjustments = new ArrayList<>();
 
@@ -65,12 +65,12 @@ public class Payment {
 		this.salesInvoices = salesInvoices;
 	}
 
-	public List<PaymentCheckPayment> getChecks() {
-		return checks;
+	public List<PaymentCheckPayment> getCheckPayments() {
+		return checkPayments;
 	}
 
-	public void setChecks(List<PaymentCheckPayment> checks) {
-		this.checks = checks;
+	public void setCheckPayments(List<PaymentCheckPayment> checkPayments) {
+		this.checkPayments = checkPayments;
 	}
 
 	public BigDecimal getTotalAmountDue() {
@@ -83,7 +83,7 @@ public class Payment {
 
 	public BigDecimal getTotalCheckPayments() {
 		BigDecimal total = Constants.ZERO;
-		for (PaymentCheckPayment check : checks) {
+		for (PaymentCheckPayment check : checkPayments) {
 			total = total.add(check.getAmount());
 		}
 		return total;
@@ -129,4 +129,20 @@ public class Payment {
 		this.adjustments = adjustments;
 	}
 
+	public BigDecimal getTotalNetAmount() {
+		BigDecimal total = Constants.ZERO;
+		for (PaymentSalesInvoice paymentSalesInvoice : salesInvoices) {
+			total = total.add(paymentSalesInvoice.getSalesInvoice().getTotalNetAmount());
+		}
+		return total;
+	}
+	
+	public BigDecimal getTotalAdjustmentAmount() {
+		BigDecimal total = Constants.ZERO;
+		for (PaymentSalesInvoice paymentSalesInvoice : salesInvoices) {
+			total = total.add(paymentSalesInvoice.getAdjustmentAmount());
+		}
+		return total;
+	}
+	
 }

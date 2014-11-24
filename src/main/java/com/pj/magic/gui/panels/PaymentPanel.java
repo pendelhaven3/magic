@@ -30,6 +30,7 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AddSalesInvoicesToPaymentDialog;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.PaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.PaymentCashPaymentsTable;
@@ -41,6 +42,7 @@ import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.PaymentService;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -60,6 +62,8 @@ public class PaymentPanel extends StandardMagicPanel {
 	@Autowired private PaymentCheckPaymentsTable checksTable;
 	@Autowired private PaymentCashPaymentsTable cashPaymentsTable;
 	@Autowired private PaymentAdjustmentsTable adjustmentsTable;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private PrintService printService;
 	
 	private Payment payment;
 	private JLabel paymentNumberField;
@@ -83,6 +87,8 @@ public class PaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton deleteAdjustmentButton;
 	private MagicToolBarButton deleteButton;
 	private MagicToolBarButton postButton;
+	private JButton printPreviewButton;
+	private JButton printButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -403,6 +409,51 @@ public class PaymentPanel extends StandardMagicPanel {
 		});
 		
 		toolBar.add(postButton);
+		
+		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreview();
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPaymentSummary();
+			}
+		});	
+		toolBar.add(printButton);
+	}
+
+	private void printPaymentSummary() {
+		printService.print(payment);
+	}
+
+	private void printPreview() {
+		cancelEditing();
+		printPreviewDialog.updateDisplay(printService.generateReportAsString(payment));
+		printPreviewDialog.setVisible(true);
+	}
+
+	private void cancelEditing() {
+		if (salesInvoicesTable.isEditing()) {
+			salesInvoicesTable.getCellEditor().cancelCellEditing();
+		}
+		if (cashPaymentsTable.isEditing()) {
+			cashPaymentsTable.getCellEditor().cancelCellEditing();
+		}
+		if (checksTable.isEditing()) {
+			checksTable.getCellEditor().cancelCellEditing();
+		}
+		if (adjustmentsTable.isEditing()) {
+			adjustmentsTable.getCellEditor().cancelCellEditing();
+		}
 	}
 
 	private void postPayment() {

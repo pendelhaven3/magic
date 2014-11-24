@@ -22,7 +22,8 @@ public class PrinterUtil {
 	private static final List<String> SUPPORTED_PRINTERS = Arrays.asList("EPSON LX-310 ESC/P", "EPSON LX-300+ /II");
 
 	public static void print(String data) throws PrintException {
-		print((data + FORM_FEED).getBytes());
+//		print((data + FORM_FEED).getBytes());
+		System.out.println(data);
 	}
 
 	public static void print(byte[] data) throws PrintException {

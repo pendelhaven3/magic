@@ -32,6 +32,7 @@ import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
+import com.pj.magic.model.Payment;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
@@ -559,6 +560,26 @@ public class PrintServiceImpl implements PrintService {
 	public void print(AdjustmentIn adjustmentIn) {
 		try {
 			for (String printPage : generateReportAsString(adjustmentIn)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(Payment payment) {
+		List<String> printPages = new ArrayList<>();
+		Map<String, Object> reportData = new HashMap<>();
+		reportData.put("payment", payment);
+		printPages.add(generateReportAsString("reports/payment.vm", reportData));
+		return printPages;
+	}
+
+	@Override
+	public void print(Payment payment) {
+		try {
+			for (String printPage : generateReportAsString(payment)) {
 				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {

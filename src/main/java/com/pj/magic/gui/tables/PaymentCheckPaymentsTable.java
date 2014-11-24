@@ -87,7 +87,7 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 		int selectedRowIndex = getSelectedRow();
 		PaymentCheckPayment item = getCurrentlySelectedRowItem().getCheck();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
-		payment.getChecks().remove(item);
+		payment.getCheckPayments().remove(item);
 		tableModel.removeItem(selectedRowIndex);
 		
 		if (tableModel.hasItems()) {
@@ -102,7 +102,7 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 	public void setPayment(Payment payment) {
 		clearSelection();
 		this.payment = payment;
-		tableModel.setChecks(payment.getChecks());
+		tableModel.setChecks(payment.getCheckPayments());
 	}
 	
 	protected void registerKeyBindings() {

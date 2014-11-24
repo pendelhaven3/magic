@@ -57,10 +57,10 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 		return columnNames[columnIndex];
 	}
 
-	public void setAdjustments(List<PaymentAdjustment> cashs) {
+	public void setAdjustments(List<PaymentAdjustment> adjustments) {
 		rowItems.clear();
-		for (PaymentAdjustment cash : cashs) {
-			rowItems.add(new PaymentAdjustmentRowItem(cash));
+		for (PaymentAdjustment adjustment : adjustments) {
+			rowItems.add(new PaymentAdjustmentRowItem(adjustment));
 		}
 		fireTableDataChanged();
 	}

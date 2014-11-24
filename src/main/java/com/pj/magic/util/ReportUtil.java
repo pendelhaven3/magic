@@ -1,6 +1,7 @@
 package com.pj.magic.util;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -86,6 +87,9 @@ public class ReportUtil {
 		return StringUtils.repeat(" ", (charactersPerLine - text.length()) / 2) + text;
 	}
 	
+	public static String field(Date date) {
+		return FormatterUtil.formatDate(date);
+	}
 	
 
 }

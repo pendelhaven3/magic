@@ -6,6 +6,7 @@ import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.Payment;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
@@ -62,5 +63,9 @@ public interface PrintService {
 	List<String> generateReportAsString(AdjustmentIn adjustmentIn);
 
 	void print(AdjustmentIn adjustmentIn);
+
+	List<String> generateReportAsString(Payment payment);
+
+	void print(Payment payment);
 	
 }

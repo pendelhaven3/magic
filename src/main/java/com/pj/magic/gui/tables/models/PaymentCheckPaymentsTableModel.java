@@ -111,7 +111,7 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 			boolean newCheckPayment = (checkPayment.getId() == null);
 			paymentService.save(checkPayment);
 			if (newCheckPayment) {
-				checkPayment.getParent().getChecks().add(checkPayment);
+				checkPayment.getParent().getCheckPayments().add(checkPayment);
 			}
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
