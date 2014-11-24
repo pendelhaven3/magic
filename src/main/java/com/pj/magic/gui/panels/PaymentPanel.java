@@ -193,28 +193,10 @@ public class PaymentPanel extends StandardMagicPanel {
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
 		
-		postButton.setEnabled(false);
-		/*
-		createDateField.setText(null);
-		transactionDateModel.setValue(null);
-		transactionDatePicker.getComponents()[1].setVisible(false);
-		encoderField.setText(null);
-		pricingSchemeComboBox.setEnabled(false);
-		pricingSchemeComboBox.setSelectedItem(null, false);
-		paymentTermComboBox.setEnabled(false);
-		paymentTermComboBox.setSelectedItem(null, false);
-		modeComboBox.setEnabled(false);
-		modeComboBox.setSelectedItem(null, false);
-		remarksField.setEnabled(false);
-		remarksField.setText(null);
-		totalItemsField.setText(null);
-		totalAmountField.setText(null);
-		salesInvoicesTable.setSalesRequisition(payment);
+		salesInvoicesTable.clearDisplay();
+		checksTable.clearDisplay();
 		
 		postButton.setEnabled(false);
-		addItemButton.setEnabled(false);
-		deleteItemButton.setEnabled(false);
-		*/
 	}
 
 	private JPanel createCustomerPanel() {

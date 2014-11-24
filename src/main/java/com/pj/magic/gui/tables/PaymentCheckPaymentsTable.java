@@ -2,6 +2,7 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -254,6 +255,11 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 			return (valid) ? super.stopCellEditing() : false;
 		}
 		
+	}
+
+	public void clearDisplay() {
+		payment = null;
+		tableModel.setChecks(new ArrayList<PaymentCheckPayment>());
 	}
 	
 }

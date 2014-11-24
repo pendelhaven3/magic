@@ -1,5 +1,6 @@
 package com.pj.magic.gui.tables;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,10 @@ public class PaymentSalesInvoicesTable extends MagicTable {
 	
 	public void setPaymentSalesInvoices(List<PaymentSalesInvoice> paymentSalesInvoices) {
 		tableModel.setPaymentSalesInvoices(paymentSalesInvoices);
+	}
+
+	public void clearDisplay() {
+		tableModel.setPaymentSalesInvoices(new ArrayList<PaymentSalesInvoice>());
 	}
 	
 }
