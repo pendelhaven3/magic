@@ -205,6 +205,9 @@ public class PaymentPanel extends StandardMagicPanel {
 		deleteCheckPaymentButton.setEnabled(!payment.isPosted());
 		addAdjustmentButton.setEnabled(!payment.isPosted());
 		deleteAdjustmentButton.setEnabled(!payment.isPosted());
+		
+		printPreviewButton.setEnabled(false);
+		printButton.setEnabled(false);
 	}
 
 	private void clearDisplay() {
@@ -227,8 +230,19 @@ public class PaymentPanel extends StandardMagicPanel {
 		totalAdjustmentsField.setText(null);
 		overOrShortField.setText(null);
 		
+		addSalesInvoiceButton.setEnabled(false);
+		deleteSalesInvoiceButton.setEnabled(false);
+		addCashPaymentButton.setEnabled(false);
+		deleteCashPaymentButton.setEnabled(false);
+		addCheckPaymentButton.setEnabled(false);
+		deleteCheckPaymentButton.setEnabled(false);
+		addAdjustmentButton.setEnabled(false);
+		deleteAdjustmentButton.setEnabled(false);
+		
 		deleteButton.setEnabled(false);
 		postButton.setEnabled(false);
+		printPreviewButton.setEnabled(false);
+		printButton.setEnabled(false);
 	}
 
 	private JPanel createCustomerPanel() {

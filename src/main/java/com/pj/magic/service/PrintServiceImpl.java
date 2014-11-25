@@ -47,6 +47,7 @@ import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.PaymentReportUtil;
 import com.pj.magic.util.PrinterUtil;
 import com.pj.magic.util.ReceivingReceiptReportUtil;
 import com.pj.magic.util.ReportUtil;
@@ -572,6 +573,7 @@ public class PrintServiceImpl implements PrintService {
 		List<String> printPages = new ArrayList<>();
 		Map<String, Object> reportData = new HashMap<>();
 		reportData.put("payment", payment);
+		reportData.put("reportUtil", PaymentReportUtil.class);
 		printPages.add(generateReportAsString("reports/payment.vm", reportData));
 		return printPages;
 	}

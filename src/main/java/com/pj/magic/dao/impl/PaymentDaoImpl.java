@@ -55,7 +55,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 		getJdbcTemplate().update(UPDATE_SQL,
 				payment.isPosted() ? "Y" : "N",
 				payment.getPostDate(),
-				payment.getPostedBy().getId(),
+				payment.isPosted() ? payment.getPostedBy().getId() : null,
 				payment.getId());
 	}
 

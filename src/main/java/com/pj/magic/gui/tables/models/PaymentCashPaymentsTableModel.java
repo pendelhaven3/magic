@@ -93,7 +93,7 @@ public class PaymentCashPaymentsTableModel extends AbstractTableModel {
 			break;
 		case PaymentCashPaymentsTable.RECEIVED_BY_COLUMN_INDEX:
 			User receivedBy = (User)value;
-			if (receivedBy.equals(rowItem.getReceivedBy())) {
+			if (receivedBy == null || receivedBy.equals(rowItem.getReceivedBy())) {
 				return;
 			}
 			rowItem.setReceivedBy(receivedBy);
