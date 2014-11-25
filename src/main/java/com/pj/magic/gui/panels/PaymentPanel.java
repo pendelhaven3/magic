@@ -236,8 +236,8 @@ public class PaymentPanel extends StandardMagicPanel {
 		addAdjustmentButton.setEnabled(!payment.isPosted());
 		deleteAdjustmentButton.setEnabled(!payment.isPosted());
 		
-		printPreviewButton.setEnabled(false);
-		printButton.setEnabled(false);
+		printPreviewButton.setEnabled(true);
+		printButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -571,7 +571,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	private String getPostConfirmMessage() {
 		String message = "Do you want to post this Payment?";
 		BigDecimal overOrShort = payment.getOverOrShort();
-		if (overOrShort.compareTo(Constants.ZERO) == 0) {
+		if (overOrShort.compareTo(Constants.ZERO) != 0) {
 			message = "This payment is over/short by {0}.\nAre you sure you want to post this payment?";
 			message = MessageFormat.format(message, FormatterUtil.formatAmount(overOrShort));
 		}
