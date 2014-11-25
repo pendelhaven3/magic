@@ -77,7 +77,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public List<Payment> getAllNewPayments() {
 		PaymentSearchCriteria criteria = new PaymentSearchCriteria();
 		criteria.setPosted(false);
-		return paymentDao.search(criteria);
+		return searchPayments(criteria);
 	}
 
 	@Transactional
@@ -155,6 +155,11 @@ public class PaymentServiceImpl implements PaymentService {
 		payment.setPostDate(new Date());
 		payment.setPostedBy(loginService.getLoggedInUser());
 		paymentDao.save(payment);
+	}
+
+	@Override
+	public List<Payment> searchPayments(PaymentSearchCriteria criteria) {
+		return paymentDao.search(criteria);
 	}
 	
 }

@@ -20,9 +20,11 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PaymentSearchCriteriaDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.PaymentsTableModel;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -31,17 +33,19 @@ public class PaymentListPanel extends StandardMagicPanel {
 
 	private static final String VIEW_PAYMENT_ACTION_NAME = "VIEW_PAYMENT_ACTION_NAME";
 	
-	@Autowired private PaymentService paymentsService;
+	@Autowired private PaymentService paymentService;
+	@Autowired private PaymentSearchCriteriaDialog paymentSearchCriteriaDialog;
 	
 	private JTable table;
 	private PaymentsTableModel tableModel = new PaymentsTableModel();
 	
 	public void updateDisplay() {
-		List<Payment> payments = paymentsService.getAllNewPayments();
+		List<Payment> payments = paymentService.getAllNewPayments();
 		tableModel.setPayments(payments);
 		if (!payments.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
+		paymentSearchCriteriaDialog.updateDisplay();
 	}
 
 	@Override
@@ -114,6 +118,33 @@ public class PaymentListPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(addButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchPayments();
+			}
+		});
+		
+		toolBar.add(searchButton);
+	}
+
+	private void searchPayments() {
+		paymentSearchCriteriaDialog.setVisible(true);
+		
+		PaymentSearchCriteria criteria = paymentSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<Payment> payments = paymentService.searchPayments(criteria);
+			tableModel.setPayments(payments);
+			if (!payments.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
 	}
 
 	private void switchToNewPaymentPanel() {

@@ -19,6 +19,7 @@ import com.pj.magic.dao.PaymentDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.search.PaymentSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PaymentDaoImpl extends MagicDao implements PaymentDao {
@@ -125,6 +126,21 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 		if (criteria.getPosted() != null) {
 			sql.append(" and a.POST_IND = ?");
 			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		if (criteria.getCustomer() != null) {
+			sql.append(" and a.CUSTOMER_ID = ?");
+			params.add(criteria.getCustomer().getId());
+		}
+		
+		if (criteria.getPaymentNumber() != null) {
+			sql.append(" and a.PAYMENT_NO = ?");
+			params.add(criteria.getPaymentNumber());
+		}
+		
+		if (criteria.getPostDate() != null) {
+			sql.append(" and a.POST_DT = ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 		}
 		
 		sql.append(" order by a.PAYMENT_NO desc");
