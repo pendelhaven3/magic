@@ -535,6 +535,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	private void printPreview() {
 		cancelEditing();
 		printPreviewDialog.updateDisplay(printService.generateReportAsString(payment));
+		printPreviewDialog.setUseCondensedFontForPrinting(true);
 		printPreviewDialog.setVisible(true);
 	}
 

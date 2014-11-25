@@ -17,12 +17,25 @@ public class PrinterUtil {
 
 	private static final DocFlavor DOC_FLAVOR = DocFlavor.INPUT_STREAM.AUTOSENSE;
 	private static final String FORM_FEED = "\f";
+	private static final char CONDENSED_FONT_ON = 15;
+	private static final char CONDENSED_FONT_OFF = 18;
 	
 	// TODO: Put this in database
 	private static final List<String> SUPPORTED_PRINTERS = Arrays.asList("EPSON LX-310 ESC/P", "EPSON LX-300+ /II");
 
 	public static void print(String data) throws PrintException {
 		print((data + FORM_FEED).getBytes());
+	}
+
+	public static void printWithCondensedFont(String data) throws PrintException {
+		StringBuilder sb = new StringBuilder();
+		sb.append(CONDENSED_FONT_ON);
+		sb.append(data);
+		sb.append(CONDENSED_FONT_OFF);
+		sb.append(" ");
+		sb.append(FORM_FEED);
+		
+		print(sb.toString().getBytes());
 	}
 
 	public static void print(byte[] data) throws PrintException {

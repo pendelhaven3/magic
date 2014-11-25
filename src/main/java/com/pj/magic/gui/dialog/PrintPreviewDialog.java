@@ -121,7 +121,7 @@ public class PrintPreviewDialog extends MagicDialog {
 
 	private void print() {
 		if (useCondensedFontForPrinting) {
-			printService.printForCondensedFont(printPages);
+			printService.printWithCondensedFont(printPages);
 		} else {
 			printService.print(printPages);
 		}

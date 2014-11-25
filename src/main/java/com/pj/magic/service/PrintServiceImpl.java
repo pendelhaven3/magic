@@ -217,10 +217,11 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public void printForCondensedFont(List<String> printPages) {
+	public void printWithCondensedFont(List<String> printPages) {
 		try {
 			for (String printPage : printPages) {
-				PrinterUtil.print(addLeftPaddingForCondensedFont(printPage));
+				PrinterUtil.printWithCondensedFont(printPage);
+//				PrinterUtil.print(addLeftPaddingForCondensedFont(printPage));
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -582,7 +583,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(Payment payment) {
 		try {
 			for (String printPage : generateReportAsString(payment)) {
-				PrinterUtil.print(printPage);
+				PrinterUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);

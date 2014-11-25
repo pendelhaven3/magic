@@ -34,7 +34,7 @@ public interface PrintService {
 	
 	void print(List<String> printPages);
 
-	void printForCondensedFont(List<String> printPages);
+	void printWithCondensedFont(List<String> printPages);
 
 	List<String> generateReportAsString(SalesInvoice salesInvoice);
 
