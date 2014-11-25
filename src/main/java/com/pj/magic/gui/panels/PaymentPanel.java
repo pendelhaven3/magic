@@ -18,9 +18,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +95,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton postButton;
 	private JButton printPreviewButton;
 	private JButton printButton;
+	private JTabbedPane tabbedPane;
 	
 	@Override
 	protected void initializeComponents() {
@@ -138,8 +141,35 @@ public class PaymentPanel extends StandardMagicPanel {
 	}
 
 	private void saveCustomer() {
-		// TODO Auto-generated method stub
+		if (payment.getCustomer() != null) {
+			if (payment.getCustomer().getCode().equals(customerCodeField.getText())) {
+				// skip saving sales requisition since there is no change in customer
+				return;
+			}
+		}
 		
+		if (StringUtils.isEmpty(customerCodeField.getText())) {
+			showErrorMessage("Customer must be specified");
+			return;
+		}
+		
+		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
+		if (customer == null) {
+			showErrorMessage("No customer matching code specified");
+			return;
+		} else {
+			payment.setCustomer(customer);
+			paymentService.save(payment);
+			updateDisplay(payment);
+			SwingUtilities.invokeLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					tabbedPane.requestFocusInWindow();
+					tabbedPane.setSelectedIndex(0);
+				}
+			});
+		}
 	}
 
 	protected void selectCustomer() {
@@ -396,7 +426,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 4;
 		
-		JTabbedPane tabbedPane = createTabbedPane();
+		tabbedPane = createTabbedPane();
 		tabbedPane.setPreferredSize(new Dimension(600, 280));
 		mainPanel.add(tabbedPane, c);
 				
@@ -526,11 +556,6 @@ public class PaymentPanel extends StandardMagicPanel {
 	private void postPayment() {
 		cancelEditing();
 
-		if (payment.getSalesInvoices().isEmpty()) {
-			showErrorMessage("Cannot post a Payment with no Sales Invoice");
-			return;
-		}
-		
 		if (confirm(getPostConfirmMessage())) {
 			try {
 				paymentService.post(payment);
