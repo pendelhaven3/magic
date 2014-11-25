@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.PaymentDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.User;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.util.DbUtil;
 
@@ -27,11 +28,14 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	private static final String PAYMENT_NUMBER_SEQUENCE = "PAYMENT_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PAYMENT_NO, CUSTOMER_ID, POST_IND,"
-			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME"
+			"select a.ID, PAYMENT_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY,"
+			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
+			+ " c.USERNAME as POST_BY_USERNAME"
 			+ " from PAYMENT a"
 			+ " join CUSTOMER b"
-			+ "   on b.ID = a.CUSTOMER_ID";
+			+ "   on b.ID = a.CUSTOMER_ID"
+			+ " left join USER c"
+			+ "   on c.ID = a.POST_BY";
 	
 	private PaymentRowMapper paymentRowMapper = new PaymentRowMapper();
 	
@@ -91,12 +95,6 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 		}
 	}
 
-	@Override
-	public List<Payment> findAllByPaymentDate(java.util.Date truncate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	private class PaymentRowMapper implements RowMapper<Payment> {
 
 		@Override
@@ -112,6 +110,11 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			customer.setName(rs.getString("CUSTOMER_NAME"));
 			payment.setCustomer(customer);
 			
+			if (rs.getLong("POST_BY") != 0) {
+				payment.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			}
+			
+			payment.setPostDate(rs.getDate("POST_DT"));
 			return payment;
 		}
 		

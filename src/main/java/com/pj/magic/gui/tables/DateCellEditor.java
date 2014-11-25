@@ -23,7 +23,7 @@ public class DateCellEditor extends MagicCellEditor {
 		if (StringUtils.isEmpty(dateString)) {
 			showErrorMessage(fieldName + " must be specified");
 		} else if (!DateUtil.isDateString(dateString)) {
-			showErrorMessage(fieldName + " must be a valid date");
+			showErrorMessage(fieldName + " must be a valid date (MM/DD/YYYY)");
 		} else {
 			valid = true;
 		}

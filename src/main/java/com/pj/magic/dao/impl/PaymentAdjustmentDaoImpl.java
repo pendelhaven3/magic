@@ -95,7 +95,7 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 	}
 	
 	private static final String DELETE_ALL_BY_PAYMENT_SQL =
-			"delete from PAYMENT_CHECK_PAYMENT where PAYMENT_ID = ?";
+			"delete from PAYMENT_ADJUSTMENT where PAYMENT_ID = ?";
 
 	@Override
 	public void deleteAllByPayment(Payment payment) {
