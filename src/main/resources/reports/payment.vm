@@ -46,7 +46,7 @@ Adjustments
 
                     Type     Ref. No    Amount
                 ------------ -------- ----------
-                SALES RETURN    12321  26,958.35
+##                SALES RETURN    12321  26,958.35
 #foreach($adjustment in $payment.adjustments)
                 $report.field($adjustment.adjustmentType, 12) $report.field($adjustment.referenceNumber, 8, "right") $report.field($adjustment.amount, 10, "right")
 #end
