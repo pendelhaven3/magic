@@ -49,10 +49,11 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	}
 
 	private static final String UPDATE_SQL =
-			"update PAYMENT set POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+			"update PAYMENT set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
 	
 	private void update(Payment payment) {
 		getJdbcTemplate().update(UPDATE_SQL,
+				payment.getCustomer().getId(),
 				payment.isPosted() ? "Y" : "N",
 				payment.getPostDate(),
 				payment.isPosted() ? payment.getPostedBy().getId() : null,

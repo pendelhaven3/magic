@@ -52,7 +52,11 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	@Override
 	public void save(Payment payment) {
+		boolean newPayment = (payment.getId() == null);
 		paymentDao.save(payment);
+		if (!newPayment) {
+			paymentSalesInvoiceDao.deleteAllByPayment(payment);
+		}
 	}
 
 	@Override
