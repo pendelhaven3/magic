@@ -2,7 +2,6 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -100,7 +99,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	public void setPayment(Payment payment) {
 		clearSelection();
 		this.payment = payment;
-		tableModel.setAdjustments(payment.getAdjustments());	
+		tableModel.setPayment(payment);	
 	}
 	
 	protected void registerKeyBindings() {
@@ -201,7 +200,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 
 	public void clearDisplay() {
 		payment = null;
-		tableModel.setAdjustments(new ArrayList<PaymentAdjustment>());
+		tableModel.setPayment(null);
 	}
 	
 }

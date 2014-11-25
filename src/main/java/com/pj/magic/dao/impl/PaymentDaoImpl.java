@@ -43,9 +43,15 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 		}
 	}
 
+	private static final String UPDATE_SQL =
+			"update PAYMENT set POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+	
 	private void update(Payment payment) {
-		// TODO Auto-generated method stub
-		
+		getJdbcTemplate().update(UPDATE_SQL,
+				payment.isPosted() ? "Y" : "N",
+				payment.getPostDate(),
+				payment.getPostedBy().getId(),
+				payment.getId());
 	}
 
 	private static final String INSERT_SQL = "insert into PAYMENT (PAYMENT_NO, CUSTOMER_ID) values (?, ?)";

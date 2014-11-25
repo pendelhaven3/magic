@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.PaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
+import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.util.FormatterUtil;
@@ -25,6 +26,7 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 	@Autowired private PaymentService paymentService;
 	
 	private List<PaymentAdjustmentRowItem> rowItems = new ArrayList<>();
+	private Payment payment;
 	
 	@Override
 	public int getColumnCount() {
@@ -57,10 +59,13 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 		return columnNames[columnIndex];
 	}
 
-	public void setAdjustments(List<PaymentAdjustment> adjustments) {
+	public void setPayment(Payment payment) {
+		this.payment = payment;
 		rowItems.clear();
-		for (PaymentAdjustment adjustment : adjustments) {
-			rowItems.add(new PaymentAdjustmentRowItem(adjustment));
+		if (payment != null) {
+			for (PaymentAdjustment adjustment : payment.getAdjustments()) {
+				rowItems.add(new PaymentAdjustmentRowItem(adjustment));
+			}
 		}
 		fireTableDataChanged();
 	}
@@ -112,6 +117,10 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		if (payment.isPosted()) {
+			return false;
+		}
+		
 		PaymentAdjustmentRowItem rowItem = rowItems.get(rowIndex);
 		boolean editable = true;
 		switch (columnIndex) {

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.pj.magic.gui.tables.PaymentSalesInvoicesTable;
+import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.util.FormatterUtil;
@@ -23,6 +24,7 @@ public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 	@Autowired private PaymentService paymentService;
 	
 	private List<PaymentSalesInvoice> paymentSalesInvoices = new ArrayList<>();
+	private Payment payment;
 	
 	@Override
 	public int getRowCount() {
@@ -65,12 +67,17 @@ public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 			return Object.class;
 		}
 	}
-	
-	public void setPaymentSalesInvoices(List<PaymentSalesInvoice> paymentSalesInvoices) {
-		this.paymentSalesInvoices = paymentSalesInvoices;
+
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+		if (payment != null) {
+			paymentSalesInvoices = payment.getSalesInvoices();
+		} else {
+			paymentSalesInvoices.clear();
+		}
 		fireTableDataChanged();
 	}
-
+	
 	@Override
 	public String getColumnName(int column) {
 		return columnNames[column];
@@ -78,7 +85,7 @@ public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == PaymentSalesInvoicesTable.ADJUSTMENT_AMOUNT_COLUMN_INDEX;
+		return !payment.isPosted() && columnIndex == PaymentSalesInvoicesTable.ADJUSTMENT_AMOUNT_COLUMN_INDEX;
 	}
 	
 	@Override

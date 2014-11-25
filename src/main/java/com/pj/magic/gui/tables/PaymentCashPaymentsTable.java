@@ -2,7 +2,6 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -103,7 +102,7 @@ public class PaymentCashPaymentsTable extends MagicTable {
 	public void setPayment(Payment payment) {
 		clearSelection();
 		this.payment = payment;
-		tableModel.setCashPayments(payment.getCashPayments());
+		tableModel.setPayment(payment);
 		
 		List<User> users = userService.getAllUsers();
 		receivedByComboBox.setModel(new DefaultComboBoxModel<>(users.toArray(new User[users.size()])));
@@ -174,15 +173,6 @@ public class PaymentCashPaymentsTable extends MagicTable {
 		}
 	}
 
-	public void highlight() {
-//		if (!adjustmentIn.hasItems()) {
-//			switchToAddMode();
-//		} else {
-//			changeSelection(0, 0, false, false);
-//			requestFocusInWindow();
-//		}
-	}
-	
 	private void initializeModelListener() {
 		getModel().addTableModelListener(new TableModelListener() {
 			
@@ -216,7 +206,7 @@ public class PaymentCashPaymentsTable extends MagicTable {
 
 	public void clearDisplay() {
 		payment = null;
-		tableModel.setCashPayments(new ArrayList<PaymentCashPayment>());
+		tableModel.setPayment(null);
 	}
 	
 }

@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -173,6 +175,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		
 		paymentNumberField.setText(payment.getPaymentNumber().toString());
 		customerCodeField.setText(payment.getCustomer().getCode());
+		customerCodeField.setEnabled(!payment.isPosted());
 		customerNameField.setText(payment.getCustomer().getName());
 		postedField.setText(payment.isPosted() ? "Yes" : "No");
 		totalAmountDueField.setText(FormatterUtil.formatAmount(payment.getTotalAmountDue()));
@@ -187,8 +190,17 @@ public class PaymentPanel extends StandardMagicPanel {
 		cashPaymentsTable.setPayment(payment);
 		adjustmentsTable.setPayment(payment);
 		
+		selectCustomerButton.setEnabled(!payment.isPosted());
 		deleteButton.setEnabled(!payment.isPosted());
 		postButton.setEnabled(!payment.isPosted());
+		addSalesInvoiceButton.setEnabled(!payment.isPosted());
+		deleteSalesInvoiceButton.setEnabled(!payment.isPosted());
+		addCashPaymentButton.setEnabled(!payment.isPosted());
+		deleteCashPaymentButton.setEnabled(!payment.isPosted());
+		addCheckPaymentButton.setEnabled(!payment.isPosted());
+		deleteCheckPaymentButton.setEnabled(!payment.isPosted());
+		addAdjustmentButton.setEnabled(!payment.isPosted());
+		deleteAdjustmentButton.setEnabled(!payment.isPosted());
 	}
 
 	private void clearDisplay() {
@@ -457,10 +469,35 @@ public class PaymentPanel extends StandardMagicPanel {
 	}
 
 	private void postPayment() {
-		// TODO Auto-generated method stub
+		cancelEditing();
+
+		if (payment.getSalesInvoices().isEmpty()) {
+			showErrorMessage("Cannot post a Payment with no Sales Invoice");
+			return;
+		}
 		
+		if (confirm(getPostConfirmMessage())) {
+			try {
+				paymentService.post(payment);
+				showMessage("Payment posted");
+				updateDisplay(payment);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred during posting!");
+			}
+		}
 	}
 
+	private String getPostConfirmMessage() {
+		String message = "Do you want to post this Payment?";
+		BigDecimal overOrShort = payment.getOverOrShort();
+		if (overOrShort.compareTo(Constants.ZERO) == 0) {
+			message = "This payment is over/short by {0}.\nAre you sure you want to post this payment?";
+			message = MessageFormat.format(message, FormatterUtil.formatAmount(overOrShort));
+		}
+		return message;
+	}
+	
 	private void deletePayment() {
 		if (confirm("Delete Payment?")) {
 			try {

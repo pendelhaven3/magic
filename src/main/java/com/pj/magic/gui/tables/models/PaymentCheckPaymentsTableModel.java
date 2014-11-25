@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import com.pj.magic.gui.tables.PaymentCheckPaymentsTable;
 import com.pj.magic.gui.tables.rowitems.PaymentCheckPaymentRowItem;
+import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.util.DateUtil;
@@ -27,6 +28,7 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 	@Autowired private PaymentService paymentService;
 	
 	private List<PaymentCheckPaymentRowItem> rowItems = new ArrayList<>();
+	private Payment payment;
 	
 	@Override
 	public int getColumnCount() {
@@ -62,10 +64,13 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 		return columnNames[columnIndex];
 	}
 
-	public void setChecks(List<PaymentCheckPayment> checks) {
+	public void setPayment(Payment payment) {
+		this.payment = payment;
 		rowItems.clear();
-		for (PaymentCheckPayment check : checks) {
-			rowItems.add(new PaymentCheckPaymentRowItem(check));
+		if (payment != null) {
+			for (PaymentCheckPayment checkPayment : payment.getCheckPayments()) {
+				rowItems.add(new PaymentCheckPaymentRowItem(checkPayment));
+			}
 		}
 		fireTableDataChanged();
 	}
@@ -119,6 +124,10 @@ public class PaymentCheckPaymentsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		if (payment.isPosted()) {
+			return false;
+		}
+		
 		PaymentCheckPaymentRowItem rowItem = rowItems.get(rowIndex);
 		boolean editable = true;
 		switch (columnIndex) {

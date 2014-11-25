@@ -21,3 +21,7 @@ create table PAYMENT_ADJUSTMENT (
   constraint PAYMENT_ADJUSTMENT$PK primary key (ID),
   constraint PAYMENT_ADJUSTMENT$FK foreign key (PAYMENT_ID) references PAYMENT (ID)
 );
+
+alter table PAYMENT add POST_DT date null;
+alter table PAYMENT add POST_BY integer null;
+alter table PAYMENT add constraint PAYMENT$FK2 foreign key (POST_BY) references USER (ID);

@@ -2,6 +2,7 @@ package com.pj.magic.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.Constants;
@@ -12,6 +13,8 @@ public class Payment {
 	private Long paymentNumber;
 	private Customer customer;
 	private boolean posted;
+	private Date postDate;
+	private User postedBy;
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 	private List<PaymentCheckPayment> checkPayments = new ArrayList<>();
 	private List<PaymentCashPayment> cashPayments = new ArrayList<>();
@@ -143,6 +146,22 @@ public class Payment {
 			total = total.add(paymentSalesInvoice.getAdjustmentAmount());
 		}
 		return total;
+	}
+
+	public Date getPostDate() {
+		return postDate;
+	}
+
+	public void setPostDate(Date postDate) {
+		this.postDate = postDate;
+	}
+
+	public User getPostedBy() {
+		return postedBy;
+	}
+
+	public void setPostedBy(User postedBy) {
+		this.postedBy = postedBy;
 	}
 	
 }

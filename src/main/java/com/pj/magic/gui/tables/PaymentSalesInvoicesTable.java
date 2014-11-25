@@ -1,7 +1,6 @@
 package com.pj.magic.gui.tables;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -74,11 +73,11 @@ public class PaymentSalesInvoicesTable extends MagicTable {
 
 	public void setPayment(Payment payment) {
 		this.payment = payment;
-		tableModel.setPaymentSalesInvoices(payment.getSalesInvoices());
+		tableModel.setPayment(payment);
 	}
 
 	public void clearDisplay() {
-		tableModel.setPaymentSalesInvoices(new ArrayList<PaymentSalesInvoice>());
+		tableModel.setPayment(null);
 	}
 	
 	private class AmountCellEditor extends MagicCellEditor {

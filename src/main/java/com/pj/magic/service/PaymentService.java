@@ -39,5 +39,7 @@ public interface PaymentService {
 	void delete(PaymentAdjustment adjustment);
 
 	void save(PaymentAdjustment adjustment);
+
+	void post(Payment payment);
 	
 }

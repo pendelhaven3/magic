@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -23,6 +24,7 @@ import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.PaymentSearchCriteria;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentService;
 
 @Service
@@ -36,6 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private PaymentCheckPaymentDao paymentCheckPaymentDao;
 	@Autowired private PaymentCashPaymentDao paymentCashPaymentDao;
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
+	@Autowired private LoginService loginService;
 	
 	@Override
 	public List<SalesInvoice> findAllUnpaidSalesInvoicesByCustomer(Customer customer) {
@@ -143,6 +146,15 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public void save(PaymentAdjustment adjustment) {
 		paymentAdjustmentDao.save(adjustment);
+	}
+
+	@Transactional
+	@Override
+	public void post(Payment payment) {
+		payment.setPosted(true);
+		payment.setPostDate(new Date());
+		payment.setPostedBy(loginService.getLoggedInUser());
+		paymentDao.save(payment);
 	}
 	
 }
