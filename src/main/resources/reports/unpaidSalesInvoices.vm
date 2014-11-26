@@ -1,0 +1,18 @@
+#set( $charsPerLine = 62 )
+$report.center("JC HARMONY SELLING INC.", $charsPerLine)
+
+$report.center("UNPAID SALES INVOICE REPORT", $charsPerLine)
+$report.center("As of ${currentDate}", $charsPerLine)
+                                                 Page: $currentPage x $totalPages
+
+S.I. # Trans.Date         Customer Name          Net Amount
+------ ---------- ------------------------------ -------------
+##369282 11/26/2014 CAN-LIZA'S SARI-SARI STORE          5,351.90
+#foreach($salesInvoice in $salesInvoices)
+$report.field($salesInvoice.salesInvoiceNumber, 6, "right") $report.field($salesInvoice.transactionDate) $report.field($salesInvoice.customer.name, 30) $report.field($salesInvoice.totalNetAmount, 13, "right")
+#end
+#if($isLastPage == true)
+                                                 -------------  
+                                    T O T A L => $report.field($totalAmount, 13, "right")
+                                                 =============
+#end

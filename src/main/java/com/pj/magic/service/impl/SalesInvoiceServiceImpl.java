@@ -178,5 +178,14 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		}
 		return salesInvoices;
 	}
+
+	@Override
+	public List<SalesInvoice> findAllUnpaidSalesInvoices() {
+		List<SalesInvoice> salesInvoices = salesInvoiceDao.findAllUnpaid();
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
+		}
+		return salesInvoices;
+	}
 	
 }

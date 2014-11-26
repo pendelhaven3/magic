@@ -53,6 +53,7 @@ import com.pj.magic.gui.panels.PurchaseOrderListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderPanel;
 import com.pj.magic.gui.panels.ReceivingReceiptListPanel;
 import com.pj.magic.gui.panels.ReceivingReceiptPanel;
+import com.pj.magic.gui.panels.ReportsPanel;
 import com.pj.magic.gui.panels.ResetPasswordPanel;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.panels.SalesInvoicePanel;
@@ -64,6 +65,7 @@ import com.pj.magic.gui.panels.StockCardInventoryReportPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
+import com.pj.magic.gui.panels.UnpaidSalesInvoicesListPanel;
 import com.pj.magic.gui.panels.UserListPanel;
 import com.pj.magic.model.AccountsReceivableSummary;
 import com.pj.magic.model.AdjustmentIn;
@@ -153,6 +155,8 @@ public class MagicFrame extends JFrame {
 	private static final String ACCOUNTS_RECEIVABLE_SUMMARY_PANEL = "ACCOUNTS_RECEIVABLE_SUMMARY_PANEL";
 	private static final String SALES_RETURN_LIST_PANEL = "SALES_RETURN_LIST_PANEL";
 	private static final String SALES_RETURN_PANEL = "SALES_RETURN_PANEL";
+	private static final String REPORTS_PANEL = "REPORTS_PANEL";
+	private static final String UNPAID_SALES_INVOICES_LIST_PANEL = "UNPAID_SALES_INVOICES_LIST_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -205,6 +209,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private AccountsReceivableSummaryPanel accountsReceivableSummaryPanel;
 	@Autowired private SalesReturnListPanel salesReturnListPanel;
 	@Autowired private SalesReturnPanel salesReturnPanel;
+	@Autowired private ReportsPanel reportsPanel;
+	@Autowired private UnpaidSalesInvoicesListPanel unpaidSalesInvoicesListPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -304,6 +310,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(accountsReceivableSummaryPanel, ACCOUNTS_RECEIVABLE_SUMMARY_PANEL);
 		panelHolder.add(salesReturnListPanel, SALES_RETURN_LIST_PANEL);
 		panelHolder.add(salesReturnPanel, SALES_RETURN_PANEL);
+		panelHolder.add(reportsPanel, REPORTS_PANEL);
+		panelHolder.add(unpaidSalesInvoicesListPanel, UNPAID_SALES_INVOICES_LIST_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -721,5 +729,17 @@ public class MagicFrame extends JFrame {
 		paymentPanel.updateDisplay(payment);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAYMENT_PANEL);
 	}
+
+	public void switchToReportsPanel() {
+		addPanelNameToTitle("Reports");
+		reportsPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, REPORTS_PANEL);
+	}
 	
+	public void switchToUnpaidSalesInvoicesListPanel() {
+		addPanelNameToTitle("Unpaid Sales Invoices List");
+		unpaidSalesInvoicesListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, UNPAID_SALES_INVOICES_LIST_PANEL);
+	}
+
 }

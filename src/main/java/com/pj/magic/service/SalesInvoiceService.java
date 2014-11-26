@@ -35,5 +35,7 @@ public interface SalesInvoiceService {
 	SalesInvoice findBySalesInvoiceNumber(long salesInvoiceNumber);
 	
 	List<SalesInvoice> findAllSalesInvoicesForPaymentByCustomer(Customer customer);
+
+	List<SalesInvoice> findAllUnpaidSalesInvoices();
 	
 }
