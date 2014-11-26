@@ -33,6 +33,7 @@ import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
@@ -44,6 +45,7 @@ import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesInvoiceReport;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
+import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
@@ -73,6 +75,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int ADJUSTMENT_OUT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_IN_ITEMS_PER_PAGE = 44;
 	private static final int UNPAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
+	private static final int PAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -621,6 +624,37 @@ public class PrintServiceImpl implements PrintService {
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+
+	@Override
+	public void print(PaidSalesInvoicesReport report) {
+		try {
+			for (String printPage : generateReportAsString(report)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(PaidSalesInvoicesReport report) {
+		String paymentDate = FormatterUtil.formatDate(report.getPaymentDate());
+		
+		List<List<PaymentSalesInvoice>> pageItems = Lists.partition(report.getPaymentSalesInvoices(), 
+				PAID_SALES_INVOICE_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("paymentDate", paymentDate);
+			reportData.put("totalAmountDue", report.getTotalAmountDue());
+			reportData.put("paymentSalesInvoices", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/paidSalesInvoices.vm", reportData));
+		}
+		return printPages;
 	}
 	
 }

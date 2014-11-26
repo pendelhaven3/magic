@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentSalesInvoice;
+import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 
 public interface PaymentSalesInvoiceDao {
 
@@ -14,5 +15,7 @@ public interface PaymentSalesInvoiceDao {
 	void deleteAllByPayment(Payment payment);
 
 	void delete(PaymentSalesInvoice paymentSalesInvoice);
+
+	List<PaymentSalesInvoice> search(PaymentSalesInvoiceSearchCriteria criteria);
 	
 }

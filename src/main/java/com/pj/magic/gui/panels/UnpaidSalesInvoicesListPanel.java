@@ -72,10 +72,6 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 		salesInvoiceSearchCriteriaDialog.updateDisplay();
 	}
 
-	public void displaySalesInvoiceDetails(SalesInvoice salesInvoice) {
-		getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
-	}
-	
 	@Override
 	protected void registerKeyBindings() {
 		// none
