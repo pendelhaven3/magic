@@ -41,6 +41,7 @@ import com.pj.magic.gui.panels.MaintainSupplierPanel;
 import com.pj.magic.gui.panels.MaintainUserPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
 import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
+import com.pj.magic.gui.panels.PaidSalesInvoicesListPanel;
 import com.pj.magic.gui.panels.PaymentListPanel;
 import com.pj.magic.gui.panels.PaymentPanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
@@ -157,6 +158,7 @@ public class MagicFrame extends JFrame {
 	private static final String SALES_RETURN_PANEL = "SALES_RETURN_PANEL";
 	private static final String REPORTS_PANEL = "REPORTS_PANEL";
 	private static final String UNPAID_SALES_INVOICES_LIST_PANEL = "UNPAID_SALES_INVOICES_LIST_PANEL";
+	private static final String PAID_SALES_INVOICES_LIST_PANEL = "PAID_SALES_INVOICES_LIST_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -211,6 +213,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private SalesReturnPanel salesReturnPanel;
 	@Autowired private ReportsPanel reportsPanel;
 	@Autowired private UnpaidSalesInvoicesListPanel unpaidSalesInvoicesListPanel;
+	@Autowired private PaidSalesInvoicesListPanel paidSalesInvoicesListPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -312,6 +315,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(salesReturnPanel, SALES_RETURN_PANEL);
 		panelHolder.add(reportsPanel, REPORTS_PANEL);
 		panelHolder.add(unpaidSalesInvoicesListPanel, UNPAID_SALES_INVOICES_LIST_PANEL);
+		panelHolder.add(paidSalesInvoicesListPanel, PAID_SALES_INVOICES_LIST_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -740,6 +744,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Unpaid Sales Invoices List");
 		unpaidSalesInvoicesListPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, UNPAID_SALES_INVOICES_LIST_PANEL);
+	}
+
+	public void switchToPaidSalesInvoicesListPanel() {
+		addPanelNameToTitle("Paid Sales Invoices List");
+		paidSalesInvoicesListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAID_SALES_INVOICES_LIST_PANEL);
 	}
 
 }

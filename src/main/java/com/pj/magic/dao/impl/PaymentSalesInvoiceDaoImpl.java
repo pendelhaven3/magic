@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PaymentSalesInvoiceDao;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
@@ -15,6 +16,20 @@ import com.pj.magic.model.SalesInvoice;
 @Repository
 public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSalesInvoiceDao {
 
+	private static final String BASE_SELECT_SQL =
+			"   select a.ID, PAYMENT_ID, SALES_INVOICE_ID, b.SALES_INVOICE_NO, ADJUSTMENT_AMOUNT,"
+			+ " c.PAYMENT_NO, c.POST_DT,"
+			+ " b.CUSTOMER_ID, d.NAME as CUSTOMER_NAME"
+			+ " from PAYMENT_SALES_INVOICE a"
+			+ " join SALES_INVOICE b"
+			+ "   on b.ID = a.SALES_INVOICE_ID"
+			+ " join PAYMENT c"
+			+ "   on c.ID = a.PAYMENT_ID"
+			+ " join CUSTOMER d"
+			+ "   on d.ID = b.CUSTOMER_ID";
+	
+	private PaymentSalesInvoiceRowMapper paymentSalesInvoiceRowMapper = new PaymentSalesInvoiceRowMapper();
+	
 	@Override
 	public void save(PaymentSalesInvoice item) {
 		if (item.getId() == null) {
@@ -40,34 +55,17 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 				item.getSalesInvoice().getId());
 	}
 
-	private static final String FIND_ALL_BY_PAYMENT_SQL =
-			"   select a.ID, SALES_INVOICE_ID, b.SALES_INVOICE_NO, ADJUSTMENT_AMOUNT"
-			+ " from PAYMENT_SALES_INVOICE a"
-			+ " join SALES_INVOICE b"
-			+ "   on b.ID = a.SALES_INVOICE_ID"
+	private static final String FIND_ALL_BY_PAYMENT_SQL = BASE_SELECT_SQL
 			+ " where PAYMENT_ID = ?";
 	
 	@Override
-	public List<PaymentSalesInvoice> findAllByPayment(final Payment payment) {
-		return getJdbcTemplate().query(FIND_ALL_BY_PAYMENT_SQL, new RowMapper<PaymentSalesInvoice>() {
-
-			@Override
-			public PaymentSalesInvoice mapRow(ResultSet rs, int rowNum) throws SQLException {
-				PaymentSalesInvoice item = new PaymentSalesInvoice();
-				item.setId(rs.getLong("ID"));
-				item.setParent(payment);
-				
-				SalesInvoice salesInvoice = new SalesInvoice();
-				salesInvoice.setId(rs.getLong("SALES_INVOICE_ID"));
-				salesInvoice.setSalesInvoiceNumber(rs.getLong("SALES_INVOICE_NO"));
-				item.setSalesInvoice(salesInvoice);
-				
-				item.setAdjustmentAmount(rs.getBigDecimal("ADJUSTMENT_AMOUNT"));
-				
-				return item;
-			}
-			
-		}, payment.getId());
+	public List<PaymentSalesInvoice> findAllByPayment(Payment payment) {
+		List<PaymentSalesInvoice> salesInvoices = 
+				getJdbcTemplate().query(FIND_ALL_BY_PAYMENT_SQL, paymentSalesInvoiceRowMapper, payment.getId());
+		for (PaymentSalesInvoice salesInvoice : salesInvoices) {
+			salesInvoice.setParent(payment);
+		}
+		return salesInvoices;
 	}
 
 	private static final String DELETE_ALL_BY_PAYMENT_SQL = 
@@ -83,6 +81,41 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 	@Override
 	public void delete(PaymentSalesInvoice paymentSalesInvoice) {
 		getJdbcTemplate().update(DELETE_SQL, paymentSalesInvoice.getId());
+	}
+
+	private static final String FIND_ALL_PAID_SQL = BASE_SELECT_SQL
+			+ " where c.POST_IND = 'Y'"
+			+ " order by POST_DT, b.SALES_INVOICE_NO";
+	
+	@Override
+	public List<PaymentSalesInvoice> findAllPaid() {
+		return getJdbcTemplate().query(FIND_ALL_PAID_SQL, paymentSalesInvoiceRowMapper);
+	}
+	
+	private class PaymentSalesInvoiceRowMapper implements RowMapper<PaymentSalesInvoice> {
+
+		@Override
+		public PaymentSalesInvoice mapRow(ResultSet rs, int rowNum) throws SQLException {
+			PaymentSalesInvoice item = new PaymentSalesInvoice();
+			item.setId(rs.getLong("ID"));
+			
+			Payment payment = new Payment();
+			payment.setId(rs.getLong("PAYMENT_ID"));
+			payment.setPaymentNumber(rs.getLong("PAYMENT_NO"));
+			payment.setPostDate(rs.getDate("POST_DT"));
+			item.setParent(payment);
+			
+			SalesInvoice salesInvoice = new SalesInvoice();
+			salesInvoice.setId(rs.getLong("SALES_INVOICE_ID"));
+			salesInvoice.setSalesInvoiceNumber(rs.getLong("SALES_INVOICE_NO"));
+			salesInvoice.setCustomer(new Customer(rs.getLong("CUSTOMER_ID"), rs.getString("CUSTOMER_NAME")));
+			item.setSalesInvoice(salesInvoice);
+			
+			item.setAdjustmentAmount(rs.getBigDecimal("ADJUSTMENT_AMOUNT"));
+			
+			return item;
+		}
+		
 	}
 	
 }

@@ -19,31 +19,28 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
-import com.pj.magic.gui.dialog.SalesInvoiceReportDialog;
-import com.pj.magic.gui.dialog.SalesInvoiceSearchCriteriaDialog;
 import com.pj.magic.gui.tables.MagicListTable;
-import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
+import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.PrintService;
-import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
+public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 
-	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 0;
-	private static final int TRANSACTION_DATE_COLUMN_INDEX = 1;
+	private static final int PAYMENT_DATE_COLUMN_INDEX = 0;
+	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 1;
 	private static final int CUSTOMER_COLUMN_INDEX = 2;
 	private static final int NET_AMOUNT_COLUMN_INDEX = 3;
+	private static final int PAYMENT_NUMBER_COLUMN_INDEX = 4;
 	
-	@Autowired private SalesInvoiceService salesInvoiceService;
-	@Autowired private SalesInvoiceSearchCriteriaDialog salesInvoiceSearchCriteriaDialog;
-	@Autowired private SalesInvoiceReportDialog salesInvoiceReportDialog;
+	@Autowired private PaymentService paymentService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	
 	private MagicListTable table;
-	private SalesInvoicesTableModel tableModel;
+	private PaymentSalesInvoicesTableModel tableModel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -52,14 +49,15 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	}
 
 	private void initializeTable() {
-		tableModel = new SalesInvoicesTableModel();
+		tableModel = new PaymentSalesInvoicesTableModel();
 		table = new MagicListTable(tableModel);
 		
 		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(PAYMENT_DATE_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(SALES_INVOICE_NUMBER_COLUMN_INDEX).setPreferredWidth(100);
-		columnModel.getColumn(TRANSACTION_DATE_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(CUSTOMER_COLUMN_INDEX).setPreferredWidth(300);
 		columnModel.getColumn(NET_AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(PAYMENT_NUMBER_COLUMN_INDEX).setPreferredWidth(100);
 	}
 
 	@Override
@@ -68,8 +66,7 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	}
 	
 	public void updateDisplay() {
-		tableModel.setSalesInvoices(salesInvoiceService.findAllUnpaidSalesInvoices());
-		salesInvoiceSearchCriteriaDialog.updateDisplay();
+		tableModel.setPaymentSalesInvoices(paymentService.findAllPaidSalesInvoices());
 	}
 
 	@Override
@@ -115,36 +112,37 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	}
 
 	private void print() {
-		UnpaidSalesInvoicesReport report = createUnpaidSalesInvoicesReport();
-		printService.print(report);
+//		UnpaidSalesInvoicesReport report = createUnpaidSalesInvoicesReport();
+//		printService.print(report);
 	}
 
 	private void printPreview() {
-		UnpaidSalesInvoicesReport report = createUnpaidSalesInvoicesReport();
-		printPreviewDialog.updateDisplay(printService.generateReportAsString(report));
-		printPreviewDialog.setVisible(true);
+//		UnpaidSalesInvoicesReport report = createUnpaidSalesInvoicesReport();
+//		printPreviewDialog.updateDisplay(printService.generateReportAsString(report));
+//		printPreviewDialog.setVisible(true);
 	}
 
-	private UnpaidSalesInvoicesReport createUnpaidSalesInvoicesReport() {
+	private UnpaidSalesInvoicesReport createPaidSalesInvoicesReport() {
 		UnpaidSalesInvoicesReport report = new UnpaidSalesInvoicesReport();
-		report.setSalesInvoices(salesInvoiceService.findAllUnpaidSalesInvoices());
+//		report.setSalesInvoices(salesInvoiceService.findAllUnpaidSalesInvoices());
 		return report;
 	}
 
-	private class SalesInvoicesTableModel extends AbstractTableModel {
+	private class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"SI No.", "Transaction Date", "Customer", "Net Amount"};
+		private final String[] columnNames = 
+			{"Payment Date", "SI No.", "Customer", "Net Amount", "Payment No."};
 		
-		private List<SalesInvoice> salesInvoices = new ArrayList<>();
+		private List<PaymentSalesInvoice> paymentSalesInvoices = new ArrayList<>();
 		
-		public void setSalesInvoices(List<SalesInvoice> salesInvoices) {
-			this.salesInvoices = salesInvoices;
+		public void setPaymentSalesInvoices(List<PaymentSalesInvoice> paymentSalesInvoices) {
+			this.paymentSalesInvoices = paymentSalesInvoices;
 			fireTableDataChanged();
 		}
 		
 		@Override
 		public int getRowCount() {
-			return salesInvoices.size();
+			return paymentSalesInvoices.size();
 		}
 
 		@Override
@@ -154,16 +152,18 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			SalesInvoice salesInvoice = salesInvoices.get(rowIndex);
+			PaymentSalesInvoice paymentSalesInvoice = paymentSalesInvoices.get(rowIndex);
 			switch (columnIndex) {
+			case PAYMENT_DATE_COLUMN_INDEX:
+				return FormatterUtil.formatDate(paymentSalesInvoice.getParent().getPostDate());
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
-				return salesInvoice.getSalesInvoiceNumber();
-			case TRANSACTION_DATE_COLUMN_INDEX:
-				return FormatterUtil.formatDate(salesInvoice.getTransactionDate());
+				return paymentSalesInvoice.getSalesInvoice().getSalesInvoiceNumber();
 			case CUSTOMER_COLUMN_INDEX:
-				return salesInvoice.getCustomer().getName();
+				return paymentSalesInvoice.getSalesInvoice().getCustomer().getName();
 			case NET_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
+				return FormatterUtil.formatAmount(paymentSalesInvoice.getSalesInvoice().getTotalNetAmount());
+			case PAYMENT_NUMBER_COLUMN_INDEX:
+				return paymentSalesInvoice.getParent().getPaymentNumber();
 			default:
 				throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 			}

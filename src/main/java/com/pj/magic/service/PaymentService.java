@@ -44,5 +44,7 @@ public interface PaymentService {
 	void post(Payment payment);
 
 	List<Payment> searchPayments(PaymentSearchCriteria criteria);
+
+	List<PaymentSalesInvoice> findAllPaidSalesInvoices();
 	
 }

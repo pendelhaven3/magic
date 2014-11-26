@@ -196,7 +196,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Adjustment Out",
 				"Sales Return List (WIP)",
 				"Payment List",
-//				"Reports",
+				"Reports",
 //				"Payment Terminal Assignments",
 //				"Create Accounts Receivable Summary (WIP)",
 //				"Accounts Receivable Summary List",

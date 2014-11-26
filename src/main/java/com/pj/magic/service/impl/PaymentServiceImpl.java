@@ -165,5 +165,15 @@ public class PaymentServiceImpl implements PaymentService {
 	public List<Payment> searchPayments(PaymentSearchCriteria criteria) {
 		return paymentDao.search(criteria);
 	}
+
+	@Override
+	public List<PaymentSalesInvoice> findAllPaidSalesInvoices() {
+		List<PaymentSalesInvoice> paymentSalesInvoices = paymentSalesInvoiceDao.findAllPaid();
+		for (PaymentSalesInvoice salesInvoice : paymentSalesInvoices) {
+			salesInvoice.getSalesInvoice().setItems(
+					salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice.getSalesInvoice()));
+		}
+		return paymentSalesInvoices;
+	}
 	
 }

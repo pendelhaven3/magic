@@ -82,6 +82,7 @@ public class ReportsPanel extends StandardMagicPanel {
 			getMagicFrame().switchToUnpaidSalesInvoicesListPanel();
 			break;
 		case "Paid Sales Invoices List":
+			getMagicFrame().switchToPaidSalesInvoicesListPanel();
 			break;
 		case "Payment Checks List":
 			break;

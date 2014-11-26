@@ -14,5 +14,7 @@ public interface PaymentSalesInvoiceDao {
 	void deleteAllByPayment(Payment payment);
 
 	void delete(PaymentSalesInvoice paymentSalesInvoice);
+
+	List<PaymentSalesInvoice> findAllPaid();
 	
 }
