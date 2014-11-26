@@ -159,7 +159,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 
 	private static final String UPDATE_AVAILABLE_QUANTITIES_SQL =
 			"update PRODUCT"
-			+ " set AVAIL_QTY_CSE = ?, AVAIL_QTY_CTN = ?, AVAIL_QTY_DOZ = ?, AVAIL_QTY_PCS = ?"
+			+ " set AVAIL_QTY_CSE = ?, AVAIL_QTY_CTN = ?, AVAIL_QTY_TIE = ?, AVAIL_QTY_DOZ = ?, AVAIL_QTY_PCS = ?"
 			+ " where ID = ?";
 	
 	@Override
@@ -167,6 +167,7 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		getJdbcTemplate().update(UPDATE_AVAILABLE_QUANTITIES_SQL,
 				product.getUnitQuantity(Unit.CASE),
 				product.getUnitQuantity(Unit.CARTON),
+				product.getUnitQuantity(Unit.TIE),
 				product.getUnitQuantity(Unit.DOZEN),
 				product.getUnitQuantity(Unit.PIECES),
 				product.getId());
