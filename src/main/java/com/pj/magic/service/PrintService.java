@@ -14,6 +14,7 @@ import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceReport;
 import com.pj.magic.model.StockQuantityConversion;
+import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
 
 public interface PrintService {
@@ -67,5 +68,9 @@ public interface PrintService {
 	List<String> generateReportAsString(Payment payment);
 
 	void print(Payment payment);
+
+	List<String> generateReportAsString(UnpaidSalesInvoicesReport report);
+
+	void print(UnpaidSalesInvoicesReport report);
 	
 }

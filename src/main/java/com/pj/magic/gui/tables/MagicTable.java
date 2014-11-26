@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.TableModel;
 
 import com.pj.magic.Constants;
@@ -39,6 +40,7 @@ public class MagicTable extends JTable {
 	public MagicTable(TableModel tableModel) {
 		super(tableModel);
 		setSurrendersFocusOnKeystroke(true); // TODO: search other references
+		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setRowHeight(25);
 		registerScrollKeys();
 	}

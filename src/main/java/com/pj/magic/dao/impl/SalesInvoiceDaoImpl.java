@@ -255,5 +255,21 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 		return getJdbcTemplate().query(FIND_ALL_FOR_PAYMENT_BY_CUSTOMER_SQL, salesInvoiceRowMapper, 
 				customer.getId());
 	}
+
+	private static final String FIND_ALL_UNPAID_SQL = BASE_SELECT_SQL
+			+ " and not exists("
+			+ "   select 1"
+			+ "   from PAYMENT_SALES_INVOICE psi"
+			+ "   join PAYMENT p"
+			+ "     on p.ID = psi.PAYMENT_ID"
+			+ "   where psi.SALES_INVOICE_ID = a.ID"
+			+ "   and p.POST_IND = 'Y'"
+			+ " )"
+			+ " order by a.TRANSACTION_DT, a.SALES_INVOICE_NO";
+	
+	@Override
+	public List<SalesInvoice> findAllUnpaid() {
+		return getJdbcTemplate().query(FIND_ALL_UNPAID_SQL, salesInvoiceRowMapper);
+	}
 	
 }

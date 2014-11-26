@@ -21,5 +21,7 @@ public interface SalesInvoiceDao {
 	SalesInvoice findBySalesInvoiceNumber(long salesInvoiceNumber);
 
 	List<SalesInvoice> findAllForPaymentByCustomer(Customer customer);
+
+	List<SalesInvoice> findAllUnpaid();
 	
 }

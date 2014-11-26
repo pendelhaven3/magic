@@ -44,6 +44,7 @@ import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesInvoiceReport;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
+import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
 import com.pj.magic.util.FormatterUtil;
@@ -71,6 +72,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int SALES_INVOICE_REPORT_ITEMS_PER_PAGE = 30;
 	private static final int ADJUSTMENT_OUT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_IN_ITEMS_PER_PAGE = 44;
+	private static final int UNPAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -584,6 +586,37 @@ public class PrintServiceImpl implements PrintService {
 		try {
 			for (String printPage : generateReportAsString(payment)) {
 				PrinterUtil.printWithCondensedFont(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(UnpaidSalesInvoicesReport report) {
+		String currentDate = FormatterUtil.formatDate(new Date());
+		
+		List<List<SalesInvoice>> pageItems = Lists.partition(report.getSalesInvoices(), 
+				UNPAID_SALES_INVOICE_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("totalAmount", report.getTotalAmount());
+			reportData.put("currentDate", currentDate);
+			reportData.put("salesInvoices", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/unpaidSalesInvoices.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(UnpaidSalesInvoicesReport report) {
+		try {
+			for (String printPage : generateReportAsString(report)) {
+				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
