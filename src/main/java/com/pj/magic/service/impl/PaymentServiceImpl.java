@@ -23,6 +23,7 @@ import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentService;
@@ -167,8 +168,9 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
-	public List<PaymentSalesInvoice> findAllPaidSalesInvoices() {
-		List<PaymentSalesInvoice> paymentSalesInvoices = paymentSalesInvoiceDao.findAllPaid();
+	public List<PaymentSalesInvoice> searchPaymentSalesInvoices(
+			PaymentSalesInvoiceSearchCriteria criteria) {
+		List<PaymentSalesInvoice> paymentSalesInvoices = paymentSalesInvoiceDao.search(criteria);
 		for (PaymentSalesInvoice salesInvoice : paymentSalesInvoices) {
 			salesInvoice.getSalesInvoice().setItems(
 					salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice.getSalesInvoice()));

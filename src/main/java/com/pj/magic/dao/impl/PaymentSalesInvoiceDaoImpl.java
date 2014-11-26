@@ -2,6 +2,7 @@ package com.pj.magic.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.RowMapper;
@@ -12,6 +13,8 @@ import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSalesInvoiceDao {
@@ -83,15 +86,6 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 		getJdbcTemplate().update(DELETE_SQL, paymentSalesInvoice.getId());
 	}
 
-	private static final String FIND_ALL_PAID_SQL = BASE_SELECT_SQL
-			+ " where c.POST_IND = 'Y'"
-			+ " order by POST_DT, b.SALES_INVOICE_NO";
-	
-	@Override
-	public List<PaymentSalesInvoice> findAllPaid() {
-		return getJdbcTemplate().query(FIND_ALL_PAID_SQL, paymentSalesInvoiceRowMapper);
-	}
-	
 	private class PaymentSalesInvoiceRowMapper implements RowMapper<PaymentSalesInvoice> {
 
 		@Override
@@ -116,6 +110,32 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 			return item;
 		}
 		
+	}
+
+	@Override
+	public List<PaymentSalesInvoice> search(PaymentSalesInvoiceSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		if (criteria.getPaid() != null) {
+			sql.append(" and c.POST_IND = ?");
+			params.add(criteria.getPaid() ? "Y" : "N");
+		}
+		
+		if (criteria.getPaymentDate() != null) {
+			sql.append(" and c.POST_DT = ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+		}
+		
+		if (criteria.getCustomer() != null) {
+			sql.append(" and c.CUSTOMER_ID = ?");
+			params.add(criteria.getCustomer().getId());
+		}
+		
+		sql.append(" order by c.POST_DT, b.SALES_INVOICE_NO");
+		
+		return getJdbcTemplate().query(sql.toString(), paymentSalesInvoiceRowMapper, params.toArray());
 	}
 	
 }
