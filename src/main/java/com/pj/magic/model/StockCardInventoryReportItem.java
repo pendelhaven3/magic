@@ -14,6 +14,7 @@ public class StockCardInventoryReportItem {
 	private BigDecimal currentCostOrSellingPrice;
 	private BigDecimal amount;
 	private String referenceNumber;
+	private String unit;
 
 	public Date getTransactionDate() {
 		return transactionDate;
@@ -86,6 +87,14 @@ public class StockCardInventoryReportItem {
 
 	public void setReferenceNumber(String referenceNumber) {
 		this.referenceNumber = referenceNumber;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 
 }
