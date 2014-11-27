@@ -45,15 +45,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.exception.NoSellingPriceException;
-import com.pj.magic.exception.NotEnoughStocksException;
-import com.pj.magic.exception.SellingPriceLessThanCostException;
+import com.pj.magic.exception.SalesRequisitionPostException;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SalesRequisitionPostExceptionsDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Customer;
@@ -87,6 +86,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	@Autowired private CustomerService customerService;
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private PaymentTermService paymentTermService;
+	@Autowired private SalesRequisitionPostExceptionsDialog postExceptionsDialog;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -660,8 +660,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			itemsTable.switchToEditMode();
 		}
 		
-		int confirm = showConfirmMessage("Do you want to post this sales requisition?");
-		if (confirm == JOptionPane.OK_OPTION) {
+		if (confirm("Do you want to post this sales requisition?")) {
 			if (!salesRequisition.hasItems()) {
 				showErrorMessage("Cannot post a sales requisition with no items");
 				itemsTable.requestFocusInWindow();
@@ -671,21 +670,14 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 				SalesInvoice salesInvoice = salesRequisitionService.post(salesRequisition);
 				JOptionPane.showMessageDialog(this, "Post successful!");
 				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
-			} catch (NotEnoughStocksException e ) {	
-				showErrorMessage("Not enough available stocks");
-				updateDisplay(salesRequisition);
-				itemsTable.highlightColumn(e.getSalesRequisitionItem(), 
-						SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX);
-			} catch (NoSellingPriceException e) {
-				showErrorMessage("No selling price");
-				updateDisplay(salesRequisition);
-				itemsTable.highlightColumn(e.getItem(), 
-						SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX);
-			} catch (SellingPriceLessThanCostException e) {
-				showErrorMessage("Selling price less than cost");
-				updateDisplay(salesRequisition);
-				itemsTable.highlightColumn(e.getItem(), 
-						SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX);
+			} catch (SalesRequisitionPostException e) {
+				postExceptionsDialog.updateDisplay(e);
+				postExceptionsDialog.setVisible(true);
+				
+				if (postExceptionsDialog.getStockQuantityConversion() != null) {
+					getMagicFrame().switchToStockQuantityConversionPanel(
+							postExceptionsDialog.getStockQuantityConversion());
+				}
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");

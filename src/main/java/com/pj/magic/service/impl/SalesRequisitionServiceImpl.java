@@ -14,9 +14,9 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.UserDao;
-import com.pj.magic.exception.NoSellingPriceException;
-import com.pj.magic.exception.NotEnoughStocksException;
-import com.pj.magic.exception.SellingPriceLessThanCostException;
+import com.pj.magic.exception.SalesRequisitionItemNotEnoughStocksException;
+import com.pj.magic.exception.SalesRequisitionItemPostException;
+import com.pj.magic.exception.SalesRequisitionPostException;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
@@ -91,25 +91,32 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	@Override
 	public SalesInvoice post(SalesRequisition salesRequisition)
-			throws NotEnoughStocksException, NoSellingPriceException {
+			throws SalesRequisitionPostException {
+		SalesRequisitionPostException exception = new SalesRequisitionPostException();
+		
 		SalesRequisition updated = getSalesRequisition(salesRequisition.getId());
 		for (SalesRequisitionItem item : updated.getItems()) {
 			if (item.getProduct().hasNoSellingPrice(item.getUnit())) {
-				throw new NoSellingPriceException(item);
+				exception.add(new SalesRequisitionItemPostException(item, "No selling price"));
 			} else if (item.getProduct().hasSellingPriceLessThanCost(item.getUnit())) {
-				throw new SellingPriceLessThanCostException(item);
+				exception.add(new SalesRequisitionItemPostException(item, "Selling price less than cost"));
 			}
 				
 			// [PJ 08/06/2014] Do not update product quantity inside sales requisition object
 			// because it has to be "rolled back" manually when an exception happens during posting
 			Product product = productDao.get(item.getProduct().getId());
 			if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity())) {
-				throw new NotEnoughStocksException(item);
-			} else {
+				exception.add(new SalesRequisitionItemNotEnoughStocksException(item));
+			} else if (exception.isEmpty()) { // No need to update anymore if validation error already encountered
 				product.subtractUnitQuantity(item.getUnit(), item.getQuantity());
 				productDao.updateAvailableQuantities(product);
 			}
 		}
+		
+		if (!exception.isEmpty()) {
+			throw exception;
+		}
+		
 		updated.setPosted(true);
 		salesRequisitionDao.save(updated);
 
