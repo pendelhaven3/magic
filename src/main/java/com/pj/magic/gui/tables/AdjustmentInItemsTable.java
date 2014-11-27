@@ -31,6 +31,7 @@ import com.pj.magic.gui.tables.models.AdjustmentInItemsTableModel;
 import com.pj.magic.gui.tables.rowitems.AdjustmentInItemRowItem;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentInItem;
+import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
 
@@ -241,7 +242,8 @@ public class AdjustmentInItemsTable extends MagicTable {
 					if (!isEditing()) {
 						editCellAt(getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
 					}
-					openSelectProductDialog((String)getCellEditor().getCellEditorValue());
+					String criteria = (String)getCellEditor().getCellEditorValue();
+					openSelectProductDialog(criteria, criteria);
 				} else if (isUnitFieldSelected()) {
 					openSelectUnitDialog();
 				}
@@ -308,7 +310,8 @@ public class AdjustmentInItemsTable extends MagicTable {
 			editCellAt(getSelectedRow(), getSelectedColumn());
 		}
 
-		openSelectProductDialog(previousSelectProductCriteria);
+		openSelectProductDialog(previousSelectProductCriteria,
+				(String)getValueAt(getSelectedRow() - 1, PRODUCT_CODE_COLUMN_INDEX));
 	}
 
 	public void removeCurrentlySelectedItem() {
@@ -337,15 +340,15 @@ public class AdjustmentInItemsTable extends MagicTable {
 		}
 	}
 
-	private void openSelectProductDialog(String criteria) {
+	private void openSelectProductDialog(String criteria, String currentlySelectedCode) {
 		previousSelectProductCriteria = criteria;
 		
-		selectProductDialog.searchProducts(criteria);
+		selectProductDialog.searchProducts(criteria, currentlySelectedCode);
 		selectProductDialog.setVisible(true);
 		
-		String productCode = selectProductDialog.getSelectedProductCode();
-		if (productCode != null) {
-			((JTextField)getEditorComponent()).setText(productCode);
+		Product product = selectProductDialog.getSelectedProduct();
+		if (product != null) {
+			((JTextField)getEditorComponent()).setText(product.getCode());
 			getCellEditor().stopCellEditing();
 		}
 	}

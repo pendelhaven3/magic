@@ -32,6 +32,7 @@ import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.gui.tables.models.PurchaseOrderItemsTableModel;
 import com.pj.magic.gui.tables.rowitems.PurchaseOrderItemRowItem;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.service.ProductService;
@@ -348,18 +349,19 @@ public class PurchaseOrderItemsTable extends MagicTable {
 			editCellAt(getSelectedRow(), getSelectedColumn());
 		}
 
-		openSelectProductDialog(previousSelectProductCriteria);
+		openSelectProductDialog(previousSelectProductCriteria,
+				(String)getValueAt(getSelectedRow() - 1, PRODUCT_CODE_COLUMN_INDEX));
 	}
 	
-	private void openSelectProductDialog(String criteria) {
+	private void openSelectProductDialog(String criteria, String currentlySelectedCode) {
 		previousSelectProductCriteria = criteria;
 		
-		selectProductDialog.searchProducts(criteria, purchaseOrder.getSupplier());
+		selectProductDialog.searchProducts(criteria, currentlySelectedCode, purchaseOrder.getSupplier());
 		selectProductDialog.setVisible(true);
 		
-		String productCode = selectProductDialog.getSelectedProductCode();
-		if (productCode != null) {
-			((JTextField)getEditorComponent()).setText(productCode);
+		Product product = selectProductDialog.getSelectedProduct();
+		if (product != null) {
+			((JTextField)getEditorComponent()).setText(product.getCode());
 			getCellEditor().stopCellEditing();
 		}
 	}
@@ -379,7 +381,8 @@ public class PurchaseOrderItemsTable extends MagicTable {
 			if (!isEditing()) {
 				editCellAt(getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
 			}
-			openSelectProductDialog((String)getCellEditor().getCellEditorValue());
+			String criteria = (String)getCellEditor().getCellEditorValue();
+			openSelectProductDialog(criteria, criteria);
 		} else if (isUnitFieldSelected()) {
 			if (!isEditing()) {
 				editCellAt(getSelectedRow(), UNIT_COLUMN_INDEX);

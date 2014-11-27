@@ -17,6 +17,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +38,6 @@ import com.pj.magic.util.ComponentUtil;
 public class SelectProductDialog extends MagicDialog {
 
 	private static final String SELECT_PRODUCT_ACTION_NAME = "selectProduct";
-	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	private static final String UNIT_PRICE_INFO_TABLE = "unitPriceInfoTable";
 	private static final String UNIT_COST_INFO_TABLE = "unitCostInfoTable";
 
@@ -49,7 +49,6 @@ public class SelectProductDialog extends MagicDialog {
 	private UnitCostsAndQuantitiesTableModel unitCostsAndQuantitiesTableModel =
 			new UnitCostsAndQuantitiesTableModel();
 	private JTable productsTable;
-	private String selectedProductCode; // TODO: Why not use product here instead?
 	private JTable unitPricesAndQuantitiesTable;
 	private JTable unitCostsAndQuantitiesTable;
 	private JPanel infoTablePanel;
@@ -110,14 +109,8 @@ public class SelectProductDialog extends MagicDialog {
 	}
 
 	protected void selectProduct() {
-		selectedProductCode = (String)productsTable.getValueAt(productsTable.getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
 		selectedProduct = productsTableModel.getProduct(productsTable.getSelectedRow());
 		setVisible(false);
-	}
-
-	// TODO: Remove this
-	public String getSelectedProductCode() {
-		return selectedProductCode;
 	}
 
 	public Product getSelectedProduct() {
@@ -127,7 +120,6 @@ public class SelectProductDialog extends MagicDialog {
 	@Override
 	protected void doWhenEscapeKeyPressed() {
 		selectedProduct = null;
-		selectedProductCode = null;
 	}
 	
 	private void layoutComponents() {
@@ -185,10 +177,14 @@ public class SelectProductDialog extends MagicDialog {
 	}
 
 	public void searchProducts(String productCode) {
-		searchProducts(productCode, new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID));
+		searchProducts(productCode, null, new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID));
 	}
 
-	public void searchProducts(String codeOrDescription, PricingScheme pricingScheme) {
+	public void searchProducts(String productCode, String currentlySelectedCode) {
+		searchProducts(productCode, currentlySelectedCode, new PricingScheme(Constants.CANVASSER_PRICING_SCHEME_ID));
+	}
+
+	public void searchProducts(String codeOrDescription, String currentlySelectedCode, PricingScheme pricingScheme) {
 		ProductSearchCriteria criteria = new ProductSearchCriteria();
 		criteria.setActive(true);
 		criteria.setCodeOrDescriptionLike(codeOrDescription);
@@ -198,13 +194,24 @@ public class SelectProductDialog extends MagicDialog {
 		productsTableModel.setProducts(products);
 		
 		if (!products.isEmpty()) {
-			productsTable.changeSelection(0, 0, false, false);
+			int selectedRow = 0;
+			if (!StringUtils.isEmpty(currentlySelectedCode)) {
+				int i = 0;
+				for (Product product : products) {
+					if (product.getCode().equals(currentlySelectedCode)) {
+						selectedRow = i;
+						break;
+					}
+					i++;
+				}
+			}
+			productsTable.changeSelection(selectedRow, 0, false, false);
 		}
 		
 		((CardLayout)infoTablePanel.getLayout()).show(infoTablePanel, UNIT_PRICE_INFO_TABLE);
 	}
 
-	public void searchProducts(String codeOrDescription, Supplier supplier) {
+	public void searchProducts(String codeOrDescription, String currentlySelectedCode, Supplier supplier) {
 		ProductSearchCriteria criteria = new ProductSearchCriteria();
 		criteria.setActive(true);
 		criteria.setCodeOrDescriptionLike(codeOrDescription);
@@ -214,7 +221,18 @@ public class SelectProductDialog extends MagicDialog {
 		productsTableModel.setProducts(products);
 		
 		if (!products.isEmpty()) {
-			productsTable.changeSelection(0, 0, false, false);
+			int selectedRow = 0;
+			if (!StringUtils.isEmpty(currentlySelectedCode)) {
+				int i = 0;
+				for (Product product : products) {
+					if (product.getCode().equals(currentlySelectedCode)) {
+						selectedRow = i;
+						break;
+					}
+					i++;
+				}
+			}
+			productsTable.changeSelection(selectedRow, 0, false, false);
 		}
 		
 		((CardLayout)infoTablePanel.getLayout()).show(infoTablePanel, UNIT_COST_INFO_TABLE);
