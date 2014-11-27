@@ -119,7 +119,7 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		
 		List<SalesInvoice> salesInvoices = salesInvoiceDao.search(criteria);
 		for (SalesInvoice salesInvoice : salesInvoices) {
-			loadSalesInvoiceDetails(salesInvoice);
+			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
 		}
 		return salesInvoices;
 	}
