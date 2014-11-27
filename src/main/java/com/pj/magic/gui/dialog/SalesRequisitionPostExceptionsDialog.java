@@ -88,7 +88,7 @@ public class SalesRequisitionPostExceptionsDialog extends MagicDialog {
 					conversionItem.setParent(stockQuantityConversion);
 					conversionItem.setProduct(item.getProduct());
 					conversionItem.setFromUnit(item.getProduct().getMaxUnit());
-					conversionItem.setQuantity(item.getQuantity());
+					conversionItem.setQuantity(1);
 					conversionItem.setToUnit(item.getUnit());
 					stockQuantityConversion.getItems().add(conversionItem);
 				}
