@@ -257,6 +257,7 @@ create table STOCK_QTY_CONVERSION_ITEM (
   FROM_UNIT char(3) not null,
   TO_UNIT char(3) not null,
   QUANTITY integer(3) not null,
+  CONVERTED_QTY integer(5) null,
   constraint STOCK_QTY_CONVERSION_ITEM$PK primary key (ID),
   constraint STOCK_QTY_CONVERSION_ITEM$FK foreign key (STOCK_QTY_CONVERSION_ID) references STOCK_QTY_CONVERSION (ID),
   constraint STOCK_QTY_CONVERSION_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)

@@ -1,0 +1,1 @@
+alter table STOCK_QTY_CONVERSION_ITEM add CONVERTED_QTY integer(5) null;

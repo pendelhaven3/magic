@@ -11,6 +11,7 @@ public class StockQuantityConversionItem implements Comparable<StockQuantityConv
 	private String fromUnit;
 	private String toUnit;
 	private Integer quantity;
+	private Integer convertedQuantity;
 
 	public Long getId() {
 		return id;
@@ -86,12 +87,20 @@ public class StockQuantityConversionItem implements Comparable<StockQuantityConv
 	}
 
 	public int getConvertedQuantity() {
-		return product.getUnitConversion(fromUnit) / product.getUnitConversion(toUnit) * quantity;
+		if (convertedQuantity != null) {
+			return convertedQuantity;
+		} else {
+			return product.getUnitConversion(fromUnit) / product.getUnitConversion(toUnit) * quantity;
+		}
 	}
 
 	@Override
 	public int compareTo(StockQuantityConversionItem o) {
 		return product.compareTo(o.getProduct());
+	}
+	
+	public void setConvertedQuantity(Integer convertedQuantity) {
+		this.convertedQuantity = convertedQuantity;
 	}
 	
 }

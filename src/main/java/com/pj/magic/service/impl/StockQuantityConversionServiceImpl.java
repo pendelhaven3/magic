@@ -72,6 +72,7 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 				product.subtractUnitQuantity(item.getFromUnit(), item.getQuantity());
 				product.addUnitQuantity(item.getToUnit(), item.getConvertedQuantity());
 				productDao.updateAvailableQuantities(product);
+				stockQuantityConversionItemDao.updateConvertedQuantity(item);
 			}
 		}
 		updated.setPosted(true);
