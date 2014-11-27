@@ -660,8 +660,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			itemsTable.switchToEditMode();
 		}
 		
-		int confirm = showConfirmMessage("Do you want to post this sales requisition?");
-		if (confirm == JOptionPane.OK_OPTION) {
+		if (confirm("Do you want to post this sales requisition?")) {
 			if (!salesRequisition.hasItems()) {
 				showErrorMessage("Cannot post a sales requisition with no items");
 				itemsTable.requestFocusInWindow();
@@ -674,6 +673,11 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			} catch (SalesRequisitionPostException e) {
 				postExceptionsDialog.updateDisplay(e);
 				postExceptionsDialog.setVisible(true);
+				
+				if (postExceptionsDialog.getStockQuantityConversion() != null) {
+					getMagicFrame().switchToStockQuantityConversionPanel(
+							postExceptionsDialog.getStockQuantityConversion());
+				}
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");

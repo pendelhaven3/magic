@@ -3,19 +3,29 @@ package com.pj.magic.gui.dialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.exception.SalesRequisitionItemNotEnoughStocksException;
 import com.pj.magic.exception.SalesRequisitionItemPostException;
 import com.pj.magic.exception.SalesRequisitionPostException;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.model.SalesRequisitionItem;
+import com.pj.magic.model.StockQuantityConversion;
+import com.pj.magic.model.StockQuantityConversionItem;
+import com.pj.magic.service.StockQuantityConversionService;
+import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class SalesRequisitionPostExceptionsDialog extends MagicDialog {
@@ -26,8 +36,13 @@ public class SalesRequisitionPostExceptionsDialog extends MagicDialog {
 	private static final int QUANTITY_COLUMN_INDEX = 3;
 	private static final int ERROR_MESSAGE_COLUMN_INDEX = 4;
 	
+	@Autowired private StockQuantityConversionService stockQuantityConversionService;
+	
 	private ExceptionsTableModel tableModel;
 	private MagicListTable table;
+	private JButton createConversionButton;
+	private SalesRequisitionPostException exception;
+	private StockQuantityConversion stockQuantityConversion;
 	
 	public SalesRequisitionPostExceptionsDialog() {
 		setSize(800, 300);
@@ -37,6 +52,12 @@ public class SalesRequisitionPostExceptionsDialog extends MagicDialog {
 
 	@PostConstruct
 	public void initialize() {
+		initializeComponents();
+		layoutComponents();
+		registerKeyBindings();
+	}
+
+	private void initializeComponents() {
 		tableModel = new ExceptionsTableModel();
 		table = new MagicListTable(tableModel);
 		
@@ -47,8 +68,42 @@ public class SalesRequisitionPostExceptionsDialog extends MagicDialog {
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(50);
 		columnModel.getColumn(ERROR_MESSAGE_COLUMN_INDEX).setPreferredWidth(200);
 		
-		layoutComponents();
-		registerKeyBindings();
+		createConversionButton = new JButton("Create Stock Quantity Conversion");
+		createConversionButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createStockQuantityConversion();
+			}
+		});
+	}
+
+	private void createStockQuantityConversion() {
+		StockQuantityConversion stockQuantityConversion = new StockQuantityConversion();
+		for (SalesRequisitionItemPostException e : exception.getExceptions()) {
+			if (e instanceof SalesRequisitionItemNotEnoughStocksException) {
+				SalesRequisitionItem item = e.getItem();
+				if (!item.getUnit().equals(item.getProduct().getMaxUnit())) {
+					StockQuantityConversionItem conversionItem = new StockQuantityConversionItem();
+					conversionItem.setParent(stockQuantityConversion);
+					conversionItem.setProduct(item.getProduct());
+					conversionItem.setFromUnit(item.getProduct().getMaxUnit());
+					conversionItem.setQuantity(item.getQuantity());
+					conversionItem.setToUnit(item.getUnit());
+					stockQuantityConversion.getItems().add(conversionItem);
+				}
+			}
+		}
+		if (stockQuantityConversion.getItems().isEmpty()) {
+			showErrorMessage("No conversion requirement detected");
+		} else {
+			stockQuantityConversionService.save(stockQuantityConversion);
+			for (StockQuantityConversionItem item : stockQuantityConversion.getItems()) {
+				stockQuantityConversionService.save(item);
+			}
+			this.stockQuantityConversion = stockQuantityConversion;
+		}
+		setVisible(false);
 	}
 
 	private void registerKeyBindings() {
@@ -64,20 +119,43 @@ public class SalesRequisitionPostExceptionsDialog extends MagicDialog {
 		int currentRow = 0;
 
 		GridBagConstraints c = new GridBagConstraints();
-		c.weightx = 1.0;
-		c.weighty = 1.0;
+		c.weightx = c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.CENTER;
 		
 		JScrollPane productsScrollPane = new JScrollPane(table);
 		productsScrollPane.setPreferredSize(new Dimension(400, 100));
 		add(productsScrollPane, c);
+		
+		currentRow++;
+
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createVerticalFiller(10), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		add(createConversionButton, c);
+		
+		currentRow++;
+
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createVerticalFiller(10), c);
 	}
 	
 	public void updateDisplay(SalesRequisitionPostException exception) {
+		this.exception = exception;
 		tableModel.setExceptions(exception.getExceptions());
+		stockQuantityConversion = null;
 	}
 	
 	private class ExceptionsTableModel extends AbstractTableModel {
@@ -124,6 +202,10 @@ public class SalesRequisitionPostExceptionsDialog extends MagicDialog {
 			}
 		}
 
+	}
+	
+	public StockQuantityConversion getStockQuantityConversion() {
+		return stockQuantityConversion;
 	}
 	
 }
