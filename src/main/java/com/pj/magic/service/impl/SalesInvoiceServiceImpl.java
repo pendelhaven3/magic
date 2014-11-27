@@ -57,11 +57,8 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 
 	private void loadSalesInvoiceDetails(SalesInvoice salesInvoice) {
 		salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
-		for (SalesInvoiceItem item : salesInvoice.getItems()) {
-			item.setProduct(productDao.get(item.getProduct().getId()));
-		}
 		Collections.sort(salesInvoice.getItems());
-		salesInvoice.setCustomer(customerDao.get(salesInvoice.getCustomer().getId()));
+		salesInvoice.setCustomer(customerDao.get(salesInvoice.getCustomer().getId())); // TODO: Review next
 	}
 
 	@Override
@@ -145,7 +142,7 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 	public List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria) {
 		List<SalesInvoice> salesInvoices = salesInvoiceDao.search(criteria);
 		for (SalesInvoice salesInvoice : salesInvoices) {
-			loadSalesInvoiceDetails(salesInvoice);
+			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
 		}
 		return salesInvoices;
 	}
