@@ -15,6 +15,14 @@ import com.pj.magic.model.SalesInvoiceItem;
 @Repository
 public class SalesInvoiceItemDaoImpl extends MagicDao implements SalesInvoiceItemDao {
 
+	private static final String BASE_SELECT_SQL =
+			"select a.ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE,"
+			+ " DISCOUNT_1, DISCOUNT_2, DISCOUNT_3, FLAT_RATE_DISCOUNT,"
+			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
+			+ " from SALES_INVOICE_ITEM a"
+			+ " join PRODUCT b"
+			+ "   on b.ID = a.PRODUCT_ID";
+	
 	@Override
 	public void save(SalesInvoiceItem item) {
 		if (item.getId() == null) {
@@ -50,10 +58,8 @@ public class SalesInvoiceItemDaoImpl extends MagicDao implements SalesInvoiceIte
 				item.getUnitPrice());
 	}
 
-	private static final String FIND_ALL_BY_SALES_INVOICE_SQL =
-			"select ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE,"
-			+ " DISCOUNT_1, DISCOUNT_2, DISCOUNT_3, FLAT_RATE_DISCOUNT"
-			+ " from SALES_INVOICE_ITEM where SALES_INVOICE_ID = ?";
+	private static final String FIND_ALL_BY_SALES_INVOICE_SQL = BASE_SELECT_SQL
+			+ " where SALES_INVOICE_ID = ?";
 	
 	@Override
 	public List<SalesInvoiceItem> findAllBySalesInvoice(final SalesInvoice salesInvoice) {
@@ -64,7 +70,13 @@ public class SalesInvoiceItemDaoImpl extends MagicDao implements SalesInvoiceIte
 				SalesInvoiceItem item = new SalesInvoiceItem();
 				item.setId(rs.getLong("ID"));
 				item.setParent(salesInvoice);
-				item.setProduct(new Product(rs.getLong("PRODUCT_ID")));
+				
+				Product product = new Product();
+				product.setId(rs.getLong("PRODUCT_ID"));
+				product.setCode(rs.getString("PRODUCT_CODE"));
+				product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
+				item.setProduct(product);
+				
 				item.setUnit(rs.getString("UNIT"));
 				item.setQuantity(rs.getInt("QUANTITY"));
 				item.setUnitPrice(rs.getBigDecimal("UNIT_PRICE"));
