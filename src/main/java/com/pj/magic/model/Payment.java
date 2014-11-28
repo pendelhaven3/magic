@@ -15,6 +15,7 @@ public class Payment {
 	private boolean posted;
 	private Date postDate;
 	private User postedBy;
+	private Date createDate;
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 	private List<PaymentCheckPayment> checkPayments = new ArrayList<>();
 	private List<PaymentCashPayment> cashPayments = new ArrayList<>();
@@ -164,6 +165,14 @@ public class Payment {
 
 	public void setPostedBy(User postedBy) {
 		this.postedBy = postedBy;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 	
 }

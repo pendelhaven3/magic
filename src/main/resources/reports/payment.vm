@@ -1,11 +1,11 @@
-#set( $charsPerLine = 48 )
+#set( $charsPerLine = 70 )
 $report.center("JC HARMONY SELLING INC.", $charsPerLine)
 $report.center("251 GEN.P.ALVAREZ ST.CALOOCAN CITY", $charsPerLine)
 $report.center("TEL.NO.3621785 3195946", $charsPerLine)
 
 $report.center("PAYMENT SUMMARY", $charsPerLine)
 
-Payment # : $payment.paymentNumber
+Payment # : $report.field($payment.paymentNumber, 7)                       Payment Date : $report.field($payment.createDate)
 Customer  : $report.field($payment.customer.name, 30)
 
    Cash   : $report.field($payment.totalCashPayments, 13, "right")               Total Invoices : $report.field($payment.totalAmountDue, 13, "right")
@@ -53,7 +53,7 @@ Adjustments
                 ------------ -------- ----------
 ##                SALES RETURN    12321  26,958.35
 #foreach($adjustment in $payment.adjustments)
-                $report.field($adjustment.adjustmentType, 12) $report.field($adjustment.referenceNumber, 8, "right") $report.field($adjustment.amount, 10, "right")
+                $report.field($adjustment.adjustmentType, 12) $report.referenceNumber($adjustment, 8, "right") $report.field($adjustment.amount, 10, "right")
 #end
                                       ----------
                            TOTAL =>   $report.field($payment.totalAdjustments, 10, "right")   

@@ -13,11 +13,11 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class PaymentsTableModel extends AbstractTableModel {
 
-	private static final String[] columnNames = {"Payment No.", "Customer", "Posted", "Post Date"};
+	private static final String[] columnNames = {"Payment No.", "Customer", "Create Date", "Posted"};
 	private static final int PAYMENT_NUMBER_COLUMN_INDEX = 0;
 	private static final int CUSTOMER_COLUMN_INDEX = 1;
-	private static final int POSTED_COLUMN_INDEX = 2;
-	private static final int POST_DATE_COLUMN_INDEX = 3;
+	private static final int CREATE_DATE_COLUMN_INDEX = 2;
+	private static final int POSTED_COLUMN_INDEX = 3;
 	
 	private List<Payment> payments = new ArrayList<>();
 	
@@ -39,10 +39,10 @@ public class PaymentsTableModel extends AbstractTableModel {
 			return payment.getPaymentNumber();
 		case CUSTOMER_COLUMN_INDEX:
 			return payment.getCustomer().getName();
+		case CREATE_DATE_COLUMN_INDEX:
+			return FormatterUtil.formatDate(payment.getCreateDate());
 		case POSTED_COLUMN_INDEX:
 			return payment.isPosted() ? "Yes" : "No";
-		case POST_DATE_COLUMN_INDEX:
-			return payment.isPosted() ? FormatterUtil.formatDate(payment.getPostDate()) : null;
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}

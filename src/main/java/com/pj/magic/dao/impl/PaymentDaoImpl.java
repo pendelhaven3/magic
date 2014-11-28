@@ -28,7 +28,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	private static final String PAYMENT_NUMBER_SEQUENCE = "PAYMENT_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PAYMENT_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY,"
+			"select a.ID, PAYMENT_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY, CREATE_DT,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME"
 			+ " from PAYMENT a"
@@ -60,7 +60,8 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 				payment.getId());
 	}
 
-	private static final String INSERT_SQL = "insert into PAYMENT (PAYMENT_NO, CUSTOMER_ID) values (?, ?)";
+	private static final String INSERT_SQL = 
+			"insert into PAYMENT (PAYMENT_NO, CUSTOMER_ID, CREATE_DT) values (?, ?, curdate())";
 	
 	private void insert(final Payment payment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -116,6 +117,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			}
 			
 			payment.setPostDate(rs.getDate("POST_DT"));
+			payment.setCreateDate(rs.getDate("CREATE_DT"));
 			return payment;
 		}
 		
