@@ -51,7 +51,7 @@ public class ReceivingReceiptItemRowItem {
 		if (StringUtils.isEmpty(discount1)) {
 			discount1 = BigDecimal.ZERO.setScale(2).toString();
 		}
-		return new BigDecimal(discount1).setScale(2);
+		return NumberUtil.toBigDecimal(discount1);
 	}
 
 	public void setDiscount1(String discount1) {
@@ -86,21 +86,21 @@ public class ReceivingReceiptItemRowItem {
 		if (StringUtils.isEmpty(discount2)) {
 			discount2 = BigDecimal.ZERO.setScale(2).toString();
 		}
-		return new BigDecimal(discount2).setScale(2);
+		return NumberUtil.toBigDecimal(discount2);
 	}
 
 	public BigDecimal getDiscount3AsBigDecimal() {
 		if (StringUtils.isEmpty(discount3)) {
 			discount3 = BigDecimal.ZERO.setScale(2).toString();
 		}
-		return new BigDecimal(discount3).setScale(2);
+		return NumberUtil.toBigDecimal(discount3);
 	}
 
 	public BigDecimal getFlatRateDiscountAsBigDecimal() {
 		if (StringUtils.isEmpty(flatRateDiscount)) {
 			flatRateDiscount = BigDecimal.ZERO.setScale(2).toString();
 		}
-		return new BigDecimal(flatRateDiscount).setScale(2);
+		return NumberUtil.toBigDecimal(flatRateDiscount);
 	}
 
 }
