@@ -22,10 +22,10 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 	
 	private static final String BASE_GET_STOCK_CARD_INVENTORY_REPORT_ITEMS_SQL =
 			"   select TRANSACTION_DT, TRANSACTION_NO, CUSTOMER_SUPPLIER_NAME, TRANSACTION_TYPE,"
-			+ " QUANTITY, UNIT_COST_OR_PRICE, REFERENCE_NO"
+			+ " UNIT, QUANTITY, UNIT_COST_OR_PRICE, REFERENCE_NO"
 			+ " from ("
 			+ "   select a.TRANSACTION_DT, a.SALES_INVOICE_NO as TRANSACTION_NO, c.NAME as CUSTOMER_SUPPLIER_NAME,"
-			+ "   'SALES INVOICE' as TRANSACTION_TYPE, b.QUANTITY,"
+			+ "   'SALES INVOICE' as TRANSACTION_TYPE, b.UNIT, b.QUANTITY,"
 			+ "   b.UNIT_PRICE as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
 			+ "   from SALES_INVOICE a"
 			+ "   join SALES_INVOICE_ITEM b"
@@ -37,7 +37,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "   union all"
 			+ "   select a.RECEIVED_DT as TRANSACTION_DT, a.RECEIVING_RECEIPT_NO as TRANSACTION_NO,"
 			+ "   c.NAME as CUSTOMER_SUPPLIER_NAME,"
-			+ "   'RECEIVING RECEIPT' as TRANSACTION_TYPE, b.QUANTITY,"
+			+ "   'RECEIVING RECEIPT' as TRANSACTION_TYPE, b.UNIT, b.QUANTITY,"
 			+ "   b.COST as UNIT_COST_OR_PRICE, a.REFERENCE_NO"
 			+ "   from RECEIVING_RECEIPT a"
 			+ "   join RECEIVING_RECEIPT_ITEM b"
@@ -49,7 +49,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "   union all"
 			+ "   select a.POST_DT as TRANSACTION_DT, a.ADJUSTMENT_OUT_NO as TRANSACTION_NO,"
 			+ "   null as CUSTOMER_SUPPLIER_NAME,"
-			+ "   'ADJUSTMENT OUT' as TRANSACTION_TYPE, b.QUANTITY,"
+			+ "   'ADJUSTMENT OUT' as TRANSACTION_TYPE, b.UNIT, b.QUANTITY,"
 			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
 			+ "   from ADJUSTMENT_OUT a"
 			+ "   join ADJUSTMENT_OUT_ITEM b"
@@ -59,11 +59,31 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "   union all"
 			+ "   select a.POST_DT as TRANSACTION_DT, a.ADJUSTMENT_IN_NO as TRANSACTION_NO,"
 			+ "   null as CUSTOMER_SUPPLIER_NAME,"
-			+ "   'ADJUSTMENT IN' as TRANSACTION_TYPE, b.QUANTITY,"
+			+ "   'ADJUSTMENT IN' as TRANSACTION_TYPE, b.UNIT, b.QUANTITY,"
 			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
 			+ "   from ADJUSTMENT_IN a"
 			+ "   join ADJUSTMENT_IN_ITEM b"
 			+ "     on b.ADJUSTMENT_IN_ID = a.ID"
+			+ "   where b.PRODUCT_ID = ?"
+			+ "   and a.POST_IND = 'Y'"
+			+ "   union all"
+			+ "   select a.POST_DT as TRANSACTION_DT, a.STOCK_QTY_CONVERSION_NO as TRANSACTION_NO,"
+			+ "   null as CUSTOMER_SUPPLIER_NAME,"
+			+ "   'STOCK QTY CONVERSION FROM' as TRANSACTION_TYPE, b.FROM_UNIT as UNIT, b.QUANTITY,"
+			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
+			+ "   from STOCK_QTY_CONVERSION a"
+			+ "   join STOCK_QTY_CONVERSION_ITEM b"
+			+ "     on b.STOCK_QTY_CONVERSION_ID = a.ID"
+			+ "   where b.PRODUCT_ID = ?"
+			+ "   and a.POST_IND = 'Y'"
+			+ "   union all"
+			+ "   select a.POST_DT as TRANSACTION_DT, a.STOCK_QTY_CONVERSION_NO as TRANSACTION_NO,"
+			+ "   null as CUSTOMER_SUPPLIER_NAME,"
+			+ "   'STOCK QTY CONVERSION TO' as TRANSACTION_TYPE, b.TO_UNIT as UNIT, b.QUANTITY,"
+			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
+			+ "   from STOCK_QTY_CONVERSION a"
+			+ "   join STOCK_QTY_CONVERSION_ITEM b"
+			+ "     on b.STOCK_QTY_CONVERSION_ID = a.ID"
 			+ "   where b.PRODUCT_ID = ?"
 			+ "   and a.POST_IND = 'Y'"
 			+ " ) m";
@@ -106,6 +126,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			item.setTransactionType(rs.getString("TRANSACTION_TYPE"));
 			item.setCurrentCostOrSellingPrice(rs.getBigDecimal("UNIT_COST_OR_PRICE"));
 			item.setReferenceNumber(rs.getString("REFERENCE_NO"));
+			item.setUnit(rs.getString("UNIT"));
 			
 			switch (rs.getString("TRANSACTION_TYPE")) {
 			case "SALES INVOICE":

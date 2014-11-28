@@ -18,4 +18,6 @@ public interface StockQuantityConversionItemDao {
 
 	StockQuantityConversionItem findFirstByProduct(Product product);
 	
+	void updateConvertedQuantity(StockQuantityConversionItem item);
+	
 }

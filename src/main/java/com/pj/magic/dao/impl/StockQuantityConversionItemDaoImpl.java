@@ -23,7 +23,7 @@ import com.pj.magic.model.StockQuantityConversionItem;
 public class StockQuantityConversionItemDaoImpl extends MagicDao implements StockQuantityConversionItemDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select ID, STOCK_QTY_CONVERSION_ID, PRODUCT_ID, FROM_UNIT, QUANTITY, TO_UNIT "
+			"select ID, STOCK_QTY_CONVERSION_ID, PRODUCT_ID, FROM_UNIT, QUANTITY, TO_UNIT, CONVERTED_QTY"
 			+ " from STOCK_QTY_CONVERSION_ITEM";
 	
 	private StockQuantityConversionItemRowMapper rowMapper =
@@ -125,9 +125,20 @@ public class StockQuantityConversionItemDaoImpl extends MagicDao implements Stoc
 			item.setFromUnit(rs.getString("FROM_UNIT"));
 			item.setQuantity(rs.getInt("QUANTITY"));
 			item.setToUnit(rs.getString("TO_UNIT"));
+			if (rs.getInt("CONVERTED_QTY") != 0) {
+				item.setConvertedQuantity(rs.getInt("CONVERTED_QTY"));
+			}
 			return item;
 		}
 		
+	}
+
+	private static final String UPDATE_CONVERTED_QUANTITY_SQL =
+			"update STOCK_QTY_CONVERSION_ITEM set CONVERTED_QTY = ? where ID = ?";
+	
+	@Override
+	public void updateConvertedQuantity(StockQuantityConversionItem item) {
+		getJdbcTemplate().update(UPDATE_CONVERTED_QUANTITY_SQL, item.getConvertedQuantity(), item.getId());
 	}
 	
 }

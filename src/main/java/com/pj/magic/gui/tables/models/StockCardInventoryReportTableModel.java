@@ -16,7 +16,7 @@ import com.pj.magic.util.FormatterUtil;
 public class StockCardInventoryReportTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames = 
-		{"Trans. Date", "Trans. No.", "Supplier/Customer", "Trans. Type", "Add Qty", "Less Qty", "Cost / Price", "Amount", "Ref. No."};
+		{"Trans. Date", "Trans. No.", "Supplier/Customer", "Trans. Type", "Unit", "Add Qty", "Less Qty", "Cost / Price", "Amount", "Ref. No."};
 	
 	private List<StockCardInventoryReportItem> items = new ArrayList<>();
 	
@@ -42,6 +42,8 @@ public class StockCardInventoryReportTableModel extends AbstractTableModel {
 			return item.getSupplierOrCustomerName();
 		case StockCardInventoryReportTable.TRANSACTION_TYPE_COLUMN_INDEX:
 			return item.getTransactionType();
+		case StockCardInventoryReportTable.UNIT_COLUMN_INDEX:
+			return item.getUnit();
 		case StockCardInventoryReportTable.ADD_QUANTITY_COLUMN_INDEX:
 			return item.getAddQuantity();
 		case StockCardInventoryReportTable.LESS_QUANTITY_COLUMN_INDEX:
