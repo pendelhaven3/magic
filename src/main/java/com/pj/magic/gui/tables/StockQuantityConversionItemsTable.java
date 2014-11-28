@@ -201,7 +201,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		
 		addMode = false;
 		List<StockQuantityConversionItem> items = stockQuantityConversion.getItems();
-		items.addAll(tableModel.getItems());
+//		items.addAll(tableModel.getItems());
 		tableModel.setStockQuantityConversion(stockQuantityConversion);
 		
 		if (items.size() > 0) {

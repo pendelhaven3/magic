@@ -166,7 +166,7 @@ public class AdjustmentOutItemsTable extends MagicTable {
 		
 		addMode = false;
 		List<AdjustmentOutItem> items = adjustmentOut.getItems();
-		items.addAll(tableModel.getItems());
+//		items.addAll(tableModel.getItems());
 		tableModel.setItems(items);
 		
 		if (items.size() > 0) {

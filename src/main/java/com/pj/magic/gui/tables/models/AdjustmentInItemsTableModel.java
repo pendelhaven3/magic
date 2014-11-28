@@ -115,7 +115,12 @@ public class AdjustmentInItemsTableModel extends AbstractTableModel {
 			item.setProduct(rowItem.getProduct());
 			item.setUnit(rowItem.getUnit());
 			item.setQuantity(Integer.valueOf(rowItem.getQuantity()));
+			
+			boolean newItem = (item.getId() == null);
 			adjustmentInService.save(item);
+			if (newItem) {
+				item.getParent().getItems().add(item);
+			}
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}

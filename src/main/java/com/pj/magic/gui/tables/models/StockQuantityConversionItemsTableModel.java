@@ -122,7 +122,12 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 			item.setFromUnit(rowItem.getFromUnit());
 			item.setQuantity(rowItem.getQuantity());
 			item.setToUnit(rowItem.getToUnit());
+			
+			boolean newItem = (item.getId() == null);
 			stockQuantityConversionService.save(item);
+			if (newItem) {
+				item.getParent().getItems().add(item);
+			}
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
