@@ -33,7 +33,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			+ " POST_DT, MARK_IND, MARK_DT, CANCEL_DT, CANCEL_IND, TRANSACTION_DT, VAT_AMOUNT,"
 			+ " PRICING_SCHEME_ID, d.NAME as PRICING_SCHEME_NAME,"
 			+ " ENCODER, b.USERNAME as ENCODER_USERNAME,"
-			+ " a.PAYMENT_TERM_ID, e.NAME as PAYMENT_TERM_NAME,"
+			+ " a.PAYMENT_TERM_ID, e.NAME as PAYMENT_TERM_NAME, e.NUMBER_OF_DAYS as PAYMENT_TERM_NUMBER_OF_DAYS,"
 			+ " POST_BY, f.USERNAME as POST_BY_USERNAME,"
 			+ " MARK_BY, g.USERNAME as MARK_BY_USERNAME,"
 			+ " CANCEL_BY, h.USERNAME as CANCEL_BY_USERNAME,"
@@ -135,8 +135,13 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 					new PricingScheme(rs.getLong("PRICING_SCHEME_ID"), rs.getString("PRICING_SCHEME_NAME")));
 			salesInvoice.setMode(rs.getString("MODE"));
 			salesInvoice.setRemarks(rs.getString("REMARKS"));
-			salesInvoice.setPaymentTerm(
-					new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
+			
+			PaymentTerm paymentTerm = new PaymentTerm();
+			paymentTerm.setId(rs.getLong("PAYMENT_TERM_ID"));
+			paymentTerm.setName(rs.getString("PAYMENT_TERM_NAME"));
+			paymentTerm.setNumberOfDays(rs.getInt("PAYMENT_TERM_NUMBER_OF_DAYS"));
+			salesInvoice.setPaymentTerm(paymentTerm);
+			
 			salesInvoice.setPostDate(rs.getDate("POST_DT"));
 			salesInvoice.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			salesInvoice.setMarked("Y".equals(rs.getString("MARK_IND")));

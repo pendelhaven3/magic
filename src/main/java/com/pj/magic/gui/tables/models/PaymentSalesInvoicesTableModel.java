@@ -19,7 +19,8 @@ import com.pj.magic.util.NumberUtil;
 @Component
 public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 
-	private static final String[] columnNames = {"SI No.", "Net Amount", "Adj. Amount", "Amount Due"};
+	private static final String[] columnNames = 
+		{"Transaction Date", "SI No.", "Net Amount", "Adj. Amount", "Amount Due", "Due Date"};
 	
 	@Autowired private PaymentService paymentService;
 	
@@ -40,6 +41,8 @@ public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		PaymentSalesInvoice paymentSalesInvoice = paymentSalesInvoices.get(rowIndex);
 		switch (columnIndex) {
+		case PaymentSalesInvoicesTable.TRANSACTION_DATE_COLUMN_INDEX:
+			return FormatterUtil.formatDate(paymentSalesInvoice.getSalesInvoice().getTransactionDate());
 		case PaymentSalesInvoicesTable.SALES_INVOICE_NUMBER_COLUMN_INDEX:
 			return paymentSalesInvoice.getSalesInvoice().getSalesInvoiceNumber();
 		case PaymentSalesInvoicesTable.NET_AMOUNT_COLUMN_INDEX:
@@ -52,6 +55,8 @@ public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 			}
 		case PaymentSalesInvoicesTable.AMOUNT_DUE_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(paymentSalesInvoice.getAmountDue());
+		case PaymentSalesInvoicesTable.DUE_DATE_COLUMN_INDEX:
+			return FormatterUtil.formatDate(paymentSalesInvoice.getSalesInvoice().getDueDate());
 		}
 		return null;
 	}

@@ -8,15 +8,20 @@ $report.center("PAYMENT SUMMARY", $charsPerLine)
 Payment # : $payment.paymentNumber
 Customer  : $report.field($payment.customer.name, 30)
 
-   S.I. #  Net Amount   Adj.Amount   Amount Due
-   ------ ------------  ----------  ------------
-##   366237   146,906.86 ( 26,958.35)   119,948.51
+   Cash   : $report.field($payment.totalCashPayments, 13, "right")               Total Invoices : $report.field($payment.totalAmountDue, 13, "right")
+   Checks : $report.field($payment.totalCheckPayments, 13, "right")               Total Payments : $report.field($payment.totalPayments, 13, "right")
+                                     Total Adjustments : $report.field($payment.totalAdjustments, 13, "right")
+                                            Over/Short : $report.field($payment.overOrShort, 13, "right")
+
+   Tran. Date S.I. #  Net Amount   Adj.Amount   Amount Due  Due Date
+   ---------- ------ ------------  ----------  ------------ ----------
+##   11/28/2014 366237   146,906.86 ( 26,958.35)   119,948.51 11/28/2014
 #foreach($paymentSalesInvoice in $payment.salesInvoices)
-   $report.field($paymentSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($paymentSalesInvoice.salesInvoice.totalNetAmount, 12, "right") ($report.adjustmentAmount($paymentSalesInvoice.adjustmentAmount, 10)) $report.field($paymentSalesInvoice.amountDue, 12, "right")
+   $report.field($paymentSalesInvoice.salesInvoice.transactionDate) $report.field($paymentSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($paymentSalesInvoice.salesInvoice.totalNetAmount, 12, "right") ($report.adjustmentAmount($paymentSalesInvoice.adjustmentAmount, 10)) $report.field($paymentSalesInvoice.amountDue, 12, "right") $report.field($paymentSalesInvoice.salesInvoice.dueDate)
 #end
-          ------------  ----------  ------------
-TOTALS => $report.field($payment.totalNetAmount, 12, "right") ($report.adjustmentAmount($payment.totalAdjustmentAmount, 10)) $report.field($payment.totalAmountDue, 12, "right")
-          ============  ==========  ============
+                     ------------  ----------  ------------
+           TOTALS => $report.field($payment.totalNetAmount, 12, "right") ($report.adjustmentAmount($payment.totalAdjustmentAmount, 10)) $report.field($payment.totalAmountDue, 12, "right")
+                     ============  ==========  ============
 
 Cash Payments
 
@@ -53,11 +58,3 @@ Adjustments
                                       ----------
                            TOTAL =>   $report.field($payment.totalAdjustments, 10, "right")   
                                       ==========
-   
-                      
-                Total Amount Due  : $report.field($payment.totalAmountDue, 12, "right")
-                Total Payments    : $report.field($payment.totalPayments, 12, "right")
-                Total Adjustments : $report.field($payment.totalAdjustments, 12, "right")
-                                    ------------
-                Over/Short        : $report.field($payment.overOrShort, 12, "right")
-                                    ============                      

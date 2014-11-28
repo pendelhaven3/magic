@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.time.DateUtils;
+
 import com.pj.magic.Constants;
 
 public class SalesInvoice {
@@ -284,6 +286,10 @@ public class SalesInvoice {
 	
 	public BigDecimal getVatableSales() {
 		return getTotalNetAmount().subtract(vatAmount);
+	}
+	
+	public Date getDueDate() {
+		return DateUtils.addDays(transactionDate, paymentTerm.getNumberOfDays());
 	}
 	
 }
