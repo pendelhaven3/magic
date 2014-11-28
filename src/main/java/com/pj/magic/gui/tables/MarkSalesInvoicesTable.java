@@ -39,6 +39,14 @@ public class MarkSalesInvoicesTable extends MagicListTable {
     }
 	
 	private void initializeColumns() {
+		columnModel.getColumn(SALES_INVOICE_NUMBER_COLUMN_INDEX).setPreferredWidth(50);
+		columnModel.getColumn(SALES_REQUISITION_NUMBER_COLUMN_INDEX).setPreferredWidth(50);
+		columnModel.getColumn(TRANSACTION_DATE_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(CUSTOMER_NAME_COLUMN_INDEX).setPreferredWidth(200);
+		columnModel.getColumn(ENCODER_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(NET_AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(MARK_COLUMN_INDEX).setPreferredWidth(50);
+		columnModel.getColumn(CANCEL_COLUMN_INDEX).setPreferredWidth(50);
 	}
 
 	public void update() {
