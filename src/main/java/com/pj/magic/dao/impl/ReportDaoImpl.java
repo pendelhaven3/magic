@@ -67,7 +67,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "   where b.PRODUCT_ID = ?"
 			+ "   and a.POST_IND = 'Y'"
 			+ "   union all"
-			+ "   select a.POST_DT as TRANSACTION_DT, a.STOCK_QTY_CONVERSION_NO as TRANSACTION_NO,"
+			+ "   select a.POST_DATE as TRANSACTION_DT, a.STOCK_QTY_CONV_NO as TRANSACTION_NO,"
 			+ "   null as CUSTOMER_SUPPLIER_NAME,"
 			+ "   'STOCK QTY CONVERSION FROM' as TRANSACTION_TYPE, b.FROM_UNIT as UNIT, b.QUANTITY,"
 			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
@@ -77,9 +77,9 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "   where b.PRODUCT_ID = ?"
 			+ "   and a.POST_IND = 'Y'"
 			+ "   union all"
-			+ "   select a.POST_DT as TRANSACTION_DT, a.STOCK_QTY_CONVERSION_NO as TRANSACTION_NO,"
+			+ "   select a.POST_DATE as TRANSACTION_DT, a.STOCK_QTY_CONV_NO as TRANSACTION_NO,"
 			+ "   null as CUSTOMER_SUPPLIER_NAME,"
-			+ "   'STOCK QTY CONVERSION TO' as TRANSACTION_TYPE, b.TO_UNIT as UNIT, b.QUANTITY,"
+			+ "   'STOCK QTY CONVERSION TO' as TRANSACTION_TYPE, b.TO_UNIT as UNIT, b.CONVERTED_QTY as QUANTITY,"
 			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
 			+ "   from STOCK_QTY_CONVERSION a"
 			+ "   join STOCK_QTY_CONVERSION_ITEM b"
@@ -92,6 +92,8 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
 			StockCardInventoryReportSearchCriteria criteria) {
 		List<Object> params = new ArrayList<>();
+		params.add(criteria.getProduct().getId());
+		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
@@ -147,6 +149,14 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 				item.setLessQuantity(rs.getInt("QUANTITY"));
 				break;
 			case "ADJUSTMENT IN":
+				item.setAddQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "STOCK QTY CONVERSION FROM":
+				item.setTransactionType("STOCK QTY CONVERSION");
+				item.setLessQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "STOCK QTY CONVERSION TO":
+				item.setTransactionType("STOCK QTY CONVERSION");
 				item.setAddQuantity(rs.getInt("QUANTITY"));
 				break;
 			}
