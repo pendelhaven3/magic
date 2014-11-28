@@ -71,6 +71,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	
 	private Payment payment;
 	private JLabel paymentNumberField;
+	private JLabel createDateField;
 	private MagicTextField customerCodeField;
 	private JLabel customerNameField;
 	private JLabel postedField;
@@ -100,6 +101,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	@Override
 	protected void initializeComponents() {
 		paymentNumberField = new JLabel();
+		createDateField = new JLabel();
 		
 		customerCodeField = new MagicTextField();
 		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
@@ -206,6 +208,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		this.payment = payment = paymentService.getPayment(payment.getId());
 		
 		paymentNumberField.setText(payment.getPaymentNumber().toString());
+		createDateField.setText(FormatterUtil.formatDate(payment.getCreateDate()));
 		customerCodeField.setText(payment.getCustomer().getCode());
 		customerCodeField.setEnabled(!payment.isPosted());
 		customerNameField.setText(payment.getCustomer().getName());
@@ -242,6 +245,7 @@ public class PaymentPanel extends StandardMagicPanel {
 
 	private void clearDisplay() {
 		paymentNumberField.setText(null);
+		createDateField.setText(null);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
 		postedField.setText(null);
@@ -285,22 +289,20 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		panel.add(customerCodeField, c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
 		selectCustomerButton.setPreferredSize(new Dimension(30, 24));
 		panel.add(selectCustomerButton, c);
 		
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
 		panel.add(ComponentUtil.createFiller(10, 20), c);
 		
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
@@ -377,10 +379,23 @@ public class PaymentPanel extends StandardMagicPanel {
 		mainPanel.add(paymentNumberField, c);
 
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 3;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(), c);
+		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Create Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		createDateField = ComponentUtil.createLabel(100, "");
+		mainPanel.add(createDateField, c);
 
 		currentRow++;
 		
@@ -394,6 +409,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
+		c.gridwidth = 3;
 		
 		customerCodeField.setPreferredSize(new Dimension(140, 25));
 		customerNameField = ComponentUtil.createLabel(190, "");
@@ -405,7 +421,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
-		c.gridwidth = 3;
+		c.gridwidth = 5;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(createPostFieldsPanel(), c);
 		
@@ -424,7 +440,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.weightx = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 4;
+		c.gridwidth = 6;
 		
 		tabbedPane = createTabbedPane();
 		tabbedPane.setPreferredSize(new Dimension(600, 280));
@@ -442,7 +458,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 4;
+		c.gridwidth = 6;
 		mainPanel.add(createTotalsPanel(), c);
 				
 		currentRow++;

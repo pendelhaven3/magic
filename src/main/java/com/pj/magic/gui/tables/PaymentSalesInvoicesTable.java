@@ -23,10 +23,12 @@ import com.pj.magic.util.NumberUtil;
 @Component
 public class PaymentSalesInvoicesTable extends MagicTable {
 
-	public static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 0;
-	public static final int NET_AMOUNT_COLUMN_INDEX = 1;
-	public static final int ADJUSTMENT_AMOUNT_COLUMN_INDEX = 2;
-	public static final int AMOUNT_DUE_COLUMN_INDEX = 3;
+	public static final int TRANSACTION_DATE_COLUMN_INDEX = 0;
+	public static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 1;
+	public static final int NET_AMOUNT_COLUMN_INDEX = 2;
+	public static final int ADJUSTMENT_AMOUNT_COLUMN_INDEX = 3;
+	public static final int AMOUNT_DUE_COLUMN_INDEX = 4;
+	public static final int DUE_DATE_COLUMN_INDEX = 5;
 	
 	@Autowired private PaymentSalesInvoicesTableModel tableModel;
 	

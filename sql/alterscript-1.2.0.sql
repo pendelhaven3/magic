@@ -59,3 +59,7 @@ set CONVERTED_QTY = QUANTITY * (select UNIT_CONV_DOZ / UNIT_CONV_PCS from PRODUC
 where (select POST_IND from STOCK_QTY_CONVERSION where ID = STOCK_QTY_CONVERSION_ID) = 'Y'
 and CONVERTED_QTY is null
 and FROM_UNIT = 'DOZ' and TO_UNIT = 'PCS';
+
+alter table PAYMENT add CREATE_DT date null;
+update PAYMENT set CREATE_DT = curdate();
+alter table PAYMENT change CREATE_DT CREATE_DT date not null;

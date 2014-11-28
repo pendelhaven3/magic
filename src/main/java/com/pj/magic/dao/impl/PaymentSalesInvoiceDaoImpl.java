@@ -12,6 +12,7 @@ import com.pj.magic.dao.PaymentSalesInvoiceDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentSalesInvoice;
+import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.util.DbUtil;
@@ -22,14 +23,17 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 	private static final String BASE_SELECT_SQL =
 			"   select a.ID, PAYMENT_ID, SALES_INVOICE_ID, b.SALES_INVOICE_NO, ADJUSTMENT_AMOUNT,"
 			+ " c.PAYMENT_NO, c.POST_DT,"
-			+ " b.CUSTOMER_ID, d.NAME as CUSTOMER_NAME"
+			+ " b.CUSTOMER_ID, d.NAME as CUSTOMER_NAME,"
+			+ " b.TRANSACTION_DT, e.NUMBER_OF_DAYS as PAYMENT_TERM_NUMBER_OF_DAYS"
 			+ " from PAYMENT_SALES_INVOICE a"
 			+ " join SALES_INVOICE b"
 			+ "   on b.ID = a.SALES_INVOICE_ID"
 			+ " join PAYMENT c"
 			+ "   on c.ID = a.PAYMENT_ID"
 			+ " join CUSTOMER d"
-			+ "   on d.ID = b.CUSTOMER_ID";
+			+ "   on d.ID = b.CUSTOMER_ID"
+			+ " join PAYMENT_TERM e"
+			+ "   on e.ID = b.PAYMENT_TERM_ID";
 	
 	private PaymentSalesInvoiceRowMapper paymentSalesInvoiceRowMapper = new PaymentSalesInvoiceRowMapper();
 	
@@ -59,7 +63,8 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 	}
 
 	private static final String FIND_ALL_BY_PAYMENT_SQL = BASE_SELECT_SQL
-			+ " where PAYMENT_ID = ?";
+			+ " where PAYMENT_ID = ?"
+			+ " order by b.TRANSACTION_DT, b.SALES_INVOICE_NO";
 	
 	@Override
 	public List<PaymentSalesInvoice> findAllByPayment(Payment payment) {
@@ -103,7 +108,12 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 			salesInvoice.setId(rs.getLong("SALES_INVOICE_ID"));
 			salesInvoice.setSalesInvoiceNumber(rs.getLong("SALES_INVOICE_NO"));
 			salesInvoice.setCustomer(new Customer(rs.getLong("CUSTOMER_ID"), rs.getString("CUSTOMER_NAME")));
+			salesInvoice.setTransactionDate(rs.getDate("TRANSACTION_DT"));
 			item.setSalesInvoice(salesInvoice);
+			
+			PaymentTerm paymentTerm = new PaymentTerm();
+			paymentTerm.setNumberOfDays(rs.getInt("PAYMENT_TERM_NUMBER_OF_DAYS"));
+			salesInvoice.setPaymentTerm(paymentTerm);
 			
 			item.setAdjustmentAmount(rs.getBigDecimal("ADJUSTMENT_AMOUNT"));
 			

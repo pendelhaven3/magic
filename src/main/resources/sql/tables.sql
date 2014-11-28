@@ -494,6 +494,7 @@ create table PAYMENT (
   POST_IND char(1) default 'N' not null,
   POST_DT date null,
   POST_BY integer null,
+  CREATE_DT date not null,
   constraint PAYMENT$PK primary key (ID),
   constraint PAYMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
   constraint PAYMENT$FK2 foreign key (POST_BY) references USER (ID)
