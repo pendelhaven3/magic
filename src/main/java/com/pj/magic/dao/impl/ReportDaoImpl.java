@@ -112,7 +112,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
-		sql.append(" order by TRANSACTION_DT desc");
+		sql.append(" order by TRANSACTION_DT desc, TRANSACTION_TYPE, TRANSACTION_NO");
 		
 		return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
 	}
