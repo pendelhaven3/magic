@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -43,6 +44,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	@Autowired private StockCardInventoryReportTable table;
 	
 	private MagicTextField productCodeField;
+	private JLabel productDescriptionLabel;
 	private UtilCalendarModel fromDateModel;
 	private UtilCalendarModel toDateModel;
 	private JButton generateButton;
@@ -52,6 +54,8 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	protected void initializeComponents() {
 		productCodeField = new MagicTextField();
 		productCodeField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
+		
+		productDescriptionLabel = new JLabel();
 		
 		selectProductButton = new EllipsisButton();
 		selectProductButton.setToolTipText("Select Product");
@@ -85,6 +89,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		Product product = selectProductDialog.getSelectedProduct();
 		if (product != null) {
 			productCodeField.setText(product.getCode());
+			productDescriptionLabel.setText(product.getDescription());
 		}
 	}
 
@@ -99,6 +104,9 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		if (product == null) {
 			showErrorMessage("No product matching code specified");
 			return;
+		} else {
+			productCodeField.setText(product.getCode());
+			productDescriptionLabel.setText(product.getDescription());
 		}
 		
 		StockCardInventoryReportSearchCriteria criteria = new StockCardInventoryReportSearchCriteria();
@@ -138,18 +146,8 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
+		c.gridwidth = 5;
 		mainPanel.add(createProductPanel(), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 3;
-		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
-		
-		c = new GridBagConstraints();
-		c.weightx = 1.0; // right space filler
-		c.gridx = 6;
-		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(), c);
 		
 		currentRow++;
 		
@@ -169,6 +167,11 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		mainPanel.add(datePicker, c);
 		
 		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+		
+		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -182,6 +185,12 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		datePanel = new JDatePanelImpl(toDateModel);
 		datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
 		mainPanel.add(datePicker, c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0; // right space filler
+		c.gridx = 6;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(), c);
 		
 		currentRow++;
 		
@@ -221,10 +230,12 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 
 	private JPanel createProductPanel() {
 		productCodeField.setPreferredSize(new Dimension(150, 25));
+		productDescriptionLabel.setPreferredSize(new Dimension(300, 20));
 		
 		JPanel panel = new JPanel();
 		panel.add(productCodeField);
 		panel.add(selectProductButton);
+		panel.add(productDescriptionLabel);
 		return panel;
 	}
 
@@ -235,6 +246,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		productCodeField.setText(null);
+		productDescriptionLabel.setText(null);
 		fromDateModel.setValue(null);
 		toDateModel.setValue(null);
 		table.setItems(new ArrayList<StockCardInventoryReportItem>());
