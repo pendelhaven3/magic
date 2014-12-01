@@ -246,8 +246,10 @@ public class PaymentPanel extends StandardMagicPanel {
 	private void clearDisplay() {
 		paymentNumberField.setText(null);
 		createDateField.setText(null);
+		customerCodeField.setEnabled(true);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
+		selectCustomerButton.setEnabled(true);
 		postedField.setText(null);
 		postDateField.setText(null);
 		postedByField.setText(null);
