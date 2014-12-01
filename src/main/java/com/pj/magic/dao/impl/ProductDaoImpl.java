@@ -185,11 +185,11 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	private static final String UPDATE_SQL =
 			"update PRODUCT set CODE = ?, DESCRIPTION = ?,"
 			+ " MAX_STOCK_LEVEL = ?, MIN_STOCK_LEVEL = ?, ACTIVE_IND = ?,"
-			+ " UNIT_IND_CSE = ?, AVAIL_QTY_CSE = ?, UNIT_CONV_CSE = ?,"
-			+ " UNIT_IND_TIE = ?, AVAIL_QTY_TIE = ?, UNIT_CONV_TIE = ?,"
-			+ " UNIT_IND_CTN = ?, AVAIL_QTY_CTN = ?, UNIT_CONV_CTN = ?,"
-			+ " UNIT_IND_DOZ = ?, AVAIL_QTY_DOZ = ?, UNIT_CONV_DOZ = ?,"
-			+ " UNIT_IND_PCS = ?, AVAIL_QTY_PCS = ?, UNIT_CONV_PCS = ?,"
+			+ " UNIT_IND_CSE = ?, UNIT_CONV_CSE = ?,"
+			+ " UNIT_IND_TIE = ?, UNIT_CONV_TIE = ?,"
+			+ " UNIT_IND_CTN = ?, UNIT_CONV_CTN = ?,"
+			+ " UNIT_IND_DOZ = ?, UNIT_CONV_DOZ = ?,"
+			+ " UNIT_IND_PCS = ?, UNIT_CONV_PCS = ?,"
 			+ " MANUFACTURER_ID = ?, CATEGORY_ID = ?, SUBCATEGORY_ID = ?,"
 			+ " COMPANY_LIST_PRICE = ? where ID = ?";
 	
@@ -201,19 +201,14 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				product.getMinimumStockLevel(),
 				product.isActive() ? "Y" : "N",
 				product.hasUnit(Unit.CASE) ? "Y" : "N",
-				product.getUnitQuantity(Unit.CASE),
 				product.getUnitConversion(Unit.CASE),
 				product.hasUnit(Unit.TIE) ? "Y" : "N",
-				product.getUnitQuantity(Unit.TIE),
 				product.getUnitConversion(Unit.TIE),
 				product.hasUnit(Unit.CARTON) ? "Y" : "N",
-				product.getUnitQuantity(Unit.CARTON),
 				product.getUnitConversion(Unit.CARTON),
 				product.hasUnit(Unit.DOZEN) ? "Y" : "N",
-				product.getUnitQuantity(Unit.DOZEN),
 				product.getUnitConversion(Unit.DOZEN),
 				product.hasUnit(Unit.PIECES) ? "Y" : "N",
-				product.getUnitQuantity(Unit.PIECES),
 				product.getUnitConversion(Unit.PIECES),
 				product.getManufacturer() != null ? product.getManufacturer().getId() : null,
 				product.getCategory() != null ? product.getCategory().getId() : null,
