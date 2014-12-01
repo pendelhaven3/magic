@@ -51,6 +51,7 @@ import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.PaymentReportUtil;
+import com.pj.magic.util.PriceListReportUtil;
 import com.pj.magic.util.PrinterUtil;
 import com.pj.magic.util.ReceivingReceiptReportUtil;
 import com.pj.magic.util.ReportUtil;
@@ -76,6 +77,8 @@ public class PrintServiceImpl implements PrintService {
 	private static final int ADJUSTMENT_IN_ITEMS_PER_PAGE = 44;
 	private static final int UNPAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	private static final int PAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
+	private static final int PRICE_LIST_ITEMS_PER_PAGE = 46;
+	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -163,10 +166,17 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public List<String> generateReportAsString(PricingScheme pricingScheme, List<Product> products) {
+	public List<String> generateReportAsString(PricingScheme pricingScheme, List<Product> products,
+			boolean includeCosts) {
 		String currentDate = FormatterUtil.formatDate(new Date());
 		
-		List<List<Product>> pageItems = partitionPricingSchemeProducts(products);
+		List<List<Product>> pageItems = null;
+		if (includeCosts) {
+			pageItems = partitionPricingSchemeProducts(products);
+		} else {
+			pageItems = Lists.partition(products, PRICE_LIST_ITEMS_PER_PAGE);
+		}
+		
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
@@ -176,7 +186,12 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			printPages.add(generateReportAsString("reports/pricingScheme.vm", reportData));
+			if (includeCosts) {
+				printPages.add(generateReportAsString("reports/pricingScheme.vm", reportData));
+			} else {
+				reportData.put("reportUtil", PriceListReportUtil.class);
+				printPages.add(generateReportAsString("reports/pricingScheme-pricesOnly.vm", reportData));
+			}
 		}
 		return printPages;
 	}
@@ -200,10 +215,14 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public void print(PricingScheme pricingScheme, List<Product> products) {
+	public void print(PricingScheme pricingScheme, List<Product> products, boolean includeCosts) {
 		try {
-			for (String printPage : generateReportAsString(pricingScheme, products)) {
-				PrinterUtil.print(printPage);
+			for (String printPage : generateReportAsString(pricingScheme, products, includeCosts)) {
+				if (includeCosts) {
+					PrinterUtil.print(printPage);
+				} else {
+					PrinterUtil.printWithCondensedFont(printPage);
+				}
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
