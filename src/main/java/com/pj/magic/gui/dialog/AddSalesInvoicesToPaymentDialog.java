@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,8 @@ public class AddSalesInvoicesToPaymentDialog extends MagicDialog {
 
 	private static final int SELECTION_CHECKBOX_COLUMN_INDEX = 0;
 	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 1;
-	private static final int AMOUNT_COLUMN_INDEX = 2;
+	private static final int TRANSACTION_DATE_COLUMN_INDEX = 2;
+	private static final int AMOUNT_COLUMN_INDEX = 3;
 
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	
@@ -79,6 +81,12 @@ public class AddSalesInvoicesToPaymentDialog extends MagicDialog {
 	private void initializeTable() {
 		tableModel = new SalesInvoicesTableModel();
 		table = new MagicListTable(tableModel);
+		
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(SELECTION_CHECKBOX_COLUMN_INDEX).setPreferredWidth(40);
+		columnModel.getColumn(SALES_INVOICE_NUMBER_COLUMN_INDEX).setPreferredWidth(120);
+		columnModel.getColumn(TRANSACTION_DATE_COLUMN_INDEX).setPreferredWidth(120);
+		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(120);
 	}
 
 	public List<SalesInvoice> getSelectedSalesInvoices() {
@@ -135,7 +143,7 @@ public class AddSalesInvoicesToPaymentDialog extends MagicDialog {
 
 	private class SalesInvoicesTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"", "SI No.", "Total Amount"};
+		private final String[] columnNames = {"", "SI No.", "Transaction Date", "Total Amount"};
 		
 		private List<SalesInvoice> salesInvoices = new ArrayList<>();
 		private List<Integer> selected = new ArrayList<>();
@@ -173,6 +181,8 @@ public class AddSalesInvoicesToPaymentDialog extends MagicDialog {
 				return selected.contains(rowIndex);
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
 				return salesInvoice.getSalesInvoiceNumber();
+			case TRANSACTION_DATE_COLUMN_INDEX:
+				return FormatterUtil.formatDate(salesInvoice.getTransactionDate());
 			case AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
 			default:
