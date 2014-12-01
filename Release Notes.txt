@@ -1,3 +1,8 @@
+version 1.2.4
+
+1. Fixed bug where product quantity is also updated at Maintain Product panel
+2. Fixed bug where Payment buttons are not enabled after viewing a posted Payment
+
 version 1.1.1
 
 1. Display Sales Requisition post errors all at once
