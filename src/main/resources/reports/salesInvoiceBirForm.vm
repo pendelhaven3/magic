@@ -1,7 +1,7 @@
 
 
 
-                                                               Page: $currentPage x $totalPages
+     SI #: $report.field($salesInvoice.salesInvoiceNumber, 7)                                             Page: $currentPage x $totalPages
 
 
 
