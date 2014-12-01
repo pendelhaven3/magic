@@ -1,3 +1,8 @@
+version 1.2.5
+
+1. Added Price List printout
+2. Added Sales Invoice number to BIR form printout
+
 version 1.2.4
 
 1. Fixed bug where product quantity is also updated at Maintain Product panel
