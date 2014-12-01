@@ -13,6 +13,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -41,6 +42,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.search.ProductSearchCriteria;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.PrintService;
+import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -356,13 +358,26 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	}
 
 	private void printPreviewPricingScheme() {
+		Object[] buttons = {"Price List", "Product Price, Cost, and Profit"};
+		int choice = JOptionPane.showOptionDialog(this, "Choose Report Type", 
+				"Print Preview", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, 
+				null, buttons, buttons[0]);
+
 		printPreviewDialog.updateDisplay(
-				printService.generateReportAsString(pricingScheme, pricesTableModel.getProducts()));
+				printService.generateReportAsString(pricingScheme, pricesTableModel.getProducts(), 
+						choice == JOptionPane.NO_OPTION));
+		printPreviewDialog.setColumnsPerLine(PrintServiceImpl.PRICE_LIST_CHARACTERS_PER_LINE);
+		printPreviewDialog.setUseCondensedFontForPrinting(true);
 		printPreviewDialog.setVisible(true);
 	}
 
 	private void printPricingScheme() {
-		printService.print(pricingScheme, pricesTableModel.getProducts());
+		Object[] buttons = {"Price List", "Product Price, Cost, and Profit"};
+		int choice = JOptionPane.showOptionDialog(this, "Choose Report Type", 
+				"Print Preview", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, 
+				null, buttons, buttons[0]);
+		
+		printService.print(pricingScheme, pricesTableModel.getProducts(), choice == JOptionPane.NO_OPTION);
 	}
 
 	protected void showAllProducts() {

@@ -28,11 +28,11 @@ public interface PrintService {
 	
 	void print(StockQuantityConversion stockQuantityConversion);
 
-	List<String> generateReportAsString(PurchaseOrder purchaseOrder, boolean includeCost);
+	List<String> generateReportAsString(PurchaseOrder purchaseOrder, boolean includeCosts);
 	
-	void print(PricingScheme pricingScheme, List<Product> products);
+	void print(PricingScheme pricingScheme, List<Product> products, boolean includeCosts);
 	
-	List<String> generateReportAsString(PricingScheme pricingScheme, List<Product> products);
+	List<String> generateReportAsString(PricingScheme pricingScheme, List<Product> products, boolean includeCost);
 	
 	void print(List<String> printPages);
 
