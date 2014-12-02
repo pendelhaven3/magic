@@ -130,8 +130,6 @@ public class PrintServiceImpl implements PrintService {
 	public List<String> generateReportAsString(PurchaseOrder purchaseOrder, boolean includeCost) {
 		purchaseOrder.setSupplier(supplierDao.get(purchaseOrder.getSupplier().getId()));
 		
-		Collections.sort(purchaseOrder.getItems());
-		
 		String currentDate = FormatterUtil.formatDate(new Date());
 		
 		String reportFile = (includeCost) ? "purchaseOrder-withCost.vm" : "purchaseOrder.vm";
@@ -279,8 +277,6 @@ public class PrintServiceImpl implements PrintService {
 			boolean includeDiscountDetails) {
 		receivingReceipt.setSupplier(supplierDao.get(receivingReceipt.getSupplier().getId()));
 		receivingReceipt.setReceivedBy(userDao.get(receivingReceipt.getReceivedBy().getId()));
-		
-		Collections.sort(receivingReceipt.getItems());
 		
 		String receivedDate = FormatterUtil.formatDate(receivingReceipt.getReceivedDate());
 		
