@@ -1,5 +1,7 @@
 package com.pj.magic.gui.tables;
 
+import java.math.BigDecimal;
+
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.tables.models.SalesInvoiceItemsTableModel;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.service.ProductService;
@@ -101,9 +104,7 @@ public class SalesInvoiceItemsTable extends MagicTable {
 			columnModel.getColumn(FLAT_RATE_DISCOUNT_COLUMN_INDEX).setCellRenderer(rightRenderer);
 			columnModel.getColumn(DISCOUNTED_AMOUNT_COLUMN_INDEX).setCellRenderer(rightRenderer);
 			columnModel.getColumn(NET_AMOUNT_COLUMN_INDEX).setCellRenderer(rightRenderer);
-		}
-		
-		if (showDiscountDetails) {
+			
 			columnModel.getColumn(DISCOUNT_1_COLUMN_INDEX).setCellEditor(
 					new DiscountCellEditor(new JTextField(), "Discount 1"));
 			columnModel.getColumn(DISCOUNT_2_COLUMN_INDEX).setCellEditor(
@@ -124,6 +125,26 @@ public class SalesInvoiceItemsTable extends MagicTable {
 		initializeColumns(showDiscountDetails);
 	}
 	
+	public boolean validateItemProfitNotLessThanZero(BigDecimal value, String fieldName) {
+		SalesInvoiceItem item = new SalesInvoiceItem(getCurrentlySelectedRowItem());
+		Product product = productService.getProduct(item.getProduct().getId());
+		switch (fieldName) {
+		case "Discount 1":
+			item.setDiscount1(value);
+			break;
+		case "Discount 2":
+			item.setDiscount2(value);
+			break;
+		case "Discount 3":
+			item.setDiscount3(value);
+			break;
+		case "Flat Rate Discount":
+			item.setFlatRateDiscount(value);
+			break;
+		}
+		return item.getNetAmount().compareTo(product.getFinalCost(item.getUnit())) >= 0;
+	}
+	
 	private class DiscountCellEditor extends MagicCellEditor {
 		
 		private String fieldName;
@@ -141,6 +162,8 @@ public class SalesInvoiceItemsTable extends MagicTable {
 				((JTextField)getComponent()).setText("0.00");
 			} else if (!NumberUtil.isAmount(discount)){
 				showErrorMessage(fieldName + " must be a valid amount");
+			} else if (!validateItemProfitNotLessThanZero(NumberUtil.toBigDecimal(discount), fieldName)) {
+				showErrorMessage("Resulting net amount less than cost");
 			} else {
 				valid = true;
 			}

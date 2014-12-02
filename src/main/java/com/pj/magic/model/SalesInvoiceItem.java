@@ -28,6 +28,17 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 	public SalesInvoiceItem(Long id) {
 		this.id = id;
 	}
+	
+	public SalesInvoiceItem(SalesInvoiceItem item) {
+		product = item.getProduct();
+		unit = item.getUnit();
+		quantity = item.getQuantity();
+		unitPrice = item.getUnitPrice();
+		discount1 = item.getDiscount1();
+		discount2 = item.getDiscount2();
+		discount3 = item.getDiscount3();
+		flatRateDiscount = item.getFlatRateDiscount();
+	}
 
 	public Long getId() {
 		return id;
