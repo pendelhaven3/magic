@@ -192,6 +192,7 @@ create table SALES_INVOICE_ITEM (
   UNIT char(3) not null,
   QUANTITY integer not null,
   UNIT_PRICE numeric(10, 2) not null,
+  COST numeric(10, 2) not null,
   DISCOUNT_1 numeric(4, 2) default 0 not null,
   DISCOUNT_2 numeric(4, 2) default 0 not null,
   DISCOUNT_3 numeric(4, 2) default 0 not null,

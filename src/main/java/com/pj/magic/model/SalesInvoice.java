@@ -292,4 +292,16 @@ public class SalesInvoice {
 		return DateUtils.addDays(transactionDate, paymentTerm.getNumberOfDays());
 	}
 	
+	public BigDecimal getTotalNetCost() {
+		BigDecimal total = Constants.ZERO;
+		for (SalesInvoiceItem item : items) {
+			total = total.add(item.getNetCost());
+		}
+		return total;
+	}
+	
+	public BigDecimal getTotalNetProfit() {
+		return getTotalNetAmount().subtract(getTotalNetCost());
+	}
+	
 }

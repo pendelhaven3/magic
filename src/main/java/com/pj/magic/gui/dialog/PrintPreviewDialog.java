@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -142,10 +143,10 @@ public class PrintPreviewDialog extends MagicDialog {
 		
 		panel.setLayout(new GridBagLayout());
 		panel.setBackground(Color.WHITE);
-		panel.setBorder(BorderFactory.createMatteBorder(20, 0, 0, 0, Color.white));
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.weightx = 1.0;
+		c.insets = new Insets(30, 30, 30, 30);
 		
 		textArea = new JTextArea();
 		textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));

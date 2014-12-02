@@ -17,7 +17,7 @@ public class SalesInvoiceItemDaoImpl extends MagicDao implements SalesInvoiceIte
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE,"
-			+ " DISCOUNT_1, DISCOUNT_2, DISCOUNT_3, FLAT_RATE_DISCOUNT,"
+			+ " DISCOUNT_1, DISCOUNT_2, DISCOUNT_3, FLAT_RATE_DISCOUNT, COST,"
 			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
 			+ " from SALES_INVOICE_ITEM a"
 			+ " join PRODUCT b"
@@ -46,8 +46,8 @@ public class SalesInvoiceItemDaoImpl extends MagicDao implements SalesInvoiceIte
 	}
 
 	private static final String INSERT_SQL =
-			"insert into SALES_INVOICE_ITEM (SALES_INVOICE_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE)"
-			+ " values (?, ?, ?, ?, ?)";
+			"insert into SALES_INVOICE_ITEM (SALES_INVOICE_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE, COST)"
+			+ " values (?, ?, ?, ?, ?, ?)";
 	
 	private void insert(SalesInvoiceItem item) {
 		getJdbcTemplate().update(INSERT_SQL,
@@ -55,7 +55,8 @@ public class SalesInvoiceItemDaoImpl extends MagicDao implements SalesInvoiceIte
 				item.getProduct().getId(),
 				item.getUnit(),
 				item.getQuantity(),
-				item.getUnitPrice());
+				item.getUnitPrice(),
+				item.getCost());
 	}
 
 	private static final String FIND_ALL_BY_SALES_INVOICE_SQL = BASE_SELECT_SQL
@@ -84,6 +85,7 @@ public class SalesInvoiceItemDaoImpl extends MagicDao implements SalesInvoiceIte
 				item.setDiscount2(rs.getBigDecimal("DISCOUNT_2"));
 				item.setDiscount3(rs.getBigDecimal("DISCOUNT_3"));
 				item.setFlatRateDiscount(rs.getBigDecimal("FLAT_RATE_DISCOUNT"));
+				item.setCost(rs.getBigDecimal("COST"));
 				return item;
 			}
 			

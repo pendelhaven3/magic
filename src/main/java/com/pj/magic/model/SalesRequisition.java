@@ -127,6 +127,7 @@ public class SalesRequisition {
 			invoiceItem.setUnit(item.getUnit());
 			invoiceItem.setQuantity(item.getQuantity());
 			invoiceItem.setUnitPrice(item.getUnitPrice());
+			invoiceItem.setCost(item.getProduct().getFinalCost(item.getUnit()));
 			salesInvoice.getItems().add(invoiceItem);
 		}
 		
