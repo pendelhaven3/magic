@@ -18,12 +18,23 @@ import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
+import com.pj.magic.model.Unit;
 
 @Repository
 public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequisitionItemDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select ID, SALES_REQUISITION_ID, PRODUCT_ID, UNIT, QUANTITY from SALES_REQUISITION_ITEM";
+			"select a.ID, SALES_REQUISITION_ID, a.PRODUCT_ID, UNIT, QUANTITY,"
+			+ " c.UNIT_IND_CSE, c.UNIT_IND_TIE, c.UNIT_IND_CTN, c.UNIT_IND_DOZ, c.UNIT_IND_PCS,"
+			+ " d.UNIT_PRICE_CSE, d.UNIT_PRICE_TIE, d.UNIT_PRICE_CTN, d.UNIT_PRICE_DOZ, d.UNIT_PRICE_PCS"
+			+ " from SALES_REQUISITION_ITEM a"
+			+ " join SALES_REQUISITION b"
+			+ "   on b.ID = a.SALES_REQUISITION_ID"
+			+ " join PRODUCT c"
+			+ "   on c.ID = a.PRODUCT_ID"
+			+ " join PRODUCT_PRICE d"
+			+ " 	on d.PRODUCT_ID = c.ID"
+			+ "     and d.PRICING_SCHEME_ID = b.PRICING_SCHEME_ID";
 
 	private SalesRequisitionItemRowMapper salesRequisitionItemRowMapper =
 			new SalesRequisitionItemRowMapper();
@@ -118,10 +129,36 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 			SalesRequisitionItem item = new SalesRequisitionItem();
 			item.setId(rs.getLong("ID"));
 			item.setParent(new SalesRequisition(rs.getLong("SALES_REQUISITION_ID")));
-			item.setProduct(new Product(rs.getLong("PRODUCT_ID")));
+			item.setProduct(mapProduct(rs));
 			item.setUnit(rs.getString("UNIT"));
 			item.setQuantity(rs.getInt("QUANTITY"));
 			return item;
+		}
+		
+		private Product mapProduct(ResultSet rs) throws SQLException {
+			Product product = new Product();
+			product.setId(rs.getLong("PRODUCT_ID"));
+			if ("Y".equals(rs.getString("UNIT_IND_CSE"))) {
+				product.addUnit(Unit.CASE);
+				product.setUnitPrice(Unit.CASE, rs.getBigDecimal("UNIT_PRICE_CSE"));
+			}
+			if ("Y".equals(rs.getString("UNIT_IND_TIE"))) {
+				product.addUnit(Unit.TIE);
+				product.setUnitPrice(Unit.TIE, rs.getBigDecimal("UNIT_PRICE_TIE"));
+			}
+			if ("Y".equals(rs.getString("UNIT_IND_CTN"))) {
+				product.addUnit(Unit.CARTON);
+				product.setUnitPrice(Unit.CARTON, rs.getBigDecimal("UNIT_PRICE_CTN"));
+			}
+			if ("Y".equals(rs.getString("UNIT_IND_DOZ"))) {
+				product.addUnit(Unit.DOZEN);
+				product.setUnitPrice(Unit.DOZEN, rs.getBigDecimal("UNIT_PRICE_DOZ"));
+			}
+			if ("Y".equals(rs.getString("UNIT_IND_PCS"))) {
+				product.addUnit(Unit.PIECES);
+				product.setUnitPrice(Unit.PIECES, rs.getBigDecimal("UNIT_PRICE_PCS"));
+			}
+			return product;
 		}
 		
 	}

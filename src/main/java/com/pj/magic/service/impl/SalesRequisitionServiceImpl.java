@@ -135,7 +135,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		
 		List<SalesRequisition> salesRequisitions = salesRequisitionDao.search(criteria);
 		for (SalesRequisition salesRequisition : salesRequisitions) {
-			loadSalesRequisitionDetails(salesRequisition);
+			salesRequisition.setItems(salesRequisitionItemDao.findAllBySalesRequisition(salesRequisition));
 		}
 		return salesRequisitions;
 	}

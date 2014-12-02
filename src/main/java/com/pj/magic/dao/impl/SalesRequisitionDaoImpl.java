@@ -28,11 +28,16 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER, POST_IND,"
-			+ " PRICING_SCHEME_ID, MODE, REMARKS, TRANSACTION_DT,"
-			+ " PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME"
+			+ " PRICING_SCHEME_ID, MODE, a.REMARKS, TRANSACTION_DT,"
+			+ " a.PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME,"
+			+ " c.NAME as CUSTOMER_NAME, d.USERNAME as ENCODER_USERNAME"
 			+ " from SALES_REQUISITION a"
 			+ " join PAYMENT_TERM b"
-			+ "   on b.ID = a.PAYMENT_TERM_ID";
+			+ "   on b.ID = a.PAYMENT_TERM_ID"
+			+ " join CUSTOMER c"
+			+ "   on c.ID = a.CUSTOMER_ID"
+			+ " join USER d"
+			+ "   on d.ID = a.ENCODER";
 	
 	private static final String SALES_REQUISITION_NUMBER_SEQUENCE = "SALES_REQUISITION_NO_SEQ";
 	
@@ -87,7 +92,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 				ps.setDate(9, new Date(salesRequisition.getTransactionDate().getTime()));
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		SalesRequisition updated = get(holder.getKey().longValue());
 		salesRequisition.setId(updated.getId());
@@ -119,12 +124,14 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			salesRequisition.setId(rs.getLong("ID"));
 			salesRequisition.setSalesRequisitionNumber(rs.getLong("SALES_REQUISITION_NO"));
 			salesRequisition.setCreateDate(rs.getDate("CREATE_DT"));
-			salesRequisition.setEncoder(new User(rs.getLong("ENCODER")));
+			salesRequisition.setEncoder(
+					new User(rs.getLong("ENCODER"), rs.getString("ENCODER_USERNAME")));
 			salesRequisition.setPosted("Y".equals(rs.getString("POST_IND")));
 			salesRequisition.setPricingScheme(new PricingScheme(rs.getLong("PRICING_SCHEME_ID")));
 			salesRequisition.setMode(rs.getString("MODE"));
 			salesRequisition.setRemarks(rs.getString("REMARKS"));
-			salesRequisition.setCustomer(new Customer(rs.getLong("CUSTOMER_ID")));
+			salesRequisition.setCustomer(
+					new Customer(rs.getLong("CUSTOMER_ID"), rs.getString("CUSTOMER_NAME")));
 			salesRequisition.setPaymentTerm(
 					new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
 			salesRequisition.setTransactionDate(rs.getDate("TRANSACTION_DT"));
