@@ -250,6 +250,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 
 	private static final String FIND_ALL_FOR_PAYMENT_BY_CUSTOMER_SQL = BASE_SELECT_SQL
 			+ " and a.CUSTOMER_ID = ?"
+			+ " and a.CANCEL_IND = 'N'"
 			+ " and not exists("
 			+ "   select 1 from PAYMENT_SALES_INVOICE"
 			+ "   where SALES_INVOICE_ID = a.ID"
