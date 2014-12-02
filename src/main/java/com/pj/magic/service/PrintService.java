@@ -54,9 +54,9 @@ public interface PrintService {
 
 	void print(AreaInventoryReport areaInventoryReport);
 
-	List<String> generateReportAsString(SalesInvoiceReport salesInvoiceReport);
+	List<String> generateReportAsString(SalesInvoiceReport salesInvoiceReport, boolean includeCostAndProfit);
 
-	void print(SalesInvoiceReport salesInvoiceReport);
+	void print(SalesInvoiceReport salesInvoiceReport, boolean includeCostAndProfit);
 
 	List<String> generateReportAsString(AdjustmentOut adjustmentOut);
 

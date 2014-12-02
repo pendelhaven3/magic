@@ -20,6 +20,7 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 	private BigDecimal discount2 = BigDecimal.ZERO; 
 	private BigDecimal discount3 = BigDecimal.ZERO;
 	private BigDecimal flatRateDiscount = BigDecimal.ZERO;
+	private BigDecimal cost;
 
 	public SalesInvoiceItem() {
 		// default constructor
@@ -174,6 +175,18 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 		return new EqualsBuilder()
 			.append(id, other.getId())
 			.isEquals();
+	}
+
+	public BigDecimal getCost() {
+		return cost;
+	}
+
+	public void setCost(BigDecimal cost) {
+		this.cost = cost;
+	}
+
+	public BigDecimal getNetCost() {
+		return cost.multiply(new BigDecimal(quantity));
 	}
 	
 }

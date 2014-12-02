@@ -78,7 +78,9 @@ public class PrintServiceImpl implements PrintService {
 	private static final int UNPAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	private static final int PAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	private static final int PRICE_LIST_ITEMS_PER_PAGE = 46;
+	
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
+	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -484,7 +486,7 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public List<String> generateReportAsString(SalesInvoiceReport salesInvoiceReport) {
+	public List<String> generateReportAsString(SalesInvoiceReport salesInvoiceReport, boolean includeCostAndProfit) {
 		Collections.sort(salesInvoiceReport.getSalesInvoices(), new Comparator<SalesInvoice>() {
 
 			@Override
@@ -507,15 +509,20 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
 			reportData.put("reportUtil", SalesInvoiceReportReportUtil.class);
-			printPages.add(generateReportAsString("reports/salesInvoiceReport.vm", reportData));
+			if (includeCostAndProfit) {
+				printPages.add(generateReportAsString("reports/salesInvoiceReport-withCostAndProfit.vm", 
+						reportData));
+			} else {
+				printPages.add(generateReportAsString("reports/salesInvoiceReport.vm", reportData));
+			}
 		}
 		return printPages;
 	}
 
 	@Override
-	public void print(SalesInvoiceReport salesInvoiceReport) {
+	public void print(SalesInvoiceReport salesInvoiceReport, boolean includeCostAndProfit) {
 		try {
-			for (String printPage : generateReportAsString(salesInvoiceReport)) {
+			for (String printPage : generateReportAsString(salesInvoiceReport, includeCostAndProfit)) {
 				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {

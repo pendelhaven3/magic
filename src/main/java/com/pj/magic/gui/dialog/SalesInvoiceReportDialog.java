@@ -1,8 +1,8 @@
 package com.pj.magic.gui.dialog;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -25,9 +25,11 @@ public class SalesInvoiceReportDialog extends MagicDialog {
 
 	private UtilCalendarModel transactionDateModel;
 	private JButton generateButton;
+	private JButton generateWithCostAndProfitButton;
+	private boolean includeCostAndProfit;
 	
 	public SalesInvoiceReportDialog() {
-		setSize(450, 150);
+		setSize(420, 190);
 		setLocationRelativeTo(null);
 		setTitle("Generate Sales Invoice Report");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
@@ -42,11 +44,22 @@ public class SalesInvoiceReportDialog extends MagicDialog {
 	private void initializeComponents() {
 		transactionDateModel = new UtilCalendarModel();
 		
-		generateButton = new JButton("Generate");
+		generateButton = new JButton("Generate Sales Invoice Report");
 		generateButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				includeCostAndProfit = false;
+				setVisible(false);
+			}
+		});
+		
+		generateWithCostAndProfitButton = new JButton("Generate Cost and Profit Report");
+		generateWithCostAndProfitButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				includeCostAndProfit = true;
 				setVisible(false);
 			}
 		});
@@ -88,12 +101,20 @@ public class SalesInvoiceReportDialog extends MagicDialog {
 		currentRow++;
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
-		c.gridx = 1;
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		generateButton.setPreferredSize(new Dimension(100, 25));
+		c.insets = new Insets(20, 0, 5, 0);
+		c.gridwidth = 2;
 		add(generateButton, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.insets = new Insets(5, 0, 5, 0);
+		c.gridwidth = 2;
+		add(generateWithCostAndProfitButton, c);
 		
 		currentRow++;
 		
@@ -114,6 +135,11 @@ public class SalesInvoiceReportDialog extends MagicDialog {
 	
 	public void updateDisplay() {
 		transactionDateModel.setValue(null);
+		includeCostAndProfit = false;
+	}
+	
+	public boolean isIncludeCostAndProfit() {
+		return includeCostAndProfit;
 	}
 	
 }

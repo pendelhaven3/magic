@@ -24,6 +24,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceReport;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.PrintService;
+import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.SalesInvoiceService;
 
 @Component
@@ -111,7 +112,7 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	private void printSalesInvoiceReport() {
 		SalesInvoiceReport salesInvoiceReport = createSalesInvoiceReport();
 		if (salesInvoiceReport != null) {
-			printService.print(salesInvoiceReport);
+			printService.print(salesInvoiceReport, salesInvoiceReportDialog.isIncludeCostAndProfit());
 		}
 	}
 
@@ -137,7 +138,11 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 		SalesInvoiceReport salesInvoiceReport = createSalesInvoiceReport();
 		if (salesInvoiceReport != null) {
 			printPreviewDialog.updateDisplay(
-					printService.generateReportAsString(salesInvoiceReport));
+					printService.generateReportAsString(salesInvoiceReport, 
+							salesInvoiceReportDialog.isIncludeCostAndProfit()));
+			printPreviewDialog.setColumnsPerLine(
+					PrintServiceImpl.SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE);
+			printPreviewDialog.setUseCondensedFontForPrinting(true);
 			printPreviewDialog.setVisible(true);
 		}
 	}
