@@ -42,6 +42,8 @@ public class SalesInvoiceItemsTable extends MagicTable {
 	@Autowired private ProductService productService;
 	@Autowired private SalesInvoiceItemsTableModel tableModel;
 	
+	private SalesInvoice salesInvoice;
+	
 	@Autowired
 	public SalesInvoiceItemsTable(SalesInvoiceItemsTableModel tableModel) {
 		super(tableModel);
@@ -121,13 +123,14 @@ public class SalesInvoiceItemsTable extends MagicTable {
 	}
 	
 	public void setSalesInvoice(SalesInvoice salesInvoice, boolean showDiscountDetails) {
+		this.salesInvoice = salesInvoice;
 		tableModel.setSalesInvoice(salesInvoice, showDiscountDetails);
 		initializeColumns(showDiscountDetails);
 	}
 	
 	public boolean validateItemProfitNotLessThanZero(BigDecimal value, String fieldName) {
 		SalesInvoiceItem item = new SalesInvoiceItem(getCurrentlySelectedRowItem());
-		Product product = productService.getProduct(item.getProduct().getId());
+		Product product = productService.getProduct(item.getProduct().getId(), salesInvoice.getPricingScheme());
 		switch (fieldName) {
 		case "Discount 1":
 			item.setDiscount1(value);
