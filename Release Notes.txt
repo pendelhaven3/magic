@@ -1,3 +1,11 @@
+version 1.2.6
+
+1. Added Transaction Date to Add Sales Invoices To Payment dialog
+2. Added Product Description to Stock Card Inventory Report
+3. Displayed Conversion Remarks under Ref. No. in Stock Card Inventory Report
+4. Refined display of Stock Conversions in Stock Card Inventory Report
+5. Optimized load time of Sales Requisition list
+
 version 1.2.5
 
 1. Added Price List printout
