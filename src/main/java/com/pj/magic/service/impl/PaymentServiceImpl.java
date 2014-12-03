@@ -14,12 +14,15 @@ import com.pj.magic.dao.PaymentCashPaymentDao;
 import com.pj.magic.dao.PaymentCheckPaymentDao;
 import com.pj.magic.dao.PaymentDao;
 import com.pj.magic.dao.PaymentSalesInvoiceDao;
+import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
+import com.pj.magic.model.PaymentTerminalAssignment;
+import com.pj.magic.model.User;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
@@ -35,6 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private PaymentCheckPaymentDao paymentCheckPaymentDao;
 	@Autowired private PaymentCashPaymentDao paymentCashPaymentDao;
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
+	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	@Autowired private LoginService loginService;
 	
 	@Transactional
@@ -143,9 +147,15 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	@Override
 	public void post(Payment payment) {
+		User user = loginService.getLoggedInUser();
+		PaymentTerminalAssignment paymentTerminalAssignment = paymentTerminalAssignmentDao.findByUser(user);
+		if (paymentTerminalAssignment == null) {
+			throw new RuntimeException("User " + user.getUsername() + " is not assigned to payment terminal");
+		}
 		payment.setPosted(true);
 		payment.setPostDate(new Date());
-		payment.setPostedBy(loginService.getLoggedInUser());
+		payment.setPostedBy(user);
+		payment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 		paymentDao.save(payment);
 	}
 

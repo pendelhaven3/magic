@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.PaymentDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.util.DbUtil;
@@ -30,12 +31,15 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PAYMENT_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY, CREATE_DT,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
-			+ " c.USERNAME as POST_BY_USERNAME"
+			+ " c.USERNAME as POST_BY_USERNAME,"
+			+ " a.PAYMENT_TERMINAL_ID, d.NAME as PAYMENT_TERMINAL_NAME"
 			+ " from PAYMENT a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_ID"
 			+ " left join USER c"
-			+ "   on c.ID = a.POST_BY";
+			+ "   on c.ID = a.POST_BY"
+			+ " left join PAYMENT_TERMINAL d"
+			+ "   on d.ID = a.PAYMENT_TERMINAL_ID";
 	
 	private PaymentRowMapper paymentRowMapper = new PaymentRowMapper();
 	
@@ -49,7 +53,8 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	}
 
 	private static final String UPDATE_SQL =
-			"update PAYMENT set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+			"update PAYMENT set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
+			+ " PAYMENT_TERMINAL_ID = ? where ID = ?";
 	
 	private void update(Payment payment) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -57,6 +62,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 				payment.isPosted() ? "Y" : "N",
 				payment.getPostDate(),
 				payment.isPosted() ? payment.getPostedBy().getId() : null,
+				payment.getPaymentTerminal() != null ? payment.getPaymentTerminal().getId() : null,
 				payment.getId());
 	}
 
@@ -118,6 +124,14 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			
 			payment.setPostDate(rs.getDate("POST_DT"));
 			payment.setCreateDate(rs.getDate("CREATE_DT"));
+			
+			if (rs.getLong("PAYMENT_TERMINAL_ID") != 0) {
+				PaymentTerminal terminal = new PaymentTerminal();
+				terminal.setId(rs.getLong("PAYMENT_TERMINAL_ID"));
+				terminal.setName(rs.getString("PAYMENT_TERMINAL_NAME"));
+				payment.setPaymentTerminal(terminal);
+			}
+			
 			return payment;
 		}
 		
