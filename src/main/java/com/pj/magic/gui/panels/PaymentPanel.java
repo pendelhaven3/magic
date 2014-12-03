@@ -574,6 +574,11 @@ public class PaymentPanel extends StandardMagicPanel {
 
 	private void postPayment() {
 		cancelEditing();
+		
+		if (payment.getTotalPayments().equals(Constants.ZERO)) {
+			showErrorMessage("Cannot post with no cash or check payments");
+			return;
+		}
 
 		if (confirm(getPostConfirmMessage())) {
 			try {
