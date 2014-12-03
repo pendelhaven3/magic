@@ -16,8 +16,6 @@ public interface SalesInvoiceDao {
 
 	List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria);
 	
-	List<SalesInvoice> findAllUnpaidByCustomer(Customer customer);
-
 	SalesInvoice findBySalesInvoiceNumber(long salesInvoiceNumber);
 
 	List<SalesInvoice> findAllForPaymentByCustomer(Customer customer);

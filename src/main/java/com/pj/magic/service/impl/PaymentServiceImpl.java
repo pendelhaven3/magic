@@ -14,15 +14,12 @@ import com.pj.magic.dao.PaymentCashPaymentDao;
 import com.pj.magic.dao.PaymentCheckPaymentDao;
 import com.pj.magic.dao.PaymentDao;
 import com.pj.magic.dao.PaymentSalesInvoiceDao;
-import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
-import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
-import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
@@ -31,7 +28,6 @@ import com.pj.magic.service.PaymentService;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-	@Autowired private SalesInvoiceDao salesInvoiceDao;
 	@Autowired private SalesInvoiceItemDao salesInvoiceItemDao;
 	@Autowired private PaymentDao paymentDao;
 	@Autowired private PaymentSalesInvoiceDao paymentSalesInvoiceDao;
@@ -41,15 +37,6 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
 	@Autowired private LoginService loginService;
 	
-	@Override
-	public List<SalesInvoice> findAllUnpaidSalesInvoicesByCustomer(Customer customer) {
-		List<SalesInvoice> salesInvoices = salesInvoiceDao.findAllUnpaidByCustomer(customer);
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
-		}
-		return salesInvoices;
-	}
-
 	@Transactional
 	@Override
 	public void save(Payment payment) {
