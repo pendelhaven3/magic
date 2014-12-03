@@ -11,6 +11,9 @@ public class SalesInvoiceSearchCriteria {
 	private Long salesInvoiceNumber;
 	private Customer customer;
 	private Date transactionDate;
+	private Date transactionDateFrom;
+	private Date transactionDateTo;
+	private Boolean paid;
 
 	public Boolean isMarked() {
 		return marked;
@@ -58,6 +61,30 @@ public class SalesInvoiceSearchCriteria {
 
 	public Boolean getCancelled() {
 		return cancelled;
+	}
+
+	public Date getTransactionDateFrom() {
+		return transactionDateFrom;
+	}
+
+	public void setTransactionDateFrom(Date transactionDateFrom) {
+		this.transactionDateFrom = transactionDateFrom;
+	}
+
+	public Date getTransactionDateTo() {
+		return transactionDateTo;
+	}
+
+	public void setTransactionDateTo(Date transactionDateTo) {
+		this.transactionDateTo = transactionDateTo;
+	}
+
+	public Boolean getPaid() {
+		return paid;
+	}
+
+	public void setPaid(Boolean paid) {
+		this.paid = paid;
 	}
 
 }
