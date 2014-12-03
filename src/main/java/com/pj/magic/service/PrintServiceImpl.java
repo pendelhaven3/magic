@@ -46,6 +46,7 @@ import com.pj.magic.model.SalesInvoiceReport;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.model.report.PaidSalesInvoicesReport;
+import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
@@ -55,7 +56,7 @@ import com.pj.magic.util.PriceListReportUtil;
 import com.pj.magic.util.PrinterUtil;
 import com.pj.magic.util.ReceivingReceiptReportUtil;
 import com.pj.magic.util.ReportUtil;
-import com.pj.magic.util.SalesInvoiceReportReportUtil;
+import com.pj.magic.util.PostedSalesAndProfitReportReportUtil;
 
 @Service 
 public class PrintServiceImpl implements PrintService {
@@ -78,9 +79,11 @@ public class PrintServiceImpl implements PrintService {
 	private static final int UNPAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	private static final int PAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	private static final int PRICE_LIST_ITEMS_PER_PAGE = 46;
+	private static final int POSTED_SALES_AND_PROFIT_REPORT_ITEMS_PER_PAGE = 44;
 	
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
+	public static final int POSTED_SALES_AND_PROFIT_REPORT_CHARACTERS_PER_LINE = 115;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -508,7 +511,7 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			reportData.put("reportUtil", SalesInvoiceReportReportUtil.class);
+			reportData.put("reportUtil", PostedSalesAndProfitReportReportUtil.class);
 			if (includeCostAndProfit) {
 				printPages.add(generateReportAsString("reports/salesInvoiceReport-withCostAndProfit.vm", 
 						reportData));
@@ -677,6 +680,38 @@ public class PrintServiceImpl implements PrintService {
 			printPages.add(generateReportAsString("reports/paidSalesInvoices.vm", reportData));
 		}
 		return printPages;
+	}
+
+	@Override
+	public List<String> generateReportAsString(PostedSalesAndProfitReport report) {
+		List<List<SalesInvoice>> pageItems = Lists.partition(report.getSalesInvoices(), 
+				POSTED_SALES_AND_PROFIT_REPORT_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("charsPerLine", POSTED_SALES_AND_PROFIT_REPORT_CHARACTERS_PER_LINE);
+			reportData.put("salesReport", report);
+			reportData.put("salesInvoices", pageItems.get(i));
+			reportData.put("customer", report.getCustomerName());
+			reportData.put("transactionDate", report.getTransactionDate());
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			reportData.put("reportUtil", PostedSalesAndProfitReportReportUtil.class);
+			printPages.add(generateReportAsString("reports/postedSalesAndProfitReport.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(PostedSalesAndProfitReport report) {
+		try {
+			for (String printPage : generateReportAsString(report)) {
+				PrinterUtil.printWithCondensedFont(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 	
 }

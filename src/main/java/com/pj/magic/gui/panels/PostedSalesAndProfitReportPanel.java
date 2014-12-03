@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.Box;
@@ -28,12 +29,17 @@ import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.CustomerService;
+import com.pj.magic.service.PrintService;
+import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -53,6 +59,8 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	@Autowired private CustomerService customerService;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private PrintService printService;
 	
 	private MagicTextField customerCodeField;
 	private JLabel customerNameLabel;
@@ -62,6 +70,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	private EllipsisButton selectCustomerButton;
 	private MagicListTable table;
 	private SalesInvoicesTableModel tableModel;
+	private Customer customer;
 	
 	@Override
 	protected void initializeComponents() {
@@ -118,7 +127,16 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	}
 
 	private void generateReport() {
-		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
+		if (fromDateModel.getValue() == null) {
+			showErrorMessage("Tran. Date From must be specified");
+			return;
+		}
+		if (toDateModel.getValue() == null) {
+			showErrorMessage("Tran. Date To must be specified");
+			return;
+		}
+		
+		customer = customerService.findCustomerByCode(customerCodeField.getText());
 		if (customer == null) {
 			customerNameLabel.setText("-");
 		} else {
@@ -174,7 +192,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "From Date: "), c);
+		mainPanel.add(ComponentUtil.createLabel(130, "Tran. Date From: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
@@ -194,7 +212,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "To Date: "), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Tran. Date To: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 5;
@@ -267,9 +285,10 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	public void updateDisplay() {
 		customerCodeField.setText(null);
 		customerNameLabel.setText(null);
-		fromDateModel.setValue(null);
-		toDateModel.setValue(null);
+		fromDateModel.setValue(Calendar.getInstance());
+		toDateModel.setValue(Calendar.getInstance());
 		tableModel.clear();
+		customer = null;
 	}
 
 	@Override
@@ -279,7 +298,51 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
+		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreviewReport();
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		JButton printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printReport();
+			}
+		});
+		toolBar.add(printButton);
+	}
+
+	private void printPreviewReport() {
+		PostedSalesAndProfitReport report = createReport();
+		printPreviewDialog.updateDisplay(printService.generateReportAsString(report));
+		printPreviewDialog.setColumnsPerLine(
+				PrintServiceImpl.POSTED_SALES_AND_PROFIT_REPORT_CHARACTERS_PER_LINE);
+		printPreviewDialog.setUseCondensedFontForPrinting(true);
+		printPreviewDialog.setVisible(true);
+	}
+
+	private PostedSalesAndProfitReport createReport() {
+		PostedSalesAndProfitReport report = new PostedSalesAndProfitReport();
+		report.setCustomer(customer);
+		if (fromDateModel.getValue() != null) {
+			report.setTransactionDateFrom(fromDateModel.getValue().getTime());
+		}
+		if (toDateModel.getValue() != null) {
+			report.setTransactionDateTo(toDateModel.getValue().getTime());
+		}
+		report.setSalesInvoices(tableModel.getSalesInvoices());
+		return report;
+	}
+
+	private void printReport() {
+		printService.print(createReport());
 	}
 
 	private class SalesInvoicesTableModel extends AbstractTableModel {
@@ -293,6 +356,10 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		public void setSalesInvoices(List<SalesInvoice> salesInvoices) {
 			this.salesInvoices = salesInvoices;
 			fireTableDataChanged();
+		}
+		
+		public List<SalesInvoice> getSalesInvoices() {
+			return salesInvoices;
 		}
 		
 		public void clear() {
