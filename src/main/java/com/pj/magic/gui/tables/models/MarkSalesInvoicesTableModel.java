@@ -44,7 +44,7 @@ public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 		case MarkSalesInvoicesTable.ENCODER_COLUMN_INDEX:
 			return salesInvoice.getEncoder().getUsername();
 		case MarkSalesInvoicesTable.NET_AMOUNT_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(salesInvoice.getTotalAmount());
+			return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
 		case MarkSalesInvoicesTable.MARK_COLUMN_INDEX:
 			return salesInvoice.isMarked();
 		case MarkSalesInvoicesTable.CANCEL_COLUMN_INDEX:
