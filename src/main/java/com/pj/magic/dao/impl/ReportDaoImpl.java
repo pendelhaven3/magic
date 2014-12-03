@@ -33,7 +33,17 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "   join CUSTOMER c"
 			+ "     on c.ID = a.CUSTOMER_ID"
 			+ "   where b.PRODUCT_ID = ?"
-			+ "   and a.CANCEL_IND = 'N'"
+			+ "   union all"
+			+ "   select a.TRANSACTION_DT, a.SALES_INVOICE_NO as TRANSACTION_NO, c.NAME as CUSTOMER_SUPPLIER_NAME,"
+			+ "   'SALES INVOICE' as TRANSACTION_TYPE, 'SALES INVOICE - CANCEL' as TRANSACTION_TYPE_KEY, b.UNIT, b.QUANTITY,"
+			+ "   b.UNIT_PRICE as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
+			+ "   from SALES_INVOICE a"
+			+ "   join SALES_INVOICE_ITEM b"
+			+ "     on b.SALES_INVOICE_ID = a.ID"
+			+ "   join CUSTOMER c"
+			+ "     on c.ID = a.CUSTOMER_ID"
+			+ "   where b.PRODUCT_ID = ?"
+			+ "   and a.CANCEL_IND = 'Y'"
 			+ "   union all"
 			+ "   select a.RECEIVED_DT as TRANSACTION_DT, a.RECEIVING_RECEIPT_NO as TRANSACTION_NO,"
 			+ "   c.NAME as CUSTOMER_SUPPLIER_NAME,"
@@ -100,6 +110,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
+		params.add(criteria.getProduct().getId());
 		
 		StringBuilder sql = new StringBuilder(BASE_GET_STOCK_CARD_INVENTORY_REPORT_ITEMS_SQL);
 		sql.append(" where 1 = 1");
@@ -133,6 +144,9 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			item.setUnit(rs.getString("UNIT"));
 			
 			switch (rs.getString("TRANSACTION_TYPE_KEY")) {
+			case "SALES INVOICE - CANCEL":
+				item.setTransactionType("CANCELLED SALES INVOICE");
+				// no break here; use same logic as SALES INVOICE transaction type key
 			case "SALES INVOICE":
 				SalesInvoiceItem salesInvoiceItem = new SalesInvoiceItem();
 				salesInvoiceItem.setQuantity(rs.getInt("QUANTITY"));
