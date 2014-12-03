@@ -13,6 +13,7 @@ import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PaymentTerm;
+import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.util.DbUtil;
@@ -24,7 +25,8 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 			"   select a.ID, PAYMENT_ID, SALES_INVOICE_ID, b.SALES_INVOICE_NO, ADJUSTMENT_AMOUNT,"
 			+ " c.PAYMENT_NO, c.POST_DT,"
 			+ " b.CUSTOMER_ID, d.NAME as CUSTOMER_NAME,"
-			+ " b.TRANSACTION_DT, e.NUMBER_OF_DAYS as PAYMENT_TERM_NUMBER_OF_DAYS"
+			+ " b.TRANSACTION_DT, e.NUMBER_OF_DAYS as PAYMENT_TERM_NUMBER_OF_DAYS,"
+			+ " c.PAYMENT_TERMINAL_ID, f.NAME as PAYMENT_TERMINAL_NAME"
 			+ " from PAYMENT_SALES_INVOICE a"
 			+ " join SALES_INVOICE b"
 			+ "   on b.ID = a.SALES_INVOICE_ID"
@@ -33,7 +35,9 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 			+ " join CUSTOMER d"
 			+ "   on d.ID = b.CUSTOMER_ID"
 			+ " join PAYMENT_TERM e"
-			+ "   on e.ID = b.PAYMENT_TERM_ID";
+			+ "   on e.ID = b.PAYMENT_TERM_ID"
+			+ " left join PAYMENT_TERMINAL f"
+			+ "   on f.ID = c.PAYMENT_TERMINAL_ID";
 	
 	private PaymentSalesInvoiceRowMapper paymentSalesInvoiceRowMapper = new PaymentSalesInvoiceRowMapper();
 	
@@ -101,7 +105,7 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 			Payment payment = new Payment();
 			payment.setId(rs.getLong("PAYMENT_ID"));
 			payment.setPaymentNumber(rs.getLong("PAYMENT_NO"));
-			payment.setPostDate(rs.getDate("POST_DT"));
+			payment.setPostDate(rs.getTimestamp("POST_DT"));
 			item.setParent(payment);
 			
 			SalesInvoice salesInvoice = new SalesInvoice();
@@ -116,6 +120,13 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 			salesInvoice.setPaymentTerm(paymentTerm);
 			
 			item.setAdjustmentAmount(rs.getBigDecimal("ADJUSTMENT_AMOUNT"));
+			
+			if (rs.getLong("PAYMENT_TERMINAL_ID") != 0) {
+				PaymentTerminal terminal = new PaymentTerminal();
+				terminal.setId(rs.getLong("PAYMENT_TERMINAL_ID"));
+				terminal.setName(rs.getString("PAYMENT_TERMINAL_NAME"));
+				payment.setPaymentTerminal(terminal);
+			}
 			
 			return item;
 		}
@@ -134,13 +145,19 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 		}
 		
 		if (criteria.getPaymentDate() != null) {
-			sql.append(" and c.POST_DT = ?");
+			sql.append(" and c.POST_DT >= ? and c.POST_DT <= DATE_ADD(?, INTERVAL 1 DAY)");
+			params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
 			params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
 		}
 		
 		if (criteria.getCustomer() != null) {
 			sql.append(" and c.CUSTOMER_ID = ?");
 			params.add(criteria.getCustomer().getId());
+		}
+		
+		if (criteria.getPaymentTerminal() != null) {
+			sql.append(" and c.PAYMENT_TERMINAL_ID = ?");
+			params.add(criteria.getPaymentTerminal().getId());
 		}
 		
 		sql.append(" order by c.POST_DT, b.SALES_INVOICE_NO");

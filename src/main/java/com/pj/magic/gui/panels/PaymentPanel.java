@@ -12,6 +12,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,9 +44,13 @@ import com.pj.magic.gui.tables.PaymentSalesInvoicesTable;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentSalesInvoice;
+import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.User;
 import com.pj.magic.service.CustomerService;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentService;
+import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -68,6 +73,8 @@ public class PaymentPanel extends StandardMagicPanel {
 	@Autowired private PaymentAdjustmentsTable adjustmentsTable;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
+	@Autowired private LoginService loginService;
+	@Autowired private PaymentTerminalService paymentTerminalService;
 	
 	private Payment payment;
 	private JLabel paymentNumberField;
@@ -77,6 +84,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	private JLabel postedField;
 	private JLabel postDateField;
 	private JLabel postedByField;
+	private JLabel paymentTerminalField;
 	private JLabel totalAmountDueField;
 	private JLabel totalCashPaymentsField;
 	private JLabel totalCheckPaymentsField;
@@ -213,8 +221,9 @@ public class PaymentPanel extends StandardMagicPanel {
 		customerCodeField.setEnabled(!payment.isPosted());
 		customerNameField.setText(payment.getCustomer().getName());
 		postedField.setText(payment.isPosted() ? "Yes" : "No");
-		postDateField.setText(payment.isPosted() ? FormatterUtil.formatDate(payment.getPostDate()) : null);
+		postDateField.setText(payment.isPosted() ? FormatterUtil.formatDateTime(payment.getPostDate()) : null);
 		postedByField.setText(payment.isPosted() ? payment.getPostedBy().getUsername() : null);
+		paymentTerminalField.setText(payment.isPosted() ? payment.getPaymentTerminal().getName() : null);
 		totalAmountDueField.setText(FormatterUtil.formatAmount(payment.getTotalAmountDue()));
 		totalCashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCashPayments()));
 		totalCheckPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCheckPayments()));
@@ -253,6 +262,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		postedField.setText(null);
 		postDateField.setText(null);
 		postedByField.setText(null);
+		paymentTerminalField.setText(null);
 		
 		salesInvoicesTable.clearDisplay();
 		checksTable.clearDisplay();
@@ -314,47 +324,6 @@ public class PaymentPanel extends StandardMagicPanel {
 		return panel;
 	}
 
-	private JPanel createPostFieldsPanel() {
-		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new GridBagLayout());
-		
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Posted:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.anchor = GridBagConstraints.WEST;
-		postedField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(postedField, c);
-
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Post Date:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 3;
-		c.anchor = GridBagConstraints.WEST;
-		postDateField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(postDateField, c);
-
-		c = new GridBagConstraints();
-		c.gridx = 4;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Posted By:"), c);
-		
-		c = new GridBagConstraints();
-		c.weightx = 1.0;
-		c.gridx = 5;
-		c.anchor = GridBagConstraints.WEST;
-		postedByField = ComponentUtil.createLabel(100, "");
-		mainPanel.add(postedByField, c);
-
-		return mainPanel;
-	}
-
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
@@ -371,33 +340,33 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(130, "Payment No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Payment No.:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		paymentNumberField = ComponentUtil.createLabel(200, "");
+		paymentNumberField = ComponentUtil.createLabel(150, "");
 		mainPanel.add(paymentNumberField, c);
 
 		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
-
-		c = new GridBagConstraints();
-		c.gridx = 4;
-		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Create Date:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
-		c.gridx = 5;
+		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		createDateField = ComponentUtil.createLabel(100, "");
 		mainPanel.add(createDateField, c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createGlue(), c);
 
 		currentRow++;
 		
@@ -411,7 +380,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		c.gridwidth = 3;
+		c.gridwidth = 4;
 		
 		customerCodeField.setPreferredSize(new Dimension(140, 25));
 		customerNameField = ComponentUtil.createLabel(190, "");
@@ -423,9 +392,56 @@ public class PaymentPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
-		c.gridwidth = 5;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(createPostFieldsPanel(), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Posted:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postedField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(postedField, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Post Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postDateField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(postDateField, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Posted By:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postedByField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(postedByField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Terminal:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentTerminalField = ComponentUtil.createLabel(100, "");
+		mainPanel.add(paymentTerminalField, c);
 		
 		currentRow++;
 		
@@ -445,7 +461,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridwidth = 6;
 		
 		tabbedPane = createTabbedPane();
-		tabbedPane.setPreferredSize(new Dimension(600, 280));
+		tabbedPane.setPreferredSize(new Dimension(600, 250));
 		mainPanel.add(tabbedPane, c);
 				
 		currentRow++;
@@ -575,6 +591,11 @@ public class PaymentPanel extends StandardMagicPanel {
 	private void postPayment() {
 		cancelEditing();
 		
+		if (!isUserAssignedToPaymentTerminal()) {
+			showErrorMessage("User is not assigned to a payment terminal");
+			return;
+		}
+		
 		if (payment.getTotalPayments().equals(Constants.ZERO)) {
 			showErrorMessage("Cannot post with no cash or check payments");
 			return;
@@ -590,6 +611,12 @@ public class PaymentPanel extends StandardMagicPanel {
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}
+	}
+
+	private boolean isUserAssignedToPaymentTerminal() {
+		User user = loginService.getLoggedInUser();
+		PaymentTerminalAssignment assignment = paymentTerminalService.findPaymentTerminalAssignment(user);
+		return assignment != null;
 	}
 
 	private String getPostConfirmMessage() {

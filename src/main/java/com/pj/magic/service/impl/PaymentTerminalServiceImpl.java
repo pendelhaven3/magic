@@ -11,6 +11,7 @@ import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.PaymentTerminalDao;
 import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.PaymentTerminalAssignment;
+import com.pj.magic.model.User;
 import com.pj.magic.service.PaymentTerminalService;
 
 @Service
@@ -39,6 +40,11 @@ public class PaymentTerminalServiceImpl implements PaymentTerminalService {
 	@Override
 	public void delete(PaymentTerminalAssignment paymentTerminalAssignment) {
 		paymentTerminalAssignmentDao.delete(paymentTerminalAssignment);
+	}
+
+	@Override
+	public PaymentTerminalAssignment findPaymentTerminalAssignment(User user) {
+		return paymentTerminalAssignmentDao.findByUser(user);
 	}
 
 }

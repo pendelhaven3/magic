@@ -191,7 +191,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Sales Return List (WIP)",
 				"Payment List",
 				"Reports",
-//				"Payment Terminal Assignments",
+				"Payment Terminal Assignments",
 				"Manufacturer List",
 				"Supplier List",
 				"Product Category List",

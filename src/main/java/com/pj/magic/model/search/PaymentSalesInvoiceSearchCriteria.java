@@ -3,12 +3,14 @@ package com.pj.magic.model.search;
 import java.util.Date;
 
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerminal;
 
 public class PaymentSalesInvoiceSearchCriteria {
 
 	private Date paymentDate;
 	private Customer customer;
 	private Boolean paid;
+	private PaymentTerminal paymentTerminal;
 
 	public Date getPaymentDate() {
 		return paymentDate;
@@ -32,6 +34,14 @@ public class PaymentSalesInvoiceSearchCriteria {
 
 	public void setPaid(Boolean paid) {
 		this.paid = paid;
+	}
+
+	public PaymentTerminal getPaymentTerminal() {
+		return paymentTerminal;
+	}
+
+	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
+		this.paymentTerminal = paymentTerminal;
 	}
 
 }
