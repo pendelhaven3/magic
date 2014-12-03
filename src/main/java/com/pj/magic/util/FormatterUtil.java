@@ -13,6 +13,10 @@ public class FormatterUtil {
 		return new SimpleDateFormat(Constants.DATE_FORMAT).format(date);
 	}
 	
+	public static final String formatDateTime(Date date) {
+		return new SimpleDateFormat(Constants.DATETIME_FORMAT).format(date);
+	}
+	
 	public static final String formatAmount(BigDecimal amount) {
 		return new DecimalFormat(Constants.AMOUNT_FORMAT).format(amount);
 	}

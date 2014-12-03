@@ -101,7 +101,7 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 			Payment payment = new Payment();
 			payment.setId(rs.getLong("PAYMENT_ID"));
 			payment.setPaymentNumber(rs.getLong("PAYMENT_NO"));
-			payment.setPostDate(rs.getDate("POST_DT"));
+			payment.setPostDate(rs.getTimestamp("POST_DT"));
 			item.setParent(payment);
 			
 			SalesInvoice salesInvoice = new SalesInvoice();
@@ -134,7 +134,8 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 		}
 		
 		if (criteria.getPaymentDate() != null) {
-			sql.append(" and c.POST_DT = ?");
+			sql.append(" and c.POST_DT >= ? and c.POST_DT <= DATE_ADD(?, INTERVAL 1 DAY)");
+			params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
 			params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
 		}
 		

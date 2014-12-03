@@ -88,7 +88,7 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 		table = new MagicListTable(tableModel);
 		
 		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(PAYMENT_DATE_COLUMN_INDEX).setPreferredWidth(80);
+		columnModel.getColumn(PAYMENT_DATE_COLUMN_INDEX).setPreferredWidth(120);
 		columnModel.getColumn(SALES_INVOICE_NUMBER_COLUMN_INDEX).setPreferredWidth(80);
 		columnModel.getColumn(CUSTOMER_COLUMN_INDEX).setPreferredWidth(300);
 		columnModel.getColumn(NET_AMOUNT_COLUMN_INDEX).setPreferredWidth(80);
@@ -250,7 +250,7 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 			PaymentSalesInvoice paymentSalesInvoice = paymentSalesInvoices.get(rowIndex);
 			switch (columnIndex) {
 			case PAYMENT_DATE_COLUMN_INDEX:
-				return FormatterUtil.formatDate(paymentSalesInvoice.getParent().getPostDate());
+				return FormatterUtil.formatDateTime(paymentSalesInvoice.getParent().getPostDate());
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
 				return paymentSalesInvoice.getSalesInvoice().getSalesInvoiceNumber();
 			case CUSTOMER_COLUMN_INDEX:

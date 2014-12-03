@@ -475,7 +475,7 @@ create table PAYMENT (
   PAYMENT_NO integer not null,
   CUSTOMER_ID integer not null,
   POST_IND char(1) default 'N' not null,
-  POST_DT date null,
+  POST_DT datetime null,
   POST_BY integer null,
   CREATE_DT date not null,
   PAYMENT_TERMINAL_ID integer null,

@@ -122,7 +122,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 				payment.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			}
 			
-			payment.setPostDate(rs.getDate("POST_DT"));
+			payment.setPostDate(rs.getTimestamp("POST_DT"));
 			payment.setCreateDate(rs.getDate("CREATE_DT"));
 			
 			if (rs.getLong("PAYMENT_TERMINAL_ID") != 0) {
@@ -159,7 +159,8 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 		}
 		
 		if (criteria.getPostDate() != null) {
-			sql.append(" and a.POST_DT = ?");
+			sql.append(" and a.POST_DT >= ? and a.POST_DT <= DATE_ADD(?, INTERVAL 1 DAY)");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 		}
 		

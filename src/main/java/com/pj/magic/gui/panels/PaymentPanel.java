@@ -221,7 +221,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		customerCodeField.setEnabled(!payment.isPosted());
 		customerNameField.setText(payment.getCustomer().getName());
 		postedField.setText(payment.isPosted() ? "Yes" : "No");
-		postDateField.setText(payment.isPosted() ? FormatterUtil.formatDate(payment.getPostDate()) : null);
+		postDateField.setText(payment.isPosted() ? FormatterUtil.formatDateTime(payment.getPostDate()) : null);
 		postedByField.setText(payment.isPosted() ? payment.getPostedBy().getUsername() : null);
 		paymentTerminalField.setText(payment.isPosted() ? payment.getPaymentTerminal().getName() : null);
 		totalAmountDueField.setText(FormatterUtil.formatAmount(payment.getTotalAmountDue()));
@@ -412,7 +412,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postDateField = ComponentUtil.createLabel(100, "");
+		postDateField = ComponentUtil.createLabel(150, "");
 		mainPanel.add(postDateField, c);
 
 		currentRow++;
