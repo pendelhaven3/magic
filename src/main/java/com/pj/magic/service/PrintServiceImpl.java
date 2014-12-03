@@ -84,6 +84,7 @@ public class PrintServiceImpl implements PrintService {
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
 	public static final int POSTED_SALES_AND_PROFIT_REPORT_CHARACTERS_PER_LINE = 115;
+	public static final int PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE = 100;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -655,7 +656,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PaidSalesInvoicesReport report) {
 		try {
 			for (String printPage : generateReportAsString(report)) {
-				PrinterUtil.print(printPage);
+				PrinterUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -671,6 +672,7 @@ public class PrintServiceImpl implements PrintService {
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("charsPerLine", PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE);
 			reportData.put("paymentDate", paymentDate);
 			reportData.put("totalAmountDue", report.getTotalAmountDue());
 			reportData.put("paymentSalesInvoices", pageItems.get(i));

@@ -36,6 +36,7 @@ import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
+import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -253,6 +254,8 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 		
 		PaidSalesInvoicesReport report = createPaidSalesInvoicesReport();
 		printPreviewDialog.updateDisplay(printService.generateReportAsString(report));
+		printPreviewDialog.setColumnsPerLine(PrintServiceImpl.PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE);
+		printPreviewDialog.setUseCondensedFontForPrinting(true);
 		printPreviewDialog.setVisible(true);
 	}
 

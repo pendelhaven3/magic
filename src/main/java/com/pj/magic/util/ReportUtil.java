@@ -91,5 +91,8 @@ public class ReportUtil {
 		return FormatterUtil.formatDate(date);
 	}
 	
+	public static String time(Date date) {
+		return StringUtils.leftPad(FormatterUtil.formatTime(date), 8);
+	}
 
 }
