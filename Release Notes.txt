@@ -1,3 +1,15 @@
+version 1.3.2
+
+1. Displayed Net Amount instead of Total Amount in Mark Sales Invoice list
+2. Cannot post Payment with no cash/check payment
+3. Added Posted Sales And Profit Report
+
+version 1.3.1
+
+1. Displayed Adj. In/Out Remarks under Ref. No. in Stock Card Inventory Report
+2. Added cancelled Sales Invoices to Stock Card Inventory Report
+3. Do not include cancelled Sales Invoices in Unpaid Sales Invoices list
+
 version 1.3.0
 
 1. Removed item sorting from Purchase Order and Receiving Receipt printouts
