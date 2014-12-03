@@ -207,6 +207,8 @@ public class PaymentPanel extends StandardMagicPanel {
 	}
 	
 	public void updateDisplay(Payment payment) {
+		tabbedPane.setSelectedIndex(0);
+		
 		if (payment.getId() == null) {
 			this.payment = payment;
 			clearDisplay();
