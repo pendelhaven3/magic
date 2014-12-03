@@ -263,6 +263,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	}
 
 	private static final String FIND_ALL_UNPAID_SQL = BASE_SELECT_SQL
+			+ " and a.CANCEL_IND = 'N'"
 			+ " and not exists("
 			+ "   select 1"
 			+ "   from PAYMENT_SALES_INVOICE psi"
