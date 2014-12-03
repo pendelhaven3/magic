@@ -14,6 +14,7 @@ public class SalesInvoiceSearchCriteria {
 	private Date transactionDateFrom;
 	private Date transactionDateTo;
 	private Boolean paid;
+	private String orderBy;
 
 	public Boolean isMarked() {
 		return marked;
@@ -85,6 +86,14 @@ public class SalesInvoiceSearchCriteria {
 
 	public void setPaid(Boolean paid) {
 		this.paid = paid;
+	}
+
+	public String getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
 	}
 
 }

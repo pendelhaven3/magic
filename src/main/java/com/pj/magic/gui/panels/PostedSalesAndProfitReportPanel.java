@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,7 +20,6 @@ import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -118,22 +118,17 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	}
 
 	private void generateReport() {
-		String customerCode = customerCodeField.getText();
-		if (StringUtils.isEmpty(customerCode)) {
-			showErrorMessage("Customer Code must be specified");
-			return;
-		}
-		
-		Customer customer = customerService.findCustomerByCode(customerCode);
+		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
 		if (customer == null) {
-			showErrorMessage("No customer matching code specified");
-			return;
+			customerNameLabel.setText("-");
 		} else {
 			customerCodeField.setText(customer.getCode());
 			customerNameLabel.setText(customer.getName());
 		}
 		
 		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
+		criteria.setPaid(true);
+		criteria.setOrderBy("TRANSACTION_DT, SALES_INVOICE_NO");
 		criteria.setCustomer(customer);
 		if (fromDateModel.getValue() != null) {
 			criteria.setTransactionDateFrom(fromDateModel.getValue().getTime());
@@ -171,7 +166,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		c.gridwidth = 5;
-		mainPanel.add(createProductPanel(), c);
+		mainPanel.add(createCustomerPanel(), c);
 		
 		currentRow++;
 		
@@ -252,13 +247,14 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		mainPanel.add(itemsTableScrollPane, c);
 	}
 
-	private JPanel createProductPanel() {
+	private JPanel createCustomerPanel() {
 		customerCodeField.setPreferredSize(new Dimension(150, 25));
 		customerNameLabel.setPreferredSize(new Dimension(300, 20));
 		
 		JPanel panel = new JPanel();
 		panel.add(customerCodeField);
 		panel.add(selectCustomerButton);
+		panel.add(Box.createHorizontalStrut(10));
 		panel.add(customerNameLabel);
 		return panel;
 	}
