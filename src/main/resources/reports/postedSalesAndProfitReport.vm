@@ -1,0 +1,19 @@
+$report.center("JC HARMONY SELLING INC.", $charsPerLine)
+
+$report.center("POSTED SALES AND PROFIT REPORT", $charsPerLine)
+                                                                                                       Page: $currentPage x $totalPages
+Customer : $customer
+Txn Date : $transactionDate
+
+                                                 Sub Total     Discount
+ Txn Date  S.I. #        Customer Name           Amount        Amount      Net Amount     Net Cost     Net Profit
+---------- ------ ------------------------------ ------------- ---------- ------------- ------------- -------------
+##11/03/2014 369282 CAN-LIZA'S SARI-SARI STORE            816.35                 5,351.90        784.92         31.43
+#foreach($salesInvoice in $salesInvoices)
+$report.field($salesInvoice.transactionDate) $report.field($salesInvoice.salesInvoiceNumber, 6, "right") $report.field($salesInvoice.customer.name, 30) $report.field($salesInvoice.totalAmount, 13, "right") $report.discount($salesInvoice.totalDiscountedAmount, 10) $report.field($salesInvoice.totalNetAmount, 13, "right") $report.field($salesInvoice.totalNetCost, 13, "right") $report.field($salesInvoice.totalNetProfit, 13, "right")
+#end
+#if($isLastPage == true)
+                                                 ------------- ---------- ------------- ------------- -------------
+                                  T O T A L S => $report.field($salesReport.totalAmount, 13, "right") $report.field($salesReport.totalDiscountedAmount, 10, "right") $report.field($salesReport.totalNetAmount, 13, "right") $report.field($salesReport.totalNetCost, 13, "right") $report.field($salesReport.totalNetProfit, 13, "right")
+                                                 ============= ========== ============= ============= =============
+#end

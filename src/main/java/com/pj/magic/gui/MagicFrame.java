@@ -46,6 +46,7 @@ import com.pj.magic.gui.panels.PaymentListPanel;
 import com.pj.magic.gui.panels.PaymentPanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
 import com.pj.magic.gui.panels.PaymentTerminalAssignmentListPanel;
+import com.pj.magic.gui.panels.PostedSalesAndProfitReportPanel;
 import com.pj.magic.gui.panels.PricingSchemeListPanel;
 import com.pj.magic.gui.panels.ProductCanvassPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
@@ -159,6 +160,7 @@ public class MagicFrame extends JFrame {
 	private static final String REPORTS_PANEL = "REPORTS_PANEL";
 	private static final String UNPAID_SALES_INVOICES_LIST_PANEL = "UNPAID_SALES_INVOICES_LIST_PANEL";
 	private static final String PAID_SALES_INVOICES_LIST_PANEL = "PAID_SALES_INVOICES_LIST_PANEL";
+	private static final String POSTED_SALES_AND_PROFIT_REPORT_PANEL = "POSTED_SALES_AND_PROFIT_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -214,6 +216,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private ReportsPanel reportsPanel;
 	@Autowired private UnpaidSalesInvoicesListPanel unpaidSalesInvoicesListPanel;
 	@Autowired private PaidSalesInvoicesListPanel paidSalesInvoicesListPanel;
+	@Autowired private PostedSalesAndProfitReportPanel postedSalesAndProfitReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -316,6 +319,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(reportsPanel, REPORTS_PANEL);
 		panelHolder.add(unpaidSalesInvoicesListPanel, UNPAID_SALES_INVOICES_LIST_PANEL);
 		panelHolder.add(paidSalesInvoicesListPanel, PAID_SALES_INVOICES_LIST_PANEL);
+		panelHolder.add(postedSalesAndProfitReportPanel, POSTED_SALES_AND_PROFIT_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -750,6 +754,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Paid Sales Invoices List");
 		paidSalesInvoicesListPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAID_SALES_INVOICES_LIST_PANEL);
+	}
+
+	public void switchToPostedSalesAndProfitReportPanel() {
+		addPanelNameToTitle("Posted Sales And Profit Report Panel");
+		postedSalesAndProfitReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, POSTED_SALES_AND_PROFIT_REPORT_PANEL);
 	}
 
 }

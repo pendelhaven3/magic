@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.pj.magic.Constants;
 
-public class SalesInvoiceReportReportUtil extends ReportUtil {
+public class PostedSalesAndProfitReportReportUtil extends ReportUtil {
 
 	public static String discount(BigDecimal discount, int length) {
 		if (!discount.equals(Constants.ZERO)) {

@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -186,39 +187,83 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				salesInvoice.getId());
 	}
 
+	private static final String PAID_WHERE_CLAUSE_SQL =
+			" and exists("
+			+ "   select 1"
+			+ "   from PAYMENT_SALES_INVOICE psi"
+			+ "   join PAYMENT p"
+			+ "     on p.ID = psi.PAYMENT_ID"
+			+ "   where psi.SALES_INVOICE_ID = a.ID"
+			+ "   and p.POST_IND = 'Y'"
+			+ " )";
+	
+	private static final String UNPAID_WHERE_CLAUSE_SQL =
+			" and CANCEL_IND = 'N'"
+			+ " and not exists("
+			+ "   select 1"
+			+ "   from PAYMENT_SALES_INVOICE psi"
+			+ "   join PAYMENT p"
+			+ "     on p.ID = psi.PAYMENT_ID"
+			+ "   where psi.SALES_INVOICE_ID = a.ID"
+			+ "   and p.POST_IND = 'Y'"
+			+ " )";
+	
 	@Override
 	public List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria) {
-		StringBuilder sb = new StringBuilder(BASE_SELECT_SQL);
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
 		List<Object> params = new ArrayList<>();
 		
 		if (criteria.isMarked() != null) {
-			sb.append(" and MARK_IND = ?");
+			sql.append(" and MARK_IND = ?");
 			params.add(criteria.isMarked() ? "Y" : "N");
 		}
 		
 		if (criteria.isCancelled() != null) {
-			sb.append(" and CANCEL_IND = ?");
+			sql.append(" and CANCEL_IND = ?");
 			params.add(criteria.isCancelled() ? "Y" : "N");
 		}
 		
 		if (criteria.getSalesInvoiceNumber() != null) {
-			sb.append(" and SALES_INVOICE_NO = ?");
+			sql.append(" and SALES_INVOICE_NO = ?");
 			params.add(criteria.getSalesInvoiceNumber());
 		}
 		
 		if (criteria.getCustomer() != null) {
-			sb.append(" and CUSTOMER_ID = ?");
+			sql.append(" and CUSTOMER_ID = ?");
 			params.add(criteria.getCustomer().getId());
 		}
 		
 		if (criteria.getTransactionDate() != null) {
-			sb.append(" and a.TRANSACTION_DT = ?");
+			sql.append(" and a.TRANSACTION_DT = ?");
 //			params.add(criteria.getTransactionDate()); // TODO: investigate this further!
 			params.add(DbUtil.toMySqlDateString(criteria.getTransactionDate()));
 		}
 		
-		sb.append(" order by SALES_INVOICE_NO desc");
-		return getJdbcTemplate().query(sb.toString(), salesInvoiceRowMapper, params.toArray());
+		if (criteria.getTransactionDateFrom() != null) {
+			sql.append(" and a.TRANSACTION_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getTransactionDateFrom()));
+		}
+		
+		if (criteria.getTransactionDateTo() != null) {
+			sql.append(" and a.TRANSACTION_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getTransactionDateTo()));
+		}
+		
+		if (criteria.getPaid() != null) {
+			if (criteria.getPaid()) {
+				sql.append(PAID_WHERE_CLAUSE_SQL);
+			} else {
+				sql.append(UNPAID_WHERE_CLAUSE_SQL);
+			}
+		}
+		
+		if (!StringUtils.isEmpty(criteria.getOrderBy())) {
+			sql.append(" order by ").append(criteria.getOrderBy());
+		} else {
+			sql.append(" order by SALES_INVOICE_NO desc");
+		}
+		
+		return getJdbcTemplate().query(sql.toString(), salesInvoiceRowMapper, params.toArray());
 	}
 
 	private static final String FIND_ALL_UNPAID_BY_CUSTOMER_SQL = BASE_SELECT_SQL
