@@ -268,9 +268,11 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 		
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			if (columnIndex == NET_AMOUNT_COLUMN_INDEX) {
+			switch (columnIndex) {
+			case NET_AMOUNT_COLUMN_INDEX:
+			case AMOUNT_DUE_COLUMN_INDEX:
 				return Number.class;
-			} else {
+			default:
 				return Object.class;
 			}
 		}
