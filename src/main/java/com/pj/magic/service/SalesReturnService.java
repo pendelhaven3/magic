@@ -17,4 +17,6 @@ public interface SalesReturnService {
 
 	void delete(SalesReturnItem item);
 	
+	void post(SalesReturn salesReturn);
+	
 }

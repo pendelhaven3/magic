@@ -3,7 +3,6 @@ package com.pj.magic.gui.tables;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -253,6 +252,9 @@ public class SalesReturnItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (salesReturn.isPosted()) {
+					return;
+				}
 				switchToAddMode();
 			}
 		});
@@ -260,6 +262,9 @@ public class SalesReturnItemsTable extends MagicTable {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (salesReturn.isPosted()) {
+					return;
+				}
 				if (isProductCodeFieldSelected()) {
 					if (!isEditing()) {
 						editCellAt(getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
@@ -275,6 +280,9 @@ public class SalesReturnItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (salesReturn.isPosted()) {
+					return;
+				}
 				if (isEditing()) {
 					getCellEditor().cancelCellEditing();
 					if (getCurrentlySelectedRowItem().isUpdating()) {
@@ -289,6 +297,9 @@ public class SalesReturnItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (salesReturn.isPosted()) {
+					return;
+				}
 				removeCurrentlySelectedItem();
 			}
 		});
@@ -297,6 +308,9 @@ public class SalesReturnItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (salesReturn.isPosted()) {
+					return;
+				}
 				if (isProductCodeFieldSelected()) {
 					openSelectProductDialogUsingPreviousCriteria();
 				} else if (isUnitFieldSelected() || isQuantityFieldSelected()) {
@@ -374,22 +388,6 @@ public class SalesReturnItemsTable extends MagicTable {
 
 		openSelectProductDialog(previousSelectProductCriteria,
 				(String)getValueAt(getSelectedRow() - 1, PRODUCT_CODE_COLUMN_INDEX));
-	}
-
-	public BigDecimal getTotalAmount() {
-		BigDecimal totalAmount = salesReturn.getTotalAmount();
-		if (isAdding()) {
-			for (SalesReturnItemRowItem rowItem : tableModel.getRowItems()) {
-				if (rowItem.isValid()) {
-					totalAmount = totalAmount.add(rowItem.getAmount());
-				}
-			}
-		}
-		return totalAmount;
-	}
-	
-	public int getTotalNumberOfItems() {
-		return salesReturn.getTotalItems();
 	}
 
 	public void highlightColumn(SalesReturnItem item, int column) {

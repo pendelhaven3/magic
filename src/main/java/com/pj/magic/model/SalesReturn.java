@@ -2,6 +2,7 @@ package com.pj.magic.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.Constants;
@@ -12,6 +13,8 @@ public class SalesReturn {
 	private Long salesReturnNumber;
 	private SalesInvoice salesInvoice;
 	private boolean posted;
+	private Date postDate;
+	private User postedBy;
 	private List<SalesReturnItem> items = new ArrayList<>();
 
 	public SalesReturn() {
@@ -80,6 +83,22 @@ public class SalesReturn {
 
 	public boolean hasItems() {
 		return !items.isEmpty();
+	}
+
+	public Date getPostDate() {
+		return postDate;
+	}
+
+	public void setPostDate(Date postDate) {
+		this.postDate = postDate;
+	}
+
+	public User getPostedBy() {
+		return postedBy;
+	}
+
+	public void setPostedBy(User postedBy) {
+		this.postedBy = postedBy;
 	}
 	
 }

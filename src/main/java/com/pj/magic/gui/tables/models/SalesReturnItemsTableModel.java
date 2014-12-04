@@ -131,6 +131,10 @@ public class SalesReturnItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		if (salesReturn.isPosted()) {
+			return false;
+		}
+		
 		SalesReturnItemRowItem rowItem = rowItems.get(rowIndex);
 		switch (columnIndex) {
 		case SalesReturnItemsTable.PRODUCT_CODE_COLUMN_INDEX:

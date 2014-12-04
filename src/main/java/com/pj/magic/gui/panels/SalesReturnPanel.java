@@ -10,8 +10,11 @@ import java.awt.event.ActionListener;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -24,12 +27,14 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.SalesReturnItemsTable;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class SalesReturnPanel extends StandardMagicPanel {
@@ -46,6 +51,8 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	private MagicTextField salesInvoiceNumberField;
 	private JLabel customerField;
 	private JLabel statusField;
+	private JLabel postDateField;
+	private JLabel postedByField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private JButton postButton;
@@ -61,10 +68,12 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		
 		customerField = new JLabel();
 		statusField = new JLabel();
+		postDateField = new JLabel();
+		postedByField = new JLabel();
 		
 		focusOnComponentWhenThisPanelIsDisplayed(salesInvoiceNumberField);
 		
-//		updateTotalAmountFieldWhenItemsTableChanges();
+		updateTotalFieldsWhenItemsTableChanges();
 	}
 
 	@Override
@@ -128,15 +137,15 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		getMagicFrame().switchToSalesReturnListPanel();
 	}
 	
-	private void updateTotalAmountFieldWhenItemsTableChanges() {
-//		itemsTable.getModel().addTableModelListener(new TableModelListener() {
-//			
-//			@Override
-//			public void tableChanged(TableModelEvent e) {
-//				totalItemsField.setText(String.valueOf(itemsTable.getTotalNumberOfItems()));
-//				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
-//			}
-//		});
+	private void updateTotalFieldsWhenItemsTableChanges() {
+		itemsTable.getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				totalItemsField.setText(String.valueOf(salesReturn.getTotalItems()));
+				totalAmountField.setText(FormatterUtil.formatAmount(salesReturn.getTotalAmount()));
+			}
+		});
 	}
 
 	public void updateDisplay(SalesReturn salesReturn) {
@@ -149,9 +158,15 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		this.salesReturn = salesReturn = salesReturnService.getSalesReturn(salesReturn.getId());
 		
 		salesReturnNumberField.setText(salesReturn.getSalesReturnNumber().toString());
+		salesInvoiceNumberField.setEnabled(!salesReturn.isPosted());
 		salesInvoiceNumberField.setText(salesReturn.getSalesInvoice().getSalesInvoiceNumber().toString());
 		statusField.setText(salesReturn.getStatus());
-		customerField.setText(salesReturn.getSalesInvoice().getCustomer().getName());
+		
+		Customer customer = salesReturn.getSalesInvoice().getCustomer();
+		customerField.setText(customer.getCode() + " - " + customer.getName());
+		
+		postDateField.setText(salesReturn.isPosted() ? FormatterUtil.formatDate(salesReturn.getPostDate()) : null);
+		postedByField.setText(salesReturn.isPosted() ? salesReturn.getPostedBy().getUsername() : null);
 		
 		itemsTable.setSalesReturn(salesReturn);
 		
@@ -162,9 +177,12 @@ public class SalesReturnPanel extends StandardMagicPanel {
 
 	private void clearDisplay() {
 		salesReturnNumberField.setText(null);
+		salesInvoiceNumberField.setEnabled(true);
 		salesInvoiceNumberField.setText(null);
 		statusField.setText(null);
 		customerField.setText(null);
+		postDateField.setText(null);
+		postedByField.setText(null);
 		itemsTable.setSalesReturn(salesReturn);
 		postButton.setEnabled(false);
 		addItemButton.setEnabled(false);
@@ -204,7 +222,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Status:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Status:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
@@ -229,6 +247,19 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		salesInvoiceNumberField.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(salesInvoiceNumberField, c);
 		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Post Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postDateField = ComponentUtil.createLabel(100);
+		mainPanel.add(postDateField, c);
+		
 		currentRow++;
 		
 		c = new GridBagConstraints();
@@ -244,6 +275,19 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		customerField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(customerField, c);
 
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Posted By:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postedByField = ComponentUtil.createLabel(100);
+		mainPanel.add(postedByField, c);
+		
 		currentRow++;
 		
 		c = new GridBagConstraints();
@@ -334,10 +378,33 @@ public class SalesReturnPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				postAdjustmentIn();
+				postSalesReturn();
 			}
 		});
 		toolBar.add(postButton);
+	}
+
+	private void postSalesReturn() {
+		if (itemsTable.isAdding()) {
+			itemsTable.switchToEditMode();
+		}
+		
+		if (!salesReturn.hasItems()) {
+			showErrorMessage("Cannot post a Sales Return with no items");
+			itemsTable.requestFocusInWindow();
+			return;
+		}
+		
+		if (confirm("Do you want to post this Sales Return?")) {
+			try {
+				salesReturnService.post(salesReturn);
+				JOptionPane.showMessageDialog(this, "Sales Return posted");
+				updateDisplay(salesReturn);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred during posting!");
+			}
+		}
 	}
 
 	private JPanel createItemsTableToolBar() {

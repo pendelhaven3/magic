@@ -455,9 +455,12 @@ create table SALES_RETURN (
   SALES_RETURN_NO integer not null,
   SALES_INVOICE_ID integer not null,
   POST_IND char(1) default 'N' not null,
+  POST_DT date null,
+  POST_BY integer null,
   constraint SALES_RETURN$PK primary key (ID),
   constraint SALES_RETURN$UK unique (SALES_RETURN_NO),
-  constraint SALES_RETURN$FK foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID)
+  constraint SALES_RETURN$FK foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID),
+  constraint SALES_RETURN$FK2 foreign key (POST_BY) references USER (ID)
 );
 
 create table SALES_RETURN_ITEM (

@@ -18,6 +18,7 @@ import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
+import com.pj.magic.model.User;
 
 @Repository
 public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
@@ -25,13 +26,16 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 	private static final String SALES_RETURN_NUMBER_SEQUENCE = "SALES_RETURN_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, SALES_RETURN_NO, SALES_INVOICE_ID, b.SALES_INVOICE_NO,"
-			+ " b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME"
+			"select a.ID, SALES_RETURN_NO, SALES_INVOICE_ID, b.SALES_INVOICE_NO, a.POST_IND, a.POST_DT, a.POST_BY,"
+			+ " b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME,"
+			+ " d.USERNAME as POST_BY_USERNAME"
 			+ " from SALES_RETURN a"
 			+ " join SALES_INVOICE b"
 			+ "   on b.ID = a.SALES_INVOICE_ID"
 			+ " join CUSTOMER c"
-			+ "   on c.ID = b.CUSTOMER_ID";
+			+ "   on c.ID = b.CUSTOMER_ID"
+			+ " left join USER d"
+			+ "   on d.ID = a.POST_BY";
 	
 	private SalesReturnRowMapper salesReturnRowMapper = new SalesReturnRowMapper();
 	
@@ -56,6 +60,13 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			salesInvoice.setCustomer(new Customer(rs.getLong("CUSTOMER_ID"), rs.getString("CUSTOMER_NAME")));
 			salesReturn.setSalesInvoice(salesInvoice);
 			
+			salesReturn.setPosted("Y".equals(rs.getString("POST_IND")));
+			salesReturn.setPostDate(rs.getDate("POST_DT"));
+			
+			if (rs.getLong("POST_BY") != 0) {
+				salesReturn.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			}
+			
 			return salesReturn;
 		}
 		
@@ -70,8 +81,15 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 		}
 	}
 
+	private static final String UPDATE_SQL =
+			"update SALES_RETURN set POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+	
 	private void update(SalesReturn salesReturn) {
-		
+		getJdbcTemplate().update(UPDATE_SQL,
+				salesReturn.isPosted() ? "Y" : "N",
+				salesReturn.getPostDate(),
+				salesReturn.isPosted() ? salesReturn.getPostedBy().getId() : null,
+				salesReturn.getId());
 	}
 	
 	private static final String INSERT_SQL = 
