@@ -42,6 +42,8 @@ import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesInvoiceReport;
+import com.pj.magic.model.SalesReturn;
+import com.pj.magic.model.SalesReturnItem;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.model.report.PaidSalesInvoicesReport;
@@ -79,6 +81,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int PAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	private static final int PRICE_LIST_ITEMS_PER_PAGE = 46;
 	private static final int POSTED_SALES_AND_PROFIT_REPORT_ITEMS_PER_PAGE = 44;
+	private static final int SALES_RETURN_ITEMS_PER_PAGE = 44;
 	
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
@@ -696,6 +699,35 @@ public class PrintServiceImpl implements PrintService {
 		try {
 			for (String printPage : generateReportAsString(report)) {
 				PrinterUtil.printWithCondensedFont(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(SalesReturn salesReturn) {
+		List<List<SalesReturnItem>> pageItems = Lists.partition(salesReturn.getItems(), 
+				SALES_RETURN_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("currentDate", new Date());
+			reportData.put("salesReturn", salesReturn);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/salesReturn.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(SalesReturn salesReturn) {
+		try {
+			for (String printPage : generateReportAsString(salesReturn)) {
+				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);

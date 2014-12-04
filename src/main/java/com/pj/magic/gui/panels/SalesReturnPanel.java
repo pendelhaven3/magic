@@ -26,10 +26,12 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.SalesReturnItemsTable;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesReturnService;
@@ -45,6 +47,8 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	@Autowired private ProductService productService;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private SalesReturnService salesReturnService;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private PrintService printService;
 	
 	private SalesReturn salesReturn;
 	private JLabel salesReturnNumberField;
@@ -58,6 +62,8 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	private JButton postButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
+	private JButton printButton;
+	private JButton printPreviewButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -173,6 +179,8 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		postButton.setEnabled(!salesReturn.isPosted());
 		addItemButton.setEnabled(!salesReturn.isPosted());
 		deleteItemButton.setEnabled(!salesReturn.isPosted());
+		printButton.setEnabled(true);
+		printPreviewButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -187,6 +195,8 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		postButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
+		printButton.setEnabled(false);
+		printPreviewButton.setEnabled(false);
 	}
 
 	@Override
@@ -382,6 +392,27 @@ public class SalesReturnPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(postButton);
+		
+		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreviewDialog.updateDisplay(printService.generateReportAsString(salesReturn));
+				printPreviewDialog.setVisible(true);
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(salesReturn);
+			}
+		});
+		toolBar.add(printButton);
 	}
 
 	private void postSalesReturn() {
