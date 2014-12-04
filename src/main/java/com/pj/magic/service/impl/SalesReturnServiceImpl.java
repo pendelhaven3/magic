@@ -2,12 +2,15 @@ package com.pj.magic.service.impl;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.dao.SalesReturnItemDao;
 import com.pj.magic.model.SalesReturn;
+import com.pj.magic.model.SalesReturnItem;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesReturnService;
 
@@ -34,6 +37,18 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		salesReturn.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
 		salesReturn.setSalesInvoice(salesInvoiceService.get(salesReturn.getSalesInvoice().getId()));
 		return salesReturn;
+	}
+
+	@Transactional
+	@Override
+	public void save(SalesReturnItem item) {
+		salesReturnItemDao.save(item);
+	}
+
+	@Transactional
+	@Override
+	public void delete(SalesReturnItem item) {
+		salesReturnItemDao.delete(item);
 	}
 	
 }

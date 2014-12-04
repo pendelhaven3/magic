@@ -1,5 +1,6 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -48,6 +49,8 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private JButton postButton;
+	private JButton addItemButton;
+	private JButton deleteItemButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -96,7 +99,6 @@ public class SalesReturnPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		boolean newSalesReturn = (salesReturn.getId() == null);
 		salesReturn.setSalesInvoice(salesInvoice);
 		try {
 			salesReturnService.save(salesReturn);
@@ -107,19 +109,14 @@ public class SalesReturnPanel extends StandardMagicPanel {
 			showErrorMessage(Constants.UNEXPECTED_ERROR_MESSAGE);
 			return;
 		}
-		
-		if (!newSalesReturn) {
-			// TODO: Delete all existing sales return items
-		}
 	}
 
-	// TODO: Add checking that no Sales Return has been made yet
 	private boolean validateSalesInvoice(SalesInvoice salesInvoice) {
 		boolean valid = false;
 		if (salesInvoice == null) {
 			showErrorMessage("No record matching Sales Invoice No. specified");
-		} else if (!salesInvoice.isNew()) {
-			showErrorMessage("Sales Invoice is already marked/cancelled");
+		} else if (salesInvoice.isCancelled()) {
+			showErrorMessage("Sales Invoice is already cancelled");
 		} else {
 			valid = true;
 		}
@@ -157,6 +154,10 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		customerField.setText(salesReturn.getSalesInvoice().getCustomer().getName());
 		
 		itemsTable.setSalesReturn(salesReturn);
+		
+		postButton.setEnabled(!salesReturn.isPosted());
+		addItemButton.setEnabled(!salesReturn.isPosted());
+		deleteItemButton.setEnabled(!salesReturn.isPosted());
 	}
 
 	private void clearDisplay() {
@@ -164,6 +165,10 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		salesInvoiceNumberField.setText(null);
 		statusField.setText(null);
 		customerField.setText(null);
+		itemsTable.setSalesReturn(salesReturn);
+		postButton.setEnabled(false);
+		addItemButton.setEnabled(false);
+		deleteItemButton.setEnabled(false);
 	}
 
 	@Override
@@ -250,6 +255,15 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(createItemsTableToolBar(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
@@ -326,4 +340,30 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		toolBar.add(postButton);
 	}
 
+	private JPanel createItemsTableToolBar() {
+		JPanel panel = new JPanel();
+		
+		addItemButton = new MagicToolBarButton("plus_small", "Add Item (F10)", true);
+		addItemButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.switchToAddMode();
+			}
+		});
+		panel.add(addItemButton, BorderLayout.WEST);
+		
+		deleteItemButton = new MagicToolBarButton("minus_small", "Delete Item (Delete)", true);
+		deleteItemButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.removeCurrentlySelectedItem();
+			}
+		});
+		panel.add(deleteItemButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+	
 }

@@ -164,7 +164,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Payment Terminal Assignments":
 			getMagicFrame().switchToPaymentTerminalAssignmentListPanel();
 			break;
-		case "Sales Return List (WIP)":
+		case "Sales Return List":
 			getMagicFrame().switchToSalesReturnListPanel();
 			break;
 		}
@@ -188,7 +188,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Receiving Receipt",
 				"Adjustment In",
 				"Adjustment Out",
-				"Sales Return List (WIP)",
+				"Sales Return List",
 				"Payment List",
 				"Reports",
 				"Payment Terminal Assignments",

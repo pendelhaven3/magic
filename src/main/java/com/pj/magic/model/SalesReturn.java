@@ -1,10 +1,10 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import com.pj.magic.Constants;
 
 public class SalesReturn {
 
@@ -66,24 +66,20 @@ public class SalesReturn {
 		return posted ? "Posted" : "New";
 	}
 
-	public List<SalesReturnItem> getItemsForEditing() {
-		List<SalesReturnItem> items = new ArrayList<>();
-		for (SalesInvoiceItem salesInvoiceItem : salesInvoice.getItems()) {
-			final SalesInvoiceItem referenceItem = salesInvoiceItem;
-			SalesReturnItem item = (SalesReturnItem)CollectionUtils.find(this.items, new Predicate() {
-				
-				@Override
-				public boolean evaluate(Object object) {
-					return ((SalesReturnItem)object).getItem().equals(referenceItem);
-				}
-			});
-			if (item == null) {
-				item = new SalesReturnItem();
-				item.setItem(referenceItem);
-			}
-			items.add(item);
+	public BigDecimal getTotalAmount() {
+		BigDecimal total = Constants.ZERO;
+		for (SalesReturnItem item : items) {
+			total = total.add(item.getAmount());
 		}
-		return items;
+		return total;
+	}
+
+	public int getTotalItems() {
+		return items.size();
+	}
+
+	public boolean hasItems() {
+		return !items.isEmpty();
 	}
 	
 }
