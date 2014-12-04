@@ -1,9 +1,11 @@
-package com.pj.magic.util;
+package com.pj.magic.util.report;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+
+import com.pj.magic.util.FormatterUtil;
 
 public class ReportUtil {
 

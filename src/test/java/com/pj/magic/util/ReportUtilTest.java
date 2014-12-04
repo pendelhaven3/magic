@@ -1,7 +1,10 @@
 package com.pj.magic.util;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
+
+import com.pj.magic.util.report.ReportUtil;
 
 public class ReportUtilTest {
 

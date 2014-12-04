@@ -1,6 +1,8 @@
-package com.pj.magic.util;
+package com.pj.magic.util.report;
 
 import java.math.BigDecimal;
+
+import com.pj.magic.util.FormatterUtil;
 
 public class ReceivingReceiptReportUtil extends ReportUtil {
 

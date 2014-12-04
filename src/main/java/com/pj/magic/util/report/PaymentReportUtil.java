@@ -1,4 +1,4 @@
-package com.pj.magic.util;
+package com.pj.magic.util.report;
 
 import java.math.BigDecimal;
 

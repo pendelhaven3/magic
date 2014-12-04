@@ -50,12 +50,12 @@ import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
 import com.pj.magic.util.FormatterUtil;
-import com.pj.magic.util.PaymentReportUtil;
-import com.pj.magic.util.PostedSalesAndProfitReportReportUtil;
-import com.pj.magic.util.PriceListReportUtil;
 import com.pj.magic.util.PrinterUtil;
-import com.pj.magic.util.ReceivingReceiptReportUtil;
-import com.pj.magic.util.ReportUtil;
+import com.pj.magic.util.report.PaymentReportUtil;
+import com.pj.magic.util.report.PostedSalesAndProfitReportReportUtil;
+import com.pj.magic.util.report.PriceListReportUtil;
+import com.pj.magic.util.report.ReceivingReceiptReportUtil;
+import com.pj.magic.util.report.ReportUtil;
 
 @Service 
 public class PrintServiceImpl implements PrintService {
