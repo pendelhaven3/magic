@@ -145,7 +145,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		}
 		
 		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
-		criteria.setPaid(true);
+		criteria.setMarked(true);
 		criteria.setOrderBy("TRANSACTION_DT, SALES_INVOICE_NO");
 		criteria.setCustomer(customer);
 		if (fromDateModel.getValue() != null) {
