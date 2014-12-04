@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
-import com.pj.magic.gui.dialog.SalesInvoiceReportDialog;
 import com.pj.magic.gui.dialog.SalesInvoiceSearchCriteriaDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.SalesInvoice;
@@ -38,7 +37,6 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private SalesInvoiceSearchCriteriaDialog salesInvoiceSearchCriteriaDialog;
-	@Autowired private SalesInvoiceReportDialog salesInvoiceReportDialog;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	
