@@ -303,5 +303,27 @@ public class SalesInvoice {
 	public BigDecimal getTotalNetProfit() {
 		return getTotalNetAmount().subtract(getTotalNetCost());
 	}
+
+	public boolean hasProduct(Product product) {
+		for (SalesInvoiceItem item : items) {
+			if (product.equals(item.getProduct())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean hasProductAndUnit(Product product, String unit) {
+		return findItemByProductAndUnit(product, unit) != null;
+	}
+	
+	public SalesInvoiceItem findItemByProductAndUnit(Product product, String unit) {
+		for (SalesInvoiceItem item : items) {
+			if (product.equals(item.getProduct()) && unit.equals(item.getUnit())) {
+				return item;
+			}
+		}
+		return null;
+	}
 	
 }

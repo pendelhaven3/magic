@@ -8,5 +8,9 @@ import com.pj.magic.model.SalesReturnItem;
 public interface SalesReturnItemDao {
 
 	List<SalesReturnItem> findAllBySalesReturn(SalesReturn salesReturn);
+
+	void save(SalesReturnItem item);
+
+	void delete(SalesReturnItem item);
 	
 }

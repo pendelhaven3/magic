@@ -163,7 +163,7 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 	@Override
 	public SalesInvoice findBySalesInvoiceNumber(long salesInvoiceNumber) {
 		SalesInvoice salesInvoice = salesInvoiceDao.findBySalesInvoiceNumber(salesInvoiceNumber);
-		loadSalesInvoiceDetails(salesInvoice);
+		salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
 		return salesInvoice;
 	}
 

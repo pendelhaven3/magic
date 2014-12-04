@@ -1,10 +1,13 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
+
+
 public class SalesReturnItem {
 
 	private Long id;
 	private SalesReturn parent;
-	private SalesInvoiceItem item;
+	private SalesInvoiceItem salesInvoiceItem;
 	private Integer quantity;
 
 	public Long getId() {
@@ -23,14 +26,6 @@ public class SalesReturnItem {
 		this.parent = parent;
 	}
 
-	public SalesInvoiceItem getItem() {
-		return item;
-	}
-
-	public void setItem(SalesInvoiceItem item) {
-		this.item = item;
-	}
-
 	public Integer getQuantity() {
 		return quantity;
 	}
@@ -39,4 +34,28 @@ public class SalesReturnItem {
 		this.quantity = quantity;
 	}
 
+	public SalesInvoiceItem getSalesInvoiceItem() {
+		return salesInvoiceItem;
+	}
+
+	public void setSalesInvoiceItem(SalesInvoiceItem salesInvoiceItem) {
+		this.salesInvoiceItem = salesInvoiceItem;
+	}
+
+	public BigDecimal getAmount() {
+		if (salesInvoiceItem == null || quantity == null) {
+			return null;
+		} else {
+			return salesInvoiceItem.getUnitPrice().multiply(new BigDecimal(quantity));
+		}
+	}
+
+	public BigDecimal getUnitPrice() {
+		if (salesInvoiceItem == null) {
+			return null;
+		} else {
+			return salesInvoiceItem.getUnitPrice();
+		}
+	}
+	
 }
