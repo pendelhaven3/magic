@@ -4,7 +4,6 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,11 +51,11 @@ import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.PaymentReportUtil;
+import com.pj.magic.util.PostedSalesAndProfitReportReportUtil;
 import com.pj.magic.util.PriceListReportUtil;
 import com.pj.magic.util.PrinterUtil;
 import com.pj.magic.util.ReceivingReceiptReportUtil;
 import com.pj.magic.util.ReportUtil;
-import com.pj.magic.util.PostedSalesAndProfitReportReportUtil;
 
 @Service 
 public class PrintServiceImpl implements PrintService {
@@ -73,7 +72,7 @@ public class PrintServiceImpl implements PrintService {
 	public static final int INVENTORY_REPORT_COMPLETE_COLUMNS_PER_LINE = 96;
 	private static final int SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE = 13;
 	private static final int AREA_INVENTORY_REPORT_ITEMS_PER_PAGE = 44;
-	private static final int SALES_INVOICE_REPORT_ITEMS_PER_PAGE = 30;
+	private static final int SALES_INVOICE_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_OUT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_IN_ITEMS_PER_PAGE = 44;
 	private static final int UNPAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
@@ -490,15 +489,7 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public List<String> generateReportAsString(SalesInvoiceReport salesInvoiceReport, boolean includeCostAndProfit) {
-		Collections.sort(salesInvoiceReport.getSalesInvoices(), new Comparator<SalesInvoice>() {
-
-			@Override
-			public int compare(SalesInvoice o1, SalesInvoice o2) {
-				return o1.getSalesInvoiceNumber().compareTo(o2.getSalesInvoiceNumber());
-			}
-		});
-		
+	public List<String> generateReportAsString(SalesInvoiceReport salesInvoiceReport) {
 		String reportDate = FormatterUtil.formatDate(salesInvoiceReport.getReportDate());
 		
 		List<List<SalesInvoice>> pageItems = Lists.partition(salesInvoiceReport.getSalesInvoices(), 
@@ -513,20 +504,15 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
 			reportData.put("reportUtil", PostedSalesAndProfitReportReportUtil.class);
-			if (includeCostAndProfit) {
-				printPages.add(generateReportAsString("reports/salesInvoiceReport-withCostAndProfit.vm", 
-						reportData));
-			} else {
-				printPages.add(generateReportAsString("reports/salesInvoiceReport.vm", reportData));
-			}
+			printPages.add(generateReportAsString("reports/salesInvoiceReport.vm", reportData));
 		}
 		return printPages;
 	}
 
 	@Override
-	public void print(SalesInvoiceReport salesInvoiceReport, boolean includeCostAndProfit) {
+	public void print(SalesInvoiceReport salesInvoiceReport) {
 		try {
-			for (String printPage : generateReportAsString(salesInvoiceReport, includeCostAndProfit)) {
+			for (String printPage : generateReportAsString(salesInvoiceReport)) {
 				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {

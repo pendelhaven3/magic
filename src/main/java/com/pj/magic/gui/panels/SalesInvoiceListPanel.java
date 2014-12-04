@@ -4,7 +4,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -17,14 +16,11 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
-import com.pj.magic.gui.dialog.SalesInvoiceReportDialog;
 import com.pj.magic.gui.dialog.SalesInvoiceSearchCriteriaDialog;
 import com.pj.magic.gui.tables.SalesInvoicesTable;
 import com.pj.magic.model.SalesInvoice;
-import com.pj.magic.model.SalesInvoiceReport;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.PrintService;
-import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.SalesInvoiceService;
 
 @Component
@@ -33,7 +29,6 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	@Autowired private SalesInvoicesTable table;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private SalesInvoiceSearchCriteriaDialog salesInvoiceSearchCriteriaDialog;
-	@Autowired private SalesInvoiceReportDialog salesInvoiceReportDialog;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	
@@ -87,64 +82,6 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 		});
 		
 		toolBar.add(searchButton);
-		
-		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview Sales Invoice Report");
-		printPreviewButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				printPreviewSalesInvoiceReport();
-			}
-		});
-		toolBar.add(printPreviewButton);
-		
-		JButton printButton = new MagicToolBarButton("print", "Print Sales Invoice Report");
-		printButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				printSalesInvoiceReport();
-			}
-		});
-		toolBar.add(printButton);
-	}
-
-	private void printSalesInvoiceReport() {
-		SalesInvoiceReport salesInvoiceReport = createSalesInvoiceReport();
-		if (salesInvoiceReport != null) {
-			printService.print(salesInvoiceReport, salesInvoiceReportDialog.isIncludeCostAndProfit());
-		}
-	}
-
-	private SalesInvoiceReport createSalesInvoiceReport() {
-		salesInvoiceReportDialog.setVisible(true);
-		
-		SalesInvoiceReport salesInvoiceReport = null;
-		Date reportDate = salesInvoiceReportDialog.getReportDate();
-		if (reportDate != null) {
-			SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
-			criteria.setMarked(true);
-			criteria.setTransactionDate(reportDate);
-			
-			salesInvoiceReport = new SalesInvoiceReport();
-			salesInvoiceReport.setReportDate(reportDate);
-			salesInvoiceReport.setSalesInvoices(salesInvoiceService.search(criteria));
-		}
-		
-		return salesInvoiceReport;
-	}
-
-	private void printPreviewSalesInvoiceReport() {
-		SalesInvoiceReport salesInvoiceReport = createSalesInvoiceReport();
-		if (salesInvoiceReport != null) {
-			printPreviewDialog.updateDisplay(
-					printService.generateReportAsString(salesInvoiceReport, 
-							salesInvoiceReportDialog.isIncludeCostAndProfit()));
-			printPreviewDialog.setColumnsPerLine(
-					PrintServiceImpl.SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE);
-			printPreviewDialog.setUseCondensedFontForPrinting(true);
-			printPreviewDialog.setVisible(true);
-		}
 	}
 
 	private void searchSalesInvoices() {
