@@ -15,7 +15,7 @@ import com.pj.magic.util.FormatterUtil;
 public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 
 	private static final String[] COLUMN_NAMES = 
-		{"SI No.", "SR No.", "Transaction Date", "Customer", "Encoder", "Net Amount", "Mark", "Cancel"};
+		{"SI No.", "Transaction Date", "Customer", "Encoder", "Net Amount", "Mark", "Cancel"};
 	
 	private List<SalesInvoice> salesInvoices = new ArrayList<>();
 	
@@ -35,8 +35,6 @@ public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case MarkSalesInvoicesTable.SALES_INVOICE_NUMBER_COLUMN_INDEX:
 			return salesInvoice.getSalesInvoiceNumber();
-		case MarkSalesInvoicesTable.SALES_REQUISITION_NUMBER_COLUMN_INDEX:
-			return salesInvoice.getRelatedSalesRequisitionNumber();
 		case MarkSalesInvoicesTable.CUSTOMER_NAME_COLUMN_INDEX:
 			return salesInvoice.getCustomer().getName();
 		case MarkSalesInvoicesTable.TRANSACTION_DATE_COLUMN_INDEX:
