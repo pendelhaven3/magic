@@ -16,6 +16,7 @@ import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
+import com.pj.magic.model.util.TimePeriod;
 import com.pj.magic.util.DbUtil;
 
 @Repository
@@ -145,9 +146,22 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 		}
 		
 		if (criteria.getPaymentDate() != null) {
-			sql.append(" and c.POST_DT >= ? and c.POST_DT <= DATE_ADD(?, INTERVAL 1 DAY)");
-			params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
-			params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+			if (criteria.getTimePeriod() != null) {
+				if (criteria.getTimePeriod() == TimePeriod.MORNING_ONLY) {
+					sql.append(" and c.POST_DT >= ? and c.POST_DT < date_add(?, interval 13 hour)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+				} else if (criteria.getTimePeriod() == TimePeriod.AFTERNOON_ONLY) {
+					sql.append(" and c.POST_DT >= date_add(?, interval 13 hour)"
+							+ " and c.POST_DT < date_add(?, interval 1 day)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+				}
+			} else {
+				sql.append(" and c.POST_DT >= ? and c.POST_DT < date_add(?, interval 1 day)");
+				params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+				params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+			}
 		}
 		
 		if (criteria.getCustomer() != null) {

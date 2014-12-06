@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerminal;
+import com.pj.magic.model.util.TimePeriod;
 
 public class PaymentSalesInvoiceSearchCriteria {
 
@@ -11,6 +12,7 @@ public class PaymentSalesInvoiceSearchCriteria {
 	private Customer customer;
 	private Boolean paid;
 	private PaymentTerminal paymentTerminal;
+	private TimePeriod timePeriod;
 
 	public Date getPaymentDate() {
 		return paymentDate;
@@ -42,6 +44,14 @@ public class PaymentSalesInvoiceSearchCriteria {
 
 	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
 		this.paymentTerminal = paymentTerminal;
+	}
+
+	public TimePeriod getTimePeriod() {
+		return timePeriod;
+	}
+
+	public void setTimePeriod(TimePeriod timePeriod) {
+		this.timePeriod = timePeriod;
 	}
 
 }

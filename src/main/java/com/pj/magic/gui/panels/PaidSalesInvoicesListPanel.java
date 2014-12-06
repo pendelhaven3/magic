@@ -33,6 +33,7 @@ import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
+import com.pj.magic.model.util.TimePeriod;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
@@ -60,6 +61,7 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 	private PaymentSalesInvoicesTableModel tableModel;
 	private UtilCalendarModel paymentDateModel;
 	private JComboBox<PaymentTerminal> paymentTerminalComboBox;
+	private JComboBox<String> timePeriodComboBox;
 	private JButton searchButton;
 	
 	@Override
@@ -71,6 +73,10 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 		paymentTerminalComboBox.setModel(
 				new DefaultComboBoxModel<>(paymentTerminals.toArray(new PaymentTerminal[paymentTerminals.size()])));
 		paymentTerminalComboBox.insertItemAt(null, 0);
+		
+		timePeriodComboBox = new JComboBox<>();
+		timePeriodComboBox.setModel(
+				new DefaultComboBoxModel<>(new String[] {"Whole Day", "Morning Only", "Afternoon Only"}));
 		
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ActionListener() {
@@ -92,9 +98,8 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 		}
 		
 		List<PaymentSalesInvoice> paymentSalesInvoices = doSearchPaidSalesInvoices();
-		if (!paymentSalesInvoices.isEmpty()) {
-			tableModel.setPaymentSalesInvoices(paymentSalesInvoices);
-		} else {
+		tableModel.setPaymentSalesInvoices(paymentSalesInvoices);
+		if (paymentSalesInvoices.isEmpty()) {
 			showErrorMessage("No records found");
 		}
 	}
@@ -104,6 +109,15 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 		criteria.setPaid(true);
 		criteria.setPaymentDate(paymentDateModel.getValue().getTime());
 		criteria.setPaymentTerminal((PaymentTerminal)paymentTerminalComboBox.getSelectedItem());
+		
+		switch (timePeriodComboBox.getSelectedIndex()) {
+		case 1:
+			criteria.setTimePeriod(TimePeriod.MORNING_ONLY);
+			break;
+		case 2:
+			criteria.setTimePeriod(TimePeriod.AFTERNOON_ONLY);
+			break;
+		}
 		
 		return paymentService.searchPaymentSalesInvoices(criteria);
 	}
@@ -129,6 +143,7 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 	public void updateDisplay() {
 		paymentDateModel.setValue(Calendar.getInstance());
 		paymentTerminalComboBox.setSelectedItem(null);
+		timePeriodComboBox.setSelectedIndex(0);
 		List<PaymentSalesInvoice> paymentSalesInvoices = doSearchPaidSalesInvoices();
 		tableModel.setPaymentSalesInvoices(paymentSalesInvoices);
 		if (!paymentSalesInvoices.isEmpty()) {
@@ -194,6 +209,21 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 		mainPanel.add(paymentTerminalComboBox, c);
 		
 		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Time Period:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		timePeriodComboBox.setPreferredSize(new Dimension(150, 25));
+		mainPanel.add(timePeriodComboBox, c);
+		
+		currentRow++;
 
 		c = new GridBagConstraints();
 		c.gridx = 0;
@@ -210,6 +240,7 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 		c.gridwidth = 5;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setPreferredSize(new Dimension(600, 400));
 		mainPanel.add(scrollPane, c);
 	}
 
