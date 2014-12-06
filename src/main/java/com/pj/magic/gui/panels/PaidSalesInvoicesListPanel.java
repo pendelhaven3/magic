@@ -294,6 +294,17 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 		PaidSalesInvoicesReport report = new PaidSalesInvoicesReport();
 		report.setPaymentSalesInvoices(doSearchPaidSalesInvoices());
 		report.setPaymentDate(paymentDateModel.getValue().getTime());
+		report.setPaymentTerminal((PaymentTerminal)paymentTerminalComboBox.getSelectedItem());
+		
+		switch (timePeriodComboBox.getSelectedIndex()) {
+		case 1:
+			report.setTimePeriod(TimePeriod.MORNING_ONLY);
+			break;
+		case 2:
+			report.setTimePeriod(TimePeriod.AFTERNOON_ONLY);
+			break;
+		}
+		
 		return report;
 	}
 
