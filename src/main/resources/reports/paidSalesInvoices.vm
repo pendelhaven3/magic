@@ -6,6 +6,9 @@ $report.center("As of ${paymentDate}", $charsPerLine)
 
                                                                              Page: $currentPage x $totalPages
 
+Terminal    : $paymentTerminal
+Time Period : $timePeriod
+
   Time   S.I. #         Customer Name          Net Amount    Amount Due    Pay. # Terminal
 -------- ------ ------------------------------ ------------- ------------- ------ --------
 ## 7:32 PM 369282 CAN-LIZA'S SARI-SARI STORE          5,351.90      5,351.90      1 CASHIER

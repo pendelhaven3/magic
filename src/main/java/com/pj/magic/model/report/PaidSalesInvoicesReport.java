@@ -6,11 +6,15 @@ import java.util.List;
 
 import com.pj.magic.Constants;
 import com.pj.magic.model.PaymentSalesInvoice;
+import com.pj.magic.model.PaymentTerminal;
+import com.pj.magic.model.util.TimePeriod;
 
 public class PaidSalesInvoicesReport {
 
 	private List<PaymentSalesInvoice> paymentSalesInvoices;
 	private Date paymentDate;
+	private PaymentTerminal paymentTerminal;
+	private TimePeriod timePeriod;
 
 	public List<PaymentSalesInvoice> getPaymentSalesInvoices() {
 		return paymentSalesInvoices;
@@ -35,6 +39,22 @@ public class PaidSalesInvoicesReport {
 
 	public void setPaymentDate(Date paymentDate) {
 		this.paymentDate = paymentDate;
+	}
+	
+	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
+		this.paymentTerminal = paymentTerminal;
+	}
+	
+	public void setTimePeriod(TimePeriod timePeriod) {
+		this.timePeriod = timePeriod;
+	}
+
+	public PaymentTerminal getPaymentTerminal() {
+		return paymentTerminal;
+	}
+
+	public TimePeriod getTimePeriod() {
+		return timePeriod;
 	}
 	
 }

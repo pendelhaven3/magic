@@ -663,6 +663,16 @@ public class PrintServiceImpl implements PrintService {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("charsPerLine", PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE);
 			reportData.put("paymentDate", paymentDate);
+			if (report.getPaymentTerminal() != null) {
+				reportData.put("paymentTerminal", report.getPaymentTerminal().getName());
+			} else {
+				reportData.put("paymentTerminal", "ANY");
+			}
+			if (report.getTimePeriod() != null) {
+				reportData.put("timePeriod", report.getTimePeriod().getDescription());
+			} else {
+				reportData.put("timePeriod", "WHOLE DAY");
+			}
 			reportData.put("totalAmountDue", report.getTotalAmountDue());
 			reportData.put("paymentSalesInvoices", pageItems.get(i));
 			reportData.put("currentPage", i + 1);
