@@ -4,6 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 import org.slf4j.Logger;
@@ -31,6 +33,8 @@ public class BackupDataPanel extends StandardMagicPanel {
 	
 	private String backupFilename = null;
 	private JButton backupButton;
+	private JFileChooser restoreFileChooser;
+	private JButton restoreButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -42,11 +46,55 @@ public class BackupDataPanel extends StandardMagicPanel {
 				backupData();
 			}
 		});
+		
+		restoreFileChooser = new JFileChooser();
+		
+		restoreButton = new JButton("Restore Data");
+		restoreButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				restoreData();
+			}
+		});
+	}
+
+	private void restoreData() {
+		restoreFileChooser.setCurrentDirectory(new File(getBackupFolderAbsolutePath()));
+		int returnVal = restoreFileChooser.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = restoreFileChooser.getSelectedFile();
+			try {
+				Process process = Runtime.getRuntime().exec(
+						new String[] {"cmd.exe", "/c", constructRestoreCommand(file)});
+				int result = process.waitFor();
+				if (result == 0) {
+					showMessage("Restore completed");
+				} else {
+					showMessage("Restore failed");
+				}
+			} catch (IOException | InterruptedException e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+			}
+		}
+	}
+
+	private String constructRestoreCommand(File file) {
+		String command = "mysql -u{0} -p{1} {2} < \"{3}\"";
+		backupFilename = constructBackupFilename();
+		return MessageFormat.format(command, 
+				ApplicationProperties.getProperty("db.user"),
+				ApplicationProperties.getProperty("db.password"),
+				ApplicationProperties.getProperty("db.name"),
+				file.getAbsolutePath()
+		);
 	}
 
 	private void backupData() {
 		try {
-			Process process = Runtime.getRuntime().exec(constructCommand()); // TODO: zip output
+			Process process = Runtime.getRuntime().exec(
+					new String[] {"cmd.exe", "/c", constructBackupCommand()}); // TODO: zip output
 			int result = process.waitFor();
 			if (result == 0) {
 				showMessage("Backup completed.\n" + backupFilename);
@@ -59,7 +107,7 @@ public class BackupDataPanel extends StandardMagicPanel {
 		}
 	}
 
-	private String constructCommand() {
+	private String constructBackupCommand() {
 		String command = "mysqldump -u{0} -p{1} --database {2} -r \"{3}\"";
 		backupFilename = constructBackupFilename();
 		return MessageFormat.format(command, 
@@ -71,19 +119,7 @@ public class BackupDataPanel extends StandardMagicPanel {
 	}
 
 	private String constructBackupFilename() {
-		Path directory = Paths.get(
-				System.getProperty("user.home"), "Desktop", 
-				ApplicationProperties.getProperty("db.backup.folder.name"));
-		if (Files.notExists(directory)) {
-			try {
-				Files.createDirectory(directory);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		directory = directory.toAbsolutePath();
-		
-		StringBuilder sb = new StringBuilder(directory.toString());
+		StringBuilder sb = new StringBuilder(getBackupFolderAbsolutePath());
 		sb.append("\\").append(ApplicationProperties.getProperty("db.backup.name"));
 		sb.append("_").append(new SimpleDateFormat(BACKUP_TIMESTAMP_FORMAT).format(new Date()));
 		sb.append(".sql");
@@ -93,11 +129,19 @@ public class BackupDataPanel extends StandardMagicPanel {
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
+		int currentRow = 0;
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = 0;
+		c.gridy = currentRow;
 		mainPanel.add(backupButton, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(restoreButton, c);
 	}
 
 	@Override
@@ -117,5 +161,20 @@ public class BackupDataPanel extends StandardMagicPanel {
 	protected void addToolBarButtons(MagicToolBar toolBar) {
 		// none
 	}
-
+	
+	private String getBackupFolderAbsolutePath() {
+		Path directory = Paths.get(System.getProperty("user.home"),
+				"Desktop",
+				ApplicationProperties.getProperty("db.backup.folder.name"));
+		if (Files.notExists(directory)) {
+			try {
+				Files.createDirectory(directory);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		directory = directory.toAbsolutePath();
+		return directory.toString();
+	}
+	
 }
