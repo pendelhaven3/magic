@@ -86,7 +86,7 @@ public class PrintServiceImpl implements PrintService {
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
 	public static final int POSTED_SALES_AND_PROFIT_REPORT_CHARACTERS_PER_LINE = 115;
-	public static final int PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE = 100;
+	public static final int PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE = 101;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =

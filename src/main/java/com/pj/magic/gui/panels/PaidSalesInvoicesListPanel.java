@@ -47,10 +47,11 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 	private static final int PAYMENT_DATE_COLUMN_INDEX = 0;
 	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 1;
 	private static final int CUSTOMER_COLUMN_INDEX = 2;
-	private static final int NET_AMOUNT_COLUMN_INDEX = 3;
-	private static final int AMOUNT_DUE_COLUMN_INDEX = 4;
-	private static final int PAYMENT_NUMBER_COLUMN_INDEX = 5;
-	private static final int PAYMENT_TERMINAL_COLUMN_INDEX = 6;
+	private static final int TRANSACTION_DATE_COLUMN_INDEX = 3;
+	private static final int NET_AMOUNT_COLUMN_INDEX = 4;
+	private static final int AMOUNT_DUE_COLUMN_INDEX = 5;
+	private static final int PAYMENT_NUMBER_COLUMN_INDEX = 6;
+	private static final int PAYMENT_TERMINAL_COLUMN_INDEX = 7;
 	
 	@Autowired private PaymentService paymentService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
@@ -159,6 +160,7 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
+
 		int currentRow = 0;
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -311,7 +313,8 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 	private class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = 
-			{"Payment Date", "SI No.", "Customer", "Net Amount", "Amount Due", "Payment No.", "Terminal"};
+			{"Payment Date", "SI No.", "Customer", "Tran. Date", "Net Amount", "Amount Due", 
+				"Payment No.", "Terminal"};
 		
 		private List<PaymentSalesInvoice> paymentSalesInvoices = new ArrayList<>();
 		
@@ -340,6 +343,8 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 				return paymentSalesInvoice.getSalesInvoice().getSalesInvoiceNumber();
 			case CUSTOMER_COLUMN_INDEX:
 				return paymentSalesInvoice.getSalesInvoice().getCustomer().getName();
+			case TRANSACTION_DATE_COLUMN_INDEX:
+				return FormatterUtil.formatDate(paymentSalesInvoice.getSalesInvoice().getTransactionDate());
 			case NET_AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(paymentSalesInvoice.getSalesInvoice().getTotalNetAmount());
 			case AMOUNT_DUE_COLUMN_INDEX:

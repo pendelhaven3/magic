@@ -1,22 +1,21 @@
-#set( $charsPerLine = 100 )
 $report.center("JC HARMONY SELLING INC.", $charsPerLine)
 
 $report.center("PAID SALES INVOICE REPORT", $charsPerLine)
 $report.center("As of ${paymentDate}", $charsPerLine)
 
-                                                                             Page: $currentPage x $totalPages
+                                                                                        Page: $currentPage x $totalPages
 
 Terminal    : $paymentTerminal
 Time Period : $timePeriod
 
-  Time   S.I. #         Customer Name          Net Amount    Amount Due    Pay. # Terminal
--------- ------ ------------------------------ ------------- ------------- ------ --------
-## 7:32 PM 369282 CAN-LIZA'S SARI-SARI STORE          5,351.90      5,351.90      1 CASHIER
+  Time   S.I. #         Customer Name          Tran. Date Net Amount    Amount Due    Pay. # Terminal
+-------- ------ ------------------------------ ---------- ------------- ------------- ------ --------
+## 7:32 PM 369282 CAN-LIZA'S SARI-SARI STORE     12/07/2014     5,351.90      5,351.90      1 CASHIER
 #foreach($paymentSalesInvoice in $paymentSalesInvoices)
-$report.time($paymentSalesInvoice.parent.postDate) $report.field($paymentSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($paymentSalesInvoice.salesInvoice.customer.name, 30) $report.field($paymentSalesInvoice.salesInvoice.totalNetAmount, 13, "right") $report.field($paymentSalesInvoice.amountDue, 13, "right") $report.field($paymentSalesInvoice.parent.paymentNumber, 6, "right") $report.field($paymentSalesInvoice.parent.paymentTerminal.name, 8)
+$report.time($paymentSalesInvoice.parent.postDate) $report.field($paymentSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($paymentSalesInvoice.salesInvoice.customer.name, 30) $report.field($paymentSalesInvoice.salesInvoice.transactionDate) $report.field($paymentSalesInvoice.salesInvoice.totalNetAmount, 13, "right") $report.field($paymentSalesInvoice.amountDue, 13, "right") $report.field($paymentSalesInvoice.parent.paymentNumber, 6, "right") $report.field($paymentSalesInvoice.parent.paymentTerminal.name, 8)
 #end
 #if($isLastPage == true)
-                                                             -------------  
-                                                T O T A L => $report.field($totalAmountDue, 13, "right")
-                                                             =============
+                                                                        -------------  
+                                                           T O T A L => $report.field($totalAmountDue, 13, "right")
+                                                                        =============
 #end
