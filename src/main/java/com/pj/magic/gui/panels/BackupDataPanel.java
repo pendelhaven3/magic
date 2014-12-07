@@ -12,17 +12,22 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.ApplicationProperties;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.dialog.WaitDialog;
 
 @Component
 public class BackupDataPanel extends StandardMagicPanel {
@@ -30,6 +35,8 @@ public class BackupDataPanel extends StandardMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(BackupDataPanel.class);
 	
 	private static final String BACKUP_TIMESTAMP_FORMAT = "yyyyMMdd_HHmmss";
+	
+	@Autowired private WaitDialog waitDialog;
 	
 	private String backupFilename = null;
 	private JButton backupButton;
@@ -60,20 +67,40 @@ public class BackupDataPanel extends StandardMagicPanel {
 	}
 
 	private void restoreData() {
-		restoreFileChooser.setCurrentDirectory(new File(getBackupFolderAbsolutePath()));
+		restoreFileChooser.setCurrentDirectory(new File(
+				getBackupFolderAbsolutePath()));
 		int returnVal = restoreFileChooser.showOpenDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = restoreFileChooser.getSelectedFile();
+			final File file = restoreFileChooser.getSelectedFile();
+			SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>() {
+
+				public Integer doInBackground() throws Exception {
+					Process process = Runtime.getRuntime().exec(
+							new String[] { "cmd.exe", "/c", constructRestoreCommand(file) });
+					return process.waitFor();
+				}
+
+				public void done() {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							waitDialog.setVisible(false);
+							waitDialog.dispose();
+						}
+					});
+				}
+
+			};
+			worker.execute();
+			waitDialog.setVisible(true);
+			System.out.println("Hark");
+			
 			try {
-				Process process = Runtime.getRuntime().exec(
-						new String[] {"cmd.exe", "/c", constructRestoreCommand(file)});
-				int result = process.waitFor();
-				if (result == 0) {
+				if (worker.get() == 0) {
 					showMessage("Restore completed");
 				} else {
 					showMessage("Restore failed");
 				}
-			} catch (IOException | InterruptedException e) {
+			} catch (InterruptedException | ExecutionException e) {
 				logger.error(e.getMessage(), e);
 				showMessageForUnexpectedError();
 			}
