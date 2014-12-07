@@ -98,12 +98,29 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "     on b.STOCK_QTY_CONVERSION_ID = a.ID"
 			+ "   where b.PRODUCT_ID = ?"
 			+ "   and a.POST_IND = 'Y'"
+			+ "   union all"
+			+ "   select a.POST_DT as TRANSACTION_DT, a.SALES_RETURN_NO as TRANSACTION_NO,"
+			+ "   e.NAME as CUSTOMER_SUPPLIER_NAME,"
+			+ "   'SALES RETURN' as TRANSACTION_TYPE, 'SALES RETURN' as TRANSACTION_TYPE_KEY, c.UNIT, b.QUANTITY,"
+			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
+			+ "   from SALES_RETURN a"
+			+ "   join SALES_RETURN_ITEM b"
+			+ "     on b.SALES_RETURN_ID = a.ID"
+			+ "   join SALES_INVOICE_ITEM c"
+			+ "     on c.ID = b.SALES_INVOICE_ITEM_ID"
+			+ "   join SALES_INVOICE d"
+			+ "     on d.ID = a.SALES_INVOICE_ID"
+			+ "   join CUSTOMER e"
+			+ "     on e.ID = d.CUSTOMER_ID"
+			+ "   where c.PRODUCT_ID = ?"
+			+ "   and a.POST_IND = 'Y'"
 			+ " ) m";
 	
 	@Override
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
 			StockCardInventoryReportSearchCriteria criteria) {
 		List<Object> params = new ArrayList<>();
+		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
@@ -171,6 +188,9 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 				item.setLessQuantity(rs.getInt("QUANTITY"));
 				break;
 			case "STOCK QTY CONVERSION TO":
+				item.setAddQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "SALES RETURN":
 				item.setAddQuantity(rs.getInt("QUANTITY"));
 				break;
 			}
