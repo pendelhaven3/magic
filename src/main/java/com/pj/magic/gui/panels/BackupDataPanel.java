@@ -70,8 +70,12 @@ public class BackupDataPanel extends StandardMagicPanel {
 	}
 
 	private void restoreData() {
-		restoreFileChooser.setCurrentDirectory(new File(
-				getBackupFolderAbsolutePath()));
+		if (!isMysqlInstalled()) {
+			showErrorMessage("Restore cannot be done through this terminal");
+			return;
+		}
+		
+		restoreFileChooser.setCurrentDirectory(new File(getBackupFolderAbsolutePath()));
 		int returnVal = restoreFileChooser.showOpenDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			final File file = restoreFileChooser.getSelectedFile();
@@ -95,7 +99,6 @@ public class BackupDataPanel extends StandardMagicPanel {
 			};
 			worker.execute();
 			waitDialog.setVisible(true);
-			System.out.println("Hark");
 			
 			try {
 				if (worker.get() == 0) {
@@ -122,6 +125,11 @@ public class BackupDataPanel extends StandardMagicPanel {
 	}
 
 	private void backupData() {
+		if (!isMysqlInstalled()) {
+			showErrorMessage("Backup cannot be done through this terminal");
+			return;
+		}
+		
 		try {
 			Process process = Runtime.getRuntime().exec(
 					new String[] {"cmd.exe", "/c", constructBackupCommand()}); // TODO: zip output
@@ -210,4 +218,21 @@ public class BackupDataPanel extends StandardMagicPanel {
 		return directory.toString();
 	}
 	
+	private boolean isMysqlInstalled() {
+		try {
+			Process process = Runtime.getRuntime().exec(
+					new String[] {"cmd.exe", "/c", constructMysqlCheckCommand()});
+			return process.waitFor() == 0;
+		} catch (IOException | InterruptedException e) {
+			return false;
+		}
+	}
+	
+	private static String constructMysqlCheckCommand() {
+		String command = "mysql -u{0} -p{1} -e \"select now()\"";
+		return MessageFormat.format(command, 
+				ApplicationProperties.getProperty("db.user"),
+				ApplicationProperties.getProperty("db.password")
+		);
+	}
 }
