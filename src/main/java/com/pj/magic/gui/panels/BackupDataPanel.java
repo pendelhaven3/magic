@@ -2,6 +2,7 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.ApplicationProperties;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.WaitDialog;
+import com.pj.magic.service.LoginService;
 
 @Component
 public class BackupDataPanel extends StandardMagicPanel {
@@ -37,6 +39,7 @@ public class BackupDataPanel extends StandardMagicPanel {
 	private static final String BACKUP_TIMESTAMP_FORMAT = "yyyyMMdd_HHmmss";
 	
 	@Autowired private WaitDialog waitDialog;
+	@Autowired private LoginService loginService;
 	
 	private String backupFilename = null;
 	private JButton backupButton;
@@ -161,6 +164,7 @@ public class BackupDataPanel extends StandardMagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.insets = new Insets(10, 10, 10, 10);
 		mainPanel.add(backupButton, c);
 		
 		currentRow++;
@@ -168,6 +172,7 @@ public class BackupDataPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.insets = new Insets(10, 10, 10, 10);
 		mainPanel.add(restoreButton, c);
 	}
 
@@ -177,6 +182,7 @@ public class BackupDataPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
+		restoreButton.setVisible(loginService.getLoggedInUser().isSupervisor());
 	}
 	
 	@Override
