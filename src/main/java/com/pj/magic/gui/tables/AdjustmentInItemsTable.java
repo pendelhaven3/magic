@@ -119,10 +119,6 @@ public class AdjustmentInItemsTable extends MagicTable {
 			getCellEditor().cancelCellEditing();
 		}
 		
-		if (addMode) {
-			adjustmentIn.getItems().addAll(tableModel.getItems());
-		}
-		
 		addMode = true;
 		tableModel.clearAndAddItem(createBlankItem());
 		changeSelection(0, 0, false, false);

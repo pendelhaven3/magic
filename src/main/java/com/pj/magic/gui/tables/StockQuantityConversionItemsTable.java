@@ -146,10 +146,6 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 			getCellEditor().cancelCellEditing();
 		}
 		
-		if (addMode) {
-			stockQuantityConversion.getItems().addAll(tableModel.getItems());
-		}
-		
 		addMode = true;
 		tableModel.clearAndAddItem(createBlankItem());
 		changeSelection(0, 0, false, false);
