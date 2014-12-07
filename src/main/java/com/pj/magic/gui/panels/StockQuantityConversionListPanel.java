@@ -29,7 +29,6 @@ import com.pj.magic.util.ComponentUtil;
 public class StockQuantityConversionListPanel extends StandardMagicPanel {
 	
 	private static final String NEW_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "newStockQuantityConversion";
-	private static final String DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME = "deleteStockQuantityConversion";
 	
 	@Autowired private StockQuantityConversionsTable table;
 	@Autowired private StockQuantityConversionService stockQuantityConversionService;
@@ -84,16 +83,6 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 				switchToNewStockQuantityConversionPanel();
 			}
 		});		
-		
-		getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-			.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME);
-		getActionMap().put(DELETE_STOCK_QUANTITY_CONVERSION_ACTION_NAME, new AbstractAction() {
-	
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				deleteStockQuantityConversion();
-			}
-		});		
 	}
 	
 	protected void switchToNewStockQuantityConversionPanel() {
@@ -108,19 +97,6 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 		getMagicFrame().switchToMainMenuPanel();
 	}
 	
-	private void deleteStockQuantityConversion() {
-		if (table.getSelectedRow() != -1) {
-			StockQuantityConversion selected = table.getCurrentlySelectedStockQuantityConversion();
-			if (selected.isPosted()) {
-				showErrorMessage("Cannot delete a stock quantity conversion that is already posted!");
-				return;
-			}
-			if (confirm("Are you sure you want to delete this stock quantity conversion?")) {
-				table.removeCurrentlySelectedRow();
-			}
-		}
-	}
-
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
 		JButton addButton = new MagicToolBarButton("plus", "New");
@@ -132,17 +108,6 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(addButton);
-		
-		// TODO: Move to Stock Quantity Conversion panel
-		JButton deleteButton = new MagicToolBarButton("minus", "Delete");
-		deleteButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				deleteStockQuantityConversion();
-			}
-		});
-		toolBar.add(deleteButton);
 		
 		JButton searchButton = new MagicToolBarButton("search", "Search");
 		searchButton.addActionListener(new ActionListener() {
