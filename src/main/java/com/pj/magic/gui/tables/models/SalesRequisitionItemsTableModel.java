@@ -118,7 +118,12 @@ public class SalesRequisitionItemsTableModel extends AbstractTableModel {
 			item.setProduct(rowItem.getProduct());
 			item.setUnit(rowItem.getUnit());
 			item.setQuantity(rowItem.getQuantityAsInt());
+			
+			boolean newItem = (item.getId() == null);
 			salesRequisitionService.save(item);
+			if (newItem) {
+				item.getParent().getItems().add(item);
+			}
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}

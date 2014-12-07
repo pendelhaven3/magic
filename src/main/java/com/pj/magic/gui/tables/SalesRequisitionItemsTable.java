@@ -184,7 +184,6 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		
 		addMode = false;
 		List<SalesRequisitionItem> items = salesRequisition.getItems();
-		items.addAll(tableModel.getItems());
 		tableModel.setItems(items);
 		
 		if (items.size() > 0) {
