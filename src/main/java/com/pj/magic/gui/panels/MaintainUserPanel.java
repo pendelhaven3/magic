@@ -87,7 +87,7 @@ public class MaintainUserPanel extends StandardMagicPanel {
 				} else {
 					showMessage("Saved!");
 				}
-				updateDisplay(user);
+				getMagicFrame().switchToEditUserPanel(user);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Error occurred during saving!");
