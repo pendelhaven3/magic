@@ -21,6 +21,7 @@ import com.pj.magic.gui.panels.AdjustmentOutPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportListPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportPanel;
 import com.pj.magic.gui.panels.AreaListPanel;
+import com.pj.magic.gui.panels.BackupDataPanel;
 import com.pj.magic.gui.panels.ChangePasswordPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
@@ -157,6 +158,7 @@ public class MagicFrame extends JFrame {
 	private static final String PAID_SALES_INVOICES_LIST_PANEL = "PAID_SALES_INVOICES_LIST_PANEL";
 	private static final String POSTED_SALES_AND_PROFIT_REPORT_PANEL = "POSTED_SALES_AND_PROFIT_REPORT_PANEL";
 	private static final String POSTED_SALES_INVOICES_REPORT_PANEL = "POSTED_SALES_INVOICES_REPORT_PANEL";
+	private static final String BACKUP_DATA_PANEL = "BACKUP_DATA_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -212,6 +214,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PaidSalesInvoicesListPanel paidSalesInvoicesListPanel;
 	@Autowired private PostedSalesAndProfitReportPanel postedSalesAndProfitReportPanel;
 	@Autowired private PostedSalesInvoicesReportPanel postedSalesInvoicesReportPanel;
+	@Autowired private BackupDataPanel backupDataPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -314,6 +317,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(paidSalesInvoicesListPanel, PAID_SALES_INVOICES_LIST_PANEL);
 		panelHolder.add(postedSalesAndProfitReportPanel, POSTED_SALES_AND_PROFIT_REPORT_PANEL);
 		panelHolder.add(postedSalesInvoicesReportPanel, POSTED_SALES_INVOICES_REPORT_PANEL);
+		panelHolder.add(backupDataPanel, BACKUP_DATA_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -745,6 +749,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Posted Sales Invoices Report Panel");
 		postedSalesInvoicesReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, POSTED_SALES_INVOICES_REPORT_PANEL);
+	}
+
+	public void switchToBackupDataPanel() {
+		addPanelNameToTitle("Backup Data");
+		backupDataPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, BACKUP_DATA_PANEL);
 	}
 
 }

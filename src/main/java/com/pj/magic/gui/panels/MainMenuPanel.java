@@ -167,6 +167,9 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case "Sales Return List":
 			getMagicFrame().switchToSalesReturnListPanel();
 			break;
+		case "Backup/Restore Data":
+			getMagicFrame().switchToBackupDataPanel();
+			break;
 		}
 	}
 
@@ -204,7 +207,8 @@ public class MainMenuPanel extends StandardMagicPanel {
 				"Stock Card Inventory Report",
 				"User List",
 				"Change Password",
-				"Reset Password"
+				"Reset Password",
+				"Backup/Restore Data"
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
