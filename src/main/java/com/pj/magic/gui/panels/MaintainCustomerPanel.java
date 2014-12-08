@@ -64,6 +64,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 	private MagicTextArea ownersTextArea;
 	private MagicTextArea bankReferencesTextArea;
 	private JCheckBox holdIndicatorCheckBox;
+	private JCheckBox activeIndicatorCheckBox;
 	private MagicTextField remarksField;
 	private JButton saveButton;
 	private JButton deleteButton;
@@ -107,6 +108,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		bankReferencesTextArea.setMaximumLength(500);
 		
 		holdIndicatorCheckBox = new JCheckBox();
+		activeIndicatorCheckBox = new JCheckBox();
 		
 		remarksField = new MagicTextField();
 		remarksField.setMaximumLength(100);
@@ -136,6 +138,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		focusOrder.add(approvedCreditLineField);
 		focusOrder.add(businessTypeComboBox);
 		focusOrder.add(holdIndicatorCheckBox);
+		focusOrder.add(activeIndicatorCheckBox);
 		focusOrder.add(remarksField);
 		focusOrder.add(ownersTextArea);
 	}
@@ -161,6 +164,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 			}
 			customer.setBusinessType((String)businessTypeComboBox.getSelectedItem());
 			customer.setHold(holdIndicatorCheckBox.isSelected());
+			customer.setActive(activeIndicatorCheckBox.isSelected());
 			customer.setRemarks(remarksField.getText());
 			customer.setOwners(ownersTextArea.getText());
 			customer.setBankReferences(bankReferencesTextArea.getText());
@@ -433,6 +437,20 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(130, "Active?: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(activeIndicatorCheckBox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(130, "Remarks: "), c);
 		
 		c = new GridBagConstraints();
@@ -533,6 +551,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		ownersTextArea.setText(customer.getOwners());
 		bankReferencesTextArea.setText(customer.getBankReferences());
 		holdIndicatorCheckBox.setSelected(customer.isOnHold());
+		activeIndicatorCheckBox.setSelected(customer.getActive());
 		remarksField.setText(customer.getRemarks());
 		deleteButton.setEnabled(true);
 	}
@@ -551,6 +570,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		ownersTextArea.setText(null);
 		bankReferencesTextArea.setText(null);
 		holdIndicatorCheckBox.setSelected(false);
+		activeIndicatorCheckBox.setSelected(false);
 		remarksField.setText(null);
 		deleteButton.setEnabled(false);
 	}

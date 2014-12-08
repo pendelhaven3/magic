@@ -2,11 +2,13 @@ package com.pj.magic.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -21,7 +23,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, CODE, a.NAME, BUSINESS_ADDRESS, DELIVERY_ADDRESS, CONTACT_PERSON, CONTACT_NUMBER,"
-			+ " TIN, APPROVED_CREDIT_LINE, BUSINESS_TYPE, OWNERS, BANK_REFERENCES, HOLD_IND, REMARKS,"
+			+ " TIN, APPROVED_CREDIT_LINE, BUSINESS_TYPE, OWNERS, BANK_REFERENCES, HOLD_IND, REMARKS, ACTIVE_IND,"
 			+ " PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME"
 			+ " from CUSTOMER a"
 			+ " left join PAYMENT_TERM b"
@@ -69,6 +71,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 			customer.setOwners(rs.getString("OWNERS"));
 			customer.setBankReferences(rs.getString("BANK_REFERENCES"));
 			customer.setHold("Y".equals(rs.getString("HOLD_IND")));
+			customer.setActive("Y".equals(rs.getString("ACTIVE_IND")));
 			customer.setRemarks(rs.getString("REMARKS"));
 			return customer;
 		}
@@ -115,8 +118,22 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 
 	@Override
 	public List<Customer> search(CustomerSearchCriteria criteria) {
-		// TODO: Put proper implementation once more criteria are added
-		return findAllWithNameLike(criteria.getNameLike());
+		List<Object> params = new ArrayList<>();
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		
+		if (!StringUtils.isEmpty(criteria.getNameLike())) {
+			sql.append(" and a.NAME like ?");
+			params.add(criteria.getNameLike());
+		}
+		
+		if (criteria.getActive() != null) {
+			sql.append(" and a.ACTIVE_IND = ?");
+			params.add(criteria.getActive() ? "Y" : "N");
+		}
+		
+		sql.append(" order by a.NAME");
+		
+		return getJdbcTemplate().query(sql.toString(), customerRowMapper, params.toArray());
 	}
 
 	private static final String DELETE_CUSTOMER_SQL = "delete from CUSTOMER where ID = ?";

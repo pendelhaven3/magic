@@ -57,7 +57,7 @@ public class CustomerSearchCriteriaDialog extends MagicDialog {
 
 	private void saveCustomerSearchCriteria() {
 		searchCriteria = new CustomerSearchCriteria();
-		searchCriteria.setName(nameField.getText());
+		searchCriteria.setNameLike(nameField.getText());
 		setVisible(false);
 	}
 
