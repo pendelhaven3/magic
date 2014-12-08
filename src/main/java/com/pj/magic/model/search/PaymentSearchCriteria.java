@@ -10,6 +10,7 @@ public class PaymentSearchCriteria {
 	private Customer customer;
 	private Date postDate;
 	private Long paymentNumber;
+	private Boolean cancelled;
 
 	public Boolean getPosted() {
 		return posted;
@@ -41,6 +42,14 @@ public class PaymentSearchCriteria {
 
 	public void setPaymentNumber(Long paymentNumber) {
 		this.paymentNumber = paymentNumber;
+	}
+
+	public Boolean getCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(Boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 	
 }

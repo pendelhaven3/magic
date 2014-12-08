@@ -85,6 +85,9 @@ public class PaymentPanel extends StandardMagicPanel {
 	private JLabel postedField;
 	private JLabel postDateField;
 	private JLabel postedByField;
+	private JLabel cancelledField;
+	private JLabel cancelDateField;
+	private JLabel cancelledByField;
 	private JLabel paymentTerminalField;
 	private JLabel totalAmountDueField;
 	private JLabel totalCashPaymentsField;
@@ -101,7 +104,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton deleteCashPaymentButton;
 	private MagicToolBarButton addAdjustmentButton;
 	private MagicToolBarButton deleteAdjustmentButton;
-	private MagicToolBarButton deleteButton;
+	private MagicToolBarButton cancelButton;
 	private MagicToolBarButton postButton;
 	private JButton printPreviewButton;
 	private JButton printButton;
@@ -222,11 +225,14 @@ public class PaymentPanel extends StandardMagicPanel {
 		createDateField.setText(FormatterUtil.formatDate(payment.getCreateDate()));
 		createdByField.setText(payment.getEncoder().getUsername());
 		customerCodeField.setText(payment.getCustomer().getCode());
-		customerCodeField.setEnabled(!payment.isPosted());
+		customerCodeField.setEnabled(payment.isNew());
 		customerNameField.setText(payment.getCustomer().getName());
 		postedField.setText(payment.isPosted() ? "Yes" : "No");
 		postDateField.setText(payment.isPosted() ? FormatterUtil.formatDateTime(payment.getPostDate()) : null);
 		postedByField.setText(payment.isPosted() ? payment.getPostedBy().getUsername() : null);
+		cancelledField.setText(payment.isCancelled() ? "Yes" : "No");
+		cancelDateField.setText(payment.isCancelled() ? FormatterUtil.formatDate(payment.getCancelDate()) : null);
+		cancelledByField.setText(payment.isCancelled() ? payment.getCancelledBy().getUsername() : null);
 		paymentTerminalField.setText(payment.isPosted() ? payment.getPaymentTerminal().getName() : null);
 		totalAmountDueField.setText(FormatterUtil.formatAmount(payment.getTotalAmountDue()));
 		totalCashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCashPayments()));
@@ -240,20 +246,21 @@ public class PaymentPanel extends StandardMagicPanel {
 		cashPaymentsTable.setPayment(payment);
 		adjustmentsTable.setPayment(payment);
 		
-		selectCustomerButton.setEnabled(!payment.isPosted());
-		deleteButton.setEnabled(!payment.isPosted());
-		postButton.setEnabled(!payment.isPosted());
-		addSalesInvoiceButton.setEnabled(!payment.isPosted());
-		deleteSalesInvoiceButton.setEnabled(!payment.isPosted());
-		addCashPaymentButton.setEnabled(!payment.isPosted());
-		deleteCashPaymentButton.setEnabled(!payment.isPosted());
-		addCheckPaymentButton.setEnabled(!payment.isPosted());
-		deleteCheckPaymentButton.setEnabled(!payment.isPosted());
-		addAdjustmentButton.setEnabled(!payment.isPosted());
-		deleteAdjustmentButton.setEnabled(!payment.isPosted());
+		boolean newPayment = payment.isNew();
+		selectCustomerButton.setEnabled(newPayment);
+		cancelButton.setEnabled(newPayment);
+		postButton.setEnabled(newPayment);
+		addSalesInvoiceButton.setEnabled(newPayment);
+		deleteSalesInvoiceButton.setEnabled(newPayment);
+		addCashPaymentButton.setEnabled(newPayment);
+		deleteCashPaymentButton.setEnabled(newPayment);
+		addCheckPaymentButton.setEnabled(newPayment);
+		deleteCheckPaymentButton.setEnabled(newPayment);
+		addAdjustmentButton.setEnabled(newPayment);
+		deleteAdjustmentButton.setEnabled(newPayment);
 		
-		printPreviewButton.setEnabled(true);
-		printButton.setEnabled(true);
+		printPreviewButton.setEnabled(!payment.isCancelled());
+		printButton.setEnabled(!payment.isCancelled());
 	}
 
 	private void clearDisplay() {
@@ -267,6 +274,9 @@ public class PaymentPanel extends StandardMagicPanel {
 		postedField.setText(null);
 		postDateField.setText(null);
 		postedByField.setText(null);
+		cancelledField.setText(null);
+		cancelDateField.setText(null);
+		cancelledByField.setText(null);
 		paymentTerminalField.setText(null);
 		
 		salesInvoicesTable.clearDisplay();
@@ -290,7 +300,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		addAdjustmentButton.setEnabled(false);
 		deleteAdjustmentButton.setEnabled(false);
 		
-		deleteButton.setEnabled(false);
+		cancelButton.setEnabled(false);
 		postButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
 		printButton.setEnabled(false);
@@ -398,12 +408,25 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		c.gridwidth = 4;
+		c.gridwidth = 3;
 		
 		customerCodeField.setPreferredSize(new Dimension(140, 25));
 		customerNameField = ComponentUtil.createLabel(190, "");
 		
 		mainPanel.add(createCustomerPanel(), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Terminal:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 6;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentTerminalField = ComponentUtil.createLabel(100, "");
+		mainPanel.add(paymentTerminalField, c);
 		
 		currentRow++;
 		
@@ -433,33 +456,59 @@ public class PaymentPanel extends StandardMagicPanel {
 		postDateField = ComponentUtil.createLabel(150, "");
 		mainPanel.add(postDateField, c);
 
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Posted By:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 6;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postedByField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(postedByField, c);
+		
 		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Posted By:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Cancelled:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postedByField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(postedByField, c);
+		cancelledField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(cancelledField, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Terminal:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Cancel Date:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		paymentTerminalField = ComponentUtil.createLabel(100, "");
-		mainPanel.add(paymentTerminalField, c);
+		cancelDateField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(cancelDateField, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Cancelled By:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 6;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		cancelledByField = ComponentUtil.createLabel(150, "");
+		mainPanel.add(cancelledByField, c);
 		
 		currentRow++;
 		
@@ -538,15 +587,15 @@ public class PaymentPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		deleteButton = new MagicToolBarButton("trash", "Delete");
-		deleteButton.addActionListener(new ActionListener() {
+		cancelButton = new MagicToolBarButton("cancel", "Cancel");
+		cancelButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				deletePayment();
+				cancelPayment();
 			}
 		});
-		toolBar.add(deleteButton);
+		toolBar.add(cancelButton);
 		
 		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
@@ -647,12 +696,12 @@ public class PaymentPanel extends StandardMagicPanel {
 		return message;
 	}
 	
-	private void deletePayment() {
-		if (confirm("Delete Payment?")) {
+	private void cancelPayment() {
+		if (confirm("Cancel Payment?")) {
 			try {
-				paymentService.delete(payment);
-				showMessage("Payment deleted");
-				getMagicFrame().switchToPaymentListPanel();
+				paymentService.cancel(payment);
+				showMessage("Payment cancelled");
+				getMagicFrame().switchToPaymentPanel(payment);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showMessageForUnexpectedError();

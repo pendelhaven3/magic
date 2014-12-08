@@ -30,10 +30,12 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PAYMENT_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY, CREATE_DT, ENCODER,"
+			+ " CANCEL_IND, CANCEL_DT, CANCEL_BY,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
 			+ " a.PAYMENT_TERMINAL_ID, d.NAME as PAYMENT_TERMINAL_NAME,"
-			+ " e.USERNAME as ENCODER_USERNAME"
+			+ " e.USERNAME as ENCODER_USERNAME,"
+			+ " f.USERNAME as CANCEL_BY_USERNAME"
 			+ " from PAYMENT a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_ID"
@@ -42,7 +44,9 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			+ " left join PAYMENT_TERMINAL d"
 			+ "   on d.ID = a.PAYMENT_TERMINAL_ID"
 			+ " join USER e"
-			+ "   on e.ID = a.ENCODER";
+			+ "   on e.ID = a.ENCODER"
+			+ " left join USER f"
+			+ "   on f.ID = a.CANCEL_BY";
 	
 	private PaymentRowMapper paymentRowMapper = new PaymentRowMapper();
 	
@@ -57,6 +61,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 
 	private static final String UPDATE_SQL =
 			"update PAYMENT set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
+			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?,"
 			+ " PAYMENT_TERMINAL_ID = ? where ID = ?";
 	
 	private void update(Payment payment) {
@@ -65,6 +70,9 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 				payment.isPosted() ? "Y" : "N",
 				payment.getPostDate(),
 				payment.isPosted() ? payment.getPostedBy().getId() : null,
+				payment.isCancelled() ? "Y" : "N",
+				payment.getCancelDate(),
+				payment.isCancelled() ? payment.getCancelledBy().getId() : null,
 				payment.getPaymentTerminal() != null ? payment.getPaymentTerminal().getId() : null,
 				payment.getId());
 	}
@@ -115,12 +123,17 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			payment.setId(rs.getLong("ID"));
 			payment.setPaymentNumber(rs.getLong("PAYMENT_NO"));
 			payment.setPosted("Y".equals(rs.getString("POST_IND")));
+			payment.setCancelled("Y".equals(rs.getString("CANCEL_IND")));
 			
 			Customer customer = new Customer();
 			customer.setId(rs.getLong("CUSTOMER_ID"));
 			customer.setCode(rs.getString("CUSTOMER_CODE"));
 			customer.setName(rs.getString("CUSTOMER_NAME"));
 			payment.setCustomer(customer);
+			
+			if (rs.getLong("POST_BY") != 0) {
+				payment.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			}
 			
 			if (rs.getLong("POST_BY") != 0) {
 				payment.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
@@ -138,6 +151,12 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			
 			payment.setEncoder(new User(rs.getLong("ENCODER"), rs.getString("ENCODER_USERNAME")));
 			
+			if (rs.getLong("CANCEL_BY") != 0) {
+				payment.setCancelledBy(new User(rs.getLong("CANCEL_BY"), rs.getString("CANCEL_BY_USERNAME")));
+			}
+			
+			payment.setCancelDate(rs.getTimestamp("CANCEL_DT"));
+			
 			return payment;
 		}
 		
@@ -152,6 +171,11 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 		if (criteria.getPosted() != null) {
 			sql.append(" and a.POST_IND = ?");
 			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		if (criteria.getCancelled() != null) {
+			sql.append(" and a.CANCEL_IND = ?");
+			params.add(criteria.getCancelled() ? "Y" : "N");
 		}
 		
 		if (criteria.getCustomer() != null) {
@@ -175,11 +199,4 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 		return getJdbcTemplate().query(sql.toString(), paymentRowMapper, params.toArray());
 	}
 
-	private static final String DELETE_SQL = "delete from PAYMENT where ID = ?";
-	
-	@Override
-	public void delete(Payment payment) {
-		getJdbcTemplate().update(DELETE_SQL, payment.getId());
-	}
-	
 }

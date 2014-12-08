@@ -76,6 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public List<Payment> getAllNewPayments() {
 		PaymentSearchCriteria criteria = new PaymentSearchCriteria();
 		criteria.setPosted(false);
+		criteria.setCancelled(false);
 		return searchPayments(criteria);
 	}
 
@@ -99,16 +100,6 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public void save(PaymentCheckPayment check) {
 		paymentCheckPaymentDao.save(check);
-	}
-
-	@Transactional
-	@Override
-	public void delete(Payment payment) {
-		paymentCheckPaymentDao.deleteAllByPayment(payment);
-		paymentSalesInvoiceDao.deleteAllByPayment(payment);
-		paymentCashPaymentDao.deleteAllByPayment(payment);
-		paymentAdjustmentDao.deleteAllByPayment(payment);
-		paymentDao.delete(payment);
 	}
 
 	@Transactional
@@ -176,6 +167,15 @@ public class PaymentServiceImpl implements PaymentService {
 					salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice.getSalesInvoice()));
 		}
 		return paymentSalesInvoices;
+	}
+
+	@Transactional
+	@Override
+	public void cancel(Payment payment) {
+		payment.setCancelled(true);
+		payment.setCancelDate(new Date());
+		payment.setCancelledBy(loginService.getLoggedInUser());
+		paymentDao.save(payment);
 	}
 	
 }
