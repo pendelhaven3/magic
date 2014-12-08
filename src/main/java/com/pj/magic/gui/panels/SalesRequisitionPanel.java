@@ -362,8 +362,8 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalItemsField.setText(String.valueOf(itemsTable.getTotalNumberOfItems()));
-				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
+				totalItemsField.setText(String.valueOf(salesRequisition.getTotalNumberOfItems()));
+				totalAmountField.setText(FormatterUtil.formatAmount(salesRequisition.getTotalAmount()));
 			}
 		});
 	}
