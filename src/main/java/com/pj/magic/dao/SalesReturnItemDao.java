@@ -12,5 +12,7 @@ public interface SalesReturnItemDao {
 	void save(SalesReturnItem item);
 
 	void delete(SalesReturnItem item);
+
+	void deleteAllBySalesReturn(SalesReturn salesReturn);
 	
 }

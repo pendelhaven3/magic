@@ -32,9 +32,14 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		return salesReturnDao.getAll();
 	}
 
+	@Transactional
 	@Override
 	public void save(SalesReturn salesReturn) {
+		boolean newSalesReturn = (salesReturn.getId() == null);
 		salesReturnDao.save(salesReturn);
+		if (!newSalesReturn) {
+			salesReturnItemDao.deleteAllBySalesReturn(salesReturn);
+		}
 	}
 
 	@Override

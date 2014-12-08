@@ -114,5 +114,13 @@ public class SalesReturnItemDaoImpl extends MagicDao implements SalesReturnItemD
 	public void delete(SalesReturnItem item) {
 		getJdbcTemplate().update(DELETE_SQL, item.getId());
 	}
+
+	private static final String DELETE_ALL_BY_SALES_RETURN_SQL =
+			"delete from SALES_RETURN_ITEM where SALES_RETURN_ID = ?";
+	
+	@Override
+	public void deleteAllBySalesReturn(SalesReturn salesReturn) {
+		getJdbcTemplate().update(DELETE_ALL_BY_SALES_RETURN_SQL, salesReturn.getId());
+	}
 	
 }

@@ -82,10 +82,11 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 	}
 
 	private static final String UPDATE_SQL =
-			"update SALES_RETURN set POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+			"update SALES_RETURN set SALES_INVOICE_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
 	
 	private void update(SalesReturn salesReturn) {
 		getJdbcTemplate().update(UPDATE_SQL,
+				salesReturn.getSalesInvoice().getId(),
 				salesReturn.isPosted() ? "Y" : "N",
 				salesReturn.getPostDate(),
 				salesReturn.isPosted() ? salesReturn.getPostedBy().getId() : null,
