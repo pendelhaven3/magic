@@ -21,7 +21,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, CODE, a.NAME, BUSINESS_ADDRESS, DELIVERY_ADDRESS, CONTACT_PERSON, CONTACT_NUMBER,"
-			+ " TIN, APPROVED_CREDIT_LINE, BUSINESS_TYPE, OWNERS, BANK_REFERENCES, HOLD_IND, REMARKS,"
+			+ " TIN, APPROVED_CREDIT_LINE, BUSINESS_TYPE, OWNERS, BANK_REFERENCES, HOLD_IND, REMARKS, ACTIVE_IND,"
 			+ " PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME"
 			+ " from CUSTOMER a"
 			+ " left join PAYMENT_TERM b"
@@ -69,6 +69,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 			customer.setOwners(rs.getString("OWNERS"));
 			customer.setBankReferences(rs.getString("BANK_REFERENCES"));
 			customer.setHold("Y".equals(rs.getString("HOLD_IND")));
+			customer.setActive("Y".equals(rs.getString("ACTIVE_IND")));
 			customer.setRemarks(rs.getString("REMARKS"));
 			return customer;
 		}

@@ -100,6 +100,7 @@ create table CUSTOMER (
   BANK_REFERENCES varchar(500) null,
   HOLD_IND char(1) default 'N' not null,
   REMARKS varchar(200) null,
+  ACTIVE_IND char(1) default 'Y' not null,
   constraint CUSTOMER$PK primary key (ID),
   constraint CUSTOMER$UK unique (CODE),
   constraint CUSTOMER$FK foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID)

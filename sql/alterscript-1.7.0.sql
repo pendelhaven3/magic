@@ -7,3 +7,5 @@ alter table PAYMENT add CANCEL_IND char(1) default 'N' not null;
 alter table PAYMENT add CANCEL_DT date null;
 alter table PAYMENT add CANCEL_BY integer null;
 alter table PAYMENT add constraint PAYMENT$FK5 foreign key (CANCEL_BY) references USER (ID);
+
+alter table CUSTOMER add ACTIVE_IND char(1) default 'Y' not null;

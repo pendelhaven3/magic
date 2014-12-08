@@ -56,6 +56,10 @@ public class Customer {
 	@Convert(converter = BooleanToStringConverter.class)
 	@Column(name = "HOLD_IND")
 	private Boolean hold = false;
+	
+	@Convert(converter = BooleanToStringConverter.class)
+	@Column(name = "ACTIVE_IND")
+	private Boolean active = false;
 
 	private String remarks;
 
@@ -210,6 +214,14 @@ public class Customer {
 
 	public boolean isOnHold() {
 		return hold;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 	
 }
