@@ -36,6 +36,10 @@ import com.pj.magic.util.KeyUtil;
 @Component
 public class PaymentSearchCriteriaDialog extends MagicDialog {
 
+	private static final int STATUS_NEW = 1;
+	private static final int STATUS_POSTED = 2;
+	private static final int STATUS_CANCELLED = 3;
+	
 	@Autowired private CustomerService customerService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	
@@ -78,7 +82,7 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 		});
 		
 		statusComboBox = new MagicComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "Not Posted", "Posted"}));
+		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted", "Cancelled"}));
 		
 		postDateModel = new UtilCalendarModel();
 		
@@ -122,11 +126,15 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 		
 		if (statusComboBox.getSelectedIndex() != 0) {
 			switch (statusComboBox.getSelectedIndex()) {
-			case 1:
+			case STATUS_NEW:
 				searchCriteria.setPosted(false);
+				searchCriteria.setCancelled(false);
 				break;
-			case 2:
+			case STATUS_POSTED:
 				searchCriteria.setPosted(true);
+				break;
+			case STATUS_CANCELLED:
+				searchCriteria.setCancelled(true);
 				break;
 			}
 		}
@@ -277,7 +285,7 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 		paymentNumberField.setText(null);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
-		statusComboBox.setSelectedIndex(1);
+		statusComboBox.setSelectedIndex(STATUS_NEW);
 		postDateModel.setValue(null);
 	}
 	
