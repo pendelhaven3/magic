@@ -18,6 +18,9 @@ public class Payment {
 	private Date createDate;
 	private PaymentTerminal paymentTerminal;
 	private User encoder;
+	private boolean cancelled;
+	private Date cancelDate;
+	private User cancelledBy;
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 	private List<PaymentCheckPayment> checkPayments = new ArrayList<>();
 	private List<PaymentCashPayment> cashPayments = new ArrayList<>();
@@ -191,6 +194,34 @@ public class Payment {
 
 	public void setEncoder(User encoder) {
 		this.encoder = encoder;
+	}
+
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
+
+	public Date getCancelDate() {
+		return cancelDate;
+	}
+
+	public void setCancelDate(Date cancelDate) {
+		this.cancelDate = cancelDate;
+	}
+
+	public User getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(User cancelledBy) {
+		this.cancelledBy = cancelledBy;
+	}
+
+	public boolean isNew() {
+		return !posted && !cancelled;
 	}
 	
 }

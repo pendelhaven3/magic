@@ -103,16 +103,6 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Transactional
 	@Override
-	public void delete(Payment payment) {
-		paymentCheckPaymentDao.deleteAllByPayment(payment);
-		paymentSalesInvoiceDao.deleteAllByPayment(payment);
-		paymentCashPaymentDao.deleteAllByPayment(payment);
-		paymentAdjustmentDao.deleteAllByPayment(payment);
-		paymentDao.delete(payment);
-	}
-
-	@Transactional
-	@Override
 	public void delete(PaymentSalesInvoice paymentSalesInvoice) {
 		paymentSalesInvoiceDao.delete(paymentSalesInvoice);
 	}
@@ -176,6 +166,15 @@ public class PaymentServiceImpl implements PaymentService {
 					salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice.getSalesInvoice()));
 		}
 		return paymentSalesInvoices;
+	}
+
+	@Transactional
+	@Override
+	public void cancel(Payment payment) {
+		payment.setCancelled(true);
+		payment.setCancelDate(new Date());
+		payment.setCancelledBy(loginService.getLoggedInUser());
+		paymentDao.save(payment);
 	}
 	
 }

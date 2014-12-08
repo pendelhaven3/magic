@@ -13,6 +13,4 @@ public interface PaymentDao {
 
 	List<Payment> search(PaymentSearchCriteria criteria);
 
-	void delete(Payment payment);
-	
 }

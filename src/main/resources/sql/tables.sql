@@ -483,11 +483,15 @@ create table PAYMENT (
   CREATE_DT date not null,
   PAYMENT_TERMINAL_ID integer null,
   ENCODER integer not null,
+  CANCEL_IND char(1) default 'N' not null,
+  CANCEL_DT date null,
+  CANCEL_BY integer null,
   constraint PAYMENT$PK primary key (ID),
   constraint PAYMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
   constraint PAYMENT$FK2 foreign key (POST_BY) references USER (ID),
   constraint PAYMENT$FK3 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID),
-  constraint PAYMENT$FK4 foreign key (ENCODER) references USER (ID)
+  constraint PAYMENT$FK4 foreign key (ENCODER) references USER (ID),
+  constraint PAYMENT$FK5 foreign key (CANCEL_BY) references USER (ID)
 );
 
 create table PAYMENT_SALES_INVOICE (

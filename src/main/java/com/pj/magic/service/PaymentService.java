@@ -24,8 +24,6 @@ public interface PaymentService {
 
 	void save(PaymentCheckPayment check);
 
-	void delete(Payment payment);
-
 	void delete(PaymentSalesInvoice paymentSalesInvoice);
 
 	void save(PaymentCashPayment cashPayment);
@@ -43,5 +41,7 @@ public interface PaymentService {
 	List<Payment> searchPayments(PaymentSearchCriteria criteria);
 
 	List<PaymentSalesInvoice> searchPaymentSalesInvoices(PaymentSalesInvoiceSearchCriteria criteria);
+	
+	void cancel(Payment payment);
 	
 }
