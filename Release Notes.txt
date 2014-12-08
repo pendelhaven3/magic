@@ -1,3 +1,26 @@
+version 1.6.0
+
+1. Added Backup and Restore Data function
+2. Added Sales Return to Stock Card Inventory Report
+3. Fixed bug where displayed items get doubled
+4. Organized menu items
+
+version 1.5.1
+
+1. Added Time Period criteria to Paid Sales Invoices list
+
+version 1.5.0
+
+1. Moved Posted Sales Invoices Report to its own screen
+2. Added simple Sales Return
+
+version 1.4.0
+
+1. Added Payment Terminal to Payment model
+2. Changed Payment Post Date to Datetime type
+3. Added Payment Terminal criteria to Paid Sales Invoices list
+4. Highlight Sales Invoices tab when opening/creating new Payment
+
 version 1.3.2
 
 1. Displayed Net Amount instead of Total Amount in Mark Sales Invoice list
