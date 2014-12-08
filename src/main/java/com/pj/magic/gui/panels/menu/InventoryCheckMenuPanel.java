@@ -1,4 +1,4 @@
-package com.pj.magic.gui.panels;
+package com.pj.magic.gui.panels.menu;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -19,12 +19,13 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
 
 @Component
-public class ReportsPanel extends StandardMagicPanel {
+public class InventoryCheckMenuPanel extends StandardMagicPanel {
 
 	@Autowired private LoginService loginService;
 	
@@ -87,17 +88,11 @@ public class ReportsPanel extends StandardMagicPanel {
 	
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-		case "Unpaid Sales Invoices List":
-			getMagicFrame().switchToUnpaidSalesInvoicesListPanel();
+		case "Inventory Check Summary":
+			getMagicFrame().switchToInventoryCheckListPanel();
 			break;
-		case "Paid Sales Invoices List":
-			getMagicFrame().switchToPaidSalesInvoicesListPanel();
-			break;
-		case "Posted Sales and Profit Report":
-			getMagicFrame().switchToPostedSalesAndProfitReportPanel();
-			break;
-		case "Posted Sales Invoices Report":
-			getMagicFrame().switchToPostedSalesInvoicesReportPanel();
+		case "Area Inventory Reports":
+			getMagicFrame().switchToAreaInventoryReportListPanel();
 			break;
 		}
 	}
@@ -110,10 +105,8 @@ public class ReportsPanel extends StandardMagicPanel {
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private final List<String> allMenuItems = Arrays.asList(
-				"Unpaid Sales Invoices List",
-				"Paid Sales Invoices List",
-				"Posted Sales Invoices Report",
-				"Posted Sales and Profit Report"
+				"Inventory Check Summary",
+				"Area Inventory Reports"
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
@@ -127,7 +120,7 @@ public class ReportsPanel extends StandardMagicPanel {
 			menuItems.clear();
 			menuItems.addAll(allMenuItems);
 			if (!user.isSupervisor()) {
-				menuItems.remove("Posted Sales and Profit Report");
+				menuItems.remove("Inventory Check Summary");
 			}
 			fireTableDataChanged();
 		}
@@ -139,7 +132,7 @@ public class ReportsPanel extends StandardMagicPanel {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			return allMenuItems.get(rowIndex);
+			return menuItems.get(rowIndex);
 		}
 		
 	}
