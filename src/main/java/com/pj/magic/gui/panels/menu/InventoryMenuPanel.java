@@ -21,6 +21,7 @@ import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.gui.tables.MagicSubmenuTable;
 import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
 
@@ -35,7 +36,7 @@ public class InventoryMenuPanel extends StandardMagicPanel {
 	@Override
 	protected void initializeComponents() {
 		tableModel = new MainMenuTableModel();
-		table = new MagicListTable(tableModel);
+		table = new MagicSubmenuTable(tableModel);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(JLabel.CENTER);

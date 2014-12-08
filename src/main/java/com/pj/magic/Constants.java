@@ -1,7 +1,10 @@
 package com.pj.magic;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.math.BigDecimal;
+
+import javax.swing.plaf.FontUIResource;
 
 public class Constants {
 
@@ -22,5 +25,7 @@ public class Constants {
 	public static final int CUSTOMER_CODE_MAXIMUM_LENGTH = 12;
 	
 	public static final String UNEXPECTED_ERROR_MESSAGE = "Unexpected error occurred";
+	
+	public static final Font SUBMENU_FONT = new FontUIResource("Arial", Font.BOLD, 24);
 	
 }

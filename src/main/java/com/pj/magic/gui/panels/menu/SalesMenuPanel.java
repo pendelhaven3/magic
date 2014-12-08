@@ -19,6 +19,7 @@ import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.gui.tables.MagicSubmenuTable;
 
 @Component
 public class SalesMenuPanel extends StandardMagicPanel {
@@ -29,12 +30,12 @@ public class SalesMenuPanel extends StandardMagicPanel {
 	@Override
 	protected void initializeComponents() {
 		tableModel = new MainMenuTableModel();
-		table = new MagicListTable(tableModel);
+		table = new MagicSubmenuTable(tableModel);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(JLabel.CENTER);
 		table.setDefaultRenderer(Object.class, renderer);
-
+		
 		table.changeSelection(0, 0, false, false);
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
