@@ -29,17 +29,20 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	private static final String PAYMENT_NUMBER_SEQUENCE = "PAYMENT_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PAYMENT_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY, CREATE_DT,"
+			"select a.ID, PAYMENT_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY, CREATE_DT, ENCODER,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
-			+ " a.PAYMENT_TERMINAL_ID, d.NAME as PAYMENT_TERMINAL_NAME"
+			+ " a.PAYMENT_TERMINAL_ID, d.NAME as PAYMENT_TERMINAL_NAME,"
+			+ " e.USERNAME as ENCODER_USERNAME"
 			+ " from PAYMENT a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_ID"
 			+ " left join USER c"
 			+ "   on c.ID = a.POST_BY"
 			+ " left join PAYMENT_TERMINAL d"
-			+ "   on d.ID = a.PAYMENT_TERMINAL_ID";
+			+ "   on d.ID = a.PAYMENT_TERMINAL_ID"
+			+ " join USER e"
+			+ "   on e.ID = a.ENCODER";
 	
 	private PaymentRowMapper paymentRowMapper = new PaymentRowMapper();
 	
@@ -67,7 +70,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	}
 
 	private static final String INSERT_SQL = 
-			"insert into PAYMENT (PAYMENT_NO, CUSTOMER_ID, CREATE_DT) values (?, ?, curdate())";
+			"insert into PAYMENT (PAYMENT_NO, CUSTOMER_ID, CREATE_DT, ENCODER) values (?, ?, curdate(), ?)";
 	
 	private void insert(final Payment payment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -79,6 +82,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, getNextPaymentNumber());
 				ps.setLong(2, payment.getCustomer().getId());
+				ps.setLong(3, payment.getEncoder().getId());
 				return ps;
 			}
 		}, holder);
@@ -131,6 +135,8 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 				terminal.setName(rs.getString("PAYMENT_TERMINAL_NAME"));
 				payment.setPaymentTerminal(terminal);
 			}
+			
+			payment.setEncoder(new User(rs.getLong("ENCODER"), rs.getString("ENCODER_USERNAME")));
 			
 			return payment;
 		}

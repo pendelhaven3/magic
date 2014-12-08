@@ -45,6 +45,9 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public void save(Payment payment) {
 		boolean newPayment = (payment.getId() == null);
+		if (newPayment) {
+			payment.setEncoder(loginService.getLoggedInUser());
+		}
 		paymentDao.save(payment);
 		if (!newPayment) {
 			paymentSalesInvoiceDao.deleteAllByPayment(payment);

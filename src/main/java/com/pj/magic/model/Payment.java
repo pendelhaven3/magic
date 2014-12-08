@@ -17,6 +17,7 @@ public class Payment {
 	private User postedBy;
 	private Date createDate;
 	private PaymentTerminal paymentTerminal;
+	private User encoder;
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 	private List<PaymentCheckPayment> checkPayments = new ArrayList<>();
 	private List<PaymentCashPayment> cashPayments = new ArrayList<>();
@@ -182,6 +183,14 @@ public class Payment {
 
 	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
 		this.paymentTerminal = paymentTerminal;
+	}
+
+	public User getEncoder() {
+		return encoder;
+	}
+
+	public void setEncoder(User encoder) {
+		this.encoder = encoder;
 	}
 	
 }
