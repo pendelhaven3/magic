@@ -254,7 +254,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToStockMovementMenuPanel();
 	}
 
 	@Override

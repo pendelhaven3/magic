@@ -98,7 +98,7 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToSalesMenuPanel();
 	}
 
 	@Override

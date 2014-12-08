@@ -94,7 +94,7 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToSalesMenuPanel();
 	}
 	
 	@Override

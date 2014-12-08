@@ -39,7 +39,7 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToSalesMenuPanel();
 	}
 	
 	public void updateDisplay() {

@@ -798,7 +798,7 @@ public class MagicFrame extends JFrame {
 	}
 
 	public void switchToInventoryMenuPanel() {
-		addPanelNameToTitle("Inventory Menu");
+		addPanelNameToTitle("Product Maintenance and Pricing Schemes Menu");
 		inventoryMenuPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, INVENTORY_MENU_PANEL);
 	}

@@ -74,7 +74,7 @@ public class ReceivingReceiptListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToPurchasesMenuPanel();
 	}
 	
 	public void displayReceivingReceiptDetails(ReceivingReceipt receivingReceipt) {

@@ -78,7 +78,7 @@ public class PurchaseOrderListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToPurchasesMenuPanel();
 	}
 	
 	@Override

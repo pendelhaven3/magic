@@ -81,7 +81,7 @@ public class PricingSchemeListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToInventoryMenuPanel();
 	}
 
 	@Override
