@@ -106,7 +106,7 @@ public class AreaListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToRecordsMaintenanceMenuPanel();
 	}
 
 	@Override

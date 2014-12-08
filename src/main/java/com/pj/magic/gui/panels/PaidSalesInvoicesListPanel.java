@@ -138,7 +138,7 @@ public class PaidSalesInvoicesListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToReportsPanel();
+		getMagicFrame().switchToReportsMenuPanel();
 	}
 	
 	public void updateDisplay() {

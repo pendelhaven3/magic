@@ -72,7 +72,7 @@ public class InventoryCheckListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToInventoryCheckMenuPanel();
 	}
 	
 	@Override

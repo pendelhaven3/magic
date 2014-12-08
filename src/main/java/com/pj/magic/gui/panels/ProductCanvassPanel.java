@@ -181,7 +181,7 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToPurchasesMenuPanel();
 	}
 
 	@Override

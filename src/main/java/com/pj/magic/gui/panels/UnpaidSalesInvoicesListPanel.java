@@ -62,7 +62,7 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToReportsPanel();
+		getMagicFrame().switchToReportsMenuPanel();
 	}
 	
 	public void updateDisplay() {

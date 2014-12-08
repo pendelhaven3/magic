@@ -164,7 +164,7 @@ public class ResetPasswordPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToUserListPanel();
+		getMagicFrame().switchToAdminMenuPanel();
 	}
 
 	@Override

@@ -178,7 +178,7 @@ public class PostedSalesInvoicesReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToReportsPanel();
+		getMagicFrame().switchToReportsMenuPanel();
 	}
 
 	@Override

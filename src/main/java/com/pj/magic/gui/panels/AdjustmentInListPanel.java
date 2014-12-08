@@ -91,7 +91,7 @@ public class AdjustmentInListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToStockMovementMenuPanel();
 	}
 	
 	@Override

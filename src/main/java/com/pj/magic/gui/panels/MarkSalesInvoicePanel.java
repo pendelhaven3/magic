@@ -48,7 +48,7 @@ public class MarkSalesInvoicePanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToSalesMenuPanel();
 	}
 	
 	public void updateDisplay() {

@@ -101,7 +101,7 @@ public class UserListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToAdminMenuPanel();
 	}
 
 	@Override
