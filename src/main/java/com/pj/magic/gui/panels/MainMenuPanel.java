@@ -7,7 +7,9 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -31,6 +33,16 @@ import com.pj.magic.service.LoginService;
 @Component
 public class MainMenuPanel extends StandardMagicPanel {
 
+	private static final Map<String, String> MENU_ITEM_IMAGE_MAP = new HashMap<>();
+	
+	static {
+		MENU_ITEM_IMAGE_MAP.put("Admin", "admin");
+		MENU_ITEM_IMAGE_MAP.put("Reports", "reports");
+		MENU_ITEM_IMAGE_MAP.put("Inventory Check", "inventory_check");
+		MENU_ITEM_IMAGE_MAP.put("Backup/Restore Data", "database_backup");
+		MENU_ITEM_IMAGE_MAP.put("Change Password", "change_password");
+	}
+	
 	@Autowired private LoginService loginService;
 	
 	private MagicTable table;
@@ -63,7 +75,8 @@ public class MainMenuPanel extends StandardMagicPanel {
 					panel.setBackground(new Color(184, 207, 229));
 				}
 				
-				if (table.getValueAt(row, column) == null) {
+				String menuItem = (String)table.getValueAt(row, column);
+				if (menuItem == null) {
 					return panel;
 				}
 
@@ -71,9 +84,15 @@ public class MainMenuPanel extends StandardMagicPanel {
 				menuLabel.setFont(new FontUIResource("Arial", Font.BOLD, 24));
 				menuLabel.setText((String)table.getValueAt(row, column));
 				
+				String imageName = MENU_ITEM_IMAGE_MAP.get(menuItem);
+				if (imageName == null) {
+					imageName = "buy";
+				}
+				
 				GridBagConstraints c = new GridBagConstraints();
 				c.gridx = 0;
-				panel.add(new JLabel(new ImageIcon(getClass().getResource("/images/buy.png"))), c);
+				panel.add(new JLabel(new ImageIcon(getClass().getResource(
+						"/images/" + imageName + ".png"))), c);
 				
 				c = new GridBagConstraints();
 				c.gridx = 1;
