@@ -223,5 +223,15 @@ public class Payment {
 	public boolean isNew() {
 		return !posted && !cancelled;
 	}
+
+	public String getStatus() {
+		if (posted) {
+			return "Posted";
+		} else if (cancelled) {
+			return "Cancelled";
+		} else {
+			return "New";
+		}
+	}
 	
 }

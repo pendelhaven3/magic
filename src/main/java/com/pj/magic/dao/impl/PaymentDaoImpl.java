@@ -173,6 +173,11 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			params.add(criteria.getPosted() ? "Y" : "N");
 		}
 		
+		if (criteria.getPosted() != null) {
+			sql.append(" and a.CANCEL_IND = ?");
+			params.add(criteria.getCancelled() ? "Y" : "N");
+		}
+		
 		if (criteria.getCustomer() != null) {
 			sql.append(" and a.CUSTOMER_ID = ?");
 			params.add(criteria.getCustomer().getId());

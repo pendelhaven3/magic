@@ -76,6 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public List<Payment> getAllNewPayments() {
 		PaymentSearchCriteria criteria = new PaymentSearchCriteria();
 		criteria.setPosted(false);
+		criteria.setCancelled(false);
 		return searchPayments(criteria);
 	}
 
