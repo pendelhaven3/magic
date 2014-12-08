@@ -2,11 +2,13 @@ package com.pj.magic.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -116,8 +118,22 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 
 	@Override
 	public List<Customer> search(CustomerSearchCriteria criteria) {
-		// TODO: Put proper implementation once more criteria are added
-		return findAllWithNameLike(criteria.getNameLike());
+		List<Object> params = new ArrayList<>();
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		
+		if (!StringUtils.isEmpty(criteria.getNameLike())) {
+			sql.append(" and a.NAME like ?");
+			params.add(criteria.getNameLike());
+		}
+		
+		if (criteria.getActive() != null) {
+			sql.append(" and a.ACTIVE_IND = ?");
+			params.add(criteria.getActive() ? "Y" : "N");
+		}
+		
+		sql.append(" order by a.NAME");
+		
+		return getJdbcTemplate().query(sql.toString(), customerRowMapper, params.toArray());
 	}
 
 	private static final String DELETE_CUSTOMER_SQL = "delete from CUSTOMER where ID = ?";

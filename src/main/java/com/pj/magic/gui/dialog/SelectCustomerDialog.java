@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.CustomersTableModel;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.search.CustomerSearchCriteria;
 import com.pj.magic.service.CustomerService;
 
 @Component
@@ -79,6 +80,19 @@ public class SelectCustomerDialog extends MagicDialog {
 	
 	public void searchCustomers(String customerName) {
 		List<Customer> customers = customerService.findAllWithNameLike(customerName);
+		customersTableModel.setCustomers(customers);
+		
+		if (!customers.isEmpty()) {
+			customersTable.changeSelection(0, 0, false, false);
+		}
+	}
+	
+	public void searchActiveCustomers(String customerName) {
+		CustomerSearchCriteria criteria = new CustomerSearchCriteria();
+		criteria.setNameLike(customerName);
+		criteria.setActive(true);
+		
+		List<Customer> customers = customerService.searchCustomers(criteria);
 		customersTableModel.setCustomers(customers);
 		
 		if (!customers.isEmpty()) {

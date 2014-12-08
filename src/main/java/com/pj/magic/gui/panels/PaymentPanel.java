@@ -168,7 +168,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		}
 		
 		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
-		if (customer == null) {
+		if (customer == null || !customer.isActive()) {
 			showErrorMessage("No customer matching code specified");
 			return;
 		} else {
@@ -187,7 +187,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	}
 
 	protected void selectCustomer() {
-		selectCustomerDialog.searchCustomers(customerCodeField.getText());
+		selectCustomerDialog.searchActiveCustomers(customerCodeField.getText());
 		selectCustomerDialog.setVisible(true);
 		
 		Customer customer = selectCustomerDialog.getSelectedCustomer();

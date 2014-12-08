@@ -277,7 +277,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	// TODO: Review this again
 	// TODO: Can combine selectCustomer() and saveCustomer()?
 	protected void selectCustomer() {
-		selectCustomerDialog.searchCustomers(customerCodeField.getText());
+		selectCustomerDialog.searchActiveCustomers(customerCodeField.getText());
 		selectCustomerDialog.setVisible(true);
 		
 		Customer customer = selectCustomerDialog.getSelectedCustomer();
@@ -325,7 +325,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		}
 		
 		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
-		if (customer == null) {
+		if (customer == null || !customer.isActive()) {
 			showErrorMessage("No customer matching code specified");
 			return;
 		} else {

@@ -224,4 +224,8 @@ public class Customer {
 		this.active = active;
 	}
 	
+	public boolean isActive() {
+		return active;
+	}
+	
 }
