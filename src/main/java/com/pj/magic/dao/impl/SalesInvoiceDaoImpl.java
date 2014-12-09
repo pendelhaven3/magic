@@ -283,8 +283,12 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			+ " and a.CUSTOMER_ID = ?"
 			+ " and a.CANCEL_IND = 'N'"
 			+ " and not exists("
-			+ "   select 1 from PAYMENT_SALES_INVOICE"
+			+ "   select 1"
+			+ "   from PAYMENT_SALES_INVOICE psi"
+			+ "   join PAYMENT pay"
+			+ "     on pay.ID = psi.PAYMENT_ID"
 			+ "   where SALES_INVOICE_ID = a.ID"
+			+ "   and pay.CANCEL_IND = 'N'"
 			+ " )";
 	
 	@Override

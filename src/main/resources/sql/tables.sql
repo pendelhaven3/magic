@@ -501,7 +501,6 @@ create table PAYMENT_SALES_INVOICE (
   SALES_INVOICE_ID integer not null,
   ADJUSTMENT_AMOUNT numeric(10, 2) null,
   constraint PAYMENT_SALES_INVOICE$PK primary key (ID),
-  constraint PAYMENT_SALES_INVOICE$UK unique (SALES_INVOICE_ID),
   constraint PAYMENT_SALES_INVOICE$FK foreign key (PAYMENT_ID) references PAYMENT (ID),
   constraint PAYMENT_SALES_INVOICE$FK2 foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID)
 );
