@@ -489,12 +489,4 @@ public class AreaInventoryReportItemsTable extends MagicTable {
 		}
 	}
 
-	public int getTotalNumberOfItems() {
-		int totalNumberOfItems = areaInventoryReport.getTotalNumberOfItems();
-		if (isAdding()) {
-			totalNumberOfItems += tableModel.getItems().size();
-		}
-		return totalNumberOfItems;
-	}
-	
 }

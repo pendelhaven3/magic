@@ -120,7 +120,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalItemsField.setText(String.valueOf(itemsTable.getTotalNumberOfItems()));
+				totalItemsField.setText(String.valueOf(areaInventoryReport.getTotalNumberOfItems()));
 			}
 		});
 	}

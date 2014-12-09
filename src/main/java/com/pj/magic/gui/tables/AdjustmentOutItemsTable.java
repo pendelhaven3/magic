@@ -3,7 +3,6 @@ package com.pj.magic.gui.tables;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -347,24 +346,6 @@ public class AdjustmentOutItemsTable extends MagicTable {
 			((JTextField)getEditorComponent()).setText(product.getCode());
 			getCellEditor().stopCellEditing();
 		}
-	}
-
-	public BigDecimal getTotalAmount() {
-		BigDecimal totalAmount = adjustmentOut.getTotalAmount();
-		if (isAdding()) {
-			for (AdjustmentOutItem item : tableModel.getItems()) {
-				totalAmount = totalAmount.add(item.getAmount());
-			}
-		}
-		return totalAmount;
-	}
-	
-	public int getTotalNumberOfItems() {
-		int totalNumberOfItems = adjustmentOut.getTotalNumberOfItems();
-		if (isAdding()) {
-			totalNumberOfItems += tableModel.getItems().size();
-		}
-		return totalNumberOfItems;
 	}
 
 	public void highlightColumn(AdjustmentOutItem item, int column) {

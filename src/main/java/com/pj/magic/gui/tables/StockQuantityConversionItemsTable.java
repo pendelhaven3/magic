@@ -399,14 +399,6 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 				(String)getValueAt(getSelectedRow() - 1, PRODUCT_CODE_COLUMN_INDEX));
 	}
 
-	public int getTotalNumberOfItems() {
-		int totalNumberOfItems = stockQuantityConversion.getTotalNumberOfItems();
-		if (isAdding()) {
-			totalNumberOfItems += tableModel.getItems().size();
-		}
-		return totalNumberOfItems;
-	}
-
 	public void highlightQuantityColumn(StockQuantityConversionItem item) {
 		int row = stockQuantityConversion.getItems().indexOf(item);
 		changeSelection(row, QUANTITY_COLUMN_INDEX, false, false);

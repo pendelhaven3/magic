@@ -132,8 +132,8 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalItemsField.setText(String.valueOf(itemsTable.getTotalNumberOfItems()));
-				totalAmountField.setText(FormatterUtil.formatAmount(itemsTable.getTotalAmount()));
+				totalItemsField.setText(String.valueOf(adjustmentIn.getTotalNumberOfItems()));
+				totalAmountField.setText(FormatterUtil.formatAmount(adjustmentIn.getTotalAmount()));
 			}
 		});
 	}
