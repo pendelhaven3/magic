@@ -123,7 +123,7 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 		
 		if (!StringUtils.isEmpty(criteria.getNameLike())) {
 			sql.append(" and a.NAME like ?");
-			params.add(criteria.getNameLike());
+			params.add(criteria.getNameLike() + "%");
 		}
 		
 		if (criteria.getActive() != null) {
