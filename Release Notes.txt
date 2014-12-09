@@ -1,3 +1,12 @@
+version 1.7.0
+
+1. Added Encoder to Payment model
+2. Renamed Payment screen titles
+3. Added cancelling payment instead of delete
+4. Added disabling customers
+5. Increased font size of submenus
+5. Allowed changing SI number of Sales Return
+
 version 1.6.0
 
 1. Added Backup and Restore Data function
