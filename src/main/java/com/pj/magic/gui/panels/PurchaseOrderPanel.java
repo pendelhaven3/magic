@@ -891,6 +891,12 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			return;
 		}
 		
+		if (paymentTermComboBox.getSelectedItem() == null) {
+			showErrorMessage("Payment Term must be specified");
+			paymentTermComboBox.requestFocusInWindow();
+			return;
+		}
+		
 		if (confirm("Do you want to post this Purchase Order?")) {
 			try {
 				ReceivingReceipt receivingReceipt = purchaseOrderService.post(purchaseOrder);
