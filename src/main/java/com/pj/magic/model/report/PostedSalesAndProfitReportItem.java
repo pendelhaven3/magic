@@ -11,7 +11,7 @@ import com.pj.magic.model.SalesReturn;
 public class PostedSalesAndProfitReportItem {
 
 	private Date transactionDate;
-	private Long referenceNumber;
+	private Long transactionNumber;
 	private Customer customer;
 	private BigDecimal totalAmount = Constants.ZERO;
 	private BigDecimal totalDiscounts = Constants.ZERO;
@@ -21,7 +21,7 @@ public class PostedSalesAndProfitReportItem {
 
 	public PostedSalesAndProfitReportItem(SalesInvoice salesInvoice) {
 		transactionDate = salesInvoice.getTransactionDate();
-		referenceNumber = salesInvoice.getSalesInvoiceNumber();
+		transactionNumber = salesInvoice.getSalesInvoiceNumber();
 		customer = salesInvoice.getCustomer();
 		totalAmount = salesInvoice.getTotalAmount();
 		totalDiscounts = salesInvoice.getTotalDiscounts();
@@ -32,7 +32,7 @@ public class PostedSalesAndProfitReportItem {
 
 	public PostedSalesAndProfitReportItem(SalesReturn salesReturn) {
 		transactionDate = salesReturn.getPostDate();
-		referenceNumber = salesReturn.getSalesReturnNumber();
+		transactionNumber = salesReturn.getSalesReturnNumber();
 		customer = salesReturn.getSalesInvoice().getCustomer();
 		netAmount = salesReturn.getTotalAmount().negate();
 		netCost = salesReturn.getTotalNetCost().negate();
@@ -47,12 +47,12 @@ public class PostedSalesAndProfitReportItem {
 		this.transactionDate = transactionDate;
 	}
 
-	public Long getReferenceNumber() {
-		return referenceNumber;
+	public Long getTransactionNumber() {
+		return transactionNumber;
 	}
 
-	public void setReferenceNumber(Long referenceNumber) {
-		this.referenceNumber = referenceNumber;
+	public void setTransactionNumber(Long transactionNumber) {
+		this.transactionNumber = transactionNumber;
 	}
 
 	public Customer getCustomer() {

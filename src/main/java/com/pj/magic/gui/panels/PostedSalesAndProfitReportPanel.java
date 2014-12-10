@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.Box;
@@ -197,6 +199,19 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 				}
 			})
 		);
+		
+		Collections.sort(items, new Comparator<PostedSalesAndProfitReportItem>() {
+
+			@Override
+			public int compare(PostedSalesAndProfitReportItem o1, PostedSalesAndProfitReportItem o2) {
+				int result = o1.getTransactionDate().compareTo(o2.getTransactionDate());
+				if (result == 0) {
+					return o1.getTransactionNumber().compareTo(o2.getTransactionNumber());
+				} else {
+					return result;
+				}
+			}
+		});
 		
 		return items;
 	}
@@ -431,7 +446,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 			case TRANSACTION_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(item.getTransactionDate());
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
-				return item.getReferenceNumber();
+				return item.getTransactionNumber();
 			case CUSTOMER_COLUMN_INDEX:
 				return item.getCustomer().getName();
 			case TOTAL_AMOUNT_COLUMN_INDEX:
