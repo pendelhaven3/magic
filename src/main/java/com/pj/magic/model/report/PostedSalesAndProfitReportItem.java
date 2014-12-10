@@ -3,6 +3,7 @@ package com.pj.magic.model.report;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.pj.magic.Constants;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
@@ -12,11 +13,11 @@ public class PostedSalesAndProfitReportItem {
 	private Date transactionDate;
 	private Long referenceNumber;
 	private Customer customer;
-	private BigDecimal totalAmount;
-	private BigDecimal totalDiscounts;
-	private BigDecimal netAmount;
-	private BigDecimal netCost;
-	private BigDecimal netProfit;
+	private BigDecimal totalAmount = Constants.ZERO;
+	private BigDecimal totalDiscounts = Constants.ZERO;
+	private BigDecimal netAmount = Constants.ZERO;
+	private BigDecimal netCost = Constants.ZERO;
+	private BigDecimal netProfit = Constants.ZERO;
 
 	public PostedSalesAndProfitReportItem(SalesInvoice salesInvoice) {
 		transactionDate = salesInvoice.getTransactionDate();

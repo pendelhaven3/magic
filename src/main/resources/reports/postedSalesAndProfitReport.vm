@@ -5,15 +5,15 @@ $report.center("POSTED SALES AND PROFIT REPORT", $charsPerLine)
 Customer : $customer
 Txn Date : $transactionDate
 
-                                                 Sub Total     Discount
- Txn Date  S.I. #        Customer Name           Amount        Amount      Net Amount     Net Cost     Net Profit
+                                                 Sub Total     Total
+ Txn Date  Ref #         Customer Name           Amount        Discounts   Net Amount     Net Cost     Net Profit
 ---------- ------ ------------------------------ ------------- ---------- ------------- ------------- -------------
 ##11/03/2014 369282 CAN-LIZA'S SARI-SARI STORE            816.35                 5,351.90        784.92         31.43
-#foreach($salesInvoice in $salesInvoices)
-$report.field($salesInvoice.transactionDate) $report.field($salesInvoice.salesInvoiceNumber, 6, "right") $report.field($salesInvoice.customer.name, 30) $report.field($salesInvoice.totalAmount, 13, "right") $report.discount($salesInvoice.totalDiscountedAmount, 10) $report.field($salesInvoice.totalNetAmount, 13, "right") $report.field($salesInvoice.totalNetCost, 13, "right") $report.field($salesInvoice.totalNetProfit, 13, "right")
+#foreach($item in $items)
+$report.field($item.transactionDate) $report.field($item.referenceNumber, 6, "right") $report.field($item.customer.name, 30) $report.discount($item.totalAmount, 13) $report.discount($item.totalDiscounts, 10) $report.field($item.netAmount, 13, "right") $report.field($item.netCost, 13, "right") $report.field($item.netProfit, 13, "right")
 #end
 #if($isLastPage == true)
                                                  ------------- ---------- ------------- ------------- -------------
-                                  T O T A L S => $report.field($salesReport.totalAmount, 13, "right") $report.field($salesReport.totalDiscountedAmount, 10, "right") $report.field($salesReport.totalNetAmount, 13, "right") $report.field($salesReport.totalNetCost, 13, "right") $report.field($salesReport.totalNetProfit, 13, "right")
+                                  T O T A L S => $report.field($salesReport.totalAmount, 13, "right") $report.field($salesReport.totalDiscounts, 10, "right") $report.field($salesReport.totalNetAmount, 13, "right") $report.field($salesReport.totalNetCost, 13, "right") $report.field($salesReport.totalNetProfit, 13, "right")
                                                  ============= ========== ============= ============= =============
 #end

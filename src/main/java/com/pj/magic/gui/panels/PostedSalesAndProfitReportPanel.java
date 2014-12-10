@@ -153,14 +153,22 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 			customerNameLabel.setText(customer.getName());
 		}
 		
+		List<PostedSalesAndProfitReportItem> items = retrieveReportItems();
+		tableModel.setItems(items);
+		if (items.isEmpty()) {
+			showErrorMessage("No records found");
+		}
+	}
+
+	private List<PostedSalesAndProfitReportItem> retrieveReportItems() {
+		List<PostedSalesAndProfitReportItem> items = new ArrayList<>();
+		
 		SalesInvoiceSearchCriteria salesInvoiceCriteria = new SalesInvoiceSearchCriteria();
 		salesInvoiceCriteria.setMarked(true);
 		salesInvoiceCriteria.setOrderBy("TRANSACTION_DT, SALES_INVOICE_NO");
 		salesInvoiceCriteria.setCustomer(customer);
 		salesInvoiceCriteria.setTransactionDateFrom(fromDateModel.getValue().getTime());
 		salesInvoiceCriteria.setTransactionDateTo(toDateModel.getValue().getTime());
-		
-		List<PostedSalesAndProfitReportItem> items = new ArrayList<>();
 		
 		List<SalesInvoice> salesInvoices = salesInvoiceService.search(salesInvoiceCriteria);
 		items.addAll(
@@ -181,22 +189,18 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		
 		List<SalesReturn> salesReturns = salesReturnService.search(salesReturnCriteria);
 		items.addAll(
-				Collections2.transform(salesReturns, new Function<SalesReturn, PostedSalesAndProfitReportItem>() {
+			Collections2.transform(salesReturns, new Function<SalesReturn, PostedSalesAndProfitReportItem>() {
+	
+				@Override
+				public PostedSalesAndProfitReportItem apply(SalesReturn input) {
+					return new PostedSalesAndProfitReportItem(input);
+				}
+			})
+		);
 		
-					@Override
-					public PostedSalesAndProfitReportItem apply(SalesReturn input) {
-						return new PostedSalesAndProfitReportItem(input);
-					}
-				})
-			);
-		
-		tableModel.setItems(items);
-		
-		if (salesInvoices.isEmpty()) {
-			showErrorMessage("No records found");
-		}
+		return items;
 	}
-
+	
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
@@ -372,7 +376,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		if (toDateModel.getValue() != null) {
 			report.setTransactionDateTo(toDateModel.getValue().getTime());
 		}
-//		report.setItems(tableModel.getItems());
+		report.setItems(tableModel.getItems());
 		return report;
 	}
 

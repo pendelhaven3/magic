@@ -48,6 +48,7 @@ import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
+import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
@@ -685,14 +686,14 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public List<String> generateReportAsString(PostedSalesAndProfitReport report) {
-		List<List<SalesInvoice>> pageItems = Lists.partition(report.getSalesInvoices(), 
+		List<List<PostedSalesAndProfitReportItem>> pageItems = Lists.partition(report.getItems(), 
 				POSTED_SALES_AND_PROFIT_REPORT_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("charsPerLine", POSTED_SALES_AND_PROFIT_REPORT_CHARACTERS_PER_LINE);
 			reportData.put("salesReport", report);
-			reportData.put("salesInvoices", pageItems.get(i));
+			reportData.put("items", pageItems.get(i));
 			reportData.put("customer", report.getCustomerName());
 			reportData.put("transactionDate", report.getTransactionDate());
 			reportData.put("currentPage", i + 1);

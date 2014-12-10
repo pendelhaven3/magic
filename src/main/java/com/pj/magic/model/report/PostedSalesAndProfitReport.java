@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.pj.magic.Constants;
 import com.pj.magic.model.Customer;
-import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.util.FormatterUtil;
 
 public class PostedSalesAndProfitReport {
@@ -14,7 +13,7 @@ public class PostedSalesAndProfitReport {
 	private Customer customer;
 	private Date transactionDateFrom;
 	private Date transactionDateTo;
-	private List<SalesInvoice> salesInvoices;
+	private List<PostedSalesAndProfitReportItem> items;
 
 	public Customer getCustomer() {
 		return customer;
@@ -40,12 +39,12 @@ public class PostedSalesAndProfitReport {
 		this.transactionDateTo = transactionDateTo;
 	}
 
-	public List<SalesInvoice> getSalesInvoices() {
-		return salesInvoices;
+	public List<PostedSalesAndProfitReportItem> getItems() {
+		return items;
 	}
 
-	public void setSalesInvoices(List<SalesInvoice> salesInvoices) {
-		this.salesInvoices = salesInvoices;
+	public void setItems(List<PostedSalesAndProfitReportItem> items) {
+		this.items = items;
 	}
 
 	public String getCustomerName() {
@@ -63,40 +62,40 @@ public class PostedSalesAndProfitReport {
 
 	public BigDecimal getTotalAmount() {
 		BigDecimal total = Constants.ZERO;
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			total = total.add(salesInvoice.getTotalAmount());
+		for (PostedSalesAndProfitReportItem item : items) {
+			total = total.add(item.getTotalAmount());
 		}
 		return total;
 	}
 	
-	public BigDecimal getTotalDiscountedAmount() {
+	public BigDecimal getTotalDiscounts() {
 		BigDecimal total = Constants.ZERO;
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			total = total.add(salesInvoice.getTotalDiscounts());
+		for (PostedSalesAndProfitReportItem item : items) {
+			total = total.add(item.getTotalDiscounts());
 		}
 		return total;
 	}
 	
 	public BigDecimal getTotalNetAmount() {
 		BigDecimal total = Constants.ZERO;
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			total = total.add(salesInvoice.getTotalNetAmount());
+		for (PostedSalesAndProfitReportItem item : items) {
+			total = total.add(item.getNetAmount());
 		}
 		return total;
 	}
 
 	public BigDecimal getTotalNetCost() {
 		BigDecimal total = Constants.ZERO;
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			total = total.add(salesInvoice.getTotalNetCost());
+		for (PostedSalesAndProfitReportItem item : items) {
+			total = total.add(item.getNetCost());
 		}
 		return total;
 	}
 	
 	public BigDecimal getTotalNetProfit() {
 		BigDecimal total = Constants.ZERO;
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			total = total.add(salesInvoice.getTotalNetProfit());
+		for (PostedSalesAndProfitReportItem item : items) {
+			total = total.add(item.getNetProfit());
 		}
 		return total;
 	}
