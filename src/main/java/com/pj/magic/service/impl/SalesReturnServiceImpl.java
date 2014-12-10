@@ -14,6 +14,7 @@ import com.pj.magic.dao.SalesReturnItemDao;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.SalesReturnItem;
+import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesReturnService;
@@ -78,5 +79,14 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		updated.setPostedBy(loginService.getLoggedInUser());
 		salesReturnDao.save(updated);
 	}
+
+	@Override
+	public List<SalesReturn> search(SalesReturnSearchCriteria criteria) {
+		List<SalesReturn> salesReturns = salesReturnDao.search(criteria);
+		for (SalesReturn salesReturn : salesReturns) {
+			salesReturn.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
+		}
+		return salesReturns;
+ 	}
 	
 }

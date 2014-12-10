@@ -54,8 +54,20 @@ public class SalesReturnItem {
 		if (salesInvoiceItem == null) {
 			return null;
 		} else {
-			return salesInvoiceItem.getUnitPrice();
+			return salesInvoiceItem.getDiscountedUnitPrice();
 		}
+	}
+	
+	public BigDecimal getCost() {
+		if (salesInvoiceItem == null) {
+			return null;
+		} else {
+			return salesInvoiceItem.getCost();
+		}
+	}
+	
+	public BigDecimal getNetCost() {
+		return getCost().multiply(new BigDecimal(quantity));
 	}
 	
 }

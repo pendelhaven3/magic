@@ -146,7 +146,7 @@ public class SalesInvoice {
 		return total;
 	}
 	
-	public BigDecimal getTotalDiscountedAmount() {
+	public BigDecimal getTotalDiscounts() {
 		BigDecimal totalDiscountedAmount = Constants.ZERO;
 		for (SalesInvoiceItem item : items) {
 			totalDiscountedAmount = totalDiscountedAmount.add(item.getDiscountedAmount());

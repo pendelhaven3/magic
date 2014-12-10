@@ -268,7 +268,7 @@ public class PostedSalesInvoicesReportPanel extends StandardMagicPanel {
 			case TOTAL_AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(salesInvoice.getTotalAmount());
 			case DISCOUNTED_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalDiscountedAmount());
+				return FormatterUtil.formatAmount(salesInvoice.getTotalDiscounts());
 			case NET_AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
 			default:

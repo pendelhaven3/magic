@@ -101,4 +101,16 @@ public class SalesReturn {
 		this.postedBy = postedBy;
 	}
 	
+	public BigDecimal getTotalNetCost() {
+		BigDecimal total = Constants.ZERO;
+		for (SalesReturnItem item : items) {
+			total = total.add(item.getNetCost());
+		}
+		return total;
+	}
+	
+	public BigDecimal getTotalNetProfit() {
+		return getTotalAmount().subtract(getTotalNetCost());
+	}
+	
 }
