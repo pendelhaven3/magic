@@ -5,7 +5,8 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 
 @ContextConfiguration(locations={
 		"classpath:applicationContext.xml",
-		"classpath:datasource-test.xml"
+//		"classpath:datasource-test.xml"
+		"classpath:datasource.xml"
 		})
 public abstract class IntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 

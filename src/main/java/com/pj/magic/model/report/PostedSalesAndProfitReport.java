@@ -72,7 +72,7 @@ public class PostedSalesAndProfitReport {
 	public BigDecimal getTotalDiscountedAmount() {
 		BigDecimal total = Constants.ZERO;
 		for (SalesInvoice salesInvoice : salesInvoices) {
-			total = total.add(salesInvoice.getTotalDiscountedAmount());
+			total = total.add(salesInvoice.getTotalDiscounts());
 		}
 		return total;
 	}

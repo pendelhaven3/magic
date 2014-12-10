@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -21,9 +22,12 @@ import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
@@ -35,12 +39,16 @@ import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
+import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
+import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.SalesInvoiceService;
+import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -51,7 +59,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 1;
 	private static final int CUSTOMER_COLUMN_INDEX = 2;
 	private static final int TOTAL_AMOUNT_COLUMN_INDEX = 3;
-	private static final int DISCOUNTED_AMOUNT_COLUMN_INDEX = 4;
+	private static final int TOTAL_DISCOUNTS_COLUMN_INDEX = 4;
 	private static final int NET_AMOUNT_COLUMN_INDEX = 5;
 	private static final int NET_COST_COLUMN_INDEX = 6;
 	private static final int NET_PROFIT_COLUMN_INDEX = 7;
@@ -61,6 +69,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
+	@Autowired private SalesReturnService salesReturnService;
 	
 	private MagicTextField customerCodeField;
 	private JLabel customerNameLabel;
@@ -69,7 +78,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	private JButton generateButton;
 	private EllipsisButton selectCustomerButton;
 	private MagicListTable table;
-	private SalesInvoicesTableModel tableModel;
+	private PostedSalesAndProfitReportItemsTableModel tableModel;
 	private Customer customer;
 	
 	@Override
@@ -107,7 +116,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	}
 
 	private void initializeTable() {
-		tableModel = new SalesInvoicesTableModel();
+		tableModel = new PostedSalesAndProfitReportItemsTableModel();
 		table = new MagicListTable(tableModel);
 		
 		TableColumnModel columnModel = table.getColumnModel();
@@ -144,19 +153,45 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 			customerNameLabel.setText(customer.getName());
 		}
 		
-		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
-		criteria.setMarked(true);
-		criteria.setOrderBy("TRANSACTION_DT, SALES_INVOICE_NO");
-		criteria.setCustomer(customer);
-		if (fromDateModel.getValue() != null) {
-			criteria.setTransactionDateFrom(fromDateModel.getValue().getTime());
-		}
-		if (toDateModel.getValue() != null) {
-			criteria.setTransactionDateTo(toDateModel.getValue().getTime());
-		}
+		SalesInvoiceSearchCriteria salesInvoiceCriteria = new SalesInvoiceSearchCriteria();
+		salesInvoiceCriteria.setMarked(true);
+		salesInvoiceCriteria.setOrderBy("TRANSACTION_DT, SALES_INVOICE_NO");
+		salesInvoiceCriteria.setCustomer(customer);
+		salesInvoiceCriteria.setTransactionDateFrom(fromDateModel.getValue().getTime());
+		salesInvoiceCriteria.setTransactionDateTo(toDateModel.getValue().getTime());
 		
-		List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
-		tableModel.setSalesInvoices(salesInvoices);
+		List<PostedSalesAndProfitReportItem> items = new ArrayList<>();
+		
+		List<SalesInvoice> salesInvoices = salesInvoiceService.search(salesInvoiceCriteria);
+		items.addAll(
+			Collections2.transform(salesInvoices, new Function<SalesInvoice, PostedSalesAndProfitReportItem>() {
+	
+				@Override
+				public PostedSalesAndProfitReportItem apply(SalesInvoice input) {
+					return new PostedSalesAndProfitReportItem(input);
+				}
+			})
+		);
+		
+		SalesReturnSearchCriteria salesReturnCriteria = new SalesReturnSearchCriteria();
+		salesReturnCriteria.setPosted(true);
+		salesReturnCriteria.setCustomer(customer);
+		salesReturnCriteria.setTransactionDateFrom(fromDateModel.getValue().getTime());
+		salesReturnCriteria.setTransactionDateTo(toDateModel.getValue().getTime());
+		
+		List<SalesReturn> salesReturns = salesReturnService.search(salesReturnCriteria);
+		items.addAll(
+				Collections2.transform(salesReturns, new Function<SalesReturn, PostedSalesAndProfitReportItem>() {
+		
+					@Override
+					public PostedSalesAndProfitReportItem apply(SalesReturn input) {
+						return new PostedSalesAndProfitReportItem(input);
+					}
+				})
+			);
+		
+		tableModel.setItems(items);
+		
 		if (salesInvoices.isEmpty()) {
 			showErrorMessage("No records found");
 		}
@@ -337,7 +372,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		if (toDateModel.getValue() != null) {
 			report.setTransactionDateTo(toDateModel.getValue().getTime());
 		}
-		report.setSalesInvoices(tableModel.getSalesInvoices());
+//		report.setItems(tableModel.getItems());
 		return report;
 	}
 
@@ -345,31 +380,31 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		printService.print(createReport());
 	}
 
-	private class SalesInvoicesTableModel extends AbstractTableModel {
+	private class PostedSalesAndProfitReportItemsTableModel extends AbstractTableModel {
 
 		private final String[] columnNames =
-			{"Tran. Date", "SI No.", "Customer", "Total Amount", "Disc. Amount", "Net Amount",
+			{"Tran. Date", "SI No.", "Customer", "Total Amount", "Total Disc.", "Net Amount",
 				"Net Cost", "Net Profit"};
 		
-		private List<SalesInvoice> salesInvoices = new ArrayList<>();
+		private List<PostedSalesAndProfitReportItem> items = new ArrayList<>();
 		
-		public void setSalesInvoices(List<SalesInvoice> salesInvoices) {
-			this.salesInvoices = salesInvoices;
+		public void setItems(List<PostedSalesAndProfitReportItem> items) {
+			this.items = items;
 			fireTableDataChanged();
 		}
 		
-		public List<SalesInvoice> getSalesInvoices() {
-			return salesInvoices;
+		public List<PostedSalesAndProfitReportItem> getItems() {
+			return items;
 		}
 		
 		public void clear() {
-			salesInvoices.clear();
+			items.clear();
 			fireTableDataChanged();
 		}
 
 		@Override
 		public int getRowCount() {
-			return salesInvoices.size();
+			return items.size();
 		}
 
 		@Override
@@ -384,24 +419,32 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			SalesInvoice salesInvoice = salesInvoices.get(rowIndex);
+			PostedSalesAndProfitReportItem item = items.get(rowIndex);
+			if (item.getTransactionDate() == null) {
+				System.out.println(ToStringBuilder.reflectionToString(item));
+			}
 			switch (columnIndex) {
 			case TRANSACTION_DATE_COLUMN_INDEX:
-				return FormatterUtil.formatDate(salesInvoice.getTransactionDate());
+				return FormatterUtil.formatDate(item.getTransactionDate());
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
-				return salesInvoice.getSalesInvoiceNumber();
+				return item.getReferenceNumber();
 			case CUSTOMER_COLUMN_INDEX:
-				return salesInvoice.getCustomer().getName();
+				return item.getCustomer().getName();
 			case TOTAL_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalAmount());
-			case DISCOUNTED_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalDiscountedAmount());
+				BigDecimal totalAmount = item.getTotalAmount();
+				return (totalAmount != null) ? FormatterUtil.formatAmount(item.getTotalAmount()) : null;
+			case TOTAL_DISCOUNTS_COLUMN_INDEX:
+				BigDecimal totalDiscounts = item.getTotalDiscounts();
+				return (totalDiscounts != null) ? FormatterUtil.formatAmount(totalDiscounts) : null;
 			case NET_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
+				BigDecimal netAmount = item.getNetAmount();
+				return (netAmount != null) ? FormatterUtil.formatAmount(item.getNetAmount()) : null;
 			case NET_COST_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalNetCost());
+				BigDecimal netCost = item.getNetCost();
+				return (netCost != null) ? FormatterUtil.formatAmount(netCost) : null;
 			case NET_PROFIT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalNetProfit());
+				BigDecimal netProfit = item.getNetProfit();
+				return (netProfit != null) ? FormatterUtil.formatAmount(netProfit) : null;
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
@@ -411,7 +454,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			switch (columnIndex) {
 			case TOTAL_AMOUNT_COLUMN_INDEX:
-			case DISCOUNTED_AMOUNT_COLUMN_INDEX:
+			case TOTAL_DISCOUNTS_COLUMN_INDEX:
 			case NET_AMOUNT_COLUMN_INDEX:
 			case NET_COST_COLUMN_INDEX:
 			case NET_PROFIT_COLUMN_INDEX:

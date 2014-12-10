@@ -96,7 +96,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		statusField.setText(salesInvoice.getStatus());
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
 		totalAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalAmount()));
-		totalDiscountedAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalDiscountedAmount()));
+		totalDiscountedAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalDiscounts()));
 		totalNetAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount()));
 		
 		itemsTable.clearSelection(); // to avoid screwing product quantity/price info table listener
@@ -654,7 +654,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 				case SalesInvoiceItemsTable.DISCOUNT_3_COLUMN_INDEX:
 				case SalesInvoiceItemsTable.FLAT_RATE_DISCOUNT_COLUMN_INDEX:
 					totalDiscountedAmountField.setText(
-							FormatterUtil.formatAmount(salesInvoice.getTotalDiscountedAmount()));
+							FormatterUtil.formatAmount(salesInvoice.getTotalDiscounts()));
 					totalNetAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount()));
 					break;
 				}

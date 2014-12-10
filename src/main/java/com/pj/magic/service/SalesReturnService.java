@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.SalesReturnItem;
+import com.pj.magic.model.search.SalesReturnSearchCriteria;
 
 public interface SalesReturnService {
 
@@ -18,5 +19,7 @@ public interface SalesReturnService {
 	void delete(SalesReturnItem item);
 	
 	void post(SalesReturn salesReturn);
+
+	List<SalesReturn> search(SalesReturnSearchCriteria criteria);
 	
 }

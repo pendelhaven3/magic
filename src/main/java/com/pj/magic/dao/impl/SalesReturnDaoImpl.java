@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -19,6 +20,8 @@ import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.SalesReturnSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
@@ -53,6 +56,7 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			SalesReturn salesReturn = new SalesReturn();
 			salesReturn.setId(rs.getLong("ID"));
 			salesReturn.setSalesReturnNumber(rs.getLong("SALES_RETURN_NO"));
+			
 			
 			SalesInvoice salesInvoice = new SalesInvoice();
 			salesInvoice.setId(rs.getLong("SALES_INVOICE_ID"));
@@ -128,6 +132,38 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 
 	private long getNextSalesReturnNumber() {
 		return getNextSequenceValue(SALES_RETURN_NUMBER_SEQUENCE);
+	}
+
+	@Override
+	public List<SalesReturn> search(SalesReturnSearchCriteria criteria) {
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		List<Object> params = new ArrayList<>();
+		
+		if (criteria.getPosted() != null) {
+			sql.append(" and a.POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		if (criteria.getCustomer() != null) {
+			sql.append(" and b.CUSTOMER_ID = ?");
+			params.add(criteria.getCustomer().getId());
+		}
+		
+		if (criteria.getTransactionDateFrom() != null) {
+			sql.append(" and a.POST_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getTransactionDateFrom()));
+		}
+		
+		if (criteria.getTransactionDateTo() != null) {
+			sql.append(" and a.POST_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getTransactionDateTo()));
+		}
+		
+		sql.append(" order by SALES_RETURN_NO");
+		
+		return getJdbcTemplate().query(sql.toString(), salesReturnRowMapper, params.toArray());
 	}
 	
 }

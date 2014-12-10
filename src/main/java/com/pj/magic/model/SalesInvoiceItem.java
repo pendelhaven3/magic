@@ -189,4 +189,21 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 		return cost.multiply(new BigDecimal(quantity));
 	}
 	
+	public BigDecimal getDiscountedUnitPrice() {
+		BigDecimal price = unitPrice;
+		if (discount1 != null && !BigDecimal.ZERO.equals(discount1)) {
+			price = price.subtract(price.multiply(new Percentage(discount1).toDecimal()));
+		}
+		if (discount2 != null && !BigDecimal.ZERO.equals(discount2)) {
+			price = price.subtract(price.multiply(new Percentage(discount2).toDecimal()));
+		}
+		if (discount3 != null && !BigDecimal.ZERO.equals(discount3)) {
+			price = price.subtract(price.multiply(new Percentage(discount3).toDecimal()));
+		}
+		if (flatRateDiscount != null) {
+			price = price.subtract(flatRateDiscount.divide(new BigDecimal(quantity), 2, RoundingMode.HALF_UP));
+		}
+		return price;
+	}
+	
 }
