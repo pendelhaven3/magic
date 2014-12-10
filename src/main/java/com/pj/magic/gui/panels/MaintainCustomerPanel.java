@@ -570,7 +570,7 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 		ownersTextArea.setText(null);
 		bankReferencesTextArea.setText(null);
 		holdIndicatorCheckBox.setSelected(false);
-		activeIndicatorCheckBox.setSelected(false);
+		activeIndicatorCheckBox.setSelected(true);
 		remarksField.setText(null);
 		deleteButton.setEnabled(false);
 	}
