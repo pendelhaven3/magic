@@ -30,7 +30,11 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 	
 	@Override
 	public List<SalesReturn> getAllSalesReturns() {
-		return salesReturnDao.getAll();
+		List<SalesReturn> salesReturns = salesReturnDao.getAll();
+		for (SalesReturn salesReturn : salesReturns) {
+			salesReturn.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
+		}
+		return salesReturns;
 	}
 
 	@Transactional

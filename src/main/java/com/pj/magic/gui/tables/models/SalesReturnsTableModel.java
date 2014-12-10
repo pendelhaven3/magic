@@ -8,17 +8,20 @@ import javax.swing.table.AbstractTableModel;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.model.SalesReturn;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class SalesReturnsTableModel extends AbstractTableModel {
 
-	private static final String[] columnNames = {"SR No.", "SI No.", "Customer", "Total Amount", "Posted"};
+	private static final String[] columnNames = {"SR No.", "SI No.", "Customer", "Total Amount",
+		"Posted", "Post Date"};
 	
 	private static final int SALES_RETURN_NUMBER_COLUMN_INDEX = 0;
 	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 1;
 	private static final int CUSTOMER_COLUMN_INDEX = 2;
 	private static final int TOTAL_AMOUNT_COLUMN_INDEX = 3;
 	private static final int POSTED_COLUMN_INDEX = 4;
+	private static final int POST_DATE_COLUMN_INDEX = 5;
 	
 	private List<SalesReturn> salesReturns = new ArrayList<>();
 	
@@ -43,14 +46,25 @@ public class SalesReturnsTableModel extends AbstractTableModel {
 		case CUSTOMER_COLUMN_INDEX:
 			return salesReturn.getSalesInvoice().getCustomer().getName();
 		case TOTAL_AMOUNT_COLUMN_INDEX:
-			return salesReturn.getSalesInvoice().getCustomer().getName();
+			return FormatterUtil.formatAmount(salesReturn.getTotalAmount());
 		case POSTED_COLUMN_INDEX:
 			return salesReturn.isPosted() ? "Yes" : "No";
+		case POST_DATE_COLUMN_INDEX:
+			return salesReturn.isPosted() ? FormatterUtil.formatDateTime(salesReturn.getPostDate()) : null;
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
 	}
 
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		if (columnIndex == TOTAL_AMOUNT_COLUMN_INDEX) {
+			return Number.class;
+		} else {
+			return Object.class;
+		}
+	}
+	
 	@Override
 	public String getColumnName(int column) {
 		return columnNames[column];

@@ -456,7 +456,7 @@ create table SALES_RETURN (
   SALES_RETURN_NO integer not null,
   SALES_INVOICE_ID integer not null,
   POST_IND char(1) default 'N' not null,
-  POST_DT date null,
+  POST_DT datetime null,
   POST_BY integer null,
   constraint SALES_RETURN$PK primary key (ID),
   constraint SALES_RETURN$UK unique (SALES_RETURN_NO),

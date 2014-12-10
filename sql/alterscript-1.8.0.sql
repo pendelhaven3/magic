@@ -1,0 +1,1 @@
+alter table SALES_RETURN change POST_DT POST_DT datetime null;

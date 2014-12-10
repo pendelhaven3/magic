@@ -65,7 +65,7 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			salesReturn.setSalesInvoice(salesInvoice);
 			
 			salesReturn.setPosted("Y".equals(rs.getString("POST_IND")));
-			salesReturn.setPostDate(rs.getDate("POST_DT"));
+			salesReturn.setPostDate(rs.getTimestamp("POST_DT"));
 			
 			if (rs.getLong("POST_BY") != 0) {
 				salesReturn.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
