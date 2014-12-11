@@ -1,3 +1,23 @@
+version 1.7.4
+
+1. Make new customers active by default
+2. Added Sales Returns to Posted Sales and Profit Report
+3. Added post Purchase Order validation that Payment Term must be specified
+4. Added Post Date column in Sales Return list
+5. Fixed Total Amount in Sales Return list
+
+version 1.7.3
+
+1. Fixed doubled totals fields values for Adjustment In/Out, Stock Conversion, Area Inventory Report 
+
+version 1.7.2
+
+1. Fixed bug where sales invoices in a cancelled payment cannot be picked up by a new payment
+
+version 1.7.1
+
+1. Fixed Customer search bug (names like criteria not fetched)
+
 version 1.7.0
 
 1. Added Encoder to Payment model
