@@ -3,6 +3,7 @@ package com.pj.magic.model.search;
 import java.util.Date;
 
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.SalesInvoice;
 
 public class SalesReturnSearchCriteria {
 
@@ -10,6 +11,7 @@ public class SalesReturnSearchCriteria {
 	private Customer customer;
 	private Date transactionDateFrom;
 	private Date transactionDateTo;
+	private SalesInvoice salesInvoice;
 
 	public Boolean getPosted() {
 		return posted;
@@ -41,6 +43,14 @@ public class SalesReturnSearchCriteria {
 
 	public void setTransactionDateTo(Date transactionDateTo) {
 		this.transactionDateTo = transactionDateTo;
+	}
+
+	public SalesInvoice getSalesInvoice() {
+		return salesInvoice;
+	}
+
+	public void setSalesInvoice(SalesInvoice salesInvoice) {
+		this.salesInvoice = salesInvoice;
 	}
 
 }

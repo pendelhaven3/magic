@@ -27,6 +27,7 @@ import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentService;
+import com.pj.magic.service.SalesReturnService;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -40,6 +41,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	@Autowired private LoginService loginService;
+	@Autowired private SalesReturnService salesReturnService;
 	
 	@Transactional
 	@Override
@@ -66,6 +68,8 @@ public class PaymentServiceImpl implements PaymentService {
 		for (PaymentSalesInvoice salesInvoice : payment.getSalesInvoices()) {
 			salesInvoice.getSalesInvoice().setItems(
 					salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice.getSalesInvoice()));
+			salesInvoice.setSalesReturns(
+					salesReturnService.findPostedSalesReturnsBySalesInvoice(salesInvoice.getSalesInvoice()));
 		}
 		payment.setCashPayments(paymentCashPaymentDao.findAllByPayment(payment));
 		payment.setCheckPayments(paymentCheckPaymentDao.findAllByPayment(payment));
