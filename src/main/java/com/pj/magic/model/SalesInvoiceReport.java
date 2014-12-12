@@ -35,7 +35,7 @@ public class SalesInvoiceReport {
 		return total;
 	}
 	
-	public BigDecimal getTotalDiscountedAmount() {
+	public BigDecimal getTotalDiscounts() {
 		BigDecimal total = Constants.ZERO;
 		for (SalesInvoice salesInvoice : salesInvoices) {
 			total = total.add(salesInvoice.getTotalDiscounts());

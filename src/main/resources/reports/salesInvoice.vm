@@ -17,7 +17,7 @@ $report.field($item.product.description, 40)   [ ] $report.field($item.unit, 4) 
 #if($isLastPage == true)
                                                                  ------------
 Total Items => $report.field($salesInvoice.items.size(), 3) Total Qty => $report.field($salesInvoice.totalQuantity, 4, "right")                 Sub Total : $report.field($salesInvoice.totalAmount, 12, "right")
-                                                     Discount  :(  $report.field($salesInvoice.totalDiscountedAmount, 10, "right"))
+                                                     Discount  :(  $report.field($salesInvoice.totalDiscounts, 10, "right"))
 Prepared by : ____________________  Encoded by:                  ------------
                                     $report.field($salesInvoice.encoder.username, 12)     Net Amount: $report.field($salesInvoice.totalNetAmount, 12, "right")
 Checked by  : ____________________                               ============
