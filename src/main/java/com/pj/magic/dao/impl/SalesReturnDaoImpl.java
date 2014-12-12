@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.Payment;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.User;
@@ -134,6 +135,14 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 		return getNextSequenceValue(SALES_RETURN_NUMBER_SEQUENCE);
 	}
 
+	private static final String PAYMENT_WHERE_CLAUSE_SQL =
+			"   and exists ("
+			+ "   select 1"
+			+ "   from PAYMENT_SALES_RETURN psr"
+			+ "   where psr.PAYMENT_ID = ?"
+			+ "   and psr.SALES_RETURN_ID = a.ID"
+			+ " )";
+	
 	@Override
 	public List<SalesReturn> search(SalesReturnSearchCriteria criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
@@ -166,9 +175,22 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			params.add(DbUtil.toMySqlDateString(criteria.getTransactionDateTo()));
 		}
 		
+		if (criteria.getPayment() != null) {
+			sql.append(PAYMENT_WHERE_CLAUSE_SQL);
+			params.add(criteria.getPayment().getId());
+		}
+		
 		sql.append(" order by SALES_RETURN_NO");
 		
 		return getJdbcTemplate().query(sql.toString(), salesReturnRowMapper, params.toArray());
+	}
+
+	private static final String SAVE_PAYMENT_SALES_RETURN_SQL = 
+			"insert into PAYMENT_SALES_RETURN (PAYMENT_ID, SALES_RETURN_ID) values (?, ?)";
+	
+	@Override
+	public void savePaymentSalesReturn(Payment payment, SalesReturn salesReturn) {
+		getJdbcTemplate().update(SAVE_PAYMENT_SALES_RETURN_SQL, payment.getId(), salesReturn.getId());
 	}
 	
 }
