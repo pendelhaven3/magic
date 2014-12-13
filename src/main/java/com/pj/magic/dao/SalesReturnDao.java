@@ -8,8 +8,6 @@ import com.pj.magic.model.search.SalesReturnSearchCriteria;
 
 public interface SalesReturnDao {
 
-	List<SalesReturn> getAll();
-
 	void save(SalesReturn salesReturn);
 	
 	SalesReturn get(long id);

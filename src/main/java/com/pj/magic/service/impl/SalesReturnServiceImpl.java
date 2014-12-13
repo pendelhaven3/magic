@@ -31,8 +31,11 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 	@Autowired private LoginService loginService;
 	
 	@Override
-	public List<SalesReturn> getAllSalesReturns() {
-		List<SalesReturn> salesReturns = salesReturnDao.getAll();
+	public List<SalesReturn> getNewSalesReturns() {
+		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
+		criteria.setPosted(false);
+		
+		List<SalesReturn> salesReturns = salesReturnDao.search(criteria);
 		for (SalesReturn salesReturn : salesReturns) {
 			salesReturn.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
 		}

@@ -10,7 +10,7 @@ import com.pj.magic.model.search.SalesReturnSearchCriteria;
 
 public interface SalesReturnService {
 
-	List<SalesReturn> getAllSalesReturns();
+	List<SalesReturn> getNewSalesReturns();
 
 	void save(SalesReturn salesReturn);
 
