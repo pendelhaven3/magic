@@ -1,10 +1,13 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 
 import javax.swing.BorderFactory;
@@ -28,6 +31,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
+import com.pj.magic.gui.dialog.SalesInvoiceStatusDialog;
 import com.pj.magic.gui.tables.SalesInvoiceItemsTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Product;
@@ -49,6 +53,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private SalesInvoiceStatusDialog salesInvoiceStatusDialog;
 	
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
@@ -72,6 +77,18 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	
 	@Override
 	protected void initializeComponents() {
+		statusField = new JLabel();
+		statusField.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				salesInvoiceStatusDialog.updateDisplay(salesInvoice);
+				salesInvoiceStatusDialog.setVisible(true);
+			}
+			
+		});
+		statusField.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
 		focusOnComponentWhenThisPanelIsDisplayed(itemsTable);
 		updateTotalsPanelWhenItemsTableChanges();
 		initializeUnitPricesAndQuantitiesTable();
@@ -93,7 +110,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		modeField.setText(salesInvoice.getMode());
 		remarksField.setText(salesInvoice.getRemarks());
 		paymentTermNameField.setText(salesInvoice.getPaymentTerm().getName());
-		statusField.setText(salesInvoice.getStatus());
+		statusField.setText("<html><u><font color=\"blue\">" + salesInvoice.getStatus() + "</font></u></html>");
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
 		totalAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalAmount()));
 		totalDiscountedAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalDiscounts()));
@@ -373,7 +390,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		statusField = ComponentUtil.createLabel(150, "");
+		statusField.setPreferredSize(new Dimension(150, 20));
 		mainPanel.add(statusField, c);
 		
 		currentRow++;
