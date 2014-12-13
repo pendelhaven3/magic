@@ -26,6 +26,6 @@ public interface SalesReturnService {
 	
 	List<SalesReturn> findPostedSalesReturnsBySalesInvoice(SalesInvoice salesInvoice);
 
-	List<SalesReturn> findAllSalesReturnsByPayment(Payment payment);
+	List<SalesReturn> findAllPaymentSalesReturns(Payment payment, SalesInvoice salesInvoice);
 
 }

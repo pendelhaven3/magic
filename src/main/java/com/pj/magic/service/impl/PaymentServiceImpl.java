@@ -75,7 +75,8 @@ public class PaymentServiceImpl implements PaymentService {
 				salesInvoice.setSalesReturns(
 						salesReturnService.findPostedSalesReturnsBySalesInvoice(salesInvoice.getSalesInvoice()));
 			} else {
-				salesInvoice.setSalesReturns(salesReturnService.findAllSalesReturnsByPayment(payment));
+				salesInvoice.setSalesReturns(
+						salesReturnService.findAllPaymentSalesReturns(payment, salesInvoice.getSalesInvoice()));
 			}
 		}
 		payment.setCashPayments(paymentCashPaymentDao.findAllByPayment(payment));

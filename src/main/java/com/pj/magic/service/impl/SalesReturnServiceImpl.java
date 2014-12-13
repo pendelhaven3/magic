@@ -105,11 +105,12 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 	}
 
 	@Override
-	public List<SalesReturn> findAllSalesReturnsByPayment(Payment payment) {
+	public List<SalesReturn> findAllPaymentSalesReturns(Payment payment, SalesInvoice salesInvoice) {
 		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
 		criteria.setPayment(payment);
+		criteria.setSalesInvoice(salesInvoice);
 		
 		return search(criteria);
 	}
-	
+
 }
