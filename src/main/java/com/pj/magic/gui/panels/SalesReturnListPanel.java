@@ -17,26 +17,30 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SalesReturnSearchCriteriaDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.SalesReturnsTableModel;
 import com.pj.magic.model.SalesReturn;
+import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class SalesReturnListPanel extends StandardMagicPanel {
 
-	@Autowired private SalesReturnService areaService;
+	@Autowired private SalesReturnService salesReturnService;
+	@Autowired private SalesReturnSearchCriteriaDialog salesReturnSearchCriteriaDialog;
 	
 	private MagicListTable table;
 	private SalesReturnsTableModel tableModel = new SalesReturnsTableModel();
 	
 	public void updateDisplay() {
-		List<SalesReturn> areas = areaService.getAllSalesReturns();
-		tableModel.setSalesReturns(areas);
-		if (!areas.isEmpty()) {
+		List<SalesReturn> salesReturns = salesReturnService.getNewSalesReturns();
+		tableModel.setSalesReturns(salesReturns);
+		if (!salesReturns.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
+		salesReturnSearchCriteriaDialog.updateDisplay();
 	}
 
 	@Override
@@ -112,6 +116,33 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(postButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchSalesReturns();
+			}
+		});
+		
+		toolBar.add(searchButton);
+	}
+	
+	private void searchSalesReturns() {
+		salesReturnSearchCriteriaDialog.setVisible(true);
+		
+		SalesReturnSearchCriteria criteria = salesReturnSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<SalesReturn> salesReturns = salesReturnService.search(criteria);
+			tableModel.setSalesReturns(salesReturns);
+			if (!salesReturns.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
 	}
 	
 }

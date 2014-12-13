@@ -43,13 +43,6 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 	
 	private SalesReturnRowMapper salesReturnRowMapper = new SalesReturnRowMapper();
 	
-	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by SALES_RETURN_NO desc";
-	
-	@Override
-	public List<SalesReturn> getAll() {
-		return getJdbcTemplate().query(GET_ALL_SQL, salesReturnRowMapper);
-	}
-
 	private class SalesReturnRowMapper implements RowMapper<SalesReturn> {
 
 		@Override
@@ -149,6 +142,11 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 		sql.append(" where 1 = 1");
 		
 		List<Object> params = new ArrayList<>();
+		
+		if (criteria.getSalesReturnNumber() != null) {
+			sql.append(" and a.SALES_RETURN_NO = ?");
+			params.add(criteria.getSalesReturnNumber());
+		}
 		
 		if (criteria.getPosted() != null) {
 			sql.append(" and a.POST_IND = ?");
