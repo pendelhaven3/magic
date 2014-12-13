@@ -1,4 +1,4 @@
-package com.pj.magic.model;
+package com.pj.magic.model.report;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -6,10 +6,10 @@ import java.util.List;
 
 import com.pj.magic.Constants;
 
-public class SalesInvoiceReport {
+public class PostedSalesReport {
 
 	private Date reportDate;
-	private List<SalesInvoice> salesInvoices;
+	private List<PostedSalesReportItem> items;
 
 	public Date getReportDate() {
 		return reportDate;
@@ -19,34 +19,34 @@ public class SalesInvoiceReport {
 		this.reportDate = reportDate;
 	}
 
-	public List<SalesInvoice> getSalesInvoices() {
-		return salesInvoices;
+	public List<PostedSalesReportItem> getItems() {
+		return items;
 	}
 
-	public void setSalesInvoices(List<SalesInvoice> salesInvoices) {
-		this.salesInvoices = salesInvoices;
+	public void setItems(List<PostedSalesReportItem> items) {
+		this.items = items;
 	}
 
 	public BigDecimal getTotalAmount() {
 		BigDecimal total = Constants.ZERO;
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			total = total.add(salesInvoice.getTotalAmount());
+		for (PostedSalesReportItem item : items) {
+			total = total.add(item.getTotalAmount());
 		}
 		return total;
 	}
 	
 	public BigDecimal getTotalDiscounts() {
 		BigDecimal total = Constants.ZERO;
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			total = total.add(salesInvoice.getTotalDiscounts());
+		for (PostedSalesReportItem item : items) {
+			total = total.add(item.getTotalDiscounts());
 		}
 		return total;
 	}
 	
 	public BigDecimal getTotalNetAmount() {
 		BigDecimal total = Constants.ZERO;
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			total = total.add(salesInvoice.getTotalNetAmount());
+		for (PostedSalesReportItem item : items) {
+			total = total.add(item.getTotalNetAmount());
 		}
 		return total;
 	}

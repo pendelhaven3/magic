@@ -10,8 +10,9 @@ public class SalesReturnSearchCriteria {
 
 	private Boolean posted;
 	private Customer customer;
-	private Date transactionDateFrom;
-	private Date transactionDateTo;
+	private Date postDate;
+	private Date postDateFrom;
+	private Date postDateTo;
 	private SalesInvoice salesInvoice;
 	private Payment payment;
 
@@ -23,8 +24,12 @@ public class SalesReturnSearchCriteria {
 		this.posted = posted;
 	}
 
-	public Date getTransactionDateFrom() {
-		return transactionDateFrom;
+	public Date getPostDate() {
+		return postDate;
+	}
+
+	public void setPostDate(Date postDate) {
+		this.postDate = postDate;
 	}
 
 	public Customer getCustomer() {
@@ -35,16 +40,20 @@ public class SalesReturnSearchCriteria {
 		this.customer = customer;
 	}
 
-	public void setTransactionDateFrom(Date transactionDateFrom) {
-		this.transactionDateFrom = transactionDateFrom;
+	public Date getPostDateFrom() {
+		return postDateFrom;
 	}
 
-	public Date getTransactionDateTo() {
-		return transactionDateTo;
+	public void setPostDateFrom(Date postDateFrom) {
+		this.postDateFrom = postDateFrom;
 	}
 
-	public void setTransactionDateTo(Date transactionDateTo) {
-		this.transactionDateTo = transactionDateTo;
+	public Date getPostDateTo() {
+		return postDateTo;
+	}
+
+	public void setPostDateTo(Date postDateTo) {
+		this.postDateTo = postDateTo;
 	}
 
 	public SalesInvoice getSalesInvoice() {

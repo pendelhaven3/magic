@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.Box;
@@ -23,21 +25,27 @@ import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.SalesInvoice;
-import com.pj.magic.model.SalesInvoiceReport;
+import com.pj.magic.model.SalesReturn;
+import com.pj.magic.model.report.PostedSalesReport;
+import com.pj.magic.model.report.PostedSalesReportItem;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
+import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.SalesInvoiceService;
+import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class PostedSalesInvoicesReportPanel extends StandardMagicPanel {
+public class PostedSalesReportPanel extends StandardMagicPanel {
 
 	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 0;
 	private static final int CUSTOMER_COLUMN_INDEX = 1;
@@ -46,13 +54,14 @@ public class PostedSalesInvoicesReportPanel extends StandardMagicPanel {
 	private static final int NET_AMOUNT_COLUMN_INDEX = 4;
 	
 	@Autowired private SalesInvoiceService salesInvoiceService;
+	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	
 	private UtilCalendarModel transactionDateModel;
 	private JButton generateButton;
 	private MagicListTable table;
-	private SalesInvoicesTableModel tableModel;
+	private PostedSalesReportItemTableModel tableModel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -71,7 +80,7 @@ public class PostedSalesInvoicesReportPanel extends StandardMagicPanel {
 	}
 
 	private void initializeTable() {
-		tableModel = new SalesInvoicesTableModel();
+		tableModel = new PostedSalesReportItemTableModel();
 		table = new MagicListTable(tableModel);
 		
 		TableColumnModel columnModel = table.getColumnModel();
@@ -85,19 +94,58 @@ public class PostedSalesInvoicesReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
-		criteria.setMarked(true);
-		if (transactionDateModel.getValue() != null) {
-			criteria.setTransactionDate(transactionDateModel.getValue().getTime());
-		}
-		
-		List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
-		tableModel.setSalesInvoices(salesInvoices);
-		if (salesInvoices.isEmpty()) {
+		List<PostedSalesReportItem> items = retrieveReportItems();
+		tableModel.setItems(items);
+		if (items.isEmpty()) {
 			showErrorMessage("No records found");
 		}
 	}
 
+	private List<PostedSalesReportItem> retrieveReportItems() {
+		List<PostedSalesReportItem> items = new ArrayList<>();
+		
+		SalesInvoiceSearchCriteria salesInvoiceCriteria = new SalesInvoiceSearchCriteria();
+		salesInvoiceCriteria.setMarked(true);
+		salesInvoiceCriteria.setOrderBy("SALES_INVOICE_NO");
+		salesInvoiceCriteria.setTransactionDate(transactionDateModel.getValue().getTime());
+		
+		List<SalesInvoice> salesInvoices = salesInvoiceService.search(salesInvoiceCriteria);
+		items.addAll(
+			Collections2.transform(salesInvoices, new Function<SalesInvoice, PostedSalesReportItem>() {
+	
+				@Override
+				public PostedSalesReportItem apply(SalesInvoice input) {
+					return new PostedSalesReportItem(input);
+				}
+			})
+		);
+		
+		SalesReturnSearchCriteria salesReturnCriteria = new SalesReturnSearchCriteria();
+		salesReturnCriteria.setPosted(true);
+		salesReturnCriteria.setPostDate(transactionDateModel.getValue().getTime());
+		
+		List<SalesReturn> salesReturns = salesReturnService.search(salesReturnCriteria);
+		items.addAll(
+			Collections2.transform(salesReturns, new Function<SalesReturn, PostedSalesReportItem>() {
+	
+				@Override
+				public PostedSalesReportItem apply(SalesReturn input) {
+					return new PostedSalesReportItem(input);
+				}
+			})
+		);
+		
+		Collections.sort(items, new Comparator<PostedSalesReportItem>() {
+
+			@Override
+			public int compare(PostedSalesReportItem o1, PostedSalesReportItem o2) {
+				return o1.getTransactionNumber().compareTo(o2.getTransactionNumber());
+			}
+		});
+		
+		return items;
+	}
+	
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
@@ -205,15 +253,15 @@ public class PostedSalesInvoicesReportPanel extends StandardMagicPanel {
 	}
 
 	private void printPreviewReport() {
-		SalesInvoiceReport report = createReport();
+		PostedSalesReport report = createReport();
 		printPreviewDialog.updateDisplay(printService.generateReportAsString(report));
 		printPreviewDialog.setVisible(true);
 	}
 
-	private SalesInvoiceReport createReport() {
-		SalesInvoiceReport report = new SalesInvoiceReport();
+	private PostedSalesReport createReport() {
+		PostedSalesReport report = new PostedSalesReport();
 		report.setReportDate(transactionDateModel.getValue().getTime());
-		report.setSalesInvoices(tableModel.getSalesInvoices());
+		report.setItems(tableModel.getItems());
 		return report;
 	}
 
@@ -221,30 +269,30 @@ public class PostedSalesInvoicesReportPanel extends StandardMagicPanel {
 		printService.print(createReport());
 	}
 
-	private class SalesInvoicesTableModel extends AbstractTableModel {
+	private class PostedSalesReportItemTableModel extends AbstractTableModel {
 
 		private final String[] columnNames =
-			{"SI No.", "Customer", "Total Amount", "Disc. Amount", "Net Amount"};
+			{"SI/SR No.", "Customer", "Total Amount", "Disc. Amount", "Net Amount"};
 		
-		private List<SalesInvoice> salesInvoices = new ArrayList<>();
+		private List<PostedSalesReportItem> items = new ArrayList<>();
 		
-		public void setSalesInvoices(List<SalesInvoice> salesInvoices) {
-			this.salesInvoices = salesInvoices;
+		public void setItems(List<PostedSalesReportItem> items) {
+			this.items = items;
 			fireTableDataChanged();
 		}
 		
-		public List<SalesInvoice> getSalesInvoices() {
-			return salesInvoices;
+		public List<PostedSalesReportItem> getItems() {
+			return items;
 		}
 		
 		public void clear() {
-			salesInvoices.clear();
+			items.clear();
 			fireTableDataChanged();
 		}
 
 		@Override
 		public int getRowCount() {
-			return salesInvoices.size();
+			return items.size();
 		}
 
 		@Override
@@ -259,18 +307,18 @@ public class PostedSalesInvoicesReportPanel extends StandardMagicPanel {
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			SalesInvoice salesInvoice = salesInvoices.get(rowIndex);
+			PostedSalesReportItem item = items.get(rowIndex);
 			switch (columnIndex) {
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
-				return salesInvoice.getSalesInvoiceNumber();
+				return item.getTransactionNumber();
 			case CUSTOMER_COLUMN_INDEX:
-				return salesInvoice.getCustomer().getName();
+				return item.getCustomer().getName();
 			case TOTAL_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalAmount());
+				return FormatterUtil.formatAmount(item.getTotalAmount());
 			case DISCOUNTED_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalDiscounts());
+				return FormatterUtil.formatAmount(item.getTotalDiscounts());
 			case NET_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
+				return FormatterUtil.formatAmount(item.getTotalNetAmount());
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
