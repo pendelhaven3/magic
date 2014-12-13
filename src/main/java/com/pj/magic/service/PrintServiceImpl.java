@@ -41,7 +41,6 @@ import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
-import com.pj.magic.model.SalesInvoiceReport;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.SalesReturnItem;
 import com.pj.magic.model.StockQuantityConversion;
@@ -49,6 +48,8 @@ import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
+import com.pj.magic.model.report.PostedSalesReport;
+import com.pj.magic.model.report.PostedSalesReportItem;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
@@ -75,7 +76,7 @@ public class PrintServiceImpl implements PrintService {
 	public static final int INVENTORY_REPORT_COMPLETE_COLUMNS_PER_LINE = 96;
 	private static final int SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE = 13;
 	private static final int AREA_INVENTORY_REPORT_ITEMS_PER_PAGE = 44;
-	private static final int SALES_INVOICE_REPORT_ITEMS_PER_PAGE = 44;
+	private static final int POSTED_SALES_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_OUT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_IN_ITEMS_PER_PAGE = 44;
 	private static final int UNPAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
@@ -493,28 +494,28 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public List<String> generateReportAsString(SalesInvoiceReport salesInvoiceReport) {
-		String reportDate = FormatterUtil.formatDate(salesInvoiceReport.getReportDate());
+	public List<String> generateReportAsString(PostedSalesReport postedSalesReport) {
+		String reportDate = FormatterUtil.formatDate(postedSalesReport.getReportDate());
 		
-		List<List<SalesInvoice>> pageItems = Lists.partition(salesInvoiceReport.getSalesInvoices(), 
-				SALES_INVOICE_REPORT_ITEMS_PER_PAGE);
+		List<List<PostedSalesReportItem>> pageItems = Lists.partition(postedSalesReport.getItems(), 
+				POSTED_SALES_REPORT_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("salesInvoiceReport", salesInvoiceReport);
-			reportData.put("salesInvoices", pageItems.get(i));
+			reportData.put("postedSalesReport", postedSalesReport);
+			reportData.put("items", pageItems.get(i));
 			reportData.put("reportDate", reportDate);
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
 			reportData.put("reportUtil", PostedSalesAndProfitReportReportUtil.class);
-			printPages.add(generateReportAsString("reports/salesInvoiceReport.vm", reportData));
+			printPages.add(generateReportAsString("reports/postedSalesReport.vm", reportData));
 		}
 		return printPages;
 	}
 
 	@Override
-	public void print(SalesInvoiceReport salesInvoiceReport) {
+	public void print(PostedSalesReport salesInvoiceReport) {
 		try {
 			for (String printPage : generateReportAsString(salesInvoiceReport)) {
 				PrinterUtil.print(printPage);

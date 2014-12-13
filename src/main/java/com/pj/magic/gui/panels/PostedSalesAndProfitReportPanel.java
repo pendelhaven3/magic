@@ -186,8 +186,8 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		SalesReturnSearchCriteria salesReturnCriteria = new SalesReturnSearchCriteria();
 		salesReturnCriteria.setPosted(true);
 		salesReturnCriteria.setCustomer(customer);
-		salesReturnCriteria.setTransactionDateFrom(fromDateModel.getValue().getTime());
-		salesReturnCriteria.setTransactionDateTo(toDateModel.getValue().getTime());
+		salesReturnCriteria.setPostDateFrom(fromDateModel.getValue().getTime());
+		salesReturnCriteria.setPostDateTo(toDateModel.getValue().getTime());
 		
 		List<SalesReturn> salesReturns = salesReturnService.search(salesReturnCriteria);
 		items.addAll(

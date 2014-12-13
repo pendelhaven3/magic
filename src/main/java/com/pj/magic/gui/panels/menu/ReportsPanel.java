@@ -98,8 +98,8 @@ public class ReportsPanel extends StandardMagicPanel {
 		case "Posted Sales and Profit Report":
 			getMagicFrame().switchToPostedSalesAndProfitReportPanel();
 			break;
-		case "Posted Sales Invoices Report":
-			getMagicFrame().switchToPostedSalesInvoicesReportPanel();
+		case "Posted Sales Report":
+			getMagicFrame().switchToPostedSalesReportPanel();
 			break;
 		}
 	}
@@ -114,7 +114,7 @@ public class ReportsPanel extends StandardMagicPanel {
 		private final List<String> allMenuItems = Arrays.asList(
 				"Unpaid Sales Invoices List",
 				"Paid Sales Invoices List",
-				"Posted Sales Invoices Report",
+				"Posted Sales Report",
 				"Posted Sales and Profit Report"
 		);
 		
