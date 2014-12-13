@@ -1,5 +1,6 @@
 package com.pj.magic.gui.tables.models;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,14 +8,13 @@ import javax.swing.table.AbstractTableModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
+import com.pj.magic.Constants;
 import com.pj.magic.gui.tables.PaymentSalesInvoicesTable;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.util.FormatterUtil;
-import com.pj.magic.util.NumberUtil;
 
 @Component
 public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
@@ -25,7 +25,6 @@ public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 	@Autowired private PaymentService paymentService;
 	
 	private List<PaymentSalesInvoice> paymentSalesInvoices = new ArrayList<>();
-	private Payment payment;
 	
 	@Override
 	public int getRowCount() {
@@ -48,8 +47,9 @@ public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 		case PaymentSalesInvoicesTable.NET_AMOUNT_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(paymentSalesInvoice.getSalesInvoice().getTotalNetAmount());
 		case PaymentSalesInvoicesTable.ADJUSTMENT_AMOUNT_COLUMN_INDEX:
-			if (paymentSalesInvoice.getAdjustmentAmount() != null) {
-				return FormatterUtil.formatAmount(paymentSalesInvoice.getAdjustmentAmount());
+			BigDecimal amount = paymentSalesInvoice.getAdjustedAmount();
+			if (!amount.equals(Constants.ZERO)) {
+				return FormatterUtil.formatAmount(amount);
 			} else {
 				return null;
 			}
@@ -74,7 +74,6 @@ public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 	}
 
 	public void setPayment(Payment payment) {
-		this.payment = payment;
 		if (payment != null) {
 			paymentSalesInvoices = payment.getSalesInvoices();
 		} else {
@@ -88,28 +87,6 @@ public class PaymentSalesInvoicesTableModel extends AbstractTableModel {
 		return columnNames[column];
 	}
 	
-	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return !payment.isPosted() && columnIndex == PaymentSalesInvoicesTable.ADJUSTMENT_AMOUNT_COLUMN_INDEX;
-	}
-	
-	@Override
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		PaymentSalesInvoice paymentSalesInvoice = paymentSalesInvoices.get(rowIndex);
-		String val = (String)aValue;
-		switch (columnIndex) {
-		case PaymentSalesInvoicesTable.ADJUSTMENT_AMOUNT_COLUMN_INDEX:
-			if (!StringUtils.isEmpty(val)) {
-				paymentSalesInvoice.setAdjustmentAmount(NumberUtil.toBigDecimal(val));
-			} else {
-				paymentSalesInvoice.setAdjustmentAmount(null);
-			}
-			paymentService.save(paymentSalesInvoice);
-			fireTableCellUpdated(rowIndex, columnIndex);
-			break;
-		}
-	}
-
 	public PaymentSalesInvoice getPaymentSalesInvoice(int rowIndex) {
 		return paymentSalesInvoices.get(rowIndex);
 	}

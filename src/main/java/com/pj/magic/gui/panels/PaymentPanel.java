@@ -52,6 +52,7 @@ import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
+import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -75,6 +76,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalService paymentTerminalService;
+	@Autowired private SalesReturnService salesReturnService;
 	
 	private Payment payment;
 	private JLabel paymentNumberField;
@@ -746,8 +748,10 @@ public class PaymentPanel extends StandardMagicPanel {
 				paymentSalesInvoice.setParent(payment);
 				paymentSalesInvoice.setSalesInvoice(salesInvoice);
 				paymentService.save(paymentSalesInvoice);
+				paymentSalesInvoice.setSalesReturns(
+						salesReturnService.findPostedSalesReturnsBySalesInvoice(salesInvoice));
+				payment.getSalesInvoices().add(paymentSalesInvoice);
 			}
-			payment.setSalesInvoices(paymentService.findAllPaymentSalesInvoicesByPayment(payment));
 			salesInvoicesTable.setPayment(payment);
 		}
 	}

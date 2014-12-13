@@ -24,7 +24,7 @@ public class SalesReturnItemDaoImpl extends MagicDao implements SalesReturnItemD
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, SALES_RETURN_ID, a.QUANTITY, b.PRODUCT_ID, c.CODE, c.DESCRIPTION,"
-			+ " a.SALES_INVOICE_ITEM_ID, b.UNIT, b.COST,"
+			+ " a.SALES_INVOICE_ITEM_ID, b.UNIT, b.COST, b.QUANTITY as SALES_INVOICE_ITEM_QUANTITY,"
 			+ " b.UNIT_PRICE, b.DISCOUNT_1, b.DISCOUNT_2, b.DISCOUNT_3, b.FLAT_RATE_DISCOUNT"
 			+ " from SALES_RETURN_ITEM a"
 			+ " join SALES_INVOICE_ITEM b"
@@ -61,6 +61,7 @@ public class SalesReturnItemDaoImpl extends MagicDao implements SalesReturnItemD
 			salesInvoiceItem.setId(rs.getLong("SALES_INVOICE_ITEM_ID"));
 			salesInvoiceItem.setProduct(product);
 			salesInvoiceItem.setUnit(rs.getString("UNIT"));
+			salesInvoiceItem.setQuantity(rs.getInt("SALES_INVOICE_ITEM_QUANTITY"));
 			salesInvoiceItem.setUnitPrice(rs.getBigDecimal("UNIT_PRICE"));
 			salesInvoiceItem.setDiscount1(rs.getBigDecimal("DISCOUNT_1"));
 			salesInvoiceItem.setDiscount2(rs.getBigDecimal("DISCOUNT_2"));

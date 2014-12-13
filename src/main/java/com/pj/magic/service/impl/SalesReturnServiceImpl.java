@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.dao.SalesReturnItemDao;
+import com.pj.magic.model.Payment;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.SalesReturnItem;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
@@ -92,5 +94,22 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		}
 		return salesReturns;
  	}
+
+	@Override
+	public List<SalesReturn> findPostedSalesReturnsBySalesInvoice(SalesInvoice salesInvoice) {
+		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
+		criteria.setSalesInvoice(salesInvoice);
+		criteria.setPosted(true);
+		
+		return search(criteria);
+	}
+
+	@Override
+	public List<SalesReturn> findAllSalesReturnsByPayment(Payment payment) {
+		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
+		criteria.setPayment(payment);
+		
+		return search(criteria);
+	}
 	
 }

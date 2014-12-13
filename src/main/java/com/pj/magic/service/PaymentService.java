@@ -43,5 +43,5 @@ public interface PaymentService {
 	List<PaymentSalesInvoice> searchPaymentSalesInvoices(PaymentSalesInvoiceSearchCriteria criteria);
 	
 	void cancel(Payment payment);
-	
+
 }

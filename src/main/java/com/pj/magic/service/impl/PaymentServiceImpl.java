@@ -16,17 +16,20 @@ import com.pj.magic.dao.PaymentDao;
 import com.pj.magic.dao.PaymentSalesInvoiceDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
+import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PaymentTerminalAssignment;
+import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentService;
+import com.pj.magic.service.SalesReturnService;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -39,7 +42,9 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private PaymentCashPaymentDao paymentCashPaymentDao;
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
+	@Autowired private SalesReturnDao salesReturnDao;
 	@Autowired private LoginService loginService;
+	@Autowired private SalesReturnService salesReturnService;
 	
 	@Transactional
 	@Override
@@ -66,6 +71,12 @@ public class PaymentServiceImpl implements PaymentService {
 		for (PaymentSalesInvoice salesInvoice : payment.getSalesInvoices()) {
 			salesInvoice.getSalesInvoice().setItems(
 					salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice.getSalesInvoice()));
+			if (payment.isNew()) {
+				salesInvoice.setSalesReturns(
+						salesReturnService.findPostedSalesReturnsBySalesInvoice(salesInvoice.getSalesInvoice()));
+			} else {
+				salesInvoice.setSalesReturns(salesReturnService.findAllSalesReturnsByPayment(payment));
+			}
 		}
 		payment.setCashPayments(paymentCashPaymentDao.findAllByPayment(payment));
 		payment.setCheckPayments(paymentCheckPaymentDao.findAllByPayment(payment));
@@ -146,11 +157,19 @@ public class PaymentServiceImpl implements PaymentService {
 		if (paymentTerminalAssignment == null) {
 			throw new RuntimeException("User " + user.getUsername() + " is not assigned to payment terminal");
 		}
-		payment.setPosted(true);
-		payment.setPostDate(new Date());
-		payment.setPostedBy(user);
-		payment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
-		paymentDao.save(payment);
+		
+		Payment updated = getPayment(payment.getId());
+		updated.setPosted(true);
+		updated.setPostDate(new Date());
+		updated.setPostedBy(user);
+		updated.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+		paymentDao.save(updated);
+		
+		for (PaymentSalesInvoice salesInvoice : updated.getSalesInvoices()) {
+			for (SalesReturn salesReturn : salesInvoice.getSalesReturns()) {
+				salesReturnDao.savePaymentSalesReturn(updated, salesReturn);
+			}
+		}
 	}
 
 	@Override

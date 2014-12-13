@@ -1,16 +1,21 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import com.pj.magic.Constants;
 
 public class PaymentSalesInvoice {
 
 	private Long id;
 	private Payment parent;
 	private SalesInvoice salesInvoice;
-	private BigDecimal adjustmentAmount;
+	private BigDecimal adjustedAmount;
+	private List<SalesReturn> salesReturns = new ArrayList<>();
 
 	public Long getId() {
 		return id;
@@ -36,20 +41,20 @@ public class PaymentSalesInvoice {
 		this.salesInvoice = salesInvoice;
 	}
 
-	public BigDecimal getAdjustmentAmount() {
-		return adjustmentAmount;
-	}
-
-	public void setAdjustmentAmount(BigDecimal adjustmentAmount) {
-		this.adjustmentAmount = adjustmentAmount;
+	public BigDecimal getAdjustedAmount() {
+		if (adjustedAmount != null) {
+			return adjustedAmount;
+		}
+		
+		BigDecimal amount = Constants.ZERO;
+		for (SalesReturn salesReturn : salesReturns) {
+			amount = amount.add(salesReturn.getTotalAmount());
+		}
+		return amount;
 	}
 
 	public BigDecimal getAmountDue() {
-		BigDecimal amount = getSalesInvoice().getTotalNetAmount();
-		if (adjustmentAmount != null) {
-			amount = amount.subtract(adjustmentAmount);
-		}
-		return amount;
+		return getSalesInvoice().getTotalNetAmount().subtract(getAdjustedAmount());
 	}
 
 	@Override
@@ -71,6 +76,18 @@ public class PaymentSalesInvoice {
 		return new EqualsBuilder()
 			.append(id, other.getId())
 			.isEquals();
+	}
+
+	public List<SalesReturn> getSalesReturns() {
+		return salesReturns;
+	}
+
+	public void setSalesReturns(List<SalesReturn> salesReturns) {
+		this.salesReturns = salesReturns;
+	}
+	
+	public void setAdjustedAmount(BigDecimal adjustedAmount) {
+		this.adjustedAmount = adjustedAmount;
 	}
 	
 }

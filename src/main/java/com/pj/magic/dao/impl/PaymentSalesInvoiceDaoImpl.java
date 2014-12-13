@@ -1,11 +1,17 @@
 package com.pj.magic.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PaymentSalesInvoiceDao;
@@ -47,24 +53,28 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 		if (item.getId() == null) {
 			insert(item);
 		} else {
-			update(item);
+			logger.warn("Updating Payment Sales Invoice not possible");
 		}
-	}
-
-	private static final String UPDATE_SQL =
-			"update PAYMENT_SALES_INVOICE set ADJUSTMENT_AMOUNT = ? where ID = ?";
-	
-	private void update(PaymentSalesInvoice item) {
-		getJdbcTemplate().update(UPDATE_SQL, item.getAdjustmentAmount(), item.getId());
 	}
 
 	private static final String INSERT_SQL =
 			"insert into PAYMENT_SALES_INVOICE (PAYMENT_ID, SALES_INVOICE_ID) values (?, ?)";
 	
-	private void insert(PaymentSalesInvoice item) {
-		getJdbcTemplate().update(INSERT_SQL,
-				item.getParent().getId(),
-				item.getSalesInvoice().getId());
+	private void insert(final PaymentSalesInvoice paymentSalesInvoice) {
+		KeyHolder holder = new GeneratedKeyHolder();
+		getJdbcTemplate().update(new PreparedStatementCreator() {
+			
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con)
+					throws SQLException {
+				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+				ps.setLong(1, paymentSalesInvoice.getParent().getId());
+				ps.setLong(2, paymentSalesInvoice.getSalesInvoice().getId());
+				return ps;
+			}
+		}, holder);
+		
+		paymentSalesInvoice.setId(holder.getKey().longValue());
 	}
 
 	private static final String FIND_ALL_BY_PAYMENT_SQL = BASE_SELECT_SQL
@@ -120,14 +130,14 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 			paymentTerm.setNumberOfDays(rs.getInt("PAYMENT_TERM_NUMBER_OF_DAYS"));
 			salesInvoice.setPaymentTerm(paymentTerm);
 			
-			item.setAdjustmentAmount(rs.getBigDecimal("ADJUSTMENT_AMOUNT"));
-			
 			if (rs.getLong("PAYMENT_TERMINAL_ID") != 0) {
 				PaymentTerminal terminal = new PaymentTerminal();
 				terminal.setId(rs.getLong("PAYMENT_TERMINAL_ID"));
 				terminal.setName(rs.getString("PAYMENT_TERMINAL_NAME"));
 				payment.setPaymentTerminal(terminal);
 			}
+			
+			item.setAdjustedAmount(rs.getBigDecimal("ADJUSTMENT_AMOUNT"));
 			
 			return item;
 		}
