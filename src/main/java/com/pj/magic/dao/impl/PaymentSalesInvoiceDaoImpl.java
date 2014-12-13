@@ -137,6 +137,8 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 				payment.setPaymentTerminal(terminal);
 			}
 			
+			item.setAdjustedAmount(rs.getBigDecimal("ADJUSTMENT_AMOUNT"));
+			
 			return item;
 		}
 		

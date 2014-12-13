@@ -14,6 +14,7 @@ public class PaymentSalesInvoice {
 	private Long id;
 	private Payment parent;
 	private SalesInvoice salesInvoice;
+	private BigDecimal adjustedAmount;
 	private List<SalesReturn> salesReturns = new ArrayList<>();
 
 	public Long getId() {
@@ -41,6 +42,10 @@ public class PaymentSalesInvoice {
 	}
 
 	public BigDecimal getAdjustedAmount() {
+		if (adjustedAmount != null) {
+			return adjustedAmount;
+		}
+		
 		BigDecimal amount = Constants.ZERO;
 		for (SalesReturn salesReturn : salesReturns) {
 			amount = amount.add(salesReturn.getTotalAmount());
@@ -79,6 +84,10 @@ public class PaymentSalesInvoice {
 
 	public void setSalesReturns(List<SalesReturn> salesReturns) {
 		this.salesReturns = salesReturns;
+	}
+	
+	public void setAdjustedAmount(BigDecimal adjustedAmount) {
+		this.adjustedAmount = adjustedAmount;
 	}
 	
 }
