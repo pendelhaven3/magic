@@ -447,4 +447,12 @@ public class Product implements Comparable<Product> {
 		return activeUnits.contains(unit);
 	}
 	
+	public BigDecimal getActiveUnitPrice(String unit) {
+		if (hasActiveUnit(unit)) {
+			return getUnitPrice(unit);
+		} else {
+			return Constants.ZERO;
+		}
+	}
+	
 }

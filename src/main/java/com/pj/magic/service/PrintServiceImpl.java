@@ -209,7 +209,7 @@ public class PrintServiceImpl implements PrintService {
 		List<Product> pageItem = new ArrayList<>();
 		int counter = 0;
 		for (Product product : products) {
-			int lineCount = 1 + product.getUnits().size();
+			int lineCount = 1 + product.getActiveUnits().size();
 			if (counter + lineCount > PRICING_SCHEME_REPORT_LINES_PER_PAGE) {
 				pageItems.add(pageItem);
 				pageItem = new ArrayList<>();
