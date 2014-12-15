@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -13,12 +14,14 @@ import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.search.BadStockReturnSearchCriteria;
 import com.pj.magic.service.BadStockReturnService;
+import com.pj.magic.service.LoginService;
 
 @Service
 public class BadStockReturnServiceImpl implements BadStockReturnService {
 
 	@Autowired private BadStockReturnDao badStockReturnDao;
 	@Autowired private BadStockReturnItemDao badStockReturnItemDao;
+	@Autowired private LoginService loginService;
 	
 	@Transactional
 	@Override
@@ -59,6 +62,21 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 	@Override
 	public void delete(BadStockReturnItem item) {
 		badStockReturnItemDao.delete(item);
+	}
+
+	@Transactional
+	@Override
+	public void post(BadStockReturn badStockReturn) {
+		BadStockReturn updated = getBadStockReturn(badStockReturn.getId());
+		updated.setPosted(true);
+		updated.setPostDate(new Date());
+		updated.setPostedBy(loginService.getLoggedInUser());
+		badStockReturnDao.save(updated);
+	}
+
+	@Override
+	public List<BadStockReturn> getAllBadStockReturns() {
+		return search(new BadStockReturnSearchCriteria());
 	}
 
 }

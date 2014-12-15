@@ -16,5 +16,9 @@ public interface BadStockReturnService {
 	void save(BadStockReturnItem item);
 
 	void delete(BadStockReturnItem item);
+
+	void post(BadStockReturn badStockReturn);
+
+	List<BadStockReturn> getAllBadStockReturns();
 	
 }

@@ -190,7 +190,9 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		
 		badStockReturnNumberField.setText(badStockReturn.getBadStockReturnNumber().toString());
 		customerCodeField.setText(badStockReturn.getCustomer().getCode());
+		customerCodeField.setEnabled(!badStockReturn.isPosted());
 		customerNameField.setText(badStockReturn.getCustomer().getName());
+		selectCustomerButton.setEnabled(!badStockReturn.isPosted());
 		statusField.setText(badStockReturn.getStatus());
 		if (badStockReturn.getPostDate() != null) {
 			postDateField.setText(FormatterUtil.formatDate(badStockReturn.getPostDate()));
@@ -214,7 +216,9 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	private void clearDisplay() {
 		badStockReturnNumberField.setText(null);
 		customerCodeField.setText(null);
+		customerCodeField.setEnabled(true);
 		customerNameField.setText(null);
+		selectCustomerButton.setEnabled(true);
 		statusField.setText(null);
 		postDateField.setText(null);
 		postedByField.setText(null);
@@ -458,28 +462,25 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	}
 
 	private void postBadStockReturn() {
-		/*
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();
 		}
 		
-		int confirm = showConfirmMessage("Do you want to post this Adjustment In?");
-		if (confirm == JOptionPane.OK_OPTION) {
+		if (confirm("Do you want to post this Bad Stock Return?")) { 
 			if (!badStockReturn.hasItems()) {
-				showErrorMessage("Cannot post a Adjustment In with no items");
+				showErrorMessage("Cannot post a Bad Stock Return with no items");
 				itemsTable.requestFocusInWindow();
 				return;
 			}
 			try {
 				badStockReturnService.post(badStockReturn);
-				JOptionPane.showMessageDialog(this, "Post successful!");
+				showMessage("Post successful!");
 				updateDisplay(badStockReturn);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");
 			}
 		}
-		*/
 	}
 
 	@Override

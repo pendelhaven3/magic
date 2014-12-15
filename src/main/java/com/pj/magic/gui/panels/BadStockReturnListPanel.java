@@ -53,7 +53,7 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		tableModel.setBadStockReturns(badStockReturnService.getAllNewBadStockReturns());
+		tableModel.setBadStockReturns(badStockReturnService.getAllBadStockReturns());
 //		adjustmentInSearchCriteriaDialog.updateDisplay();
 	}
 
@@ -117,7 +117,7 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToStockMovementMenuPanel();
+		getMagicFrame().switchToSalesMenuPanel();
 	}
 	
 	@Override

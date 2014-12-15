@@ -51,7 +51,22 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 
 	@Override
 	public void save(BadStockReturn badStockReturn) {
-		insert(badStockReturn);
+		if (badStockReturn.getId() == null) {
+			insert(badStockReturn);
+		} else {
+			update(badStockReturn);
+		}
+	}
+
+	private static final String UPDATE_SQL = 
+			"update BAD_STOCK_RETURN set POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+	
+	private void update(BadStockReturn badStockReturn) {
+		getJdbcTemplate().update(UPDATE_SQL,
+				badStockReturn.isPosted() ? "Y" : "N",
+				badStockReturn.getPostDate(),
+				badStockReturn.isPosted() ? badStockReturn.getPostedBy().getId() : null,
+				badStockReturn.getId());
 	}
 
 	private static final String INSERT_SQL =
