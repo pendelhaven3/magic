@@ -22,6 +22,8 @@ import com.pj.magic.gui.panels.AreaInventoryReportListPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportPanel;
 import com.pj.magic.gui.panels.AreaListPanel;
 import com.pj.magic.gui.panels.BackupDataPanel;
+import com.pj.magic.gui.panels.BadStockReturnListPanel;
+import com.pj.magic.gui.panels.BadStockReturnPanel;
 import com.pj.magic.gui.panels.ChangePasswordPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
@@ -80,6 +82,7 @@ import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
+import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Manufacturer;
@@ -173,6 +176,8 @@ public class MagicFrame extends JFrame {
 	private static final String INVENTORY_CHECK_MENU_PANEL = "INVENTORY_CHECK_MENU_PANEL";
 	private static final String RECORDS_MAINTENANCE_MENU_PANEL = "RECORDS_MAINTENANCE_MENU_PANEL";
 	private static final String ADMIN_MENU_PANEL = "ADMIN_MENU_PANEL";
+	private static final String BAD_STOCK_RETURN_LIST_PANEL = "BAD_STOCK_RETURN_LIST_PANEL";
+	private static final String BAD_STOCK_RETURN_PANEL = "BAD_STOCK_RETURN_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -236,6 +241,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private InventoryCheckMenuPanel inventoryCheckMenuPanel;
 	@Autowired private RecordsMaintenanceMenuPanel recordsMaintenanceMenuPanel;
 	@Autowired private AdminMenuPanel adminMenuPanel;
+	@Autowired private BadStockReturnListPanel badStockReturnListPanel;
+	@Autowired private BadStockReturnPanel badStockReturnPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -346,6 +353,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(inventoryCheckMenuPanel, INVENTORY_CHECK_MENU_PANEL);
 		panelHolder.add(recordsMaintenanceMenuPanel, RECORDS_MAINTENANCE_MENU_PANEL);
 		panelHolder.add(adminMenuPanel, ADMIN_MENU_PANEL);
+		panelHolder.add(badStockReturnListPanel, BAD_STOCK_RETURN_LIST_PANEL);
+		panelHolder.add(badStockReturnPanel, BAD_STOCK_RETURN_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -602,7 +611,7 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADJUSTMENT_IN_LIST_PANEL);
 	}
 	
-	public void switchToAdjustmentInPanel(AdjustmentIn adjustmentIn) {
+	public void switchToAddBadStockReturnPanel(AdjustmentIn adjustmentIn) {
 		addPanelNameToTitle("Adjustment In");
 		adjustmentInPanel.updateDisplay(adjustmentIn);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADJUSTMENT_IN_PANEL);
@@ -825,6 +834,18 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Admin Menu");
 		adminMenuPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADMIN_MENU_PANEL);
+	}
+
+	public void switchToBadStockReturnListPanel() {
+		addPanelNameToTitle("Bad Stock Return List");
+		badStockReturnListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_RETURN_LIST_PANEL);
+	}
+
+	public void switchToBadStockReturnPanel(BadStockReturn badStockReturn) {
+		addPanelNameToTitle("Bad Stock Return");
+		badStockReturnPanel.updateDisplay(badStockReturn);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_RETURN_PANEL);
 	}
 
 }
