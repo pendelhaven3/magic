@@ -8,6 +8,7 @@ insert into SEQUENCE (NAME) values ('ADJUSTMENT_IN_NO_SEQ');
 insert into SEQUENCE (NAME) values ('ACCT_RECEIVABLE_SUMMARY_NO_SEQ');
 insert into SEQUENCE (NAME) values ('SALES_RETURN_NO_SEQ');
 insert into SEQUENCE (NAME) values ('PAYMENT_NO_SEQ');
+insert into SEQUENCE (NAME) values ('BAD_STOCK_RETURN_NO_SEQ');
 
 insert into SYSTEM_PARAMETER (NAME, VALUE) values ('VERSION', '0.17.0');
 

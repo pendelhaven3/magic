@@ -46,7 +46,7 @@ public class AdjustmentInListPanel extends StandardMagicPanel {
 	}
 
 	public void displayAdjustmentInDetails(AdjustmentIn AdjustmentIn) {
-		getMagicFrame().switchToAdjustmentInPanel(AdjustmentIn);
+		getMagicFrame().switchToAddBadStockReturnPanel(AdjustmentIn);
 	}
 	
 	@Override
@@ -86,7 +86,7 @@ public class AdjustmentInListPanel extends StandardMagicPanel {
 	}
 	
 	protected void switchToNewAdjustmentInPanel() {
-		getMagicFrame().switchToAdjustmentInPanel(new AdjustmentIn());
+		getMagicFrame().switchToAddBadStockReturnPanel(new AdjustmentIn());
 	}
 
 	@Override

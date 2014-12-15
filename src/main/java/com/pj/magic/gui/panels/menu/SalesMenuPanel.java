@@ -97,6 +97,9 @@ public class SalesMenuPanel extends StandardMagicPanel {
 		case "Sales Return":
 			getMagicFrame().switchToSalesReturnListPanel();
 			break;
+		case "Bad Stock Return":
+			getMagicFrame().switchToBadStockReturnListPanel();
+			break;
 		}
 	}
 
@@ -112,7 +115,8 @@ public class SalesMenuPanel extends StandardMagicPanel {
 				"Stock Quantity Conversion",
 				"Sales Invoice",
 				"Mark Sales Invoice",
-				"Sales Return"
+				"Sales Return",
+				"Bad Stock Return"
 		);
 		
 		@Override
