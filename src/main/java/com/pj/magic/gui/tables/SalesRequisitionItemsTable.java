@@ -337,7 +337,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 			editCellAt(getSelectedRow(), UNIT_COLUMN_INDEX);
 		}
 		
-		selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
+		selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getActiveUnits());
 		selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
 		selectUnitDialog.setVisible(true);
 		
@@ -463,7 +463,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 				showErrorMessage("Unit must be specified");
 			} else {
 				SalesRequisitionItemRowItem rowItem = getCurrentlySelectedRowItem();
-				if (!rowItem.getProduct().hasUnit(unit)) {
+				if (!rowItem.getProduct().hasActiveUnit(unit)) {
 					showErrorMessage("Product does not have unit specified");
 				} else if (hasDuplicate(unit, rowItem)) {
 					showErrorMessage("Duplicate item");

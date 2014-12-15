@@ -362,7 +362,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		if (!isEditing()) {
 			editCellAt(getSelectedRow(), getSelectedColumn());
 		}
-		selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getUnits());
+		selectUnitDialog.setUnits(getCurrentlySelectedRowItem().getProduct().getActiveUnits());
 		selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
 		selectUnitDialog.setVisible(true);
 		
@@ -491,7 +491,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 				showErrorMessage("From Unit must be specified");
 			} else {
 				StockQuantityConversionItemRowItem rowItem = getCurrentlySelectedRowItem();
-				if (!rowItem.getProduct().hasUnit(unit)) {
+				if (!rowItem.getProduct().hasActiveUnit(unit)) {
 					showErrorMessage("Product does not have unit specified");
 				} else {
 					valid = true;
@@ -516,7 +516,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 				showErrorMessage("To Unit must be specified");
 			} else {
 				StockQuantityConversionItemRowItem rowItem = getCurrentlySelectedRowItem();
-				if (!rowItem.getProduct().hasUnit(unit)) {
+				if (!rowItem.getProduct().hasActiveUnit(unit)) {
 					showErrorMessage("Product does not have unit specified");
 				} else if (unit.equals(rowItem.getFromUnit())) {
 					showErrorMessage("From Unit and To Unit must not be the same");

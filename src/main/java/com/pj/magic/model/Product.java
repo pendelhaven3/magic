@@ -19,6 +19,7 @@ public class Product implements Comparable<Product> {
 	private String code;
 	private String description;
 	private List<String> units = new ArrayList<>();
+	private List<String> activeUnits = new ArrayList<>();
 	private List<UnitPrice> unitPrices = new ArrayList<>();
 	private List<UnitQuantity> unitQuantities = new ArrayList<>();
 	private int minimumStockLevel = 0;
@@ -432,6 +433,26 @@ public class Product implements Comparable<Product> {
 
 	public BigDecimal getTotalValue(String unit) {
 		return getFinalCost(unit).multiply(new BigDecimal(getUnitQuantity(unit)));
+	}
+
+	public List<String> getActiveUnits() {
+		return activeUnits;
+	}
+
+	public void setActiveUnits(List<String> activeUnits) {
+		this.activeUnits = activeUnits;
+	}
+	
+	public boolean hasActiveUnit(String unit) {
+		return activeUnits.contains(unit);
+	}
+	
+	public BigDecimal getActiveUnitPrice(String unit) {
+		if (hasActiveUnit(unit)) {
+			return getUnitPrice(unit);
+		} else {
+			return Constants.ZERO;
+		}
 	}
 	
 }
