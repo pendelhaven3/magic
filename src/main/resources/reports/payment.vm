@@ -17,10 +17,10 @@ Customer  : $report.field($payment.customer.name, 30)
    ---------- ------ ------------  ----------  ------------ ----------
 ##   11/28/2014 366237   146,906.86 ( 26,958.35)   119,948.51 11/28/2014
 #foreach($paymentSalesInvoice in $payment.salesInvoices)
-   $report.field($paymentSalesInvoice.salesInvoice.transactionDate) $report.field($paymentSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($paymentSalesInvoice.salesInvoice.totalNetAmount, 12, "right") ($report.adjustmentAmount($paymentSalesInvoice.adjustmentAmount, 10)) $report.field($paymentSalesInvoice.amountDue, 12, "right") $report.field($paymentSalesInvoice.salesInvoice.dueDate)
+   $report.field($paymentSalesInvoice.salesInvoice.transactionDate) $report.field($paymentSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($paymentSalesInvoice.salesInvoice.totalNetAmount, 12, "right") ($report.adjustmentAmount($paymentSalesInvoice.adjustedAmount, 10)) $report.field($paymentSalesInvoice.amountDue, 12, "right") $report.field($paymentSalesInvoice.salesInvoice.dueDate)
 #end
                      ------------  ----------  ------------
-           TOTALS => $report.field($payment.totalNetAmount, 12, "right") ($report.adjustmentAmount($payment.totalAdjustmentAmount, 10)) $report.field($payment.totalAmountDue, 12, "right")
+           TOTALS => $report.field($payment.totalNetAmount, 12, "right") ($report.adjustmentAmount($payment.totalAdjustedAmount, 10)) $report.field($payment.totalAmountDue, 12, "right")
                      ============  ==========  ============
 
 Cash Payments
