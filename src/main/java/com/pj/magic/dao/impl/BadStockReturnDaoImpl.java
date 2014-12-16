@@ -59,10 +59,11 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 	}
 
 	private static final String UPDATE_SQL = 
-			"update BAD_STOCK_RETURN set POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+			"update BAD_STOCK_RETURN set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
 	
 	private void update(BadStockReturn badStockReturn) {
 		getJdbcTemplate().update(UPDATE_SQL,
+				badStockReturn.getCustomer().getId(),
 				badStockReturn.isPosted() ? "Y" : "N",
 				badStockReturn.getPostDate(),
 				badStockReturn.isPosted() ? badStockReturn.getPostedBy().getId() : null,

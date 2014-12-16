@@ -106,6 +106,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 				try {
 					badStockReturnService.save(badStockReturn);
 					updateDisplay(badStockReturn);
+					itemsTable.highlight();
 				} catch (Exception e) {
 					logger.error(e.getMessage(), e);
 					showMessageForUnexpectedError();
