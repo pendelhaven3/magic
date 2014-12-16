@@ -29,6 +29,8 @@ import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
+import com.pj.magic.model.BadStockReturn;
+import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.Payment;
@@ -84,6 +86,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int PRICE_LIST_ITEMS_PER_PAGE = 46;
 	private static final int POSTED_SALES_AND_PROFIT_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int SALES_RETURN_ITEMS_PER_PAGE = 44;
+	private static final int BAD_STOCK_RETURN_ITEMS_PER_PAGE = 44;
 	
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
@@ -739,6 +742,35 @@ public class PrintServiceImpl implements PrintService {
 	public void print(SalesReturn salesReturn) {
 		try {
 			for (String printPage : generateReportAsString(salesReturn)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(BadStockReturn badStockReturn) {
+		List<List<BadStockReturnItem>> pageItems = Lists.partition(badStockReturn.getItems(), 
+				BAD_STOCK_RETURN_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("currentDate", new Date());
+			reportData.put("badStockReturn", badStockReturn);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/badStockReturn.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(BadStockReturn badStockReturn) {
+		try {
+			for (String printPage : generateReportAsString(badStockReturn)) {
 				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {

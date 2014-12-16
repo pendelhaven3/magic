@@ -29,12 +29,14 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.BadStockReturnItemsTable;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.CustomerService;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -51,6 +53,8 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	@Autowired private BadStockReturnService badStockReturnService;
 	@Autowired private CustomerService customerService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
+	@Autowired private PrintService printService;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
 	
 	private BadStockReturn badStockReturn;
 	private JLabel badStockReturnNumberField;
@@ -65,6 +69,8 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	private JButton postButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
+	private JButton printPreviewButton;
+	private JButton printButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -209,6 +215,8 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		postButton.setEnabled(!badStockReturn.isPosted());
 		addItemButton.setEnabled(!badStockReturn.isPosted());
 		deleteItemButton.setEnabled(!badStockReturn.isPosted());
+		printPreviewButton.setEnabled(true);
+		printButton.setEnabled(true);
 		
 		itemsTable.setBadStockReturn(badStockReturn);
 	}
@@ -228,6 +236,8 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		postButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
+		printPreviewButton.setEnabled(false);
+		printButton.setEnabled(false);
 	}
 
 	@Override
@@ -494,6 +504,27 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(postButton);
+		
+		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreviewDialog.updateDisplay(printService.generateReportAsString(badStockReturn));
+				printPreviewDialog.setVisible(true);
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(badStockReturn);
+			}
+		});
+		toolBar.add(printButton);
 	}
 
 }

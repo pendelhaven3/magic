@@ -5,6 +5,7 @@ import java.util.List;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AreaInventoryReport;
+import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PricingScheme;
@@ -87,5 +88,9 @@ public interface PrintService {
 	List<String> generateReportAsString(SalesReturn salesReturn);
 
 	void print(SalesReturn salesReturn);
+	
+	List<String> generateReportAsString(BadStockReturn badStockReturn);
+
+	void print(BadStockReturn badStockReturn);
 	
 }
