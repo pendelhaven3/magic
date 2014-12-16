@@ -2,11 +2,13 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
@@ -18,10 +20,12 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.AmountCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.RequiredFieldCellEditor;
+import com.pj.magic.gui.dialog.SelectDateDialog;
 import com.pj.magic.gui.tables.models.PaymentCheckPaymentsTableModel;
 import com.pj.magic.gui.tables.rowitems.PaymentCheckPaymentRowItem;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCheckPayment;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class PaymentCheckPaymentsTable extends MagicTable {
@@ -33,8 +37,10 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 	private static final String F10_ACTION_NAME = "F10";
+	private static final String F5_ACTION_NAME = "F5";
 
 	@Autowired private PaymentCheckPaymentsTableModel tableModel;
+	@Autowired private SelectDateDialog selectDateDialog;
 	
 	private Payment payment;
 	
@@ -108,6 +114,7 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), F10_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), F5_ACTION_NAME);
 		/*
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
 		
@@ -127,6 +134,15 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 				addNewRow();
 			}
 		});
+		actionMap.put(F5_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (isCheckDateColumnSelected() && payment.isNew()) {
+					openSelectDateDialog();
+				}
+			}
+		});
 		/*
 		actionMap.put(DELETE_ITEM_ACTION_NAME, new AbstractAction() {
 			
@@ -139,6 +155,23 @@ public class PaymentCheckPaymentsTable extends MagicTable {
 		
 	}
 	
+	private boolean isCheckDateColumnSelected() {
+		return getSelectedColumn() == CHECK_DATE_COLUMN_INDEX;
+	}
+
+	private void openSelectDateDialog() {
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), CHECK_DATE_COLUMN_INDEX);
+		}
+		
+		selectDateDialog.setVisible(true);
+		Date selectedDate = selectDateDialog.getSelectedDate();
+		if (selectedDate != null) {
+			((JTextField)getEditorComponent()).setText(FormatterUtil.formatDate(selectedDate));
+			getCellEditor().stopCellEditing();
+		}
+	}
+
 	private void cancelEditing() {
 		if (isEditing()) {
 			getCellEditor().cancelCellEditing();
