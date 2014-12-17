@@ -1,6 +1,7 @@
 package com.pj.magic.gui.panels;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -37,6 +38,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 	
 	static {
 		MENU_ITEM_IMAGE_MAP.put("Admin", "admin");
+		MENU_ITEM_IMAGE_MAP.put("Payment", "money_large");
 		MENU_ITEM_IMAGE_MAP.put("Reports", "reports");
 		MENU_ITEM_IMAGE_MAP.put("Inventory Check", "inventory_check");
 		MENU_ITEM_IMAGE_MAP.put("Backup/Restore Data", "database_backup");
@@ -91,8 +93,14 @@ public class MainMenuPanel extends StandardMagicPanel {
 				
 				GridBagConstraints c = new GridBagConstraints();
 				c.gridx = 0;
-				panel.add(new JLabel(new ImageIcon(getClass().getResource(
-						"/images/" + imageName + ".png"))), c);
+				
+				JLabel iconLabel = new JLabel(new ImageIcon(getClass().getResource(
+						"/images/" + imageName + ".png")));
+				iconLabel.setPreferredSize(new Dimension(64, 64));
+				iconLabel.setVerticalAlignment(JLabel.CENTER);
+				iconLabel.setHorizontalAlignment(JLabel.CENTER);
+				
+				panel.add(iconLabel, c);
 				
 				c = new GridBagConstraints();
 				c.gridx = 1;
