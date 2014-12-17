@@ -248,7 +248,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		statusField = ComponentUtil.createLabel(100);
+		statusField = ComponentUtil.createLabel(150);
 		mainPanel.add(statusField, c);
 		
 		currentRow++;

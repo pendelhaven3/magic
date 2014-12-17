@@ -14,14 +14,14 @@ import com.pj.magic.util.FormatterUtil;
 public class SalesReturnsTableModel extends AbstractTableModel {
 
 	private static final String[] columnNames = {"SR No.", "SI No.", "Customer", "Total Amount",
-		"Posted", "Post Date"};
+		"Status", "Paid Date"};
 	
 	private static final int SALES_RETURN_NUMBER_COLUMN_INDEX = 0;
 	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 1;
 	private static final int CUSTOMER_COLUMN_INDEX = 2;
 	private static final int TOTAL_AMOUNT_COLUMN_INDEX = 3;
-	private static final int POSTED_COLUMN_INDEX = 4;
-	private static final int POST_DATE_COLUMN_INDEX = 5;
+	private static final int STATUS_COLUMN_INDEX = 4;
+	private static final int PAID_DATE_COLUMN_INDEX = 5;
 	
 	private List<SalesReturn> salesReturns = new ArrayList<>();
 	
@@ -47,10 +47,10 @@ public class SalesReturnsTableModel extends AbstractTableModel {
 			return salesReturn.getSalesInvoice().getCustomer().getName();
 		case TOTAL_AMOUNT_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(salesReturn.getTotalAmount());
-		case POSTED_COLUMN_INDEX:
-			return salesReturn.isPosted() ? "Yes" : "No";
-		case POST_DATE_COLUMN_INDEX:
-			return salesReturn.isPosted() ? FormatterUtil.formatDateTime(salesReturn.getPostDate()) : null;
+		case STATUS_COLUMN_INDEX:
+			return salesReturn.getStatus();
+		case PAID_DATE_COLUMN_INDEX:
+			return salesReturn.isPaid() ? FormatterUtil.formatDateTime(salesReturn.getPaidDate()) : null;
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}

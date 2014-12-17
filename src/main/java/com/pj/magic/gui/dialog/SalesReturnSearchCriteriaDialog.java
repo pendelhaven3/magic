@@ -37,8 +37,9 @@ import com.pj.magic.util.KeyUtil;
 public class SalesReturnSearchCriteriaDialog extends MagicDialog {
 
 	private static final int STATUS_ALL = 0;
-	private static final int STATUS_NOT_POSTED = 1;
+	private static final int STATUS_NEW = 1;
 	private static final int STATUS_POSTED = 2;
+	private static final int STATUS_PAID = 3;
 	
 	@Autowired private CustomerService customerService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
@@ -82,7 +83,7 @@ public class SalesReturnSearchCriteriaDialog extends MagicDialog {
 		});
 		
 		statusComboBox = new MagicComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "Not Posted", "Posted"}));
+		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted/Unpaid", "Paid"}));
 		
 		postDateModel = new UtilCalendarModel();
 		
@@ -126,11 +127,16 @@ public class SalesReturnSearchCriteriaDialog extends MagicDialog {
 		
 		if (statusComboBox.getSelectedIndex() != STATUS_ALL) {
 			switch (statusComboBox.getSelectedIndex()) {
-			case STATUS_NOT_POSTED:
+			case STATUS_NEW:
 				searchCriteria.setPosted(false);
+				searchCriteria.setPaid(false);
 				break;
 			case STATUS_POSTED:
 				searchCriteria.setPosted(true);
+				searchCriteria.setPaid(false);
+				break;
+			case STATUS_PAID:
+				searchCriteria.setPaid(true);
 				break;
 			}
 		}
@@ -281,7 +287,7 @@ public class SalesReturnSearchCriteriaDialog extends MagicDialog {
 		salesReturnNumberField.setText(null);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
-		statusComboBox.setSelectedIndex(STATUS_NOT_POSTED);
+		statusComboBox.setSelectedIndex(STATUS_NEW);
 		postDateModel.setValue(null);
 	}
 	

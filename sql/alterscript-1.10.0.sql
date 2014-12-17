@@ -12,3 +12,5 @@ alter table SALES_RETURN add constraint SALES_RETURN$FK4 foreign key (PAYMENT_TE
 
 update SALES_RETURN set PAID_IND = 'Y', PAID_DT = POST_DT, PAID_BY = POST_BY, PAYMENT_TERMINAL_ID = 2
 where POST_IND = 'Y';
+
+alter table SALES_RETURN change POST_DT POST_DT date null;

@@ -73,7 +73,7 @@ public class SalesReturn {
 		if (paid) {
 			return "Paid";
 		} else if (posted) {
-			return "Posted";
+			return "Posted/Unpaid";
 		} else {
 			return "New";
 		}
