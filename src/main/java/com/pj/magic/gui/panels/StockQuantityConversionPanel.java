@@ -66,6 +66,8 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 	private JLabel totalItemsField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	private JButton postButton;
+	private JButton addItemButton;
+	private JButton deleteItemButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -131,10 +133,13 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		postedByField.setText(stockQuantityConversion.isPosted() ?
 				stockQuantityConversion.getPostedBy().getUsername() : null);
 		remarksField.setText(stockQuantityConversion.getRemarks());
+		remarksField.setEnabled(!stockQuantityConversion.isPosted());
 		totalItemsField.setText(String.valueOf(stockQuantityConversion.getTotalNumberOfItems()));
 		itemsTable.setStockQuantityConversion(stockQuantityConversion);
 		
 		postButton.setEnabled(!stockQuantityConversion.isPosted());
+		addItemButton.setEnabled(!stockQuantityConversion.isPosted());
+		deleteItemButton.setEnabled(!stockQuantityConversion.isPosted());
 	}
 
 	@Override
@@ -526,7 +531,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 	private JPanel createItemsTableToolBar() {
 		JPanel panel = new JPanel();
 		
-		JButton addItemButton = new MagicToolBarButton("plus_small", "Add Item (F10)", true);
+		addItemButton = new MagicToolBarButton("plus_small", "Add Item (F10)", true);
 		addItemButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -536,7 +541,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		});
 		panel.add(addItemButton, BorderLayout.WEST);
 		
-		JButton deleteItemButton = new MagicToolBarButton("minus_small", "Delete Item (Delete)", true);
+		deleteItemButton = new MagicToolBarButton("minus_small", "Delete Item (Delete)", true);
 		deleteItemButton.addActionListener(new ActionListener() {
 			
 			@Override
