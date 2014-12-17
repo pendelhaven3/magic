@@ -240,6 +240,11 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			params.add(criteria.getPosted() ? "Y" : "N");
 		}
 
+		if (criteria.getCancelled() != null) {
+			sql.append(" and a.CANCEL_IND = ?");
+			params.add(criteria.getCancelled() ? "Y" : "N");
+		}
+
 		if (criteria.getReceivedDate() != null) {
 			sql.append(" and a.RECEIVED_DT = ?");
 //			params.add(criteria.getReceivedDate()); // TODO: investigate this further!

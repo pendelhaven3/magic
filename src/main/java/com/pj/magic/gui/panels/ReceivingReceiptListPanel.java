@@ -35,7 +35,7 @@ public class ReceivingReceiptListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		List<ReceivingReceipt> receivingReceipts = receivingReceiptService.getAllNonPostedReceivingReceipts();
+		List<ReceivingReceipt> receivingReceipts = receivingReceiptService.getNewReceivingReceipts();
 		table.setReceivingReceipts(receivingReceipts);
 		receivingReceiptSearchCriteriaDialog.updateDisplay();
 	}

@@ -9,6 +9,7 @@ public class ReceivingReceiptSearchCriteria {
 	private Long receivingReceiptNumber;
 	private Supplier supplier;
 	private Boolean posted;
+	private Boolean cancelled;
 	private Date receivedDate;
 	
 	public Long getReceivingReceiptNumber() {
@@ -41,6 +42,14 @@ public class ReceivingReceiptSearchCriteria {
 
 	public void setReceivedDate(Date receivedDate) {
 		this.receivedDate = receivedDate;
+	}
+
+	public Boolean getCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(Boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 }

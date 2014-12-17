@@ -34,6 +34,10 @@ import com.pj.magic.util.KeyUtil;
 @Component
 public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 
+	private static final int STATUS_NEW = 1;
+	private static final int STATUS_POSTED = 2;
+	private static final int STATUS_CANCELLED = 3;
+	
 	@Autowired private SupplierService supplierService;
 	
 	private MagicTextField receivingReceiptNumberField;
@@ -64,7 +68,8 @@ public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 		supplierComboBox = new MagicComboBox<>();
 		
 		statusComboBox = new MagicComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "Non-Posted", "Posted"}));
+		statusComboBox.setModel(new DefaultComboBoxModel<>(
+				new String[] {"All", "New", "Posted", "Cancelled"}));
 		
 		receivedDateModel = new UtilCalendarModel();
 		
@@ -90,8 +95,17 @@ public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 		
 		searchCriteria.setSupplier((Supplier)supplierComboBox.getSelectedItem());
 		
-		if (statusComboBox.getSelectedIndex() != 0) {
-			searchCriteria.setPosted(statusComboBox.getSelectedIndex() == 2);
+		switch (statusComboBox.getSelectedIndex()) {
+		case STATUS_NEW:
+			searchCriteria.setPosted(false);
+			searchCriteria.setCancelled(false);
+			break;
+		case STATUS_POSTED:
+			searchCriteria.setPosted(true);
+			break;
+		case STATUS_CANCELLED:
+			searchCriteria.setCancelled(true);
+			break;
 		}
 		
 		if (receivedDateModel.getValue() != null) {
@@ -245,7 +259,7 @@ public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 		supplierComboBox.setModel(
 				new DefaultComboBoxModel<>(suppliers.toArray(new Supplier[suppliers.size()])));
 		
-		statusComboBox.setSelectedIndex(1);
+		statusComboBox.setSelectedIndex(STATUS_NEW);
 		
 		receivedDateModel.setValue(null);
 	}

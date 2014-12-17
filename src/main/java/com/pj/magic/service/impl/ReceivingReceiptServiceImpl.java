@@ -63,9 +63,10 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	}
 
 	@Override
-	public List<ReceivingReceipt> getAllNonPostedReceivingReceipts() {
+	public List<ReceivingReceipt> getNewReceivingReceipts() {
 		ReceivingReceiptSearchCriteria criteria = new ReceivingReceiptSearchCriteria();
 		criteria.setPosted(false);
+		criteria.setCancelled(false);
 		
 		return search(criteria);
 	}
