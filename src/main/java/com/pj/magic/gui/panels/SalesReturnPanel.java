@@ -29,8 +29,12 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.SalesReturnItemsTable;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
+import com.pj.magic.model.User;
+import com.pj.magic.service.LoginService;
+import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
@@ -49,6 +53,8 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
+	@Autowired private LoginService loginService;
+	@Autowired private PaymentTerminalService paymentTerminalService;	
 	
 	private SalesReturn salesReturn;
 	private JLabel salesReturnNumberField;
@@ -60,6 +66,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private JButton postButton;
+	private JButton markAsPaidButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
 	private JButton printButton;
@@ -177,6 +184,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		itemsTable.setSalesReturn(salesReturn);
 		
 		postButton.setEnabled(!salesReturn.isPosted());
+		markAsPaidButton.setEnabled(salesReturn.isPosted() && !salesReturn.isPaid());
 		addItemButton.setEnabled(!salesReturn.isPosted());
 		deleteItemButton.setEnabled(!salesReturn.isPosted());
 		printButton.setEnabled(true);
@@ -193,6 +201,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		postedByField.setText(null);
 		itemsTable.setSalesReturn(salesReturn);
 		postButton.setEnabled(false);
+		markAsPaidButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
 		printButton.setEnabled(false);
@@ -393,6 +402,16 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		});
 		toolBar.add(postButton);
 		
+		markAsPaidButton = new MagicToolBarButton("coins", "Mark As Paid");
+		markAsPaidButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				markSalesReturnAsPaid();
+			}
+		});
+		toolBar.add(markAsPaidButton);
+		
 		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {
 			
@@ -413,6 +432,30 @@ public class SalesReturnPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+	}
+
+	private void markSalesReturnAsPaid() {
+		if (!isUserAssignedToPaymentTerminal()) {
+			showErrorMessage("User is not assigned to a payment terminal");
+			return;
+		}
+		
+		if (confirm("Mark Sales Return as paid?")) {
+			try {
+				salesReturnService.markAsPaid(salesReturn);
+				JOptionPane.showMessageDialog(this, "Sales Return marked as paid");
+				updateDisplay(salesReturn);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+			}
+		}
+	}
+
+	private boolean isUserAssignedToPaymentTerminal() {
+		User user = loginService.getLoggedInUser();
+		PaymentTerminalAssignment assignment = paymentTerminalService.findPaymentTerminalAssignment(user);
+		return assignment != null;
 	}
 
 	private void postSalesReturn() {

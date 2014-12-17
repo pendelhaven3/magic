@@ -15,6 +15,10 @@ public class SalesReturn {
 	private boolean posted;
 	private Date postDate;
 	private User postedBy;
+	private boolean paid;
+	private Date paidDate;
+	private User paidBy;
+	private PaymentTerminal paymentTerminal;
 	private List<SalesReturnItem> items = new ArrayList<>();
 
 	public SalesReturn() {
@@ -66,7 +70,13 @@ public class SalesReturn {
 	}
 
 	public String getStatus() {
-		return posted ? "Posted" : "New";
+		if (paid) {
+			return "Paid";
+		} else if (posted) {
+			return "Posted";
+		} else {
+			return "New";
+		}
 	}
 
 	public BigDecimal getTotalAmount() {
@@ -111,6 +121,38 @@ public class SalesReturn {
 	
 	public BigDecimal getTotalNetProfit() {
 		return getTotalAmount().subtract(getTotalNetCost());
+	}
+
+	public boolean isPaid() {
+		return paid;
+	}
+
+	public void setPaid(boolean paid) {
+		this.paid = paid;
+	}
+
+	public Date getPaidDate() {
+		return paidDate;
+	}
+
+	public void setPaidDate(Date paidDate) {
+		this.paidDate = paidDate;
+	}
+
+	public User getPaidBy() {
+		return paidBy;
+	}
+
+	public void setPaidBy(User paidBy) {
+		this.paidBy = paidBy;
+	}
+
+	public PaymentTerminal getPaymentTerminal() {
+		return paymentTerminal;
+	}
+
+	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
+		this.paymentTerminal = paymentTerminal;
 	}
 	
 }

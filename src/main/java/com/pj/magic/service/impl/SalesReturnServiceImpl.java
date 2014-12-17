@@ -8,14 +8,17 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.dao.SalesReturnItemDao;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.SalesReturnItem;
+import com.pj.magic.model.User;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.SalesInvoiceService;
@@ -29,6 +32,7 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private ProductDao productDao;
 	@Autowired private LoginService loginService;
+	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	
 	@Override
 	public List<SalesReturn> getNewSalesReturns() {
@@ -114,6 +118,23 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		criteria.setSalesInvoice(salesInvoice);
 		
 		return search(criteria);
+	}
+
+	@Transactional
+	@Override
+	public void markAsPaid(SalesReturn salesReturn) {
+		User user = loginService.getLoggedInUser();
+		PaymentTerminalAssignment paymentTerminalAssignment = paymentTerminalAssignmentDao.findByUser(user);
+		if (paymentTerminalAssignment == null) {
+			throw new RuntimeException("User " + user.getUsername() + " is not assigned to payment terminal");
+		}
+		
+		SalesReturn updated = salesReturnDao.get(salesReturn.getId());
+		updated.setPaid(true);
+		updated.setPaidDate(new Date());
+		updated.setPaidBy(loginService.getLoggedInUser());
+		updated.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+		salesReturnDao.save(updated);
 	}
 
 }

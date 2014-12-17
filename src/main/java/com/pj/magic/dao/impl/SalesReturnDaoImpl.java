@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.User;
@@ -31,15 +32,22 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 	
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, SALES_RETURN_NO, SALES_INVOICE_ID, b.SALES_INVOICE_NO, a.POST_IND, a.POST_DT, a.POST_BY,"
+			+ " PAID_IND, PAID_BY, PAID_DT,"
 			+ " b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME,"
-			+ " d.USERNAME as POST_BY_USERNAME"
+			+ " d.USERNAME as POST_BY_USERNAME,"
+			+ " e.USERNAME as PAID_BY_USERNAME,"
+			+ " a.PAYMENT_TERMINAL_ID, f.NAME as PAYMENT_TERMINAL_NAME"
 			+ " from SALES_RETURN a"
 			+ " join SALES_INVOICE b"
 			+ "   on b.ID = a.SALES_INVOICE_ID"
 			+ " join CUSTOMER c"
 			+ "   on c.ID = b.CUSTOMER_ID"
 			+ " left join USER d"
-			+ "   on d.ID = a.POST_BY";
+			+ "   on d.ID = a.POST_BY"
+			+ " left join USER e"
+			+ "   on e.ID = a.PAID_BY"
+			+ " left join PAYMENT_TERMINAL f"
+			+ "   on f.ID = a.PAYMENT_TERMINAL_ID";
 	
 	private SalesReturnRowMapper salesReturnRowMapper = new SalesReturnRowMapper();
 	
@@ -51,7 +59,6 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			salesReturn.setId(rs.getLong("ID"));
 			salesReturn.setSalesReturnNumber(rs.getLong("SALES_RETURN_NO"));
 			
-			
 			SalesInvoice salesInvoice = new SalesInvoice();
 			salesInvoice.setId(rs.getLong("SALES_INVOICE_ID"));
 			salesInvoice.setSalesInvoiceNumber(rs.getLong("SALES_INVOICE_NO"));
@@ -59,10 +66,17 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			salesReturn.setSalesInvoice(salesInvoice);
 			
 			salesReturn.setPosted("Y".equals(rs.getString("POST_IND")));
-			salesReturn.setPostDate(rs.getTimestamp("POST_DT"));
-			
-			if (rs.getLong("POST_BY") != 0) {
+			if (salesReturn.isPosted()) {
+				salesReturn.setPostDate(rs.getTimestamp("POST_DT"));
 				salesReturn.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			}
+			
+			salesReturn.setPaid("Y".equals(rs.getString("PAID_IND")));
+			if (salesReturn.isPaid()) {
+				salesReturn.setPaidDate(rs.getTimestamp("PAID_DT"));
+				salesReturn.setPaidBy(new User(rs.getLong("PAID_BY"), rs.getString("PAID_BY_USERNAME")));
+				salesReturn.setPaymentTerminal(new PaymentTerminal(
+						rs.getLong("PAYMENT_TERMINAL_ID"), rs.getString("PAYMENT_TERMINAL_NAME")));
 			}
 			
 			return salesReturn;
@@ -80,14 +94,19 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 	}
 
 	private static final String UPDATE_SQL =
-			"update SALES_RETURN set SALES_INVOICE_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+			"update SALES_RETURN set SALES_INVOICE_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
+			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ? where ID = ?";
 	
 	private void update(SalesReturn salesReturn) {
 		getJdbcTemplate().update(UPDATE_SQL,
 				salesReturn.getSalesInvoice().getId(),
 				salesReturn.isPosted() ? "Y" : "N",
-				salesReturn.getPostDate(),
+				salesReturn.isPosted() ? salesReturn.getPostDate() : null,
 				salesReturn.isPosted() ? salesReturn.getPostedBy().getId() : null,
+				salesReturn.isPaid() ? "Y" : "N",
+				salesReturn.isPaid() ? salesReturn.getPaidDate() : null,
+				salesReturn.isPaid() ? salesReturn.getPaidBy().getId() : null,
+				salesReturn.isPaid() ? salesReturn.getPaymentTerminal().getId() : null,
 				salesReturn.getId());
 	}
 	
@@ -184,7 +203,7 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			params.add(criteria.getPayment().getId());
 		}
 		
-		sql.append(" order by SALES_RETURN_NO");
+		sql.append(" order by SALES_RETURN_NO desc");
 		
 		return getJdbcTemplate().query(sql.toString(), salesReturnRowMapper, params.toArray());
 	}
