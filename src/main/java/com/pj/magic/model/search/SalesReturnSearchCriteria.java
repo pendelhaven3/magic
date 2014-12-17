@@ -14,6 +14,7 @@ public class SalesReturnSearchCriteria {
 	private Date postDate;
 	private Date postDateFrom;
 	private Date postDateTo;
+	private Boolean paid;
 	private SalesInvoice salesInvoice;
 	private Payment payment;
 
@@ -79,6 +80,14 @@ public class SalesReturnSearchCriteria {
 
 	public void setPayment(Payment payment) {
 		this.payment = payment;
+	}
+
+	public Boolean getPaid() {
+		return paid;
+	}
+
+	public void setPaid(Boolean paid) {
+		this.paid = paid;
 	}
 
 }

@@ -23,10 +23,12 @@ import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PaymentTerminalAssignment;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
+import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.SalesReturnService;
@@ -73,7 +75,7 @@ public class PaymentServiceImpl implements PaymentService {
 					salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice.getSalesInvoice()));
 			if (payment.isNew()) {
 				salesInvoice.setSalesReturns(
-						salesReturnService.findPostedSalesReturnsBySalesInvoice(salesInvoice.getSalesInvoice()));
+						findPostedSalesReturnsBySalesInvoice(salesInvoice.getSalesInvoice()));
 			} else {
 				salesInvoice.setSalesReturns(
 						salesReturnService.findAllPaymentSalesReturns(payment, salesInvoice.getSalesInvoice()));
@@ -82,6 +84,15 @@ public class PaymentServiceImpl implements PaymentService {
 		payment.setCashPayments(paymentCashPaymentDao.findAllByPayment(payment));
 		payment.setCheckPayments(paymentCheckPaymentDao.findAllByPayment(payment));
 		payment.setAdjustments(paymentAdjustmentDao.findAllByPayment(payment));
+	}
+
+	private List<SalesReturn> findPostedSalesReturnsBySalesInvoice(SalesInvoice salesInvoice) {
+		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
+		criteria.setSalesInvoice(salesInvoice);
+		criteria.setPosted(true);
+		criteria.setPaid(false);
+		
+		return salesReturnService.search(criteria);
 	}
 
 	@Override
@@ -169,6 +180,12 @@ public class PaymentServiceImpl implements PaymentService {
 		for (PaymentSalesInvoice salesInvoice : updated.getSalesInvoices()) {
 			for (SalesReturn salesReturn : salesInvoice.getSalesReturns()) {
 				salesReturnDao.savePaymentSalesReturn(updated, salesReturn);
+				
+				salesReturn.setPaid(true);
+				salesReturn.setPaidDate(new Date());
+				salesReturn.setPaidBy(loginService.getLoggedInUser());
+				salesReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+				salesReturnDao.save(salesReturn);
 			}
 		}
 	}

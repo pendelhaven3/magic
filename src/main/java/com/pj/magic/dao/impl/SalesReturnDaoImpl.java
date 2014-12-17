@@ -203,6 +203,11 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			params.add(criteria.getPayment().getId());
 		}
 		
+		if (criteria.getPaid() != null) {
+			sql.append(" and a.PAID_IND = ?");
+			params.add(criteria.getPaid() ? "Y" : "N");
+		}
+		
 		sql.append(" order by SALES_RETURN_NO desc");
 		
 		return getJdbcTemplate().query(sql.toString(), salesReturnRowMapper, params.toArray());
