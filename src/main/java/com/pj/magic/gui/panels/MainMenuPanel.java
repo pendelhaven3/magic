@@ -236,7 +236,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			int index = rowIndex + columnIndex * 6; // * rowCount
+			int index = rowIndex + columnIndex * getRowCount(); // * rowCount
 			if (index < menuItems.size()) {
 				return menuItems.get(index);
 			} else {
