@@ -12,6 +12,7 @@ public class StockQuantityConversion {
 	private List<StockQuantityConversionItem> items = new ArrayList<>();
 	private boolean posted;
 	private Date postDate;
+	private User postedBy;
 
 	public StockQuantityConversion() {
 		// default constructor
@@ -75,6 +76,18 @@ public class StockQuantityConversion {
 
 	public void setPostDate(Date postDate) {
 		this.postDate = postDate;
+	}
+
+	public String getStatus() {
+		return posted ? "Yes" : "No";
+	}
+
+	public User getPostedBy() {
+		return postedBy;
+	}
+
+	public void setPostedBy(User postedBy) {
+		this.postedBy = postedBy;
 	}
 
 }

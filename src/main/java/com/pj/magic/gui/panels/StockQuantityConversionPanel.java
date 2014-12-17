@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -59,6 +60,9 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 	private StockQuantityConversion stockQuantityConversion;
 	private JLabel stockQuantityConversionNumberField;
 	private JTextField remarksField;
+	private JLabel postedField;
+	private JLabel postDateField;
+	private JLabel postedByField;
 	private JLabel totalItemsField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	private JButton postButton;
@@ -66,6 +70,9 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 	@Override
 	protected void initializeComponents() {
 		stockQuantityConversionNumberField = new JLabel();
+		postedField = new JLabel();
+		postDateField = new JLabel();
+		postedByField = new JLabel();
 		remarksField = new MagicTextField();
 		
 		focusOnComponentWhenThisPanelIsDisplayed(remarksField);
@@ -114,10 +121,15 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay(StockQuantityConversion stockQuantityConversion) {
-		this.stockQuantityConversion = stockQuantityConversionService.getStockQuantityConversion(stockQuantityConversion.getId());
-		stockQuantityConversion = this.stockQuantityConversion;
+		this.stockQuantityConversion = stockQuantityConversion
+				= stockQuantityConversionService.getStockQuantityConversion(stockQuantityConversion.getId());
 		
 		stockQuantityConversionNumberField.setText(stockQuantityConversion.getStockQuantityConversionNumber().toString());
+		postedField.setText(stockQuantityConversion.getStatus());
+		postDateField.setText(stockQuantityConversion.isPosted() ?
+				FormatterUtil.formatDate(stockQuantityConversion.getPostDate()) : null);
+		postedByField.setText(stockQuantityConversion.isPosted() ?
+				stockQuantityConversion.getPostedBy().getUsername() : null);
 		remarksField.setText(stockQuantityConversion.getRemarks());
 		totalItemsField.setText(String.valueOf(stockQuantityConversion.getTotalNumberOfItems()));
 		itemsTable.setStockQuantityConversion(stockQuantityConversion);
@@ -153,19 +165,24 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		stockQuantityConversionNumberField = ComponentUtil.createLabel(200, "");
 		mainPanel.add(stockQuantityConversionNumberField, c);
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(100, 1), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
 		
-		c.weightx = 1.0;
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(150, 1), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Posted:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postedField.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(postedField, c);
 		
 		currentRow++;
 		
@@ -182,6 +199,34 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		remarksField.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(remarksField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Post Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postDateField.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(postDateField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Posted By:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postedByField.setPreferredSize(new Dimension(120, 20));
+		mainPanel.add(postedByField, c);
 		
 		currentRow++;
 		
@@ -207,7 +252,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 5;
+		c.gridwidth = 6;
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
@@ -219,7 +264,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 5;
+		c.gridwidth = 6;
 		c.anchor = GridBagConstraints.CENTER;
 		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
 		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
@@ -230,7 +275,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 5;
+		c.gridwidth = 6;
 		c.anchor = GridBagConstraints.EAST;
 		mainPanel.add(createTotalsPanel(), c);
 	}

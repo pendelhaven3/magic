@@ -252,8 +252,10 @@ create table STOCK_QTY_CONVERSION (
   REMARKS varchar(100) null,
   POST_IND char(1) default 'N' not null,
   POST_DATE date null,
+  POST_BY integer null,
   constraint STOCK_QTY_CONVERSION$PK primary key (ID),
-  constraint STOCK_QTY_CONVERSION$UK unique (STOCK_QTY_CONV_NO)
+  constraint STOCK_QTY_CONVERSION$UK unique (STOCK_QTY_CONV_NO),
+  constraint STOCK_QTY_CONVERSION$FK foreign key (POST_BY) references USER (ID)
 );
 
 create table STOCK_QTY_CONVERSION_ITEM (

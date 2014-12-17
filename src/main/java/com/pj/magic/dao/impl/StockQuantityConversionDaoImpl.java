@@ -17,13 +17,18 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.model.StockQuantityConversion;
+import com.pj.magic.model.User;
 import com.pj.magic.model.search.StockQuantityConversionSearchCriteria;
 
 @Repository
 public class StockQuantityConversionDaoImpl extends MagicDao implements StockQuantityConversionDao {
 	
 	private static final String BASE_SELECT_SQL = 
-			"select ID, STOCK_QTY_CONV_NO, REMARKS, POST_IND, POST_DATE from STOCK_QTY_CONVERSION";
+			"select a.ID, STOCK_QTY_CONV_NO, REMARKS, POST_IND, POST_DATE, POST_BY,"
+			+ " b.USERNAME as POST_BY_USERNAME"
+			+ " from STOCK_QTY_CONVERSION a"
+			+ " left join USER b"
+			+ "   on b.ID = a.POST_BY";
 	
 	private static final String STOCK_QUANTITY_CONVERSION_NUMBER_SEQUENCE = "STOCK_QTY_CONV_NO_SEQ";
 	
@@ -65,17 +70,18 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 	}
 
 	private static final String UPDATE_SQL = "update STOCK_QTY_CONVERSION"
-			+ " set REMARKS = ?, POST_IND = ?, POST_DATE = ? where ID = ?";
+			+ " set REMARKS = ?, POST_IND = ?, POST_DATE = ?, POST_BY = ? where ID = ?";
 	
 	private void update(StockQuantityConversion stockQuantityConversion) {
 		getJdbcTemplate().update(UPDATE_SQL, 
 				stockQuantityConversion.getRemarks(),
 				stockQuantityConversion.isPosted() ? "Y" : "N",
 				stockQuantityConversion.getPostDate(),
+				stockQuantityConversion.isPosted() ? stockQuantityConversion.getPostedBy().getId() : null,
 				stockQuantityConversion.getId());
 	}
 
-	private static final String GET_SQL = BASE_SELECT_SQL + " where id = ?";
+	private static final String GET_SQL = BASE_SELECT_SQL + " where a.ID = ?";
 	
 	@Override
 	public StockQuantityConversion get(long id) {
@@ -86,7 +92,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		}
 	}
 
-	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by POST_IND asc, POST_DATE desc, ID desc";
+	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by POST_IND asc, POST_DATE desc, a.ID desc";
 	
 	@Override
 	public List<StockQuantityConversion> getAll() {
@@ -102,7 +108,11 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 			stockQuantityConversion.setStockQuantityConversionNumber(rs.getLong("STOCK_QTY_CONV_NO"));
 			stockQuantityConversion.setRemarks(rs.getString("REMARKS"));
 			stockQuantityConversion.setPosted("Y".equals(rs.getString("POST_IND")));
-			stockQuantityConversion.setPostDate(rs.getDate("POST_DATE"));
+			if (stockQuantityConversion.isPosted()) {
+				stockQuantityConversion.setPostDate(rs.getDate("POST_DATE"));
+				stockQuantityConversion.setPostedBy(
+						new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			}
 			return stockQuantityConversion;
 		}
 		
