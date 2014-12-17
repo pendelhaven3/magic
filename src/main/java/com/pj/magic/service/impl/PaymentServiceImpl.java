@@ -188,6 +188,21 @@ public class PaymentServiceImpl implements PaymentService {
 				salesReturnDao.save(salesReturn);
 			}
 		}
+		
+		for (PaymentAdjustment adjustment : updated.getAdjustments()) {
+			if ("SALES RETURN".equals(adjustment.getAdjustmentType())) {
+				SalesReturn salesReturn = salesReturnDao.findBySalesReturnNumber(Long.valueOf(adjustment.getReferenceNumber()));
+				if (salesReturn.isPaid()) {
+					throw new RuntimeException("Sales Return " + salesReturn.getSalesReturnNumber() + " is already paid");
+				}
+				
+				salesReturn.setPaid(true);
+				salesReturn.setPaidDate(new Date());
+				salesReturn.setPaidBy(loginService.getLoggedInUser());
+				salesReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+				salesReturnDao.save(salesReturn);
+			}
+		}
 	}
 
 	@Override
