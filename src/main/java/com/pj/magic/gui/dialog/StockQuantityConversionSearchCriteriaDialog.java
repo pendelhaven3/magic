@@ -13,8 +13,15 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 
-import org.springframework.stereotype.Component;
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.pj.magic.gui.component.DatePickerFormatter;
+import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.search.StockQuantityConversionSearchCriteria;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
@@ -22,12 +29,14 @@ import com.pj.magic.util.KeyUtil;
 @Component
 public class StockQuantityConversionSearchCriteriaDialog extends MagicDialog {
 
+	private MagicTextField stockQuantityConversionNumberField;
 	private JComboBox<String> statusComboBox;
+	private UtilCalendarModel postDateModel;
 	private JButton searchButton;
 	private StockQuantityConversionSearchCriteria searchCriteria;
 	
 	public StockQuantityConversionSearchCriteriaDialog() {
-		setSize(350, 160);
+		setSize(360, 190);
 		setLocationRelativeTo(null);
 		setTitle("Search Stock Quantity Conversions");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
@@ -41,8 +50,14 @@ public class StockQuantityConversionSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
+		stockQuantityConversionNumberField = new MagicTextField();
+		stockQuantityConversionNumberField.setNumbersOnly(true);
+		stockQuantityConversionNumberField.setMaximumLength(10);
+		
 		statusComboBox = new JComboBox<>();
 		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "Not Posted", "Posted"}));
+		
+		postDateModel = new UtilCalendarModel();
 		
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ActionListener() {
@@ -58,6 +73,10 @@ public class StockQuantityConversionSearchCriteriaDialog extends MagicDialog {
 
 	private void saveStockQuantityConversionCriteria() {
 		searchCriteria = new StockQuantityConversionSearchCriteria();
+		if (!StringUtils.isEmpty(stockQuantityConversionNumberField.getText())) {
+			searchCriteria
+				.setStockQuantityConversionNumber(Long.valueOf(stockQuantityConversionNumberField.getText()));
+		}
 		
 		if (statusComboBox.getSelectedIndex() != 0) {
 			switch (statusComboBox.getSelectedIndex()) {
@@ -68,6 +87,10 @@ public class StockQuantityConversionSearchCriteriaDialog extends MagicDialog {
 				searchCriteria.setPosted(true);
 				break;
 			}
+		}
+		
+		if (postDateModel.getValue() != null) {
+			searchCriteria.setPostDate(postDateModel.getValue().getTime());
 		}
 		
 		setVisible(false);
@@ -107,6 +130,22 @@ public class StockQuantityConversionSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(100, "SQC No.:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		stockQuantityConversionNumberField.setPreferredSize(new Dimension(100, 25));
+		add(stockQuantityConversionNumberField, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
 		add(ComponentUtil.createLabel(80, "Status:"), c);
 
 		c = new GridBagConstraints();
@@ -117,6 +156,24 @@ public class StockQuantityConversionSearchCriteriaDialog extends MagicDialog {
 		statusComboBox.setPreferredSize(new Dimension(150, 25));
 		add(statusComboBox, c);
 
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(80, "Post Date:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePanelImpl datePanel = new JDatePanelImpl(postDateModel);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		add(datePicker, c);
+		
 		currentRow++;
 		
 		c = new GridBagConstraints();
@@ -151,7 +208,9 @@ public class StockQuantityConversionSearchCriteriaDialog extends MagicDialog {
 	
 	public void updateDisplay() {
 		searchCriteria = null;
+		stockQuantityConversionNumberField.setText(null);
 		statusComboBox.setSelectedIndex(1);
+		postDateModel.setValue(null);
 	}
 	
 }

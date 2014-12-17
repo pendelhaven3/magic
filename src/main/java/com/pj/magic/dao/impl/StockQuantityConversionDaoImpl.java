@@ -19,6 +19,7 @@ import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.StockQuantityConversionSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class StockQuantityConversionDaoImpl extends MagicDao implements StockQuantityConversionDao {
@@ -132,9 +133,19 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		StringBuilder sb = new StringBuilder(BASE_SELECT_SQL);
 		sb.append(" where 1 = 1");
 		
+		if (criteria.getStockQuantityConversionNumber() != null) {
+			sb.append(" and STOCK_QTY_CONV_NO = ?");
+			params.add(criteria.getStockQuantityConversionNumber());
+		}
+		
 		if (criteria.getPosted() != null) {
 			sb.append(" and POST_IND = ?");
 			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		if (criteria.getPostDate() != null) {
+			sb.append(" and POST_DATE = ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 		}
 		
 		sb.append(" order by STOCK_QTY_CONV_NO desc");
