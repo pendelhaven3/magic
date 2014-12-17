@@ -9,11 +9,12 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.AdjustmentOutsTable;
 import com.pj.magic.model.AdjustmentOut;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class AdjustmentOutsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"Adj. Out No.", "Remarks", "Posted"};
+	private static final String[] COLUMN_NAMES = {"Adj. Out No.", "Remarks", "Posted", "Post Date"};
 	
 	private List<AdjustmentOut> adjustmentOuts = new ArrayList<>();
 	
@@ -37,6 +38,8 @@ public class AdjustmentOutsTableModel extends AbstractTableModel {
 			return adjustmentOut.getRemarks();
 		case AdjustmentOutsTable.POSTED_COLUMN_INDEX:
 			return adjustmentOut.isPosted() ? "Yes" : "No";
+		case AdjustmentOutsTable.POST_DATE_COLUMN_INDEX:
+			return adjustmentOut.isPosted() ? FormatterUtil.formatDate(adjustmentOut.getPostDate()) : null;
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}

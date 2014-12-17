@@ -19,6 +19,7 @@ import com.pj.magic.dao.AdjustmentInDao;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.AdjustmentInSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
@@ -139,6 +140,11 @@ public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 		if (criteria.getPosted() != null) {
 			sb.append(" and POST_IND = ?");
 			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+
+		if (criteria.getPostDate() != null) {
+			sb.append(" and POST_DT = ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 		}
 		
 		sb.append(" order by ADJUSTMENT_IN_NO desc");

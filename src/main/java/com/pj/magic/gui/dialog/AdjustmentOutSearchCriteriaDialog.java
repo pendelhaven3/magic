@@ -13,9 +13,14 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.search.AdjustmentOutSearchCriteria;
 import com.pj.magic.util.ComponentUtil;
@@ -26,11 +31,12 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 
 	private MagicTextField adjustmentOutNumberField;
 	private JComboBox<String> statusComboBox;
+	private UtilCalendarModel postDateModel;
 	private JButton searchButton;
 	private AdjustmentOutSearchCriteria searchCriteria;
 	
 	public AdjustmentOutSearchCriteriaDialog() {
-		setSize(400, 160);
+		setSize(400, 190);
 		setLocationRelativeTo(null);
 		setTitle("Search Adjustment Outs");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
@@ -50,6 +56,8 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 		
 		statusComboBox = new JComboBox<>();
 		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "Not Posted", "Posted"}));
+		
+		postDateModel = new UtilCalendarModel();
 		
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ActionListener() {
@@ -78,6 +86,10 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 				searchCriteria.setPosted(true);
 				break;
 			}
+		}
+		
+		if (postDateModel.getValue() != null) {
+			searchCriteria.setPostDate(postDateModel.getValue().getTime());
 		}
 		
 		setVisible(false);
@@ -156,6 +168,24 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(140, "Post Date:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePanelImpl datePanel = new JDatePanelImpl(postDateModel);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		add(datePicker, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
 		add(ComponentUtil.createVerticalFiller(10), c);
 		
 		currentRow++;
@@ -187,6 +217,7 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 		searchCriteria = null;
 		adjustmentOutNumberField.setText(null);
 		statusComboBox.setSelectedIndex(1);
+		postDateModel.setValue(null);
 	}
 	
 }

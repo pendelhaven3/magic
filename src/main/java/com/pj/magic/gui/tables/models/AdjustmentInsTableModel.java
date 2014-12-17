@@ -9,11 +9,12 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.AdjustmentInsTable;
 import com.pj.magic.model.AdjustmentIn;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class AdjustmentInsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"Adj. In No.", "Remarks", "Posted"};
+	private static final String[] COLUMN_NAMES = {"Adj. In No.", "Remarks", "Posted", "Post Date"};
 	
 	private List<AdjustmentIn> adjustmentIns = new ArrayList<>();
 	
@@ -37,6 +38,8 @@ public class AdjustmentInsTableModel extends AbstractTableModel {
 			return adjustmentIn.getRemarks();
 		case AdjustmentInsTable.POSTED_COLUMN_INDEX:
 			return adjustmentIn.isPosted() ? "Yes" : "No";
+		case AdjustmentInsTable.POST_DATE_COLUMN_INDEX:
+			return adjustmentIn.isPosted() ? FormatterUtil.formatDate(adjustmentIn.getPostDate()) : null;
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}

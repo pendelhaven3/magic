@@ -26,6 +26,8 @@ public class AdjustmentOutsTable extends MagicListTable {
 	public static final int ADJUSTMENT_OUT_NUMBER_COLUMN_INDEX = 0;
 	public static final int REMARKS_COLUMN_INDEX = 1;
 	public static final int POSTED_COLUMN_INDEX = 2;
+	public static final int POST_DATE_COLUMN_INDEX = 3;
+	
 	private static final String GO_TO_ADJUSTMENT_OUT_ACTION_NAME = "goToAdjustmentOut";
 	private static final String DELETE_ADJUSTMENT_OUT_ACTION_NAME = "deleteAdjustmentOut";
 
