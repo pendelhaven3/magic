@@ -5,24 +5,28 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
-import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.AmountCellEditor;
+import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.RequiredFieldCellEditor;
 import com.pj.magic.gui.tables.models.PaymentAdjustmentsTableModel;
 import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.SalesReturn;
+import com.pj.magic.service.SalesReturnService;
 
 @Component
 public class PaymentAdjustmentsTable extends MagicTable {
@@ -35,6 +39,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	private static final String F10_ACTION_NAME = "F10";
 
 	@Autowired private PaymentAdjustmentsTableModel tableModel;
+	@Autowired private SalesReturnService salesReturnService;
 	
 	private Payment payment;
 	
@@ -54,8 +59,9 @@ public class PaymentAdjustmentsTable extends MagicTable {
 
 		MagicTextField referenceNumberTextField = new MagicTextField();
 		referenceNumberTextField.setMaximumLength(20);
+		referenceNumberTextField.setNumbersOnly(true);
 		columnModel.getColumn(REFERENCE_NUMBER_COLUMN_INDEX)
-			.setCellEditor(new DefaultCellEditor(referenceNumberTextField));
+			.setCellEditor(new ReferenceNumberCellEditor(referenceNumberTextField));
 		
 		MagicTextField amountTextField = new MagicTextField();
 		amountTextField.setMaximumLength(12);
@@ -201,6 +207,41 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	public void clearDisplay() {
 		payment = null;
 		tableModel.setPayment(null);
+	}
+	
+	public class ReferenceNumberCellEditor extends MagicCellEditor {
+
+		public ReferenceNumberCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			PaymentAdjustmentRowItem rowItem = getCurrentlySelectedRowItem();
+			if (!"SALES RETURN".equals(rowItem.getAdjustmentType())) {
+				return super.stopCellEditing();
+			}
+			
+			String referenceNumber = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(referenceNumber)) {
+				showErrorMessage("Sales Return reference number must be specified");
+			} else {
+				SalesReturn salesReturn = salesReturnService
+						.findSalesReturnBySalesReturnNumber(Long.parseLong(referenceNumber));
+				if (salesReturn == null) {
+					showErrorMessage("Sales Return does not exist");
+				} else if (salesReturn.isPaid()) {
+					showErrorMessage("Sales Return is already paid");
+				} else if (!salesReturn.isPosted()) {
+					showErrorMessage("Sales Return is not yet posted");
+				} else {
+					valid = true;
+				}
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+
 	}
 	
 }

@@ -29,5 +29,7 @@ public interface SalesReturnService {
 	List<SalesReturn> findAllPaymentSalesReturns(Payment payment, SalesInvoice salesInvoice);
 
 	void markAsPaid(SalesReturn salesReturn);
+
+	SalesReturn findSalesReturnBySalesReturnNumber(long salesReturnNumber);
 	
 }

@@ -220,5 +220,18 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 	public void savePaymentSalesReturn(Payment payment, SalesReturn salesReturn) {
 		getJdbcTemplate().update(SAVE_PAYMENT_SALES_RETURN_SQL, payment.getId(), salesReturn.getId());
 	}
+
+	private static final String FIND_BY_SALES_RETURN_NUMBER_SQL = BASE_SELECT_SQL 
+			+ " where a.SALES_RETURN_NO = ?";
+	
+	@Override
+	public SalesReturn findBySalesReturnNumber(long salesReturnNumber) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_SALES_RETURN_NUMBER_SQL, salesReturnRowMapper, 
+					salesReturnNumber);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
 	
 }

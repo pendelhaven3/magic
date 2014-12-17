@@ -59,8 +59,10 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 	@Override
 	public SalesReturn getSalesReturn(long id) {
 		SalesReturn salesReturn = salesReturnDao.get(id);
-		salesReturn.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
-		salesReturn.setSalesInvoice(salesInvoiceService.get(salesReturn.getSalesInvoice().getId()));
+		if (salesReturn != null) {
+			salesReturn.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
+			salesReturn.setSalesInvoice(salesInvoiceService.get(salesReturn.getSalesInvoice().getId()));
+		}
 		return salesReturn;
 	}
 
@@ -135,6 +137,16 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		updated.setPaidBy(loginService.getLoggedInUser());
 		updated.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 		salesReturnDao.save(updated);
+	}
+
+	@Override
+	public SalesReturn findSalesReturnBySalesReturnNumber(long salesReturnNumber) {
+		SalesReturn salesReturn = salesReturnDao.findBySalesReturnNumber(salesReturnNumber);
+		if (salesReturn != null) {
+			salesReturn.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
+			salesReturn.setSalesInvoice(salesInvoiceService.get(salesReturn.getSalesInvoice().getId()));
+		}
+		return salesReturn;
 	}
 
 }

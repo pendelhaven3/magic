@@ -15,5 +15,7 @@ public interface SalesReturnDao {
 	List<SalesReturn> search(SalesReturnSearchCriteria criteria);
 	
 	void savePaymentSalesReturn(Payment payment, SalesReturn salesReturn);
+
+	SalesReturn findBySalesReturnNumber(long salesReturnNumber);
 	
 }

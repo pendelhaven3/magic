@@ -14,7 +14,9 @@ import com.pj.magic.gui.tables.PaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.SalesReturn;
 import com.pj.magic.service.PaymentService;
+import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.NumberUtil;
 
@@ -24,6 +26,7 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 	private static final String[] columnNames = {"Adjustment Type", "Reference No.", "Amount"};
 	
 	@Autowired private PaymentService paymentService;
+	@Autowired private SalesReturnService salesReturnService;
 	
 	private List<PaymentAdjustmentRowItem> rowItems = new ArrayList<>();
 	private Payment payment;
@@ -85,11 +88,20 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 			if (val.equals(rowItem.getReferenceNumber())) {
 				return;
 			}
+			
 			if (!StringUtils.isEmpty(val)) {
 				rowItem.setReferenceNumber(val);
+				
+				if ("SALES RETURN".equals(rowItem.getAdjustmentType())) {
+					SalesReturn salesReturn = salesReturnService
+							.findSalesReturnBySalesReturnNumber(Long.parseLong(val));
+					rowItem.setAmount(salesReturn.getTotalAmount());
+					columnIndex = PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX;
+				}
 			} else {
 				rowItem.setReferenceNumber(null);
 			}
+			
 			break;
 		case PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX:
 			String amount = (String)value;
