@@ -24,6 +24,7 @@ import com.pj.magic.gui.panels.AreaListPanel;
 import com.pj.magic.gui.panels.BackupDataPanel;
 import com.pj.magic.gui.panels.BadStockReturnListPanel;
 import com.pj.magic.gui.panels.BadStockReturnPanel;
+import com.pj.magic.gui.panels.CashFlowReportPanel;
 import com.pj.magic.gui.panels.ChangePasswordPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
@@ -178,6 +179,7 @@ public class MagicFrame extends JFrame {
 	private static final String ADMIN_MENU_PANEL = "ADMIN_MENU_PANEL";
 	private static final String BAD_STOCK_RETURN_LIST_PANEL = "BAD_STOCK_RETURN_LIST_PANEL";
 	private static final String BAD_STOCK_RETURN_PANEL = "BAD_STOCK_RETURN_PANEL";
+	private static final String CASH_FLOW_REPORT_PANEL = "CASH_FLOW_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -243,6 +245,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private AdminMenuPanel adminMenuPanel;
 	@Autowired private BadStockReturnListPanel badStockReturnListPanel;
 	@Autowired private BadStockReturnPanel badStockReturnPanel;
+	@Autowired private CashFlowReportPanel cashFlowReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -355,6 +358,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(adminMenuPanel, ADMIN_MENU_PANEL);
 		panelHolder.add(badStockReturnListPanel, BAD_STOCK_RETURN_LIST_PANEL);
 		panelHolder.add(badStockReturnPanel, BAD_STOCK_RETURN_PANEL);
+		panelHolder.add(cashFlowReportPanel, CASH_FLOW_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -846,6 +850,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Bad Stock Return");
 		badStockReturnPanel.updateDisplay(badStockReturn);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_RETURN_PANEL);
+	}
+
+	public void switchToCashFlowReportPanel() {
+		addPanelNameToTitle("Cash Flow Report");
+		cashFlowReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, CASH_FLOW_REPORT_PANEL);
 	}
 
 }

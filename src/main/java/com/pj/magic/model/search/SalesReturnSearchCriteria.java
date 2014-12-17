@@ -4,7 +4,9 @@ import java.util.Date;
 
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.util.TimePeriod;
 
 public class SalesReturnSearchCriteria {
 
@@ -15,8 +17,11 @@ public class SalesReturnSearchCriteria {
 	private Date postDateFrom;
 	private Date postDateTo;
 	private Boolean paid;
+	private Date paidDate;
+	private TimePeriod timePeriod;
 	private SalesInvoice salesInvoice;
 	private Payment payment;
+	private PaymentTerminal paymentTerminal;
 
 	public Long getSalesReturnNumber() {
 		return salesReturnNumber;
@@ -88,6 +93,30 @@ public class SalesReturnSearchCriteria {
 
 	public void setPaid(Boolean paid) {
 		this.paid = paid;
+	}
+
+	public Date getPaidDate() {
+		return paidDate;
+	}
+
+	public void setPaidDate(Date paidDate) {
+		this.paidDate = paidDate;
+	}
+
+	public TimePeriod getTimePeriod() {
+		return timePeriod;
+	}
+
+	public void setTimePeriod(TimePeriod timePeriod) {
+		this.timePeriod = timePeriod;
+	}
+
+	public PaymentTerminal getPaymentTerminal() {
+		return paymentTerminal;
+	}
+
+	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
+		this.paymentTerminal = paymentTerminal;
 	}
 
 }

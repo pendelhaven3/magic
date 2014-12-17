@@ -1,0 +1,97 @@
+package com.pj.magic.model.report;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentSalesInvoice;
+import com.pj.magic.model.PaymentTerminal;
+import com.pj.magic.model.SalesReturn;
+
+public class CashFlowReportItem {
+
+	private Date time;
+	private String transactionType;
+	private Long referenceNumber;
+	private Customer customer;
+	private BigDecimal amount;
+	private Long paymentNumber;
+	private PaymentTerminal paymentTerminal;
+
+	public CashFlowReportItem(PaymentSalesInvoice paymentSalesInvoice) {
+		time = paymentSalesInvoice.getParent().getPostDate();
+		transactionType = "SALES INVOICE";
+		referenceNumber = paymentSalesInvoice.getSalesInvoice().getSalesInvoiceNumber();
+		customer = paymentSalesInvoice.getSalesInvoice().getCustomer();
+		amount = paymentSalesInvoice.getSalesInvoice().getTotalNetAmount();
+		paymentNumber = paymentSalesInvoice.getParent().getPaymentNumber();
+		paymentTerminal = paymentSalesInvoice.getParent().getPaymentTerminal();
+	}
+	
+	public CashFlowReportItem(SalesReturn salesReturn) {
+		time = salesReturn.getPaidDate();
+		transactionType = "SALES RETURN";
+		referenceNumber = salesReturn.getSalesReturnNumber();
+		customer = salesReturn.getSalesInvoice().getCustomer();
+		amount = salesReturn.getTotalAmount().negate();
+		paymentNumber = null;
+		paymentTerminal = salesReturn.getPaymentTerminal();
+	}
+	
+	public Date getTime() {
+		return time;
+	}
+
+	public void setTime(Date time) {
+		this.time = time;
+	}
+
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
+	}
+
+	public Long getReferenceNumber() {
+		return referenceNumber;
+	}
+
+	public void setReferenceNumber(Long referenceNumber) {
+		this.referenceNumber = referenceNumber;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+
+	public Long getPaymentNumber() {
+		return paymentNumber;
+	}
+
+	public void setPaymentNumber(Long paymentNumber) {
+		this.paymentNumber = paymentNumber;
+	}
+
+	public PaymentTerminal getPaymentTerminal() {
+		return paymentTerminal;
+	}
+
+	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
+		this.paymentTerminal = paymentTerminal;
+	}
+
+}

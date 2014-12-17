@@ -23,6 +23,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
+import com.pj.magic.model.util.TimePeriod;
 import com.pj.magic.util.DbUtil;
 
 @Repository
@@ -206,6 +207,30 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 		if (criteria.getPaid() != null) {
 			sql.append(" and a.PAID_IND = ?");
 			params.add(criteria.getPaid() ? "Y" : "N");
+		}
+		
+		if (criteria.getPaidDate() != null) {
+			if (criteria.getTimePeriod() != null) {
+				if (criteria.getTimePeriod() == TimePeriod.MORNING_ONLY) {
+					sql.append(" and PAID_DT >= ? and PAID_DT < date_add(?, interval 13 hour)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+				} else if (criteria.getTimePeriod() == TimePeriod.AFTERNOON_ONLY) {
+					sql.append(" and PAID_DT >= date_add(?, interval 13 hour)"
+							+ " and PAID_DT < date_add(?, interval 1 day)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+				}
+			} else {
+				sql.append(" and PAID_DT >= ? and PAID_DT < date_add(?, interval 1 day)");
+				params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+				params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+			}
+		}
+		
+		if (criteria.getPaymentTerminal() != null) {
+			sql.append(" and PAYMENT_TERMINAL_ID = ?");
+			params.add(criteria.getPaymentTerminal().getId());
 		}
 		
 		sql.append(" order by SALES_RETURN_NO desc");
