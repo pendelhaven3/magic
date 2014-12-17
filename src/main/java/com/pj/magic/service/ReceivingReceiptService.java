@@ -20,4 +20,6 @@ public interface ReceivingReceiptService {
 
 	List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria);
 	
+	void cancel(ReceivingReceipt receivingReceipt);
+	
 }

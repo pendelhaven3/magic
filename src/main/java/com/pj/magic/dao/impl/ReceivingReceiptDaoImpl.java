@@ -34,11 +34,20 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, RECEIVING_RECEIPT_NO, SUPPLIER_ID, POST_IND, VAT_INCLUSIVE, VAT_RATE,"
-			+ " a.PAYMENT_TERM_ID, c.NAME as PAYMENT_TERM_NAME, a.REMARKS, REFERENCE_NO, RECEIVED_DT, "
-			+ " RELATED_PURCHASE_ORDER_NO, RECEIVED_BY, b.NAME as SUPPLIER_NAME"
-			+ " from RECEIVING_RECEIPT a, SUPPLIER b, PAYMENT_TERM c"
-			+ " where a.SUPPLIER_ID = b.ID"
-			+ " and a.PAYMENT_TERM_ID = c.ID";
+			+ " a.PAYMENT_TERM_ID, c.NAME as PAYMENT_TERM_NAME, a.REMARKS, REFERENCE_NO, RECEIVED_DT,"
+			+ " POST_DT, POST_BY, CANCEL_IND, CANCEL_DT, CANCEL_BY,"
+			+ " RELATED_PURCHASE_ORDER_NO, RECEIVED_BY, b.NAME as SUPPLIER_NAME,"
+			+ " d.USERNAME as POST_BY_USERNAME, e.USERNAME as CANCEL_BY_USERNAME"
+			+ " from RECEIVING_RECEIPT a"
+			+ " join SUPPLIER b"
+			+ "   on b.ID = a.SUPPLIER_ID"
+			+ " join PAYMENT_TERM c"
+			+ "   on c.ID = a.PAYMENT_TERM_ID"
+			+ " left join USER d"
+			+ "   on d.ID = a.POST_BY"
+			+ " left join USER e"
+			+ "   on e.ID = a.CANCEL_BY"
+			+ " where 1 = 1";
 
 	private static final String RECEIVING_RECEIPT_NUMBER_SEQUENCE = "RECEIVING_RECEIPT_NO_SEQ";
 	
@@ -102,18 +111,24 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	}
 
 	private static final String UPDATE_SQL =
-			"update RECEIVING_RECEIPT set SUPPLIER_ID = ?, POST_IND = ?, "
-			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?, RECEIVED_DT = ?"
+			"update RECEIVING_RECEIPT set SUPPLIER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
+			+ " PAYMENT_TERM_ID = ?, REMARKS = ?, REFERENCE_NO = ?, RECEIVED_DT = ?,"
+			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?"
 			+ " where ID = ?";
 	
 	private void update(ReceivingReceipt receivingReceipt) {
 		getJdbcTemplate().update(UPDATE_SQL, 
 				receivingReceipt.getSupplier().getId(),
 				receivingReceipt.isPosted() ? "Y" : "N",
+				receivingReceipt.isPosted() ? receivingReceipt.getPostDate() : null,
+				receivingReceipt.isPosted() ? receivingReceipt.getPostedBy().getId() : null,
 				receivingReceipt.getPaymentTerm().getId(),
 				receivingReceipt.getRemarks(),
 				receivingReceipt.getReferenceNumber(),
 				receivingReceipt.getReceivedDate(),
+				receivingReceipt.isCancelled() ? "Y" : "N",
+				receivingReceipt.isCancelled() ? receivingReceipt.getCancelDate() : null,
+				receivingReceipt.isCancelled() ? receivingReceipt.getCancelledBy().getId() : null,
 				receivingReceipt.getId());
 	}
 	
@@ -126,6 +141,17 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			receivingReceipt.setReceivingReceiptNumber(rs.getLong("RECEIVING_RECEIPT_NO"));
 			receivingReceipt.setSupplier(new Supplier(rs.getLong("SUPPLIER_ID"), rs.getString("SUPPLIER_NAME")));
 			receivingReceipt.setPosted("Y".equals(rs.getString("POST_IND")));
+			if (receivingReceipt.isPosted()) {
+				receivingReceipt.setPostDate(rs.getDate("POST_DT"));
+				receivingReceipt.setPostedBy(
+						new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			}
+			receivingReceipt.setCancelled("Y".equals(rs.getString("CANCEL_IND")));
+			if (receivingReceipt.isCancelled()) {
+				receivingReceipt.setCancelDate(rs.getDate("CANCEL_DT"));
+				receivingReceipt.setCancelledBy(
+						new User(rs.getLong("CANCEL_BY"), rs.getString("CANCEL_BY_USERNAME")));
+			}
 			receivingReceipt.setPaymentTerm(
 					new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
 			receivingReceipt.setRemarks(rs.getString("REMARKS"));

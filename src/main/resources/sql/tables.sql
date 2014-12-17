@@ -307,6 +307,8 @@ create table RECEIVING_RECEIPT (
   RECEIVING_RECEIPT_NO integer not null,
   SUPPLIER_ID integer not null,
   POST_IND char(1) default 'N' not null,
+  POST_DT date null,
+  POST_BY integer null,
   PAYMENT_TERM_ID integer not null,
   REMARKS varchar(100) null,
   REFERENCE_NO varchar(30) null,
@@ -315,12 +317,17 @@ create table RECEIVING_RECEIPT (
   RELATED_PURCHASE_ORDER_NO integer not null,
   VAT_INCLUSIVE char(1) not null,
   VAT_RATE numeric(4, 2) not null,
+  CANCEL_IND char(1) default 'N' not null,
+  CANCEL_DT date null,
+  CANCEL_BY integer null,
   constraint RECEIVING_RECEIPT$PK primary key (ID),
   constraint RECEIVING_RECEIPT$UK unique (RECEIVING_RECEIPT_NO),
   constraint RECEIVING_RECEIPT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),
   constraint RECEIVING_RECEIPT$FK2 foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID),
   constraint RECEIVING_RECEIPT$FK3 foreign key (RECEIVED_BY) references USER (ID),
-  constraint RECEIVING_RECEIPT$FK4 foreign key (RELATED_PURCHASE_ORDER_NO) references PURCHASE_ORDER (PURCHASE_ORDER_NO)
+  constraint RECEIVING_RECEIPT$FK4 foreign key (RELATED_PURCHASE_ORDER_NO) references PURCHASE_ORDER (PURCHASE_ORDER_NO),
+  constraint RECEIVING_RECEIPT$FK5 foreign key (POST_BY) references USER (ID),
+  constraint RECEIVING_RECEIPT$FK6 foreign key (CANCEL_BY) references USER (ID)
 );
 
 create table RECEIVING_RECEIPT_ITEM (

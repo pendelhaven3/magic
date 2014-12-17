@@ -2,6 +2,7 @@ package com.pj.magic.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.ReceivingReceiptService;
 
 // TODO: No need to fetch product details for some cases
@@ -26,6 +28,7 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	@Autowired private ReceivingReceiptDao receivingReceiptDao;
 	@Autowired private ReceivingReceiptItemDao receivingReceiptItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private LoginService loginService;
 	
 	@Transactional
 	@Override
@@ -97,6 +100,8 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 		}
 		
 		updated.setPosted(true);
+		updated.setPostDate(new Date());
+		updated.setPostedBy(loginService.getLoggedInUser());
 		receivingReceiptDao.save(updated);
 	}
 
@@ -119,6 +124,16 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 			loadReceivingReceiptDetails(purchaseOrder);
 		}
 		return receivingReceipts;
+	}
+
+	@Transactional
+	@Override
+	public void cancel(ReceivingReceipt receivingReceipt) {
+		ReceivingReceipt updated = receivingReceiptDao.get(receivingReceipt.getId());
+		updated.setCancelled(true);
+		updated.setCancelDate(new Date());
+		updated.setCancelledBy(loginService.getLoggedInUser());
+		receivingReceiptDao.save(updated);
 	}
 	
 }

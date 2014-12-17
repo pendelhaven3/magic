@@ -19,6 +19,11 @@ public class ReceivingReceipt {
 	private String referenceNumber;
 	private List<ReceivingReceiptItem> items = new ArrayList<>();
 	private boolean posted;
+	private Date postDate;
+	private User postedBy;
+	private boolean cancelled;
+	private Date cancelDate;
+	private User cancelledBy;
 	private String remarks;
 	private Long relatedPurchaseOrderNumber;
 	private boolean vatInclusive;
@@ -105,7 +110,13 @@ public class ReceivingReceipt {
 	}
 
 	public String getStatus() {
-		return posted ? "Posted" : "New";
+		if (posted) {
+			return "Posted";
+		} else if (cancelled) {
+			return "Cancelled";
+		} else {
+			return "New";
+		}
 	}
 
 	public int getTotalNumberOfItems() {
@@ -187,5 +198,49 @@ public class ReceivingReceipt {
 			return Constants.ONE.add(vatRate);
 		}
 	}
-	
+
+	public Date getPostDate() {
+		return postDate;
+	}
+
+	public void setPostDate(Date postDate) {
+		this.postDate = postDate;
+	}
+
+	public User getPostedBy() {
+		return postedBy;
+	}
+
+	public void setPostedBy(User postedBy) {
+		this.postedBy = postedBy;
+	}
+
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
+
+	public Date getCancelDate() {
+		return cancelDate;
+	}
+
+	public void setCancelDate(Date cancelDate) {
+		this.cancelDate = cancelDate;
+	}
+
+	public User getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(User cancelledBy) {
+		this.cancelledBy = cancelledBy;
+	}
+
+	public boolean isNew() {
+		return !posted && !cancelled;
+	}
+
 }

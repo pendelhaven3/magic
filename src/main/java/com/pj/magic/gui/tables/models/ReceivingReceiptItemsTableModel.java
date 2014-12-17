@@ -175,7 +175,7 @@ public class ReceivingReceiptItemsTableModel extends AbstractTableModel {
 	
 	public void setReceivingReceipt(ReceivingReceipt receivingReceipt) {
 		setItems(receivingReceipt.getItems());
-		setEditable(!receivingReceipt.isPosted());
+		setEditable(receivingReceipt.isNew());
 	}
 
 	public void setEditable(boolean editable) {

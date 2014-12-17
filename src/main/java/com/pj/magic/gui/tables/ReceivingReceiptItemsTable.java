@@ -102,7 +102,7 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 
 	public void highlight() {
 		changeSelection(0, DISCOUNT_1_COLUMN_INDEX, false, false);
-		if (receivingReceipt.isPosted()) {
+		if (!receivingReceipt.isNew()) {
 			requestFocusInWindow();
 		} else {
 			editCellAt(0, DISCOUNT_1_COLUMN_INDEX);

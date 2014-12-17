@@ -60,6 +60,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	private JLabel receivingReceiptNumberField;
 	private JLabel relatedPurchaseOrderNumberField;
 	private JLabel supplierField;
+	private JLabel statusField;
 	private JLabel paymentTermField;
 	private UtilCalendarModel receivedDateModel;
 	private JLabel referenceNumberField;
@@ -70,11 +71,13 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	private JLabel vatAmountField;
 	private JLabel totalAmountField;
 	private MagicToolBarButton postButton;
+	private MagicToolBarButton cancelButton;
 	private JDatePickerImpl datePicker;
 	
 	@Override
 	protected void initializeComponents() {
 		supplierField = new JLabel();
+		statusField = new JLabel();
 		paymentTermField = new JLabel();
 		referenceNumberField = new JLabel();
 		
@@ -142,6 +145,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		receivingReceiptNumberField.setText(receivingReceipt.getReceivingReceiptNumber().toString());
 		relatedPurchaseOrderNumberField.setText(receivingReceipt.getRelatedPurchaseOrderNumber().toString());
 		supplierField.setText(receivingReceipt.getSupplier().getName());
+		statusField.setText(receivingReceipt.getStatus());
 		paymentTermField.setText(receivingReceipt.getPaymentTerm().getName());
 		updateReceivedDateField();
 		referenceNumberField.setText(receivingReceipt.getReferenceNumber());
@@ -152,8 +156,9 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		totalNetAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalNetAmount()));
 		itemsTable.setReceivingReceipt(receivingReceipt);
 		
-		postButton.setEnabled(!receivingReceipt.isPosted());
-		datePicker.getComponents()[1].setVisible(!receivingReceipt.isPosted());
+		postButton.setEnabled(receivingReceipt.isNew());
+		cancelButton.setEnabled(receivingReceipt.isNew());
+		datePicker.getComponents()[1].setVisible(receivingReceipt.isNew());
 	}
 
 	private void updateReceivedDateField() {
@@ -224,6 +229,20 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(supplierField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Status:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		statusField.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(statusField, c);
 		
 		currentRow++;
 		
@@ -425,6 +444,16 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		cancelButton = new MagicToolBarButton("cancel", "Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cancelReceivingReceipt();
+			}
+		});
+		toolBar.add(cancelButton);
+		
 		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
 			
@@ -454,6 +483,23 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+	}
+
+	private void cancelReceivingReceipt() {
+		if (itemsTable.isEditing()) {
+			itemsTable.getCellEditor().cancelCellEditing();
+		}
+		
+		if (confirm("Do you want to cancel this Receiving Receipt?")) {
+			try {
+				receivingReceiptService.cancel(receivingReceipt);
+				showMessage("Receiving Receipt cancelled");
+				updateDisplay(receivingReceipt);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+			}
+		}
 	}
 
 	protected void printPreview() {
