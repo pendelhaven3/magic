@@ -236,8 +236,15 @@ public class MaintainProductPanel extends StandardMagicPanel {
 	private void copyAsNewProduct() {
 		getMagicFrame().setTitle("Add New Product");
 		product.setId(null);
+		product.getUnitQuantities().clear();
+		caseQuantityField.setText("0");
+		tieQuantityField.setText("0");
+		cartonQuantityField.setText("0");
+		dozenQuantityField.setText("0");
+		piecesQuantityField.setText("0");
 		deleteButton.setEnabled(false);
 		productSuppliersTable.clearDisplay();
+		addSupplierButton.setEnabled(false);
 		codeField.requestFocusInWindow();
 	}
 

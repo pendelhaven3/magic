@@ -241,14 +241,13 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 	private static final String INSERT_SQL =
 			"insert into PRODUCT (CODE, DESCRIPTION, MAX_STOCK_LEVEL, MIN_STOCK_LEVEL, ACTIVE_IND,"
 			+ " UNIT_IND_CSE, UNIT_IND_TIE, UNIT_IND_CTN, UNIT_IND_DOZ, UNIT_IND_PCS,"
-			+ " AVAIL_QTY_CSE, AVAIL_QTY_TIE, AVAIL_QTY_CTN, AVAIL_QTY_DOZ, AVAIL_QTY_PCS,"
 			+ " UNIT_CONV_CSE, UNIT_CONV_TIE, UNIT_CONV_CTN, UNIT_CONV_DOZ, UNIT_CONV_PCS,"
 			+ " GROSS_COST_CSE, GROSS_COST_TIE, GROSS_COST_CTN, GROSS_COST_DOZ, GROSS_COST_PCS,"
 			+ " FINAL_COST_CSE, FINAL_COST_TIE, FINAL_COST_CTN, FINAL_COST_DOZ, FINAL_COST_PCS,"
 			+ " MANUFACTURER_ID, CATEGORY_ID, SUBCATEGORY_ID, COMPANY_LIST_PRICE,"
 			+ " ACTIVE_UNIT_IND_TIE, ACTIVE_UNIT_IND_CTN, ACTIVE_UNIT_IND_DOZ, ACTIVE_UNIT_IND_PCS)"
 			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
-			+ " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Product product) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -268,46 +267,41 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 				ps.setString(8, product.hasUnit(Unit.CARTON) ? "Y" : "N");
 				ps.setString(9, product.hasUnit(Unit.DOZEN) ? "Y" : "N");
 				ps.setString(10, product.hasUnit(Unit.PIECES) ? "Y" : "N");
-				ps.setInt(11, product.getUnitQuantity(Unit.CASE));
-				ps.setInt(12, product.getUnitQuantity(Unit.TIE));
-				ps.setInt(13, product.getUnitQuantity(Unit.CARTON));
-				ps.setInt(14, product.getUnitQuantity(Unit.DOZEN));
-				ps.setInt(15, product.getUnitQuantity(Unit.PIECES));
-				ps.setInt(16, product.getUnitConversion(Unit.CASE));
-				ps.setInt(17, product.getUnitConversion(Unit.TIE));
-				ps.setInt(18, product.getUnitConversion(Unit.CARTON));
-				ps.setInt(19, product.getUnitConversion(Unit.DOZEN));
-				ps.setInt(20, product.getUnitConversion(Unit.PIECES));
-				ps.setBigDecimal(21, product.getGrossCost(Unit.CASE));
-				ps.setBigDecimal(22, product.getGrossCost(Unit.TIE));
-				ps.setBigDecimal(23, product.getGrossCost(Unit.CARTON));
-				ps.setBigDecimal(24, product.getGrossCost(Unit.DOZEN));
-				ps.setBigDecimal(25, product.getGrossCost(Unit.PIECES));
-				ps.setBigDecimal(26, product.getFinalCost(Unit.CASE));
-				ps.setBigDecimal(27, product.getFinalCost(Unit.TIE));
-				ps.setBigDecimal(28, product.getFinalCost(Unit.CARTON));
-				ps.setBigDecimal(29, product.getFinalCost(Unit.DOZEN));
-				ps.setBigDecimal(30, product.getFinalCost(Unit.PIECES));
+				ps.setInt(11, product.getUnitConversion(Unit.CASE));
+				ps.setInt(12, product.getUnitConversion(Unit.TIE));
+				ps.setInt(13, product.getUnitConversion(Unit.CARTON));
+				ps.setInt(14, product.getUnitConversion(Unit.DOZEN));
+				ps.setInt(15, product.getUnitConversion(Unit.PIECES));
+				ps.setBigDecimal(16, product.getGrossCost(Unit.CASE));
+				ps.setBigDecimal(17, product.getGrossCost(Unit.TIE));
+				ps.setBigDecimal(18, product.getGrossCost(Unit.CARTON));
+				ps.setBigDecimal(19, product.getGrossCost(Unit.DOZEN));
+				ps.setBigDecimal(20, product.getGrossCost(Unit.PIECES));
+				ps.setBigDecimal(21, product.getFinalCost(Unit.CASE));
+				ps.setBigDecimal(22, product.getFinalCost(Unit.TIE));
+				ps.setBigDecimal(23, product.getFinalCost(Unit.CARTON));
+				ps.setBigDecimal(24, product.getFinalCost(Unit.DOZEN));
+				ps.setBigDecimal(25, product.getFinalCost(Unit.PIECES));
 				if (product.getManufacturer() != null) {
-					ps.setLong(31, product.getManufacturer().getId());
+					ps.setLong(26, product.getManufacturer().getId());
 				} else {
-					ps.setNull(31, Types.NUMERIC);
+					ps.setNull(26, Types.NUMERIC);
 				}
 				if (product.getCategory() != null) {
-					ps.setLong(32, product.getCategory().getId());
+					ps.setLong(27, product.getCategory().getId());
 				} else {
-					ps.setNull(32, Types.NUMERIC);
+					ps.setNull(27, Types.NUMERIC);
 				}
 				if (product.getSubcategory() != null) {
-					ps.setLong(33, product.getSubcategory().getId());
+					ps.setLong(28, product.getSubcategory().getId());
 				} else {
-					ps.setNull(33, Types.NUMERIC);
+					ps.setNull(28, Types.NUMERIC);
 				}
-				ps.setBigDecimal(34, product.getCompanyListPrice());
-				ps.setString(35, product.hasActiveUnit(Unit.TIE) ? "Y" : "N");
-				ps.setString(36, product.hasActiveUnit(Unit.CARTON) ? "Y" : "N");
-				ps.setString(37, product.hasActiveUnit(Unit.DOZEN) ? "Y" : "N");
-				ps.setString(38, product.hasActiveUnit(Unit.PIECES) ? "Y" : "N");
+				ps.setBigDecimal(29, product.getCompanyListPrice());
+				ps.setString(30, product.hasActiveUnit(Unit.TIE) ? "Y" : "N");
+				ps.setString(31, product.hasActiveUnit(Unit.CARTON) ? "Y" : "N");
+				ps.setString(32, product.hasActiveUnit(Unit.DOZEN) ? "Y" : "N");
+				ps.setString(33, product.hasActiveUnit(Unit.PIECES) ? "Y" : "N");
 				return ps;
 			}
 		}, holder);
