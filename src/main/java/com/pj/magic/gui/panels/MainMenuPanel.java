@@ -39,8 +39,10 @@ public class MainMenuPanel extends StandardMagicPanel {
 	static {
 		MENU_ITEM_IMAGE_MAP.put("Admin", "admin");
 		MENU_ITEM_IMAGE_MAP.put("Payment", "money_large");
+		MENU_ITEM_IMAGE_MAP.put("Stock Movement", "stock_movement");
 		MENU_ITEM_IMAGE_MAP.put("Reports", "reports");
 		MENU_ITEM_IMAGE_MAP.put("Inventory Check", "inventory_check");
+		MENU_ITEM_IMAGE_MAP.put("Records Maintenance", "records");
 		MENU_ITEM_IMAGE_MAP.put("Backup/Restore Data", "database_backup");
 		MENU_ITEM_IMAGE_MAP.put("Change Password", "change_password");
 	}
