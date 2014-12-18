@@ -114,12 +114,25 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "     on e.ID = d.CUSTOMER_ID"
 			+ "   where c.PRODUCT_ID = ?"
 			+ "   and a.POST_IND = 'Y'"
+			+ "   union all"
+			+ "   select c.INVENTORY_DT as TRANSACTION_DT, null as TRANSACTION_NO,"
+			+ "   null as CUSTOMER_SUPPLIER_NAME,"
+			+ "   'INVENTORY CHECK' as TRANSACTION_TYPE, 'INVENTORY CHECK' as TRANSACTION_TYPE_KEY, b.UNIT, b.QUANTITY,"
+			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
+			+ "   from AREA_INV_REPORT a"
+			+ "   join AREA_INV_REPORT_ITEM b"
+			+ "     on b.AREA_INV_REPORT_ID = a.ID"
+			+ "   join INVENTORY_CHECK c"
+			+ "     on c.ID = a.INVENTORY_CHECK_ID"
+			+ "   where b.PRODUCT_ID = ?"
+			+ "   and c.POST_IND = 'Y'"
 			+ " ) m";
 	
 	@Override
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
 			StockCardInventoryReportSearchCriteria criteria) {
 		List<Object> params = new ArrayList<>();
+		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
@@ -153,7 +166,9 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		public StockCardInventoryReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {
 			StockCardInventoryReportItem item = new StockCardInventoryReportItem();
 			item.setTransactionDate(rs.getDate("TRANSACTION_DT"));
-			item.setTransactionNumber(rs.getLong("TRANSACTION_NO"));
+			if (rs.getLong("TRANSACTION_NO") != 0) {
+				item.setTransactionNumber(rs.getLong("TRANSACTION_NO"));
+			}
 			item.setSupplierOrCustomerName(rs.getString("CUSTOMER_SUPPLIER_NAME"));
 			item.setTransactionType(rs.getString("TRANSACTION_TYPE"));
 			item.setCurrentCostOrSellingPrice(rs.getBigDecimal("UNIT_COST_OR_PRICE"));
@@ -191,6 +206,9 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 				item.setAddQuantity(rs.getInt("QUANTITY"));
 				break;
 			case "SALES RETURN":
+				item.setAddQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "INVENTORY CHECK":
 				item.setAddQuantity(rs.getInt("QUANTITY"));
 				break;
 			}
