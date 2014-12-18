@@ -57,8 +57,7 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 	private static final int REFERENCE_NUMBER_COLUMN_INDEX = 2;
 	private static final int CUSTOMER_COLUMN_INDEX = 3;
 	private static final int AMOUNT_COLUMN_INDEX = 4;
-	private static final int PAYMENT_NUMBER_COLUMN_INDEX = 5;
-	private static final int PAYMENT_TERMINAL_COLUMN_INDEX = 6;
+	private static final int PAYMENT_TERMINAL_COLUMN_INDEX = 5;
 	
 	@Autowired private PaymentService paymentService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
@@ -194,7 +193,6 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 		columnModel.getColumn(REFERENCE_NUMBER_COLUMN_INDEX).setPreferredWidth(60);
 		columnModel.getColumn(CUSTOMER_COLUMN_INDEX).setPreferredWidth(300);
 		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(80);
-		columnModel.getColumn(PAYMENT_NUMBER_COLUMN_INDEX).setPreferredWidth(80);
 	}
 
 	@Override
@@ -374,7 +372,7 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 	private class CashFlowReportItemsTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = 
-			{"Time", "Tran. Type", "Ref. No.", "Customer", "Amount", "Payment No.", "Terminal"};
+			{"Time", "Tran. Type", "Ref. No.", "Customer", "Amount", "Terminal"};
 		
 		private List<CashFlowReportItem> items = new ArrayList<>();
 		
@@ -407,8 +405,6 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 				return item.getCustomer().getName();
 			case AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(item.getAmount());
-			case PAYMENT_NUMBER_COLUMN_INDEX:
-				return item.getPaymentNumber();
 			case PAYMENT_TERMINAL_COLUMN_INDEX:
 				return item.getPaymentTerminal().getName();
 			default:

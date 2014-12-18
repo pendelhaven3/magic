@@ -15,7 +15,6 @@ public class CashFlowReportItem {
 	private Long referenceNumber;
 	private Customer customer;
 	private BigDecimal amount;
-	private Long paymentNumber;
 	private PaymentTerminal paymentTerminal;
 
 	public CashFlowReportItem(PaymentSalesInvoice paymentSalesInvoice) {
@@ -24,7 +23,6 @@ public class CashFlowReportItem {
 		referenceNumber = paymentSalesInvoice.getSalesInvoice().getSalesInvoiceNumber();
 		customer = paymentSalesInvoice.getSalesInvoice().getCustomer();
 		amount = paymentSalesInvoice.getSalesInvoice().getTotalNetAmount();
-		paymentNumber = paymentSalesInvoice.getParent().getPaymentNumber();
 		paymentTerminal = paymentSalesInvoice.getParent().getPaymentTerminal();
 	}
 	
@@ -34,7 +32,6 @@ public class CashFlowReportItem {
 		referenceNumber = salesReturn.getSalesReturnNumber();
 		customer = salesReturn.getSalesInvoice().getCustomer();
 		amount = salesReturn.getTotalAmount().negate();
-		paymentNumber = null;
 		paymentTerminal = salesReturn.getPaymentTerminal();
 	}
 	
@@ -76,14 +73,6 @@ public class CashFlowReportItem {
 
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
-	}
-
-	public Long getPaymentNumber() {
-		return paymentNumber;
-	}
-
-	public void setPaymentNumber(Long paymentNumber) {
-		this.paymentNumber = paymentNumber;
 	}
 
 	public PaymentTerminal getPaymentTerminal() {
