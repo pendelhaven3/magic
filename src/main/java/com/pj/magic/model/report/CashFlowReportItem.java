@@ -14,6 +14,7 @@ public class CashFlowReportItem {
 	private String transactionType;
 	private Long referenceNumber;
 	private Customer customer;
+	private Date transactionDate;
 	private BigDecimal amount;
 	private PaymentTerminal paymentTerminal;
 
@@ -22,6 +23,7 @@ public class CashFlowReportItem {
 		transactionType = "SALES INVOICE";
 		referenceNumber = paymentSalesInvoice.getSalesInvoice().getSalesInvoiceNumber();
 		customer = paymentSalesInvoice.getSalesInvoice().getCustomer();
+		transactionDate = paymentSalesInvoice.getSalesInvoice().getTransactionDate();
 		amount = paymentSalesInvoice.getSalesInvoice().getTotalNetAmount();
 		paymentTerminal = paymentSalesInvoice.getParent().getPaymentTerminal();
 	}
@@ -31,6 +33,7 @@ public class CashFlowReportItem {
 		transactionType = "SALES RETURN";
 		referenceNumber = salesReturn.getSalesReturnNumber();
 		customer = salesReturn.getSalesInvoice().getCustomer();
+		transactionDate = salesReturn.getPostDate();
 		amount = salesReturn.getTotalAmount().negate();
 		paymentTerminal = salesReturn.getPaymentTerminal();
 	}
@@ -81,6 +84,14 @@ public class CashFlowReportItem {
 
 	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
 		this.paymentTerminal = paymentTerminal;
+	}
+
+	public Date getTransactionDate() {
+		return transactionDate;
+	}
+
+	public void setTransactionDate(Date transactionDate) {
+		this.transactionDate = transactionDate;
 	}
 
 }

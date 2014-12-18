@@ -1,9 +1,11 @@
 package com.pj.magic.model.report;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.pj.magic.Constants;
 import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.util.TimePeriod;
 
@@ -44,6 +46,14 @@ public class CashFlowReport {
 
 	public void setTimePeriod(TimePeriod timePeriod) {
 		this.timePeriod = timePeriod;
+	}
+
+	public BigDecimal getTotalAmount() {
+		BigDecimal total = Constants.ZERO;
+		for (CashFlowReportItem item : items) {
+			total = total.add(item.getAmount());
+		}
+		return total;
 	}
 
 }

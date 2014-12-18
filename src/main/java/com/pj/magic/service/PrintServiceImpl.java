@@ -47,6 +47,8 @@ import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.SalesReturnItem;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
+import com.pj.magic.model.report.CashFlowReport;
+import com.pj.magic.model.report.CashFlowReportItem;
 import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
@@ -87,11 +89,13 @@ public class PrintServiceImpl implements PrintService {
 	private static final int POSTED_SALES_AND_PROFIT_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int SALES_RETURN_ITEMS_PER_PAGE = 44;
 	private static final int BAD_STOCK_RETURN_ITEMS_PER_PAGE = 44;
+	private static final int CASH_FLOW_REPORT_ITEMS_PER_PAGE = 44;
 	
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
 	public static final int POSTED_SALES_AND_PROFIT_REPORT_CHARACTERS_PER_LINE = 115;
 	public static final int PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE = 101;
+	public static final int CASH_FLOW_REPORT_CHARACTERS_PER_LINE = 94;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -776,6 +780,45 @@ public class PrintServiceImpl implements PrintService {
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+
+	@Override
+	public void print(CashFlowReport report) {
+		try {
+			for (String printPage : generateReportAsString(report)) {
+				PrinterUtil.printWithCondensedFont(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(CashFlowReport report) {
+		List<List<CashFlowReportItem>> pageItems = Lists.partition(report.getItems(), 
+				CASH_FLOW_REPORT_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("cashFlowReport", report);
+			reportData.put("charsPerLine", CASH_FLOW_REPORT_CHARACTERS_PER_LINE);
+			if (report.getPaymentTerminal() != null) {
+				reportData.put("paymentTerminal", report.getPaymentTerminal().getName());
+			} else {
+				reportData.put("paymentTerminal", "ANY");
+			}
+			if (report.getTimePeriod() != null) {
+				reportData.put("timePeriod", report.getTimePeriod().getDescription());
+			} else {
+				reportData.put("timePeriod", "WHOLE DAY");
+			}
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/cashFlowReport.vm", reportData));
+		}
+		return printPages;
 	}
 	
 }

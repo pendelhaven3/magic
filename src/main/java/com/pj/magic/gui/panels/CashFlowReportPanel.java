@@ -7,11 +7,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -45,6 +45,7 @@ import com.pj.magic.model.util.TimePeriod;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
+import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -56,8 +57,9 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 	private static final int TRANSACTION_TYPE_COLUMN_INDEX = 1;
 	private static final int REFERENCE_NUMBER_COLUMN_INDEX = 2;
 	private static final int CUSTOMER_COLUMN_INDEX = 3;
-	private static final int AMOUNT_COLUMN_INDEX = 4;
-	private static final int PAYMENT_TERMINAL_COLUMN_INDEX = 5;
+	private static final int TRANSACTION_DATE_COLUMN_INDEX = 4;
+	private static final int AMOUNT_COLUMN_INDEX = 5;
+	private static final int PAYMENT_TERMINAL_COLUMN_INDEX = 6;
 	
 	@Autowired private PaymentService paymentService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
@@ -225,7 +227,7 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
 
 		c = new GridBagConstraints();
 		c.gridx = 1;
@@ -334,8 +336,7 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		CashFlowReport report = createCashFlowReport();
-//		printService.print(report);
+		printService.print(createCashFlowReport());
 	}
 
 	private void printPreview() {
@@ -345,10 +346,10 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 		}
 		
 		CashFlowReport report = createCashFlowReport();
-//		printPreviewDialog.updateDisplay(printService.generateReportAsString(report));
-//		printPreviewDialog.setColumnsPerLine(PrintServiceImpl.PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE);
-//		printPreviewDialog.setUseCondensedFontForPrinting(true);
-//		printPreviewDialog.setVisible(true);
+		printPreviewDialog.updateDisplay(printService.generateReportAsString(report));
+		printPreviewDialog.setColumnsPerLine(PrintServiceImpl.CASH_FLOW_REPORT_CHARACTERS_PER_LINE);
+		printPreviewDialog.setUseCondensedFontForPrinting(true);
+		printPreviewDialog.setVisible(true);
 	}
 
 	private CashFlowReport createCashFlowReport() {
@@ -372,7 +373,7 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 	private class CashFlowReportItemsTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = 
-			{"Time", "Tran. Type", "Ref. No.", "Customer", "Amount", "Terminal"};
+			{"Time", "Tran. Type", "Ref. No.", "Customer", "Tran. Date", "Amount", "Terminal"};
 		
 		private List<CashFlowReportItem> items = new ArrayList<>();
 		
@@ -403,6 +404,8 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 				return item.getReferenceNumber();
 			case CUSTOMER_COLUMN_INDEX:
 				return item.getCustomer().getName();
+			case TRANSACTION_DATE_COLUMN_INDEX:
+				return FormatterUtil.formatDate(item.getTransactionDate());
 			case AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(item.getAmount());
 			case PAYMENT_TERMINAL_COLUMN_INDEX:
