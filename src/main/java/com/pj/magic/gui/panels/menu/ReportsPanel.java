@@ -118,7 +118,6 @@ public class ReportsPanel extends StandardMagicPanel {
 				"Unpaid Sales Invoices List",
 				"Paid Sales Invoices List",
 				"Cash Flow Report",
-				"Posted Sales Report",
 				"Posted Sales and Profit Report"
 		);
 		
