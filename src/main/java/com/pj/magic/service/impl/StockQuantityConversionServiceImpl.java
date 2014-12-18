@@ -15,6 +15,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.model.search.StockQuantityConversionSearchCriteria;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.StockQuantityConversionService;
 
 @Service
@@ -23,6 +24,7 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 	@Autowired private StockQuantityConversionDao stockQuantityConversionDao;
 	@Autowired private StockQuantityConversionItemDao stockQuantityConversionItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private LoginService loginService;
 	
 	@Transactional
 	@Override
@@ -77,6 +79,7 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 		}
 		updated.setPosted(true);
 		updated.setPostDate(new Date());
+		updated.setPostedBy(loginService.getLoggedInUser());
 		stockQuantityConversionDao.save(updated);
 	}
 
