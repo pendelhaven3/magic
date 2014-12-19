@@ -28,13 +28,20 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, BAD_STOCK_RETURN_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY,"
+			+ " PAID_IND, PAID_DT, PAID_BY, PAYMENT_TERMINAL_ID,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
-			+ " c.USERNAME as POST_BY_USERNAME"
+			+ " c.USERNAME as POST_BY_USERNAME,"
+			+ " d.USERNAME as PAID_BY_USERNAME,"
+			+ " e.NAME as PAYMENT_TERMINAL_NAME"
 			+ " from BAD_STOCK_RETURN a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_ID"
 			+ " left join USER c"
-			+ "   on c.ID = a.POST_BY";
+			+ "   on c.ID = a.POST_BY"
+			+ " left join USER d"
+			+ "   on d.ID = a.PAID_BY"
+			+ " left join PAYMENT_TERMINAL e"
+			+ "   on e.ID = a.PAYMENT_TERMINAL_ID";
 
 	private BadStockReturnRowMapper badStockReturnRowMapper = new BadStockReturnRowMapper();
 	
@@ -59,7 +66,8 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 	}
 
 	private static final String UPDATE_SQL = 
-			"update BAD_STOCK_RETURN set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+			"update BAD_STOCK_RETURN set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
+			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ? where ID = ?";
 	
 	private void update(BadStockReturn badStockReturn) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -67,6 +75,10 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 				badStockReturn.isPosted() ? "Y" : "N",
 				badStockReturn.getPostDate(),
 				badStockReturn.isPosted() ? badStockReturn.getPostedBy().getId() : null,
+				badStockReturn.isPaid() ? "Y" : "N",
+				badStockReturn.isPaid() ? badStockReturn.getPaidDate() : null,
+				badStockReturn.isPaid() ? badStockReturn.getPaidBy().getId() : null,
+				badStockReturn.isPaid() ? badStockReturn.getPaymentTerminal().getId() : null,
 				badStockReturn.getId());
 	}
 
@@ -111,10 +123,17 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 			badStockReturn.setCustomer(customer);
 			
 			badStockReturn.setPosted("Y".equals(rs.getString("POST_IND")));
-			badStockReturn.setPostDate(rs.getDate("POST_DT"));
-			if (rs.getLong("POST_BY") != 0) {
+			if (badStockReturn.isPosted()) {
+				badStockReturn.setPostDate(rs.getDate("POST_DT"));
 				badStockReturn.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			}
+			
+			badStockReturn.setPaid("Y".equals(rs.getString("PAID_IND")));
+			if (badStockReturn.isPaid()) {
+				badStockReturn.setPaidDate(rs.getTimestamp("PAID_DT"));
+				badStockReturn.setPaidBy(new User(rs.getLong("PAID_BY"), rs.getString("PAID_BY_USERNAME")));
+			}
+			
 			return badStockReturn;
 		}
 		

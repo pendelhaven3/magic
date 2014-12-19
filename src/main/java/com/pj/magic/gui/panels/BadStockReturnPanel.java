@@ -12,6 +12,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -34,8 +35,12 @@ import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.BadStockReturnItemsTable;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerminalAssignment;
+import com.pj.magic.model.User;
 import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.CustomerService;
+import com.pj.magic.service.LoginService;
+import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -55,6 +60,8 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private LoginService loginService;
+	@Autowired private PaymentTerminalService paymentTerminalService;
 	
 	private BadStockReturn badStockReturn;
 	private JLabel badStockReturnNumberField;
@@ -67,6 +74,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private JButton postButton;
+	private JButton markAsPaidButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
 	private JButton printPreviewButton;
@@ -214,6 +222,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		totalItemsField.setText(String.valueOf(badStockReturn.getTotalItems()));
 		totalAmountField.setText(badStockReturn.getTotalAmount().toString());
 		postButton.setEnabled(!badStockReturn.isPosted());
+		markAsPaidButton.setEnabled(badStockReturn.isPosted() && !badStockReturn.isPaid());
 		addItemButton.setEnabled(!badStockReturn.isPosted());
 		deleteItemButton.setEnabled(!badStockReturn.isPosted());
 		printPreviewButton.setEnabled(true);
@@ -235,6 +244,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		totalAmountField.setText(null);
 		itemsTable.setBadStockReturn(badStockReturn);
 		postButton.setEnabled(false);
+		markAsPaidButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
@@ -282,7 +292,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		statusField = ComponentUtil.createLabel(100, "");
+		statusField = ComponentUtil.createLabel(150);
 		mainPanel.add(statusField, c);
 		
 		currentRow++;
@@ -506,6 +516,16 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		});
 		toolBar.add(postButton);
 		
+		markAsPaidButton = new MagicToolBarButton("coins", "Mark As Paid");
+		markAsPaidButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				markBadStockReturnAsPaid();
+			}
+		});
+		toolBar.add(markAsPaidButton);
+		
 		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {
 			
@@ -528,4 +548,28 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		toolBar.add(printButton);
 	}
 
+	private void markBadStockReturnAsPaid() {
+		if (!isUserAssignedToPaymentTerminal()) {
+			showErrorMessage("User is not assigned to a payment terminal");
+			return;
+		}
+		
+		if (confirm("Mark Bad Stock Return as paid?")) {
+			try {
+				badStockReturnService.markAsPaid(badStockReturn);
+				JOptionPane.showMessageDialog(this, "Bad Stock Return marked as paid");
+				updateDisplay(badStockReturn);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+			}
+		}
+	}
+
+	private boolean isUserAssignedToPaymentTerminal() {
+		User user = loginService.getLoggedInUser();
+		PaymentTerminalAssignment assignment = paymentTerminalService.findPaymentTerminalAssignment(user);
+		return assignment != null;
+	}
+	
 }

@@ -15,6 +15,11 @@ public class BadStockReturn {
 	private boolean posted;
 	private Date postDate;
 	private User postedBy;
+	private boolean paid;
+	private Date paidDate;
+	private User paidBy;
+	private PaymentTerminal paymentTerminal;
+	
 	private List<BadStockReturnItem> items = new ArrayList<>();
 
 	public BadStockReturn() {
@@ -66,7 +71,13 @@ public class BadStockReturn {
 	}
 
 	public String getStatus() {
-		return posted ? "Posted" : "New";
+		if (paid) {
+			return "Paid";
+		} else if (posted) {
+			return "Posted/Unpaid";
+		} else {
+			return "New";
+		}
 	}
 
 	public int getTotalItems() {
@@ -99,6 +110,38 @@ public class BadStockReturn {
 			total = total.add(item.getAmount());
 		}
 		return total;
+	}
+
+	public boolean isPaid() {
+		return paid;
+	}
+
+	public void setPaid(boolean paid) {
+		this.paid = paid;
+	}
+
+	public Date getPaidDate() {
+		return paidDate;
+	}
+
+	public void setPaidDate(Date paidDate) {
+		this.paidDate = paidDate;
+	}
+
+	public User getPaidBy() {
+		return paidBy;
+	}
+
+	public void setPaidBy(User paidBy) {
+		this.paidBy = paidBy;
+	}
+
+	public PaymentTerminal getPaymentTerminal() {
+		return paymentTerminal;
+	}
+
+	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
+		this.paymentTerminal = paymentTerminal;
 	}
 	
 }

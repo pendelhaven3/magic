@@ -31,8 +31,8 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	private static final int BAD_STOCK_RETURN_NUMBER_COLUMN_INDEX = 0;
 	private static final int CUSTOMER_COLUMN_INDEX = 1;
 	private static final int TOTAL_AMOUNT_COLUMN_INDEX = 2;
-	private static final int POSTED_COLUMN_INDEX = 3;
-	private static final int POST_DATE_COLUMN_INDEX = 4;
+	private static final int STATUS_COLUMN_INDEX = 3;
+	private static final int PAID_DATE_COLUMN_INDEX = 4;
 	
 	@Autowired private BadStockReturnService badStockReturnService;
 //	@Autowired private AdjustmentInSearchCriteriaDialog adjustmentInSearchCriteriaDialog;
@@ -165,7 +165,7 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	private class BadStockReturnsTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = 
-			{"Bad Stock Return No.", "Customer", "Total Amount", "Posted", "Post Date"};
+			{"Bad Stock Return No.", "Customer", "Total Amount", "Status", "Paid Date"};
 		
 		private List<BadStockReturn> badStockReturns = new ArrayList<>();
 		
@@ -199,10 +199,10 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 				return badStockReturn.getCustomer().getName();
 			case TOTAL_AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(badStockReturn.getTotalAmount());
-			case POSTED_COLUMN_INDEX:
-				return badStockReturn.isPosted() ? "Yes" : "No";
-			case POST_DATE_COLUMN_INDEX:
-				return badStockReturn.isPosted() ? FormatterUtil.formatDate(badStockReturn.getPostDate()) : null;
+			case STATUS_COLUMN_INDEX:
+				return badStockReturn.getStatus();
+			case PAID_DATE_COLUMN_INDEX:
+				return badStockReturn.isPaid() ? FormatterUtil.formatDateTime(badStockReturn.getPaidDate()) : null;
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
