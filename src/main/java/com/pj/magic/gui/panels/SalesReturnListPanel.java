@@ -35,7 +35,7 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 	private SalesReturnsTableModel tableModel = new SalesReturnsTableModel();
 	
 	public void updateDisplay() {
-		List<SalesReturn> salesReturns = salesReturnService.getNewSalesReturns();
+		List<SalesReturn> salesReturns = salesReturnService.getUnpaidSalesReturns();
 		tableModel.setSalesReturns(salesReturns);
 		if (!salesReturns.isEmpty()) {
 			table.changeSelection(0, 0, false, false);

@@ -31,5 +31,7 @@ public interface SalesReturnService {
 	void markAsPaid(SalesReturn salesReturn);
 
 	SalesReturn findSalesReturnBySalesReturnNumber(long salesReturnNumber);
+
+	List<SalesReturn> getUnpaidSalesReturns();
 	
 }

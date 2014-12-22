@@ -149,4 +149,16 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		return salesReturn;
 	}
 
+	@Override
+	public List<SalesReturn> getUnpaidSalesReturns() {
+		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
+		criteria.setPaid(false);
+		
+		List<SalesReturn> salesReturns = salesReturnDao.search(criteria);
+		for (SalesReturn salesReturn : salesReturns) {
+			salesReturn.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
+		}
+		return salesReturns;
+	}
+
 }
