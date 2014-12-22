@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
+import com.pj.magic.model.search.BadStockReturnSearchCriteria;
 
 public interface BadStockReturnService {
 
@@ -26,5 +27,7 @@ public interface BadStockReturnService {
 	BadStockReturn findBadStockReturnByBadStockReturnNumber(long badStockReturnNumber);
 
 	List<BadStockReturn> getUnpaidBadStockReturns();
+
+	List<BadStockReturn> search(BadStockReturnSearchCriteria criteria);
 	
 }

@@ -19,8 +19,10 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.BadStockReturnSearchCriteriaDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.BadStockReturn;
+import com.pj.magic.model.search.BadStockReturnSearchCriteria;
 import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -35,7 +37,7 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	private static final int PAID_DATE_COLUMN_INDEX = 4;
 	
 	@Autowired private BadStockReturnService badStockReturnService;
-//	@Autowired private AdjustmentInSearchCriteriaDialog adjustmentInSearchCriteriaDialog;
+	@Autowired private BadStockReturnSearchCriteriaDialog badStockReturnSearchCriteriaDialog;
 	
 	private MagicListTable table;
 	private BadStockReturnsTableModel tableModel;
@@ -54,7 +56,7 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		tableModel.setBadStockReturns(badStockReturnService.getUnpaidBadStockReturns());
-//		adjustmentInSearchCriteriaDialog.updateDisplay();
+		badStockReturnSearchCriteriaDialog.updateDisplay();
 	}
 
 	public void displayBadStockReturnDetails(BadStockReturn badStockReturn) {
@@ -141,25 +143,23 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 			}
 		});
 		
-//		toolBar.add(searchButton);
+		toolBar.add(searchButton);
 	}
 
 	private void searchBadStockReturns() {
-		/*
-		adjustmentInSearchCriteriaDialog.setVisible(true);
+		badStockReturnSearchCriteriaDialog.setVisible(true);
 		
-		AdjustmentInSearchCriteria criteria = adjustmentInSearchCriteriaDialog.getSearchCriteria();
+		BadStockReturnSearchCriteria criteria = badStockReturnSearchCriteriaDialog.getSearchCriteria();
 		if (criteria != null) {
-			List<AdjustmentIn> adjustmentIns = badStockReturnService.search(criteria);
-			table.setAdjustmentIns(adjustmentIns);
-			if (!adjustmentIns.isEmpty()) {
+			List<BadStockReturn> badStockReturns = badStockReturnService.search(criteria);
+			tableModel.setBadStockReturns(badStockReturns);
+			if (!badStockReturns.isEmpty()) {
 				table.changeSelection(0, 0, false, false);
 				table.requestFocusInWindow();
 			} else {
 				showMessage("No matching records");
 			}
 		}
-		*/
 	}
 
 	private class BadStockReturnsTableModel extends AbstractTableModel {

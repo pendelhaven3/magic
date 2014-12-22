@@ -20,6 +20,7 @@ import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.BadStockReturnSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao {
@@ -146,6 +147,11 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 		
 		List<Object> params = new ArrayList<>();
 		
+		if (criteria.getBadStockReturnNumber() != null) {
+			sql.append(" and a.BAD_STOCK_RETURN_NO = ?");
+			params.add(criteria.getBadStockReturnNumber());
+		}
+		
 		if (criteria.getPosted() != null) {
 			sql.append(" and a.POST_IND = ?");
 			params.add(criteria.getPosted() ? "Y" : "N");
@@ -154,6 +160,16 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 		if (criteria.getPaid() != null) {
 			sql.append(" and a.PAID_IND = ?");
 			params.add(criteria.getPaid() ? "Y" : "N");
+		}
+		
+		if (criteria.getPostDate() != null) {
+			sql.append(" and a.POST_DT = ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
+		}
+		
+		if (criteria.getCustomer() != null) {
+			sql.append(" and a.CUSTOMER_ID = ?");
+			params.add(criteria.getCustomer().getId());
 		}
 		
 		sql.append(" order by BAD_STOCK_RETURN_NO desc");

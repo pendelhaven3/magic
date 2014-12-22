@@ -50,7 +50,8 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 		return search(criteria);
 	}
 
-	private List<BadStockReturn> search(BadStockReturnSearchCriteria criteria) {
+	@Override
+	public List<BadStockReturn> search(BadStockReturnSearchCriteria criteria) {
 		List<BadStockReturn> badStockReturns = badStockReturnDao.search(criteria);
 		for (BadStockReturn badStockReturn : badStockReturns) {
 			badStockReturn.setItems(badStockReturnItemDao.findAllByBadStockReturn(badStockReturn));
