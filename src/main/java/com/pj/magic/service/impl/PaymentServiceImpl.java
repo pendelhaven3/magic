@@ -193,9 +193,13 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 		
 		for (PaymentAdjustment adjustment : updated.getAdjustments()) {
+			if (adjustment.getReferenceNumber() == null) {
+				continue;
+			}
+			
 			long referenceNumber = Long.valueOf(adjustment.getReferenceNumber());
 			switch (adjustment.getAdjustmentType()) {
-			case "SALES RETURN":
+			case PaymentAdjustment.SALES_RETURN_TYPE:
 				SalesReturn salesReturn = salesReturnDao.findBySalesReturnNumber(referenceNumber);
 				if (salesReturn.isPaid()) {
 					throw new RuntimeException("Sales Return " + salesReturn.getSalesReturnNumber() + " is already paid");
@@ -207,7 +211,7 @@ public class PaymentServiceImpl implements PaymentService {
 				salesReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				salesReturnDao.save(salesReturn);
 				break;
-			case "BAD STOCK RETURN":
+			case PaymentAdjustment.BAD_STOCK_RETURN_TYPE:
 				BadStockReturn badStockReturn = badStockReturnDao.findByBadStockReturnNumber(referenceNumber);
 				if (badStockReturn.isPaid()) {
 					throw new RuntimeException("Bad Stock Return " + badStockReturn.getBadStockReturnNumber() + " is already paid");

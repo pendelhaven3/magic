@@ -7,8 +7,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputMap;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
@@ -25,8 +23,8 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.AmountCellEditor;
 import com.pj.magic.gui.component.MagicCellEditor;
-import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.component.RequiredFieldCellEditor;
 import com.pj.magic.gui.tables.models.PaymentAdjustmentsTableModel;
 import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
 import com.pj.magic.model.BadStockReturn;
@@ -62,11 +60,10 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	}
 	
 	private void initializeColumns() {
-		adjustmentTypeComboBox = new MagicComboBox<>();
-		adjustmentTypeComboBox.setModel(
-				new DefaultComboBoxModel<>(new String[] {"SALES RETURN", "BAD STOCK RETURN"}));
+		MagicTextField adjustmentTypeTextField = new MagicTextField();
+		adjustmentTypeTextField.setMaximumLength(20);
 		columnModel.getColumn(ADJUSTMENT_TYPE_COLUMN_INDEX)
-			.setCellEditor(new DefaultCellEditor(adjustmentTypeComboBox));
+			.setCellEditor(new RequiredFieldCellEditor(adjustmentTypeTextField, "Adjustment Type"));
 
 		MagicTextField referenceNumberTextField = new MagicTextField();
 		referenceNumberTextField.setMaximumLength(20);
@@ -226,7 +223,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	public class ReferenceNumberCellEditor extends MagicCellEditor {
 
 		private final List<String> specialLogicAdjustmentTypes = 
-				Arrays.asList("SALES RETURN", "BAD STOCK RETURN");
+				Arrays.asList(PaymentAdjustment.SALES_RETURN_TYPE, PaymentAdjustment.BAD_STOCK_RETURN_TYPE);
 		
 		public ReferenceNumberCellEditor(JTextField textField) {
 			super(textField);
@@ -246,10 +243,10 @@ public class PaymentAdjustmentsTable extends MagicTable {
 			} else {
 				long referenceNumber = Long.parseLong(referenceNumberString);
 				switch (rowItem.getAdjustmentType()) {
-				case "SALES RETURN":
+				case PaymentAdjustment.SALES_RETURN_TYPE:
 					valid = validateSalesReturn(referenceNumber);
 					break;
-				case "BAD STOCK RETURN":
+				case PaymentAdjustment.BAD_STOCK_RETURN_TYPE:
 					valid = validateBadStockReturn(referenceNumber);
 					break;
 				}

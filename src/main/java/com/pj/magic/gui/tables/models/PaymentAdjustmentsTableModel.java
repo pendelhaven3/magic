@@ -20,6 +20,7 @@ import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.NumberUtil;
 
 @Component
 public class PaymentAdjustmentsTableModel extends AbstractTableModel {
@@ -97,12 +98,12 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 			if (!StringUtils.isEmpty(val)) {
 				rowItem.setReferenceNumber(val);
 				
-				if ("SALES RETURN".equals(rowItem.getAdjustmentType())) {
+				if (PaymentAdjustment.SALES_RETURN_TYPE.equals(rowItem.getAdjustmentType())) {
 					SalesReturn salesReturn = salesReturnService
 							.findSalesReturnBySalesReturnNumber(Long.parseLong(val));
 					rowItem.setAmount(salesReturn.getTotalAmount());
 					columnIndex = PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX;
-				} else if ("BAD STOCK RETURN".equals(rowItem.getAdjustmentType())) {
+				} else if (PaymentAdjustment.BAD_STOCK_RETURN_TYPE.equals(rowItem.getAdjustmentType())) {
 					BadStockReturn badStockReturn = badStockReturnService
 							.findBadStockReturnByBadStockReturnNumber(Long.parseLong(val));
 					rowItem.setAmount(badStockReturn.getTotalAmount());
@@ -112,6 +113,13 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 				rowItem.setReferenceNumber(null);
 			}
 			
+			break;
+		case PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX:
+			String amount = (String)value;
+			if (NumberUtil.toBigDecimal(amount).equals(rowItem.getAmount())) {
+				return;
+			}
+			rowItem.setAmount(NumberUtil.toBigDecimal(amount));
 			break;
 		}
 		
@@ -140,10 +148,8 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 		boolean editable = true;
 		switch (columnIndex) {
 		case PaymentAdjustmentsTable.REFERENCE_NUMBER_COLUMN_INDEX:
-			editable = !StringUtils.isEmpty(rowItem.getAdjustmentType());
-			break;
 		case PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX:
-			editable = false;
+			editable = !StringUtils.isEmpty(rowItem.getAdjustmentType());
 			break;
 		}
 		return editable;

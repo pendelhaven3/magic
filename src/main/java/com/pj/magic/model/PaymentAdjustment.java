@@ -7,9 +7,12 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class PaymentAdjustment {
 
+	public static final String SALES_RETURN_TYPE = "SR";
+	public static final String BAD_STOCK_RETURN_TYPE = "BSR";
+	
 	private Long id;
 	private Payment parent;
-	private String adjustmentType = "SALES RETURN";
+	private String adjustmentType;
 	private BigDecimal amount;
 	private String referenceNumber;
 
