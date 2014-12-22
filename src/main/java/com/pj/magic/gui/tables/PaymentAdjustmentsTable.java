@@ -2,16 +2,22 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputMap;
+import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +25,15 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.AmountCellEditor;
 import com.pj.magic.gui.component.MagicCellEditor;
+import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.gui.component.RequiredFieldCellEditor;
 import com.pj.magic.gui.tables.models.PaymentAdjustmentsTableModel;
 import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
+import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.SalesReturn;
+import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.SalesReturnService;
 
 @Component
@@ -40,8 +48,10 @@ public class PaymentAdjustmentsTable extends MagicTable {
 
 	@Autowired private PaymentAdjustmentsTableModel tableModel;
 	@Autowired private SalesReturnService salesReturnService;
+	@Autowired private BadStockReturnService badStockReturnService;
 	
 	private Payment payment;
+	private JComboBox<String> adjustmentTypeComboBox;
 	
 	@Autowired
 	public PaymentAdjustmentsTable(PaymentAdjustmentsTableModel tableModel) {
@@ -52,10 +62,11 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	}
 	
 	private void initializeColumns() {
-		MagicTextField adjustmentTypeTextField = new MagicTextField();
-		adjustmentTypeTextField.setMaximumLength(20);
+		adjustmentTypeComboBox = new MagicComboBox<>();
+		adjustmentTypeComboBox.setModel(
+				new DefaultComboBoxModel<>(new String[] {"SALES RETURN", "BAD STOCK RETURN"}));
 		columnModel.getColumn(ADJUSTMENT_TYPE_COLUMN_INDEX)
-			.setCellEditor(new RequiredFieldCellEditor(adjustmentTypeTextField, "Adjustment Type"));
+			.setCellEditor(new DefaultCellEditor(adjustmentTypeComboBox));
 
 		MagicTextField referenceNumberTextField = new MagicTextField();
 		referenceNumberTextField.setMaximumLength(20);
@@ -105,7 +116,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	public void setPayment(Payment payment) {
 		clearSelection();
 		this.payment = payment;
-		tableModel.setPayment(payment);	
+		tableModel.setPayment(payment);
 	}
 	
 	protected void registerKeyBindings() {
@@ -178,6 +189,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
+				final AbstractTableModel model = (AbstractTableModel)e.getSource();
 				final int row = e.getFirstRow();
 				final int column = e.getColumn();
 				
@@ -188,9 +200,11 @@ public class PaymentAdjustmentsTable extends MagicTable {
 						switch (column) {
 						case ADJUSTMENT_TYPE_COLUMN_INDEX:
 							selectAndEditCellAt(row, REFERENCE_NUMBER_COLUMN_INDEX);
+							model.fireTableRowsUpdated(row, row);
 							break;
 						case REFERENCE_NUMBER_COLUMN_INDEX:
 							selectAndEditCellAt(row, AMOUNT_COLUMN_INDEX);
+							model.fireTableRowsUpdated(row, row);
 							break;
 						case AMOUNT_COLUMN_INDEX:
 							if (isLastRowSelected()) {
@@ -211,6 +225,9 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	
 	public class ReferenceNumberCellEditor extends MagicCellEditor {
 
+		private final List<String> specialLogicAdjustmentTypes = 
+				Arrays.asList("SALES RETURN", "BAD STOCK RETURN");
+		
 		public ReferenceNumberCellEditor(JTextField textField) {
 			super(textField);
 		}
@@ -218,30 +235,60 @@ public class PaymentAdjustmentsTable extends MagicTable {
 		@Override
 		public boolean stopCellEditing() {
 			PaymentAdjustmentRowItem rowItem = getCurrentlySelectedRowItem();
-			if (!"SALES RETURN".equals(rowItem.getAdjustmentType())) {
+			if (!specialLogicAdjustmentTypes.contains(rowItem.getAdjustmentType())) {
 				return super.stopCellEditing();
 			}
 			
-			String referenceNumber = ((JTextField)getComponent()).getText();
+			String referenceNumberString = ((JTextField)getComponent()).getText();
 			boolean valid = false;
-			if (StringUtils.isEmpty(referenceNumber)) {
-				showErrorMessage("Sales Return reference number must be specified");
+			if (StringUtils.isEmpty(referenceNumberString)) {
+				showErrorMessage("Reference number must be specified");
 			} else {
-				SalesReturn salesReturn = salesReturnService
-						.findSalesReturnBySalesReturnNumber(Long.parseLong(referenceNumber));
-				if (salesReturn == null) {
-					showErrorMessage("Sales Return does not exist");
-				} else if (salesReturn.isPaid()) {
-					showErrorMessage("Sales Return is already paid");
-				} else if (!salesReturn.isPosted()) {
-					showErrorMessage("Sales Return is not yet posted");
-				} else {
-					valid = true;
+				long referenceNumber = Long.parseLong(referenceNumberString);
+				switch (rowItem.getAdjustmentType()) {
+				case "SALES RETURN":
+					valid = validateSalesReturn(referenceNumber);
+					break;
+				case "BAD STOCK RETURN":
+					valid = validateBadStockReturn(referenceNumber);
+					break;
 				}
 			}
 			return (valid) ? super.stopCellEditing() : false;
 		}
 
+	}
+
+	private boolean validateBadStockReturn(long badStockReturnNumber) {
+		boolean valid = false;
+		BadStockReturn badStockReturn = badStockReturnService
+				.findBadStockReturnByBadStockReturnNumber(badStockReturnNumber);
+		if (badStockReturn == null) {
+			showErrorMessage("Bad Stock Return does not exist");
+		} else if (badStockReturn.isPaid()) {
+			showErrorMessage("Bad Stock Return is already paid");
+		} else if (!badStockReturn.isPosted()) {
+			showErrorMessage("Bad Stock Return is not yet posted");
+		} else {
+			valid = true;
+		}
+		return valid;
+	}
+
+	private boolean validateSalesReturn(long salesReturnNumber) {
+		boolean valid = false;
+		SalesReturn salesReturn = salesReturnService
+				.findSalesReturnBySalesReturnNumber(salesReturnNumber);
+		if (salesReturn == null) {
+			showErrorMessage("Sales Return does not exist");
+		} else if (salesReturn.isPaid()) {
+			showErrorMessage("Sales Return is already paid");
+		} else if (!salesReturn.isPosted()) {
+			showErrorMessage("Sales Return is not yet posted");
+		} else {
+			valid = true;
+		}
+		return valid;
 	}
 	
 }

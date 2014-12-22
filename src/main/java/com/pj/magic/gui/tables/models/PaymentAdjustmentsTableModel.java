@@ -12,13 +12,14 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.PaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
+import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.SalesReturn;
+import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.FormatterUtil;
-import com.pj.magic.util.NumberUtil;
 
 @Component
 public class PaymentAdjustmentsTableModel extends AbstractTableModel {
@@ -27,6 +28,7 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 	
 	@Autowired private PaymentService paymentService;
 	@Autowired private SalesReturnService salesReturnService;
+	@Autowired private BadStockReturnService badStockReturnService;
 	
 	private List<PaymentAdjustmentRowItem> rowItems = new ArrayList<>();
 	private Payment payment;
@@ -79,10 +81,13 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 		String val = (String)value;
 		switch (columnIndex) {
 		case PaymentAdjustmentsTable.ADJUSTMENT_TYPE_COLUMN_INDEX:
-			if (val.equals(rowItem.getAdjustmentType())) {
+			if (val != null && val.equals(rowItem.getAdjustmentType())) {
+				fireTableCellUpdated(rowIndex, columnIndex);
 				return;
 			}
 			rowItem.setAdjustmentType(val);
+			rowItem.setReferenceNumber(null);
+			rowItem.setAmount(null);
 			break;
 		case PaymentAdjustmentsTable.REFERENCE_NUMBER_COLUMN_INDEX:
 			if (val.equals(rowItem.getReferenceNumber())) {
@@ -97,18 +102,16 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 							.findSalesReturnBySalesReturnNumber(Long.parseLong(val));
 					rowItem.setAmount(salesReturn.getTotalAmount());
 					columnIndex = PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX;
+				} else if ("BAD STOCK RETURN".equals(rowItem.getAdjustmentType())) {
+					BadStockReturn badStockReturn = badStockReturnService
+							.findBadStockReturnByBadStockReturnNumber(Long.parseLong(val));
+					rowItem.setAmount(badStockReturn.getTotalAmount());
+					columnIndex = PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX;
 				}
 			} else {
 				rowItem.setReferenceNumber(null);
 			}
 			
-			break;
-		case PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX:
-			String amount = (String)value;
-			if (NumberUtil.toBigDecimal(amount).equals(rowItem.getAmount())) {
-				return;
-			}
-			rowItem.setAmount(NumberUtil.toBigDecimal(amount));
 			break;
 		}
 		
@@ -136,8 +139,11 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 		PaymentAdjustmentRowItem rowItem = rowItems.get(rowIndex);
 		boolean editable = true;
 		switch (columnIndex) {
-		case PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX:
+		case PaymentAdjustmentsTable.REFERENCE_NUMBER_COLUMN_INDEX:
 			editable = !StringUtils.isEmpty(rowItem.getAdjustmentType());
+			break;
+		case PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX:
+			editable = false;
 			break;
 		}
 		return editable;

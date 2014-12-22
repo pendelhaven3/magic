@@ -155,5 +155,18 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 		
 		return getJdbcTemplate().query(sql.toString(), badStockReturnRowMapper, params.toArray());
 	}
+
+	private static final String FIND_BY_BAD_STOCK_RETURN_NUMBER_SQL = BASE_SELECT_SQL +
+			" where a.BAD_STOCK_RETURN_NO = ?";
+	
+	@Override
+	public BadStockReturn findByBadStockReturnNumber(long badStockReturnNumber) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_BAD_STOCK_RETURN_NUMBER_SQL,
+					badStockReturnRowMapper, badStockReturnNumber);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
 	
 }

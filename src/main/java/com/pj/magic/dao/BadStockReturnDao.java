@@ -13,4 +13,6 @@ public interface BadStockReturnDao {
 
 	List<BadStockReturn> search(BadStockReturnSearchCriteria criteria);
 
+	BadStockReturn findByBadStockReturnNumber(long badStockReturnNumber);
+
 }

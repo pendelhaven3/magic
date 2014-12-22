@@ -36,7 +36,9 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 	@Override
 	public BadStockReturn getBadStockReturn(long id) {
 		BadStockReturn badStockReturn = badStockReturnDao.get(id);
-		badStockReturn.setItems(badStockReturnItemDao.findAllByBadStockReturn(badStockReturn));
+		if (badStockReturn != null) {
+			badStockReturn.setItems(badStockReturnItemDao.findAllByBadStockReturn(badStockReturn));
+		}
 		return badStockReturn;
 	}
 
@@ -98,6 +100,15 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 		updated.setPaidBy(loginService.getLoggedInUser());
 		updated.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 		badStockReturnDao.save(updated);
+	}
+
+	@Override
+	public BadStockReturn findBadStockReturnByBadStockReturnNumber(long badStockReturnNumber) {
+		BadStockReturn badStockReturn = badStockReturnDao.findByBadStockReturnNumber(badStockReturnNumber);
+		if (badStockReturn != null) {
+			badStockReturn.setItems(badStockReturnItemDao.findAllByBadStockReturn(badStockReturn));
+		}
+		return badStockReturn;
 	}
 
 }

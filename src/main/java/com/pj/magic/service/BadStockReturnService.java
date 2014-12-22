@@ -22,5 +22,7 @@ public interface BadStockReturnService {
 	List<BadStockReturn> getAllBadStockReturns();
 
 	void markAsPaid(BadStockReturn badStockReturn);
+
+	BadStockReturn findBadStockReturnByBadStockReturnNumber(long badStockReturnNumber);
 	
 }

@@ -9,7 +9,7 @@ public class PaymentAdjustment {
 
 	private Long id;
 	private Payment parent;
-	private String adjustmentType;
+	private String adjustmentType = "SALES RETURN";
 	private BigDecimal amount;
 	private String referenceNumber;
 
