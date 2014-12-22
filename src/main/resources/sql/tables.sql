@@ -576,6 +576,7 @@ create table BAD_STOCK_RETURN (
   PAID_DT datetime null,
   PAID_BY integer null,
   PAYMENT_TERMINAL_ID integer null,
+  REMARKS varchar(100) null,
   constraint BAD_STOCK_RETURN$PK primary key (ID),
   constraint BAD_STOCK_RETURN$UK unique (BAD_STOCK_RETURN_NO),
   constraint BAD_STOCK_RETURN$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),

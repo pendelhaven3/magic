@@ -9,3 +9,4 @@ update BAD_STOCK_RETURN set PAID_IND = 'Y', PAID_DT = POST_DT, PAID_BY = POST_BY
 where POST_IND = 'Y';
 
 alter table SALES_RETURN add REMARKS varchar(100) null;
+alter table BAD_STOCK_RETURN add REMARKS varchar(100) null;

@@ -29,7 +29,7 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, BAD_STOCK_RETURN_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY,"
-			+ " PAID_IND, PAID_DT, PAID_BY, PAYMENT_TERMINAL_ID,"
+			+ " PAID_IND, PAID_DT, PAID_BY, PAYMENT_TERMINAL_ID, a.REMARKS,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
 			+ " d.USERNAME as PAID_BY_USERNAME,"
@@ -68,7 +68,7 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 
 	private static final String UPDATE_SQL = 
 			"update BAD_STOCK_RETURN set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
-			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ? where ID = ?";
+			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ?, REMARKS = ? where ID = ?";
 	
 	private void update(BadStockReturn badStockReturn) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -80,6 +80,7 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 				badStockReturn.isPaid() ? badStockReturn.getPaidDate() : null,
 				badStockReturn.isPaid() ? badStockReturn.getPaidBy().getId() : null,
 				badStockReturn.isPaid() ? badStockReturn.getPaymentTerminal().getId() : null,
+				badStockReturn.getRemarks(),
 				badStockReturn.getId());
 	}
 
@@ -134,6 +135,8 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 				badStockReturn.setPaidDate(rs.getTimestamp("PAID_DT"));
 				badStockReturn.setPaidBy(new User(rs.getLong("PAID_BY"), rs.getString("PAID_BY_USERNAME")));
 			}
+			
+			badStockReturn.setRemarks(rs.getString("REMARKS"));
 			
 			return badStockReturn;
 		}

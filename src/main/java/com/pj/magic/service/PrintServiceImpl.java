@@ -763,6 +763,7 @@ public class PrintServiceImpl implements PrintService {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("currentDate", new Date());
 			reportData.put("badStockReturn", badStockReturn);
+			reportData.put("remarks", StringUtils.defaultString(badStockReturn.getRemarks()));
 			reportData.put("items", pageItems.get(i));
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());

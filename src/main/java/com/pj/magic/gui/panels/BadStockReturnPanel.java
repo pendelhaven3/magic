@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
@@ -71,6 +73,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	private JLabel statusField;
 	private JLabel postDateField;
 	private JLabel postedByField;
+	private MagicTextField remarksField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private JButton postButton;
@@ -95,10 +98,27 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 			}
 		});;
 		
+		remarksField = new MagicTextField();
+		remarksField.setMaximumLength(100);
+		remarksField.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				saveRemarks();
+			}
+		});
+		
 		focusOnComponentWhenThisPanelIsDisplayed(customerCodeField);
 		updateTotalAmountFieldWhenItemsTableChanges();
 	}
 
+	private void saveRemarks() {
+		if (!remarksField.getText().equals(badStockReturn.getRemarks())) {
+			badStockReturn.setRemarks(remarksField.getText());
+			badStockReturnService.save(badStockReturn);
+		}
+	}
+	
 	private void selectCustomer() {
 		selectCustomerDialog.searchActiveCustomers(customerCodeField.getText());
 		selectCustomerDialog.setVisible(true);
@@ -107,14 +127,14 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		if (customer != null) {
 			if (badStockReturn.getCustomer() != null && badStockReturn.getCustomer().equals(customer)) {
 				// skip saving Bad Stock Return since there is no change
-				itemsTable.highlight();
+				remarksField.requestFocusInWindow();
 				return;
 			} else {
 				badStockReturn.setCustomer(customer);
 				try {
 					badStockReturnService.save(badStockReturn);
 					updateDisplay(badStockReturn);
-					itemsTable.highlight();
+					remarksField.requestFocusInWindow();
 				} catch (Exception e) {
 					logger.error(e.getMessage(), e);
 					showMessageForUnexpectedError();
@@ -142,13 +162,21 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 				selectCustomer();
 			}
 		});
+		
+		remarksField.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.highlight();
+			}
+		});
 	}
 
 	private void saveCustomer() {
 		if (badStockReturn.getCustomer() != null) {
 			if (badStockReturn.getCustomer().getCode().equals(customerCodeField.getText())) {
 				// skip saving Bad Stock Return since there is no change in customer
-				itemsTable.highlight();
+				remarksField.requestFocusInWindow();
 				return;
 			}
 		}
@@ -167,7 +195,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 			try {
 				badStockReturnService.save(badStockReturn);
 				updateDisplay(badStockReturn);
-				itemsTable.highlight();
+				remarksField.requestFocusInWindow();
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showMessageForUnexpectedError();
@@ -219,6 +247,8 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		} else {
 			postedByField.setText(null);
 		}
+		remarksField.setText(badStockReturn.getRemarks());
+		remarksField.setEnabled(!badStockReturn.isPosted());
 		totalItemsField.setText(String.valueOf(badStockReturn.getTotalItems()));
 		totalAmountField.setText(badStockReturn.getTotalAmount().toString());
 		postButton.setEnabled(!badStockReturn.isPosted());
@@ -240,6 +270,8 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		statusField.setText(null);
 		postDateField.setText(null);
 		postedByField.setText(null);
+		remarksField.setText(null);
+		remarksField.setEnabled(false);
 		totalItemsField.setText(null);
 		totalAmountField.setText(null);
 		itemsTable.setBadStockReturn(badStockReturn);
@@ -338,6 +370,21 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		postedByField = ComponentUtil.createLabel(100, "");
 		mainPanel.add(postedByField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Remarks:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		remarksField.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(remarksField, c);
 		
 		currentRow++;
 		

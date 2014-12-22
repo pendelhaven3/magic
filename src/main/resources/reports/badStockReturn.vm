@@ -16,7 +16,9 @@ $report.field($item.product.description, 40) $report.field($item.unit, 4) $repor
 
                                                               ----------
                                                Total Amount P $report.field($badStockReturn.totalAmount, 10, "right")
-  Prepared by   :                                             ==========                    
+  Prepared by   : $report.field($badStockReturn.postedBy.username, 15)                             ==========                    
   Verified by   :
   Total Items   : $report.field($badStockReturn.items.size(), 5, "right")              Approved by :
+  
+  Remarks       : $remarks
 #end

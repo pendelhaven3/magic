@@ -19,6 +19,7 @@ public class BadStockReturn {
 	private Date paidDate;
 	private User paidBy;
 	private PaymentTerminal paymentTerminal;
+	private String remarks;
 	
 	private List<BadStockReturnItem> items = new ArrayList<>();
 
@@ -142,6 +143,14 @@ public class BadStockReturn {
 
 	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
 		this.paymentTerminal = paymentTerminal;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 	
 }
