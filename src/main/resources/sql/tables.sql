@@ -475,6 +475,7 @@ create table SALES_RETURN (
   PAID_DT datetime null,
   PAID_BY integer null,
   PAYMENT_TERMINAL_ID integer null,
+  REMARKS varchar(100) null,
   constraint SALES_RETURN$PK primary key (ID),
   constraint SALES_RETURN$UK unique (SALES_RETURN_NO),
   constraint SALES_RETURN$FK foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID),

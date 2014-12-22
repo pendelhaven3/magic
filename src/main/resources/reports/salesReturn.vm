@@ -17,7 +17,9 @@ $report.field($item.salesInvoiceItem.product.description, 40) $report.field($ite
 
                                                               ----------
                                                Total Amount P $report.field($salesReturn.totalAmount, 10, "right")
-  Prepared by   :                                             ==========                    
+  Prepared by   : $report.field($salesReturn.postedBy.username, 15)                             ==========                    
   Verified by   :
   Total Items   : $report.field($salesReturn.items.size(), 5, "right")              Approved by :
+  
+  Remarks       : $remarks
 #end

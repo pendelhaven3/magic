@@ -19,6 +19,7 @@ public class SalesReturn {
 	private Date paidDate;
 	private User paidBy;
 	private PaymentTerminal paymentTerminal;
+	private String remarks;
 	private List<SalesReturnItem> items = new ArrayList<>();
 
 	public SalesReturn() {
@@ -153,6 +154,14 @@ public class SalesReturn {
 
 	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
 		this.paymentTerminal = paymentTerminal;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 	
 }

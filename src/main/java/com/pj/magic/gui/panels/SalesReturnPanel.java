@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -63,6 +65,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	private JLabel statusField;
 	private JLabel postDateField;
 	private JLabel postedByField;
+	private MagicTextField remarksField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private JButton postButton;
@@ -84,9 +87,26 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		postDateField = new JLabel();
 		postedByField = new JLabel();
 		
+		remarksField = new MagicTextField();
+		remarksField.setMaximumLength(100);
+		remarksField.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				saveRemarks();
+			}
+		});
+		
 		focusOnComponentWhenThisPanelIsDisplayed(salesInvoiceNumberField);
 		
 		updateTotalFieldsWhenItemsTableChanges();
+	}
+
+	private void saveRemarks() {
+		if (!remarksField.getText().equals(salesReturn.getRemarks())) {
+			salesReturn.setRemarks(remarksField.getText());
+			salesReturnService.save(salesReturn);
+		}
 	}
 
 	@Override
@@ -98,6 +118,14 @@ public class SalesReturnPanel extends StandardMagicPanel {
 				saveSalesInvoiceNumber();
 			}
 		});
+		
+		remarksField.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.highlight();
+			}
+		});		
 	}
 
 	private void saveSalesInvoiceNumber() {
@@ -111,7 +139,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		if (salesReturn.getId() != null 
 				&& salesReturn.getSalesInvoice().getSalesInvoiceNumber().equals(salesInvoiceNumber)) {
 			// no changes
-			itemsTable.highlight();
+			remarksField.requestFocusInWindow();
 			return;
 		}
 		
@@ -125,7 +153,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		try {
 			salesReturnService.save(salesReturn);
 			updateDisplay(salesReturn);
-			itemsTable.highlight();
+			remarksField.requestFocusInWindow();
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			showErrorMessage(Constants.UNEXPECTED_ERROR_MESSAGE);
@@ -180,6 +208,8 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		
 		postDateField.setText(salesReturn.isPosted() ? FormatterUtil.formatDate(salesReturn.getPostDate()) : null);
 		postedByField.setText(salesReturn.isPosted() ? salesReturn.getPostedBy().getUsername() : null);
+		remarksField.setText(salesReturn.getRemarks());
+		remarksField.setEnabled(!salesReturn.isPosted());
 		
 		itemsTable.setSalesReturn(salesReturn);
 		
@@ -199,6 +229,8 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		customerField.setText(null);
 		postDateField.setText(null);
 		postedByField.setText(null);
+		remarksField.setText(null);
+		remarksField.setEnabled(false);
 		itemsTable.setSalesReturn(salesReturn);
 		postButton.setEnabled(false);
 		markAsPaidButton.setEnabled(false);
@@ -306,6 +338,21 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		postedByField = ComponentUtil.createLabel(100);
 		mainPanel.add(postedByField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Remarks:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		remarksField.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(remarksField, c);
 		
 		currentRow++;
 		

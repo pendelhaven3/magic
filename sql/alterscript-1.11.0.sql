@@ -7,3 +7,5 @@ alter table BAD_STOCK_RETURN add constraint BAD_STOCK_RETURN$FK4 foreign key (PA
 
 update BAD_STOCK_RETURN set PAID_IND = 'Y', PAID_DT = POST_DT, PAID_BY = POST_BY, PAYMENT_TERMINAL_ID = 2
 where POST_IND = 'Y';
+
+alter table SALES_RETURN add REMARKS varchar(100) null;
