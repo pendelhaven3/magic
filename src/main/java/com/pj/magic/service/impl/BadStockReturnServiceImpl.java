@@ -111,4 +111,11 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 		return badStockReturn;
 	}
 
+	@Override
+	public List<BadStockReturn> getUnpaidBadStockReturns() {
+		BadStockReturnSearchCriteria criteria = new BadStockReturnSearchCriteria();
+		criteria.setPaid(false);
+		return search(criteria);
+	}
+
 }

@@ -53,7 +53,7 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		tableModel.setBadStockReturns(badStockReturnService.getAllBadStockReturns());
+		tableModel.setBadStockReturns(badStockReturnService.getUnpaidBadStockReturns());
 //		adjustmentInSearchCriteriaDialog.updateDisplay();
 	}
 
