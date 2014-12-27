@@ -17,7 +17,7 @@ Time Period : $timePeriod
 $report.time($item.time) $report.field($item.transactionType, 13) $report.field($item.referenceNumber, 6, "right") $report.field($item.customer.name, 30) $report.field($item.transactionDate) $report.field($item.amount, 13, "right") $report.field($item.paymentTerminal.name, 8)
 #end
 #if($isLastPage == true)
-                                                             -------------  
-                                                T O T A L => $report.field($cashFlowReport.totalAmount, 13, "right")
-                                                             =============
+                                                                        -------------  
+                                                           T O T A L => $report.field($cashFlowReport.totalAmount, 13, "right")
+                                                                        =============
 #end

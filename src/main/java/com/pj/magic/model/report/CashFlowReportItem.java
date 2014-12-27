@@ -3,6 +3,7 @@ package com.pj.magic.model.report;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PaymentTerminal;
@@ -36,6 +37,16 @@ public class CashFlowReportItem {
 		transactionDate = salesReturn.getPostDate();
 		amount = salesReturn.getTotalAmount().negate();
 		paymentTerminal = salesReturn.getPaymentTerminal();
+	}
+	
+	public CashFlowReportItem(BadStockReturn badStockReturn) {
+		time = badStockReturn.getPaidDate();
+		transactionType = "BAD STOCK RETURN";
+		referenceNumber = badStockReturn.getBadStockReturnNumber();
+		customer = badStockReturn.getCustomer();
+		transactionDate = badStockReturn.getPaidDate();
+		amount = badStockReturn.getTotalAmount().negate();
+		paymentTerminal = badStockReturn.getPaymentTerminal();
 	}
 	
 	public Date getTime() {

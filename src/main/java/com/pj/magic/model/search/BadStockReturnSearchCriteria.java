@@ -3,6 +3,8 @@ package com.pj.magic.model.search;
 import java.util.Date;
 
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerminal;
+import com.pj.magic.model.util.TimePeriod;
 
 public class BadStockReturnSearchCriteria {
 
@@ -11,6 +13,9 @@ public class BadStockReturnSearchCriteria {
 	private Boolean paid;
 	private Customer customer;
 	private Date postDate;
+	private Date paidDate;
+	private TimePeriod timePeriod;
+	private PaymentTerminal paymentTerminal;
 
 	public Boolean getPosted() {
 		return posted;
@@ -50,6 +55,30 @@ public class BadStockReturnSearchCriteria {
 
 	public void setPostDate(Date postDate) {
 		this.postDate = postDate;
+	}
+
+	public Date getPaidDate() {
+		return paidDate;
+	}
+
+	public void setPaidDate(Date paidDate) {
+		this.paidDate = paidDate;
+	}
+
+	public TimePeriod getTimePeriod() {
+		return timePeriod;
+	}
+
+	public void setTimePeriod(TimePeriod timePeriod) {
+		this.timePeriod = timePeriod;
+	}
+
+	public PaymentTerminal getPaymentTerminal() {
+		return paymentTerminal;
+	}
+
+	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
+		this.paymentTerminal = paymentTerminal;
 	}
 	
 }

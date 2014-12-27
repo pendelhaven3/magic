@@ -18,8 +18,10 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.BadStockReturnDao;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.BadStockReturnSearchCriteria;
+import com.pj.magic.model.util.TimePeriod;
 import com.pj.magic.util.DbUtil;
 
 @Repository
@@ -134,6 +136,8 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 			if (badStockReturn.isPaid()) {
 				badStockReturn.setPaidDate(rs.getTimestamp("PAID_DT"));
 				badStockReturn.setPaidBy(new User(rs.getLong("PAID_BY"), rs.getString("PAID_BY_USERNAME")));
+				badStockReturn.setPaymentTerminal(new PaymentTerminal(
+						rs.getLong("PAYMENT_TERMINAL_ID"), rs.getString("PAYMENT_TERMINAL_NAME")));
 			}
 			
 			badStockReturn.setRemarks(rs.getString("REMARKS"));
@@ -173,6 +177,30 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 		if (criteria.getCustomer() != null) {
 			sql.append(" and a.CUSTOMER_ID = ?");
 			params.add(criteria.getCustomer().getId());
+		}
+		
+		if (criteria.getPaidDate() != null) {
+			if (criteria.getTimePeriod() != null) {
+				if (criteria.getTimePeriod() == TimePeriod.MORNING_ONLY) {
+					sql.append(" and PAID_DT >= ? and PAID_DT < date_add(?, interval 13 hour)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+				} else if (criteria.getTimePeriod() == TimePeriod.AFTERNOON_ONLY) {
+					sql.append(" and PAID_DT >= date_add(?, interval 13 hour)"
+							+ " and PAID_DT < date_add(?, interval 1 day)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+				}
+			} else {
+				sql.append(" and PAID_DT >= ? and PAID_DT < date_add(?, interval 1 day)");
+				params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+				params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+			}
+		}
+		
+		if (criteria.getPaymentTerminal() != null) {
+			sql.append(" and PAYMENT_TERMINAL_ID = ?");
+			params.add(criteria.getPaymentTerminal().getId());
 		}
 		
 		sql.append(" order by BAD_STOCK_RETURN_NO desc");
