@@ -18,6 +18,7 @@ import com.pj.magic.gui.panels.AdjustmentInListPanel;
 import com.pj.magic.gui.panels.AdjustmentInPanel;
 import com.pj.magic.gui.panels.AdjustmentOutListPanel;
 import com.pj.magic.gui.panels.AdjustmentOutPanel;
+import com.pj.magic.gui.panels.AdjustmentTypeListPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportListPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportPanel;
 import com.pj.magic.gui.panels.AreaListPanel;
@@ -31,6 +32,7 @@ import com.pj.magic.gui.panels.InventoryCheckListPanel;
 import com.pj.magic.gui.panels.InventoryCheckPanel;
 import com.pj.magic.gui.panels.LoginPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
+import com.pj.magic.gui.panels.MaintainAdjustmentTypePanel;
 import com.pj.magic.gui.panels.MaintainAreaPanel;
 import com.pj.magic.gui.panels.MaintainCustomerPanel;
 import com.pj.magic.gui.panels.MaintainManufacturerPanel;
@@ -81,6 +83,7 @@ import com.pj.magic.gui.panels.menu.SalesMenuPanel;
 import com.pj.magic.gui.panels.menu.StockMovementMenuPanel;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
+import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.BadStockReturn;
@@ -180,6 +183,8 @@ public class MagicFrame extends JFrame {
 	private static final String BAD_STOCK_RETURN_LIST_PANEL = "BAD_STOCK_RETURN_LIST_PANEL";
 	private static final String BAD_STOCK_RETURN_PANEL = "BAD_STOCK_RETURN_PANEL";
 	private static final String CASH_FLOW_REPORT_PANEL = "CASH_FLOW_REPORT_PANEL";
+	private static final String ADJUSTMENT_TYPE_LIST_PANEL = "ADJUSTMENT_TYPE_LIST_PANEL";
+	private static final String MAINTAIN_ADJUSTMENT_TYPE_PANEL = "MAINTAIN_ADJUSTMENT_TYPE_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -246,6 +251,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private BadStockReturnListPanel badStockReturnListPanel;
 	@Autowired private BadStockReturnPanel badStockReturnPanel;
 	@Autowired private CashFlowReportPanel cashFlowReportPanel;
+	@Autowired private AdjustmentTypeListPanel adjustmentTypeListPanel;
+	@Autowired private MaintainAdjustmentTypePanel maintainAdjustmentTypePanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -359,6 +366,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(badStockReturnListPanel, BAD_STOCK_RETURN_LIST_PANEL);
 		panelHolder.add(badStockReturnPanel, BAD_STOCK_RETURN_PANEL);
 		panelHolder.add(cashFlowReportPanel, CASH_FLOW_REPORT_PANEL);
+		panelHolder.add(adjustmentTypeListPanel, ADJUSTMENT_TYPE_LIST_PANEL);
+		panelHolder.add(maintainAdjustmentTypePanel, MAINTAIN_ADJUSTMENT_TYPE_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -856,6 +865,27 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Cash Flow Report");
 		cashFlowReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, CASH_FLOW_REPORT_PANEL);
+	}
+
+	public void switchToAdjustmentTypeListPanel() {
+		addPanelNameToTitle("Adjustment Type List");
+		adjustmentTypeListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADJUSTMENT_TYPE_LIST_PANEL);
+	}
+
+	public void switchToEditAdjustmentTypePanel(AdjustmentType type) {
+		addPanelNameToTitle("Edit Adjustment Type");
+		switchToMaintainAdjustmentTypePanel(type);
+	}
+	
+	public void switchToAddNewAdjustmentTypePanel() {
+		addPanelNameToTitle("Add New Adjustment Type");
+		switchToMaintainAdjustmentTypePanel(new AdjustmentType());
+	}
+	
+	private void switchToMaintainAdjustmentTypePanel(AdjustmentType type) {
+		maintainAdjustmentTypePanel.updateDisplay(type);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_ADJUSTMENT_TYPE_PANEL);
 	}
 
 }

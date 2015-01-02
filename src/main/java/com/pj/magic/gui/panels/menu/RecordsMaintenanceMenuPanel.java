@@ -97,6 +97,9 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 		case "Product Category List":
 			getMagicFrame().switchToProductCategoryListPanel();
 			break;
+		case "Adjustment Type List":
+			getMagicFrame().switchToAdjustmentTypeListPanel();
+			break;
 		case "Area List":
 			getMagicFrame().switchToAreaListPanel();
 			break;
@@ -116,6 +119,7 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 				"Manufacturer List",
 				"Payment Term List",
 				"Product Category List",
+				"Adjustment Type List",
 				"Area List"
 		);
 		
