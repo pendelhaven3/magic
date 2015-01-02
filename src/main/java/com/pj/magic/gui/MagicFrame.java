@@ -60,6 +60,7 @@ import com.pj.magic.gui.panels.PurchaseOrderListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderPanel;
 import com.pj.magic.gui.panels.ReceivingReceiptListPanel;
 import com.pj.magic.gui.panels.ReceivingReceiptPanel;
+import com.pj.magic.gui.panels.RemittanceReportPanel;
 import com.pj.magic.gui.panels.ResetPasswordPanel;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.panels.SalesInvoicePanel;
@@ -185,6 +186,7 @@ public class MagicFrame extends JFrame {
 	private static final String CASH_FLOW_REPORT_PANEL = "CASH_FLOW_REPORT_PANEL";
 	private static final String ADJUSTMENT_TYPE_LIST_PANEL = "ADJUSTMENT_TYPE_LIST_PANEL";
 	private static final String MAINTAIN_ADJUSTMENT_TYPE_PANEL = "MAINTAIN_ADJUSTMENT_TYPE_PANEL";
+	private static final String REMITTANCE_REPORT_PANEL = "REMITTANCE_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -253,6 +255,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private CashFlowReportPanel cashFlowReportPanel;
 	@Autowired private AdjustmentTypeListPanel adjustmentTypeListPanel;
 	@Autowired private MaintainAdjustmentTypePanel maintainAdjustmentTypePanel;
+	@Autowired private RemittanceReportPanel remittanceReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -368,6 +371,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(cashFlowReportPanel, CASH_FLOW_REPORT_PANEL);
 		panelHolder.add(adjustmentTypeListPanel, ADJUSTMENT_TYPE_LIST_PANEL);
 		panelHolder.add(maintainAdjustmentTypePanel, MAINTAIN_ADJUSTMENT_TYPE_PANEL);
+		panelHolder.add(remittanceReportPanel, REMITTANCE_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -886,6 +890,12 @@ public class MagicFrame extends JFrame {
 	private void switchToMaintainAdjustmentTypePanel(AdjustmentType type) {
 		maintainAdjustmentTypePanel.updateDisplay(type);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_ADJUSTMENT_TYPE_PANEL);
+	}
+
+	public void switchToRemittanceReportPanel() {
+		addPanelNameToTitle("Remittance Report");
+		remittanceReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, REMITTANCE_REPORT_PANEL);
 	}
 
 }

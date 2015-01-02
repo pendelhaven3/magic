@@ -7,6 +7,8 @@ import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
+import com.pj.magic.model.search.PaymentCashPaymentSearchCriteria;
+import com.pj.magic.model.search.PaymentCheckPaymentSearchCriteria;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 
@@ -44,4 +46,8 @@ public interface PaymentService {
 	
 	void cancel(Payment payment);
 
+	List<PaymentCashPayment> searchPaymentCashPayments(PaymentCashPaymentSearchCriteria criteria);
+	
+	List<PaymentCheckPayment> searchPaymentCheckPayments(PaymentCheckPaymentSearchCriteria criteria);
+	
 }

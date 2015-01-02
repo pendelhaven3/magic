@@ -19,6 +19,7 @@ import com.pj.magic.model.report.CashFlowReport;
 import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PostedSalesReport;
+import com.pj.magic.model.report.RemittanceReport;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
 
@@ -97,5 +98,9 @@ public interface PrintService {
 	void print(CashFlowReport report);
 
 	List<String> generateReportAsString(CashFlowReport report);
+
+	List<String> generateReportAsString(RemittanceReport report);
+
+	void print(RemittanceReport createRemittanceReport);
 	
 }

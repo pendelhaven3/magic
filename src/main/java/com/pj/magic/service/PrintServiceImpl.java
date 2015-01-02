@@ -34,6 +34,7 @@ import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
@@ -54,6 +55,7 @@ import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
 import com.pj.magic.model.report.PostedSalesReport;
 import com.pj.magic.model.report.PostedSalesReportItem;
+import com.pj.magic.model.report.RemittanceReport;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.model.util.InventoryCheckSummaryPrintItem;
@@ -90,12 +92,14 @@ public class PrintServiceImpl implements PrintService {
 	private static final int SALES_RETURN_ITEMS_PER_PAGE = 44;
 	private static final int BAD_STOCK_RETURN_ITEMS_PER_PAGE = 44;
 	private static final int CASH_FLOW_REPORT_ITEMS_PER_PAGE = 44;
+	private static final int REMITTANCE_REPORT_ITEMS_PER_PAGE = 44;
 	
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
 	public static final int POSTED_SALES_AND_PROFIT_REPORT_CHARACTERS_PER_LINE = 115;
 	public static final int PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE = 101;
 	public static final int CASH_FLOW_REPORT_CHARACTERS_PER_LINE = 94;
+	public static final int REMITTANCE_REPORT_CHARACTERS_PER_LINE = 90;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -821,6 +825,45 @@ public class PrintServiceImpl implements PrintService {
 			printPages.add(generateReportAsString("reports/cashFlowReport.vm", reportData));
 		}
 		return printPages;
+	}
+
+	@Override
+	public List<String> generateReportAsString(RemittanceReport report) {
+		List<List<PaymentCheckPayment>> pageItems = Lists.partition(report.getCheckPayments(), 
+				REMITTANCE_REPORT_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("remittanceReport", report);
+			reportData.put("charsPerLine", REMITTANCE_REPORT_CHARACTERS_PER_LINE);
+			if (report.getPaymentTerminal() != null) {
+				reportData.put("paymentTerminal", report.getPaymentTerminal().getName());
+			} else {
+				reportData.put("paymentTerminal", "ANY");
+			}
+			if (report.getTimePeriod() != null) {
+				reportData.put("timePeriod", report.getTimePeriod().getDescription());
+			} else {
+				reportData.put("timePeriod", "WHOLE DAY");
+			}
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/remittanceReport.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(RemittanceReport report) {
+		try {
+			for (String printPage : generateReportAsString(report)) {
+				PrinterUtil.printWithCondensedFont(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 	
 }

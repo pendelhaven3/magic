@@ -28,6 +28,8 @@ import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.PaymentCashPaymentSearchCriteria;
+import com.pj.magic.model.search.PaymentCheckPaymentSearchCriteria;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
@@ -250,6 +252,18 @@ public class PaymentServiceImpl implements PaymentService {
 		payment.setCancelDate(new Date());
 		payment.setCancelledBy(loginService.getLoggedInUser());
 		paymentDao.save(payment);
+	}
+
+	@Override
+	public List<PaymentCashPayment> searchPaymentCashPayments(
+			PaymentCashPaymentSearchCriteria criteria) {
+		return paymentCashPaymentDao.search(criteria);
+	}
+
+	@Override
+	public List<PaymentCheckPayment> searchPaymentCheckPayments(
+			PaymentCheckPaymentSearchCriteria criteria) {
+		return paymentCheckPaymentDao.search(criteria);
 	}
 	
 }
