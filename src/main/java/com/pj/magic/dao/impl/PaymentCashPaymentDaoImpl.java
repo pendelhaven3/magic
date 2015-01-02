@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -18,6 +19,9 @@ import com.pj.magic.dao.PaymentCashPaymentDao;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.PaymentCashPaymentSearchCriteria;
+import com.pj.magic.model.util.TimePeriod;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PaymentCashPaymentDaoImpl extends MagicDao implements PaymentCashPaymentDao {
@@ -27,7 +31,9 @@ public class PaymentCashPaymentDaoImpl extends MagicDao implements PaymentCashPa
 			+ " b.USERNAME as RECEIVED_BY_USERNAME"
 			+ " from PAYMENT_CASH_PAYMENT a"
 			+ " join USER b"
-			+ "   on b.ID = a.RECEIVED_BY";
+			+ "   on b.ID = a.RECEIVED_BY"
+			+ " join PAYMENT c"
+			+ "   on c.ID = a.PAYMENT_ID";
 	
 	private PaymentCashPaymentRowMapper cashPaymentRowMapper = new PaymentCashPaymentRowMapper();
 	
@@ -113,6 +119,46 @@ public class PaymentCashPaymentDaoImpl extends MagicDao implements PaymentCashPa
 	@Override
 	public void delete(PaymentCashPayment cashPayment) {
 		getJdbcTemplate().update(DELETE_SQL, cashPayment.getId());
+	}
+
+	@Override
+	public List<PaymentCashPayment> search(PaymentCashPaymentSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		if (criteria.getPaid() != null) {
+			sql.append(" and c.POST_IND = ?");
+			params.add(criteria.getPaid() ? "Y" : "N");
+		}
+		
+		if (criteria.getPaymentDate() != null) {
+			if (criteria.getTimePeriod() != null) {
+				if (criteria.getTimePeriod() == TimePeriod.MORNING_ONLY) {
+					sql.append(" and c.POST_DT >= ? and c.POST_DT < date_add(?, interval 13 hour)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+				} else if (criteria.getTimePeriod() == TimePeriod.AFTERNOON_ONLY) {
+					sql.append(" and c.POST_DT >= date_add(?, interval 13 hour)"
+							+ " and c.POST_DT < date_add(?, interval 1 day)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+				}
+			} else {
+				sql.append(" and c.POST_DT >= ? and c.POST_DT < date_add(?, interval 1 day)");
+				params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+				params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+			}
+		}
+		
+		if (criteria.getPaymentTerminal() != null) {
+			sql.append(" and c.PAYMENT_TERMINAL_ID = ?");
+			params.add(criteria.getPaymentTerminal().getId());
+		}
+		
+		sql.append(" order by c.POST_DT");
+		
+		return getJdbcTemplate().query(sql.toString(), cashPaymentRowMapper, params.toArray());
 	}
 	
 }

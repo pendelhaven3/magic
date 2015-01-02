@@ -98,6 +98,9 @@ public class ReportsPanel extends StandardMagicPanel {
 		case "Cash Flow Report":
 			getMagicFrame().switchToCashFlowReportPanel();
 			break;
+		case "Remittance Report":
+			getMagicFrame().switchToRemittanceReportPanel();
+			break;
 		case "Posted Sales and Profit Report":
 			getMagicFrame().switchToPostedSalesAndProfitReportPanel();
 			break;
@@ -118,6 +121,7 @@ public class ReportsPanel extends StandardMagicPanel {
 				"Unpaid Sales Invoices List",
 				"Paid Sales Invoices List",
 				"Cash Flow Report",
+				"Remittance Report",
 				"Posted Sales and Profit Report"
 		);
 		

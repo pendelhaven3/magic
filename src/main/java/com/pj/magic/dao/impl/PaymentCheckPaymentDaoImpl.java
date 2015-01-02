@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -15,15 +16,28 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PaymentCheckPaymentDao;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCheckPayment;
+import com.pj.magic.model.PaymentTerminal;
+import com.pj.magic.model.search.PaymentCheckPaymentSearchCriteria;
+import com.pj.magic.model.util.TimePeriod;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PaymentCheckPaymentDaoImpl extends MagicDao implements PaymentCheckPaymentDao {
 
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, PAYMENT_ID, BANK, CHECK_DT, CHECK_NO, AMOUNT"
-			+ " from PAYMENT_CHECK_PAYMENT a";
+			"select a.ID, PAYMENT_ID, BANK, CHECK_DT, CHECK_NO, AMOUNT,"
+			+ " b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME,"
+			+ " b.PAYMENT_TERMINAL_ID, d.NAME as PAYMENT_TERMINAL_NAME"
+			+ " from PAYMENT_CHECK_PAYMENT a"
+			+ " join PAYMENT b"
+			+ "   on b.ID = a.PAYMENT_ID"
+			+ " join CUSTOMER c"
+			+ "   on c.ID = b.CUSTOMER_ID"
+			+ " left join PAYMENT_TERMINAL d"
+			+ "   on d.ID = b.PAYMENT_TERMINAL_ID";
 	
 	private PaymentCheckPaymentRowMapper checkRowMapper = new PaymentCheckPaymentRowMapper();
 	
@@ -93,6 +107,12 @@ public class PaymentCheckPaymentDaoImpl extends MagicDao implements PaymentCheck
 			check.setCheckDate(rs.getDate("CHECK_DT"));
 			check.setCheckNumber(rs.getString("CHECK_NO"));
 			check.setAmount(rs.getBigDecimal("AMOUNT"));
+			
+			check.getParent().setCustomer(
+					new Customer(rs.getLong("CUSTOMER_ID"), rs.getString("CUSTOMER_NAME")));
+			check.getParent().setPaymentTerminal(new PaymentTerminal(
+					rs.getLong("PAYMENT_TERMINAL_ID"), rs.getString("PAYMENT_TERMINAL_NAME")));
+			
 			return check;
 		}
 		
@@ -111,6 +131,46 @@ public class PaymentCheckPaymentDaoImpl extends MagicDao implements PaymentCheck
 	@Override
 	public void delete(PaymentCheckPayment checkPayment) {
 		getJdbcTemplate().update(DELETE_SQL, checkPayment.getId());
+	}
+
+	@Override
+	public List<PaymentCheckPayment> search(PaymentCheckPaymentSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		if (criteria.getPaid() != null) {
+			sql.append(" and b.POST_IND = ?");
+			params.add(criteria.getPaid() ? "Y" : "N");
+		}
+		
+		if (criteria.getPaymentDate() != null) {
+			if (criteria.getTimePeriod() != null) {
+				if (criteria.getTimePeriod() == TimePeriod.MORNING_ONLY) {
+					sql.append(" and b.POST_DT >= ? and b.POST_DT < date_add(?, interval 13 hour)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+				} else if (criteria.getTimePeriod() == TimePeriod.AFTERNOON_ONLY) {
+					sql.append(" and b.POST_DT >= date_add(?, interval 13 hour)"
+							+ " and b.POST_DT < date_add(?, interval 1 day)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+				}
+			} else {
+				sql.append(" and b.POST_DT >= ? and b.POST_DT < date_add(?, interval 1 day)");
+				params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+				params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
+			}
+		}
+		
+		if (criteria.getPaymentTerminal() != null) {
+			sql.append(" and b.PAYMENT_TERMINAL_ID = ?");
+			params.add(criteria.getPaymentTerminal().getId());
+		}
+		
+		sql.append(" order by b.POST_DT");
+		
+		return getJdbcTemplate().query(sql.toString(), checkRowMapper, params.toArray());
 	}
 	
 }
