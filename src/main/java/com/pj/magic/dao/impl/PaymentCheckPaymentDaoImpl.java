@@ -168,7 +168,7 @@ public class PaymentCheckPaymentDaoImpl extends MagicDao implements PaymentCheck
 			params.add(criteria.getPaymentTerminal().getId());
 		}
 		
-		sql.append(" order by b.POST_DT");
+		sql.append(" order by c.NAME, CHECK_DT");
 		
 		return getJdbcTemplate().query(sql.toString(), checkRowMapper, params.toArray());
 	}
