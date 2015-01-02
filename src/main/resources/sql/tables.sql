@@ -494,6 +494,14 @@ create table SALES_RETURN_ITEM (
   constraint SALES_RETURN_ITEM$FK2 foreign key (SALES_INVOICE_ITEM_ID) references SALES_INVOICE_ITEM (ID)
 );
 
+create table ADJUSTMENT_TYPE (
+  ID integer auto_increment,
+  CODE varchar(12) not null,
+  DESCRIPTION varchar(100) not null,
+  constraint ADJUSTMENT_TYPE$PK primary key (ID),
+  constraint ADJUSTMENT_TYPE$UK unique (CODE)
+);
+
 create table PAYMENT (
   ID integer auto_increment,
   PAYMENT_NO integer not null,

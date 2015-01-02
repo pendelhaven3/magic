@@ -16,6 +16,12 @@ insert into PRICING_SCHEME (ID, NAME) values (1, 'CANVASSER');
 
 insert into USER (ID, USERNAME, PASSWORD, SUPERVISOR_IND) values (1, 'ADMIN', 'jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=', 'Y');
 
+insert into ADJUSTMENT_TYPE (ID, CODE, DESCRIPTION) values (1, 'SR', 'SALES RETURN');
+insert into ADJUSTMENT_TYPE (ID, CODE, DESCRIPTION) values (2, 'BSR', 'BAD STOCK RETURN');
+
+insert into PAYMENT_TERMINAL (ID, NAME) values (1, 'CASHIER');
+insert into PAYMENT_TERMINAL (ID, NAME) values (2, 'OFFICE');
+
 insert into PRODUCT_CATEGORY (ID, NAME) values (1, 'FOOD');
 insert into PRODUCT_CATEGORY (ID, NAME) values (2, 'NON-FOOD');
 
@@ -114,6 +120,3 @@ insert into PRODUCT_SUBCATEGORY (PRODUCT_CATEGORY_ID, NAME) values (2, 'PAPER PR
 insert into PRODUCT_SUBCATEGORY (PRODUCT_CATEGORY_ID, NAME) values (2, 'PLASTIC PRODUCTS');
 insert into PRODUCT_SUBCATEGORY (PRODUCT_CATEGORY_ID, NAME) values (2, 'SHOE CARE');
 insert into PRODUCT_SUBCATEGORY (PRODUCT_CATEGORY_ID, NAME) values (2, 'TOOTHPICK');
-
-insert into PAYMENT_TERMINAL (ID, NAME) values (1, 'CASHIER');
-insert into PAYMENT_TERMINAL (ID, NAME) values (2, 'OFFICE');
