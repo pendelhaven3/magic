@@ -82,6 +82,11 @@ public class MagicTable extends JTable {
 		getEditorComponent().requestFocusInWindow();
 	}
 	
+	protected void editCellAtCurrentLocation() {
+		editCellAt(getSelectedRow(), getSelectedColumn());
+		getEditorComponent().requestFocusInWindow();
+	}
+	
 	public boolean isAdding() {
 		return addMode;
 	}
@@ -112,6 +117,11 @@ public class MagicTable extends JTable {
 		getActionMap().put(Constants.ENTER_KEY_ACTION_NAME, action);
 	}
 	
+	public void onF9Key(Action action) {
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), Constants.F9_KEY_ACTION_NAME);
+		getActionMap().put(Constants.F9_KEY_ACTION_NAME, action);
+	}
+	
 	protected void scrollToBottom() {
 		changeSelection(getRowCount() - 1, 0, false, false);
 	}
@@ -131,6 +141,10 @@ public class MagicTable extends JTable {
 		} else {
 			return (String)value;
 		}
+	}
+
+	public void changeSelection(int rowIndex, int columnIndex) {
+		super.changeSelection(rowIndex, columnIndex, false, false);
 	}
 	
 }
