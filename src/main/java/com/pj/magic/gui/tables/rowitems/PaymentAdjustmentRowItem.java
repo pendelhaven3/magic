@@ -4,12 +4,13 @@ import java.math.BigDecimal;
 
 import org.springframework.util.StringUtils;
 
+import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.PaymentAdjustment;
 
 public class PaymentAdjustmentRowItem {
 
 	private PaymentAdjustment adjustment;
-	private String adjustmentType;
+	private AdjustmentType adjustmentType;
 	private String referenceNumber;
 	private BigDecimal amount;
 
@@ -29,11 +30,11 @@ public class PaymentAdjustmentRowItem {
 		this.adjustment = adjustment;
 	}
 
-	public String getAdjustmentType() {
+	public AdjustmentType getAdjustmentType() {
 		return adjustmentType;
 	}
 
-	public void setAdjustmentType(String adjustmentType) {
+	public void setAdjustmentType(AdjustmentType adjustmentType) {
 		this.adjustmentType = adjustmentType;
 	}
 

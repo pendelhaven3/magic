@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PaymentAdjustmentDao;
+import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 
@@ -21,8 +22,11 @@ import com.pj.magic.model.PaymentAdjustment;
 public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustmentDao {
 
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, PAYMENT_ID, ADJUSTMENT_TYPE, REFERENCE_NO, a.AMOUNT"
-			+ " from PAYMENT_ADJUSTMENT a";
+			"select a.ID, PAYMENT_ID, ADJUSTMENT_TYPE, ADJUSTMENT_TYPE_ID, REFERENCE_NO, a.AMOUNT,"
+			+ " b.CODE as ADJUSTMENT_TYPE_CODE"
+			+ " from PAYMENT_ADJUSTMENT a"
+			+ " join ADJUSTMENT_TYPE b"
+			+ "   on b.ID = a.ADJUSTMENT_TYPE_ID";
 	
 	private PaymentAdjustmentRowMapper adjustmentRowMapper = new PaymentAdjustmentRowMapper();
 	
@@ -37,7 +41,7 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 
 	private static final String INSERT_SQL = 
 			"insert into PAYMENT_ADJUSTMENT"
-			+ " (PAYMENT_ID, ADJUSTMENT_TYPE, REFERENCE_NO, AMOUNT) values (?, ?, ?, ?)";
+			+ " (PAYMENT_ID, ADJUSTMENT_TYPE_ID, REFERENCE_NO, AMOUNT) values (?, ?, ?, ?)";
 	
 	private void insert(final PaymentAdjustment adjustment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -48,7 +52,7 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, adjustment.getParent().getId());
-				ps.setString(2, adjustment.getAdjustmentType());
+				ps.setLong(2, adjustment.getAdjustmentType().getId());
 				ps.setString(3, adjustment.getReferenceNumber());
 				ps.setBigDecimal(4, adjustment.getAmount());
 				return ps;
@@ -60,12 +64,12 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 
 	private static final String UPDATE_SQL = 
 			"update PAYMENT_ADJUSTMENT"
-			+ " set ADJUSTMENT_TYPE = ?, REFERENCE_NO = ?, AMOUNT = ?"
+			+ " set ADJUSTMENT_TYPE_ID = ?, REFERENCE_NO = ?, AMOUNT = ?"
 			+ " where ID = ?";
 	
 	private void update(PaymentAdjustment adjustment) {
 		getJdbcTemplate().update(UPDATE_SQL,
-				adjustment.getAdjustmentType(),
+				adjustment.getAdjustmentType().getId(),
 				adjustment.getReferenceNumber(),
 				adjustment.getAmount(), 
 				adjustment.getId());
@@ -86,7 +90,8 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 			PaymentAdjustment adjustment = new PaymentAdjustment();
 			adjustment.setId(rs.getLong("ID"));
 			adjustment.setParent(new Payment(rs.getLong("PAYMENT_ID")));
-			adjustment.setAdjustmentType(rs.getString("ADJUSTMENT_TYPE"));
+			adjustment.setAdjustmentType(new AdjustmentType(
+					rs.getLong("ADJUSTMENT_TYPE_ID"), rs.getString("ADJUSTMENT_TYPE_CODE")));
 			adjustment.setReferenceNumber(rs.getString("REFERENCE_NO"));
 			adjustment.setAmount(rs.getBigDecimal("AMOUNT"));
 			return adjustment;

@@ -7,12 +7,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 public class PaymentAdjustment {
 
-	public static final String SALES_RETURN_TYPE = "SR";
-	public static final String BAD_STOCK_RETURN_TYPE = "BSR";
-	
 	private Long id;
 	private Payment parent;
-	private String adjustmentType;
+	private AdjustmentType adjustmentType = AdjustmentType.SALES_RETURN;
 	private BigDecimal amount;
 	private String referenceNumber;
 
@@ -24,10 +21,6 @@ public class PaymentAdjustment {
 		this.id = id;
 	}
 
-	public String getAdjustmentType() {
-		return adjustmentType;
-	}
-
 	public Payment getParent() {
 		return parent;
 	}
@@ -36,7 +29,11 @@ public class PaymentAdjustment {
 		this.parent = parent;
 	}
 
-	public void setAdjustmentType(String adjustmentType) {
+	public AdjustmentType getAdjustmentType() {
+		return adjustmentType;
+	}
+
+	public void setAdjustmentType(AdjustmentType adjustmentType) {
 		this.adjustmentType = adjustmentType;
 	}
 

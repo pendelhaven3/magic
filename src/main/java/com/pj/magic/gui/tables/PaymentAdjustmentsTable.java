@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
-import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -24,13 +23,15 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.AmountCellEditor;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.gui.component.RequiredFieldCellEditor;
+import com.pj.magic.gui.dialog.SelectAdjustmentTypeDialog;
 import com.pj.magic.gui.tables.models.PaymentAdjustmentsTableModel;
 import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
+import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.SalesReturn;
+import com.pj.magic.service.AdjustmentTypeService;
 import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.SalesReturnService;
 
@@ -43,13 +44,15 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 	private static final String F10_ACTION_NAME = "F10";
+	private static final String F5_ACTION_NAME = "F5";
 
 	@Autowired private PaymentAdjustmentsTableModel tableModel;
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private BadStockReturnService badStockReturnService;
+	@Autowired private AdjustmentTypeService adjustmentTypeService;
+	@Autowired private SelectAdjustmentTypeDialog selectAdjustmentTypeDialog;
 	
 	private Payment payment;
-	private JComboBox<String> adjustmentTypeComboBox;
 	
 	@Autowired
 	public PaymentAdjustmentsTable(PaymentAdjustmentsTableModel tableModel) {
@@ -63,7 +66,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 		MagicTextField adjustmentTypeTextField = new MagicTextField();
 		adjustmentTypeTextField.setMaximumLength(20);
 		columnModel.getColumn(ADJUSTMENT_TYPE_COLUMN_INDEX)
-			.setCellEditor(new RequiredFieldCellEditor(adjustmentTypeTextField, "Adjustment Type"));
+			.setCellEditor(new AdjustmentTypeCellEditor(adjustmentTypeTextField));
 
 		MagicTextField referenceNumberTextField = new MagicTextField();
 		referenceNumberTextField.setMaximumLength(20);
@@ -120,6 +123,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 		InputMap inputMap = getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), F10_ACTION_NAME);
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), F5_ACTION_NAME);
 		/*
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
 		
@@ -139,6 +143,13 @@ public class PaymentAdjustmentsTable extends MagicTable {
 				addNewRow();
 			}
 		});
+		actionMap.put(F5_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectAdjustmentTypeDialog();
+			}
+		});
 		/*
 		actionMap.put(DELETE_ITEM_ACTION_NAME, new AbstractAction() {
 			
@@ -151,7 +162,32 @@ public class PaymentAdjustmentsTable extends MagicTable {
 		
 	}
 	
+	private void openSelectAdjustmentTypeDialog() {
+		if (!payment.isNew()) {
+			return;
+		}
+		
+		if (getSelectedColumn() == ADJUSTMENT_TYPE_COLUMN_INDEX) {
+			if (!isEditing()) {
+				editCellAtCurrentLocation();
+			}
+			
+			selectAdjustmentTypeDialog.updateDisplay();
+			selectAdjustmentTypeDialog.setVisible(true);
+			
+			AdjustmentType adjustmentType = selectAdjustmentTypeDialog.getSelectedAdjustmentType();
+			if (adjustmentType != null) {
+				((JTextField)getEditorComponent()).setText(adjustmentType.getCode());
+				getCellEditor().stopCellEditing();
+			}
+		}
+	}
+
 	private void cancelEditing() {
+		if (getSelectedRow() == -1) {
+			return;
+		}
+		
 		if (isEditing()) {
 			getCellEditor().cancelCellEditing();
 			if (getCurrentlySelectedRowItem().isUpdating()) {
@@ -222,8 +258,8 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	
 	public class ReferenceNumberCellEditor extends MagicCellEditor {
 
-		private final List<String> specialLogicAdjustmentTypes = 
-				Arrays.asList(PaymentAdjustment.SALES_RETURN_TYPE, PaymentAdjustment.BAD_STOCK_RETURN_TYPE);
+		private final List<AdjustmentType> specialLogicAdjustmentTypes = 
+				Arrays.asList(AdjustmentType.SALES_RETURN, AdjustmentType.BAD_STOCK_RETURN);
 		
 		public ReferenceNumberCellEditor(JTextField textField) {
 			super(textField);
@@ -242,13 +278,12 @@ public class PaymentAdjustmentsTable extends MagicTable {
 				showErrorMessage("Reference number must be specified");
 			} else {
 				long referenceNumber = Long.parseLong(referenceNumberString);
-				switch (rowItem.getAdjustmentType()) {
-				case PaymentAdjustment.SALES_RETURN_TYPE:
+				if (AdjustmentType.SALES_RETURN.equals(rowItem.getAdjustmentType())) {
 					valid = validateSalesReturn(referenceNumber);
-					break;
-				case PaymentAdjustment.BAD_STOCK_RETURN_TYPE:
+				} else if (AdjustmentType.BAD_STOCK_RETURN.equals(rowItem.getAdjustmentType())) {
 					valid = validateBadStockReturn(referenceNumber);
-					break;
+				} else {
+					valid = true;
 				}
 			}
 			return (valid) ? super.stopCellEditing() : false;
@@ -286,6 +321,28 @@ public class PaymentAdjustmentsTable extends MagicTable {
 			valid = true;
 		}
 		return valid;
+	}
+	
+	private class AdjustmentTypeCellEditor extends MagicCellEditor {
+
+		public AdjustmentTypeCellEditor(JTextField textField) {
+			super(textField);
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String code = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(code)) {
+				showErrorMessage("Adjustment Type must be specified");
+			} else if (adjustmentTypeService.findAdjustmentTypeByCode(code) == null) {
+				showErrorMessage("No Adjustment Type matching code specified");
+			} else {
+				valid = true;
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+
 	}
 	
 }

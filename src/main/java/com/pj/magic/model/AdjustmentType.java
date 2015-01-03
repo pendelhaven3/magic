@@ -5,16 +5,35 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 @Entity
 @Table(name = "ADJUSTMENT_TYPE")
 public class AdjustmentType {
 
+	public static final AdjustmentType SALES_RETURN = new AdjustmentType(1L);
+	public static final AdjustmentType BAD_STOCK_RETURN = new AdjustmentType(2L);
+	
 	@Id
 	@GeneratedValue
 	private Long id;
 	
 	private String code;
 	private String description;
+
+	public AdjustmentType() {
+		// default constructor
+	}
+	
+	public AdjustmentType(Long id) {
+		this.id = id;
+	}
+
+	public AdjustmentType(Long id, String code) {
+		this.id = id;
+		this.code = code;
+	}
 
 	public Long getId() {
 		return id;
@@ -40,4 +59,30 @@ public class AdjustmentType {
 		this.description = description;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof AdjustmentType)) {
+            return false;
+        }
+        AdjustmentType other = (AdjustmentType)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+	
+	@Override
+	public String toString() {
+		return code;
+	}
+	
 }

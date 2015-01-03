@@ -18,6 +18,7 @@ import com.pj.magic.dao.PaymentSalesInvoiceDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesReturnDao;
+import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
@@ -200,8 +201,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 			
 			long referenceNumber = Long.valueOf(adjustment.getReferenceNumber());
-			switch (adjustment.getAdjustmentType()) {
-			case PaymentAdjustment.SALES_RETURN_TYPE:
+			if (AdjustmentType.SALES_RETURN.equals(adjustment.getAdjustmentType())) {
 				SalesReturn salesReturn = salesReturnDao.findBySalesReturnNumber(referenceNumber);
 				if (salesReturn.isPaid()) {
 					throw new RuntimeException("Sales Return " + salesReturn.getSalesReturnNumber() + " is already paid");
@@ -212,8 +212,7 @@ public class PaymentServiceImpl implements PaymentService {
 				salesReturn.setPaidBy(loginService.getLoggedInUser());
 				salesReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				salesReturnDao.save(salesReturn);
-				break;
-			case PaymentAdjustment.BAD_STOCK_RETURN_TYPE:
+			} else if (AdjustmentType.BAD_STOCK_RETURN.equals(adjustment.getAdjustmentType())) {
 				BadStockReturn badStockReturn = badStockReturnDao.findByBadStockReturnNumber(referenceNumber);
 				if (badStockReturn.isPaid()) {
 					throw new RuntimeException("Bad Stock Return " + badStockReturn.getBadStockReturnNumber() + " is already paid");
@@ -224,7 +223,6 @@ public class PaymentServiceImpl implements PaymentService {
 				badStockReturn.setPaidBy(loginService.getLoggedInUser());
 				badStockReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				badStockReturnDao.save(badStockReturn);
-				break;
 			}
 		}
 	}
