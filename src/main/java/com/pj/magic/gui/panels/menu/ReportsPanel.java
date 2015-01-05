@@ -104,9 +104,6 @@ public class ReportsPanel extends StandardMagicPanel {
 		case "Posted Sales and Profit Report":
 			getMagicFrame().switchToPostedSalesAndProfitReportPanel();
 			break;
-		case "Posted Sales Report":
-			getMagicFrame().switchToPostedSalesReportPanel();
-			break;
 		}
 	}
 

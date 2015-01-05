@@ -51,7 +51,6 @@ import com.pj.magic.gui.panels.PaymentPanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
 import com.pj.magic.gui.panels.PaymentTerminalAssignmentListPanel;
 import com.pj.magic.gui.panels.PostedSalesAndProfitReportPanel;
-import com.pj.magic.gui.panels.PostedSalesReportPanel;
 import com.pj.magic.gui.panels.PricingSchemeListPanel;
 import com.pj.magic.gui.panels.ProductCanvassPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
@@ -172,7 +171,6 @@ public class MagicFrame extends JFrame {
 	private static final String UNPAID_SALES_INVOICES_LIST_PANEL = "UNPAID_SALES_INVOICES_LIST_PANEL";
 	private static final String PAID_SALES_INVOICES_LIST_PANEL = "PAID_SALES_INVOICES_LIST_PANEL";
 	private static final String POSTED_SALES_AND_PROFIT_REPORT_PANEL = "POSTED_SALES_AND_PROFIT_REPORT_PANEL";
-	private static final String POSTED_SALES_REPORT_PANEL = "POSTED_SALES_REPORT_PANEL";
 	private static final String BACKUP_DATA_PANEL = "BACKUP_DATA_PANEL";
 	private static final String SALES_MENU_PANEL = "SALES_MENU_PANEL";
 	private static final String PURCHASES_MENU_PANEL = "PURCHASES_MENU_PANEL";
@@ -241,7 +239,6 @@ public class MagicFrame extends JFrame {
 	@Autowired private UnpaidSalesInvoicesListPanel unpaidSalesInvoicesListPanel;
 	@Autowired private PaidSalesInvoicesListPanel paidSalesInvoicesListPanel;
 	@Autowired private PostedSalesAndProfitReportPanel postedSalesAndProfitReportPanel;
-	@Autowired private PostedSalesReportPanel postedSalesReportPanel;
 	@Autowired private BackupDataPanel backupDataPanel;
 	@Autowired private SalesMenuPanel salesMenuPanel;
 	@Autowired private PurchasesMenuPanel purchasesMenuPanel;
@@ -357,7 +354,6 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(unpaidSalesInvoicesListPanel, UNPAID_SALES_INVOICES_LIST_PANEL);
 		panelHolder.add(paidSalesInvoicesListPanel, PAID_SALES_INVOICES_LIST_PANEL);
 		panelHolder.add(postedSalesAndProfitReportPanel, POSTED_SALES_AND_PROFIT_REPORT_PANEL);
-		panelHolder.add(postedSalesReportPanel, POSTED_SALES_REPORT_PANEL);
 		panelHolder.add(backupDataPanel, BACKUP_DATA_PANEL);
 		panelHolder.add(salesMenuPanel, SALES_MENU_PANEL);
 		panelHolder.add(purchasesMenuPanel, PURCHASES_MENU_PANEL);
@@ -797,12 +793,6 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Posted Sales And Profit Report");
 		postedSalesAndProfitReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, POSTED_SALES_AND_PROFIT_REPORT_PANEL);
-	}
-
-	public void switchToPostedSalesReportPanel() {
-		addPanelNameToTitle("Posted Sales Report Panel");
-		postedSalesReportPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, POSTED_SALES_REPORT_PANEL);
 	}
 
 	public void switchToBackupDataPanel() {

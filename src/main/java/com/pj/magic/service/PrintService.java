@@ -18,7 +18,6 @@ import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.report.CashFlowReport;
 import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
-import com.pj.magic.model.report.PostedSalesReport;
 import com.pj.magic.model.report.RemittanceReport;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
@@ -58,10 +57,6 @@ public interface PrintService {
 	List<String> generateReportAsString(AreaInventoryReport areaInventoryReport);
 
 	void print(AreaInventoryReport areaInventoryReport);
-
-	List<String> generateReportAsString(PostedSalesReport salesInvoiceReport);
-
-	void print(PostedSalesReport salesInvoiceReport);
 
 	List<String> generateReportAsString(AdjustmentOut adjustmentOut);
 
