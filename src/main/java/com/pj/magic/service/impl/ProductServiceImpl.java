@@ -13,6 +13,7 @@ import com.pj.magic.dao.AreaInventoryReportItemDao;
 import com.pj.magic.dao.PricingSchemeDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ProductPriceDao;
+import com.pj.magic.dao.ProductPriceHistoryDao;
 import com.pj.magic.dao.PurchaseOrderItemDao;
 import com.pj.magic.dao.ReceivingReceiptDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
@@ -21,8 +22,10 @@ import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCanvassItem;
+import com.pj.magic.model.ProductPriceHistory;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.ProductSearchCriteria;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.ProductService;
 
 @Service
@@ -39,6 +42,8 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired private AdjustmentInItemDao adjustmentInItemDao;
 	@Autowired private AdjustmentOutItemDao adjustmentOutItemDao;
 	@Autowired private AreaInventoryReportItemDao areaInventoryReportItemDao;
+	@Autowired private ProductPriceHistoryDao productPriceHistoryDao;
+	@Autowired private LoginService loginService;
 	
 	@Override
 	public List<Product> getAllProducts() {
@@ -124,6 +129,16 @@ public class ProductServiceImpl implements ProductService {
 	public void saveUnitCostsAndPrices(Product product, PricingScheme pricingScheme) {
 		productPriceDao.updateUnitPrices(product, pricingScheme);
 		productDao.updateCosts(product);
+		productPriceHistoryDao.save(createProductPriceHistory(product, pricingScheme));
+	}
+
+	private ProductPriceHistory createProductPriceHistory(Product product, PricingScheme pricingScheme) {
+		ProductPriceHistory history = new ProductPriceHistory();
+		history.setPricingScheme(pricingScheme);
+		history.setProduct(product);
+		history.setUpdatedBy(loginService.getLoggedInUser());
+		history.setUnitPrices(product.getUnitPrices());
+		return history;
 	}
 
 	@Override
@@ -171,6 +186,11 @@ public class ProductServiceImpl implements ProductService {
 		supplierDao.deleteAllByProduct(product);
 		productPriceDao.deleteAllByProduct(product);
 		productDao.delete(product);
+	}
+
+	@Override
+	public List<ProductPriceHistory> getProductPriceHistory(Product product, PricingScheme pricingScheme) {
+		return productPriceHistoryDao.getAll(product, pricingScheme);
 	}
 
 }
