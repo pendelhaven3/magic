@@ -5,6 +5,7 @@ import java.util.List;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCanvassItem;
+import com.pj.magic.model.ProductPriceHistory;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.ProductSearchCriteria;
 
@@ -46,5 +47,7 @@ public interface ProductService {
 	boolean canDeleteProduct(Product product);
 
 	void deleteProduct(Product product);
+
+	List<ProductPriceHistory> getProductPriceHistory(Product product, PricingScheme pricingScheme);
 
 }

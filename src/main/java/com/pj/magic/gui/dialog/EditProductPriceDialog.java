@@ -31,6 +31,7 @@ public class EditProductPriceDialog extends MagicDialog {
 
 	@Autowired private ProductService productService;
 	@Autowired private EditProductPriceTable table;
+	@Autowired private ProductPriceHistoryDialog productPriceHistoryDialog;
 
 	private PricingScheme pricingScheme;
 	private Product product;
@@ -39,9 +40,10 @@ public class EditProductPriceDialog extends MagicDialog {
 	private JLabel pricingSchemeNameLabel;
 	private JLabel companyListPriceLabel;
 	private JButton saveButton;
+	private JButton showPriceHistoryButton;
 	
 	public EditProductPriceDialog() {
-		setSize(600, 380);
+		setSize(600, 400);
 		setLocationRelativeTo(null);
 		setTitle("Edit Product Price");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
@@ -66,6 +68,16 @@ public class EditProductPriceDialog extends MagicDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveUnitCostsAndPrices();
+			}
+		});
+		
+		showPriceHistoryButton = new JButton("Show Price History");
+		showPriceHistoryButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				productPriceHistoryDialog.updateDisplay(product, pricingScheme);
+				productPriceHistoryDialog.setVisible(true);
 			}
 		});
 	}
@@ -200,6 +212,16 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.anchor = GridBagConstraints.CENTER;
 		saveButton.setPreferredSize(new Dimension(100, 25));
 		add(saveButton, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 3;
+		c.insets.top = 10;
+		showPriceHistoryButton.setPreferredSize(new Dimension(180, 25));
+		add(showPriceHistoryButton, c);
 		
 		currentRow++;
 		

@@ -10,6 +10,6 @@ public interface ProductPriceHistoryDao {
 
 	void save(ProductPriceHistory history);
 	
-	List<ProductPriceHistory> getAll(PricingScheme pricingScheme, Product product);
+	List<ProductPriceHistory> getAll(Product product, PricingScheme pricingScheme);
 	
 }

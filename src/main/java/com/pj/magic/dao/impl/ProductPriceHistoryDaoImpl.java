@@ -51,7 +51,7 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 			+ " order by UPDATE_DT desc"; 
 	
 	@Override
-	public List<ProductPriceHistory> getAll(PricingScheme pricingScheme, Product product) {
+	public List<ProductPriceHistory> getAll(Product product, PricingScheme pricingScheme) {
 		return getJdbcTemplate().query(GET_ALL_SQL, new RowMapper<ProductPriceHistory>() {
 
 			@Override
@@ -59,7 +59,7 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 				ProductPriceHistory history = new ProductPriceHistory();
 				history.setPricingScheme(new PricingScheme(rs.getLong("PRICING_SCHEME_ID")));
 				history.setProduct(new Product(rs.getLong("PRODUCT_ID")));
-				history.setUpdateDate(rs.getDate("UPDATE_DT"));
+				history.setUpdateDate(rs.getTimestamp("UPDATE_DT"));
 				history.setUpdatedBy(new User(rs.getLong("UPDATE_BY"), rs.getString("UPDATE_BY_USERNAME")));
 				
 				BigDecimal unitPriceCase = rs.getBigDecimal("UNIT_PRICE_CSE");

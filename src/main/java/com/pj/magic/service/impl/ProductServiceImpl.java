@@ -188,4 +188,9 @@ public class ProductServiceImpl implements ProductService {
 		productDao.delete(product);
 	}
 
+	@Override
+	public List<ProductPriceHistory> getProductPriceHistory(Product product, PricingScheme pricingScheme) {
+		return productPriceHistoryDao.getAll(product, pricingScheme);
+	}
+
 }
