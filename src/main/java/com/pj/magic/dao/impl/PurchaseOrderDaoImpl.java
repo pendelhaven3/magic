@@ -28,7 +28,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PURCHASE_ORDER_NO, SUPPLIER_ID, POST_IND, DELIVERY_IND,"
-			+ " a.PAYMENT_TERM_ID, a.REMARKS, REFERENCE_NO, POST_DT, VAT_INCLUSIVE,"
+			+ " a.PAYMENT_TERM_ID, a.REMARKS, REFERENCE_NO, POST_DT, a.VAT_INCLUSIVE,"
 			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME,"
 			+ " a.CREATED_BY, c.USERNAME as CREATED_BY_USERNAME"
 			+ " from PURCHASE_ORDER a, SUPPLIER b, USER c"
