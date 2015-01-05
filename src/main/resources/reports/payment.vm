@@ -53,7 +53,7 @@ Adjustments
                 ------------ -------- ----------
 ##                SALES RETURN    12321  26,958.35
 #foreach($adjustment in $payment.adjustments)
-                $report.field($adjustment.adjustmentType, 12) $report.referenceNumber($adjustment, 8, "right") $report.field($adjustment.amount, 10, "right")
+                $report.field($adjustment.adjustmentType.code, 12) $report.referenceNumber($adjustment, 8, "right") $report.field($adjustment.amount, 10, "right")
 #end
                                       ----------
                            TOTAL =>   $report.field($payment.totalAdjustments, 10, "right")   
