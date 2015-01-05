@@ -17,6 +17,7 @@ public class Supplier {
 	private String tin;
 	private PaymentTerm paymentTerm;
 	private String discount;
+	private boolean vatInclusive;
 	
 	public Supplier() {
 		// default constructor
@@ -158,6 +159,14 @@ public class Supplier {
 
 	public void setDiscount(String discount) {
 		this.discount = discount;
+	}
+
+	public boolean isVatInclusive() {
+		return vatInclusive;
+	}
+
+	public void setVatInclusive(boolean vatInclusive) {
+		this.vatInclusive = vatInclusive;
 	}
 	
 }

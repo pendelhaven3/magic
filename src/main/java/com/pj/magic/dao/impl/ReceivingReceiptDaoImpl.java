@@ -33,7 +33,7 @@ import com.pj.magic.util.DbUtil;
 public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceiptDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, RECEIVING_RECEIPT_NO, SUPPLIER_ID, POST_IND, VAT_INCLUSIVE, VAT_RATE,"
+			"select a.ID, RECEIVING_RECEIPT_NO, SUPPLIER_ID, POST_IND, a.VAT_INCLUSIVE, VAT_RATE,"
 			+ " a.PAYMENT_TERM_ID, c.NAME as PAYMENT_TERM_NAME, a.REMARKS, REFERENCE_NO, RECEIVED_DT,"
 			+ " POST_DT, POST_BY, CANCEL_IND, CANCEL_DT, CANCEL_BY,"
 			+ " RELATED_PURCHASE_ORDER_NO, RECEIVED_BY, b.NAME as SUPPLIER_NAME,"

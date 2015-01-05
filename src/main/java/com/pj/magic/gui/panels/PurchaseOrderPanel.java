@@ -182,6 +182,8 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			supplierCodeField.setText(supplier.getCode());
 			supplierNameField.setText(supplier.getName());
 			
+			purchaseOrder.setVatInclusive(supplier.isVatInclusive());
+			
 			purchaseOrder.setPaymentTerm(supplier.getPaymentTerm());
 			paymentTermComboBox.setEnabled(true);
 			paymentTermComboBox.setSelectedItem(supplier.getPaymentTerm());

@@ -25,6 +25,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	
 	private static final String BASE_SELECT_SQL = "select a.ID, CODE, a.NAME, ADDRESS, CONTACT_NUMBER, "
 			+ " CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, TIN, PAYMENT_TERM_ID, REMARKS, DISCOUNT,"
+			+ " VAT_INCLUSIVE,"
 			+ " b.NAME as PAYMENT_TERM_NAME, b.NUMBER_OF_DAYS"
 			+ " from SUPPLIER a"
 			+ " left join PAYMENT_TERM b"
@@ -43,8 +44,8 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 
 	private static final String INSERT_SQL = "insert into SUPPLIER"
 			+ " (CODE, NAME, ADDRESS, CONTACT_NUMBER, CONTACT_PERSON, FAX_NUMBER, EMAIL_ADDRESS, "
-			+ "  TIN, PAYMENT_TERM_ID, REMARKS, DISCOUNT)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "  TIN, PAYMENT_TERM_ID, REMARKS, DISCOUNT, VAT_INCLUSIVE)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Supplier supplier) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -69,6 +70,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 				}
 				ps.setString(10, supplier.getRemarks());
 				ps.setString(11, supplier.getDiscount());
+				ps.setString(12, supplier.isVatInclusive() ? "Y" : "N");
 				return ps;
 			}
 		}, holder);
@@ -79,7 +81,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 	private static final String UPDATE_SQL = "update SUPPLIER"
 			+ " set CODE = ?, NAME = ?, ADDRESS = ?, CONTACT_NUMBER = ?, CONTACT_PERSON = ?,"
 			+ " FAX_NUMBER = ?, EMAIL_ADDRESS = ?, TIN = ?, PAYMENT_TERM_ID = ?, REMARKS = ?,"
-			+ " DISCOUNT = ?"
+			+ " DISCOUNT = ?, VAT_INCLUSIVE = ?"
 			+ " where ID = ?";
 	
 	private void update(Supplier supplier) {
@@ -95,6 +97,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 				(supplier.getPaymentTerm() != null) ? supplier.getPaymentTerm().getId() : null,
 				supplier.getRemarks(),
 				supplier.getDiscount(),
+				supplier.isVatInclusive() ? "Y" : "N",
 				supplier.getId());
 	}
 
@@ -139,6 +142,7 @@ public class SupplierDaoImpl extends MagicDao implements SupplierDao {
 			supplier.setTin(rs.getString("TIN"));
 			supplier.setRemarks(rs.getString("REMARKS"));
 			supplier.setDiscount(rs.getString("DISCOUNT"));
+			supplier.setVatInclusive("Y".equals(rs.getString("VAT_INCLUSIVE")));
 			return supplier;
 		}
 		

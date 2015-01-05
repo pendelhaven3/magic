@@ -220,6 +220,7 @@ create table SUPPLIER (
   PAYMENT_TERM_ID integer null,
   REMARKS varchar(200) null,
   DISCOUNT varchar(30) null,
+  VAT_INCLUSIVE char(1) not null,
   constraint SUPPLIER$PK primary key (ID),
   constraint SUPPLIER$UK unique (NAME),
   constraint SUPPLIER$FK foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID)

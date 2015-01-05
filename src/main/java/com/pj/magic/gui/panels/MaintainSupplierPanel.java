@@ -11,6 +11,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -55,6 +56,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 	private MagicTextField remarksField;
 	private MagicTextField discountField;
 	private JComboBox<PaymentTerm> paymentTermComboBox; 
+	private JCheckBox vatInclusiveCheckBox;
 	private JButton saveButton;
 	private JButton deleteButton;
 	
@@ -91,6 +93,8 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 		discountField.setMaximumLength(200);
 		
 		paymentTermComboBox = new JComboBox<>(); 
+		
+		vatInclusiveCheckBox = new JCheckBox();
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -137,6 +141,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 			supplier.setPaymentTerm((PaymentTerm)paymentTermComboBox.getSelectedItem());
 			supplier.setRemarks(remarksField.getText());
 			supplier.setDiscount(discountField.getText());
+			supplier.setVatInclusive(vatInclusiveCheckBox.isSelected());
 			
 			try {
 				supplierService.save(supplier);
@@ -342,6 +347,20 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "VAT Inclusive: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(vatInclusiveCheckBox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createFiller(1, 25), c);
@@ -422,6 +441,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 		}
 		remarksField.setText(supplier.getRemarks());
 		discountField.setText(supplier.getDiscount());
+		vatInclusiveCheckBox.setSelected(supplier.isVatInclusive());
 		deleteButton.setEnabled(true);
 	}
 
@@ -437,6 +457,7 @@ public class MaintainSupplierPanel extends StandardMagicPanel {
 		paymentTermComboBox.setSelectedItem(null);
 		remarksField.setText(null);
 		discountField.setText(null);
+		vatInclusiveCheckBox.setSelected(true);
 		deleteButton.setEnabled(false);
 	}
 
