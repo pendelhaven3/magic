@@ -100,11 +100,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 		PurchaseOrderSearchCriteria criteria = new PurchaseOrderSearchCriteria();
 		criteria.setPosted(false);
 		
-		List<PurchaseOrder> purchaseOrders = purchaseOrderDao.search(criteria);
-		for (PurchaseOrder purchaseOrder : purchaseOrders) {
-			loadPurchaseOrderDetails(purchaseOrder);
-		}
-		return purchaseOrders;
+		return search(criteria);
 	}
 
 	@Transactional
