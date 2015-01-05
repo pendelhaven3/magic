@@ -61,8 +61,8 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 	
 	private static final String INSERT_SQL =
 			"insert into PURCHASE_ORDER"
-			+ " (PURCHASE_ORDER_NO, SUPPLIER_ID, PAYMENT_TERM_ID, CREATED_BY)"
-			+ " values (?, ?, ?, ?)";
+			+ " (PURCHASE_ORDER_NO, SUPPLIER_ID, PAYMENT_TERM_ID, CREATED_BY, VAT_INCLUSIVE)"
+			+ " values (?, ?, ?, ?, ?)";
 	
 	private void insert(final PurchaseOrder purchaseOrder) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -80,6 +80,7 @@ public class PurchaseOrderDaoImpl extends MagicDao implements PurchaseOrderDao {
 					ps.setNull(3, Types.INTEGER);
 				}
 				ps.setLong(4, purchaseOrder.getCreatedBy().getId());
+				ps.setString(5, purchaseOrder.isVatInclusive() ? "Y" : "N");
 				return ps;
 			}
 		}, holder);
