@@ -11,6 +11,7 @@ public class ProductPriceHistory {
 	private PricingScheme pricingScheme;
 	private Product product;
 	private List<UnitPrice> unitPrices = new ArrayList<>();
+	private List<String> activeUnits = new ArrayList<>();
 	private Date updateDate;
 	private User updatedBy;
 
@@ -67,6 +68,21 @@ public class ProductPriceHistory {
 			if (unitPrice.getUnit().equals(unit)) {
 				return unitPrice.getPrice();
 			}
+		}
+		return null;
+	}
+
+	public List<String> getActiveUnits() {
+		return activeUnits;
+	}
+
+	public void setActiveUnits(List<String> activeUnits) {
+		this.activeUnits = activeUnits;
+	}
+	
+	public BigDecimal getActiveUnitPrice(String unit) {
+		if (activeUnits.contains(unit)) {
+			return getUnitPrice(unit);
 		}
 		return null;
 	}

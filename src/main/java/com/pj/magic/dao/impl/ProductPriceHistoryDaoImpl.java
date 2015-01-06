@@ -24,6 +24,7 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 	private static final String BASE_SELECT_SQL =
 			"select PRICING_SCHEME_ID, PRODUCT_ID, UPDATE_DT, UPDATE_BY,"
 			+ " UNIT_PRICE_CSE, UNIT_PRICE_TIE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
+			+ " c.ACTIVE_UNIT_IND_PCS, c.ACTIVE_UNIT_IND_DOZ, c.ACTIVE_UNIT_IND_CTN, c.ACTIVE_UNIT_IND_TIE,"
 			+ " b.USERNAME as UPDATE_BY_USERNAME,"
 			+ " c.DESCRIPTION as PRODUCT_DESCRIPTION"
 			+ " from PRODUCT_PRICE_HISTORY a"
@@ -116,6 +117,22 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 			BigDecimal unitPricePieces = rs.getBigDecimal("UNIT_PRICE_PCS");
 			if (unitPricePieces != null) {
 				history.getUnitPrices().add(new UnitPrice(Unit.PIECES, unitPricePieces));
+			}
+			
+			if ("Y".equals(rs.getString("ACTIVE_UNIT_IND_TIE"))) {
+				history.getActiveUnits().add(Unit.TIE);
+			}
+			
+			if ("Y".equals(rs.getString("ACTIVE_UNIT_IND_CTN"))) {
+				history.getActiveUnits().add(Unit.CARTON);
+			}
+			
+			if ("Y".equals(rs.getString("ACTIVE_UNIT_IND_DOZ"))) {
+				history.getActiveUnits().add(Unit.DOZEN);
+			}
+			
+			if ("Y".equals(rs.getString("ACTIVE_UNIT_IND_PCS"))) {
+				history.getActiveUnits().add(Unit.PIECES);
 			}
 			
 			return history;

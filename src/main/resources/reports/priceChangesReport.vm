@@ -14,13 +14,13 @@ $report.center("as of $report.field($priceChangesReport.reportDate)", $charsPerL
 #set( $unitPriceCarton = "" )
 #set( $unitPriceTie = "" )
 #set( $unitPriceCase = "" )
-#set( $unitPricePieces = $item.getUnitPrice("PCS") )
-#set( $unitPriceDozen = $item.getUnitPrice("DOZ") )
-#set( $unitPriceCarton = $item.getUnitPrice("CTN") )
-#set( $unitPriceTie = $item.getUnitPrice("TIE") )
+#set( $unitPricePieces = $item.getActiveUnitPrice("PCS") )
+#set( $unitPriceDozen = $item.getActiveUnitPrice("DOZ") )
+#set( $unitPriceCarton = $item.getActiveUnitPrice("CTN") )
+#set( $unitPriceTie = $item.getActiveUnitPrice("TIE") )
 #set( $unitPriceCase = $item.getUnitPrice("CSE") )
 $report.field($item.product.description, 38) $report.time($item.updateDate) $report.field($unitPricePieces, 8, "right") $report.field($unitPriceDozen, 8, "right") $report.field($unitPriceCarton, 8, "right") $report.field($unitPriceTie, 8, "right") $report.field($unitPriceCase, 9, "right")
 #end
 #if($isLastPage == true)
-----------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
 #end
