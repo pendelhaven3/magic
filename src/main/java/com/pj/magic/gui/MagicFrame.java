@@ -51,6 +51,7 @@ import com.pj.magic.gui.panels.PaymentPanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
 import com.pj.magic.gui.panels.PaymentTerminalAssignmentListPanel;
 import com.pj.magic.gui.panels.PostedSalesAndProfitReportPanel;
+import com.pj.magic.gui.panels.PriceChangesReportPanel;
 import com.pj.magic.gui.panels.PricingSchemeListPanel;
 import com.pj.magic.gui.panels.ProductCanvassPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
@@ -185,6 +186,7 @@ public class MagicFrame extends JFrame {
 	private static final String ADJUSTMENT_TYPE_LIST_PANEL = "ADJUSTMENT_TYPE_LIST_PANEL";
 	private static final String MAINTAIN_ADJUSTMENT_TYPE_PANEL = "MAINTAIN_ADJUSTMENT_TYPE_PANEL";
 	private static final String REMITTANCE_REPORT_PANEL = "REMITTANCE_REPORT_PANEL";
+	private static final String PRICE_CHANGES_REPORT_PANEL = "PRICE_CHANGES_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -253,6 +255,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private AdjustmentTypeListPanel adjustmentTypeListPanel;
 	@Autowired private MaintainAdjustmentTypePanel maintainAdjustmentTypePanel;
 	@Autowired private RemittanceReportPanel remittanceReportPanel;
+	@Autowired private PriceChangesReportPanel priceChangesReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -368,6 +371,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(adjustmentTypeListPanel, ADJUSTMENT_TYPE_LIST_PANEL);
 		panelHolder.add(maintainAdjustmentTypePanel, MAINTAIN_ADJUSTMENT_TYPE_PANEL);
 		panelHolder.add(remittanceReportPanel, REMITTANCE_REPORT_PANEL);
+		panelHolder.add(priceChangesReportPanel, PRICE_CHANGES_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -886,6 +890,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Remittance Report");
 		remittanceReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, REMITTANCE_REPORT_PANEL);
+	}
+
+	public void switchToPriceChangesReportPanel() {
+		addPanelNameToTitle("Price Changes Report");
+		priceChangesReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRICE_CHANGES_REPORT_PANEL);
 	}
 
 }

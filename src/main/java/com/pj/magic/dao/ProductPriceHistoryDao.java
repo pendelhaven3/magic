@@ -1,5 +1,6 @@
 package com.pj.magic.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.model.PricingScheme;
@@ -10,6 +11,8 @@ public interface ProductPriceHistoryDao {
 
 	void save(ProductPriceHistory history);
 	
-	List<ProductPriceHistory> getAll(Product product, PricingScheme pricingScheme);
+	List<ProductPriceHistory> findAllByProductAndPricingScheme(Product product, PricingScheme pricingScheme);
+
+	List<ProductPriceHistory> findAllByUpdateDateAndPricingScheme(Date date, PricingScheme pricingScheme);
 	
 }

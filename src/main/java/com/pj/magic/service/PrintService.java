@@ -18,6 +18,7 @@ import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.report.CashFlowReport;
 import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
+import com.pj.magic.model.report.PriceChangesReport;
 import com.pj.magic.model.report.RemittanceReport;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
@@ -97,5 +98,9 @@ public interface PrintService {
 	List<String> generateReportAsString(RemittanceReport report);
 
 	void print(RemittanceReport createRemittanceReport);
+	
+	List<String> generateReportAsString(PriceChangesReport report);
+
+	void print(PriceChangesReport report);
 	
 }

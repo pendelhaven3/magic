@@ -104,6 +104,9 @@ public class ReportsPanel extends StandardMagicPanel {
 		case "Posted Sales and Profit Report":
 			getMagicFrame().switchToPostedSalesAndProfitReportPanel();
 			break;
+		case "Price Changes Report":
+			getMagicFrame().switchToPriceChangesReportPanel();
+			break;
 		}
 	}
 
@@ -119,7 +122,8 @@ public class ReportsPanel extends StandardMagicPanel {
 				"Paid Sales Invoices List",
 				"Cash Flow Report",
 				"Remittance Report",
-				"Posted Sales and Profit Report"
+				"Posted Sales and Profit Report",
+				"Price Changes Report"
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
