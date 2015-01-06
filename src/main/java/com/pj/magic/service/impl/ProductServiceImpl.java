@@ -190,7 +190,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public List<ProductPriceHistory> getProductPriceHistory(Product product, PricingScheme pricingScheme) {
-		return productPriceHistoryDao.getAll(product, pricingScheme);
+		return productPriceHistoryDao.findAllByProductAndPricingScheme(product, pricingScheme);
 	}
 
 }

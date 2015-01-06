@@ -143,8 +143,13 @@ public class MagicTable extends JTable {
 		}
 	}
 
+	// TODO: Remove this
 	public void changeSelection(int rowIndex, int columnIndex) {
 		super.changeSelection(rowIndex, columnIndex, false, false);
+	}
+	
+	public void selectFirstRow() {
+		changeSelection(0, 0, false, false);
 	}
 	
 }

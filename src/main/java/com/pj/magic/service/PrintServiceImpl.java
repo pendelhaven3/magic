@@ -38,6 +38,7 @@ import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.ProductPriceHistory;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.ReceivingReceipt;
@@ -53,6 +54,7 @@ import com.pj.magic.model.report.CashFlowReportItem;
 import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
+import com.pj.magic.model.report.PriceChangesReport;
 import com.pj.magic.model.report.RemittanceReport;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
@@ -90,6 +92,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int BAD_STOCK_RETURN_ITEMS_PER_PAGE = 44;
 	private static final int CASH_FLOW_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int REMITTANCE_REPORT_ITEMS_PER_PAGE = 44;
+	private static final int PRICE_CHANGES_REPORT_ITEMS_PER_PAGE = 44;
 	
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
@@ -97,6 +100,7 @@ public class PrintServiceImpl implements PrintService {
 	public static final int PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE = 101;
 	public static final int CASH_FLOW_REPORT_CHARACTERS_PER_LINE = 94;
 	public static final int REMITTANCE_REPORT_CHARACTERS_PER_LINE = 90;
+	public static final int PRICE_CHANGES_REPORT_CHARACTERS_PER_LINE = 93;
 	
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
@@ -822,6 +826,35 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public void print(RemittanceReport report) {
+		try {
+			for (String printPage : generateReportAsString(report)) {
+				PrinterUtil.printWithCondensedFont(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(PriceChangesReport report) {
+		List<List<ProductPriceHistory>> pageItems = Lists.partition(report.getItems(), 
+				PRICE_CHANGES_REPORT_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("priceChangesReport", report);
+			reportData.put("charsPerLine", PRICE_CHANGES_REPORT_CHARACTERS_PER_LINE);
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/priceChangesReport.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(PriceChangesReport report) {
 		try {
 			for (String printPage : generateReportAsString(report)) {
 				PrinterUtil.printWithCondensedFont(printPage);
