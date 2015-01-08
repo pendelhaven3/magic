@@ -1,0 +1,1 @@
+delete from SEQUENCE where NAME = 'ACCT_RECEIVABLE_SUMMARY_NO_SEQ';
