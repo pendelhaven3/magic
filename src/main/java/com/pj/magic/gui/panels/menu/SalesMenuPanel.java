@@ -100,6 +100,9 @@ public class SalesMenuPanel extends StandardMagicPanel {
 		case "Bad Stock Return":
 			getMagicFrame().switchToBadStockReturnListPanel();
 			break;
+		case "No More Stock Adjustment":
+			getMagicFrame().switchToNoMoreStockAdjustmentListPanel();
+			break;
 		}
 	}
 
@@ -116,7 +119,8 @@ public class SalesMenuPanel extends StandardMagicPanel {
 				"Sales Invoice",
 				"Mark Sales Invoice",
 				"Sales Return",
-				"Bad Stock Return"
+				"Bad Stock Return",
+				"No More Stock Adjustment"
 		);
 		
 		@Override
