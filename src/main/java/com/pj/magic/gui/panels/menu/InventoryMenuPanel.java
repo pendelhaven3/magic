@@ -95,6 +95,9 @@ public class InventoryMenuPanel extends StandardMagicPanel {
 		case "Pricing Scheme":
 			getMagicFrame().switchToPricingSchemeListPanel();
 			break;
+		case "Price Changes Report":
+			getMagicFrame().switchToPriceChangesReportPanel();
+			break;
 		}
 	}
 
@@ -107,7 +110,8 @@ public class InventoryMenuPanel extends StandardMagicPanel {
 
 		private final List<String> allMenuItems = Arrays.asList(
 				"Product List",
-				"Pricing Scheme"
+				"Pricing Scheme",
+				"Price Changes Report"
 		);
 		
 		private List<String> menuItems = new ArrayList<>();

@@ -113,7 +113,7 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToReportsMenuPanel();
+		getMagicFrame().switchToInventoryMenuPanel();
 	}
 	
 	public void updateDisplay() {
