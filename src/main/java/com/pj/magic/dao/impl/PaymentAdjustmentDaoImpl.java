@@ -22,7 +22,7 @@ import com.pj.magic.model.PaymentAdjustment;
 public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustmentDao {
 
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, PAYMENT_ID, ADJUSTMENT_TYPE, ADJUSTMENT_TYPE_ID, REFERENCE_NO, a.AMOUNT,"
+			"select a.ID, PAYMENT_ID, ADJUSTMENT_TYPE_ID, REFERENCE_NO, a.AMOUNT,"
 			+ " b.CODE as ADJUSTMENT_TYPE_CODE"
 			+ " from PAYMENT_ADJUSTMENT a"
 			+ " join ADJUSTMENT_TYPE b"
