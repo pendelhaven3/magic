@@ -45,6 +45,8 @@ import com.pj.magic.gui.panels.MaintainSupplierPanel;
 import com.pj.magic.gui.panels.MaintainUserPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
 import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
+import com.pj.magic.gui.panels.NoMoreStockAdjustmentListPanel;
+import com.pj.magic.gui.panels.NoMoreStockAdjustmentPanel;
 import com.pj.magic.gui.panels.PaymentListPanel;
 import com.pj.magic.gui.panels.PaymentPanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
@@ -90,6 +92,7 @@ import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Manufacturer;
+import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PaymentTerminalAssignment;
@@ -185,6 +188,8 @@ public class MagicFrame extends JFrame {
 	private static final String MAINTAIN_ADJUSTMENT_TYPE_PANEL = "MAINTAIN_ADJUSTMENT_TYPE_PANEL";
 	private static final String REMITTANCE_REPORT_PANEL = "REMITTANCE_REPORT_PANEL";
 	private static final String PRICE_CHANGES_REPORT_PANEL = "PRICE_CHANGES_REPORT_PANEL";
+	private static final String NO_MORE_STOCK_ADJUSTMENT_LIST_PANEL = "NO_MORE_STOCK_ADJUSTMENT_LIST_PANEL";
+	private static final String NO_MORE_STOCK_ADJUSTMENT_PANEL = "NO_MORE_STOCK_ADJUSTMENT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -253,6 +258,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainAdjustmentTypePanel maintainAdjustmentTypePanel;
 	@Autowired private RemittanceReportPanel remittanceReportPanel;
 	@Autowired private PriceChangesReportPanel priceChangesReportPanel;
+	@Autowired private NoMoreStockAdjustmentListPanel noMoreStockAdjustmentListPanel;
+	@Autowired private NoMoreStockAdjustmentPanel noMoreStockAdjustmentPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -368,6 +375,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(maintainAdjustmentTypePanel, MAINTAIN_ADJUSTMENT_TYPE_PANEL);
 		panelHolder.add(remittanceReportPanel, REMITTANCE_REPORT_PANEL);
 		panelHolder.add(priceChangesReportPanel, PRICE_CHANGES_REPORT_PANEL);
+		panelHolder.add(noMoreStockAdjustmentListPanel, NO_MORE_STOCK_ADJUSTMENT_LIST_PANEL);
+		panelHolder.add(noMoreStockAdjustmentPanel, NO_MORE_STOCK_ADJUSTMENT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -886,6 +895,18 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Price Changes Report");
 		priceChangesReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRICE_CHANGES_REPORT_PANEL);
+	}
+
+	public void switchToNoMoreStockAdjustmentListPanel() {
+		addPanelNameToTitle("No More Stock Adjustment List");
+		noMoreStockAdjustmentListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, NO_MORE_STOCK_ADJUSTMENT_LIST_PANEL);
+	}
+
+	public void switchToNoMoreStockAdjustmentPanel(NoMoreStockAdjustment noMoreStockAdjustment) {
+		addPanelNameToTitle("No More Stock Adjustment");
+		noMoreStockAdjustmentPanel.updateDisplay(noMoreStockAdjustment);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, NO_MORE_STOCK_ADJUSTMENT_PANEL);
 	}
 
 }
