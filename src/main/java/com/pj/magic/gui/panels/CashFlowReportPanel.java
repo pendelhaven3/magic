@@ -35,16 +35,19 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.BadStockReturn;
+import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.report.CashFlowReport;
 import com.pj.magic.model.report.CashFlowReportItem;
 import com.pj.magic.model.search.BadStockReturnSearchCriteria;
+import com.pj.magic.model.search.NoMoreStockAdjustmentSearchCriteria;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.model.util.TimePeriod;
 import com.pj.magic.service.BadStockReturnService;
+import com.pj.magic.service.NoMoreStockAdjustmentService;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
@@ -70,6 +73,7 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 	@Autowired private PaymentTerminalService paymentTerminalService;
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private BadStockReturnService badStockReturnService;
+	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
 	
 	private MagicListTable table;
 	private CashFlowReportItemsTableModel tableModel;
@@ -151,6 +155,16 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 					}
 		}));
 		
+		List<NoMoreStockAdjustment> noMoreStockAdjustments = searchNoMoreStockAdjustments();
+		items.addAll(Collections2.transform(noMoreStockAdjustments, 
+				new Function<NoMoreStockAdjustment, CashFlowReportItem>() {
+
+					@Override
+					public CashFlowReportItem apply(NoMoreStockAdjustment input) {
+						return new CashFlowReportItem(input);
+					}
+		}));
+		
 		Collections.sort(items, new Comparator<CashFlowReportItem>() {
 
 			@Override
@@ -163,6 +177,24 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 		return items;
 	}
 	
+	private List<NoMoreStockAdjustment> searchNoMoreStockAdjustments() {
+		NoMoreStockAdjustmentSearchCriteria criteria = new NoMoreStockAdjustmentSearchCriteria();
+		criteria.setPaid(true);
+		criteria.setPaidDate(paymentDateModel.getValue().getTime());
+		criteria.setPaymentTerminal((PaymentTerminal)paymentTerminalComboBox.getSelectedItem());
+		
+		switch (timePeriodComboBox.getSelectedIndex()) {
+		case 1:
+			criteria.setTimePeriod(TimePeriod.MORNING_ONLY);
+			break;
+		case 2:
+			criteria.setTimePeriod(TimePeriod.AFTERNOON_ONLY);
+			break;
+		}
+		
+		return noMoreStockAdjustmentService.search(criteria);
+	}
+
 	private List<BadStockReturn> searchBadStockReturns() {
 		BadStockReturnSearchCriteria criteria = new BadStockReturnSearchCriteria();
 		criteria.setPaid(true);
