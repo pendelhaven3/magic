@@ -35,7 +35,6 @@ import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCheckPayment;
-import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductPriceHistory;
@@ -51,7 +50,6 @@ import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.model.report.CashFlowReport;
 import com.pj.magic.model.report.CashFlowReportItem;
-import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
 import com.pj.magic.model.report.PriceChangesReport;
@@ -85,7 +83,6 @@ public class PrintServiceImpl implements PrintService {
 	private static final int ADJUSTMENT_OUT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_IN_ITEMS_PER_PAGE = 44;
 	private static final int UNPAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
-	private static final int PAID_SALES_INVOICE_ITEMS_PER_PAGE = 44;
 	private static final int PRICE_LIST_ITEMS_PER_PAGE = 46;
 	private static final int POSTED_SALES_AND_PROFIT_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int SALES_RETURN_ITEMS_PER_PAGE = 44;
@@ -621,48 +618,6 @@ public class PrintServiceImpl implements PrintService {
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
 		}
-	}
-
-	@Override
-	public void print(PaidSalesInvoicesReport report) {
-		try {
-			for (String printPage : generateReportAsString(report)) {
-				PrinterUtil.printWithCondensedFont(printPage);
-			}
-		} catch (PrintException e) {
-			logger.error(e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public List<String> generateReportAsString(PaidSalesInvoicesReport report) {
-		String paymentDate = FormatterUtil.formatDate(report.getPaymentDate());
-		
-		List<List<PaymentSalesInvoice>> pageItems = Lists.partition(report.getPaymentSalesInvoices(), 
-				PAID_SALES_INVOICE_ITEMS_PER_PAGE);
-		List<String> printPages = new ArrayList<>();
-		for (int i = 0; i < pageItems.size(); i++) {
-			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("charsPerLine", PAID_SALES_INVOICES_REPORT_CHARACTERS_PER_LINE);
-			reportData.put("paymentDate", paymentDate);
-			if (report.getPaymentTerminal() != null) {
-				reportData.put("paymentTerminal", report.getPaymentTerminal().getName());
-			} else {
-				reportData.put("paymentTerminal", "ANY");
-			}
-			if (report.getTimePeriod() != null) {
-				reportData.put("timePeriod", report.getTimePeriod().getDescription());
-			} else {
-				reportData.put("timePeriod", "WHOLE DAY");
-			}
-			reportData.put("totalAmountDue", report.getTotalAmountDue());
-			reportData.put("paymentSalesInvoices", pageItems.get(i));
-			reportData.put("currentPage", i + 1);
-			reportData.put("totalPages", pageItems.size());
-			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			printPages.add(generateReportAsString("reports/paidSalesInvoices.vm", reportData));
-		}
-		return printPages;
 	}
 
 	@Override

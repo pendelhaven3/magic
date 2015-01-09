@@ -16,7 +16,6 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.report.CashFlowReport;
-import com.pj.magic.model.report.PaidSalesInvoicesReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PriceChangesReport;
 import com.pj.magic.model.report.RemittanceReport;
@@ -74,10 +73,6 @@ public interface PrintService {
 	List<String> generateReportAsString(UnpaidSalesInvoicesReport report);
 
 	void print(UnpaidSalesInvoicesReport report);
-
-	void print(PaidSalesInvoicesReport report);
-
-	List<String> generateReportAsString(PaidSalesInvoicesReport report);
 
 	List<String> generateReportAsString(PostedSalesAndProfitReport report);
 
