@@ -28,11 +28,13 @@ import com.pj.magic.gui.tables.models.PaymentAdjustmentsTableModel;
 import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
+import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.service.AdjustmentTypeService;
 import com.pj.magic.service.BadStockReturnService;
+import com.pj.magic.service.NoMoreStockAdjustmentService;
 import com.pj.magic.service.SalesReturnService;
 
 @Component
@@ -50,6 +52,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private BadStockReturnService badStockReturnService;
 	@Autowired private AdjustmentTypeService adjustmentTypeService;
+	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
 	@Autowired private SelectAdjustmentTypeDialog selectAdjustmentTypeDialog;
 	
 	private Payment payment;
@@ -258,8 +261,10 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	
 	public class ReferenceNumberCellEditor extends MagicCellEditor {
 
-		private final List<AdjustmentType> specialLogicAdjustmentTypes = 
-				Arrays.asList(AdjustmentType.SALES_RETURN, AdjustmentType.BAD_STOCK_RETURN);
+		private final List<String> specialLogicAdjustmentTypes = Arrays.asList(
+				AdjustmentType.SALES_RETURN_CODE, 
+				AdjustmentType.BAD_STOCK_RETURN_CODE,
+				AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE);
 		
 		public ReferenceNumberCellEditor(JTextField textField) {
 			super(textField);
@@ -268,7 +273,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 		@Override
 		public boolean stopCellEditing() {
 			PaymentAdjustmentRowItem rowItem = getCurrentlySelectedRowItem();
-			if (!specialLogicAdjustmentTypes.contains(rowItem.getAdjustmentType())) {
+			if (!specialLogicAdjustmentTypes.contains(rowItem.getAdjustmentType().getCode())) {
 				return super.stopCellEditing();
 			}
 			
@@ -278,10 +283,13 @@ public class PaymentAdjustmentsTable extends MagicTable {
 				showErrorMessage("Reference number must be specified");
 			} else {
 				long referenceNumber = Long.parseLong(referenceNumberString);
-				if (AdjustmentType.SALES_RETURN.equals(rowItem.getAdjustmentType())) {
+				String adjustmentTypeCode = rowItem.getAdjustmentType().getCode();
+				if (AdjustmentType.SALES_RETURN_CODE.equals(adjustmentTypeCode)) {
 					valid = validateSalesReturn(referenceNumber);
-				} else if (AdjustmentType.BAD_STOCK_RETURN.equals(rowItem.getAdjustmentType())) {
+				} else if (AdjustmentType.BAD_STOCK_RETURN_CODE.equals(adjustmentTypeCode)) {
 					valid = validateBadStockReturn(referenceNumber);
+				} else if (AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE.equals(adjustmentTypeCode)) {
+					valid = validateNoMoreStockAdjustment(referenceNumber);
 				} else {
 					valid = true;
 				}
@@ -317,6 +325,22 @@ public class PaymentAdjustmentsTable extends MagicTable {
 			showErrorMessage("Sales Return is already paid");
 		} else if (!salesReturn.isPosted()) {
 			showErrorMessage("Sales Return is not yet posted");
+		} else {
+			valid = true;
+		}
+		return valid;
+	}
+	
+	private boolean validateNoMoreStockAdjustment(long noMoreStockAdjustmentNumber) {
+		boolean valid = false;
+		NoMoreStockAdjustment noMoreStockAdjustment = noMoreStockAdjustmentService
+				.findNoMoreStockAdjustmentByNoMoreStockAdjustmentNumber(noMoreStockAdjustmentNumber);
+		if (noMoreStockAdjustment == null) {
+			showErrorMessage("No More Stock Adjustment does not exist");
+		} else if (noMoreStockAdjustment.isPaid()) {
+			showErrorMessage("No More Stock Adjustment is already paid");
+		} else if (!noMoreStockAdjustment.isPosted()) {
+			showErrorMessage("No More Stock Adjustment is not yet posted");
 		} else {
 			valid = true;
 		}

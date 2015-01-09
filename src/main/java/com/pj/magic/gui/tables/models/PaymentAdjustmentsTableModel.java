@@ -14,11 +14,13 @@ import com.pj.magic.gui.tables.PaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
+import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.service.AdjustmentTypeService;
 import com.pj.magic.service.BadStockReturnService;
+import com.pj.magic.service.NoMoreStockAdjustmentService;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.FormatterUtil;
@@ -33,6 +35,7 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private BadStockReturnService badStockReturnService;
 	@Autowired private AdjustmentTypeService adjustmentTypeService;
+	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
 	
 	private List<PaymentAdjustmentRowItem> rowItems = new ArrayList<>();
 	private Payment payment;
@@ -103,16 +106,25 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 			if (!StringUtils.isEmpty(val)) {
 				rowItem.setReferenceNumber(val);
 				
-				if (AdjustmentType.SALES_RETURN.equals(rowItem.getAdjustmentType())) {
+				switch (rowItem.getAdjustmentType().getCode()) {
+				case AdjustmentType.SALES_RETURN_CODE:
 					SalesReturn salesReturn = salesReturnService
-							.findSalesReturnBySalesReturnNumber(Long.parseLong(val));
+						.findSalesReturnBySalesReturnNumber(Long.parseLong(val));
 					rowItem.setAmount(salesReturn.getTotalAmount());
 					columnIndex = PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX;
-				} else if (AdjustmentType.BAD_STOCK_RETURN.equals(rowItem.getAdjustmentType())) {
+					break;
+				case AdjustmentType.BAD_STOCK_RETURN_CODE:
 					BadStockReturn badStockReturn = badStockReturnService
-							.findBadStockReturnByBadStockReturnNumber(Long.parseLong(val));
+						.findBadStockReturnByBadStockReturnNumber(Long.parseLong(val));
 					rowItem.setAmount(badStockReturn.getTotalAmount());
 					columnIndex = PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX;
+					break;
+				case AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE:
+					NoMoreStockAdjustment noMoreStockAdjustment = noMoreStockAdjustmentService
+						.findNoMoreStockAdjustmentByNoMoreStockAdjustmentNumber(Long.parseLong(val));
+					rowItem.setAmount(noMoreStockAdjustment.getTotalAmount());
+					columnIndex = PaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX;
+					break;
 				}
 			} else {
 				rowItem.setReferenceNumber(null);

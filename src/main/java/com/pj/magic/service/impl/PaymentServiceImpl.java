@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.BadStockReturnDao;
 import com.pj.magic.dao.CustomerDao;
+import com.pj.magic.dao.NoMoreStockAdjustmentDao;
 import com.pj.magic.dao.PaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentCashPaymentDao;
 import com.pj.magic.dao.PaymentCheckPaymentDao;
@@ -20,6 +21,7 @@ import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
+import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
@@ -53,6 +55,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private LoginService loginService;
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private BadStockReturnDao badStockReturnDao;
+	@Autowired private NoMoreStockAdjustmentDao noMoreStockAdjustmentDao;
 	
 	@Transactional
 	@Override
@@ -201,7 +204,8 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 			
 			long referenceNumber = Long.valueOf(adjustment.getReferenceNumber());
-			if (AdjustmentType.SALES_RETURN.equals(adjustment.getAdjustmentType())) {
+			switch (adjustment.getAdjustmentType().getCode()) {
+			case AdjustmentType.SALES_RETURN_CODE:
 				SalesReturn salesReturn = salesReturnDao.findBySalesReturnNumber(referenceNumber);
 				if (salesReturn.isPaid()) {
 					throw new RuntimeException("Sales Return " + salesReturn.getSalesReturnNumber() + " is already paid");
@@ -212,7 +216,8 @@ public class PaymentServiceImpl implements PaymentService {
 				salesReturn.setPaidBy(loginService.getLoggedInUser());
 				salesReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				salesReturnDao.save(salesReturn);
-			} else if (AdjustmentType.BAD_STOCK_RETURN.equals(adjustment.getAdjustmentType())) {
+				break;
+			case AdjustmentType.BAD_STOCK_RETURN_CODE:
 				BadStockReturn badStockReturn = badStockReturnDao.findByBadStockReturnNumber(referenceNumber);
 				if (badStockReturn.isPaid()) {
 					throw new RuntimeException("Bad Stock Return " + badStockReturn.getBadStockReturnNumber() + " is already paid");
@@ -223,6 +228,20 @@ public class PaymentServiceImpl implements PaymentService {
 				badStockReturn.setPaidBy(loginService.getLoggedInUser());
 				badStockReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				badStockReturnDao.save(badStockReturn);
+				break;
+			case AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE:
+				NoMoreStockAdjustment noMoreStockAdjustment = noMoreStockAdjustmentDao.findByNoMoreStockAdjustmentNumber(referenceNumber);
+				if (noMoreStockAdjustment.isPaid()) {
+					throw new RuntimeException("No More Stock Adjustment " + 
+						noMoreStockAdjustment.getNoMoreStockAdjustmentNumber() + " is already paid");
+				}
+				
+				noMoreStockAdjustment.setPaid(true);
+				noMoreStockAdjustment.setPaidDate(new Date());
+				noMoreStockAdjustment.setPaidBy(loginService.getLoggedInUser());
+				noMoreStockAdjustment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+				noMoreStockAdjustmentDao.save(noMoreStockAdjustment);
+				break;
 			}
 		}
 	}

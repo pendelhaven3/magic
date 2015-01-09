@@ -12,8 +12,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name = "ADJUSTMENT_TYPE")
 public class AdjustmentType {
 
-	public static final AdjustmentType SALES_RETURN = new AdjustmentType(1L);
-	public static final AdjustmentType BAD_STOCK_RETURN = new AdjustmentType(2L);
+	public static final String SALES_RETURN_CODE = "SR";
+	public static final String BAD_STOCK_RETURN_CODE = "BSR";
+	public static final String NO_MORE_STOCK_ADJUSTMENT_CODE = "NMS";
 	
 	@Id
 	@GeneratedValue
