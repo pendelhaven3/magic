@@ -5,12 +5,14 @@ import java.util.Date;
 
 import com.pj.magic.Constants;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 
 public class PostedSalesAndProfitReportItem {
 
 	private Date transactionDate;
+	private String transactionType;
 	private Long transactionNumber;
 	private Customer customer;
 	private BigDecimal totalAmount = Constants.ZERO;
@@ -21,6 +23,7 @@ public class PostedSalesAndProfitReportItem {
 
 	public PostedSalesAndProfitReportItem(SalesInvoice salesInvoice) {
 		transactionDate = salesInvoice.getTransactionDate();
+		transactionType = "SALES INVOICE";
 		transactionNumber = salesInvoice.getSalesInvoiceNumber();
 		customer = salesInvoice.getCustomer();
 		totalAmount = salesInvoice.getTotalAmount();
@@ -32,11 +35,20 @@ public class PostedSalesAndProfitReportItem {
 
 	public PostedSalesAndProfitReportItem(SalesReturn salesReturn) {
 		transactionDate = salesReturn.getPostDate();
+		transactionType = "SALES RETURN";
 		transactionNumber = salesReturn.getSalesReturnNumber();
 		customer = salesReturn.getSalesInvoice().getCustomer();
 		netAmount = salesReturn.getTotalAmount().negate();
 		netCost = salesReturn.getTotalNetCost().negate();
 		netProfit = salesReturn.getTotalNetProfit().negate();
+	}
+	
+	public PostedSalesAndProfitReportItem(NoMoreStockAdjustment noMoreStockAdjustment) {
+		transactionDate = noMoreStockAdjustment.getPostDate();
+		transactionType = "NO MORE STOCK";
+		transactionNumber = noMoreStockAdjustment.getNoMoreStockAdjustmentNumber();
+		customer = noMoreStockAdjustment.getSalesInvoice().getCustomer();
+		netAmount = netProfit = noMoreStockAdjustment.getTotalAmount().negate();
 	}
 	
 	public Date getTransactionDate() {
@@ -101,6 +113,14 @@ public class PostedSalesAndProfitReportItem {
 
 	public void setNetProfit(BigDecimal netProfit) {
 		this.netProfit = netProfit;
+	}
+
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
 	}
 
 }

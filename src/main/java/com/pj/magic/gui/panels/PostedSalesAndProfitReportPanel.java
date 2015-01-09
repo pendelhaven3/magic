@@ -24,7 +24,6 @@ import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,13 +39,16 @@ import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
+import com.pj.magic.model.search.NoMoreStockAdjustmentSearchCriteria;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.CustomerService;
+import com.pj.magic.service.NoMoreStockAdjustmentService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.SalesInvoiceService;
@@ -58,13 +60,14 @@ import com.pj.magic.util.FormatterUtil;
 public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 
 	private static final int TRANSACTION_DATE_COLUMN_INDEX = 0;
-	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 1;
-	private static final int CUSTOMER_COLUMN_INDEX = 2;
-	private static final int TOTAL_AMOUNT_COLUMN_INDEX = 3;
-	private static final int TOTAL_DISCOUNTS_COLUMN_INDEX = 4;
-	private static final int NET_AMOUNT_COLUMN_INDEX = 5;
-	private static final int NET_COST_COLUMN_INDEX = 6;
-	private static final int NET_PROFIT_COLUMN_INDEX = 7;
+	private static final int TRANSACTION_TYPE_COLUMN_INDEX = 1;
+	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 2;
+	private static final int CUSTOMER_COLUMN_INDEX = 3;
+	private static final int TOTAL_AMOUNT_COLUMN_INDEX = 4;
+	private static final int TOTAL_DISCOUNTS_COLUMN_INDEX = 5;
+	private static final int NET_AMOUNT_COLUMN_INDEX = 6;
+	private static final int NET_COST_COLUMN_INDEX = 7;
+	private static final int NET_PROFIT_COLUMN_INDEX = 8;
 	
 	@Autowired private CustomerService customerService;
 	@Autowired private SalesInvoiceService salesInvoiceService;
@@ -72,6 +75,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	@Autowired private SalesReturnService salesReturnService;
+	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
 	
 	private MagicTextField customerCodeField;
 	private JLabel customerNameLabel;
@@ -195,6 +199,26 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	
 				@Override
 				public PostedSalesAndProfitReportItem apply(SalesReturn input) {
+					return new PostedSalesAndProfitReportItem(input);
+				}
+			})
+		);
+		
+		NoMoreStockAdjustmentSearchCriteria noMoreStockAdjustmentCriteria = 
+				new NoMoreStockAdjustmentSearchCriteria();
+		noMoreStockAdjustmentCriteria.setPosted(true);
+		noMoreStockAdjustmentCriteria.setCustomer(customer);
+		noMoreStockAdjustmentCriteria.setPostDateFrom(fromDateModel.getValue().getTime());
+		noMoreStockAdjustmentCriteria.setPostDateTo(toDateModel.getValue().getTime());
+		
+		List<NoMoreStockAdjustment> noMoreStockAdjustments = 
+				noMoreStockAdjustmentService.search(noMoreStockAdjustmentCriteria);
+		items.addAll(
+			Collections2.transform(noMoreStockAdjustments, 
+					new Function<NoMoreStockAdjustment, PostedSalesAndProfitReportItem>() {
+	
+				@Override
+				public PostedSalesAndProfitReportItem apply(NoMoreStockAdjustment input) {
 					return new PostedSalesAndProfitReportItem(input);
 				}
 			})
@@ -402,7 +426,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	private class PostedSalesAndProfitReportItemsTableModel extends AbstractTableModel {
 
 		private final String[] columnNames =
-			{"Tran. Date", "SI No.", "Customer", "Total Amount", "Total Disc.", "Net Amount",
+			{"Tran. Date", "Tran. Type", "Ref. No.", "Customer", "Total Amount", "Total Disc.", "Net Amount",
 				"Net Cost", "Net Profit"};
 		
 		private List<PostedSalesAndProfitReportItem> items = new ArrayList<>();
@@ -439,12 +463,11 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			PostedSalesAndProfitReportItem item = items.get(rowIndex);
-			if (item.getTransactionDate() == null) {
-				System.out.println(ToStringBuilder.reflectionToString(item));
-			}
 			switch (columnIndex) {
 			case TRANSACTION_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(item.getTransactionDate());
+			case TRANSACTION_TYPE_COLUMN_INDEX:
+				return item.getTransactionType();
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
 				return item.getTransactionNumber();
 			case CUSTOMER_COLUMN_INDEX:

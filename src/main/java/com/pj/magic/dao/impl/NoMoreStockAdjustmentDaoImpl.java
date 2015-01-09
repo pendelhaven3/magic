@@ -205,7 +205,7 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 		}
 		
 		if (criteria.getPostDateTo() != null) {
-			sql.append(" and a.POST_DT <= ?");
+			sql.append(" and a.POST_DT < date_add(?, interval 1 day)");
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDateTo()));
 		}
 		
