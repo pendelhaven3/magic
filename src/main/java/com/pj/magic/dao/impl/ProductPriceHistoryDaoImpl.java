@@ -3,7 +3,7 @@ package com.pj.magic.dao.impl;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.RowMapper;
@@ -16,6 +16,7 @@ import com.pj.magic.model.ProductPriceHistory;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.ProductPriceHistorySearchCriteria;
 import com.pj.magic.util.DbUtil;
 
 @Repository
@@ -64,20 +65,6 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 	public List<ProductPriceHistory> findAllByProductAndPricingScheme(
 			Product product, PricingScheme pricingScheme) {
 		return getJdbcTemplate().query(FIND_ALL_BY_PRODUCT_AND_PRICING_SCHEME_SQL, rowMapper, pricingScheme.getId(), product.getId());
-	}
-
-	private static final String FIND_ALL_BY_UPDATE_DATE_SQL = BASE_SELECT_SQL
-			+ " and UPDATE_DT >= ? and UPDATE_DT < date_add(?, interval 1 day)"
-			+ " and PRICING_SCHEME_ID = ?"
-			+ " order by c.DESCRIPTION";
-	
-	@Override
-	public List<ProductPriceHistory> findAllByUpdateDateAndPricingScheme(
-			Date date, PricingScheme pricingScheme) {
-		return getJdbcTemplate().query(FIND_ALL_BY_UPDATE_DATE_SQL, rowMapper, 
-				DbUtil.toMySqlDateString(date),
-				DbUtil.toMySqlDateString(date),
-				pricingScheme.getId());
 	}
 
 	private class ProductPriceHistoryRowMapper implements RowMapper<ProductPriceHistory> {
@@ -138,6 +125,28 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 			return history;
 		}
 		
+	}
+
+	@Override
+	public List<ProductPriceHistory> search(ProductPriceHistorySearchCriteria criteria) {
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		List<Object> params = new ArrayList<>();
+		
+		if (criteria.getFromDate() != null) {
+			sql.append(" and a.UPDATE_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getFromDate()));
+		}
+		
+		if (criteria.getToDate() != null) {
+			sql.append(" and a.UPDATE_DT < date_add(?, interval 1 day)");
+			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
+		}
+		
+		sql.append(" order by c.DESCRIPTION");
+		
+		return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
 	}
 	
 }

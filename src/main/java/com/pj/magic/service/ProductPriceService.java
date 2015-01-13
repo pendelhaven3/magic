@@ -1,12 +1,12 @@
 package com.pj.magic.service;
 
-import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.model.ProductPriceHistory;
+import com.pj.magic.model.search.ProductPriceHistorySearchCriteria;
 
 public interface ProductPriceService {
 
-	List<ProductPriceHistory> getAllProductPriceHistoriesByDate(Date date);
+	List<ProductPriceHistory> searchProductPriceHistories(ProductPriceHistorySearchCriteria criteria);
 	
 }

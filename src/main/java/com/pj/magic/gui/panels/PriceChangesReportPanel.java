@@ -32,6 +32,7 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.ProductPriceHistory;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.report.PriceChangesReport;
+import com.pj.magic.model.search.ProductPriceHistorySearchCriteria;
 import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
@@ -44,7 +45,7 @@ import com.pj.magic.util.FormatterUtil;
 public class PriceChangesReportPanel extends StandardMagicPanel {
 
 	private static final int PRODUCT_COLUMN_INDEX = 0;
-	private static final int UPDATE_DATE_COLUMN_INDEX = 1;
+	private static final int EFFECTIVE_DATE_COLUMN_INDEX = 1;
 	private static final int UNIT_PRICE_CASE_COLUMN_INDEX = 2;
 	private static final int UNIT_PRICE_TIE_COLUMN_INDEX = 3;
 	private static final int UNIT_PRICE_CARTON_COLUMN_INDEX = 4;
@@ -59,12 +60,14 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 	
 	private MagicListTable table;
 	private PriceChangesTableModel tableModel;
-	private UtilCalendarModel reportDateModel;
+	private UtilCalendarModel fromDateModel;
+	private UtilCalendarModel toDateModel;
 	private JButton generateButton;
 	
 	@Override
 	protected void initializeComponents() {
-		reportDateModel = new UtilCalendarModel();
+		fromDateModel = new UtilCalendarModel();
+		toDateModel = new UtilCalendarModel();
 		
 		generateButton = new JButton("Generate Report");
 		generateButton.addActionListener(new ActionListener() {
@@ -80,13 +83,11 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 	}
 
 	private void generateReport() {
-		if (reportDateModel.getValue() == null) {
-			showErrorMessage("Date must be specified");
+		if (!validateCriteria()) {
 			return;
 		}
 		
-		List<ProductPriceHistory> items = productPriceService
-				.getAllProductPriceHistoriesByDate(reportDateModel.getValue().getTime());
+		List<ProductPriceHistory> items = retrieveReportItems();
 		tableModel.setItems(items);
 		if (!items.isEmpty()) {
 			table.changeSelection(0, 0);
@@ -95,12 +96,22 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 		}
 	}
 
+	private List<ProductPriceHistory> retrieveReportItems() {
+		ProductPriceHistorySearchCriteria criteria = new ProductPriceHistorySearchCriteria();
+		criteria.setFromDate(fromDateModel.getValue().getTime());
+		criteria.setToDate(toDateModel.getValue().getTime());
+		
+		return productPriceService.searchProductPriceHistories(criteria);
+	}
+	
 	private PriceChangesReport createPriceChangesReport() {
-		Date reportDate = reportDateModel.getValue().getTime();
+		Date fromDate = fromDateModel.getValue().getTime();
+		Date toDate = toDateModel.getValue().getTime();
 		
 		PriceChangesReport report = new PriceChangesReport();
-		report.setReportDate(reportDate);
-		report.setItems(productPriceService.getAllProductPriceHistoriesByDate(reportDate));
+		report.setFromDate(fromDate);
+		report.setToDate(toDate);
+		report.setItems(retrieveReportItems());
 		return report;
 	}
 
@@ -109,6 +120,7 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 		table = new MagicListTable(tableModel);
 		
 		table.getColumnModel().getColumn(PRODUCT_COLUMN_INDEX).setPreferredWidth(300);
+		table.getColumnModel().getColumn(EFFECTIVE_DATE_COLUMN_INDEX).setPreferredWidth(150);
 	}
 
 	@Override
@@ -117,7 +129,9 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 	}
 	
 	public void updateDisplay() {
-		reportDateModel.setValue(Calendar.getInstance());
+		Calendar cal = Calendar.getInstance();
+		fromDateModel.setValue(cal);
+		toDateModel.setValue(cal);
 		tableModel.clear();
 	}
 
@@ -141,27 +155,52 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Date:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "From Date:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		
-		JDatePanelImpl datePanel = new JDatePanelImpl(reportDateModel);
-		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		JDatePanelImpl fromDatePanel = new JDatePanelImpl(fromDateModel);
+		JDatePickerImpl datePicker = new JDatePickerImpl(fromDatePanel, new DatePickerFormatter());
 		mainPanel.add(datePicker, c);
 
 		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(30), c);
+		mainPanel.add(Box.createHorizontalStrut(30), c);
 
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "To Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePanelImpl toDatePanel = new JDatePanelImpl(toDateModel);
+		JDatePickerImpl toDatePicker = new JDatePickerImpl(toDatePanel, new DatePickerFormatter());
+		mainPanel.add(toDatePicker, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 6;
+		c.gridy = currentRow;
+		c.weightx = 1.0;
+		mainPanel.add(Box.createGlue(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.gridwidth = 2;
+		c.anchor = GridBagConstraints.WEST;
+		c.insets.top = 20;
+		generateButton.setPreferredSize(new Dimension(160, 25));
 		mainPanel.add(generateButton, c);
 		
 		currentRow++;
@@ -185,7 +224,7 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 5;
+		c.gridwidth = 7;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setPreferredSize(new Dimension(600, 200));
@@ -216,17 +255,28 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 	}
 
 	private void print() {
-		if (reportDateModel.getValue() == null) {
-			showErrorMessage("Date must be specified");
+		if (!validateCriteria()) {
 			return;
 		}
-		
 		printService.print(createPriceChangesReport());
 	}
 
+	private boolean validateCriteria() {
+		if (fromDateModel.getValue() == null) {
+			showErrorMessage("From Date must be specified");
+			return false;
+		}
+		
+		if (toDateModel.getValue() == null) {
+			showErrorMessage("To Date must be specified");
+			return false;
+		}
+		
+		return true;
+	}
+
 	private void printPreview() {
-		if (reportDateModel.getValue() == null) {
-			showErrorMessage("Date must be specified");
+		if (!validateCriteria()) {
 			return;
 		}
 		
@@ -239,7 +289,7 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 
 	private class PriceChangesTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"Product", "Time", "CSE", "TIE", "CTN", "DOZ", "PCS"};
+		private final String[] columnNames = {"Product", "Effective Date/Time", "CSE", "TIE", "CTN", "DOZ", "PCS"};
 		
 		private List<ProductPriceHistory> items = new ArrayList<>();
 		
@@ -283,8 +333,8 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 			switch (columnIndex) {
 			case PRODUCT_COLUMN_INDEX:
 				return item.getProduct().getDescription();
-			case UPDATE_DATE_COLUMN_INDEX:
-				return FormatterUtil.formatTime(item.getUpdateDate());
+			case EFFECTIVE_DATE_COLUMN_INDEX:
+				return FormatterUtil.formatDateTime(item.getUpdateDate());
 			case UNIT_PRICE_CASE_COLUMN_INDEX:
 				BigDecimal unitPriceCase = item.getUnitPrice(Unit.CASE);
 				return (unitPriceCase != null) ? FormatterUtil.formatAmount(unitPriceCase) : null;
