@@ -13,6 +13,8 @@ public class BadStockReturnSearchCriteria {
 	private Boolean paid;
 	private Customer customer;
 	private Date postDate;
+	private Date postDateFrom;
+	private Date postDateTo;
 	private Date paidDate;
 	private TimePeriod timePeriod;
 	private PaymentTerminal paymentTerminal;
@@ -79,6 +81,22 @@ public class BadStockReturnSearchCriteria {
 
 	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
 		this.paymentTerminal = paymentTerminal;
+	}
+
+	public Date getPostDateFrom() {
+		return postDateFrom;
+	}
+
+	public void setPostDateFrom(Date postDateFrom) {
+		this.postDateFrom = postDateFrom;
+	}
+
+	public Date getPostDateTo() {
+		return postDateTo;
+	}
+
+	public void setPostDateTo(Date postDateTo) {
+		this.postDateTo = postDateTo;
 	}
 	
 }

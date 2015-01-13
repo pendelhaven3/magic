@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.pj.magic.Constants;
+import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.SalesInvoice;
@@ -41,6 +42,16 @@ public class PostedSalesAndProfitReportItem {
 		netAmount = salesReturn.getTotalAmount().negate();
 		netCost = salesReturn.getTotalNetCost().negate();
 		netProfit = salesReturn.getTotalNetProfit().negate();
+	}
+	
+	public PostedSalesAndProfitReportItem(BadStockReturn badStockReturn) {
+		transactionDate = badStockReturn.getPostDate();
+		transactionType = "BAD STOCK RETURN";
+		transactionNumber = badStockReturn.getBadStockReturnNumber();
+		customer = badStockReturn.getCustomer();
+		netAmount = badStockReturn.getTotalAmount().negate();
+		netCost = badStockReturn.getTotalCost().negate();
+		netProfit = badStockReturn.getTotalLoss().negate();
 	}
 	
 	public PostedSalesAndProfitReportItem(NoMoreStockAdjustment noMoreStockAdjustment) {

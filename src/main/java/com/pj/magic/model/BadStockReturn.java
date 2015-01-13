@@ -152,5 +152,21 @@ public class BadStockReturn {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+
+	public BigDecimal getTotalCost() {
+		BigDecimal total = Constants.ZERO;
+		for (BadStockReturnItem item : items) {
+			total = total.add(item.getCost());
+		}
+		return total;
+	}
+
+	public BigDecimal getTotalLoss() {
+		BigDecimal total = Constants.ZERO;
+		for (BadStockReturnItem item : items) {
+			total = total.add(item.getLoss());
+		}
+		return total;
+	}
 	
 }

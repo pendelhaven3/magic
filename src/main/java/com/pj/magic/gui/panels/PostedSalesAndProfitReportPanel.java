@@ -38,15 +38,18 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
+import com.pj.magic.model.search.BadStockReturnSearchCriteria;
 import com.pj.magic.model.search.NoMoreStockAdjustmentSearchCriteria;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
+import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.NoMoreStockAdjustmentService;
 import com.pj.magic.service.PrintService;
@@ -76,6 +79,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
+	@Autowired private BadStockReturnService badStockReturnService;
 	
 	private MagicTextField customerCodeField;
 	private JLabel customerNameLabel;
@@ -199,6 +203,24 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	
 				@Override
 				public PostedSalesAndProfitReportItem apply(SalesReturn input) {
+					return new PostedSalesAndProfitReportItem(input);
+				}
+			})
+		);
+		
+		BadStockReturnSearchCriteria badStockReturnCriteria = new BadStockReturnSearchCriteria();
+		badStockReturnCriteria.setPosted(true);
+		badStockReturnCriteria.setCustomer(customer);
+		badStockReturnCriteria.setPostDateFrom(fromDateModel.getValue().getTime());
+		badStockReturnCriteria.setPostDateTo(toDateModel.getValue().getTime());
+		
+		List<BadStockReturn> badStockReturns = badStockReturnService.search(badStockReturnCriteria);
+		items.addAll(
+			Collections2.transform(badStockReturns, 
+					new Function<BadStockReturn, PostedSalesAndProfitReportItem>() {
+	
+				@Override
+				public PostedSalesAndProfitReportItem apply(BadStockReturn input) {
 					return new PostedSalesAndProfitReportItem(input);
 				}
 			})

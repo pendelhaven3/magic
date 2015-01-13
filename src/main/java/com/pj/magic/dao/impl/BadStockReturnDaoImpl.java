@@ -174,6 +174,16 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 		}
 		
+		if (criteria.getPostDateFrom() != null) {
+			sql.append(" and a.POST_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDateFrom()));
+		}
+		
+		if (criteria.getPostDateTo() != null) {
+			sql.append(" and a.POST_DT < date_add(?, interval 1 day)");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDateTo()));
+		}
+		
 		if (criteria.getCustomer() != null) {
 			sql.append(" and a.CUSTOMER_ID = ?");
 			params.add(criteria.getCustomer().getId());
