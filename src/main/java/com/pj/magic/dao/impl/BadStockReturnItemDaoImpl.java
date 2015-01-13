@@ -22,7 +22,7 @@ import com.pj.magic.model.Product;
 public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockReturnItemDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, BAD_STOCK_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE,"
+			"select a.ID, BAD_STOCK_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE, COST,"
 			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
 			+ " from BAD_STOCK_RETURN_ITEM a"
 			+ " join PRODUCT b"
@@ -40,7 +40,8 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 	}
 
 	private static final String INSERT_SQL =
-			"insert into BAD_STOCK_RETURN_ITEM (BAD_STOCK_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE)"
+			"insert into BAD_STOCK_RETURN_ITEM"
+			+ " (BAD_STOCK_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE)"
 			+ " values (?, ?, ?, ?, ?)";
 	
 	private void insert(final BadStockReturnItem item) {
@@ -64,7 +65,8 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 	}
 
 	private static final String UPDATE_SQL =
-			"update BAD_STOCK_RETURN_ITEM set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, UNIT_PRICE = ?"
+			"update BAD_STOCK_RETURN_ITEM set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, UNIT_PRICE = ?,"
+			+ " COST = ?"
 			+ " where ID = ?";
 	
 	private void update(BadStockReturnItem item) {
@@ -73,6 +75,7 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 				item.getUnit(),
 				item.getQuantity(),
 				item.getUnitPrice(),
+				item.getCost(),
 				item.getId());
 	}
 
@@ -108,6 +111,7 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 			item.setUnit(rs.getString("UNIT"));
 			item.setQuantity(rs.getInt("QUANTITY"));
 			item.setUnitPrice(rs.getBigDecimal("UNIT_PRICE"));
+			item.setCost(rs.getBigDecimal("COST"));
 			
 			return item;
 		}

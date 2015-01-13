@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.BadStockReturnDao;
 import com.pj.magic.dao.BadStockReturnItemDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
+import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.PaymentTerminalAssignment;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.BadStockReturnSearchCriteria;
 import com.pj.magic.service.BadStockReturnService;
@@ -26,6 +28,7 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 	@Autowired private BadStockReturnItemDao badStockReturnItemDao;
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
+	@Autowired private ProductDao productDao;
 	
 	@Transactional
 	@Override
@@ -79,6 +82,12 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 		updated.setPostDate(new Date());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		badStockReturnDao.save(updated);
+		
+		for (BadStockReturnItem item : updated.getItems()) {
+			Product product = productDao.get(item.getProduct().getId());
+			item.setCost(product.getFinalCost(item.getUnit()));
+			badStockReturnItemDao.save(item);
+		}
 	}
 
 	@Override

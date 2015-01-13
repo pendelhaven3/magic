@@ -13,6 +13,7 @@ public class BadStockReturnItem {
 	private String unit;
 	private Integer quantity;
 	private BigDecimal unitPrice;
+	private BigDecimal cost;
 
 	public Long getId() {
 		return id;
@@ -90,6 +91,14 @@ public class BadStockReturnItem {
 			return unitPrice.multiply(new BigDecimal(quantity));
 		}
 		return null;
+	}
+
+	public BigDecimal getCost() {
+		return cost;
+	}
+
+	public void setCost(BigDecimal cost) {
+		this.cost = cost;
 	}
 	
 }

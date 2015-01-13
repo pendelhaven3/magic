@@ -619,6 +619,7 @@ create table BAD_STOCK_RETURN_ITEM (
   UNIT char(3) not null,
   QUANTITY integer not null,
   UNIT_PRICE numeric(10, 2) not null,
+  COST numeric(10, 2) null,
   constraint BAD_STOCK_RETURN_ITEM$PK primary key (ID),
   constraint BAD_STOCK_RETURN_ITEM$FK foreign key (BAD_STOCK_RETURN_ID) references BAD_STOCK_RETURN (ID),
   constraint BAD_STOCK_RETURN_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
