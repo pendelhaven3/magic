@@ -10,6 +10,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
 import com.pj.magic.Constants;
 
@@ -58,6 +59,15 @@ public class MagicTextField extends JTextField {
 
 	public void setAllowLowerCase(boolean allowLowerCase) {
 		this.allowLowerCase = allowLowerCase;
+	}
+
+	public Integer getTextAsInteger() {
+		String value = getText();
+		if (NumberUtils.isNumber(value)) {
+			return Integer.valueOf(value);
+		} else {
+			return null;
+		}
 	}
 	
 }

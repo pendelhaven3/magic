@@ -10,8 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.swing.BorderFactory;
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,6 +21,7 @@ import javax.swing.SwingUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.service.PrintService;
@@ -41,22 +41,54 @@ public class PrintPreviewDialog extends MagicDialog {
 	private int currentPage;
 	private int totalPages;
 	private List<String> printPages;
-	private JLabel pageNumberLabel;
+	private MagicTextField pageField;
+	private JLabel lastPageNumberLabel;
 	private boolean useCondensedFontForPrinting;
 	
 	public PrintPreviewDialog() {
 		setSize(800, 600);
 		setLocationRelativeTo(null);
 		setTitle("Print Preview");
+		
+		initializeComponents();
+		layoutMainPanel();
+		registerKeyBindings();
 	}
 	
+	private void registerKeyBindings() {
+		pageField.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jumpToPage();
+			}
+		});
+	}
+
+	private void jumpToPage() {
+		Integer targetPage = pageField.getTextAsInteger();
+		if (targetPage != null && !(targetPage >= 1 && targetPage <= totalPages)) {
+			showErrorMessage("Invalid page");
+			return;
+		}
+		
+		currentPage = targetPage - 1;
+		displayPage(currentPage);
+		updatePageNumberLabelAndNavigation();
+	}
+
+	private void initializeComponents() {
+		pageField = new MagicTextField();
+		pageField.setNumbersOnly(true);
+		lastPageNumberLabel = new JLabel();
+	}
+
 	@Override
 	protected void doWhenEscapeKeyPressed() {
 		// none
 	}
 	
-	@PostConstruct
-	public void layoutComponents() {
+	public void layoutMainPanel() {
 		setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
@@ -79,13 +111,12 @@ public class PrintPreviewDialog extends MagicDialog {
 	private MagicToolBar createToolBar() {
 		MagicToolBar toolBar = new MagicToolBar();
 		
-		pageNumberLabel = new JLabel();
-		Dimension dim = new Dimension(120, 20);
-		pageNumberLabel.setPreferredSize(dim);
-		pageNumberLabel.setMinimumSize(dim);
-		pageNumberLabel.setMaximumSize(dim);
-		pageNumberLabel.setHorizontalAlignment(JLabel.CENTER);
-		toolBar.add(pageNumberLabel);
+		JPanel pageNumberPanel = createPageNumberPanel();
+		Dimension dim = new Dimension(130, 36);
+		pageNumberPanel.setPreferredSize(dim);
+		pageNumberPanel.setMinimumSize(dim);
+		pageNumberPanel.setMaximumSize(dim);
+		toolBar.add(pageNumberPanel);
 		
 		previousButton = new MagicToolBarButton("left", "Previous Page");
 		previousButton.addActionListener(new ActionListener() {
@@ -118,6 +149,23 @@ public class PrintPreviewDialog extends MagicDialog {
 		toolBar.add(printButton);
 		
 		return toolBar;
+	}
+
+	private JPanel createPageNumberPanel() {
+		JPanel panel = new JPanel();
+		
+		panel.add(new JLabel("Page"));
+		
+		pageField.setPreferredSize(new Dimension(25, 25));
+		panel.add(pageField);
+		
+		panel.add(new JLabel("of "));
+		
+		lastPageNumberLabel.setPreferredSize(new Dimension(25, 25));
+		panel.add(lastPageNumberLabel);
+		
+		
+		return panel;
 	}
 
 	private void print() {
@@ -189,7 +237,8 @@ public class PrintPreviewDialog extends MagicDialog {
 	}
 
 	private void updatePageNumberLabelAndNavigation() {
-		pageNumberLabel.setText("Page " + (currentPage + 1) + " of " + totalPages);
+		pageField.setText(String.valueOf(currentPage + 1));
+		lastPageNumberLabel.setText(String.valueOf(totalPages));
 		previousButton.setEnabled(currentPage > 0);
 		nextButton.setEnabled(currentPage + 1 < totalPages);
 	}
