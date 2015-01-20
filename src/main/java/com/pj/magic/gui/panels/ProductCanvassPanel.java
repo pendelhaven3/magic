@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -35,6 +36,7 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 	@Autowired private ProductCanvassTable table;
 	
 	private MagicTextField productCodeField;
+	private JLabel productDescriptionLabel;
 	private JButton generateButton;
 	private EllipsisButton selectProductButton;
 	
@@ -52,6 +54,8 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 				openSelectProductDialog();
 			}
 		});
+		
+		productDescriptionLabel = new JLabel();
 		
 		generateButton = new JButton("Generate");
 		generateButton.addActionListener(new ActionListener() {
@@ -72,6 +76,7 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 		Product product = selectProductDialog.getSelectedProduct();
 		if (product != null) {
 			productCodeField.setText(product.getCode());
+			productDescriptionLabel.setText(product.getDescription());
 		}
 	}
 
@@ -162,10 +167,12 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 
 	private JPanel createProductPanel() {
 		productCodeField.setPreferredSize(new Dimension(150, 25));
+		productDescriptionLabel.setPreferredSize(new Dimension(300, 20));
 		
 		JPanel panel = new JPanel();
 		panel.add(productCodeField);
 		panel.add(selectProductButton);
+		panel.add(productDescriptionLabel);
 		return panel;
 	}
 
@@ -176,6 +183,7 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		productCodeField.setText(null);
+		productDescriptionLabel.setText(null);
 		table.setItems(new ArrayList<ProductCanvassItem>());
 	}
 
