@@ -339,16 +339,16 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 				BigDecimal unitPriceCase = item.getUnitPrice(Unit.CASE);
 				return (unitPriceCase != null) ? FormatterUtil.formatAmount(unitPriceCase) : null;
 			case UNIT_PRICE_TIE_COLUMN_INDEX:
-				BigDecimal unitPriceTie = item.getUnitPrice(Unit.TIE);
+				BigDecimal unitPriceTie = item.getActiveUnitPrice(Unit.TIE);
 				return (unitPriceTie != null) ? FormatterUtil.formatAmount(unitPriceTie) : null;
 			case UNIT_PRICE_CARTON_COLUMN_INDEX:
-				BigDecimal unitPriceCarton = item.getUnitPrice(Unit.CARTON);
+				BigDecimal unitPriceCarton = item.getActiveUnitPrice(Unit.CARTON);
 				return (unitPriceCarton != null) ? FormatterUtil.formatAmount(unitPriceCarton) : null;
 			case UNIT_PRICE_DOZEN_COLUMN_INDEX:
-				BigDecimal unitPriceDozen = item.getUnitPrice(Unit.DOZEN);
+				BigDecimal unitPriceDozen = item.getActiveUnitPrice(Unit.DOZEN);
 				return (unitPriceDozen != null) ? FormatterUtil.formatAmount(unitPriceDozen) : null;
 			case UNIT_PRICE_PIECES_COLUMN_INDEX:
-				BigDecimal unitPricePieces = item.getUnitPrice(Unit.PIECES);
+				BigDecimal unitPricePieces = item.getActiveUnitPrice(Unit.PIECES);
 				return (unitPricePieces != null) ? FormatterUtil.formatAmount(unitPricePieces) : null;
 			default:
 				throw new RuntimeException("Fetcing invalid column index: " + columnIndex);
