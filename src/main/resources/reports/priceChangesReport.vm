@@ -2,12 +2,15 @@ $report.center("JC HARMONY SELLING", $charsPerLine)
 
 $report.center("PRICE CHANGES REPORT", $charsPerLine)
 $report.center("as of $report.field($priceChangesReport.fromDate) - $report.field($priceChangesReport.toDate)", $charsPerLine)
-                                                                                           Page: $currentPage x $totalPages
+                                                                                Page: $currentPage x $totalPages
 
-             Product Description         Eff. Date/Time      PCS      DOZ      CTN      TIE       CSE
--------------------------------------- ------------------- -------- -------- -------- -------- ---------
-##DM P.APPLE 1/2GALx12 (56273) JUICE     01/13/2015 11:45 PM 1,110.00 1,110.00 1,110.00 1,110.00 11,110.00
-#foreach($item in $items)
+#foreach($itemGroup in $itemGroups)
+Effective Date: $report.field($itemGroup.date)
+
+  Time            Product Description           PCS      DOZ      CTN      TIE       CSE
+-------- -------------------------------------- -------- -------- -------- -------- ---------
+##11:45 PM DM P.APPLE 1/2GALx12 (56273) JUICE     1,110.00 1,110.00 1,110.00 1,110.00 11,110.00
+#foreach($item in $itemGroup.items)
 #set( $unitPricePieces = "" )
 #set( $unitPriceDozen = "" )
 #set( $unitPriceCarton = "" )
@@ -18,8 +21,9 @@ $report.center("as of $report.field($priceChangesReport.fromDate) - $report.fiel
 #set( $unitPriceCarton = $item.getActiveUnitPrice("CTN") )
 #set( $unitPriceTie = $item.getActiveUnitPrice("TIE") )
 #set( $unitPriceCase = $item.getUnitPrice("CSE") )
-$report.field($item.product.description, 38) $report.dateTime($item.updateDate) $report.field($unitPricePieces, 8, "right") $report.field($unitPriceDozen, 8, "right") $report.field($unitPriceCarton, 8, "right") $report.field($unitPriceTie, 8, "right") $report.field($unitPriceCase, 9, "right")
+$report.time($item.updateDate) $report.field($item.product.description, 38) $report.field($unitPricePieces, 8, "right") $report.field($unitPriceDozen, 8, "right") $report.field($unitPriceCarton, 8, "right") $report.field($unitPriceTie, 8, "right") $report.field($unitPriceCase, 9, "right")
 #end
-#if($isLastPage == true)
---------------------------------------------------------------------------------------------------------
+-------- -------------------------------------- -------- -------- -------- -------- ---------
+
+
 #end
