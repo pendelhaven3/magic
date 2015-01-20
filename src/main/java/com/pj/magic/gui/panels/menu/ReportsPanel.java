@@ -28,6 +28,12 @@ import com.pj.magic.service.LoginService;
 @Component
 public class ReportsPanel extends StandardMagicPanel {
 
+	private static final String INVENTORY_REPORT = "Inventory Report";
+	private static final String POSTED_SALES_AND_PROFIT_REPORT = "Posted Sales and Profit Report";
+	private static final String REMITTANCE_REPORT = "Remittance Report";
+	private static final String CASH_FLOW_REPORT = "Cash Flow Report";
+	private static final String UNPAID_SALES_INVOICES_LIST = "Unpaid Sales Invoices List";
+
 	@Autowired private LoginService loginService;
 	
 	private MagicListTable table;
@@ -89,19 +95,19 @@ public class ReportsPanel extends StandardMagicPanel {
 	
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-		case "Unpaid Sales Invoices List":
+		case UNPAID_SALES_INVOICES_LIST:
 			getMagicFrame().switchToUnpaidSalesInvoicesListPanel();
 			break;
-		case "Cash Flow Report":
+		case CASH_FLOW_REPORT:
 			getMagicFrame().switchToCashFlowReportPanel();
 			break;
-		case "Remittance Report":
+		case REMITTANCE_REPORT:
 			getMagicFrame().switchToRemittanceReportPanel();
 			break;
-		case "Posted Sales and Profit Report":
+		case POSTED_SALES_AND_PROFIT_REPORT:
 			getMagicFrame().switchToPostedSalesAndProfitReportPanel();
 			break;
-		case "Inventory Report":
+		case INVENTORY_REPORT:
 			getMagicFrame().switchToInventoryReportPanel();
 			break;
 		}
@@ -115,11 +121,11 @@ public class ReportsPanel extends StandardMagicPanel {
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private final List<String> allMenuItems = Arrays.asList(
-				"Unpaid Sales Invoices List",
-				"Cash Flow Report",
-				"Remittance Report",
-				"Posted Sales and Profit Report",
-				"Inventory Report"
+				UNPAID_SALES_INVOICES_LIST,
+				CASH_FLOW_REPORT,
+				REMITTANCE_REPORT,
+				POSTED_SALES_AND_PROFIT_REPORT,
+				INVENTORY_REPORT
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
@@ -133,8 +139,8 @@ public class ReportsPanel extends StandardMagicPanel {
 			menuItems.clear();
 			menuItems.addAll(allMenuItems);
 			if (!user.isSupervisor()) {
-				menuItems.remove("Posted Sales and Profit Report");
-				menuItems.remove("Inventory Report");
+				menuItems.remove(POSTED_SALES_AND_PROFIT_REPORT);
+				menuItems.remove(INVENTORY_REPORT);
 			}
 			fireTableDataChanged();
 		}
