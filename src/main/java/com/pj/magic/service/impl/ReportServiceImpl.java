@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.ReportDao;
 import com.pj.magic.model.StockCardInventoryReportItem;
+import com.pj.magic.model.report.InventoryReport;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 import com.pj.magic.service.ReportService;
 
@@ -19,6 +20,13 @@ public class ReportServiceImpl implements ReportService {
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
 			StockCardInventoryReportSearchCriteria criteria) {
 		return reportDao.getStockCardInventoryReport(criteria);
+	}
+
+	@Override
+	public InventoryReport getInventoryReport() {
+		InventoryReport report = new InventoryReport();
+		report.setItems(reportDao.getAllInventoryReportItems());
+		return report;
 	}
 
 }

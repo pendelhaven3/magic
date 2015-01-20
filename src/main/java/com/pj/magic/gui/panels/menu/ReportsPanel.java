@@ -101,6 +101,9 @@ public class ReportsPanel extends StandardMagicPanel {
 		case "Posted Sales and Profit Report":
 			getMagicFrame().switchToPostedSalesAndProfitReportPanel();
 			break;
+		case "Inventory Report":
+			getMagicFrame().switchToInventoryReportPanel();
+			break;
 		}
 	}
 
@@ -115,7 +118,8 @@ public class ReportsPanel extends StandardMagicPanel {
 				"Unpaid Sales Invoices List",
 				"Cash Flow Report",
 				"Remittance Report",
-				"Posted Sales and Profit Report"
+				"Posted Sales and Profit Report",
+				"Inventory Report"
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
@@ -130,6 +134,7 @@ public class ReportsPanel extends StandardMagicPanel {
 			menuItems.addAll(allMenuItems);
 			if (!user.isSupervisor()) {
 				menuItems.remove("Posted Sales and Profit Report");
+				menuItems.remove("Inventory Report");
 			}
 			fireTableDataChanged();
 		}

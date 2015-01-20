@@ -403,7 +403,7 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
 			reportData.put("totalValue", totalValue);
 			if (reportType == InventoryCheckReportType.COMPLETE) {
-				printPages.add(generateReportAsString("reports/inventoryReport-complete.vm", reportData));
+				printPages.add(generateReportAsString("reports/inventoryCheckReport.vm", reportData));
 			} else {
 				printPages.add(generateReportAsString("reports/inventoryReport.vm", reportData));
 			}

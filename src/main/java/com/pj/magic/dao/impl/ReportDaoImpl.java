@@ -9,9 +9,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ReportDao;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.StockCardInventoryReportItem;
+import com.pj.magic.model.report.InventoryReportItem;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 import com.pj.magic.util.DbUtil;
 
@@ -216,6 +218,59 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			return item;
 		}
 		
+	}
+
+	private static final String GET_ALL_INVENTORY_REPORT_ITEMS_SQL =
+			" select ID, CODE, DESCRIPTION, UNIT, QUANTITY, COST"
+			+ " from ("
+			+ "   select ID, CODE, DESCRIPTION, 'CSE' as UNIT, AVAIL_QTY_CSE as QUANTITY, FINAL_COST_CSE as COST"
+			+ "   from PRODUCT"
+			+ "   where UNIT_IND_CSE = 'Y'"
+			+ "   and AVAIL_QTY_CSE > 0"
+			+ "   union all"
+			+ "   select ID, CODE, DESCRIPTION, 'TIE' as UNIT, AVAIL_QTY_TIE as QUANTITY, FINAL_COST_TIE as COST"
+			+ "   from PRODUCT"
+			+ "   where UNIT_IND_TIE = 'Y'"
+			+ "   and AVAIL_QTY_TIE > 0"
+			+ "   union all"
+			+ "   select ID, CODE, DESCRIPTION, 'CTN' as UNIT, AVAIL_QTY_CTN as QUANTITY, FINAL_COST_CTN as COST"
+			+ "   from PRODUCT"
+			+ "   where UNIT_IND_CTN = 'Y'"
+			+ "   and AVAIL_QTY_CTN > 0"
+			+ "   union all"
+			+ "   select ID, CODE, DESCRIPTION, 'DOZ' as UNIT, AVAIL_QTY_DOZ as QUANTITY, FINAL_COST_DOZ as COST"
+			+ "   from PRODUCT"
+			+ "   where UNIT_IND_DOZ = 'Y'"
+			+ "   and AVAIL_QTY_DOZ > 0"
+			+ "   union all"
+			+ "   select ID, CODE, DESCRIPTION, 'PCS' as UNIT, AVAIL_QTY_PCS as QUANTITY, FINAL_COST_PCS as COST"
+			+ "   from PRODUCT"
+			+ "   where UNIT_IND_PCS = 'Y'"
+			+ "   and AVAIL_QTY_PCS > 0"
+			+ " ) a"
+			+ " order by CODE";
+	
+	@Override
+	public List<InventoryReportItem> getAllInventoryReportItems() {
+		return getJdbcTemplate().query(GET_ALL_INVENTORY_REPORT_ITEMS_SQL, new RowMapper<InventoryReportItem>() {
+
+			@Override
+			public InventoryReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+				InventoryReportItem item = new InventoryReportItem();
+				
+				Product product = new Product();
+				product.setCode(rs.getString("CODE"));
+				product.setDescription(rs.getString("DESCRIPTION"));
+				item.setProduct(product);
+				
+				item.setUnit(rs.getString("UNIT"));
+				item.setQuantity(rs.getInt("QUANTITY"));
+				item.setUnitCost(rs.getBigDecimal("COST"));
+				
+				return item;
+			}
+			
+		});
 	}
 
 }

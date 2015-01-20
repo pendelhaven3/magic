@@ -30,6 +30,7 @@ import com.pj.magic.gui.panels.ChangePasswordPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
 import com.pj.magic.gui.panels.InventoryCheckPanel;
+import com.pj.magic.gui.panels.InventoryReportPanel;
 import com.pj.magic.gui.panels.LoginPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
 import com.pj.magic.gui.panels.MaintainAdjustmentTypePanel;
@@ -190,6 +191,7 @@ public class MagicFrame extends JFrame {
 	private static final String PRICE_CHANGES_REPORT_PANEL = "PRICE_CHANGES_REPORT_PANEL";
 	private static final String NO_MORE_STOCK_ADJUSTMENT_LIST_PANEL = "NO_MORE_STOCK_ADJUSTMENT_LIST_PANEL";
 	private static final String NO_MORE_STOCK_ADJUSTMENT_PANEL = "NO_MORE_STOCK_ADJUSTMENT_PANEL";
+	private static final String INVENTORY_REPORT_PANEL = "INVENTORY_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -260,6 +262,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PriceChangesReportPanel priceChangesReportPanel;
 	@Autowired private NoMoreStockAdjustmentListPanel noMoreStockAdjustmentListPanel;
 	@Autowired private NoMoreStockAdjustmentPanel noMoreStockAdjustmentPanel;
+	@Autowired private InventoryReportPanel inventoryReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -377,6 +380,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(priceChangesReportPanel, PRICE_CHANGES_REPORT_PANEL);
 		panelHolder.add(noMoreStockAdjustmentListPanel, NO_MORE_STOCK_ADJUSTMENT_LIST_PANEL);
 		panelHolder.add(noMoreStockAdjustmentPanel, NO_MORE_STOCK_ADJUSTMENT_PANEL);
+		panelHolder.add(inventoryReportPanel, INVENTORY_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -907,6 +911,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("No More Stock Adjustment");
 		noMoreStockAdjustmentPanel.updateDisplay(noMoreStockAdjustment);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, NO_MORE_STOCK_ADJUSTMENT_PANEL);
+	}
+
+	public void switchToInventoryReportPanel() {
+		addPanelNameToTitle("Inventory Report");
+		inventoryReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, INVENTORY_REPORT_PANEL);
 	}
 
 }
