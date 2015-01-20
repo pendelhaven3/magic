@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -85,6 +86,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	private JLabel customerNameLabel;
 	private UtilCalendarModel fromDateModel;
 	private UtilCalendarModel toDateModel;
+	private JCheckBox treatNoMoreStockAsSalesReturnCheckBox;
 	private JButton generateButton;
 	private EllipsisButton selectCustomerButton;
 	private MagicListTable table;
@@ -110,6 +112,8 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		
 		fromDateModel = new UtilCalendarModel();
 		toDateModel = new UtilCalendarModel();
+		
+		treatNoMoreStockAsSalesReturnCheckBox = new JCheckBox();
 		
 		generateButton = new JButton("Generate");
 		generateButton.addActionListener(new ActionListener() {
@@ -241,7 +245,8 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	
 				@Override
 				public PostedSalesAndProfitReportItem apply(NoMoreStockAdjustment input) {
-					return new PostedSalesAndProfitReportItem(input);
+					return new PostedSalesAndProfitReportItem(input,
+							treatNoMoreStockAsSalesReturnCheckBox.isSelected());
 				}
 			})
 		);
@@ -332,6 +337,15 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridwidth = 2;
+		mainPanel.add(createNoMoreStockAsSalesReturnPanel(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createVerticalFiller(20), c);
@@ -365,6 +379,21 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		mainPanel.add(itemsTableScrollPane, c);
 	}
 
+	private JPanel createNoMoreStockAsSalesReturnPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.anchor = GridBagConstraints.WEST;
+		c.insets.top = 5;
+		panel.add(ComponentUtil.createLabel(210, "Treat NMS as Sales Return: "), c);
+		
+		c.gridx = 1;
+		panel.add(treatNoMoreStockAsSalesReturnCheckBox);
+
+		return panel;
+	}
+
 	private JPanel createCustomerPanel() {
 		customerCodeField.setPreferredSize(new Dimension(150, 25));
 		customerNameLabel.setPreferredSize(new Dimension(300, 20));
@@ -387,6 +416,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		customerNameLabel.setText(null);
 		fromDateModel.setValue(Calendar.getInstance());
 		toDateModel.setValue(Calendar.getInstance());
+		treatNoMoreStockAsSalesReturnCheckBox.setSelected(false);
 		tableModel.clear();
 		customer = null;
 	}

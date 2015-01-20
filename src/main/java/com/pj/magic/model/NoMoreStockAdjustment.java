@@ -112,18 +112,6 @@ public class NoMoreStockAdjustment {
 		this.postedBy = postedBy;
 	}
 	
-	public BigDecimal getTotalNetCost() {
-		BigDecimal total = Constants.ZERO;
-		for (NoMoreStockAdjustmentItem item : items) {
-			total = total.add(item.getNetCost());
-		}
-		return total;
-	}
-	
-	public BigDecimal getTotalNetProfit() {
-		return getTotalAmount().subtract(getTotalNetCost());
-	}
-
 	public boolean isPaid() {
 		return paid;
 	}
@@ -162,6 +150,14 @@ public class NoMoreStockAdjustment {
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+	public BigDecimal getTotalCost() {
+		BigDecimal total = Constants.ZERO;
+		for (NoMoreStockAdjustmentItem item : items) {
+			total = total.add(item.getTotalCost());
+		}
+		return total;
 	}
 	
 }

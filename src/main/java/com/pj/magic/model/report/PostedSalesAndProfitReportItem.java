@@ -55,11 +55,23 @@ public class PostedSalesAndProfitReportItem {
 	}
 	
 	public PostedSalesAndProfitReportItem(NoMoreStockAdjustment noMoreStockAdjustment) {
+		this(noMoreStockAdjustment, false);
+	}
+	
+	public PostedSalesAndProfitReportItem(NoMoreStockAdjustment noMoreStockAdjustment, 
+			boolean treatAsSalesReturn) {
 		transactionDate = noMoreStockAdjustment.getPostDate();
 		transactionType = "NO MORE STOCK";
 		transactionNumber = noMoreStockAdjustment.getNoMoreStockAdjustmentNumber();
 		customer = noMoreStockAdjustment.getSalesInvoice().getCustomer();
-		netAmount = netProfit = noMoreStockAdjustment.getTotalAmount().negate();
+		netAmount = noMoreStockAdjustment.getTotalAmount().negate();
+		if (treatAsSalesReturn) {
+			netCost = noMoreStockAdjustment.getTotalCost().negate();
+			netProfit = noMoreStockAdjustment.getTotalAmount()
+					.subtract(noMoreStockAdjustment.getTotalCost()).negate();
+		} else {
+			netProfit = netAmount;
+		}
 	}
 	
 	public Date getTransactionDate() {

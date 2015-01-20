@@ -66,7 +66,7 @@ public class NoMoreStockAdjustmentItem {
 		}
 	}
 	
-	public BigDecimal getNetCost() {
+	public BigDecimal getTotalCost() {
 		return getCost().multiply(new BigDecimal(quantity));
 	}
 	
