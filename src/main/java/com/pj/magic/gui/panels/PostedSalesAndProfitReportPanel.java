@@ -92,6 +92,9 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private PostedSalesAndProfitReportItemsTableModel tableModel;
 	private Customer customer;
+	private JLabel totalNetAmountLabel;
+	private JLabel totalCostLabel;
+	private JLabel totalProfitLabel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -167,11 +170,16 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 			customerNameLabel.setText(customer.getName());
 		}
 		
-		List<PostedSalesAndProfitReportItem> items = retrieveReportItems();
-		tableModel.setItems(items);
-		if (items.isEmpty()) {
+		PostedSalesAndProfitReport report = new PostedSalesAndProfitReport();
+		report.setItems(retrieveReportItems());
+		
+		tableModel.setItems(report.getItems());
+		if (report.getItems().isEmpty()) {
 			showErrorMessage("No records found");
 		}
+		totalNetAmountLabel.setText(FormatterUtil.formatAmount(report.getTotalNetAmount()));
+		totalCostLabel.setText(FormatterUtil.formatAmount(report.getTotalNetCost()));
+		totalProfitLabel.setText(FormatterUtil.formatAmount(report.getTotalNetProfit()));
 	}
 
 	private List<PostedSalesAndProfitReportItem> retrieveReportItems() {
@@ -377,6 +385,72 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		JScrollPane itemsTableScrollPane = new JScrollPane(table);
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
 		mainPanel.add(itemsTableScrollPane, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.EAST;
+		c.gridwidth = 7;
+		mainPanel.add(createTotalsPanel(), c);
+	}
+
+	private JPanel createTotalsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Total Net Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalNetAmountLabel = ComponentUtil.createRightLabel(100, "");
+		panel.add(totalNetAmountLabel, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		panel.add(Box.createHorizontalStrut(10), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Total Cost:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalCostLabel = ComponentUtil.createRightLabel(100, "");
+		panel.add(totalCostLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(140, "Total Profit:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalProfitLabel = ComponentUtil.createRightLabel(100, "");
+		panel.add(totalProfitLabel, c);
+		
+		return panel;
 	}
 
 	private JPanel createNoMoreStockAsSalesReturnPanel() {
@@ -419,6 +493,9 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		treatNoMoreStockAsSalesReturnCheckBox.setSelected(false);
 		tableModel.clear();
 		customer = null;
+		totalNetAmountLabel.setText(null);
+		totalCostLabel.setText(null);
+		totalProfitLabel.setText(null);
 	}
 
 	@Override
