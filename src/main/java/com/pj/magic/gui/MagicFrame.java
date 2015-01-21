@@ -28,6 +28,7 @@ import com.pj.magic.gui.panels.BadStockReturnPanel;
 import com.pj.magic.gui.panels.CashFlowReportPanel;
 import com.pj.magic.gui.panels.ChangePasswordPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
+import com.pj.magic.gui.panels.CustomerSalesSummaryReportPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
 import com.pj.magic.gui.panels.InventoryCheckPanel;
 import com.pj.magic.gui.panels.InventoryReportPanel;
@@ -192,6 +193,7 @@ public class MagicFrame extends JFrame {
 	private static final String NO_MORE_STOCK_ADJUSTMENT_LIST_PANEL = "NO_MORE_STOCK_ADJUSTMENT_LIST_PANEL";
 	private static final String NO_MORE_STOCK_ADJUSTMENT_PANEL = "NO_MORE_STOCK_ADJUSTMENT_PANEL";
 	private static final String INVENTORY_REPORT_PANEL = "INVENTORY_REPORT_PANEL";
+	private static final String CUSTOMER_SALES_SUMMARY_REPORT_PANEL = "CUSTOMER_SALES_SUMMARY_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -263,6 +265,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private NoMoreStockAdjustmentListPanel noMoreStockAdjustmentListPanel;
 	@Autowired private NoMoreStockAdjustmentPanel noMoreStockAdjustmentPanel;
 	@Autowired private InventoryReportPanel inventoryReportPanel;
+	@Autowired private CustomerSalesSummaryReportPanel customerSalesSummaryReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -381,6 +384,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(noMoreStockAdjustmentListPanel, NO_MORE_STOCK_ADJUSTMENT_LIST_PANEL);
 		panelHolder.add(noMoreStockAdjustmentPanel, NO_MORE_STOCK_ADJUSTMENT_PANEL);
 		panelHolder.add(inventoryReportPanel, INVENTORY_REPORT_PANEL);
+		panelHolder.add(customerSalesSummaryReportPanel, CUSTOMER_SALES_SUMMARY_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -917,6 +921,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Inventory Report");
 		inventoryReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, INVENTORY_REPORT_PANEL);
+	}
+
+	public void switchToCustomerSalesSummaryReportPanel() {
+		addPanelNameToTitle("Customer Sales Summary Report");
+		customerSalesSummaryReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, CUSTOMER_SALES_SUMMARY_REPORT_PANEL);
 	}
 
 }

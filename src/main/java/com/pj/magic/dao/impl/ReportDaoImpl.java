@@ -3,19 +3,25 @@ package com.pj.magic.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ReportDao;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.StockCardInventoryReportItem;
+import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.report.InventoryReportItem;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 import com.pj.magic.util.DbUtil;
+import com.pj.magic.util.QueriesUtil;
 
 @Repository
 public class ReportDaoImpl extends MagicDao implements ReportDao {
@@ -269,6 +275,38 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 				
 				return item;
 			}
+			
+		});
+	}
+
+	@Override
+	public List<CustomerSalesSummaryReportItem> searchCustomerSalesSummaryReportItems(
+			Date fromDate, Date toDate) {
+		String sql = QueriesUtil.getSql("customerSalesSummaryReport");
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("fromDate", fromDate);
+		params.put("toDate", toDate);
+		
+		return getNamedParameterJdbcTemplate().query(sql,
+				params,
+				new RowMapper<CustomerSalesSummaryReportItem>() {
+
+					@Override
+					public CustomerSalesSummaryReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+						CustomerSalesSummaryReportItem item = new CustomerSalesSummaryReportItem();
+						
+						Customer customer = new Customer();
+						customer.setCode(rs.getString("CUSTOMER_CODE"));
+						customer.setName(rs.getString("CUSTOMER_NAME"));
+						item.setCustomer(customer);
+						
+						item.setTotalAmount(rs.getBigDecimal("TOTAL_NET_AMOUNT"));
+						item.setTotalCost(rs.getBigDecimal("TOTAL_COST"));
+						item.setTotalProfit(rs.getBigDecimal("TOTAL_PROFIT"));
+						
+						return item;
+					}
 			
 		});
 	}

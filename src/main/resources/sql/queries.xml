@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<entry name="customerSalesSummaryReport">
+	<![CDATA[
+select cust.CODE as CUSTOMER_CODE, cust.NAME as CUSTOMER_NAME, 
+	sum(TOTAL_NET_AMOUNT) as TOTAL_NET_AMOUNT,
+	sum(TOTAL_COST) as TOTAL_COST,
+	sum(TOTAL_PROFIT) as TOTAL_PROFIT
+from (
+	select CUSTOMER_ID, sum(NET_AMOUNT) as TOTAL_NET_AMOUNT, sum(TOTAL_COST) as TOTAL_COST, sum(NET_AMOUNT) - sum(TOTAL_COST) as TOTAL_PROFIT
+	from (
+		select a.CUSTOMER_ID,
+		b.UNIT_PRICE * b.QUANTITY * (1 - DISCOUNT_1/100) * (1 - DISCOUNT_2/100) * (1 - DISCOUNT_3/100) - FLAT_RATE_DISCOUNT as NET_AMOUNT,
+		b.COST * b.QUANTITY as TOTAL_COST
+		from SALES_INVOICE a
+		join SALES_INVOICE_ITEM b
+		  on b.SALES_INVOICE_ID = a.ID
+		where a.MARK_IND = 'Y'
+        and a.MARK_DT >= :fromDate
+        and a.MARK_DT <= :toDate
+	) agg
+	group by CUSTOMER_ID
+	union all
+	select CUSTOMER_ID, 
+		-1 * sum(NET_AMOUNT) as TOTAL_NET_AMOUNT,
+		-1 * sum(TOTAL_COST) as TOTAL_COST, 
+		-1 * (sum(NET_AMOUNT) - sum(TOTAL_COST)) as TOTAL_PROFIT
+	from (
+		select d.CUSTOMER_ID,
+		c.UNIT_PRICE * b.QUANTITY * (1 - DISCOUNT_1/100) * (1 - DISCOUNT_2/100) * (1 - DISCOUNT_3/100) - (FLAT_RATE_DISCOUNT / c.QUANTITY * b.QUANTITY) as NET_AMOUNT,
+		c.COST * b.QUANTITY as TOTAL_COST
+		from SALES_RETURN a
+		join SALES_RETURN_ITEM b
+		  on b.SALES_RETURN_ID = a.ID
+		join SALES_INVOICE_ITEM c
+		  on c.ID = b.SALES_INVOICE_ITEM_ID
+		join SALES_INVOICE d
+		  on d.ID = a.SALES_INVOICE_ID
+		where a.POST_IND = 'Y'
+        and a.POST_DT >= :fromDate
+        and a.POST_DT < date_add(:toDate, interval 1 day)
+	) agg
+	group by CUSTOMER_ID
+	union all
+	select CUSTOMER_ID, 
+	-1 * sum(NET_AMOUNT) as TOTAL_NET_AMOUNT, 
+	-1 * sum(TOTAL_COST) as TOTAL_COST, 
+	-1 * (sum(NET_AMOUNT) - sum(TOTAL_COST)) as TOTAL_PROFIT
+	from (
+		select a.CUSTOMER_ID,
+		b.UNIT_PRICE * b.QUANTITY as NET_AMOUNT,
+		b.COST * b.QUANTITY as TOTAL_COST
+		from BAD_STOCK_RETURN a
+		join BAD_STOCK_RETURN_ITEM b
+		  on b.BAD_STOCK_RETURN_ID = a.ID
+		where a.POST_IND = 'Y'
+        and a.POST_DT >= :fromDate
+        and a.POST_DT <= :toDate
+	) agg
+	group by CUSTOMER_ID
+	union all
+	select CUSTOMER_ID, 
+		-1 * sum(NET_AMOUNT) as TOTAL_NET_AMOUNT,
+		-1 * sum(TOTAL_COST) as TOTAL_COST, 
+		-1 * (sum(NET_AMOUNT) - sum(TOTAL_COST)) as TOTAL_PROFIT
+	from (
+		select d.CUSTOMER_ID,
+		c.UNIT_PRICE * b.QUANTITY * (1 - DISCOUNT_1/100) * (1 - DISCOUNT_2/100) * (1 - DISCOUNT_3/100) - (FLAT_RATE_DISCOUNT / c.QUANTITY * b.QUANTITY) as NET_AMOUNT,
+		c.COST * b.QUANTITY as TOTAL_COST
+		from NO_MORE_STOCK_ADJUSTMENT a
+		join NO_MORE_STOCK_ADJUSTMENT_ITEM b
+		  on b.NO_MORE_STOCK_ADJUSTMENT_ID = a.ID
+		join SALES_INVOICE_ITEM c
+		  on c.ID = b.SALES_INVOICE_ITEM_ID
+		join SALES_INVOICE d
+		  on d.ID = a.SALES_INVOICE_ID
+		where a.POST_IND = 'Y'
+        and a.POST_DT >= :fromDate
+        and a.POST_DT < date_add(:toDate, interval 1 day)
+	) agg
+	group by CUSTOMER_ID
+) main
+join CUSTOMER cust
+  on cust.ID = main.CUSTOMER_ID
+group by CUSTOMER_ID
+order by cust.NAME
+	]]>
+	</entry>
+</root>

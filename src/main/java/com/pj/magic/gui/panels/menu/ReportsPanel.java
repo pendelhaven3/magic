@@ -33,6 +33,7 @@ public class ReportsPanel extends StandardMagicPanel {
 	private static final String REMITTANCE_REPORT = "Remittance Report";
 	private static final String CASH_FLOW_REPORT = "Cash Flow Report";
 	private static final String UNPAID_SALES_INVOICES_LIST = "Unpaid Sales Invoices List";
+	private static final String CUSTOMER_SALES_SUMMARY_REPORT = "Customer Sales Summary Report";
 
 	@Autowired private LoginService loginService;
 	
@@ -110,6 +111,9 @@ public class ReportsPanel extends StandardMagicPanel {
 		case INVENTORY_REPORT:
 			getMagicFrame().switchToInventoryReportPanel();
 			break;
+		case CUSTOMER_SALES_SUMMARY_REPORT:
+			getMagicFrame().switchToCustomerSalesSummaryReportPanel();
+			break;
 		}
 	}
 
@@ -125,7 +129,8 @@ public class ReportsPanel extends StandardMagicPanel {
 				CASH_FLOW_REPORT,
 				REMITTANCE_REPORT,
 				POSTED_SALES_AND_PROFIT_REPORT,
-				INVENTORY_REPORT
+				INVENTORY_REPORT,
+				CUSTOMER_SALES_SUMMARY_REPORT
 		);
 		
 		private List<String> menuItems = new ArrayList<>();

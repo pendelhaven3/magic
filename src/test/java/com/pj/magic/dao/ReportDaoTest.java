@@ -1,6 +1,7 @@
 package com.pj.magic.dao;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +14,21 @@ public class ReportDaoTest extends IntegrationTest {
 	@Autowired private ReportDao reportDao;
 	
 	@Test
-	public void test() throws Exception {
+	public void getStockCardInventoryReport() throws Exception {
 		StockCardInventoryReportSearchCriteria criteria = new StockCardInventoryReportSearchCriteria();
 		criteria.setProduct(new Product(1L));
 		criteria.setFromDate(new SimpleDateFormat("MM/dd/yyyy").parse("11/18/2014"));
 		criteria.setToDate(new SimpleDateFormat("MM/dd/yyyy").parse("11/18/2014"));
 		
 		reportDao.getStockCardInventoryReport(criteria);
+	}
+
+	@Test
+	public void getAllCustomerSalesSummaryReportItems() throws Exception {
+		Date fromDate = new SimpleDateFormat("MM/dd/yyyy").parse("11/18/2014");
+		Date toDate = new SimpleDateFormat("MM/dd/yyyy").parse("01/18/2015");
+		
+		reportDao.searchCustomerSalesSummaryReportItems(fromDate, toDate);
 	}
 	
 }
