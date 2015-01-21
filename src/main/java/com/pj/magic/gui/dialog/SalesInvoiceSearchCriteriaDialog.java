@@ -281,7 +281,7 @@ public class SalesInvoiceSearchCriteriaDialog extends MagicDialog {
 		salesInvoiceNumberField.setText(null);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
-		statusComboBox.setSelectedIndex(1);
+		statusComboBox.setSelectedIndex(0);
 		transactionDateModel.setValue(null);
 	}
 	

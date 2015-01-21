@@ -287,7 +287,7 @@ public class BadStockReturnSearchCriteriaDialog extends MagicDialog {
 		badStockReturnNumberField.setText(null);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
-		statusComboBox.setSelectedIndex(STATUS_NEW);
+		statusComboBox.setSelectedIndex(STATUS_ALL);
 		postDateModel.setValue(null);
 	}
 	

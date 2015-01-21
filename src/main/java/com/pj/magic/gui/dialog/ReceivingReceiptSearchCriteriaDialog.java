@@ -259,7 +259,7 @@ public class ReceivingReceiptSearchCriteriaDialog extends MagicDialog {
 		supplierComboBox.setModel(
 				new DefaultComboBoxModel<>(suppliers.toArray(new Supplier[suppliers.size()])));
 		
-		statusComboBox.setSelectedIndex(STATUS_NEW);
+		statusComboBox.setSelectedIndex(0);
 		
 		receivedDateModel.setValue(null);
 	}

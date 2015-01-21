@@ -285,7 +285,7 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 		paymentNumberField.setText(null);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
-		statusComboBox.setSelectedIndex(STATUS_NEW);
+		statusComboBox.setSelectedIndex(0);
 		postDateModel.setValue(null);
 	}
 	

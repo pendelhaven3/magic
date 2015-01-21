@@ -216,7 +216,7 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 	public void updateDisplay() {
 		searchCriteria = null;
 		adjustmentOutNumberField.setText(null);
-		statusComboBox.setSelectedIndex(1);
+		statusComboBox.setSelectedIndex(0);
 		postDateModel.setValue(null);
 	}
 	

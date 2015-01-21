@@ -209,7 +209,7 @@ public class StockQuantityConversionSearchCriteriaDialog extends MagicDialog {
 	public void updateDisplay() {
 		searchCriteria = null;
 		stockQuantityConversionNumberField.setText(null);
-		statusComboBox.setSelectedIndex(1);
+		statusComboBox.setSelectedIndex(0);
 		postDateModel.setValue(null);
 	}
 	

@@ -213,7 +213,7 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 		supplierComboBox.setModel(
 				new DefaultComboBoxModel<>(suppliers.toArray(new Supplier[suppliers.size()])));
 		
-		statusComboBox.setSelectedIndex(1);
+		statusComboBox.setSelectedIndex(0);
 	}
 	
 }
