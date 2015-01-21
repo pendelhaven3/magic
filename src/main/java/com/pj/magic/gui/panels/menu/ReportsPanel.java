@@ -146,6 +146,7 @@ public class ReportsPanel extends StandardMagicPanel {
 			if (!user.isSupervisor()) {
 				menuItems.remove(POSTED_SALES_AND_PROFIT_REPORT);
 				menuItems.remove(INVENTORY_REPORT);
+				menuItems.remove(CUSTOMER_SALES_SUMMARY_REPORT);
 			}
 			fireTableDataChanged();
 		}
