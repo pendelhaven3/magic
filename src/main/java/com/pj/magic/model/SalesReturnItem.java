@@ -46,7 +46,7 @@ public class SalesReturnItem {
 		if (salesInvoiceItem == null || quantity == null) {
 			return null;
 		} else {
-			return salesInvoiceItem.getUnitPrice().multiply(new BigDecimal(quantity));
+			return salesInvoiceItem.getDiscountedUnitPrice().multiply(new BigDecimal(quantity));
 		}
 	}
 

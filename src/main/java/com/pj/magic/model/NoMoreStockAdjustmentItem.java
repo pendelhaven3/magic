@@ -46,7 +46,7 @@ public class NoMoreStockAdjustmentItem {
 		if (salesInvoiceItem == null || quantity == null) {
 			return null;
 		} else {
-			return salesInvoiceItem.getUnitPrice().multiply(new BigDecimal(quantity));
+			return getUnitPrice().multiply(new BigDecimal(quantity));
 		}
 	}
 

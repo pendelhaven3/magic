@@ -16,8 +16,8 @@ from (
 		join SALES_INVOICE_ITEM b
 		  on b.SALES_INVOICE_ID = a.ID
 		where a.MARK_IND = 'Y'
-        and a.MARK_DT >= :fromDate
-        and a.MARK_DT <= :toDate
+        and a.TRANSACTION_DT >= :fromDate
+        and a.TRANSACTION_DT <= :toDate
 	) agg
 	group by CUSTOMER_ID
 	union all

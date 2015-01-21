@@ -156,7 +156,7 @@ public class BadStockReturn {
 	public BigDecimal getTotalCost() {
 		BigDecimal total = Constants.ZERO;
 		for (BadStockReturnItem item : items) {
-			total = total.add(item.getCost());
+			total = total.add(item.getTotalCost());
 		}
 		return total;
 	}
@@ -164,7 +164,7 @@ public class BadStockReturn {
 	public BigDecimal getTotalLoss() {
 		BigDecimal total = Constants.ZERO;
 		for (BadStockReturnItem item : items) {
-			total = total.add(item.getLoss());
+			total = total.add(item.getTotalLoss());
 		}
 		return total;
 	}

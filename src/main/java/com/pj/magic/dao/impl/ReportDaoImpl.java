@@ -285,8 +285,8 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		String sql = QueriesUtil.getSql("customerSalesSummaryReport");
 		
 		Map<String, Object> params = new HashMap<>();
-		params.put("fromDate", fromDate);
-		params.put("toDate", toDate);
+		params.put("fromDate", DbUtil.toMySqlDateString(fromDate));
+		params.put("toDate", DbUtil.toMySqlDateString(toDate));
 		
 		return getNamedParameterJdbcTemplate().query(sql,
 				params,

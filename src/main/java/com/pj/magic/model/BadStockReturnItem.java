@@ -101,8 +101,12 @@ public class BadStockReturnItem {
 		this.cost = cost;
 	}
 
-	public BigDecimal getLoss() {
-		return unitPrice.subtract(cost);
+	public BigDecimal getTotalLoss() {
+		return getAmount().subtract(getTotalCost());
+	}
+	
+	public BigDecimal getTotalCost() {
+		return cost.multiply(new BigDecimal(quantity));
 	}
 	
 }
