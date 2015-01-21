@@ -19,7 +19,7 @@ public interface AdjustmentOutService {
 
 	void delete(AdjustmentOut adjustmentOut);
 
-	void post (AdjustmentOut adjustmentOut) throws NotEnoughStocksException;
+	void post(AdjustmentOut adjustmentOut) throws NotEnoughStocksException;
 	
 	List<AdjustmentOut> getAllNonPostedAdjustmentOuts();
 

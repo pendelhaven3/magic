@@ -120,8 +120,13 @@ public class AdjustmentInServiceTest {
 		assertTrue(DateUtils.isSameDay(new Date(), fromDb.getPostDate()));
 		assertSame(loggedInUser, fromDb.getPostedBy());
 		
-		verify(productDao).updateAvailableQuantities(product);
-		assertEquals(2, product.getUnitQuantity(Unit.CASE));
+		verify(productDao).updateAvailableQuantities(argThat(new ArgumentMatcher<Product>() {
+
+			@Override
+			public boolean matches(Object argument) {
+				return ((Product)argument).getUnitQuantity(Unit.CASE) == 2;
+			}
+		}));
 	}
 	
 	@Test
