@@ -28,6 +28,11 @@ import com.pj.magic.service.LoginService;
 @Component
 public class InventoryMenuPanel extends StandardMagicPanel {
 
+	private static final String PRICE_CHANGES_REPORT = "Price Changes Report";
+	private static final String PRICING_SCHEME = "Pricing Scheme";
+	private static final String PRODUCT_LIST = "Product List";
+	private static final String INVENTORY_REPORT = "Inventory Report";
+
 	@Autowired private LoginService loginService;
 	
 	private MagicListTable table;
@@ -89,14 +94,17 @@ public class InventoryMenuPanel extends StandardMagicPanel {
 	
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-		case "Product List":
+		case PRODUCT_LIST:
 			getMagicFrame().switchToProductListPanel();
 			break;
-		case "Pricing Scheme":
+		case PRICING_SCHEME:
 			getMagicFrame().switchToPricingSchemeListPanel();
 			break;
-		case "Price Changes Report":
+		case PRICE_CHANGES_REPORT:
 			getMagicFrame().switchToPriceChangesReportPanel();
+			break;
+		case INVENTORY_REPORT:
+			getMagicFrame().switchToInventoryReportPanel();
 			break;
 		}
 	}
@@ -109,9 +117,10 @@ public class InventoryMenuPanel extends StandardMagicPanel {
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private final List<String> allMenuItems = Arrays.asList(
-				"Product List",
-				"Pricing Scheme",
-				"Price Changes Report"
+				PRODUCT_LIST,
+				PRICING_SCHEME,
+				PRICE_CHANGES_REPORT,
+				INVENTORY_REPORT
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
@@ -125,7 +134,8 @@ public class InventoryMenuPanel extends StandardMagicPanel {
 			menuItems.clear();
 			menuItems.addAll(allMenuItems);
 			if (!user.isSupervisor()) {
-				menuItems.remove("Pricing Scheme");
+				menuItems.remove(PRICING_SCHEME);
+				menuItems.remove(INVENTORY_REPORT);
 			}
 			fireTableDataChanged();
 		}

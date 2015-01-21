@@ -102,7 +102,7 @@ public class InventoryReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToReportsMenuPanel();
+		getMagicFrame().switchToInventoryMenuPanel();
 	}
 
 	@Override

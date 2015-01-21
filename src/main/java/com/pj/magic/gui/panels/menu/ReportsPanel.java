@@ -28,7 +28,6 @@ import com.pj.magic.service.LoginService;
 @Component
 public class ReportsPanel extends StandardMagicPanel {
 
-	private static final String INVENTORY_REPORT = "Inventory Report";
 	private static final String POSTED_SALES_AND_PROFIT_REPORT = "Posted Sales and Profit Report";
 	private static final String REMITTANCE_REPORT = "Remittance Report";
 	private static final String CASH_FLOW_REPORT = "Cash Flow Report";
@@ -108,9 +107,6 @@ public class ReportsPanel extends StandardMagicPanel {
 		case POSTED_SALES_AND_PROFIT_REPORT:
 			getMagicFrame().switchToPostedSalesAndProfitReportPanel();
 			break;
-		case INVENTORY_REPORT:
-			getMagicFrame().switchToInventoryReportPanel();
-			break;
 		case CUSTOMER_SALES_SUMMARY_REPORT:
 			getMagicFrame().switchToCustomerSalesSummaryReportPanel();
 			break;
@@ -129,7 +125,6 @@ public class ReportsPanel extends StandardMagicPanel {
 				CASH_FLOW_REPORT,
 				REMITTANCE_REPORT,
 				POSTED_SALES_AND_PROFIT_REPORT,
-				INVENTORY_REPORT,
 				CUSTOMER_SALES_SUMMARY_REPORT
 		);
 		
@@ -145,7 +140,6 @@ public class ReportsPanel extends StandardMagicPanel {
 			menuItems.addAll(allMenuItems);
 			if (!user.isSupervisor()) {
 				menuItems.remove(POSTED_SALES_AND_PROFIT_REPORT);
-				menuItems.remove(INVENTORY_REPORT);
 				menuItems.remove(CUSTOMER_SALES_SUMMARY_REPORT);
 			}
 			fireTableDataChanged();
