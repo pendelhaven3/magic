@@ -33,6 +33,7 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 	private static final int CUSTOMER_COLUMN_INDEX = 1;
 	private static final int ADJUSTMENT_TYPE_COLUMN_INDEX = 2;
 	private static final int AMOUNT_COLUMN_INDEX = 3;
+	private static final int STATUS_COLUMN_INDEX = 4;
 	
 	@Autowired private PaymentAdjustmentService paymentAdjustmentService;
 	@Autowired private AdjustmentInSearchCriteriaDialog adjustmentInSearchCriteriaDialog;
@@ -160,7 +161,7 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 
 	private class PaymentAdjustmentsTableModel extends AbstractTableModel {
 
-		private String[] columnNames = {"Payment Adj. No.", "Customer", "Adj. Type", "Amount"};
+		private String[] columnNames = {"Payment Adj. No.", "Customer", "Adj. Type", "Amount", "Status"};
 		
 		private List<PaymentAdjustment> paymentAdjustments = new ArrayList<>();
 		
@@ -200,6 +201,8 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 				return paymentAdjustment.getAdjustmentType().getCode();
 			case AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(paymentAdjustment.getAmount());
+			case STATUS_COLUMN_INDEX:
+				return paymentAdjustment.getStatus();
 			default:
 				throw new RuntimeException("Error fetching invalid column index: " + columnIndex);
 			}

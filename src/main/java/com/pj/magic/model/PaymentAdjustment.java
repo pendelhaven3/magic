@@ -123,4 +123,14 @@ public class PaymentAdjustment {
 		this.customer = customer;
 	}
 
+	public String getStatus() {
+		if (paid) {
+			return "Paid";
+		} else if (posted) {
+			return "Posted";
+		} else {
+			return "New";
+		}
+	}
+
 }

@@ -9,7 +9,7 @@ create table PAYMENT_ADJUSTMENT (
   ADJUSTMENT_TYPE_ID integer not null,
   AMOUNT numeric(8, 2) not null,
   POST_IND char(1) default 'N' not null,
-  POST_DT datetime null,
+  POST_DT date null,
   POST_BY integer null,
   PAID_IND char(1) default 'N' not null,
   PAID_DT datetime null,

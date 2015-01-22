@@ -28,6 +28,7 @@ import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.Customer;
@@ -50,15 +51,21 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	
 	private PaymentAdjustment paymentAdjustment;
+	private JLabel paymentAdjustmentNumberLabel;
+	private JLabel statusLabel;
 	private MagicTextField customerCodeField;
 	private EllipsisButton selectCustomerButton;
 	private JLabel customerNameLabel;
 	private JComboBox<AdjustmentType> adjustmentTypeComboBox;
 	private MagicTextField amountField;
 	private JButton saveButton;
+	private JButton postButton;
 	
 	@Override
 	protected void initializeComponents() {
+		paymentAdjustmentNumberLabel = new JLabel();
+		statusLabel = new JLabel();
+		
 		customerCodeField = new MagicTextField();
 		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
 		
@@ -171,6 +178,42 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Payment Adj. No.: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentAdjustmentNumberLabel.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(paymentAdjustmentNumberLabel, c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0; // right space filler
+		c.gridx = 3;
+		c.gridy = currentRow;
+		mainPanel.add(ComponentUtil.createFiller(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Status: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		statusLabel.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(statusLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(150, "Customer: "), c);
 		
 		c = new GridBagConstraints();
@@ -178,12 +221,6 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(createCustomerPanel(), c);
-		
-		c = new GridBagConstraints();
-		c.weightx = 1.0; // right space filler
-		c.gridx = 3;
-		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(), c);
 		
 		currentRow++;
 		
@@ -309,17 +346,34 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 			return;
 		}
 		
+		this.paymentAdjustment = paymentAdjustment = 
+				paymentAdjustmentService.getPaymentAdjustment(paymentAdjustment.getId());
+		
+		boolean posted = paymentAdjustment.isPosted();
+		
+		paymentAdjustmentNumberLabel.setText(String.valueOf(paymentAdjustment.getPaymentAdjustmentNumber()));
+		statusLabel.setText(paymentAdjustment.getStatus());
+		customerCodeField.setEnabled(!posted);
 		customerCodeField.setText(paymentAdjustment.getCustomer().getCode());
 		customerNameLabel.setText(paymentAdjustment.getCustomer().getName());
+		adjustmentTypeComboBox.setEnabled(!posted);
 		adjustmentTypeComboBox.setSelectedItem(paymentAdjustment.getAdjustmentType());
+		amountField.setEnabled(!posted);
 		amountField.setText(FormatterUtil.formatAmount(paymentAdjustment.getAmount()));
+		saveButton.setEnabled(!posted);
+		postButton.setEnabled(!posted);
+		selectCustomerButton.setEnabled(!posted);
 	}
 
 	private void clearDisplay() {
+		paymentAdjustmentNumberLabel.setText(null);
+		statusLabel.setText(null);
 		customerCodeField.setText(null);
 		customerNameLabel.setText(null);
 		adjustmentTypeComboBox.setSelectedItem(null);
 		amountField.setText(null);
+		saveButton.setEnabled(true);
+		postButton.setEnabled(false);
 	}
 
 	@Override
@@ -329,7 +383,29 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
+		postButton = new MagicToolBarButton("post", "Post");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				postPaymentAdjustment();
+			}
+		});
+		
+		toolBar.add(postButton);
+	}
+
+	private void postPaymentAdjustment() {
+		if (confirm("Do you want to post this Payment Adjustment?")) {
+			try {
+				paymentAdjustmentService.post(paymentAdjustment);
+				showMessage("Payment Adjustment posted");
+				updateDisplay(paymentAdjustment);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred during posting!");
+			}
+		}
 	}
 
 }

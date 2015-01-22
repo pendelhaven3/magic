@@ -11,5 +11,7 @@ public interface PaymentAdjustmentService {
 	PaymentAdjustment getPaymentAdjustment(long id);
 	
 	List<PaymentAdjustment> getAllPaymentAdjustments();
+
+	void post(PaymentAdjustment paymentAdjustment);
 	
 }
