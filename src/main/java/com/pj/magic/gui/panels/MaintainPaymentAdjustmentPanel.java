@@ -33,8 +33,12 @@ import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.PaymentTerminalAssignment;
+import com.pj.magic.model.User;
 import com.pj.magic.service.AdjustmentTypeService;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentAdjustmentService;
+import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.NumberUtil;
@@ -49,6 +53,8 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 	@Autowired private PaymentAdjustmentService paymentAdjustmentService;
 	@Autowired private AdjustmentTypeService adjustmentTypeService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
+	@Autowired private LoginService loginService;
+	@Autowired private PaymentTerminalService paymentTerminalService;
 	
 	private PaymentAdjustment paymentAdjustment;
 	private JLabel paymentAdjustmentNumberLabel;
@@ -60,6 +66,7 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 	private MagicTextField amountField;
 	private JButton saveButton;
 	private JButton postButton;
+	private JButton markAsPaidButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -307,7 +314,7 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		c.gridx = 3;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		customerNameLabel.setPreferredSize(new Dimension(150, 20));
+		customerNameLabel.setPreferredSize(new Dimension(250, 20));
 		panel.add(customerNameLabel, c);
 		
 		return panel;
@@ -363,17 +370,23 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		saveButton.setEnabled(!posted);
 		postButton.setEnabled(!posted);
 		selectCustomerButton.setEnabled(!posted);
+		markAsPaidButton.setEnabled(posted && !paymentAdjustment.isPaid());
 	}
 
 	private void clearDisplay() {
 		paymentAdjustmentNumberLabel.setText(null);
 		statusLabel.setText(null);
+		customerCodeField.setEnabled(true);
 		customerCodeField.setText(null);
 		customerNameLabel.setText(null);
+		adjustmentTypeComboBox.setEnabled(true);
 		adjustmentTypeComboBox.setSelectedItem(null);
+		amountField.setEnabled(true);
 		amountField.setText(null);
 		saveButton.setEnabled(true);
 		postButton.setEnabled(false);
+		selectCustomerButton.setEnabled(true);
+		markAsPaidButton.setEnabled(false);
 	}
 
 	@Override
@@ -393,8 +406,42 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		});
 		
 		toolBar.add(postButton);
+		
+		markAsPaidButton = new MagicToolBarButton("coins", "Mark As Paid");
+		markAsPaidButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				markPaymentAdjustmentAsPaid();
+			}
+		});
+		toolBar.add(markAsPaidButton);
 	}
 
+	private void markPaymentAdjustmentAsPaid() {
+		if (!isUserAssignedToPaymentTerminal()) {
+			showErrorMessage("User is not assigned to a payment terminal");
+			return;
+		}
+		
+		if (confirm("Mark Payment Adjustment as paid?")) {
+			try {
+				paymentAdjustmentService.markAsPaid(paymentAdjustment);
+				showMessage("Payment Adjustment marked as paid");
+				updateDisplay(paymentAdjustment);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+			}
+		}
+	}
+
+	private boolean isUserAssignedToPaymentTerminal() {
+		User user = loginService.getLoggedInUser();
+		PaymentTerminalAssignment assignment = paymentTerminalService.findPaymentTerminalAssignment(user);
+		return assignment != null;
+	}
+	
 	private void postPaymentAdjustment() {
 		if (confirm("Do you want to post this Payment Adjustment?")) {
 			try {
