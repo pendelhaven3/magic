@@ -3,7 +3,7 @@ package com.pj.magic.service;
 import java.util.List;
 
 import com.pj.magic.model.Payment;
-import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
@@ -34,9 +34,9 @@ public interface PaymentService {
 
 	void delete(PaymentCashPayment cashPayment);
 
-	void delete(PaymentAdjustment adjustment);
+	void delete(PaymentPaymentAdjustment adjustment);
 
-	void save(PaymentAdjustment adjustment);
+	void save(PaymentPaymentAdjustment adjustment);
 
 	void post(Payment payment);
 
@@ -49,5 +49,5 @@ public interface PaymentService {
 	List<PaymentCashPayment> searchPaymentCashPayments(PaymentCashPaymentSearchCriteria criteria);
 	
 	List<PaymentCheckPayment> searchPaymentCheckPayments(PaymentCheckPaymentSearchCriteria criteria);
-	
+
 }

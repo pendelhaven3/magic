@@ -30,7 +30,7 @@ import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
-import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.service.AdjustmentTypeService;
 import com.pj.magic.service.BadStockReturnService;
@@ -90,7 +90,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 			return;
 		}
 		
-		PaymentAdjustment adjustment = new PaymentAdjustment();
+		PaymentPaymentAdjustment adjustment = new PaymentPaymentAdjustment();
 		adjustment.setParent(payment);
 		tableModel.addItem(adjustment);
 		selectAndEditCellAt(getRowCount() - 1, 0);
@@ -102,7 +102,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 
 	public void doDeleteCurrentlySelectedItem() {
 		int selectedRowIndex = getSelectedRow();
-		PaymentAdjustment item = getCurrentlySelectedRowItem().getAdjustment();
+		PaymentPaymentAdjustment item = getCurrentlySelectedRowItem().getAdjustment();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
 		payment.getAdjustments().remove(item);
 		tableModel.removeItem(selectedRowIndex);

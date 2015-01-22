@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.BadStockReturnDao;
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.NoMoreStockAdjustmentDao;
-import com.pj.magic.dao.PaymentAdjustmentDao;
+import com.pj.magic.dao.PaymentPaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentCashPaymentDao;
 import com.pj.magic.dao.PaymentCheckPaymentDao;
 import com.pj.magic.dao.PaymentDao;
@@ -23,7 +23,7 @@ import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
-import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
@@ -49,7 +49,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private CustomerDao customerDao;
 	@Autowired private PaymentCheckPaymentDao paymentCheckPaymentDao;
 	@Autowired private PaymentCashPaymentDao paymentCashPaymentDao;
-	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
+	@Autowired private PaymentPaymentAdjustmentDao paymentAdjustmentDao;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	@Autowired private SalesReturnDao salesReturnDao;
 	@Autowired private LoginService loginService;
@@ -160,13 +160,13 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Transactional
 	@Override
-	public void delete(PaymentAdjustment adjustment) {
+	public void delete(PaymentPaymentAdjustment adjustment) {
 		paymentAdjustmentDao.delete(adjustment);
 	}
 
 	@Transactional
 	@Override
-	public void save(PaymentAdjustment adjustment) {
+	public void save(PaymentPaymentAdjustment adjustment) {
 		paymentAdjustmentDao.save(adjustment);
 	}
 
@@ -198,7 +198,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 		}
 		
-		for (PaymentAdjustment adjustment : updated.getAdjustments()) {
+		for (PaymentPaymentAdjustment adjustment : updated.getAdjustments()) {
 			if (adjustment.getReferenceNumber() == null) {
 				continue;
 			}

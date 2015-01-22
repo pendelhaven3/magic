@@ -573,7 +573,7 @@ create table PAYMENT_CASH_PAYMENT (
   constraint PAYMENT_CASH_PAYMENT$FK2 foreign key (RECEIVED_BY) references USER (ID)
 );
 
-create table PAYMENT_ADJUSTMENT (
+create table PAYMENT_PAYMENT_ADJUSTMENT (
   ID integer auto_increment,
   PAYMENT_ID integer not null,
   ADJUSTMENT_TYPE varchar(20) null,
@@ -653,4 +653,27 @@ create table NO_MORE_STOCK_ADJUSTMENT_ITEM (
   constraint NO_MORE_STOCK_ADJUSTMENT_ITEM$PK primary key (ID),
   constraint NO_MORE_STOCK_ADJUSTMENT_ITEM$FK foreign key (NO_MORE_STOCK_ADJUSTMENT_ID) references NO_MORE_STOCK_ADJUSTMENT (ID),
   constraint NO_MORE_STOCK_ADJUSTMENT_ITEM$FK2 foreign key (SALES_INVOICE_ITEM_ID) references SALES_INVOICE_ITEM (ID)
+);
+
+create table PAYMENT_ADJUSTMENT (
+  ID integer auto_increment,
+  PAYMENT_ADJUSTMENT_NO integer not null,
+  CUSTOMER_ID integer not null,
+  ADJUSTMENT_TYPE_ID integer not null,
+  AMOUNT numeric(8, 2) not null,
+  POST_IND char(1) default 'N' not null,
+  POST_DT datetime null,
+  POST_BY integer null,
+  PAID_IND char(1) default 'N' not null,
+  PAID_DT datetime null,
+  PAID_BY integer null,
+  PAYMENT_TERMINAL_ID integer null,
+  REMARKS varchar(100) null,
+  constraint PAYMENT_ADJUSTMENT$PK primary key (ID),
+  constraint PAYMENT_ADJUSTMENT$UK unique (PAYMENT_ADJUSTMENT_NO),
+  constraint PAYMENT_ADJUSTMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
+  constraint PAYMENT_ADJUSTMENT$FK2 foreign key (ADJUSTMENT_TYPE_ID) references ADJUSTMENT_TYPE (ID),
+  constraint PAYMENT_ADJUSTMENT$FK3 foreign key (POST_BY) references USER (ID),
+  constraint PAYMENT_ADJUSTMENT$FK4 foreign key (PAID_BY) references USER (ID),
+  constraint PAYMENT_ADJUSTMENT$FK5 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID)
 );

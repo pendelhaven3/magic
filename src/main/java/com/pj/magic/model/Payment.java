@@ -24,7 +24,7 @@ public class Payment {
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 	private List<PaymentCheckPayment> checkPayments = new ArrayList<>();
 	private List<PaymentCashPayment> cashPayments = new ArrayList<>();
-	private List<PaymentAdjustment> adjustments = new ArrayList<>();
+	private List<PaymentPaymentAdjustment> adjustments = new ArrayList<>();
 
 	public Payment() {
 		// default constructor
@@ -116,7 +116,7 @@ public class Payment {
 
 	public BigDecimal getTotalAdjustments() {
 		BigDecimal total = Constants.ZERO;
-		for (PaymentAdjustment adjustment : adjustments) {
+		for (PaymentPaymentAdjustment adjustment : adjustments) {
 			total = total.add(adjustment.getAmount());
 		}
 		return total;
@@ -130,11 +130,11 @@ public class Payment {
 		this.cashPayments = cashPayments;
 	}
 
-	public List<PaymentAdjustment> getAdjustments() {
+	public List<PaymentPaymentAdjustment> getAdjustments() {
 		return adjustments;
 	}
 
-	public void setAdjustments(List<PaymentAdjustment> adjustments) {
+	public void setAdjustments(List<PaymentPaymentAdjustment> adjustments) {
 		this.adjustments = adjustments;
 	}
 

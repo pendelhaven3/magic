@@ -1,17 +1,23 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import java.util.Date;
 
 public class PaymentAdjustment {
 
 	private Long id;
-	private Payment parent;
+	private Long paymentAdjustmentNumber;
+	private Customer customer;
 	private AdjustmentType adjustmentType;
 	private BigDecimal amount;
-	private String referenceNumber;
+	private boolean posted;
+	private Date postDate;
+	private User postedBy;
+	private boolean paid;
+	private Date paidDate;
+	private User paidBy;
+	private PaymentTerminal paymentTerminal;
+	private String remarks;
 
 	public Long getId() {
 		return id;
@@ -21,12 +27,12 @@ public class PaymentAdjustment {
 		this.id = id;
 	}
 
-	public Payment getParent() {
-		return parent;
+	public Long getPaymentAdjustmentNumber() {
+		return paymentAdjustmentNumber;
 	}
 
-	public void setParent(Payment parent) {
-		this.parent = parent;
+	public void setPaymentAdjustmentNumber(Long paymentAdjustmentNumber) {
+		this.paymentAdjustmentNumber = paymentAdjustmentNumber;
 	}
 
 	public AdjustmentType getAdjustmentType() {
@@ -45,33 +51,76 @@ public class PaymentAdjustment {
 		this.amount = amount;
 	}
 
-	public String getReferenceNumber() {
-		return referenceNumber;
+	public boolean isPosted() {
+		return posted;
 	}
 
-	public void setReferenceNumber(String referenceNumber) {
-		this.referenceNumber = referenceNumber;
+	public void setPosted(boolean posted) {
+		this.posted = posted;
 	}
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder()
-			.append(id)
-			.toHashCode();
+	public Date getPostDate() {
+		return postDate;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-        if (!(obj instanceof PaymentAdjustment)) {
-            return false;
-        }
-        PaymentAdjustment other = (PaymentAdjustment)obj;		
-		return new EqualsBuilder()
-			.append(id, other.getId())
-			.isEquals();
+	public void setPostDate(Date postDate) {
+		this.postDate = postDate;
 	}
-	
+
+	public User getPostedBy() {
+		return postedBy;
+	}
+
+	public void setPostedBy(User postedBy) {
+		this.postedBy = postedBy;
+	}
+
+	public boolean isPaid() {
+		return paid;
+	}
+
+	public void setPaid(boolean paid) {
+		this.paid = paid;
+	}
+
+	public Date getPaidDate() {
+		return paidDate;
+	}
+
+	public void setPaidDate(Date paidDate) {
+		this.paidDate = paidDate;
+	}
+
+	public User getPaidBy() {
+		return paidBy;
+	}
+
+	public void setPaidBy(User paidBy) {
+		this.paidBy = paidBy;
+	}
+
+	public PaymentTerminal getPaymentTerminal() {
+		return paymentTerminal;
+	}
+
+	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
+		this.paymentTerminal = paymentTerminal;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+
 }

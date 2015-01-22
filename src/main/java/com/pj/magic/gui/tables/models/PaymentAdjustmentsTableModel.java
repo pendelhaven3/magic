@@ -16,7 +16,7 @@ import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
-import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.service.AdjustmentTypeService;
 import com.pj.magic.service.BadStockReturnService;
@@ -75,7 +75,7 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 		this.payment = payment;
 		rowItems.clear();
 		if (payment != null) {
-			for (PaymentAdjustment adjustment : payment.getAdjustments()) {
+			for (PaymentPaymentAdjustment adjustment : payment.getAdjustments()) {
 				rowItems.add(new PaymentAdjustmentRowItem(adjustment));
 			}
 		}
@@ -141,7 +141,7 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 		}
 		
 		if (rowItem.isValid()) {
-			PaymentAdjustment adjustment = rowItem.getAdjustment();
+			PaymentPaymentAdjustment adjustment = rowItem.getAdjustment();
 			adjustment.setAdjustmentType(rowItem.getAdjustmentType());
 			adjustment.setReferenceNumber(rowItem.getReferenceNumber());
 			adjustment.setAmount(rowItem.getAmount());
@@ -181,7 +181,7 @@ public class PaymentAdjustmentsTableModel extends AbstractTableModel {
 		}
 	}
 
-	public void addItem(PaymentAdjustment adjustment) {
+	public void addItem(PaymentPaymentAdjustment adjustment) {
 		rowItems.add(new PaymentAdjustmentRowItem(adjustment));
 		fireTableDataChanged();
 	}
