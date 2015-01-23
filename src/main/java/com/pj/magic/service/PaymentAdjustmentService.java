@@ -15,5 +15,7 @@ public interface PaymentAdjustmentService {
 	void post(PaymentAdjustment paymentAdjustment);
 
 	void markAsPaid(PaymentAdjustment paymentAdjustment);
+
+	PaymentAdjustment findPaymentAdjustmentByPaymentAdjustmentNumber(long paymentAdjustmentNumber);
 	
 }

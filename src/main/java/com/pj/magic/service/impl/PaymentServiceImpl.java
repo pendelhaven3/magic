@@ -11,10 +11,11 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.BadStockReturnDao;
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.NoMoreStockAdjustmentDao;
-import com.pj.magic.dao.PaymentPaymentAdjustmentDao;
+import com.pj.magic.dao.PaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentCashPaymentDao;
 import com.pj.magic.dao.PaymentCheckPaymentDao;
 import com.pj.magic.dao.PaymentDao;
+import com.pj.magic.dao.PaymentPaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentSalesInvoiceDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
@@ -23,9 +24,10 @@ import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
-import com.pj.magic.model.PaymentPaymentAdjustment;
+import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
+import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.SalesInvoice;
@@ -49,13 +51,14 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private CustomerDao customerDao;
 	@Autowired private PaymentCheckPaymentDao paymentCheckPaymentDao;
 	@Autowired private PaymentCashPaymentDao paymentCashPaymentDao;
-	@Autowired private PaymentPaymentAdjustmentDao paymentAdjustmentDao;
+	@Autowired private PaymentPaymentAdjustmentDao paymentPaymentAdjustmentDao;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	@Autowired private SalesReturnDao salesReturnDao;
 	@Autowired private LoginService loginService;
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private BadStockReturnDao badStockReturnDao;
 	@Autowired private NoMoreStockAdjustmentDao noMoreStockAdjustmentDao;
+	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
 	
 	@Transactional
 	@Override
@@ -92,7 +95,7 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 		payment.setCashPayments(paymentCashPaymentDao.findAllByPayment(payment));
 		payment.setCheckPayments(paymentCheckPaymentDao.findAllByPayment(payment));
-		payment.setAdjustments(paymentAdjustmentDao.findAllByPayment(payment));
+		payment.setAdjustments(paymentPaymentAdjustmentDao.findAllByPayment(payment));
 	}
 
 	private List<SalesReturn> findPostedSalesReturnsBySalesInvoice(SalesInvoice salesInvoice) {
@@ -161,13 +164,13 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	@Override
 	public void delete(PaymentPaymentAdjustment adjustment) {
-		paymentAdjustmentDao.delete(adjustment);
+		paymentPaymentAdjustmentDao.delete(adjustment);
 	}
 
 	@Transactional
 	@Override
 	public void save(PaymentPaymentAdjustment adjustment) {
-		paymentAdjustmentDao.save(adjustment);
+		paymentPaymentAdjustmentDao.save(adjustment);
 	}
 
 	@Transactional
@@ -241,6 +244,20 @@ public class PaymentServiceImpl implements PaymentService {
 				noMoreStockAdjustment.setPaidBy(loginService.getLoggedInUser());
 				noMoreStockAdjustment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				noMoreStockAdjustmentDao.save(noMoreStockAdjustment);
+				break;
+			default:
+				PaymentAdjustment paymentAdjustment = 
+					paymentAdjustmentDao.findByPaymentAdjustmentNumber(referenceNumber);
+				if (paymentAdjustment.isPaid()) {
+					throw new RuntimeException("Payment Adjustment " + 
+							paymentAdjustment.getPaymentAdjustmentNumber() + " is already paid");
+				}
+				
+				paymentAdjustment.setPaid(true);
+				paymentAdjustment.setPaidDate(new Date());
+				paymentAdjustment.setPaidBy(loginService.getLoggedInUser());
+				paymentAdjustment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+				paymentAdjustmentDao.save(paymentAdjustment);
 				break;
 			}
 		}

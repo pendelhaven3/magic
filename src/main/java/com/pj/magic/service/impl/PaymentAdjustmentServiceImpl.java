@@ -66,4 +66,9 @@ public class PaymentAdjustmentServiceImpl implements PaymentAdjustmentService {
 		paymentAdjustmentDao.save(updated);
 	}
 
+	@Override
+	public PaymentAdjustment findPaymentAdjustmentByPaymentAdjustmentNumber(long paymentAdjustmentNumber) {
+		return paymentAdjustmentDao.findByPaymentAdjustmentNumber(paymentAdjustmentNumber);
+	}
+
 }

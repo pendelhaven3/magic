@@ -37,7 +37,7 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AddSalesInvoicesToPaymentDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
-import com.pj.magic.gui.tables.PaymentAdjustmentsTable;
+import com.pj.magic.gui.tables.PaymentPaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.PaymentCashPaymentsTable;
 import com.pj.magic.gui.tables.PaymentCheckPaymentsTable;
 import com.pj.magic.gui.tables.PaymentSalesInvoicesTable;
@@ -71,7 +71,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	@Autowired private AddSalesInvoicesToPaymentDialog addSalesInvoicesToPaymentDialog;
 	@Autowired private PaymentCheckPaymentsTable checksTable;
 	@Autowired private PaymentCashPaymentsTable cashPaymentsTable;
-	@Autowired private PaymentAdjustmentsTable adjustmentsTable;
+	@Autowired private PaymentPaymentAdjustmentsTable adjustmentsTable;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	@Autowired private LoginService loginService;

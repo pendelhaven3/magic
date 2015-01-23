@@ -168,4 +168,17 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 		return getJdbcTemplate().query(GET_ALL_SQL, paymentAdjustmentRowMapper);
 	}
 
+	private static final String FIND_BY_PAYMENT_ADJUSTMENT_NUMBER_SQL = BASE_SELECT_SQL
+			+ " where a.PAYMENT_ADJUSTMENT_NO = ?";
+	
+	@Override
+	public PaymentAdjustment findByPaymentAdjustmentNumber(long paymentAdjustmentNumber) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_PAYMENT_ADJUSTMENT_NUMBER_SQL, 
+					paymentAdjustmentRowMapper, paymentAdjustmentNumber);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
+
 }

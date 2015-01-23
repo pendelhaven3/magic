@@ -12,4 +12,6 @@ public interface PaymentAdjustmentDao {
 
 	List<PaymentAdjustment> getAll();
 
+	PaymentAdjustment findByPaymentAdjustmentNumber(long paymentAdjustmentNumber);
+
 }
