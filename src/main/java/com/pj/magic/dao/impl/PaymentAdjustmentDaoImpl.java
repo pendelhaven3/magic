@@ -92,7 +92,9 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 
 	private static final String INSERT_SQL =
 			"insert into PAYMENT_ADJUSTMENT"
-			+ " (PAYMENT_ADJUSTMENT_NO, CUSTOMER_ID, ADJUSTMENT_TYPE_ID, AMOUNT) values (?, ?, ?, ?)";
+			+ " (PAYMENT_ADJUSTMENT_NO, CUSTOMER_ID, ADJUSTMENT_TYPE_ID, AMOUNT, REMARKS)"
+			+ " values"
+			+ " (?, ?, ?, ?, ?)";
 	
 	private void insert(final PaymentAdjustment paymentAdjustment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -106,6 +108,7 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 				ps.setLong(2, paymentAdjustment.getCustomer().getId());
 				ps.setLong(3, paymentAdjustment.getAdjustmentType().getId());
 				ps.setBigDecimal(4, paymentAdjustment.getAmount());
+				ps.setString(5, paymentAdjustment.getRemarks());
 				return ps;
 			}
 		}, holder);
