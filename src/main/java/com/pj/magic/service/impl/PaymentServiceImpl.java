@@ -15,6 +15,7 @@ import com.pj.magic.dao.PaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentCashPaymentDao;
 import com.pj.magic.dao.PaymentCheckPaymentDao;
 import com.pj.magic.dao.PaymentDao;
+import com.pj.magic.dao.PaymentPaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentSalesInvoiceDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
@@ -26,6 +27,7 @@ import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
+import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.SalesInvoice;
@@ -49,13 +51,14 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private CustomerDao customerDao;
 	@Autowired private PaymentCheckPaymentDao paymentCheckPaymentDao;
 	@Autowired private PaymentCashPaymentDao paymentCashPaymentDao;
-	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
+	@Autowired private PaymentPaymentAdjustmentDao paymentPaymentAdjustmentDao;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	@Autowired private SalesReturnDao salesReturnDao;
 	@Autowired private LoginService loginService;
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private BadStockReturnDao badStockReturnDao;
 	@Autowired private NoMoreStockAdjustmentDao noMoreStockAdjustmentDao;
+	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
 	
 	@Transactional
 	@Override
@@ -92,7 +95,7 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 		payment.setCashPayments(paymentCashPaymentDao.findAllByPayment(payment));
 		payment.setCheckPayments(paymentCheckPaymentDao.findAllByPayment(payment));
-		payment.setAdjustments(paymentAdjustmentDao.findAllByPayment(payment));
+		payment.setAdjustments(paymentPaymentAdjustmentDao.findAllByPayment(payment));
 	}
 
 	private List<SalesReturn> findPostedSalesReturnsBySalesInvoice(SalesInvoice salesInvoice) {
@@ -160,14 +163,14 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Transactional
 	@Override
-	public void delete(PaymentAdjustment adjustment) {
-		paymentAdjustmentDao.delete(adjustment);
+	public void delete(PaymentPaymentAdjustment adjustment) {
+		paymentPaymentAdjustmentDao.delete(adjustment);
 	}
 
 	@Transactional
 	@Override
-	public void save(PaymentAdjustment adjustment) {
-		paymentAdjustmentDao.save(adjustment);
+	public void save(PaymentPaymentAdjustment adjustment) {
+		paymentPaymentAdjustmentDao.save(adjustment);
 	}
 
 	@Transactional
@@ -198,7 +201,7 @@ public class PaymentServiceImpl implements PaymentService {
 			}
 		}
 		
-		for (PaymentAdjustment adjustment : updated.getAdjustments()) {
+		for (PaymentPaymentAdjustment adjustment : updated.getAdjustments()) {
 			if (adjustment.getReferenceNumber() == null) {
 				continue;
 			}
@@ -241,6 +244,20 @@ public class PaymentServiceImpl implements PaymentService {
 				noMoreStockAdjustment.setPaidBy(loginService.getLoggedInUser());
 				noMoreStockAdjustment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				noMoreStockAdjustmentDao.save(noMoreStockAdjustment);
+				break;
+			default:
+				PaymentAdjustment paymentAdjustment = 
+					paymentAdjustmentDao.findByPaymentAdjustmentNumber(referenceNumber);
+				if (paymentAdjustment.isPaid()) {
+					throw new RuntimeException("Payment Adjustment " + 
+							paymentAdjustment.getPaymentAdjustmentNumber() + " is already paid");
+				}
+				
+				paymentAdjustment.setPaid(true);
+				paymentAdjustment.setPaidDate(new Date());
+				paymentAdjustment.setPaidBy(loginService.getLoggedInUser());
+				paymentAdjustment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+				paymentAdjustmentDao.save(paymentAdjustment);
 				break;
 			}
 		}

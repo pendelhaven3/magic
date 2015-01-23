@@ -38,6 +38,7 @@ import com.pj.magic.gui.panels.MaintainAdjustmentTypePanel;
 import com.pj.magic.gui.panels.MaintainAreaPanel;
 import com.pj.magic.gui.panels.MaintainCustomerPanel;
 import com.pj.magic.gui.panels.MaintainManufacturerPanel;
+import com.pj.magic.gui.panels.MaintainPaymentAdjustmentPanel;
 import com.pj.magic.gui.panels.MaintainPaymentTermPanel;
 import com.pj.magic.gui.panels.MaintainPaymentTerminalAssignmentPanel;
 import com.pj.magic.gui.panels.MaintainPricingSchemePanel;
@@ -49,6 +50,7 @@ import com.pj.magic.gui.panels.ManufacturerListPanel;
 import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
 import com.pj.magic.gui.panels.NoMoreStockAdjustmentListPanel;
 import com.pj.magic.gui.panels.NoMoreStockAdjustmentPanel;
+import com.pj.magic.gui.panels.PaymentAdjustmentListPanel;
 import com.pj.magic.gui.panels.PaymentListPanel;
 import com.pj.magic.gui.panels.PaymentPanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
@@ -96,6 +98,7 @@ import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
+import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.PricingScheme;
@@ -194,6 +197,8 @@ public class MagicFrame extends JFrame {
 	private static final String NO_MORE_STOCK_ADJUSTMENT_PANEL = "NO_MORE_STOCK_ADJUSTMENT_PANEL";
 	private static final String INVENTORY_REPORT_PANEL = "INVENTORY_REPORT_PANEL";
 	private static final String CUSTOMER_SALES_SUMMARY_REPORT_PANEL = "CUSTOMER_SALES_SUMMARY_REPORT_PANEL";
+	private static final String PAYMENT_ADJUSTMENT_LIST_PANEL = "PAYMENT_ADJUSTMENT_LIST_PANEL";
+	private static final String MAINTAIN_PAYMENT_ADJUSTMENT_PANEL = "MAINTAIN_PAYMENT_ADJUSTMENT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -266,6 +271,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private NoMoreStockAdjustmentPanel noMoreStockAdjustmentPanel;
 	@Autowired private InventoryReportPanel inventoryReportPanel;
 	@Autowired private CustomerSalesSummaryReportPanel customerSalesSummaryReportPanel;
+	@Autowired private PaymentAdjustmentListPanel paymentAdjustmentListPanel;
+	@Autowired private MaintainPaymentAdjustmentPanel maintainPaymentAdjustmentPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -385,6 +392,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(noMoreStockAdjustmentPanel, NO_MORE_STOCK_ADJUSTMENT_PANEL);
 		panelHolder.add(inventoryReportPanel, INVENTORY_REPORT_PANEL);
 		panelHolder.add(customerSalesSummaryReportPanel, CUSTOMER_SALES_SUMMARY_REPORT_PANEL);
+		panelHolder.add(paymentAdjustmentListPanel, PAYMENT_ADJUSTMENT_LIST_PANEL);
+		panelHolder.add(maintainPaymentAdjustmentPanel, MAINTAIN_PAYMENT_ADJUSTMENT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -929,4 +938,25 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, CUSTOMER_SALES_SUMMARY_REPORT_PANEL);
 	}
 
+	public void switchToPaymentAdjustmentListPanel() {
+		addPanelNameToTitle("Payment Adjustment List");
+		paymentAdjustmentListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PAYMENT_ADJUSTMENT_LIST_PANEL);
+	}
+
+	public void switchToAddNewPaymentAdjustmentPanel() {
+		addPanelNameToTitle("Add New Payment Adjustment");
+		switchToMaintainPaymentAdjustmentPanel(new PaymentAdjustment());
+	}
+	
+	public void switchToEditPaymentAdjustmentPanel(PaymentAdjustment paymentAdjustment) {
+		addPanelNameToTitle("Edit Payment Adjustment");
+		switchToMaintainPaymentAdjustmentPanel(paymentAdjustment);
+	}
+	
+	public void switchToMaintainPaymentAdjustmentPanel(PaymentAdjustment paymentAdjustment) {
+		maintainPaymentAdjustmentPanel.updateDisplay(paymentAdjustment);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PAYMENT_ADJUSTMENT_PANEL);
+	}
+	
 }

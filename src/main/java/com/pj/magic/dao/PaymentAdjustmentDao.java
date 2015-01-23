@@ -2,17 +2,16 @@ package com.pj.magic.dao;
 
 import java.util.List;
 
-import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 
 public interface PaymentAdjustmentDao {
 
-	void save(PaymentAdjustment adjustment);
+	PaymentAdjustment get(long id);
 
-	List<PaymentAdjustment> findAllByPayment(Payment payment);
+	void save(PaymentAdjustment paymentAdjustment);
 
-	void deleteAllByPayment(Payment payment);
+	List<PaymentAdjustment> getAll();
 
-	void delete(PaymentAdjustment adjustment);
-	
+	PaymentAdjustment findByPaymentAdjustmentNumber(long paymentAdjustmentNumber);
+
 }

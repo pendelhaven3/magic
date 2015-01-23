@@ -2,8 +2,6 @@ package com.pj.magic.gui.tables;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -24,21 +22,23 @@ import com.pj.magic.gui.component.AmountCellEditor;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectAdjustmentTypeDialog;
-import com.pj.magic.gui.tables.models.PaymentAdjustmentsTableModel;
+import com.pj.magic.gui.tables.models.PaymentPaymentAdjustmentsTableModel;
 import com.pj.magic.gui.tables.rowitems.PaymentAdjustmentRowItem;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.service.AdjustmentTypeService;
 import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.NoMoreStockAdjustmentService;
+import com.pj.magic.service.PaymentAdjustmentService;
 import com.pj.magic.service.SalesReturnService;
 
 @Component
-public class PaymentAdjustmentsTable extends MagicTable {
+public class PaymentPaymentAdjustmentsTable extends MagicTable {
 	
 	public static final int ADJUSTMENT_TYPE_COLUMN_INDEX = 0;
 	public static final int REFERENCE_NUMBER_COLUMN_INDEX = 1;
@@ -48,17 +48,18 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	private static final String F10_ACTION_NAME = "F10";
 	private static final String F5_ACTION_NAME = "F5";
 
-	@Autowired private PaymentAdjustmentsTableModel tableModel;
+	@Autowired private PaymentPaymentAdjustmentsTableModel tableModel;
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private BadStockReturnService badStockReturnService;
 	@Autowired private AdjustmentTypeService adjustmentTypeService;
 	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
+	@Autowired private PaymentAdjustmentService paymentAdjustmentService;
 	@Autowired private SelectAdjustmentTypeDialog selectAdjustmentTypeDialog;
 	
 	private Payment payment;
 	
 	@Autowired
-	public PaymentAdjustmentsTable(PaymentAdjustmentsTableModel tableModel) {
+	public PaymentPaymentAdjustmentsTable(PaymentPaymentAdjustmentsTableModel tableModel) {
 		super(tableModel);
 		initializeColumns();
 		initializeModelListener();
@@ -90,7 +91,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 			return;
 		}
 		
-		PaymentAdjustment adjustment = new PaymentAdjustment();
+		PaymentPaymentAdjustment adjustment = new PaymentPaymentAdjustment();
 		adjustment.setParent(payment);
 		tableModel.addItem(adjustment);
 		selectAndEditCellAt(getRowCount() - 1, 0);
@@ -102,7 +103,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 
 	public void doDeleteCurrentlySelectedItem() {
 		int selectedRowIndex = getSelectedRow();
-		PaymentAdjustment item = getCurrentlySelectedRowItem().getAdjustment();
+		PaymentPaymentAdjustment item = getCurrentlySelectedRowItem().getAdjustment();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
 		payment.getAdjustments().remove(item);
 		tableModel.removeItem(selectedRowIndex);
@@ -261,11 +262,6 @@ public class PaymentAdjustmentsTable extends MagicTable {
 	
 	public class ReferenceNumberCellEditor extends MagicCellEditor {
 
-		private final List<String> specialLogicAdjustmentTypes = Arrays.asList(
-				AdjustmentType.SALES_RETURN_CODE, 
-				AdjustmentType.BAD_STOCK_RETURN_CODE,
-				AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE);
-		
 		public ReferenceNumberCellEditor(JTextField textField) {
 			super(textField);
 		}
@@ -273,10 +269,6 @@ public class PaymentAdjustmentsTable extends MagicTable {
 		@Override
 		public boolean stopCellEditing() {
 			PaymentAdjustmentRowItem rowItem = getCurrentlySelectedRowItem();
-			if (!specialLogicAdjustmentTypes.contains(rowItem.getAdjustmentType().getCode())) {
-				return super.stopCellEditing();
-			}
-			
 			String referenceNumberString = ((JTextField)getComponent()).getText();
 			boolean valid = false;
 			if (StringUtils.isEmpty(referenceNumberString)) {
@@ -291,7 +283,7 @@ public class PaymentAdjustmentsTable extends MagicTable {
 				} else if (AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE.equals(adjustmentTypeCode)) {
 					valid = validateNoMoreStockAdjustment(referenceNumber);
 				} else {
-					valid = true;
+					valid = validatePaymentAdjustment(rowItem.getAdjustmentType(), referenceNumber);
 				}
 			}
 			return (valid) ? super.stopCellEditing() : false;
@@ -309,6 +301,22 @@ public class PaymentAdjustmentsTable extends MagicTable {
 			showErrorMessage("Bad Stock Return is already paid");
 		} else if (!badStockReturn.isPosted()) {
 			showErrorMessage("Bad Stock Return is not yet posted");
+		} else {
+			valid = true;
+		}
+		return valid;
+	}
+
+	private boolean validatePaymentAdjustment(AdjustmentType adjustmentType, long paymentAdjustmentNumber) {
+		boolean valid = false;
+		PaymentAdjustment paymentAdjustment = paymentAdjustmentService
+				.findPaymentAdjustmentByPaymentAdjustmentNumber(paymentAdjustmentNumber);
+		if (paymentAdjustment == null || !paymentAdjustment.getAdjustmentType().equals(adjustmentType)) {
+			showErrorMessage("Payment Adjustment does not exist");
+		} else if (paymentAdjustment.isPaid()) {
+			showErrorMessage("Payment Adjustment is already paid");
+		} else if (!paymentAdjustment.isPosted()) {
+			showErrorMessage("Payment Adjustment is not yet posted");
 		} else {
 			valid = true;
 		}

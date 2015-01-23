@@ -3,7 +3,7 @@ package com.pj.magic.util.report;
 import java.math.BigDecimal;
 
 import com.pj.magic.Constants;
-import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.PaymentPaymentAdjustment;
 
 public class PaymentReportUtil extends ReportUtil {
 
@@ -15,7 +15,7 @@ public class PaymentReportUtil extends ReportUtil {
 		}
 	}
 	
-	public static String referenceNumber(PaymentAdjustment adjustment, int length, String align) {
+	public static String referenceNumber(PaymentPaymentAdjustment adjustment, int length, String align) {
 		String referenceNumber = adjustment.getReferenceNumber();
 		if (referenceNumber == null) {
 			referenceNumber = "";

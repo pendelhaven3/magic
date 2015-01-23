@@ -14,4 +14,6 @@ public interface AdjustmentTypeService {
 
 	AdjustmentType findAdjustmentTypeByCode(String code);
 
+	List<AdjustmentType> getRegularAdjustmentTypes();
+	
 }
