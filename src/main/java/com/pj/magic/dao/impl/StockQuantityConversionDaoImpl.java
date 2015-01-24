@@ -25,7 +25,7 @@ import com.pj.magic.util.DbUtil;
 public class StockQuantityConversionDaoImpl extends MagicDao implements StockQuantityConversionDao {
 	
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, STOCK_QTY_CONV_NO, REMARKS, POST_IND, POST_DATE, POST_BY,"
+			"select a.ID, STOCK_QTY_CONV_NO, REMARKS, POST_IND, POST_DT, POST_BY,"
 			+ " b.USERNAME as POST_BY_USERNAME"
 			+ " from STOCK_QTY_CONVERSION a"
 			+ " left join USER b"
@@ -71,7 +71,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 	}
 
 	private static final String UPDATE_SQL = "update STOCK_QTY_CONVERSION"
-			+ " set REMARKS = ?, POST_IND = ?, POST_DATE = ?, POST_BY = ? where ID = ?";
+			+ " set REMARKS = ?, POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
 	
 	private void update(StockQuantityConversion stockQuantityConversion) {
 		getJdbcTemplate().update(UPDATE_SQL, 
@@ -93,7 +93,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		}
 	}
 
-	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by POST_IND asc, POST_DATE desc, a.ID desc";
+	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by POST_IND asc, POST_DT desc, a.ID desc";
 	
 	@Override
 	public List<StockQuantityConversion> getAll() {
@@ -110,7 +110,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 			stockQuantityConversion.setRemarks(rs.getString("REMARKS"));
 			stockQuantityConversion.setPosted("Y".equals(rs.getString("POST_IND")));
 			if (stockQuantityConversion.isPosted()) {
-				stockQuantityConversion.setPostDate(rs.getDate("POST_DATE"));
+				stockQuantityConversion.setPostDate(rs.getDate("POST_DT"));
 				stockQuantityConversion.setPostedBy(
 						new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			}
@@ -144,7 +144,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		}
 		
 		if (criteria.getPostDate() != null) {
-			sb.append(" and POST_DATE = ?");
+			sb.append(" and POST_DT = ?");
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 		}
 		
