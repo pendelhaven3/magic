@@ -11,4 +11,9 @@ public class EllipsisButton extends JButton {
 		setPreferredSize(new Dimension(30, 24));
 	}
 	
+	public EllipsisButton(String toolTipText) {
+		this();
+		setToolTipText(toolTipText);
+	}
+	
 }

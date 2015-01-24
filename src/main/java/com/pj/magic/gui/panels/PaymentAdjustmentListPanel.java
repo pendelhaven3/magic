@@ -20,9 +20,10 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.AdjustmentInSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.PaymentAdjustmentSearchCriteriaDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.search.PaymentAdjustmentSearchCriteria;
 import com.pj.magic.service.PaymentAdjustmentService;
 import com.pj.magic.util.FormatterUtil;
 
@@ -34,9 +35,10 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 	private static final int ADJUSTMENT_TYPE_COLUMN_INDEX = 2;
 	private static final int AMOUNT_COLUMN_INDEX = 3;
 	private static final int STATUS_COLUMN_INDEX = 4;
+	private static final int POST_DATE_COLUMN_INDEX = 5;
 	
 	@Autowired private PaymentAdjustmentService paymentAdjustmentService;
-	@Autowired private AdjustmentInSearchCriteriaDialog adjustmentInSearchCriteriaDialog;
+	@Autowired private PaymentAdjustmentSearchCriteriaDialog paymentAdjustmentSearchCriteriaDialog;
 	
 	private MagicListTable table;
 	private PaymentAdjustmentsTableModel tableModel;
@@ -53,8 +55,12 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		tableModel.setPaymentAdjustments(paymentAdjustmentService.getAllPaymentAdjustments());
-		adjustmentInSearchCriteriaDialog.updateDisplay();
+		List<PaymentAdjustment> paymentAdjustments = paymentAdjustmentService.getAllPaymentAdjustments();
+		tableModel.setPaymentAdjustments(paymentAdjustments);
+		if (!paymentAdjustments.isEmpty()) {
+			table.changeSelection(0, 0);
+		}
+		paymentAdjustmentSearchCriteriaDialog.updateDisplay();
 	}
 
 	@Override
@@ -135,33 +141,34 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				searchAdjustmentIns();
+				searchPaymentAdjustments();
 			}
 		});
 		
 		toolBar.add(searchButton);
 	}
 
-	private void searchAdjustmentIns() {
-//		adjustmentInSearchCriteriaDialog.setVisible(true);
-//		
-//		AdjustmentInSearchCriteria criteria = adjustmentInSearchCriteriaDialog.getSearchCriteria();
-//		if (criteria != null) {
-//			List<AdjustmentIn> adjustmentIns = adjustmentInService.search(criteria);
-//			table.setAdjustmentIns(adjustmentIns);
-//			if (!adjustmentIns.isEmpty()) {
-//				table.changeSelection(0, 0, false, false);
-//				table.requestFocusInWindow();
-//			} else {
-//				showMessage("No matching records");
-//			}
-//		}
-//
+	private void searchPaymentAdjustments() {
+		paymentAdjustmentSearchCriteriaDialog.setVisible(true);
+		
+		PaymentAdjustmentSearchCriteria criteria = paymentAdjustmentSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<PaymentAdjustment> adjustmentIns = paymentAdjustmentService.search(criteria);
+			tableModel.setPaymentAdjustments(adjustmentIns);
+			if (!adjustmentIns.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
+
 	}
 
 	private class PaymentAdjustmentsTableModel extends AbstractTableModel {
 
-		private String[] columnNames = {"Payment Adj. No.", "Customer", "Adj. Type", "Amount", "Status"};
+		private String[] columnNames = 
+			{"Payment Adj. No.", "Customer", "Adj. Type", "Amount", "Status", "Post Date"};
 		
 		private List<PaymentAdjustment> paymentAdjustments = new ArrayList<>();
 		
@@ -190,6 +197,15 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 		}
 		
 		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			if (columnIndex == AMOUNT_COLUMN_INDEX) {
+				return Number.class;
+			} else {
+				return String.class;
+			}
+		}
+		
+		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			PaymentAdjustment paymentAdjustment = paymentAdjustments.get(rowIndex);
 			switch (columnIndex) {
@@ -203,6 +219,9 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 				return FormatterUtil.formatAmount(paymentAdjustment.getAmount());
 			case STATUS_COLUMN_INDEX:
 				return paymentAdjustment.getStatus();
+			case POST_DATE_COLUMN_INDEX:
+				return paymentAdjustment.isPosted() ? 
+						FormatterUtil.formatDate(paymentAdjustment.getPostDate()) : null;
 			default:
 				throw new RuntimeException("Error fetching invalid column index: " + columnIndex);
 			}

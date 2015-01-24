@@ -13,6 +13,7 @@ import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.PaymentAdjustmentSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentAdjustmentService;
 
@@ -69,6 +70,11 @@ public class PaymentAdjustmentServiceImpl implements PaymentAdjustmentService {
 	@Override
 	public PaymentAdjustment findPaymentAdjustmentByPaymentAdjustmentNumber(long paymentAdjustmentNumber) {
 		return paymentAdjustmentDao.findByPaymentAdjustmentNumber(paymentAdjustmentNumber);
+	}
+
+	@Override
+	public List<PaymentAdjustment> search(PaymentAdjustmentSearchCriteria criteria) {
+		return paymentAdjustmentDao.search(criteria);
 	}
 
 }

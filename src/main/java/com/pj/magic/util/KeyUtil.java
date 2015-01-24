@@ -19,4 +19,8 @@ public class KeyUtil {
 		return KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 	}
 
+	public static KeyStroke getF5Key() {
+		return KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0);
+	}
+
 }

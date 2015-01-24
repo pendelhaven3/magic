@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -16,10 +17,12 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PaymentAdjustmentDao;
 import com.pj.magic.model.AdjustmentType;
-import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.PaymentAdjustmentSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustmentDao {
@@ -182,6 +185,74 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
+	}
+
+	@Override
+	public List<PaymentAdjustment> search(PaymentAdjustmentSearchCriteria criteria) {
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		List<Object> params = new ArrayList<>();
+		
+		if (criteria.getPaymentAdjustmentNumber() != null) {
+			sql.append(" and a.PAYMENT_ADJUSTMENT_NO = ?");
+			params.add(criteria.getPaymentAdjustmentNumber());
+		}
+		
+		if (criteria.getCustomer() != null) {
+			sql.append(" and a.CUSTOMER_ID = ?");
+			params.add(criteria.getCustomer().getId());
+		}
+		
+		if (criteria.getAdjustmentType() != null) {
+			sql.append(" and a.ADJUSTMENT_TYPE_ID = ?");
+			params.add(criteria.getAdjustmentType().getId());
+		}
+		
+		if (criteria.getPosted() != null) {
+			sql.append(" and a.POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		if (criteria.getPostDate() != null) {
+			sql.append(" and a.POST_DT = ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
+		}
+		
+		if (criteria.getPaid() != null) {
+			sql.append(" and a.PAID_IND = ?");
+			params.add(criteria.getPaid() ? "Y" : "N");
+		}
+		
+		/*
+		if (criteria.getPaidDate() != null) {
+			if (criteria.getTimePeriod() != null) {
+				if (criteria.getTimePeriod() == TimePeriod.MORNING_ONLY) {
+					sql.append(" and PAID_DT >= ? and PAID_DT < date_add(?, interval 13 hour)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+				} else if (criteria.getTimePeriod() == TimePeriod.AFTERNOON_ONLY) {
+					sql.append(" and PAID_DT >= date_add(?, interval 13 hour)"
+							+ " and PAID_DT < date_add(?, interval 1 day)");
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+					params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+				}
+			} else {
+				sql.append(" and PAID_DT >= ? and PAID_DT < date_add(?, interval 1 day)");
+				params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+				params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
+			}
+		}
+		
+		if (criteria.getPaymentTerminal() != null) {
+			sql.append(" and PAYMENT_TERMINAL_ID = ?");
+			params.add(criteria.getPaymentTerminal().getId());
+		}
+		*/
+		
+		sql.append(" order by PAYMENT_ADJUSTMENT_NO desc");
+		
+		return getJdbcTemplate().query(sql.toString(), paymentAdjustmentRowMapper, params.toArray());
 	}
 
 }
