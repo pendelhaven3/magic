@@ -22,6 +22,7 @@ import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PaymentAdjustmentSearchCriteria;
+import com.pj.magic.model.util.TimePeriod;
 import com.pj.magic.util.DbUtil;
 
 @Repository
@@ -234,7 +235,6 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 			params.add(criteria.getPaid() ? "Y" : "N");
 		}
 		
-		/*
 		if (criteria.getPaidDate() != null) {
 			if (criteria.getTimePeriod() != null) {
 				if (criteria.getTimePeriod() == TimePeriod.MORNING_ONLY) {
@@ -258,7 +258,6 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 			sql.append(" and PAYMENT_TERMINAL_ID = ?");
 			params.add(criteria.getPaymentTerminal().getId());
 		}
-		*/
 		
 		sql.append(" order by PAYMENT_ADJUSTMENT_NO desc");
 		

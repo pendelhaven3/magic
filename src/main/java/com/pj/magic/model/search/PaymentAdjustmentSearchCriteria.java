@@ -4,6 +4,8 @@ import java.util.Date;
 
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentTerminal;
+import com.pj.magic.model.util.TimePeriod;
 
 public class PaymentAdjustmentSearchCriteria {
 
@@ -15,6 +17,9 @@ public class PaymentAdjustmentSearchCriteria {
 	private Date postDateFrom;
 	private Date postDateTo;
 	private Boolean paid;
+	private Date paidDate;
+	private TimePeriod timePeriod;
+	private PaymentTerminal paymentTerminal;
 
 	public Long getPaymentAdjustmentNumber() {
 		return paymentAdjustmentNumber;
@@ -78,6 +83,30 @@ public class PaymentAdjustmentSearchCriteria {
 
 	public void setPostDateTo(Date postDateTo) {
 		this.postDateTo = postDateTo;
+	}
+
+	public Date getPaidDate() {
+		return paidDate;
+	}
+
+	public void setPaidDate(Date paidDate) {
+		this.paidDate = paidDate;
+	}
+
+	public TimePeriod getTimePeriod() {
+		return timePeriod;
+	}
+
+	public void setTimePeriod(TimePeriod timePeriod) {
+		this.timePeriod = timePeriod;
+	}
+
+	public PaymentTerminal getPaymentTerminal() {
+		return paymentTerminal;
+	}
+
+	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
+		this.paymentTerminal = paymentTerminal;
 	}
 
 }

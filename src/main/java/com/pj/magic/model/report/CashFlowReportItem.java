@@ -6,6 +6,7 @@ import java.util.Date;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.NoMoreStockAdjustment;
+import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.SalesReturn;
@@ -60,6 +61,16 @@ public class CashFlowReportItem {
 		paymentTerminal = noMoreStockAdjustment.getPaymentTerminal();
 	}
 	
+	public CashFlowReportItem(PaymentAdjustment paymentAdjustment) {
+		time = paymentAdjustment.getPaidDate();
+		transactionType = paymentAdjustment.getAdjustmentType().getCode();
+		referenceNumber = paymentAdjustment.getPaymentAdjustmentNumber();
+		customer = paymentAdjustment.getCustomer();
+		transactionDate = paymentAdjustment.getPostDate();
+		amount = paymentAdjustment.getAmount();
+		paymentTerminal = paymentAdjustment.getPaymentTerminal();
+	}
+
 	public Date getTime() {
 		return time;
 	}
