@@ -7,6 +7,7 @@ import com.pj.magic.Constants;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.NoMoreStockAdjustment;
+import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 
@@ -74,6 +75,15 @@ public class PostedSalesAndProfitReportItem {
 		}
 	}
 	
+	public PostedSalesAndProfitReportItem(PaymentAdjustment paymentAdjustment) {
+		transactionDate = paymentAdjustment.getPostDate();
+		transactionType = paymentAdjustment.getAdjustmentType().getCode();
+		transactionNumber = paymentAdjustment.getPaymentAdjustmentNumber();
+		customer = paymentAdjustment.getCustomer();
+		netAmount = paymentAdjustment.getAmount();
+		netProfit = paymentAdjustment.getAmount();
+	}
+
 	public Date getTransactionDate() {
 		return transactionDate;
 	}

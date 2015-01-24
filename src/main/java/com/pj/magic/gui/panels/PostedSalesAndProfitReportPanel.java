@@ -42,17 +42,20 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.NoMoreStockAdjustment;
+import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
 import com.pj.magic.model.search.BadStockReturnSearchCriteria;
 import com.pj.magic.model.search.NoMoreStockAdjustmentSearchCriteria;
+import com.pj.magic.model.search.PaymentAdjustmentSearchCriteria;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.NoMoreStockAdjustmentService;
+import com.pj.magic.service.PaymentAdjustmentService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.SalesInvoiceService;
@@ -81,6 +84,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
 	@Autowired private BadStockReturnService badStockReturnService;
+	@Autowired private PaymentAdjustmentService paymentAdjustmentService;
 	
 	private MagicTextField customerCodeField;
 	private JLabel customerNameLabel;
@@ -255,6 +259,25 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 				public PostedSalesAndProfitReportItem apply(NoMoreStockAdjustment input) {
 					return new PostedSalesAndProfitReportItem(input,
 							treatNoMoreStockAsSalesReturnCheckBox.isSelected());
+				}
+			})
+		);
+		
+		PaymentAdjustmentSearchCriteria paymentAdjustmentCriteria = new PaymentAdjustmentSearchCriteria();
+		paymentAdjustmentCriteria.setPosted(true);
+		paymentAdjustmentCriteria.setCustomer(customer);
+		paymentAdjustmentCriteria.setPostDateFrom(fromDateModel.getValue().getTime());
+		paymentAdjustmentCriteria.setPostDateTo(toDateModel.getValue().getTime());
+		
+		List<PaymentAdjustment> paymentAdjustments = 
+				paymentAdjustmentService.search(paymentAdjustmentCriteria);
+		items.addAll(
+			Collections2.transform(paymentAdjustments, 
+					new Function<PaymentAdjustment, PostedSalesAndProfitReportItem>() {
+	
+				@Override
+				public PostedSalesAndProfitReportItem apply(PaymentAdjustment input) {
+					return new PostedSalesAndProfitReportItem(input);
 				}
 			})
 		);

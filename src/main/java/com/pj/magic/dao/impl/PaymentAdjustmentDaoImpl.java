@@ -219,6 +219,16 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 		}
 		
+		if (criteria.getPostDateFrom() != null) {
+			sql.append(" and a.POST_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDateFrom()));
+		}
+		
+		if (criteria.getPostDateTo() != null) {
+			sql.append(" and a.POST_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDateTo()));
+		}
+		
 		if (criteria.getPaid() != null) {
 			sql.append(" and a.PAID_IND = ?");
 			params.add(criteria.getPaid() ? "Y" : "N");

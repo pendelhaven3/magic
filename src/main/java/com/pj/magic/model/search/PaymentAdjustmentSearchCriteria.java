@@ -12,6 +12,8 @@ public class PaymentAdjustmentSearchCriteria {
 	private AdjustmentType adjustmentType;
 	private Boolean posted;
 	private Date postDate;
+	private Date postDateFrom;
+	private Date postDateTo;
 	private Boolean paid;
 
 	public Long getPaymentAdjustmentNumber() {
@@ -60,6 +62,22 @@ public class PaymentAdjustmentSearchCriteria {
 
 	public void setPaid(Boolean paid) {
 		this.paid = paid;
+	}
+
+	public Date getPostDateFrom() {
+		return postDateFrom;
+	}
+
+	public void setPostDateFrom(Date postDateFrom) {
+		this.postDateFrom = postDateFrom;
+	}
+
+	public Date getPostDateTo() {
+		return postDateTo;
+	}
+
+	public void setPostDateTo(Date postDateTo) {
+		this.postDateTo = postDateTo;
 	}
 
 }
