@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 
 public interface ReceivingReceiptService {
@@ -21,5 +22,7 @@ public interface ReceivingReceiptService {
 	List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria);
 	
 	void cancel(ReceivingReceipt receivingReceipt);
+
+	List<ReceivingReceipt> findAllReceivingReceiptsForPaymentBySupplier(Supplier supplier);
 	
 }

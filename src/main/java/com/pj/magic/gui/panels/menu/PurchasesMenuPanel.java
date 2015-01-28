@@ -91,6 +91,9 @@ public class PurchasesMenuPanel extends StandardMagicPanel {
 		case "Product Canvass":
 			getMagicFrame().switchToProductCanvassPanel();
 			break;
+		case "Supplier Payment":
+			getMagicFrame().switchToSupplierPaymentListPanel();
+			break;
 		}
 	}
 
@@ -104,7 +107,8 @@ public class PurchasesMenuPanel extends StandardMagicPanel {
 		private final List<String> menuItems = Arrays.asList(
 				"Purchase Order",
 				"Receiving Receipt",
-				"Product Canvass"
+				"Product Canvass",
+				"Supplier Payment"
 		);
 		
 		@Override
