@@ -19,7 +19,7 @@ public class PriceChangesReport {
 
 		@Override
 		public int compare(ProductPriceHistory o1, ProductPriceHistory o2) {
-			return o1.getUpdateDate().compareTo(o2.getUpdateDate());
+			return o1.getProduct().getDescription().compareTo(o2.getProduct().getDescription());
 		}
 	};
 	
