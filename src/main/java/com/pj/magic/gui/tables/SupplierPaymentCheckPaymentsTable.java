@@ -104,7 +104,7 @@ public class SupplierPaymentCheckPaymentsTable extends MagicTable {
 		}
 	}
 	
-	public void setPayment(SupplierPayment supplierPayment) {
+	public void setSupplierPayment(SupplierPayment supplierPayment) {
 		clearSelection();
 		this.supplierPayment = supplierPayment;
 		tableModel.setPayment(supplierPayment);

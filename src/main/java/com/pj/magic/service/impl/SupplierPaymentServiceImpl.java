@@ -8,16 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.ReceivingReceiptItemDao;
+import com.pj.magic.dao.SupplierPaymentAdjustmentDao;
 import com.pj.magic.dao.SupplierPaymentCashPaymentDao;
 import com.pj.magic.dao.SupplierPaymentCheckPaymentDao;
 import com.pj.magic.dao.SupplierPaymentCreditCardPaymentDao;
 import com.pj.magic.dao.SupplierPaymentDao;
+import com.pj.magic.dao.SupplierPaymentPaymentAdjustmentDao;
 import com.pj.magic.dao.SupplierPaymentReceivingReceiptDao;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentCashPayment;
 import com.pj.magic.model.SupplierPaymentCheckPayment;
 import com.pj.magic.model.SupplierPaymentCreditCardPayment;
+import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentReceivingReceipt;
 import com.pj.magic.model.search.SupplierPaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
@@ -33,6 +36,8 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 	@Autowired private SupplierPaymentCashPaymentDao supplierPaymentCashPaymentDao;
 	@Autowired private SupplierPaymentCreditCardPaymentDao supplierPaymentCreditCardPaymentDao;
 	@Autowired private SupplierPaymentCheckPaymentDao supplierPaymentCheckPaymentDao;
+	@Autowired private SupplierPaymentAdjustmentDao supplierPaymentAdjustmentDao;
+	@Autowired private SupplierPaymentPaymentAdjustmentDao supplierPaymentPaymentAdjustmentDao;
 	
 	@Transactional
 	@Override
@@ -61,7 +66,8 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 		supplierPayment.setCreditCardPayments(
 				supplierPaymentCreditCardPaymentDao.findAllBySupplierPayment(supplierPayment));
 		supplierPayment.setCheckPayments(supplierPaymentCheckPaymentDao.findAllBySupplierPayment(supplierPayment));
-//		supplierPayment.setAdjustments(paymentPaymentAdjustmentDao.findAllByPayment(supplierPayment));
+		supplierPayment.setPaymentAdjustments(
+				supplierPaymentPaymentAdjustmentDao.findAllBySupplierPayment(supplierPayment));
 	}
 	
 	@Override
@@ -131,6 +137,17 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 	@Override
 	public void delete(SupplierPaymentCreditCardPayment creditCardPayment) {
 		supplierPaymentCreditCardPaymentDao.delete(creditCardPayment);
+	}
+
+	@Transactional
+	@Override
+	public void delete(SupplierPaymentPaymentAdjustment paymentAdjustment) {
+		supplierPaymentPaymentAdjustmentDao.delete(paymentAdjustment);
+	}
+
+	@Override
+	public void save(SupplierPaymentPaymentAdjustment paymentAdjustment) {
+		supplierPaymentPaymentAdjustmentDao.save(paymentAdjustment);
 	}
 	
 }

@@ -24,7 +24,7 @@ public class SupplierPayment {
 	private List<SupplierPaymentCashPayment> cashPayments = new ArrayList<>();
 	private List<SupplierPaymentCreditCardPayment> creditCardPayments = new ArrayList<>();
 	private List<SupplierPaymentCheckPayment> checkPayments = new ArrayList<>();
-//	private List<PaymentPaymentAdjustment> adjustments = new ArrayList<>();
+	private List<SupplierPaymentPaymentAdjustment> paymentAdjustments = new ArrayList<>();
 
 	public SupplierPayment() {
 		// default constructor
@@ -189,9 +189,9 @@ public class SupplierPayment {
 
 	public BigDecimal getTotalAdjustments() {
 		BigDecimal total = Constants.ZERO;
-//		for (PaymentPaymentAdjustment adjustment : adjustments) {
-//			total = total.add(adjustment.getAmount());
-//		}
+		for (SupplierPaymentPaymentAdjustment adjustment : paymentAdjustments) {
+			total = total.add(adjustment.getAmount());
+		}
 		return total;
 	}
 
@@ -210,5 +210,13 @@ public class SupplierPayment {
 	public void setCheckPayments(List<SupplierPaymentCheckPayment> checkPayments) {
 		this.checkPayments = checkPayments;
 	}
-	
+
+	public List<SupplierPaymentPaymentAdjustment> getPaymentAdjustments() {
+		return paymentAdjustments;
+	}
+
+	public void setPaymentAdjustments(List<SupplierPaymentPaymentAdjustment> paymentAdjustments) {
+		this.paymentAdjustments = paymentAdjustments;
+	}
+
 }

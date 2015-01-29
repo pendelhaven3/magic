@@ -7,6 +7,7 @@ import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentCashPayment;
 import com.pj.magic.model.SupplierPaymentCheckPayment;
 import com.pj.magic.model.SupplierPaymentCreditCardPayment;
+import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentReceivingReceipt;
 
 public interface SupplierPaymentService {
@@ -37,8 +38,8 @@ public interface SupplierPaymentService {
 
 	void delete(SupplierPaymentCreditCardPayment creditCardPayment);
 
-//	void delete(PaymentPaymentAdjustment adjustment);
-//
-//	void save(PaymentPaymentAdjustment adjustment);
+	void delete(SupplierPaymentPaymentAdjustment adjustment);
+
+	void save(SupplierPaymentPaymentAdjustment adjustment);
 	
 }

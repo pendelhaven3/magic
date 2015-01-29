@@ -35,10 +35,10 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AddReceivingReceiptsToSupplierPaymentDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
-import com.pj.magic.gui.tables.PaymentPaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.SupplierPaymentCashPaymentsTable;
 import com.pj.magic.gui.tables.SupplierPaymentCheckPaymentsTable;
 import com.pj.magic.gui.tables.SupplierPaymentCreditCardPaymentsTable;
+import com.pj.magic.gui.tables.SupplierPaymentPaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.SupplierPaymentReceivingReceiptsTable;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
@@ -59,7 +59,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(SupplierPaymentPanel.class);
 	
 	private static final String SAVE_SUPPLIER_ACTION_NAME = "saveSupplier";
-	private static final String OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME = "openSelectCustomerDialog";
+	private static final String OPEN_SELECT_SUPPLIER_DIALOG_ACTION_NAME = "openSelectSupplierDialog";
 	
 	@Autowired private SupplierPaymentReceivingReceiptsTable receivingReceiptsTable;
 	@Autowired private SupplierPaymentService supplierPaymentService;
@@ -69,7 +69,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 	@Autowired private SupplierPaymentCashPaymentsTable cashPaymentsTable;
 	@Autowired private SupplierPaymentCreditCardPaymentsTable creditCardPaymentsTable;
 	@Autowired private SupplierPaymentCheckPaymentsTable checkPaymentsTable;
-	@Autowired private PaymentPaymentAdjustmentsTable adjustmentsTable;
+	@Autowired private SupplierPaymentPaymentAdjustmentsTable paymentAdjustmentsTable;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	@Autowired private LoginService loginService;
@@ -86,7 +86,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 	private JLabel totalCreditCardPaymentsLabel;
 	private JLabel totalCheckPaymentsLabel;
 	private JLabel totalPaymentsLabel;
-	private JLabel totalAdjustmentsField;
+	private JLabel totalAdjustmentsLabel;
 	private JLabel overOrShortLabel;
 	private JButton selectSupplierButton;
 	private MagicToolBarButton addReceivingReceiptButton;
@@ -138,8 +138,8 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 			}
 		});
 		
-		supplierCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME);
-		supplierCodeField.getActionMap().put(OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME, new AbstractAction() {
+		supplierCodeField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), OPEN_SELECT_SUPPLIER_DIALOG_ACTION_NAME);
+		supplierCodeField.getActionMap().put(OPEN_SELECT_SUPPLIER_DIALOG_ACTION_NAME, new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -226,14 +226,14 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 				FormatterUtil.formatAmount(supplierPayment.getTotalCreditCardPayments()));
 		totalCheckPaymentsLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalCheckPayments()));
 		totalPaymentsLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalPayments()));
-		totalAdjustmentsField.setText(FormatterUtil.formatAmount(supplierPayment.getTotalAdjustments()));
+		totalAdjustmentsLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalAdjustments()));
 		overOrShortLabel.setText(FormatterUtil.formatAmount(supplierPayment.getOverOrShort()));
 		
 		receivingReceiptsTable.setSupplierPayment(supplierPayment);
 		cashPaymentsTable.setSupplierPayment(supplierPayment);
 		creditCardPaymentsTable.setSupplierPayment(supplierPayment);
-		checkPaymentsTable.setPayment(supplierPayment);
-//		adjustmentsTable.setPayment(supplierPayment);
+		checkPaymentsTable.setSupplierPayment(supplierPayment);
+		paymentAdjustmentsTable.setSupplierPayment(supplierPayment);
 		
 		boolean newPayment = !supplierPayment.isPosted();
 		selectSupplierButton.setEnabled(newPayment);
@@ -265,14 +265,14 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		cashPaymentsTable.clearDisplay();
 		creditCardPaymentsTable.clearDisplay();
 		checkPaymentsTable.clearDisplay();
-		adjustmentsTable.clearDisplay();
+		paymentAdjustmentsTable.clearDisplay();
 		
 		totalAmountLabel.setText(null);
 		totalCashPaymentsLabel.setText(null);
 		totalCreditCardPaymentsLabel.setText(null);
 		totalCheckPaymentsLabel.setText(null);
 		totalPaymentsLabel.setText(null);
-		totalAdjustmentsField.setText(null);
+		totalAdjustmentsLabel.setText(null);
 		overOrShortLabel.setText(null);
 		
 		addReceivingReceiptButton.setEnabled(false);
@@ -400,7 +400,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		
 		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
+		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 8;
@@ -430,7 +430,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(), c);
+//		mainPanel.add(ComponentUtil.createFiller(), c);
 	}
 
 	private JPanel createCheckPaymentsTableToolBar() {
@@ -473,7 +473,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 				cancelPayment();
 			}
 		});
-		toolBar.add(cancelButton);
+//		toolBar.add(cancelButton);
 		
 		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
@@ -484,7 +484,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 			}
 		});
 		
-		toolBar.add(postButton);
+//		toolBar.add(postButton);
 		
 		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {
@@ -494,7 +494,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 				printPreview();
 			}
 		});
-		toolBar.add(printPreviewButton);
+//		toolBar.add(printPreviewButton);
 		
 		printButton = new MagicToolBarButton("print", "Print");
 		printButton.addActionListener(new ActionListener() {
@@ -504,7 +504,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 				printPaymentSummary();
 			}
 		});	
-		toolBar.add(printButton);
+//		toolBar.add(printButton);
 	}
 
 	private void printPaymentSummary() {
@@ -528,8 +528,8 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		if (checkPaymentsTable.isEditing()) {
 			checkPaymentsTable.getCellEditor().cancelCellEditing();
 		}
-		if (adjustmentsTable.isEditing()) {
-			adjustmentsTable.getCellEditor().cancelCellEditing();
+		if (paymentAdjustmentsTable.isEditing()) {
+			paymentAdjustmentsTable.getCellEditor().cancelCellEditing();
 		}
 	}
 
@@ -776,8 +776,8 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAdjustmentsField = ComponentUtil.createRightLabel(120, "");
-		mainPanel.add(totalAdjustmentsField, c);
+		totalAdjustmentsLabel = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalAdjustmentsLabel, c);
 		
 		currentRow++;
 		
@@ -931,7 +931,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		JScrollPane scrollPane = new JScrollPane(adjustmentsTable);
+		JScrollPane scrollPane = new JScrollPane(paymentAdjustmentsTable);
 		scrollPane.setPreferredSize(new Dimension(600, 150));
 		panel.add(scrollPane, c);
 		
@@ -956,7 +956,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				adjustmentsTable.removeCurrentlySelectedItem();
+				paymentAdjustmentsTable.removeCurrentlySelectedItem();
 			}
 		});
 		panel.add(deleteAdjustmentButton, BorderLayout.WEST);
@@ -965,7 +965,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 	}
 
 	private void addAdjustment() {
-		adjustmentsTable.addNewRow();
+		paymentAdjustmentsTable.addNewRow();
 	}
 
 	private void initializeModelListeners() {
@@ -1008,16 +1008,14 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 			}
 		});
 
-		/*
-		adjustmentsTable.getModel().addTableModelListener(new TableModelListener() {
+		paymentAdjustmentsTable.getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalAdjustmentsField.setText(FormatterUtil.formatAmount(supplierPayment.getTotalAdjustments()));
-				overOrShortField.setText(FormatterUtil.formatAmount(supplierPayment.getOverOrShort()));
+				totalAdjustmentsLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalAdjustments()));
+				overOrShortLabel.setText(FormatterUtil.formatAmount(supplierPayment.getOverOrShort()));
 			}
 		});
-		*/
 	}
 	
 }
