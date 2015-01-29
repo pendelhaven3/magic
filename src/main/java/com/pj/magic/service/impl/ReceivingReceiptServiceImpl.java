@@ -16,6 +16,7 @@ import com.pj.magic.dao.ReceivingReceiptItemDao;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.ReceivingReceiptService;
@@ -135,6 +136,15 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 		updated.setCancelDate(new Date());
 		updated.setCancelledBy(loginService.getLoggedInUser());
 		receivingReceiptDao.save(updated);
+	}
+
+	@Override
+	public List<ReceivingReceipt> findAllReceivingReceiptsForPaymentBySupplier(Supplier supplier) {
+		List<ReceivingReceipt> receivingReceipts = receivingReceiptDao.findAllForPaymentBySupplier(supplier);
+		for (ReceivingReceipt receivingReceipt : receivingReceipts) {
+			receivingReceipt.setItems(receivingReceiptItemDao.findAllByReceivingReceipt(receivingReceipt));
+		}
+		return receivingReceipts;
 	}
 	
 }

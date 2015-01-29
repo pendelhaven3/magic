@@ -10,6 +10,8 @@ insert into SEQUENCE (NAME) values ('PAYMENT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('BAD_STOCK_RETURN_NO_SEQ');
 insert into SEQUENCE (NAME) values ('NO_MORE_STOCK_ADJUSTMENT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('PAYMENT_ADJUSTMENT_NO_SEQ');
+insert into SEQUENCE (NAME) values ('SUPPLIER_PAYMENT_NO_SEQ');
+insert into SEQUENCE (NAME) values ('SUPP_PAYMENT_ADJUSTMENT_NO_SEQ');
 
 insert into SYSTEM_PARAMETER (NAME, VALUE) values ('VERSION', '0.17.0');
 

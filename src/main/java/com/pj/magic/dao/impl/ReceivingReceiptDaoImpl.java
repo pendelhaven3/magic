@@ -256,4 +256,22 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 		return getJdbcTemplate().query(sql.toString(), receivingReceiptRowMapper, params.toArray());
 	}
 
+	private static final String FIND_ALL_FOR_PAYMENT_BY_SUPPLIER_SQL = BASE_SELECT_SQL
+			+ " and a.SUPPLIER_ID = ?"
+			+ " and a.CANCEL_IND = 'N'"
+			+ " and not exists ("
+			+ "   select 1"
+			+ "   from SUPP_PAYMENT_RECV_RCPT sprr"
+			+ "   join SUPPLIER_PAYMENT pay"
+			+ "     on pay.ID = sprr.SUPPLIER_PAYMENT_ID"
+			+ "   where sprr.RECEIVING_RECEIPT_ID = a.ID"
+			+ "   and pay.CANCEL_IND = 'N'"
+			+ " )";
+	
+	@Override
+	public List<ReceivingReceipt> findAllForPaymentBySupplier(Supplier supplier) {
+		return getJdbcTemplate().query(FIND_ALL_FOR_PAYMENT_BY_SUPPLIER_SQL, receivingReceiptRowMapper, 
+				supplier.getId());
+	}
+
 }
