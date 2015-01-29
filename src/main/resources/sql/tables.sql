@@ -739,3 +739,31 @@ create table SUPP_PAYMENT_CREDITCARD_PYMNT (
   constraint SUPP_PAYMENT_CREDITCARD_PYMNT$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
   constraint SUPP_PAYMENT_CREDITCARD_PYMNT$FK2 foreign key (PAID_BY) references USER (ID)
 );
+
+create table SUPP_PAYMENT_ADJUSTMENT (
+  ID integer auto_increment,
+  SUPP_PAYMENT_ADJUSTMENT_NO integer not null,
+  SUPPLIER_ID integer not null,
+  ADJUSTMENT_TYPE_ID integer not null,
+  AMOUNT numeric(8, 2) not null,
+  POST_IND char(1) default 'N' not null,
+  POST_DT date null,
+  POST_BY integer null,
+  REMARKS varchar(100) null,
+  constraint SUPP_PAYMENT_ADJUSTMENT$PK primary key (ID),
+  constraint SUPP_PAYMENT_ADJUSTMENT$UK unique (SUPP_PAYMENT_ADJUSTMENT_NO),
+  constraint SUPP_PAYMENT_ADJUSTMENT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),
+  constraint SUPP_PAYMENT_ADJUSTMENT$FK2 foreign key (ADJUSTMENT_TYPE_ID) references ADJUSTMENT_TYPE (ID),
+  constraint SUPP_PAYMENT_ADJUSTMENT$FK3 foreign key (POST_BY) references USER (ID)
+);
+
+create table SUPP_PAYMENT_PAYMNT_ADJ (
+  ID integer auto_increment,
+  SUPPLIER_PAYMENT_ID integer not null,
+  ADJUSTMENT_TYPE_ID integer not null,
+  REFERENCE_NO varchar(30) null,
+  AMOUNT numeric(10, 2) not null,
+  constraint SUPP_PAYMENT_PAYMNT_ADJ$PK primary key (ID),
+  constraint SUPP_PAYMENT_PAYMNT_ADJ$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
+  constraint SUPP_PAYMENT_PAYMNT_ADJ$FK2 foreign key (ADJUSTMENT_TYPE_ID) references ADJUSTMENT_TYPE (ID)
+);

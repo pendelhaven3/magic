@@ -24,10 +24,12 @@ import com.pj.magic.gui.tables.MagicSubmenuTable;
 @Component
 public class PurchasesMenuPanel extends StandardMagicPanel {
 
-	private static final String SUPPLIER_PAYMENT = "Supplier Payment";
 	private static final String PRODUCT_CANVASS = "Product Canvass";
 	private static final String RECEIVING_RECEIPT = "Receiving Receipt";
 	private static final String PURCHASE_ORDER = "Purchase Order";
+	private static final String SUPPLIER_PAYMENT = "Supplier Payment";
+	private static final String SUPPLIER_PAYMENT_ADJUSTMENT = "Supplier Payment Adjustment";
+	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
 	
@@ -98,6 +100,9 @@ public class PurchasesMenuPanel extends StandardMagicPanel {
 		case SUPPLIER_PAYMENT:
 			getMagicFrame().switchToSupplierPaymentListPanel();
 			break;
+		case SUPPLIER_PAYMENT_ADJUSTMENT:
+			getMagicFrame().switchToSupplierPaymentAdjustmentListPanel();
+			break;
 		}
 	}
 
@@ -112,7 +117,8 @@ public class PurchasesMenuPanel extends StandardMagicPanel {
 				PURCHASE_ORDER,
 				RECEIVING_RECEIPT,
 				PRODUCT_CANVASS,
-				SUPPLIER_PAYMENT
+				SUPPLIER_PAYMENT,
+				SUPPLIER_PAYMENT_ADJUSTMENT
 		);
 		
 		@Override
