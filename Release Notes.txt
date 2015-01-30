@@ -2,6 +2,8 @@ version 1.20.1
 
 1. Fixed updating of Supplier Payment
 2. Added posting of Supplier Payment
+3. Added search Supplier Payment function
+4. Removed Amount column from Supplier Payments list
 
 [TODO: Put past changes here]
 

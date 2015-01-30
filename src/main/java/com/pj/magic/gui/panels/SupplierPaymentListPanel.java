@@ -32,9 +32,8 @@ public class SupplierPaymentListPanel extends StandardMagicPanel {
 
 	private static final int SUPPLIER_PAYMENT_NUMBER_COLUMN_INDEX = 0;
 	private static final int SUPPLIER_COLUMN_INDEX = 1;
-	private static final int AMOUNT_COLUMN_INDEX = 2;
-	private static final int STATUS_COLUMN_INDEX = 3;
-	private static final int POST_DATE_COLUMN_INDEX = 4;
+	private static final int STATUS_COLUMN_INDEX = 2;
+	private static final int POST_DATE_COLUMN_INDEX = 3;
 	
 	@Autowired private SupplierPaymentService supplierPaymentService;
 	@Autowired private SupplierPaymentSearchCriteriaDialog supplierPaymentSearchCriteriaDialog;
@@ -60,6 +59,8 @@ public class SupplierPaymentListPanel extends StandardMagicPanel {
 	private void initializeTable() {
 		tableModel = new SupplierPaymentsTableModel();
 		table = new MagicListTable(tableModel);
+		
+		table.getColumnModel().getColumn(SUPPLIER_COLUMN_INDEX).setPreferredWidth(300);
 	}
 
 	@Override
@@ -161,8 +162,7 @@ public class SupplierPaymentListPanel extends StandardMagicPanel {
 
 	private class SupplierPaymentsTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = 
-			{"Supplier Payment No.", "Supplier", "Amount", "Status", "Post Date"};
+		private final String[] columnNames = {"Supplier Payment No.", "Supplier", "Status", "Post Date"};
 		
 		List<SupplierPayment> supplierPayments = new ArrayList<>();
 		
@@ -191,15 +191,6 @@ public class SupplierPaymentListPanel extends StandardMagicPanel {
 		}
 		
 		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			if (columnIndex == AMOUNT_COLUMN_INDEX) {
-				return Number.class;
-			} else {
-				return String.class;
-			}
-		}
-		
-		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			SupplierPayment supplierPayment = supplierPayments.get(rowIndex);
 			switch (columnIndex) {
@@ -207,8 +198,6 @@ public class SupplierPaymentListPanel extends StandardMagicPanel {
 				return supplierPayment.getSupplierPaymentNumber();
 			case SUPPLIER_COLUMN_INDEX:
 				return supplierPayment.getSupplier().getName();
-			case AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(supplierPayment.getTotalAmount());
 			case STATUS_COLUMN_INDEX:
 				return supplierPayment.getStatus();
 			case POST_DATE_COLUMN_INDEX:
