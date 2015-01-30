@@ -42,10 +42,15 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 	@Transactional
 	@Override
 	public void save(SupplierPayment supplierPayment) {
-		if (supplierPayment.getId() == null) {
+		boolean newPayment = (supplierPayment.getId() == null);
+		if (newPayment) {
 			supplierPayment.setEncoder(loginService.getLoggedInUser());
 		}
 		supplierPaymentDao.save(supplierPayment);
+		if (!newPayment) {
+			supplierPaymentReceivingReceiptDao.deleteAllBySupplierPayment(supplierPayment);
+			supplierPaymentPaymentAdjustmentDao.deleteAllBySupplierPayment(supplierPayment);
+		}
 	}
 
 	@Override

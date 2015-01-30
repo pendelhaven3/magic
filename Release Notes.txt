@@ -1,3 +1,9 @@
+version 1.20.1
+
+1. Fixed updating of Supplier Payment
+
+[TODO: Put past changes here]
+
 version 1.7.4
 
 1. Make new customers active by default

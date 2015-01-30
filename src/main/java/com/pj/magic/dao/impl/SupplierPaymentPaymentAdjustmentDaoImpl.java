@@ -101,7 +101,7 @@ public class SupplierPaymentPaymentAdjustmentDaoImpl extends MagicDao
 	}
 	
 	private static final String DELETE_ALL_BY_SUPPLIER_PAYMENT_SQL =
-			"delete from SUPP_PAYMENT_PAYMNT_ADJ where PAYMENT_ID = ?";
+			"delete from SUPP_PAYMENT_PAYMNT_ADJ where SUPPLIER_PAYMENT_ID = ?";
 
 	@Override
 	public void deleteAllBySupplierPayment(SupplierPayment supplierPayment) {

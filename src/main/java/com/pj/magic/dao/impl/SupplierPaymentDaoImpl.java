@@ -80,7 +80,20 @@ public class SupplierPaymentDaoImpl extends MagicDao implements SupplierPaymentD
 		return getNextSequenceValue(SUPPLIER_PAYMENT_NUMBER_SEQUENCE);
 	}
 	
-	private void update(SupplierPayment supplierPayment) {
+	private static final String UPDATE_SQL =
+			"update SUPPLIER_PAYMENT set SUPPLIER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
+			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ? where ID = ?";
+	
+	private void update(SupplierPayment payment) {
+		getJdbcTemplate().update(UPDATE_SQL,
+				payment.getSupplier().getId(),
+				payment.isPosted() ? "Y" : "N",
+				payment.isPosted() ? payment.getPostDate() : null,
+				payment.isPosted() ? payment.getPostedBy().getId() : null,
+				payment.isCancelled() ? "Y" : "N",
+				payment.isCancelled() ? payment.getCancelDate() : null,
+				payment.isCancelled() ? payment.getCancelledBy().getId() : null,
+				payment.getId());
 	}
 
 	private static final String GET_SQL = BASE_SELECT_SQL
