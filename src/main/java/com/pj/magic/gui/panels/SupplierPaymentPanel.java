@@ -484,7 +484,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 			}
 		});
 		
-//		toolBar.add(postButton);
+		toolBar.add(postButton);
 		
 		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {
@@ -536,12 +536,12 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 	private void postPayment() {
 		cancelEditing();
 		
-//		if (supplierPayment.getTotalPayments().equals(Constants.ZERO)) {
-//			showErrorMessage("Cannot post with no cash or check payments");
-//			return;
-//		}
+		if (supplierPayment.getTotalPayments().equals(Constants.ZERO)) {
+			showErrorMessage("Cannot post with no cash or check payments");
+			return;
+		}
 
-		if (confirm(getPostConfirmMessage())) {
+		if (confirm("Do you want to post this Payment?")) {
 			try {
 				supplierPaymentService.post(supplierPayment);
 				showMessage("Payment posted");
@@ -553,16 +553,6 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		}
 	}
 
-	private String getPostConfirmMessage() {
-		String message = "Do you want to post this Payment?";
-//		BigDecimal overOrShort = supplierPayment.getOverOrShort();
-//		if (overOrShort.compareTo(Constants.ZERO) != 0) {
-//			message = "This payment is over/short by {0}.\nAre you sure you want to post this payment?";
-//			message = MessageFormat.format(message, FormatterUtil.formatAmount(overOrShort));
-//		}
-		return message;
-	}
-	
 	private void cancelPayment() {
 //		if (confirm("Cancel Payment?")) {
 //			try {

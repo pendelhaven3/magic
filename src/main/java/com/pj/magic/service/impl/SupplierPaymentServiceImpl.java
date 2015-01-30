@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -75,8 +76,14 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 				supplierPaymentPaymentAdjustmentDao.findAllBySupplierPayment(supplierPayment));
 	}
 	
+	@Transactional
 	@Override
 	public void post(SupplierPayment supplierPayment) {
+		SupplierPayment updated = getSupplierPayment(supplierPayment.getId());
+		updated.setPosted(true);
+		updated.setPostDate(new Date());
+		updated.setPostedBy(loginService.getLoggedInUser());
+		supplierPaymentDao.save(updated);
 	}
 
 	@Override

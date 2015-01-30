@@ -1,6 +1,7 @@
 version 1.20.1
 
 1. Fixed updating of Supplier Payment
+2. Added posting of Supplier Payment
 
 [TODO: Put past changes here]
 
