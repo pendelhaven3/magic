@@ -2,12 +2,12 @@ package com.pj.magic.model.search;
 
 import java.util.Date;
 
-import com.pj.magic.model.Customer;
+import com.pj.magic.model.Supplier;
 
 public class SupplierPaymentSearchCriteria {
 
 	private Boolean posted;
-	private Customer customer;
+	private Supplier supplier;
 	private Date postDate;
 	private Long paymentNumber;
 	private Boolean cancelled;
@@ -20,12 +20,12 @@ public class SupplierPaymentSearchCriteria {
 		this.posted = posted;
 	}
 
-	public Customer getCustomer() {
-		return customer;
+	public Supplier getSupplier() {
+		return supplier;
 	}
 
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
+	public void setSupplier(Supplier supplier) {
+		this.supplier = supplier;
 	}
 
 	public Date getPostDate() {

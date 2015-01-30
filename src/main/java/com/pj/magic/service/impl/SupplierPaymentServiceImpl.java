@@ -161,5 +161,10 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 	public void save(SupplierPaymentPaymentAdjustment paymentAdjustment) {
 		supplierPaymentPaymentAdjustmentDao.save(paymentAdjustment);
 	}
+
+	@Override
+	public List<SupplierPayment> searchSupplierPayments(SupplierPaymentSearchCriteria criteria) {
+		return supplierPaymentDao.search(criteria);
+	}
 	
 }

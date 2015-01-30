@@ -683,7 +683,7 @@ create table SUPPLIER_PAYMENT (
   SUPPLIER_PAYMENT_NO integer not null,
   SUPPLIER_ID integer not null,
   POST_IND char(1) default 'N' not null,
-  POST_DT datetime null,
+  POST_DT date null,
   POST_BY integer null,
   CREATE_DT date not null,
   ENCODER integer not null,

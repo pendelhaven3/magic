@@ -27,9 +27,9 @@ import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.model.Customer;
-import com.pj.magic.model.search.PaymentSearchCriteria;
-import com.pj.magic.service.CustomerService;
+import com.pj.magic.model.Supplier;
+import com.pj.magic.model.search.SupplierPaymentSearchCriteria;
+import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
@@ -40,22 +40,22 @@ public class SupplierPaymentSearchCriteriaDialog extends MagicDialog {
 	private static final int STATUS_POSTED = 2;
 	private static final int STATUS_CANCELLED = 3;
 	
-	@Autowired private CustomerService customerService;
-	@Autowired private SelectCustomerDialog selectCustomerDialog;
+	@Autowired private SupplierService supplierService;
+	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	
-	private MagicTextField paymentNumberField;
-	private MagicTextField customerCodeField;
-	private JLabel customerNameField;
+	private MagicTextField supplierPaymentNumberField;
+	private MagicTextField supplierCodeField;
+	private JLabel supplierNameField;
 	private MagicComboBox<String> statusComboBox;
 	private UtilCalendarModel postDateModel;
 	private JButton searchButton;
-	private PaymentSearchCriteria searchCriteria;
-	private JButton selectCustomerButton;
+	private SupplierPaymentSearchCriteria searchCriteria;
+	private JButton selectSupplierButton;
 	
 	public SupplierPaymentSearchCriteriaDialog() {
 		setSize(600, 250);
 		setLocationRelativeTo(null);
-		setTitle("Search Payments");
+		setTitle("Search Supplier Payments");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
 	}
 
@@ -67,22 +67,22 @@ public class SupplierPaymentSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		paymentNumberField = new MagicTextField();
+		supplierPaymentNumberField = new MagicTextField();
 		
-		customerCodeField = new MagicTextField();
-		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
+		supplierCodeField = new MagicTextField();
+		supplierCodeField.setMaximumLength(Constants.SUPPLIER_CODE_MAXIMUM_LENGTH);
 		
-		selectCustomerButton = new EllipsisButton();
-		selectCustomerButton.addActionListener(new ActionListener() {
+		selectSupplierButton = new EllipsisButton("Select Supplier");
+		selectSupplierButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openSelectCustomerDialog();
+				openSelectSupplierDialog();
 			}
 		});
 		
 		statusComboBox = new MagicComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted", "Cancelled"}));
+		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted"}));
 		
 		postDateModel = new UtilCalendarModel();
 		
@@ -91,37 +91,37 @@ public class SupplierPaymentSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePaymentCriteria();
+				saveSearchCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(paymentNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(supplierPaymentNumberField);
 	}
 
-	private void openSelectCustomerDialog() {
-		selectCustomerDialog.searchCustomers(customerCodeField.getText());
-		selectCustomerDialog.setVisible(true);
+	private void openSelectSupplierDialog() {
+		selectSupplierDialog.searchSuppliers(supplierCodeField.getText());
+		selectSupplierDialog.setVisible(true);
 		
-		Customer customer = selectCustomerDialog.getSelectedCustomer();
-		if (customer != null) {
-			customerCodeField.setText(customer.getCode());
-			customerNameField.setText(customer.getName());
+		Supplier supplier = selectSupplierDialog.getSelectedSupplier();
+		if (supplier != null) {
+			supplierCodeField.setText(supplier.getCode());
+			supplierNameField.setText(supplier.getName());
 		}
 	}
 
-	private void savePaymentCriteria() {
-		searchCriteria = new PaymentSearchCriteria();
+	private void saveSearchCriteria() {
+		searchCriteria = new SupplierPaymentSearchCriteria();
 		
-		if (!StringUtils.isEmpty(paymentNumberField.getText())) {
-			searchCriteria.setPaymentNumber(Long.valueOf(paymentNumberField.getText()));
+		if (!StringUtils.isEmpty(supplierPaymentNumberField.getText())) {
+			searchCriteria.setPaymentNumber(Long.valueOf(supplierPaymentNumberField.getText()));
 		}
 		
-		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
-		searchCriteria.setCustomer(customer);
-		if (customer != null) {
-			customerNameField.setText(customer.getName());
+		Supplier supplier = supplierService.findSupplierByCode(supplierCodeField.getText());
+		searchCriteria.setSupplier(supplier);
+		if (supplier != null) {
+			supplierNameField.setText(supplier.getName());
 		} else {
-			customerNameField.setText(null);
+			supplierNameField.setText(null);
 		}
 		
 		if (statusComboBox.getSelectedIndex() != 0) {
@@ -147,16 +147,16 @@ public class SupplierPaymentSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
-		paymentNumberField.onEnterKey(new AbstractAction() {
+		supplierPaymentNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				customerCodeField.requestFocusInWindow();
+				supplierCodeField.requestFocusInWindow();
 			}
 		});
 		
-		customerCodeField.getInputMap().put(KeyUtil.getEnterKey(), "enter");
-		customerCodeField.getActionMap().put("enter", new AbstractAction() {
+		supplierCodeField.getInputMap().put(KeyUtil.getEnterKey(), "enter");
+		supplierCodeField.getActionMap().put("enter", new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -169,7 +169,7 @@ public class SupplierPaymentSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePaymentCriteria();
+				saveSearchCriteria();
 			}
 		});
 		
@@ -188,15 +188,15 @@ public class SupplierPaymentSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Payment No.:"), c);
+		add(ComponentUtil.createLabel(180, "Supplier Payment No.:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		paymentNumberField.setPreferredSize(new Dimension(100, 25));
-		add(paymentNumberField, c);
+		supplierPaymentNumberField.setPreferredSize(new Dimension(100, 25));
+		add(supplierPaymentNumberField, c);
 
 		currentRow++;
 		
@@ -204,7 +204,7 @@ public class SupplierPaymentSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(120, "Customer:"), c);
+		add(ComponentUtil.createLabel(120, "Supplier:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
@@ -274,17 +274,17 @@ public class SupplierPaymentSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(), c);
 	}
 	
-	public PaymentSearchCriteria getSearchCriteria() {
-		PaymentSearchCriteria returnCriteria = searchCriteria;
+	public SupplierPaymentSearchCriteria getSearchCriteria() {
+		SupplierPaymentSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
 		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		paymentNumberField.setText(null);
-		customerCodeField.setText(null);
-		customerNameField.setText(null);
+		supplierPaymentNumberField.setText(null);
+		supplierCodeField.setText(null);
+		supplierNameField.setText(null);
 		statusComboBox.setSelectedIndex(0);
 		postDateModel.setValue(null);
 	}
@@ -297,15 +297,15 @@ public class SupplierPaymentSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		customerCodeField.setPreferredSize(new Dimension(120, 25));
-		panel.add(customerCodeField, c);
+		supplierCodeField.setPreferredSize(new Dimension(120, 25));
+		panel.add(supplierCodeField, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		selectCustomerButton.setPreferredSize(new Dimension(30, 24));
-		panel.add(selectCustomerButton, c);
+		selectSupplierButton.setPreferredSize(new Dimension(30, 24));
+		panel.add(selectSupplierButton, c);
 		
 		c.weightx = 0.0;
 		c.weighty = 0.0;
@@ -319,8 +319,8 @@ public class SupplierPaymentSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 3;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		customerNameField = ComponentUtil.createLabel(200);
-		panel.add(customerNameField, c);
+		supplierNameField = ComponentUtil.createLabel(200);
+		panel.add(supplierNameField, c);
 		
 		return panel;
 	}

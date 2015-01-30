@@ -124,19 +124,18 @@ public class SupplierPaymentDaoImpl extends MagicDao implements SupplierPaymentD
 			params.add(criteria.getCancelled() ? "Y" : "N");
 		}
 		
-		if (criteria.getCustomer() != null) {
-			sql.append(" and a.CUSTOMER_ID = ?");
-			params.add(criteria.getCustomer().getId());
+		if (criteria.getSupplier() != null) {
+			sql.append(" and a.SUPPLIER_ID = ?");
+			params.add(criteria.getSupplier().getId());
 		}
 		
 		if (criteria.getPaymentNumber() != null) {
-			sql.append(" and a.PAYMENT_NO = ?");
+			sql.append(" and a.SUPPLIER_PAYMENT_NO = ?");
 			params.add(criteria.getPaymentNumber());
 		}
 		
 		if (criteria.getPostDate() != null) {
-			sql.append(" and a.POST_DT >= ? and a.POST_DT <= DATE_ADD(?, INTERVAL 1 DAY)");
-			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
+			sql.append(" and a.POST_DT = ?");
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 		}
 		

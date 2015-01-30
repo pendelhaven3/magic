@@ -19,9 +19,10 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PaymentSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SupplierPaymentSearchCriteriaDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.SupplierPayment;
+import com.pj.magic.model.search.SupplierPaymentSearchCriteria;
 import com.pj.magic.service.SupplierPaymentService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -36,7 +37,7 @@ public class SupplierPaymentListPanel extends StandardMagicPanel {
 	private static final int POST_DATE_COLUMN_INDEX = 4;
 	
 	@Autowired private SupplierPaymentService supplierPaymentService;
-	@Autowired private PaymentSearchCriteriaDialog paymentSearchCriteriaDialog;
+	@Autowired private SupplierPaymentSearchCriteriaDialog supplierPaymentSearchCriteriaDialog;
 	
 	private MagicListTable table;
 	private SupplierPaymentsTableModel tableModel;
@@ -47,7 +48,7 @@ public class SupplierPaymentListPanel extends StandardMagicPanel {
 		if (!supplierPayments.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
-		paymentSearchCriteriaDialog.updateDisplay();
+		supplierPaymentSearchCriteriaDialog.updateDisplay();
 	}
 
 	@Override
@@ -131,27 +132,27 @@ public class SupplierPaymentListPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				searchPayments();
+				searchSupplierPayments();
 			}
 		});
 		
 		toolBar.add(searchButton);
 	}
 
-	private void searchPayments() {
-//		paymentSearchCriteriaDialog.setVisible(true);
-//		
-//		PaymentSearchCriteria criteria = paymentSearchCriteriaDialog.getSearchCriteria();
-//		if (criteria != null) {
-//			List<Payment> payments = supplierPaymentService.searchPayments(criteria);
-//			tableModel.setPayments(payments);
-//			if (!payments.isEmpty()) {
-//				table.changeSelection(0, 0, false, false);
-//				table.requestFocusInWindow();
-//			} else {
-//				showMessage("No matching records");
-//			}
-//		}
+	private void searchSupplierPayments() {
+		supplierPaymentSearchCriteriaDialog.setVisible(true);
+		
+		SupplierPaymentSearchCriteria criteria = supplierPaymentSearchCriteriaDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<SupplierPayment> payments = supplierPaymentService.searchSupplierPayments(criteria);
+			tableModel.setSupplierPayments(payments);
+			if (!payments.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
 	}
 
 	private void switchToNewSupplierPaymentPanel() {

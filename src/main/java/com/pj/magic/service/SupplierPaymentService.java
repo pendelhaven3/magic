@@ -9,6 +9,7 @@ import com.pj.magic.model.SupplierPaymentCheckPayment;
 import com.pj.magic.model.SupplierPaymentCreditCardPayment;
 import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentReceivingReceipt;
+import com.pj.magic.model.search.SupplierPaymentSearchCriteria;
 
 public interface SupplierPaymentService {
 
@@ -41,5 +42,7 @@ public interface SupplierPaymentService {
 	void delete(SupplierPaymentPaymentAdjustment adjustment);
 
 	void save(SupplierPaymentPaymentAdjustment adjustment);
+
+	List<SupplierPayment> searchSupplierPayments(SupplierPaymentSearchCriteria criteria);
 	
 }
