@@ -35,6 +35,7 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AddReceivingReceiptsToSupplierPaymentDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
+import com.pj.magic.gui.tables.SupplierPaymentBankTransfersTable;
 import com.pj.magic.gui.tables.SupplierPaymentCashPaymentsTable;
 import com.pj.magic.gui.tables.SupplierPaymentCheckPaymentsTable;
 import com.pj.magic.gui.tables.SupplierPaymentCreditCardPaymentsTable;
@@ -69,6 +70,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 	@Autowired private SupplierPaymentCashPaymentsTable cashPaymentsTable;
 	@Autowired private SupplierPaymentCreditCardPaymentsTable creditCardPaymentsTable;
 	@Autowired private SupplierPaymentCheckPaymentsTable checkPaymentsTable;
+	@Autowired private SupplierPaymentBankTransfersTable bankTransfersTable;
 	@Autowired private SupplierPaymentPaymentAdjustmentsTable paymentAdjustmentsTable;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
@@ -97,6 +99,8 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton removeCreditCardPaymentButton;
 	private MagicToolBarButton addCheckPaymentButton;
 	private MagicToolBarButton deleteCheckPaymentButton;
+	private MagicToolBarButton addBankTransferButton;
+	private MagicToolBarButton removeBankTransferButton;
 	private MagicToolBarButton addAdjustmentButton;
 	private MagicToolBarButton deleteAdjustmentButton;
 	private MagicToolBarButton cancelButton;
@@ -233,6 +237,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		cashPaymentsTable.setSupplierPayment(supplierPayment);
 		creditCardPaymentsTable.setSupplierPayment(supplierPayment);
 		checkPaymentsTable.setSupplierPayment(supplierPayment);
+		bankTransfersTable.setSupplierPayment(supplierPayment);
 		paymentAdjustmentsTable.setSupplierPayment(supplierPayment);
 		
 		boolean newPayment = !supplierPayment.isPosted();
@@ -247,6 +252,8 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		removeCreditCardPaymentButton.setEnabled(newPayment);
 		addCheckPaymentButton.setEnabled(newPayment);
 		deleteCheckPaymentButton.setEnabled(newPayment);
+		addBankTransferButton.setEnabled(newPayment);
+		removeBankTransferButton.setEnabled(newPayment);
 		addAdjustmentButton.setEnabled(newPayment);
 		deleteAdjustmentButton.setEnabled(newPayment);
 		
@@ -265,6 +272,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		cashPaymentsTable.clearDisplay();
 		creditCardPaymentsTable.clearDisplay();
 		checkPaymentsTable.clearDisplay();
+		bankTransfersTable.clearDisplay();
 		paymentAdjustmentsTable.clearDisplay();
 		
 		totalAmountLabel.setText(null);
@@ -283,6 +291,8 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		removeCreditCardPaymentButton.setEnabled(false);
 		addCheckPaymentButton.setEnabled(false);
 		deleteCheckPaymentButton.setEnabled(false);
+		addBankTransferButton.setEnabled(false);
+		removeBankTransferButton.setEnabled(false);
 		addAdjustmentButton.setEnabled(false);
 		deleteAdjustmentButton.setEnabled(false);
 		
@@ -615,9 +625,37 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		tabbedPane.addTab("Receiving Receipts", createReceivingReceiptsPanel());
 		tabbedPane.addTab("Cash Payments", createCashPaymentsPanel());
 		tabbedPane.addTab("Credit Card Payments", createCreditCardPaymentsPanel());
+		tabbedPane.addTab("Bank Transfers", createBankTransfersPanel());
 		tabbedPane.addTab("Check Payments", createCheckPaymentsPanel());
 		tabbedPane.addTab("Adjustments", createAdjustmentsPanel());
 		return tabbedPane;
+	}
+
+	private JPanel createBankTransfersPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(createBankTransfersTableToolBar(), c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		JScrollPane scrollPane = new JScrollPane(bankTransfersTable);
+		scrollPane.setPreferredSize(new Dimension(600, 150));
+		panel.add(scrollPane, c);
+		
+		return panel;
 	}
 
 	private JPanel createReceivingReceiptsPanel() {
@@ -841,6 +879,32 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		return panel;
 	}
 	
+	private JPanel createBankTransfersTableToolBar() {
+		JPanel panel = new JPanel();
+		
+		addBankTransferButton = new MagicToolBarButton("plus_small", "Add Bank Transfer", true);
+		addBankTransferButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addBankTransfer();
+			}
+		});
+		panel.add(addBankTransferButton, BorderLayout.WEST);
+		
+		removeBankTransferButton = new MagicToolBarButton("minus_small", "Remove Bank Transfer", true);
+		removeBankTransferButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				bankTransfersTable.removeCurrentlySelectedItem();
+			}
+		});
+		panel.add(removeBankTransferButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+
 	private JPanel createCashPaymentsTableToolBar() {
 		JPanel panel = new JPanel();
 		
@@ -899,6 +963,10 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 
 	private void addCashPayment() {
 		cashPaymentsTable.addNewRow();
+	}
+
+	private void addBankTransfer() {
+		bankTransfersTable.addNewRow();
 	}
 
 	private JPanel createAdjustmentsPanel() {

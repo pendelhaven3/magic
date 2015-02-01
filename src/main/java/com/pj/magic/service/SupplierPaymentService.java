@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SupplierPayment;
+import com.pj.magic.model.SupplierPaymentBankTransfer;
 import com.pj.magic.model.SupplierPaymentCashPayment;
 import com.pj.magic.model.SupplierPaymentCheckPayment;
 import com.pj.magic.model.SupplierPaymentCreditCardPayment;
@@ -44,5 +45,9 @@ public interface SupplierPaymentService {
 	void save(SupplierPaymentPaymentAdjustment adjustment);
 
 	List<SupplierPayment> searchSupplierPayments(SupplierPaymentSearchCriteria criteria);
+
+	void save(SupplierPaymentBankTransfer bankTransfer);
+
+	void delete(SupplierPaymentBankTransfer bankTransfer);
 	
 }

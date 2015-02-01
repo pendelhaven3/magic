@@ -24,6 +24,7 @@ public class SupplierPayment {
 	private List<SupplierPaymentCashPayment> cashPayments = new ArrayList<>();
 	private List<SupplierPaymentCreditCardPayment> creditCardPayments = new ArrayList<>();
 	private List<SupplierPaymentCheckPayment> checkPayments = new ArrayList<>();
+	private List<SupplierPaymentBankTransfer> bankTransfers = new ArrayList<>();
 	private List<SupplierPaymentPaymentAdjustment> paymentAdjustments = new ArrayList<>();
 
 	public SupplierPayment() {
@@ -217,6 +218,14 @@ public class SupplierPayment {
 
 	public void setPaymentAdjustments(List<SupplierPaymentPaymentAdjustment> paymentAdjustments) {
 		this.paymentAdjustments = paymentAdjustments;
+	}
+
+	public List<SupplierPaymentBankTransfer> getBankTransfers() {
+		return bankTransfers;
+	}
+
+	public void setBankTransfers(List<SupplierPaymentBankTransfer> bankTransfers) {
+		this.bankTransfers = bankTransfers;
 	}
 
 }

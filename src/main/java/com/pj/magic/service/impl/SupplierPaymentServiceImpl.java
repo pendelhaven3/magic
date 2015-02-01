@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.ReceivingReceiptItemDao;
 import com.pj.magic.dao.SupplierPaymentAdjustmentDao;
+import com.pj.magic.dao.SupplierPaymentBankTransferDao;
 import com.pj.magic.dao.SupplierPaymentCashPaymentDao;
 import com.pj.magic.dao.SupplierPaymentCheckPaymentDao;
 import com.pj.magic.dao.SupplierPaymentCreditCardPaymentDao;
@@ -18,6 +19,7 @@ import com.pj.magic.dao.SupplierPaymentPaymentAdjustmentDao;
 import com.pj.magic.dao.SupplierPaymentReceivingReceiptDao;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SupplierPayment;
+import com.pj.magic.model.SupplierPaymentBankTransfer;
 import com.pj.magic.model.SupplierPaymentCashPayment;
 import com.pj.magic.model.SupplierPaymentCheckPayment;
 import com.pj.magic.model.SupplierPaymentCreditCardPayment;
@@ -37,6 +39,7 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 	@Autowired private SupplierPaymentCashPaymentDao supplierPaymentCashPaymentDao;
 	@Autowired private SupplierPaymentCreditCardPaymentDao supplierPaymentCreditCardPaymentDao;
 	@Autowired private SupplierPaymentCheckPaymentDao supplierPaymentCheckPaymentDao;
+	@Autowired private SupplierPaymentBankTransferDao supplierPaymentBankTransferDao;
 	@Autowired private SupplierPaymentAdjustmentDao supplierPaymentAdjustmentDao;
 	@Autowired private SupplierPaymentPaymentAdjustmentDao supplierPaymentPaymentAdjustmentDao;
 	
@@ -72,6 +75,8 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 		supplierPayment.setCreditCardPayments(
 				supplierPaymentCreditCardPaymentDao.findAllBySupplierPayment(supplierPayment));
 		supplierPayment.setCheckPayments(supplierPaymentCheckPaymentDao.findAllBySupplierPayment(supplierPayment));
+		supplierPayment.setBankTransfers(
+				supplierPaymentBankTransferDao.findAllBySupplierPayment(supplierPayment));
 		supplierPayment.setPaymentAdjustments(
 				supplierPaymentPaymentAdjustmentDao.findAllBySupplierPayment(supplierPayment));
 	}
@@ -165,6 +170,18 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 	@Override
 	public List<SupplierPayment> searchSupplierPayments(SupplierPaymentSearchCriteria criteria) {
 		return supplierPaymentDao.search(criteria);
+	}
+
+	@Transactional
+	@Override
+	public void save(SupplierPaymentBankTransfer bankTransfer) {
+		supplierPaymentBankTransferDao.save(bankTransfer);
+	}
+
+	@Transactional
+	@Override
+	public void delete(SupplierPaymentBankTransfer bankTransfer) {
+		supplierPaymentBankTransferDao.delete(bankTransfer);
 	}
 	
 }
