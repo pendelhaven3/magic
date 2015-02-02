@@ -24,6 +24,7 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
 import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
+import com.pj.magic.util.ListUtil;
 
 @Component
 public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
@@ -132,7 +133,7 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 
 	private class MainMenuTableModel extends AbstractTableModel {
 
-		private final List<String> allMenuItems = Arrays.asList(
+		private final List<String> allMenuItems = ListUtil.asSortedList(Arrays.asList(
 				CUSTOMER_LIST,
 				SUPPLIER_LIST,
 				MANUFACTURER_LIST,
@@ -141,7 +142,7 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 				ADJUSTMENT_TYPE_LIST,
 				AREA_LIST,
 				CREDIT_CARD_LIST
-		);
+		));
 		
 		private List<String> menuItems = new ArrayList<>();
 		
