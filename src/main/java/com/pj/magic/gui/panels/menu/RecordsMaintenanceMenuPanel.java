@@ -3,6 +3,7 @@ package com.pj.magic.gui.panels.menu;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
@@ -20,6 +22,8 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
+import com.pj.magic.model.User;
+import com.pj.magic.service.LoginService;
 
 @Component
 public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
@@ -32,6 +36,8 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 	private static final String SUPPLIER_LIST = "Supplier List";
 	private static final String CUSTOMER_LIST = "Customer List";
 	private static final String CREDIT_CARD_LIST = "Credit Card List";
+	
+	@Autowired private LoginService loginService;
 	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
@@ -86,6 +92,7 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
+		tableModel.setUser(loginService.getLoggedInUser());
 		table.changeSelection(0, 0, false, false);
 	}
 	
@@ -125,7 +132,7 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 
 	private class MainMenuTableModel extends AbstractTableModel {
 
-		private final List<String> menuItems = Arrays.asList(
+		private final List<String> allMenuItems = Arrays.asList(
 				CUSTOMER_LIST,
 				SUPPLIER_LIST,
 				MANUFACTURER_LIST,
@@ -135,6 +142,8 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 				AREA_LIST,
 				CREDIT_CARD_LIST
 		);
+		
+		private List<String> menuItems = new ArrayList<>();
 		
 		@Override
 		public int getRowCount() {
@@ -149,6 +158,15 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			return menuItems.get(rowIndex);
+		}
+		
+		public void setUser(User user) {
+			menuItems.clear();
+			menuItems.addAll(allMenuItems);
+			if (!user.isSupervisor()) {
+				menuItems.remove(CREDIT_CARD_LIST);
+			}
+			fireTableDataChanged();
 		}
 		
 	}
