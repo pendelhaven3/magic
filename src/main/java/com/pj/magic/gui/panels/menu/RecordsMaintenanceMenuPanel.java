@@ -31,6 +31,8 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 	private static final String MANUFACTURER_LIST = "Manufacturer List";
 	private static final String SUPPLIER_LIST = "Supplier List";
 	private static final String CUSTOMER_LIST = "Customer List";
+	private static final String CREDIT_CARD_LIST = "Credit Card List";
+	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
 	
@@ -110,6 +112,9 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 		case AREA_LIST:
 			getMagicFrame().switchToAreaListPanel();
 			break;
+		case CREDIT_CARD_LIST:
+			getMagicFrame().switchToCreditCardListPanel();
+			break;
 		}
 	}
 
@@ -127,7 +132,8 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 				PAYMENT_TERM_LIST,
 				PRODUCT_CATEGORY_LIST,
 				ADJUSTMENT_TYPE_LIST,
-				AREA_LIST
+				AREA_LIST,
+				CREDIT_CARD_LIST
 		);
 		
 		@Override

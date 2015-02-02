@@ -8,3 +8,11 @@ create table SUPP_PAYMENT_BANK_TRANSFER (
   constraint SUPP_PAYMENT_BANK_TRANSFER$PK primary key (ID),
   constraint SUPP_PAYMENT_BANK_TRANSFER$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID)
 );
+
+create table CREDIT_CARD (
+  ID integer auto_increment,
+  USER varchar(20) not null,
+  BANK varchar(20) not null,
+  CARD_NUMBER varchar(20) not null,
+  constraint CREDIT_CARD$PK primary key (ID)
+);

@@ -678,6 +678,14 @@ create table PAYMENT_ADJUSTMENT (
   constraint PAYMENT_ADJUSTMENT$FK5 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID)
 );
 
+create table CREDIT_CARD (
+  ID integer auto_increment,
+  USER varchar(20) not null,
+  BANK varchar(20) not null,
+  CARD_NUMBER varchar(20) not null,
+  constraint CREDIT_CARD$PK primary key (ID)
+);
+
 create table SUPPLIER_PAYMENT (
   ID integer auto_increment,
   SUPPLIER_PAYMENT_NO integer not null,

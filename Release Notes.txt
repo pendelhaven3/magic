@@ -1,6 +1,7 @@
 version 1.21.0
 
 1. Added Supplier Payment Bank Transfer
+2. Added Maintain Credit Card screen
 
 version 1.20.1
 
