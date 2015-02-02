@@ -24,6 +24,13 @@ import com.pj.magic.gui.tables.MagicSubmenuTable;
 @Component
 public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 
+	private static final String AREA_LIST = "Area List";
+	private static final String ADJUSTMENT_TYPE_LIST = "Adjustment Type List";
+	private static final String PRODUCT_CATEGORY_LIST = "Product Category List";
+	private static final String PAYMENT_TERM_LIST = "Payment Term List";
+	private static final String MANUFACTURER_LIST = "Manufacturer List";
+	private static final String SUPPLIER_LIST = "Supplier List";
+	private static final String CUSTOMER_LIST = "Customer List";
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
 	
@@ -82,25 +89,25 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 	
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-		case "Customer List":
+		case CUSTOMER_LIST:
 			getMagicFrame().switchToCustomerListPanel();
 			break;
-		case "Supplier List":
+		case SUPPLIER_LIST:
 			getMagicFrame().switchToSupplierListPanel();
 			break;
-		case "Manufacturer List":
+		case MANUFACTURER_LIST:
 			getMagicFrame().switchToManufacturerListPanel();
 			break;
-		case "Payment Term List":
+		case PAYMENT_TERM_LIST:
 			getMagicFrame().switchToPaymentTermListPanel();
 			break;
-		case "Product Category List":
+		case PRODUCT_CATEGORY_LIST:
 			getMagicFrame().switchToProductCategoryListPanel();
 			break;
-		case "Adjustment Type List":
+		case ADJUSTMENT_TYPE_LIST:
 			getMagicFrame().switchToAdjustmentTypeListPanel();
 			break;
-		case "Area List":
+		case AREA_LIST:
 			getMagicFrame().switchToAreaListPanel();
 			break;
 		}
@@ -114,13 +121,13 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private final List<String> menuItems = Arrays.asList(
-				"Customer List",
-				"Supplier List",
-				"Manufacturer List",
-				"Payment Term List",
-				"Product Category List",
-				"Adjustment Type List",
-				"Area List"
+				CUSTOMER_LIST,
+				SUPPLIER_LIST,
+				MANUFACTURER_LIST,
+				PAYMENT_TERM_LIST,
+				PRODUCT_CATEGORY_LIST,
+				ADJUSTMENT_TYPE_LIST,
+				AREA_LIST
 		);
 		
 		@Override
