@@ -36,7 +36,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			"select a.ID, RECEIVING_RECEIPT_NO, SUPPLIER_ID, POST_IND, a.VAT_INCLUSIVE, VAT_RATE,"
 			+ " a.PAYMENT_TERM_ID, c.NAME as PAYMENT_TERM_NAME, a.REMARKS, REFERENCE_NO, RECEIVED_DT,"
 			+ " POST_DT, POST_BY, CANCEL_IND, CANCEL_DT, CANCEL_BY,"
-			+ " RELATED_PURCHASE_ORDER_NO, RECEIVED_BY, b.NAME as SUPPLIER_NAME,"
+			+ " RELATED_PURCHASE_ORDER_NO, RECEIVED_BY, b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME,"
 			+ " d.USERNAME as POST_BY_USERNAME, e.USERNAME as CANCEL_BY_USERNAME"
 			+ " from RECEIVING_RECEIPT a"
 			+ " join SUPPLIER b"
@@ -139,7 +139,13 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			ReceivingReceipt receivingReceipt = new ReceivingReceipt();
 			receivingReceipt.setId(rs.getLong("ID"));
 			receivingReceipt.setReceivingReceiptNumber(rs.getLong("RECEIVING_RECEIPT_NO"));
-			receivingReceipt.setSupplier(new Supplier(rs.getLong("SUPPLIER_ID"), rs.getString("SUPPLIER_NAME")));
+			
+			Supplier supplier = new Supplier();
+			supplier.setId(rs.getLong("SUPPLIER_ID"));
+			supplier.setCode(rs.getString("SUPPLIER_CODE"));
+			supplier.setName(rs.getString("SUPPLIER_NAME"));
+			receivingReceipt.setSupplier(supplier);
+			
 			receivingReceipt.setPosted("Y".equals(rs.getString("POST_IND")));
 			if (receivingReceipt.isPosted()) {
 				receivingReceipt.setPostDate(rs.getDate("POST_DT"));
@@ -272,6 +278,19 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 	public List<ReceivingReceipt> findAllForPaymentBySupplier(Supplier supplier) {
 		return getJdbcTemplate().query(FIND_ALL_FOR_PAYMENT_BY_SUPPLIER_SQL, receivingReceiptRowMapper, 
 				supplier.getId());
+	}
+
+	private static final String FIND_BY_RECEIVING_RECEIPT_NUMBER_SQL = BASE_SELECT_SQL
+			+ " and RECEIVING_RECEIPT_NO = ?";
+	
+	@Override
+	public ReceivingReceipt findByReceivingReceiptNumber(long receivingReceiptNumber) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_RECEIVING_RECEIPT_NUMBER_SQL,
+					receivingReceiptRowMapper, receivingReceiptNumber);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
 	}
 
 }

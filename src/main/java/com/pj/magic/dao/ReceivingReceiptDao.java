@@ -21,5 +21,7 @@ public interface ReceivingReceiptDao {
 	List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria);
 
 	List<ReceivingReceipt> findAllForPaymentBySupplier(Supplier supplier);
+
+	ReceivingReceipt findByReceivingReceiptNumber(long receivingReceiptNumber);
 	
 }

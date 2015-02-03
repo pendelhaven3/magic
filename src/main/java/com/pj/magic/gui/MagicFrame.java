@@ -66,6 +66,8 @@ import com.pj.magic.gui.panels.ProductCategoryListPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderPanel;
+import com.pj.magic.gui.panels.PurchaseReturnListPanel;
+import com.pj.magic.gui.panels.PurchaseReturnPanel;
 import com.pj.magic.gui.panels.ReceivingReceiptListPanel;
 import com.pj.magic.gui.panels.ReceivingReceiptPanel;
 import com.pj.magic.gui.panels.RemittanceReportPanel;
@@ -113,6 +115,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.PurchaseOrder;
+import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
@@ -218,6 +221,8 @@ public class MagicFrame extends JFrame {
 			"MAINTAIN_SUPPLIER_PAYMENT_ADJUSTMENT_PANEL";
 	private static final String CREDIT_CARD_LIST_PANEL = "CREDIT_CARD_LIST_PANEL";
 	private static final String MAINTAIN_CREDIT_CARD_PANEL = "MAINTAIN_CREDIT_CARD_PANEL";
+	private static final String PURCHASE_RETURN_LIST_PANEL = "PURCHASE_RETURN_LIST_PANEL";
+	private static final String PURCHASE_RETURN_PANEL = "PURCHASE_RETURN_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -299,6 +304,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainSupplierPaymentAdjustmentPanel maintainSupplierPaymentAdjustmentPanel;
 	@Autowired private CreditCardListPanel creditCardListPanel;
 	@Autowired private MaintainCreditCardPanel maintainCreditCardPanel;
+	@Autowired private PurchaseReturnListPanel purchaseReturnListPanel;
+	@Autowired private PurchaseReturnPanel purchaseReturnPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -427,6 +434,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(maintainSupplierPaymentAdjustmentPanel, MAINTAIN_SUPPLIER_PAYMENT_ADJUSTMENT_PANEL);
 		panelHolder.add(creditCardListPanel, CREDIT_CARD_LIST_PANEL);
 		panelHolder.add(maintainCreditCardPanel, MAINTAIN_CREDIT_CARD_PANEL);
+		panelHolder.add(purchaseReturnListPanel, PURCHASE_RETURN_LIST_PANEL);
+		panelHolder.add(purchaseReturnPanel, PURCHASE_RETURN_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1050,6 +1059,18 @@ public class MagicFrame extends JFrame {
 	public void switchToMaintainCreditCardPanel(CreditCard creditCard) {
 		maintainCreditCardPanel.updateDisplay(creditCard);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_CREDIT_CARD_PANEL);
+	}
+	
+	public void switchToPurchaseReturnListPanel() {
+		addPanelNameToTitle("Purchase Return List");
+		purchaseReturnListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_RETURN_LIST_PANEL);
+	}
+
+	public void switchToPurchaseReturnPanel(PurchaseReturn purchaseReturn) {
+		addPanelNameToTitle("Purchase Return");
+		purchaseReturnPanel.updateDisplay(purchaseReturn);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_RETURN_PANEL);
 	}
 	
 }

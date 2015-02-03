@@ -247,4 +247,31 @@ public class ReceivingReceipt {
 		return !posted && !cancelled;
 	}
 
+	public ReceivingReceiptItem findItemByProductAndUnit(Product product, String unit) {
+		for (ReceivingReceiptItem item : items) {
+			if (product.equals(item.getProduct()) && unit.equals(item.getUnit())) {
+				return item;
+			}
+		}
+		return null;
+	}
+
+	public boolean hasProduct(Product product) {
+		for (ReceivingReceiptItem item : items) {
+			if (product.equals(item.getProduct())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean hasProductAndUnit(Product product, String unit) {
+		for (ReceivingReceiptItem item : items) {
+			if (product.equals(item.getProduct()) && unit.equals(item.getUnit())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

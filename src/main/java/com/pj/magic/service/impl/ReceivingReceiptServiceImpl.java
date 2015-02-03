@@ -146,5 +146,12 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 		}
 		return receivingReceipts;
 	}
+
+	@Override
+	public ReceivingReceipt findReceivingReceiptByReceivingReceiptNumber(long receivingReceiptNumber) {
+		ReceivingReceipt receivingReceipt = 
+				receivingReceiptDao.findByReceivingReceiptNumber(receivingReceiptNumber);
+		return receivingReceipt;
+	}
 	
 }

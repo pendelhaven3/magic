@@ -1,6 +1,7 @@
-version 1.21.2
+version 1.22.0
 
 1. Moved Payment Adjustment menu item to new Sales Payments sub-menu
+2. Added Purchase Return / Good Stock
 
 version 1.21.1
 

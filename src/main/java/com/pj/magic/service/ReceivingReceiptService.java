@@ -25,4 +25,6 @@ public interface ReceivingReceiptService {
 
 	List<ReceivingReceipt> findAllReceivingReceiptsForPaymentBySupplier(Supplier supplier);
 	
+	ReceivingReceipt findReceivingReceiptByReceivingReceiptNumber(long receivingReceiptNumber);
+	
 }
