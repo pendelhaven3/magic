@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import javax.swing.BorderFactory;
@@ -23,6 +25,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +40,7 @@ import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.service.ExcelService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
@@ -54,6 +58,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private SalesInvoiceStatusDialog salesInvoiceStatusDialog;
+	@Autowired private ExcelService excelService;
 	
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
@@ -554,6 +559,28 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(copyButton);
+		
+		JButton toExcelButton = new MagicToolBarButton("excel", "Generate Excel spreadsheet from Sales Invoice");
+		toExcelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				generateExcelSpreadsheetFromSalesInvoice();
+			}
+		});
+		toolBar.add(toExcelButton);
+	}
+
+	private void generateExcelSpreadsheetFromSalesInvoice() {
+		try (
+			XSSFWorkbook workbook = excelService.generateSpreadsheet(salesInvoice);
+			FileOutputStream out = new FileOutputStream("salesInvoice.xlsx");
+		) {
+			workbook.write(out);
+			showMessage("Excel spreadsheet generated successfully");
+		} catch (IOException e) {
+			showErrorMessage("Unexpected error during excel generation");
+		}
 	}
 
 	protected void cancelSalesInvoice() {
