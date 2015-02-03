@@ -37,6 +37,7 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 	private static final String SUPPLIER_LIST = "Supplier List";
 	private static final String CUSTOMER_LIST = "Customer List";
 	private static final String CREDIT_CARD_LIST = "Credit Card List";
+	private static final String PURCHASE_PAYMENT_ADJUSTMENT_TYPE_LIST = "Purchase Payment Adjustment Type List";
 	
 	@Autowired private LoginService loginService;
 	
@@ -123,6 +124,9 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 		case CREDIT_CARD_LIST:
 			getMagicFrame().switchToCreditCardListPanel();
 			break;
+		case PURCHASE_PAYMENT_ADJUSTMENT_TYPE_LIST:
+			getMagicFrame().switchToPurchasePaymentAdjustmentTypeListPanel();
+			break;
 		}
 	}
 
@@ -141,7 +145,8 @@ public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
 				PRODUCT_CATEGORY_LIST,
 				ADJUSTMENT_TYPE_LIST,
 				AREA_LIST,
-				CREDIT_CARD_LIST
+				CREDIT_CARD_LIST,
+				PURCHASE_PAYMENT_ADJUSTMENT_TYPE_LIST
 		));
 		
 		private List<String> menuItems = new ArrayList<>();

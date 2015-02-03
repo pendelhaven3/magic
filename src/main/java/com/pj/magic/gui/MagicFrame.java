@@ -46,6 +46,7 @@ import com.pj.magic.gui.panels.MaintainPaymentTerminalAssignmentPanel;
 import com.pj.magic.gui.panels.MaintainPricingSchemePanel;
 import com.pj.magic.gui.panels.MaintainProductCategoryPanel;
 import com.pj.magic.gui.panels.MaintainProductPanel;
+import com.pj.magic.gui.panels.MaintainPurchasePaymentAdjustmentTypePanel;
 import com.pj.magic.gui.panels.MaintainSupplierPanel;
 import com.pj.magic.gui.panels.MaintainSupplierPaymentAdjustmentPanel;
 import com.pj.magic.gui.panels.MaintainUserPanel;
@@ -66,6 +67,7 @@ import com.pj.magic.gui.panels.ProductCategoryListPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderPanel;
+import com.pj.magic.gui.panels.PurchasePaymentAdjustmentTypeListPanel;
 import com.pj.magic.gui.panels.PurchaseReturnListPanel;
 import com.pj.magic.gui.panels.PurchaseReturnPanel;
 import com.pj.magic.gui.panels.ReceivingReceiptListPanel;
@@ -115,6 +117,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.PurchaseOrder;
+import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesInvoice;
@@ -223,6 +226,10 @@ public class MagicFrame extends JFrame {
 	private static final String MAINTAIN_CREDIT_CARD_PANEL = "MAINTAIN_CREDIT_CARD_PANEL";
 	private static final String PURCHASE_RETURN_LIST_PANEL = "PURCHASE_RETURN_LIST_PANEL";
 	private static final String PURCHASE_RETURN_PANEL = "PURCHASE_RETURN_PANEL";
+	private static final String PURCHASE_PAYMENT_ADJUSTMENT_TYPE_LIST_PANEL = 
+			"PURCHASE_PAYMENT_ADJUSTMENT_TYPE_LIST_PANEL";
+	private static final String MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_TYPE_PANEL = 
+			"MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_TYPE_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -306,6 +313,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainCreditCardPanel maintainCreditCardPanel;
 	@Autowired private PurchaseReturnListPanel purchaseReturnListPanel;
 	@Autowired private PurchaseReturnPanel purchaseReturnPanel;
+	@Autowired private PurchasePaymentAdjustmentTypeListPanel purchasePaymentAdjustmentTypeListPanel;
+	@Autowired private MaintainPurchasePaymentAdjustmentTypePanel maintainPurchasePaymentAdjustmentTypePanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -436,6 +445,9 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(maintainCreditCardPanel, MAINTAIN_CREDIT_CARD_PANEL);
 		panelHolder.add(purchaseReturnListPanel, PURCHASE_RETURN_LIST_PANEL);
 		panelHolder.add(purchaseReturnPanel, PURCHASE_RETURN_PANEL);
+		panelHolder.add(purchasePaymentAdjustmentTypeListPanel, PURCHASE_PAYMENT_ADJUSTMENT_TYPE_LIST_PANEL);
+		panelHolder.add(maintainPurchasePaymentAdjustmentTypePanel, 
+				MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_TYPE_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1071,6 +1083,27 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Purchase Return");
 		purchaseReturnPanel.updateDisplay(purchaseReturn);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_RETURN_PANEL);
+	}
+	
+	public void switchToPurchasePaymentAdjustmentTypeListPanel() {
+		addPanelNameToTitle("Purchase Payment Adjustment Type List");
+		purchasePaymentAdjustmentTypeListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_PAYMENT_ADJUSTMENT_TYPE_LIST_PANEL);
+	}
+
+	public void switchToEditPurchasePaymentAdjustmentTypePanel(PurchasePaymentAdjustmentType type) {
+		addPanelNameToTitle("Edit Purchase Payment Adjustment Type");
+		switchToMaintainPurchasePaymentAdjustmentTypePanel(type);
+	}
+	
+	public void switchToAddNewPurchasePaymentAdjustmentTypePanel() {
+		addPanelNameToTitle("Add New Purchase Payment Adjustment Type");
+		switchToMaintainPurchasePaymentAdjustmentTypePanel(new PurchasePaymentAdjustmentType());
+	}
+	
+	private void switchToMaintainPurchasePaymentAdjustmentTypePanel(PurchasePaymentAdjustmentType type) {
+		maintainPurchasePaymentAdjustmentTypePanel.updateDisplay(type);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_TYPE_PANEL);
 	}
 	
 }

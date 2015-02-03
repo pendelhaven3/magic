@@ -23,3 +23,11 @@ create table PURCHASE_RETURN_ITEM (
   constraint PURCHASE_RETURN_ITEM$FK foreign key (PURCHASE_RETURN_ID) references PURCHASE_RETURN (ID),
   constraint PURCHASE_RETURN_ITEM$FK2 foreign key (RECEIVING_RECEIPT_ITEM_ID) references RECEIVING_RECEIPT_ITEM (ID)
 );
+
+create table PURCHASE_PAYMENT_ADJ_TYPE (
+  ID integer auto_increment,
+  CODE varchar(12) not null,
+  DESCRIPTION varchar(100) not null,
+  constraint PURCHASE_PAYMENT_ADJ_TYPE$PK primary key (ID),
+  constraint PURCHASE_PAYMENT_ADJ_TYPE$UK unique (CODE)
+);
