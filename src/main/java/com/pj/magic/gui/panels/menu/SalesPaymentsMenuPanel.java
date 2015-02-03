@@ -22,8 +22,11 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
 
 @Component
-public class SalesMenuPanel extends StandardMagicPanel {
+public class SalesPaymentsMenuPanel extends StandardMagicPanel {
 
+	private static final String SALES_PAYMENT = "Sales Payment";
+	private static final String PAYMENT_ADJUSTMENT = "Payment Adjustment";
+	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
 	
@@ -35,7 +38,7 @@ public class SalesMenuPanel extends StandardMagicPanel {
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(JLabel.CENTER);
 		table.setDefaultRenderer(Object.class, renderer);
-		
+
 		table.changeSelection(0, 0, false, false);
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
@@ -82,26 +85,11 @@ public class SalesMenuPanel extends StandardMagicPanel {
 	
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-		case "Sales Requisition":
-			getMagicFrame().switchToSalesRequisitionsListPanel();
+		case PAYMENT_ADJUSTMENT:
+			getMagicFrame().switchToPaymentAdjustmentListPanel();
 			break;
-		case "Stock Quantity Conversion":
-			getMagicFrame().switchToStockQuantityConversionListPanel();
-			break;
-		case "Sales Invoice":
-			getMagicFrame().switchToSalesInvoicesListPanel();
-			break;
-		case "Mark Sales Invoice":
-			getMagicFrame().switchToMarkSalesInvoicesPanel();
-			break;
-		case "Sales Return":
-			getMagicFrame().switchToSalesReturnListPanel();
-			break;
-		case "Bad Stock Return":
-			getMagicFrame().switchToBadStockReturnListPanel();
-			break;
-		case "No More Stock Adjustment":
-			getMagicFrame().switchToNoMoreStockAdjustmentListPanel();
+		case SALES_PAYMENT:
+			getMagicFrame().switchToPaymentListPanel();
 			break;
 		}
 	}
@@ -114,13 +102,8 @@ public class SalesMenuPanel extends StandardMagicPanel {
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private final List<String> menuItems = Arrays.asList(
-				"Sales Requisition",
-				"Stock Quantity Conversion",
-				"Sales Invoice",
-				"Mark Sales Invoice",
-				"Sales Return",
-				"Bad Stock Return",
-				"No More Stock Adjustment"
+				SALES_PAYMENT,
+				PAYMENT_ADJUSTMENT
 		);
 		
 		@Override

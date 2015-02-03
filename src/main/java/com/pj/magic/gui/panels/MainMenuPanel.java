@@ -41,7 +41,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 	private static final String INVENTORY_CHECK = "Inventory Check";
 	private static final String REPORTS = "Reports";
 	private static final String STOCK_MOVEMENT = "Stock Movement";
-	private static final String PAYMENT = "Payment";
+	private static final String SALES_PAYMENT = "Sales Payment";
 	private static final String PRODUCT_MAINTENANCE_AND_PRICING_SCHEMES = "<html>Product Maintenance<br>and Pricing Schemes</html>";
 	private static final String PURCHASES = "Purchases";
 	private static final String SALES = "Sales";
@@ -50,7 +50,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 	
 	static {
 		MENU_ITEM_IMAGE_MAP.put(ADMIN, "admin");
-		MENU_ITEM_IMAGE_MAP.put(PAYMENT, "money_large");
+		MENU_ITEM_IMAGE_MAP.put(SALES_PAYMENT, "money_large");
 		MENU_ITEM_IMAGE_MAP.put(STOCK_MOVEMENT, "stock_movement");
 		MENU_ITEM_IMAGE_MAP.put(REPORTS, "reports");
 		MENU_ITEM_IMAGE_MAP.put(INVENTORY_CHECK, "inventory_check");
@@ -178,8 +178,8 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case PRODUCT_MAINTENANCE_AND_PRICING_SCHEMES:
 			getMagicFrame().switchToInventoryMenuPanel();
 			break;
-		case PAYMENT:
-			getMagicFrame().switchToPaymentListPanel();
+		case SALES_PAYMENT:
+			getMagicFrame().switchToSalesPaymentsMenuPanel();
 			break;
 		case STOCK_MOVEMENT:
 			getMagicFrame().switchToStockMovementMenuPanel();
@@ -216,7 +216,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				SALES,
 				PURCHASES,
 				PRODUCT_MAINTENANCE_AND_PRICING_SCHEMES,
-				PAYMENT,
+				SALES_PAYMENT,
 				STOCK_MOVEMENT,
 				REPORTS,
 				INVENTORY_CHECK,

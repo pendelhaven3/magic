@@ -92,6 +92,7 @@ import com.pj.magic.gui.panels.menu.PurchasesMenuPanel;
 import com.pj.magic.gui.panels.menu.RecordsMaintenanceMenuPanel;
 import com.pj.magic.gui.panels.menu.ReportsPanel;
 import com.pj.magic.gui.panels.menu.SalesMenuPanel;
+import com.pj.magic.gui.panels.menu.SalesPaymentsMenuPanel;
 import com.pj.magic.gui.panels.menu.StockMovementMenuPanel;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
@@ -191,6 +192,7 @@ public class MagicFrame extends JFrame {
 	private static final String SALES_MENU_PANEL = "SALES_MENU_PANEL";
 	private static final String PURCHASES_MENU_PANEL = "PURCHASES_MENU_PANEL";
 	private static final String INVENTORY_MENU_PANEL = "INVENTORY_MENU_PANEL";
+	private static final String SALES_PAYMENTS_MENU_PANEL = "SALES_PAYMENTS_MENU_PANEL";
 	private static final String STOCK_MOVEMENT_MENU_PANEL = "STOCK_MOVEMENT_MENU_PANEL";
 	private static final String INVENTORY_CHECK_MENU_PANEL = "INVENTORY_CHECK_MENU_PANEL";
 	private static final String RECORDS_MAINTENANCE_MENU_PANEL = "RECORDS_MAINTENANCE_MENU_PANEL";
@@ -273,6 +275,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private SalesMenuPanel salesMenuPanel;
 	@Autowired private PurchasesMenuPanel purchasesMenuPanel;
 	@Autowired private InventoryMenuPanel inventoryMenuPanel;
+	@Autowired private SalesPaymentsMenuPanel salesPaymentsMenuPanel;
 	@Autowired private StockMovementMenuPanel stockMovementMenuPanel;
 	@Autowired private InventoryCheckMenuPanel inventoryCheckMenuPanel;
 	@Autowired private RecordsMaintenanceMenuPanel recordsMaintenanceMenuPanel;
@@ -400,6 +403,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(salesMenuPanel, SALES_MENU_PANEL);
 		panelHolder.add(purchasesMenuPanel, PURCHASES_MENU_PANEL);
 		panelHolder.add(inventoryMenuPanel, INVENTORY_MENU_PANEL);
+		panelHolder.add(salesPaymentsMenuPanel, SALES_PAYMENTS_MENU_PANEL);
 		panelHolder.add(stockMovementMenuPanel, STOCK_MOVEMENT_MENU_PANEL);
 		panelHolder.add(inventoryCheckMenuPanel, INVENTORY_CHECK_MENU_PANEL);
 		panelHolder.add(recordsMaintenanceMenuPanel, RECORDS_MAINTENANCE_MENU_PANEL);
@@ -868,6 +872,12 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, INVENTORY_MENU_PANEL);
 	}
 	
+	public void switchToSalesPaymentsMenuPanel() {
+		addPanelNameToTitle("Sales Payments Menu");
+		salesPaymentsMenuPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_PAYMENTS_MENU_PANEL);
+	}
+
 	public void switchToStockMovementMenuPanel() {
 		addPanelNameToTitle("Stock Movement Menu");
 		stockMovementMenuPanel.updateDisplay();

@@ -104,7 +104,7 @@ public class PaymentListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToSalesPaymentsMenuPanel();
 	}
 
 	@Override
