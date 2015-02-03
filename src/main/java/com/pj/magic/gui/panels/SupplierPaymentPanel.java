@@ -87,6 +87,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 	private JLabel totalCashPaymentsLabel;
 	private JLabel totalCreditCardPaymentsLabel;
 	private JLabel totalCheckPaymentsLabel;
+	private JLabel totalBankTransfersLabel;
 	private JLabel totalPaymentsLabel;
 	private JLabel totalAdjustmentsLabel;
 	private JLabel overOrShortLabel;
@@ -229,6 +230,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		totalCreditCardPaymentsLabel.setText(
 				FormatterUtil.formatAmount(supplierPayment.getTotalCreditCardPayments()));
 		totalCheckPaymentsLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalCheckPayments()));
+		totalBankTransfersLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalBankTransfers()));
 		totalPaymentsLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalPayments()));
 		totalAdjustmentsLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalAdjustments()));
 		overOrShortLabel.setText(FormatterUtil.formatAmount(supplierPayment.getOverOrShort()));
@@ -279,6 +281,7 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		totalCashPaymentsLabel.setText(null);
 		totalCreditCardPaymentsLabel.setText(null);
 		totalCheckPaymentsLabel.setText(null);
+		totalBankTransfersLabel.setText(null);
 		totalPaymentsLabel.setText(null);
 		totalAdjustmentsLabel.setText(null);
 		overOrShortLabel.setText(null);
@@ -546,8 +549,9 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 	private void postPayment() {
 		cancelEditing();
 		
-		if (supplierPayment.getTotalPayments().equals(Constants.ZERO)) {
-			showErrorMessage("Cannot post with no cash or check payments");
+		if (supplierPayment.getTotalPayments().equals(Constants.ZERO) &&
+				supplierPayment.getTotalAdjustments().equals(Constants.ZERO)) {
+			showErrorMessage("Cannot post with no payments or adjustments");
 			return;
 		}
 
@@ -785,14 +789,14 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(160, "Total Check Payments:"), c);
+		mainPanel.add(ComponentUtil.createLabel(160, "Total Bank Transfers:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalCheckPaymentsLabel = ComponentUtil.createRightLabel(120, "");
-		mainPanel.add(totalCheckPaymentsLabel, c);
+		totalBankTransfersLabel = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalBankTransfersLabel, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
@@ -808,6 +812,19 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 		mainPanel.add(totalAdjustmentsLabel, c);
 		
 		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(160, "Total Check Payments:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalCheckPaymentsLabel = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalCheckPaymentsLabel, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
@@ -1061,6 +1078,16 @@ public class SupplierPaymentPanel extends StandardMagicPanel {
 			@Override
 			public void tableChanged(TableModelEvent e) {
 				totalCheckPaymentsLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalCheckPayments()));
+				totalPaymentsLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalPayments()));
+				overOrShortLabel.setText(FormatterUtil.formatAmount(supplierPayment.getOverOrShort()));
+			}
+		});
+
+		bankTransfersTable.getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				totalBankTransfersLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalBankTransfers()));
 				totalPaymentsLabel.setText(FormatterUtil.formatAmount(supplierPayment.getTotalPayments()));
 				overOrShortLabel.setText(FormatterUtil.formatAmount(supplierPayment.getOverOrShort()));
 			}

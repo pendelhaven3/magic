@@ -173,9 +173,18 @@ public class SupplierPayment {
 	}
 	
 	public BigDecimal getTotalPayments() {
-		return getTotalCashPayments().add(getTotalCreditCardPayments()).add(getTotalCheckPayments());
+		return getTotalCashPayments().add(getTotalCreditCardPayments()).add(getTotalCheckPayments())
+				.add(getTotalBankTransfers());
 	}
 	
+	public BigDecimal getTotalBankTransfers() {
+		BigDecimal total = Constants.ZERO;
+		for (SupplierPaymentBankTransfer bankTransfer : bankTransfers) {
+			total = total.add(bankTransfer.getAmount());
+		}
+		return total;
+	}
+
 	public BigDecimal getTotalCheckPayments() {
 		BigDecimal total = Constants.ZERO;
 		for (SupplierPaymentCheckPayment check : checkPayments) {
