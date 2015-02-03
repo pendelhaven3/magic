@@ -81,7 +81,6 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	private JLabel totalDiscountedAmountField;
 	private JLabel totalNetAmountField;
 	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
-	private JButton markButton;
 	private JButton cancelButton;
 	private JButton showDiscountsButton;
 	private boolean showDiscounts;
@@ -151,7 +150,6 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			itemsTable.changeSelection(0, 0, false, false);
 		}
 		
-		markButton.setEnabled(salesInvoice.isNew());
 		cancelButton.setEnabled(salesInvoice.isNew());
 	}
 
@@ -520,16 +518,6 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		});
 		toolBar.add(showDiscountsButton);
 		
-		markButton = new MagicToolBarButton("post", "Mark");
-		markButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				markSalesInvoice();
-			}
-		});
-//		toolBar.add(markButton);
-		
 		cancelButton = new MagicToolBarButton("cancel", "Cancel");
 		cancelButton.addActionListener(new ActionListener() {
 			
@@ -631,19 +619,6 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			try {
 				salesInvoiceService.cancel(salesInvoice);
 				showMessage("Sales Invoice cancelled");
-				updateDisplay(salesInvoice, showDiscounts);
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-				showErrorMessage("Unexpected error occurred");
-			}
-		}
-	}
-
-	protected void markSalesInvoice() {
-		if (confirm("Mark this Sales Invoice?")) {
-			try {
-				salesInvoiceService.mark(salesInvoice);
-				showMessage("Sales Invoice marked");
 				updateDisplay(salesInvoice, showDiscounts);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
