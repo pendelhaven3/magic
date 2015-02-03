@@ -269,7 +269,7 @@ create table STOCK_QTY_CONVERSION (
   STOCK_QTY_CONV_NO integer not null,
   REMARKS varchar(100) null,
   POST_IND char(1) default 'N' not null,
-  POST_DATE date null,
+  POST_DT date null,
   POST_BY integer null,
   constraint STOCK_QTY_CONVERSION$PK primary key (ID),
   constraint STOCK_QTY_CONVERSION$UK unique (STOCK_QTY_CONV_NO),
