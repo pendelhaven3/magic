@@ -28,19 +28,19 @@ import com.pj.magic.gui.component.RequiredFieldCellEditor;
 import com.pj.magic.gui.dialog.SelectDateDialog;
 import com.pj.magic.gui.tables.models.SupplierPaymentCreditCardPaymentsTableModel;
 import com.pj.magic.gui.tables.rowitems.SupplierPaymentCreditCardPaymentRowItem;
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentCreditCardPayment;
-import com.pj.magic.model.User;
-import com.pj.magic.service.UserService;
+import com.pj.magic.service.CreditCardService;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class SupplierPaymentCreditCardPaymentsTable extends MagicTable {
 	
 	public static final int AMOUNT_COLUMN_INDEX = 0;
-	public static final int BANK_COLUMN_INDEX = 1;
-	public static final int PAID_DATE_COLUMN_INDEX = 2;
-	public static final int PAID_BY_COLUMN_INDEX = 3;
+	public static final int CREDIT_CARD_COLUMN_INDEX = 1;
+	public static final int TRANSACTION_DATE_COLUMN_INDEX = 2;
+	public static final int APPROVAL_CODE_COLUMN_INDEX = 3;
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
 	private static final String F10_ACTION_NAME = "F10";
@@ -48,10 +48,10 @@ public class SupplierPaymentCreditCardPaymentsTable extends MagicTable {
 
 	@Autowired private SupplierPaymentCreditCardPaymentsTableModel tableModel;
 	@Autowired private SelectDateDialog selectDateDialog;
-	@Autowired private UserService userService;
+	@Autowired private CreditCardService creditCardService;
 	
 	private SupplierPayment supplierPayment;
-	private JComboBox<User> paidByComboBox;
+	private JComboBox<CreditCard> creditCardComboBox;
 	
 	@Autowired
 	public SupplierPaymentCreditCardPaymentsTable(SupplierPaymentCreditCardPaymentsTableModel tableModel) {
@@ -62,22 +62,22 @@ public class SupplierPaymentCreditCardPaymentsTable extends MagicTable {
 	}
 	
 	private void initializeColumns() {
-		MagicTextField bankTextField = new MagicTextField();
-		bankTextField.setMaximumLength(30);
-		columnModel.getColumn(BANK_COLUMN_INDEX).setCellEditor(
-				new RequiredFieldCellEditor(bankTextField, "Bank"));
-
 		MagicTextField amountTextField = new MagicTextField();
 		amountTextField.setMaximumLength(12);
 		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setCellEditor(new AmountCellEditor(amountTextField));
 		
-		MagicTextField paidDateField = new MagicTextField();
-		paidDateField.setMaximumLength(10);
-		columnModel.getColumn(PAID_DATE_COLUMN_INDEX).setCellEditor(
-				new DateCellEditor(paidDateField, "Check Date"));
+		creditCardComboBox = new MagicComboBox<>();
+		columnModel.getColumn(CREDIT_CARD_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(creditCardComboBox));
+
+		MagicTextField transactionDateField = new MagicTextField();
+		transactionDateField.setMaximumLength(10);
+		columnModel.getColumn(TRANSACTION_DATE_COLUMN_INDEX).setCellEditor(
+				new DateCellEditor(transactionDateField, "Transaction Date"));
 		
-		paidByComboBox = new MagicComboBox<>();
-		columnModel.getColumn(PAID_BY_COLUMN_INDEX).setCellEditor(new DefaultCellEditor(paidByComboBox));
+		MagicTextField approvalCodeTextField = new MagicTextField();
+		approvalCodeTextField.setMaximumLength(30);
+		columnModel.getColumn(APPROVAL_CODE_COLUMN_INDEX).setCellEditor(
+				new RequiredFieldCellEditor(approvalCodeTextField, "Approval Code"));
 	}
 	
 	public void addNewRow() {
@@ -116,8 +116,9 @@ public class SupplierPaymentCreditCardPaymentsTable extends MagicTable {
 		this.supplierPayment = supplierPayment;
 		tableModel.setSupplierPayment(supplierPayment);
 		
-		List<User> users = userService.getAllUsers();
-		paidByComboBox.setModel(new DefaultComboBoxModel<>(users.toArray(new User[users.size()])));
+		List<CreditCard> creditCards = creditCardService.getAllCreditCards();
+		creditCardComboBox.setModel(new DefaultComboBoxModel<>(
+				creditCards.toArray(new CreditCard[creditCards.size()])));
 	}
 	
 	protected void registerKeyBindings() {
@@ -166,12 +167,12 @@ public class SupplierPaymentCreditCardPaymentsTable extends MagicTable {
 	}
 	
 	private boolean isCheckDateColumnSelected() {
-		return getSelectedColumn() == PAID_DATE_COLUMN_INDEX;
+		return getSelectedColumn() == TRANSACTION_DATE_COLUMN_INDEX;
 	}
 
 	private void openSelectDateDialog() {
 		if (!isEditing()) {
-			editCellAt(getSelectedRow(), PAID_DATE_COLUMN_INDEX);
+			editCellAt(getSelectedRow(), TRANSACTION_DATE_COLUMN_INDEX);
 		}
 		
 		selectDateDialog.setVisible(true);
@@ -235,15 +236,15 @@ public class SupplierPaymentCreditCardPaymentsTable extends MagicTable {
 					public void run() {
 						switch (column) {
 						case AMOUNT_COLUMN_INDEX:
-							selectAndEditCellAt(row, BANK_COLUMN_INDEX);
+							selectAndEditCellAt(row, CREDIT_CARD_COLUMN_INDEX);
 							break;
-						case BANK_COLUMN_INDEX:
-							selectAndEditCellAt(row, PAID_DATE_COLUMN_INDEX);
+						case CREDIT_CARD_COLUMN_INDEX:
+							selectAndEditCellAt(row, TRANSACTION_DATE_COLUMN_INDEX);
 							break;
-						case PAID_DATE_COLUMN_INDEX:
-							selectAndEditCellAt(row, PAID_BY_COLUMN_INDEX);
+						case TRANSACTION_DATE_COLUMN_INDEX:
+							selectAndEditCellAt(row, APPROVAL_CODE_COLUMN_INDEX);
 							break;
-						case PAID_BY_COLUMN_INDEX:
+						case APPROVAL_CODE_COLUMN_INDEX:
 							if (isLastRowSelected()) {
 								addNewRow();
 							}

@@ -7,14 +7,15 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.SupplierPaymentCreditCardPaymentsTable;
 import com.pj.magic.gui.tables.rowitems.SupplierPaymentCreditCardPaymentRowItem;
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentCreditCardPayment;
-import com.pj.magic.model.User;
 import com.pj.magic.service.SupplierPaymentService;
 import com.pj.magic.util.DateUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -23,7 +24,7 @@ import com.pj.magic.util.NumberUtil;
 @Component
 public class SupplierPaymentCreditCardPaymentsTableModel extends AbstractTableModel {
 	
-	private static final String[] columnNames = {"Amount", "Bank", "Paid Date", "Paid By"};
+	private static final String[] columnNames = {"Amount", "Credit Card", "Transaction Date", "Approval Code"};
 	
 	@Autowired private SupplierPaymentService supplierPaymentService;
 	
@@ -47,13 +48,13 @@ public class SupplierPaymentCreditCardPaymentsTableModel extends AbstractTableMo
 		case SupplierPaymentCreditCardPaymentsTable.AMOUNT_COLUMN_INDEX:
 			BigDecimal amount = rowItem.getAmount();
 			return (amount != null) ? FormatterUtil.formatAmount(amount) : null;
-		case SupplierPaymentCreditCardPaymentsTable.BANK_COLUMN_INDEX:
-			return rowItem.getBank();
-		case SupplierPaymentCreditCardPaymentsTable.PAID_DATE_COLUMN_INDEX:
-			Date paidDate = rowItem.getPaidDate();
-			return (paidDate != null) ? FormatterUtil.formatDate(paidDate) : null;
-		case SupplierPaymentCreditCardPaymentsTable.PAID_BY_COLUMN_INDEX:
-			return rowItem.getPaidBy();
+		case SupplierPaymentCreditCardPaymentsTable.CREDIT_CARD_COLUMN_INDEX:
+			return rowItem.getCreditCard();
+		case SupplierPaymentCreditCardPaymentsTable.TRANSACTION_DATE_COLUMN_INDEX:
+			Date transactionDate = rowItem.getTransactionDate();
+			return (transactionDate != null) ? FormatterUtil.formatDate(transactionDate) : null;
+		case SupplierPaymentCreditCardPaymentsTable.APPROVAL_CODE_COLUMN_INDEX:
+			return rowItem.getApprovalCode();
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
@@ -86,35 +87,35 @@ public class SupplierPaymentCreditCardPaymentsTableModel extends AbstractTableMo
 			}
 			rowItem.setAmount(NumberUtil.toBigDecimal(amount));
 			break;
-		case SupplierPaymentCreditCardPaymentsTable.BANK_COLUMN_INDEX:
-			String bank = (String)value;
-			if (bank.equals(rowItem.getBank())) {
+		case SupplierPaymentCreditCardPaymentsTable.CREDIT_CARD_COLUMN_INDEX:
+			CreditCard creditCard = (CreditCard)value;
+			if (creditCard.equals(rowItem.getCreditCard())) {
 				return;
 			}
-			rowItem.setBank(bank);
+			rowItem.setCreditCard(creditCard);
 			break;
-		case SupplierPaymentCreditCardPaymentsTable.PAID_DATE_COLUMN_INDEX:
+		case SupplierPaymentCreditCardPaymentsTable.TRANSACTION_DATE_COLUMN_INDEX:
 			String dateString = (String)value;
-			if (DateUtil.toDate(dateString).equals(rowItem.getPaidDate())) {
+			if (DateUtil.toDate(dateString).equals(rowItem.getTransactionDate())) {
 				return;
 			}
-			rowItem.setPaidDate(DateUtil.toDate(dateString));
+			rowItem.setTransactionDate(DateUtil.toDate(dateString));
 			break;
-		case SupplierPaymentCreditCardPaymentsTable.PAID_BY_COLUMN_INDEX:
-			User paidBy = (User)value;
-			if (paidBy == null || paidBy.equals(rowItem.getPaidBy())) {
+		case SupplierPaymentCreditCardPaymentsTable.APPROVAL_CODE_COLUMN_INDEX:
+			String approvalCode = (String)value;
+			if (StringUtils.isEmpty(approvalCode) || approvalCode.equals(rowItem.getApprovalCode())) {
 				return;
 			}
-			rowItem.setPaidBy(paidBy);
+			rowItem.setApprovalCode(approvalCode);
 			break;
 		}
 		
 		if (rowItem.isValid()) {
 			SupplierPaymentCreditCardPayment creditCardPayment = rowItem.getCreditCardPayment();
 			creditCardPayment.setAmount(rowItem.getAmount());
-			creditCardPayment.setBank(rowItem.getBank());
-			creditCardPayment.setPaidDate(rowItem.getPaidDate());
-			creditCardPayment.setPaidBy(rowItem.getPaidBy());
+			creditCardPayment.setCreditCard(rowItem.getCreditCard());
+			creditCardPayment.setTransactionDate(rowItem.getTransactionDate());
+			creditCardPayment.setApprovalCode(rowItem.getApprovalCode());
 			
 			boolean newCreditCardPayment = (creditCardPayment.getId() == null);
 			supplierPaymentService.save(creditCardPayment);
@@ -134,9 +135,11 @@ public class SupplierPaymentCreditCardPaymentsTableModel extends AbstractTableMo
 		SupplierPaymentCreditCardPaymentRowItem rowItem = rowItems.get(rowIndex);
 		boolean editable = true;
 		switch (columnIndex) {
-		case SupplierPaymentCreditCardPaymentsTable.PAID_BY_COLUMN_INDEX:
-			editable = (rowItem.getPaidDate() != null);
-		case SupplierPaymentCreditCardPaymentsTable.PAID_DATE_COLUMN_INDEX:
+		case SupplierPaymentCreditCardPaymentsTable.APPROVAL_CODE_COLUMN_INDEX:
+			editable = (rowItem.getTransactionDate() != null);
+		case SupplierPaymentCreditCardPaymentsTable.TRANSACTION_DATE_COLUMN_INDEX:
+			editable = (rowItem.getCreditCard() != null);
+		case SupplierPaymentCreditCardPaymentsTable.CREDIT_CARD_COLUMN_INDEX:
 			editable = (rowItem.getAmount() != null);
 		case SupplierPaymentCreditCardPaymentsTable.AMOUNT_COLUMN_INDEX:
 			break;

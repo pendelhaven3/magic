@@ -11,9 +11,9 @@ public class SupplierPaymentCreditCardPayment {
 	private Long id;
 	private SupplierPayment parent;
 	private BigDecimal amount;
-	private String bank;
-	private Date paidDate;
-	private User paidBy;
+	private CreditCard creditCard;
+	private Date transactionDate;
+	private String approvalCode;
 
 	public Long getId() {
 		return id;
@@ -39,20 +39,28 @@ public class SupplierPaymentCreditCardPayment {
 		this.amount = amount;
 	}
 
-	public Date getPaidDate() {
-		return paidDate;
+	public CreditCard getCreditCard() {
+		return creditCard;
 	}
 
-	public void setPaidDate(Date paidDate) {
-		this.paidDate = paidDate;
+	public void setCreditCard(CreditCard creditCard) {
+		this.creditCard = creditCard;
 	}
 
-	public User getReceivedBy() {
-		return paidBy;
+	public Date getTransactionDate() {
+		return transactionDate;
 	}
 
-	public void setPaidBy(User paidBy) {
-		this.paidBy = paidBy;
+	public void setTransactionDate(Date transactionDate) {
+		this.transactionDate = transactionDate;
+	}
+
+	public String getApprovalCode() {
+		return approvalCode;
+	}
+
+	public void setApprovalCode(String approvalCode) {
+		this.approvalCode = approvalCode;
 	}
 
 	@Override
@@ -76,16 +84,4 @@ public class SupplierPaymentCreditCardPayment {
 			.isEquals();
 	}
 
-	public String getBank() {
-		return bank;
-	}
-
-	public void setBank(String bank) {
-		this.bank = bank;
-	}
-
-	public User getPaidBy() {
-		return paidBy;
-	}
-	
 }

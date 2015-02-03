@@ -23,6 +23,14 @@ public class CreditCard {
 	@Column(name = "CARD_NUMBER")
 	private String cardNumber;
 
+	public CreditCard() {
+		// default constructor
+	}
+	
+	public CreditCard(long id) {
+		this.id = id;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -74,6 +82,11 @@ public class CreditCard {
 		return new EqualsBuilder()
 			.append(id, other.getId())
 			.isEquals();
+	}
+	
+	@Override
+	public String toString() {
+		return user + " - " + bank;
 	}
 	
 }

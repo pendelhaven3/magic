@@ -739,13 +739,13 @@ create table SUPP_PAYMENT_CHECK_PYMNT (
 create table SUPP_PAYMENT_CREDITCARD_PYMNT (
   ID integer auto_increment,
   SUPPLIER_PAYMENT_ID integer not null,
-  BANK varchar(30) not null,
   AMOUNT numeric(10, 2) not null,
-  PAID_DT date not null,
-  PAID_BY integer not null,
+  CREDIT_CARD_ID integer not null,
+  TRANSACTION_DT date not null,
+  APPROVAL_CODE varchar(20) not null,
   constraint SUPP_PAYMENT_CREDITCARD_PYMNT$PK primary key (ID),
   constraint SUPP_PAYMENT_CREDITCARD_PYMNT$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
-  constraint SUPP_PAYMENT_CREDITCARD_PYMNT$FK2 foreign key (PAID_BY) references USER (ID)
+  constraint SUPP_PAYMENT_CREDITCARD_PYMNT$FK2 foreign key (CREDIT_CARD_ID) references CREDIT_CARD (ID)
 );
 
 create table SUPP_PAYMENT_ADJUSTMENT (

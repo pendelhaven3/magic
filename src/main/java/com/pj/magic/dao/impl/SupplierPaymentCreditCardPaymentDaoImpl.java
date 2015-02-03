@@ -15,21 +15,19 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SupplierPaymentCreditCardPaymentDao;
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentCreditCardPayment;
-import com.pj.magic.model.User;
 
 @Repository
 public class SupplierPaymentCreditCardPaymentDaoImpl extends MagicDao implements SupplierPaymentCreditCardPaymentDao {
 
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, SUPPLIER_PAYMENT_ID, a.AMOUNT, BANK, PAID_DT, PAID_BY,"
-			+ " b.USERNAME as PAID_BY_USERNAME"
+			"select a.ID, SUPPLIER_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE,"
+			+ " b.USER as CREDIT_CARD_USER, b.BANK as CREDIT_CARD_BANK"
 			+ " from SUPP_PAYMENT_CREDITCARD_PYMNT a"
-			+ " join USER b"
-			+ "   on b.ID = a.PAID_BY"
-			+ " join SUPPLIER_PAYMENT c"
-			+ "   on c.ID = a.SUPPLIER_PAYMENT_ID";
+			+ " join CREDIT_CARD b"
+			+ "   on b.ID = a.CREDIT_CARD_ID";
 	
 	private SupplierPaymentCreditCardPaymentRowMapper creditCardPaymentRowMapper = 
 			new SupplierPaymentCreditCardPaymentRowMapper();
@@ -45,7 +43,7 @@ public class SupplierPaymentCreditCardPaymentDaoImpl extends MagicDao implements
 
 	private static final String INSERT_SQL = 
 			"insert into SUPP_PAYMENT_CREDITCARD_PYMNT"
-			+ " (SUPPLIER_PAYMENT_ID, AMOUNT, BANK, PAID_DT, PAID_BY) values (?, ?, ?, ?, ?)";
+			+ " (SUPPLIER_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE) values (?, ?, ?, ?, ?)";
 	
 	private void insert(final SupplierPaymentCreditCardPayment creditCardPayment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -57,9 +55,9 @@ public class SupplierPaymentCreditCardPaymentDaoImpl extends MagicDao implements
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, creditCardPayment.getParent().getId());
 				ps.setBigDecimal(2, creditCardPayment.getAmount());
-				ps.setString(3, creditCardPayment.getBank());
-				ps.setDate(4, new Date(creditCardPayment.getPaidDate().getTime()));
-				ps.setLong(5, creditCardPayment.getPaidBy().getId());
+				ps.setLong(3, creditCardPayment.getCreditCard().getId());
+				ps.setDate(4, new Date(creditCardPayment.getTransactionDate().getTime()));
+				ps.setString(5, creditCardPayment.getApprovalCode());
 				return ps;
 			}
 		}, holder);
@@ -69,15 +67,15 @@ public class SupplierPaymentCreditCardPaymentDaoImpl extends MagicDao implements
 
 	private static final String UPDATE_SQL = 
 			"update SUPP_PAYMENT_CREDITCARD_PYMNT"
-			+ " set AMOUNT = ?, BANK = ?, PAID_DT = ?, PAID_BY = ?"
+			+ " set AMOUNT = ?, CREDIT_CARD_ID = ?, TRANSACTION_DT = ?, APPROVAL_CODE = ?"
 			+ " where ID = ?";
 	
 	private void update(SupplierPaymentCreditCardPayment cashPayment) {
 		getJdbcTemplate().update(UPDATE_SQL, 
 				cashPayment.getAmount(),
-				cashPayment.getBank(),
-				cashPayment.getPaidDate(),
-				cashPayment.getPaidBy().getId(),
+				cashPayment.getCreditCard().getId(),
+				cashPayment.getTransactionDate(),
+				cashPayment.getApprovalCode(),
 				cashPayment.getId());
 	}
 
@@ -98,10 +96,15 @@ public class SupplierPaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			creditCardPayment.setId(rs.getLong("ID"));
 			creditCardPayment.setParent(new SupplierPayment(rs.getLong("SUPPLIER_PAYMENT_ID")));
 			creditCardPayment.setAmount(rs.getBigDecimal("AMOUNT"));
-			creditCardPayment.setBank(rs.getString("BANK"));
-			creditCardPayment.setPaidDate(rs.getDate("PAID_DT"));
-			creditCardPayment.setPaidBy(
-					new User(rs.getLong("PAID_BY"), rs.getString("PAID_BY_USERNAME")));
+			
+			CreditCard creditCard = new CreditCard();
+			creditCard.setId(rs.getLong("CREDIT_CARD_ID"));
+			creditCard.setUser(rs.getString("CREDIT_CARD_USER"));
+			creditCard.setBank(rs.getString("CREDIT_CARD_BANK"));
+			creditCardPayment.setCreditCard(creditCard);
+			
+			creditCardPayment.setTransactionDate(rs.getDate("TRANSACTION_DT"));
+			creditCardPayment.setApprovalCode(rs.getString("APPROVAL_CODE"));
 			return creditCardPayment;
 		}
 		

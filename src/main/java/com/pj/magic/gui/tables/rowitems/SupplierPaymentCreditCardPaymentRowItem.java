@@ -5,23 +5,20 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.SupplierPaymentCreditCardPayment;
-import com.pj.magic.model.User;
 
 public class SupplierPaymentCreditCardPaymentRowItem {
 
 	private SupplierPaymentCreditCardPayment creditCardPayment;
-	private String bank;
 	private BigDecimal amount;
-	private Date paidDate;
-	private User paidBy;
+	private CreditCard creditCard;
+	private Date transactionDate;
+	private String approvalCode;
 
 	public SupplierPaymentCreditCardPaymentRowItem(SupplierPaymentCreditCardPayment creditCardPayment) {
 		this.creditCardPayment = creditCardPayment;
-		amount = creditCardPayment.getAmount();
-		bank = creditCardPayment.getBank();
-		paidDate = creditCardPayment.getPaidDate();
-		paidBy = creditCardPayment.getPaidBy();
+		reset();
 	}
 	
 	
@@ -44,48 +41,50 @@ public class SupplierPaymentCreditCardPaymentRowItem {
 		this.amount = amount;
 	}
 
-
-	public Date getPaidDate() {
-		return paidDate;
-	}
-
-
-	public void setPaidDate(Date paidDate) {
-		this.paidDate = paidDate;
-	}
-
-
-	public User getPaidBy() {
-		return paidBy;
-	}
-
-
-	public void setPaidBy(User paidBy) {
-		this.paidBy = paidBy;
-	}
-
-
 	public void reset() {
 		amount = creditCardPayment.getAmount();
-		bank = creditCardPayment.getBank();
-		paidDate = creditCardPayment.getPaidDate();
-		paidBy = creditCardPayment.getPaidBy();
+		creditCard = creditCardPayment.getCreditCard();
+		transactionDate = creditCardPayment.getTransactionDate();
+		approvalCode = creditCardPayment.getApprovalCode();
 	}
 
 	public boolean isValid() {
-		return amount != null && !StringUtils.isEmpty(bank) && paidDate != null && paidBy != null;
+		return amount != null && creditCard != null && transactionDate != null 
+				&& !StringUtils.isEmpty(approvalCode);
 	}
 
 	public boolean isUpdating() {
 		return creditCardPayment.getId() != null;
 	}
 
-	public String getBank() {
-		return bank;
+
+	public CreditCard getCreditCard() {
+		return creditCard;
 	}
 
-	public void setBank(String bank) {
-		this.bank = bank;
+
+	public void setCreditCard(CreditCard creditCard) {
+		this.creditCard = creditCard;
+	}
+
+
+	public Date getTransactionDate() {
+		return transactionDate;
+	}
+
+
+	public void setTransactionDate(Date transactionDate) {
+		this.transactionDate = transactionDate;
+	}
+
+
+	public String getApprovalCode() {
+		return approvalCode;
+	}
+
+
+	public void setApprovalCode(String approvalCode) {
+		this.approvalCode = approvalCode;
 	}
 
 }
