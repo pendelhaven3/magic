@@ -34,17 +34,29 @@ import com.pj.magic.service.LoginService;
 @Component
 public class MainMenuPanel extends StandardMagicPanel {
 
+	private static final String CHANGE_PASSWORD = "Change Password";
+	private static final String ADMIN = "Admin";
+	private static final String BACKUP_RESTORE_DATA = "Backup/Restore Data";
+	private static final String RECORDS_MAINTENANCE = "Records Maintenance";
+	private static final String INVENTORY_CHECK = "Inventory Check";
+	private static final String REPORTS = "Reports";
+	private static final String STOCK_MOVEMENT = "Stock Movement";
+	private static final String PAYMENT = "Payment";
+	private static final String PRODUCT_MAINTENANCE_AND_PRICING_SCHEMES = "<html>Product Maintenance<br>and Pricing Schemes</html>";
+	private static final String PURCHASES = "Purchases";
+	private static final String SALES = "Sales";
+
 	private static final Map<String, String> MENU_ITEM_IMAGE_MAP = new HashMap<>();
 	
 	static {
-		MENU_ITEM_IMAGE_MAP.put("Admin", "admin");
-		MENU_ITEM_IMAGE_MAP.put("Payment", "money_large");
-		MENU_ITEM_IMAGE_MAP.put("Stock Movement", "stock_movement");
-		MENU_ITEM_IMAGE_MAP.put("Reports", "reports");
-		MENU_ITEM_IMAGE_MAP.put("Inventory Check", "inventory_check");
-		MENU_ITEM_IMAGE_MAP.put("Records Maintenance", "records");
-		MENU_ITEM_IMAGE_MAP.put("Backup/Restore Data", "database_backup");
-		MENU_ITEM_IMAGE_MAP.put("Change Password", "change_password");
+		MENU_ITEM_IMAGE_MAP.put(ADMIN, "admin");
+		MENU_ITEM_IMAGE_MAP.put(PAYMENT, "money_large");
+		MENU_ITEM_IMAGE_MAP.put(STOCK_MOVEMENT, "stock_movement");
+		MENU_ITEM_IMAGE_MAP.put(REPORTS, "reports");
+		MENU_ITEM_IMAGE_MAP.put(INVENTORY_CHECK, "inventory_check");
+		MENU_ITEM_IMAGE_MAP.put(RECORDS_MAINTENANCE, "records");
+		MENU_ITEM_IMAGE_MAP.put(BACKUP_RESTORE_DATA, "database_backup");
+		MENU_ITEM_IMAGE_MAP.put(CHANGE_PASSWORD, "change_password");
 	}
 	
 	@Autowired private LoginService loginService;
@@ -157,37 +169,37 @@ public class MainMenuPanel extends StandardMagicPanel {
 		}
 		
 		switch (menuItem) {
-		case "Sales":
+		case SALES:
 			getMagicFrame().switchToSalesMenuPanel();
 			break;
-		case "Purchases":
+		case PURCHASES:
 			getMagicFrame().switchToPurchasesMenuPanel();
 			break;
-		case "<html>Product Maintenance<br>and Pricing Schemes</html>":
+		case PRODUCT_MAINTENANCE_AND_PRICING_SCHEMES:
 			getMagicFrame().switchToInventoryMenuPanel();
 			break;
-		case "Payment":
+		case PAYMENT:
 			getMagicFrame().switchToPaymentListPanel();
 			break;
-		case "Stock Movement":
+		case STOCK_MOVEMENT:
 			getMagicFrame().switchToStockMovementMenuPanel();
 			break;
-		case "Reports":
+		case REPORTS:
 			getMagicFrame().switchToReportsMenuPanel();
 			break;
-		case "Inventory Check":
+		case INVENTORY_CHECK:
 			getMagicFrame().switchToInventoryCheckMenuPanel();
 			break;
-		case "Records Maintenance":
+		case RECORDS_MAINTENANCE:
 			getMagicFrame().switchToRecordsMaintenanceMenuPanel();
 			break;
-		case "Backup/Restore Data":
+		case BACKUP_RESTORE_DATA:
 			getMagicFrame().switchToBackupDataPanel();
 			break;
-		case "Admin":
+		case ADMIN:
 			getMagicFrame().switchToAdminMenuPanel();
 			break;
-		case "Change Password":
+		case CHANGE_PASSWORD:
 			getMagicFrame().switchToChangePasswordPanel();
 			break;
 		}
@@ -201,17 +213,17 @@ public class MainMenuPanel extends StandardMagicPanel {
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private final List<String> allMenuItems = Arrays.asList(
-				"Sales",
-				"Purchases",
-				"<html>Product Maintenance<br>and Pricing Schemes</html>",
-				"Payment",
-				"Stock Movement",
-				"Reports",
-				"Inventory Check",
-				"Records Maintenance",
-				"Backup/Restore Data",
-				"Admin",
-				"Change Password"
+				SALES,
+				PURCHASES,
+				PRODUCT_MAINTENANCE_AND_PRICING_SCHEMES,
+				PAYMENT,
+				STOCK_MOVEMENT,
+				REPORTS,
+				INVENTORY_CHECK,
+				RECORDS_MAINTENANCE,
+				BACKUP_RESTORE_DATA,
+				ADMIN,
+				CHANGE_PASSWORD
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
@@ -226,7 +238,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 			menuItems.clear();
 			menuItems.addAll(allMenuItems);
 			if (!user.isSupervisor()) {
-				menuItems.remove("Admin");
+				menuItems.remove(ADMIN);
 			}
 			fireTableDataChanged();
 		}
