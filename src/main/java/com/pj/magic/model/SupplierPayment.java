@@ -135,7 +135,7 @@ public class SupplierPayment {
 	public BigDecimal getTotalAmount() {
 		BigDecimal total = Constants.ZERO;
 		for (SupplierPaymentReceivingReceipt receivingReceipt : receivingReceipts) {
-			total = total.add(receivingReceipt.getReceivingReceipt().getTotalNetAmount());
+			total = total.add(receivingReceipt.getReceivingReceipt().getTotalNetAmountWithVat());
 		}
 		return total;
 	}

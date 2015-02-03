@@ -199,6 +199,10 @@ public class ReceivingReceipt {
 		}
 	}
 
+	public BigDecimal getTotalNetAmountWithVat() {
+		return getTotalNetAmount().add(getVatAmount());
+	}
+	
 	public Date getPostDate() {
 		return postDate;
 	}

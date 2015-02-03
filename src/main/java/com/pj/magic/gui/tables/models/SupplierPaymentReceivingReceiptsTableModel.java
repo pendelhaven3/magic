@@ -43,7 +43,8 @@ public class SupplierPaymentReceivingReceiptsTableModel extends AbstractTableMod
 		case SupplierPaymentReceivingReceiptsTable.RECEIVING_RECEIPT_NUMBER_COLUMN_INDEX:
 			return paymentReceivingReceipt.getReceivingReceipt().getReceivingReceiptNumber();
 		case PaymentSalesInvoicesTable.NET_AMOUNT_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(paymentReceivingReceipt.getReceivingReceipt().getTotalNetAmount());
+			return FormatterUtil.formatAmount(paymentReceivingReceipt.getReceivingReceipt()
+					.getTotalNetAmountWithVat());
 		default:
 			return null;
 		}
