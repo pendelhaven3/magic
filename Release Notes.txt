@@ -1,3 +1,8 @@
+version 1.21.1
+
+1. Added Total Bank Transfers field to Supplier Payment screen
+2. Display total amount of Supplier Payment Receiving Receipts with VAT
+
 version 1.21.0
 
 1. Added Supplier Payment Bank Transfer
