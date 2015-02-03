@@ -2,6 +2,8 @@ version 1.21.0
 
 1. Added Supplier Payment Bank Transfer
 2. Added Maintain Credit Card screen
+3. Added generation of Excel spreadsheet from Sales Invoice
+4. Revised Supplier Payment Credit Card Payments to use new Credit Card fields
 
 version 1.20.1
 
