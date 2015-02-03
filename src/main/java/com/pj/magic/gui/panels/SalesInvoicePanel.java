@@ -8,10 +8,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -20,9 +26,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +46,7 @@ import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.service.ExcelService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
@@ -54,6 +64,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private SalesInvoiceStatusDialog salesInvoiceStatusDialog;
+	@Autowired private ExcelService excelService;
 	
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
@@ -74,6 +85,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	private JButton cancelButton;
 	private JButton showDiscountsButton;
 	private boolean showDiscounts;
+	private JFileChooser excelFileChooser;
 	
 	@Override
 	protected void initializeComponents() {
@@ -88,6 +100,21 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			
 		});
 		statusField.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		
+		excelFileChooser = new JFileChooser();
+		excelFileChooser.setCurrentDirectory(new File(getDesktopFolderPath()));
+		excelFileChooser.setFileFilter(new FileFilter() {
+			
+			@Override
+			public String getDescription() {
+				return "Excel workbook (*.xlsx)";
+			}
+			
+			@Override
+			public boolean accept(File f) {
+				return FilenameUtils.getExtension(f.getName()).equals("xlsx");
+			}
+		});
 		
 		focusOnComponentWhenThisPanelIsDisplayed(itemsTable);
 		updateTotalsPanelWhenItemsTableChanges();
@@ -554,8 +581,51 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(copyButton);
+		
+		JButton toExcelButton = new MagicToolBarButton("excel", "Generate Excel spreadsheet from Sales Invoice");
+		toExcelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				generateExcelSpreadsheetFromSalesInvoice();
+			}
+		});
+		toolBar.add(toExcelButton);
 	}
 
+	private void generateExcelSpreadsheetFromSalesInvoice() {
+		excelFileChooser.setSelectedFile(new File(generateDefaultSpreadsheetName() + ".xlsx"));
+		
+		int returnVal = excelFileChooser.showSaveDialog(this);
+		if (returnVal != JFileChooser.APPROVE_OPTION) {
+			return;
+		}
+		
+		try (
+			XSSFWorkbook workbook = excelService.generateSpreadsheet(salesInvoice);
+			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
+		) {
+			workbook.write(out);
+			showMessage("Excel spreadsheet generated successfully");
+		} catch (IOException e) {
+			showErrorMessage("Unexpected error during excel generation");
+		}
+	}
+
+	private String generateDefaultSpreadsheetName() {
+		return new StringBuilder()
+			.append(salesInvoice.getCustomer().getName())
+			.append(" - ")
+			.append(new SimpleDateFormat("MMM-dd-yyyy").format(salesInvoice.getTransactionDate()))
+			.append(" - SI ")
+			.append(salesInvoice.getSalesInvoiceNumber())
+			.toString();
+	}
+
+	private String getDesktopFolderPath() {
+		return Paths.get(System.getProperty("user.home"), "Desktop").toAbsolutePath().toString();
+	}
+	
 	protected void cancelSalesInvoice() {
 		if (confirm("Cancel this Sales Invoice?")) {
 			try {
