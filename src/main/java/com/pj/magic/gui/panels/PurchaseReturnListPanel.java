@@ -31,9 +31,11 @@ import com.pj.magic.util.FormatterUtil;
 public class PurchaseReturnListPanel extends StandardMagicPanel {
 
 	private static final int PURCHASE_RETURN_COLUMN_INDEX = 0;
-	private static final int SUPPLIER_COLUMN_INDEX = 1;
-	private static final int STATUS_COLUMN_INDEX = 2;
-	private static final int POST_DATE_COLUMN_INDEX = 3;
+	private static final int RECEIVING_RECEIPT_NUMBER_COLUMN_INDEX = 1;
+	private static final int SUPPLIER_COLUMN_INDEX = 2;
+	private static final int TOTAL_AMOUNT_COLUMN_INDEX = 3;
+	private static final int STATUS_COLUMN_INDEX = 4;
+	private static final int POST_DATE_COLUMN_INDEX = 5;
 	
 	@Autowired private PurchaseReturnService purchaseReturnService;
 	@Autowired private PurchaseReturnSearchCriteriaDialog purchaseReturnSearchCriteriaDialog;
@@ -159,7 +161,8 @@ public class PurchaseReturnListPanel extends StandardMagicPanel {
 	
 	private class PurchaseReturnsTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"Purchase Return No.", "Supplier", "Status", "Post Date"};
+		private final String[] columnNames = 
+			{"Purchase Return No.", "RR No.", "Supplier", "Total Amount", "Status", "Post Date"};
 		
 		private List<PurchaseReturn> purchaseReturns = new ArrayList<>();
 		
@@ -189,8 +192,12 @@ public class PurchaseReturnListPanel extends StandardMagicPanel {
 			switch (columnIndex) {
 			case PURCHASE_RETURN_COLUMN_INDEX:
 				return purchaseReturn.getPurchaseReturnNumber();
+			case RECEIVING_RECEIPT_NUMBER_COLUMN_INDEX:
+				return purchaseReturn.getReceivingReceipt().getReceivingReceiptNumber();
 			case SUPPLIER_COLUMN_INDEX:
 				return purchaseReturn.getReceivingReceipt().getSupplier().getName();
+			case TOTAL_AMOUNT_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(purchaseReturn.getTotalAmount());
 			case STATUS_COLUMN_INDEX:
 				return purchaseReturn.getStatus();
 			case POST_DATE_COLUMN_INDEX:
