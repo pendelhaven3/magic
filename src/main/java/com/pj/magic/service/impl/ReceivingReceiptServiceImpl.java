@@ -122,8 +122,8 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	@Override
 	public List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria) {
 		List<ReceivingReceipt> receivingReceipts = receivingReceiptDao.search(criteria);
-		for (ReceivingReceipt purchaseOrder : receivingReceipts) {
-			loadReceivingReceiptDetails(purchaseOrder);
+		for (ReceivingReceipt receivingReceipt : receivingReceipts) {
+			receivingReceipt.setItems(receivingReceiptItemDao.findAllByReceivingReceipt(receivingReceipt));
 		}
 		return receivingReceipts;
 	}
