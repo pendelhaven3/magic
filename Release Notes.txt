@@ -6,6 +6,7 @@ version 1.22.0
 4. Revised Supplier Payment Adjustment to use new Purchase Payment Adjustment Type
 5. Added adding Purchase Return - Good Stock to Supplier Payment
 6. Display Receiving Receipt total amount with VAT in Add Receiving Receipts to Supplier Payment dialog
+7. Post associated Payment Adjustments and Purchase Returns when Supplier Payment is posted
 
 version 1.21.1
 

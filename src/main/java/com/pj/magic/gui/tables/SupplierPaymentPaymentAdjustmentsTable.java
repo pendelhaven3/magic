@@ -290,8 +290,8 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 				.findSupplierPaymentAdjustmentBySupplierPaymentAdjustmentNumber(paymentAdjustmentNumber);
 		if (paymentAdjustment == null || !paymentAdjustment.getAdjustmentType().equals(adjustmentType)) {
 			showErrorMessage("Supplier Payment Adjustment does not exist");
-		} else if (!paymentAdjustment.isPosted()) {
-			showErrorMessage("Supplier Payment Adjustment is not yet posted");
+		} else if (paymentAdjustment.isPosted()) {
+			showErrorMessage("Supplier Payment Adjustment is already posted");
 		} else {
 			valid = true;
 		}
@@ -304,8 +304,8 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 				.findPurchaseReturnByPurchaseReturnNumber(purchaseReturnNumber);
 		if (purchaseReturn == null) {
 			showErrorMessage("Purchase Return does not exist");
-		} else if (!purchaseReturn.isPosted()) {
-			showErrorMessage("Purchase Return is not yet posted");
+		} else if (purchaseReturn.isPosted()) {
+			showErrorMessage("Purchase Return is already posted");
 		} else {
 			valid = true;
 		}

@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.dao.PurchaseReturnDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
 import com.pj.magic.dao.SupplierPaymentAdjustmentDao;
 import com.pj.magic.dao.SupplierPaymentBankTransferDao;
@@ -18,6 +19,7 @@ import com.pj.magic.dao.SupplierPaymentDao;
 import com.pj.magic.dao.SupplierPaymentPaymentAdjustmentDao;
 import com.pj.magic.dao.SupplierPaymentReceivingReceiptDao;
 import com.pj.magic.model.PaymentSalesInvoice;
+import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentBankTransfer;
 import com.pj.magic.model.SupplierPaymentCashPayment;
@@ -27,6 +29,8 @@ import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentReceivingReceipt;
 import com.pj.magic.model.search.SupplierPaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
+import com.pj.magic.service.PurchaseReturnService;
+import com.pj.magic.service.SupplierPaymentAdjustmentService;
 import com.pj.magic.service.SupplierPaymentService;
 
 @Service
@@ -42,6 +46,9 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 	@Autowired private SupplierPaymentBankTransferDao supplierPaymentBankTransferDao;
 	@Autowired private SupplierPaymentAdjustmentDao supplierPaymentAdjustmentDao;
 	@Autowired private SupplierPaymentPaymentAdjustmentDao supplierPaymentPaymentAdjustmentDao;
+	@Autowired private PurchaseReturnService purchaseReturnService;
+	@Autowired private PurchaseReturnDao purchaseReturnDao;
+	@Autowired private SupplierPaymentAdjustmentService supplierPaymentAdjustmentService;
 	
 	@Transactional
 	@Override
@@ -89,6 +96,19 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 		updated.setPostDate(new Date());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		supplierPaymentDao.save(updated);
+		
+		for (SupplierPaymentPaymentAdjustment paymentAdjustment : updated.getPaymentAdjustments()) {
+			long referenceNumber = Long.parseLong(paymentAdjustment.getReferenceNumber());
+			switch (paymentAdjustment.getAdjustmentType().getCode()) {
+			case PurchasePaymentAdjustmentType.PURCHASE_RETURN_GOOD_STOCK_CODE:
+				purchaseReturnService.post(purchaseReturnDao.findByPurchaseReturnNumber(referenceNumber));
+				break;
+			default:
+				supplierPaymentAdjustmentService.post(
+						supplierPaymentAdjustmentDao.findBySupplierPaymentAdjustmentNumber(referenceNumber));
+				break;
+			}
+		}
 	}
 
 	@Override

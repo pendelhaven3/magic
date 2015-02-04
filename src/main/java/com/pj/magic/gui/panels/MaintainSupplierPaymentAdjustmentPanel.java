@@ -423,7 +423,7 @@ public class MaintainSupplierPaymentAdjustmentPanel extends StandardMagicPanel {
 			}
 		});
 		
-		toolBar.add(postButton);
+//		toolBar.add(postButton);
 	}
 
 	private void postPaymentAdjustment() {
