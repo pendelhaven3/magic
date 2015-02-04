@@ -185,7 +185,7 @@ public class AddReceivingReceiptsToSupplierPaymentDialog extends MagicDialog {
 			case RECEIVED_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(receivingReceipt.getReceivedDate());
 			case AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(receivingReceipt.getTotalNetAmount());
+				return FormatterUtil.formatAmount(receivingReceipt.getTotalNetAmountWithVat());
 			default:
 				throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 			}
