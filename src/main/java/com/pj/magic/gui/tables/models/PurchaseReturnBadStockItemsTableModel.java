@@ -23,7 +23,7 @@ import com.pj.magic.util.NumberUtil;
 @Component
 public class PurchaseReturnBadStockItemsTableModel extends AbstractTableModel {
 	
-	private static final String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
+	private static final String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Cost", "Amount"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;

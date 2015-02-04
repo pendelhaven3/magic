@@ -20,7 +20,7 @@ public interface PurchaseReturnBadStockService {
 
 	void post(PurchaseReturnBadStock purchaseReturnBadStock);
 
-	PurchaseReturnBadStock findPurchaseReturnBadStocksByPurchaseReturnBadStockNumber(
+	PurchaseReturnBadStock findPurchaseReturnBadStockByPurchaseReturnBadStockNumber(
 			long purchaseReturnBadStockNumber);
 
 	List<PurchaseReturnBadStock> search(PurchaseReturnBadStockSearchCriteria criteria);

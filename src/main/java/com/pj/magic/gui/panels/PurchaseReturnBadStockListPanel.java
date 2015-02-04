@@ -119,7 +119,7 @@ public class PurchaseReturnBadStockListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToSalesMenuPanel();
+		getMagicFrame().switchToPurchasesMenuPanel();
 	}
 	
 	@Override
@@ -203,7 +203,7 @@ public class PurchaseReturnBadStockListPanel extends StandardMagicPanel {
 				return purchaseReturnBadStock.getStatus();
 			case POST_DATE_COLUMN_INDEX:
 				return purchaseReturnBadStock.isPosted() ? 
-						FormatterUtil.formatDateTime(purchaseReturnBadStock.getPostDate()) : null;
+						FormatterUtil.formatDate(purchaseReturnBadStock.getPostDate()) : null;
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}

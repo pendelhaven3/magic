@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -71,11 +72,11 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
 	@Transactional
 	@Override
 	public void post(PurchaseReturnBadStock purchaseReturnBadStock) {
-//		BadPurchaseReturn updated = getBadPurchaseReturn(badPurchaseReturn.getId());
-//		updated.setPosted(true);
-//		updated.setPostDate(new Date());
-//		updated.setPostedBy(loginService.getLoggedInUser());
-//		badPurchaseReturnDao.save(updated);
+		PurchaseReturnBadStock updated = getPurchaseReturnBadStock(purchaseReturnBadStock.getId());
+		updated.setPosted(true);
+		updated.setPostDate(new Date());
+		updated.setPostedBy(loginService.getLoggedInUser());
+		purchaseReturnBadStockDao.save(updated);
 //		
 //		for (BadPurchaseReturnItem item : updated.getItems()) {
 //			Product product = productDao.get(item.getProduct().getId());
@@ -85,7 +86,7 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
 	}
 
 	@Override
-	public PurchaseReturnBadStock findPurchaseReturnBadStocksByPurchaseReturnBadStockNumber(
+	public PurchaseReturnBadStock findPurchaseReturnBadStockByPurchaseReturnBadStockNumber(
 			long purchaseReturnBadStockNumber) {
 		PurchaseReturnBadStock purchaseReturnBadStock = 
 				purchaseReturnBadStockDao.findByPurchaseReturnBadStockNumber(purchaseReturnBadStockNumber);
