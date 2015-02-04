@@ -768,12 +768,13 @@ create table SUPP_PAYMENT_ADJUSTMENT (
 create table SUPP_PAYMENT_PAYMNT_ADJ (
   ID integer auto_increment,
   SUPPLIER_PAYMENT_ID integer not null,
-  ADJUSTMENT_TYPE_ID integer not null,
+  ADJUSTMENT_TYPE_ID integer null,
+  PURCHASE_PAYMENT_ADJ_TYPE_ID integer null,
   REFERENCE_NO varchar(30) null,
   AMOUNT numeric(10, 2) not null,
   constraint SUPP_PAYMENT_PAYMNT_ADJ$PK primary key (ID),
   constraint SUPP_PAYMENT_PAYMNT_ADJ$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
-  constraint SUPP_PAYMENT_PAYMNT_ADJ$FK2 foreign key (ADJUSTMENT_TYPE_ID) references ADJUSTMENT_TYPE (ID)
+  constraint SUPP_PAYMENT_PAYMNT_ADJ$FK2 foreign key (PURCHASE_PAYMENT_ADJ_TYPE_ID) references PURCHASE_PAYMENT_ADJ_TYPE (ID)
 );
 
 create table SUPP_PAYMENT_BANK_TRANSFER (

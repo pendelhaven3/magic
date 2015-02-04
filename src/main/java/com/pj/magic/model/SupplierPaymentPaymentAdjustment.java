@@ -9,7 +9,7 @@ public class SupplierPaymentPaymentAdjustment {
 
 	private Long id;
 	private SupplierPayment parent;
-	private AdjustmentType adjustmentType;
+	private PurchasePaymentAdjustmentType adjustmentType;
 	private BigDecimal amount;
 	private String referenceNumber;
 
@@ -29,11 +29,11 @@ public class SupplierPaymentPaymentAdjustment {
 		this.parent = parent;
 	}
 
-	public AdjustmentType getAdjustmentType() {
+	public PurchasePaymentAdjustmentType getAdjustmentType() {
 		return adjustmentType;
 	}
 
-	public void setAdjustmentType(AdjustmentType adjustmentType) {
+	public void setAdjustmentType(PurchasePaymentAdjustmentType adjustmentType) {
 		this.adjustmentType = adjustmentType;
 	}
 

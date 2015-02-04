@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.pj.magic.dao.PurchasePaymentAdjustmentTypeDao;
-import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.service.PurchasePaymentAdjustmentTypeService;
 
@@ -51,9 +50,9 @@ public class PurchasePaymentAdjustmentTypeServiceImpl implements PurchasePayment
 			@Override
 			public boolean apply(PurchasePaymentAdjustmentType adjustmentType) {
 				String code = adjustmentType.getCode();
-				return !Arrays.asList(AdjustmentType.SALES_RETURN_CODE,
-						AdjustmentType.BAD_STOCK_RETURN_CODE,
-						AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE).contains(code);
+				return !Arrays.asList(
+						PurchasePaymentAdjustmentType.PURCHASE_RETURN_GOOD_STOCK_CODE,
+						PurchasePaymentAdjustmentType.PURCHASE_RETURN_BAD_STOCK_CODE).contains(code);
 			}
 		}));
 	}

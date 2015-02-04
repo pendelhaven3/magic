@@ -16,7 +16,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SupplierPaymentAdjustmentDao;
-import com.pj.magic.model.AdjustmentType;
+import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.SupplierPaymentAdjustment;
 import com.pj.magic.model.User;
@@ -29,7 +29,7 @@ public class SupplierPaymentAdjustmentDaoImpl extends MagicDao implements Suppli
 	private static final String SUPPLIER_PAYMENT_ADJUSTMENT_NUMBER_SEQUENCE = "SUPP_PAYMENT_ADJUSTMENT_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, SUPP_PAYMENT_ADJUSTMENT_NO, SUPPLIER_ID, ADJUSTMENT_TYPE_ID, AMOUNT,"
+			"select a.ID, SUPP_PAYMENT_ADJUSTMENT_NO, SUPPLIER_ID, PURCHASE_PAYMENT_ADJ_TYPE_ID, AMOUNT,"
 			+ " POST_IND, POST_DT, POST_BY, a.REMARKS,"
 			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
@@ -39,8 +39,8 @@ public class SupplierPaymentAdjustmentDaoImpl extends MagicDao implements Suppli
 			+ "   on b.ID = a.SUPPLIER_ID"
 			+ " left join USER c"
 			+ "   on c.ID = a.POST_BY"
-			+ " join ADJUSTMENT_TYPE d"
-			+ "   on d.ID = a.ADJUSTMENT_TYPE_ID";
+			+ " join PURCHASE_PAYMENT_ADJ_TYPE d"
+			+ "   on d.ID = a.PURCHASE_PAYMENT_ADJ_TYPE_ID";
 
 	private SupplierPaymentAdjustmentRowMapper paymentAdjustmentRowMapper = 
 			new SupplierPaymentAdjustmentRowMapper();
@@ -66,7 +66,7 @@ public class SupplierPaymentAdjustmentDaoImpl extends MagicDao implements Suppli
 	}
 
 	private static final String UPDATE_SQL = 
-			"update SUPP_PAYMENT_ADJUSTMENT set SUPPLIER_ID = ?, ADJUSTMENT_TYPE_ID = ?, AMOUNT = ?,"
+			"update SUPP_PAYMENT_ADJUSTMENT set SUPPLIER_ID = ?, PURCHASE_PAYMENT_ADJ_TYPE_ID = ?, AMOUNT = ?,"
 			+ " POST_IND = ?, POST_DT = ?, POST_BY = ?, REMARKS = ? where ID = ?";
 	
 	private void update(SupplierPaymentAdjustment paymentAdjustment) {
@@ -83,7 +83,7 @@ public class SupplierPaymentAdjustmentDaoImpl extends MagicDao implements Suppli
 
 	private static final String INSERT_SQL =
 			"insert into SUPP_PAYMENT_ADJUSTMENT"
-			+ " (SUPP_PAYMENT_ADJUSTMENT_NO, SUPPLIER_ID, ADJUSTMENT_TYPE_ID, AMOUNT, REMARKS)"
+			+ " (SUPP_PAYMENT_ADJUSTMENT_NO, SUPPLIER_ID, PURCHASE_PAYMENT_ADJ_TYPE_ID, AMOUNT, REMARKS)"
 			+ " values"
 			+ " (?, ?, ?, ?, ?)";
 	
@@ -128,8 +128,8 @@ public class SupplierPaymentAdjustmentDaoImpl extends MagicDao implements Suppli
 			supplier.setName(rs.getString("SUPPLIER_NAME"));
 			paymentAdjustment.setSupplier(supplier);
 
-			AdjustmentType adjustmentType = new AdjustmentType();
-			adjustmentType.setId(rs.getLong("ADJUSTMENT_TYPE_ID"));
+			PurchasePaymentAdjustmentType adjustmentType = new PurchasePaymentAdjustmentType();
+			adjustmentType.setId(rs.getLong("PURCHASE_PAYMENT_ADJ_TYPE_ID"));
 			adjustmentType.setCode(rs.getString("ADJUSTMENT_TYPE_CODE"));
 			paymentAdjustment.setAdjustmentType(adjustmentType);
 			
@@ -177,7 +177,7 @@ public class SupplierPaymentAdjustmentDaoImpl extends MagicDao implements Suppli
 		}
 		
 		if (criteria.getAdjustmentType() != null) {
-			sql.append(" and a.ADJUSTMENT_TYPE_ID = ?");
+			sql.append(" and a.PURCHASE_PAYMENT_ADJ_TYPE_ID = ?");
 			params.add(criteria.getAdjustmentType().getId());
 		}
 		

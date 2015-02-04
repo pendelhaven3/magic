@@ -14,7 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SupplierPaymentPaymentAdjustmentDao;
-import com.pj.magic.model.AdjustmentType;
+import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 
@@ -26,8 +26,8 @@ public class SupplierPaymentPaymentAdjustmentDaoImpl extends MagicDao
 			"select a.ID, SUPPLIER_PAYMENT_ID, ADJUSTMENT_TYPE_ID, REFERENCE_NO, a.AMOUNT,"
 			+ " b.CODE as ADJUSTMENT_TYPE_CODE"
 			+ " from SUPP_PAYMENT_PAYMNT_ADJ a"
-			+ " join ADJUSTMENT_TYPE b"
-			+ "   on b.ID = a.ADJUSTMENT_TYPE_ID";
+			+ " join PURCHASE_PAYMENT_ADJ_TYPE b"
+			+ "   on b.ID = a.PURCHASE_PAYMENT_ADJ_TYPE_ID";
 	
 	private SupplierPaymentAdjustmentRowMapper adjustmentRowMapper = new SupplierPaymentAdjustmentRowMapper();
 	
@@ -42,7 +42,7 @@ public class SupplierPaymentPaymentAdjustmentDaoImpl extends MagicDao
 
 	private static final String INSERT_SQL = 
 			"insert into SUPP_PAYMENT_PAYMNT_ADJ"
-			+ " (SUPPLIER_PAYMENT_ID, ADJUSTMENT_TYPE_ID, REFERENCE_NO, AMOUNT) values (?, ?, ?, ?)";
+			+ " (SUPPLIER_PAYMENT_ID, PURCHASE_PAYMENT_ADJ_TYPE_ID, REFERENCE_NO, AMOUNT) values (?, ?, ?, ?)";
 	
 	private void insert(final SupplierPaymentPaymentAdjustment adjustment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -91,7 +91,7 @@ public class SupplierPaymentPaymentAdjustmentDaoImpl extends MagicDao
 			SupplierPaymentPaymentAdjustment adjustment = new SupplierPaymentPaymentAdjustment();
 			adjustment.setId(rs.getLong("ID"));
 			adjustment.setParent(new SupplierPayment(rs.getLong("SUPPLIER_PAYMENT_ID")));
-			adjustment.setAdjustmentType(new AdjustmentType(
+			adjustment.setAdjustmentType(new PurchasePaymentAdjustmentType(
 					rs.getLong("ADJUSTMENT_TYPE_ID"), rs.getString("ADJUSTMENT_TYPE_CODE")));
 			adjustment.setReferenceNumber(rs.getString("REFERENCE_NO"));
 			adjustment.setAmount(rs.getBigDecimal("AMOUNT"));

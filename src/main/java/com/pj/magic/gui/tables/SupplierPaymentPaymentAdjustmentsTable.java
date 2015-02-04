@@ -21,14 +21,14 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.AmountCellEditor;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.gui.dialog.SelectAdjustmentTypeDialog;
+import com.pj.magic.gui.dialog.SelectPurchasePaymentAdjustmentTypeDialog;
 import com.pj.magic.gui.tables.models.SupplierPaymentPaymentAdjustmentsTableModel;
 import com.pj.magic.gui.tables.rowitems.SupplierPaymentAdjustmentRowItem;
-import com.pj.magic.model.AdjustmentType;
+import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
-import com.pj.magic.service.AdjustmentTypeService;
+import com.pj.magic.service.PurchasePaymentAdjustmentTypeService;
 import com.pj.magic.service.SupplierPaymentAdjustmentService;
 
 @Component
@@ -43,9 +43,9 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 	private static final String F5_ACTION_NAME = "F5";
 
 	@Autowired private SupplierPaymentPaymentAdjustmentsTableModel tableModel;
-	@Autowired private AdjustmentTypeService adjustmentTypeService;
+	@Autowired private PurchasePaymentAdjustmentTypeService purchasePaymentAdjustmentTypeService;
 	@Autowired private SupplierPaymentAdjustmentService supplierPaymentAdjustmentService;
-	@Autowired private SelectAdjustmentTypeDialog selectAdjustmentTypeDialog;
+	@Autowired private SelectPurchasePaymentAdjustmentTypeDialog selectPurchasePaymentAdjustmentTypeDialog;
 	
 	private SupplierPayment payment;
 	
@@ -167,10 +167,11 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 				editCellAtCurrentLocation();
 			}
 			
-			selectAdjustmentTypeDialog.updateDisplay();
-			selectAdjustmentTypeDialog.setVisible(true);
+			selectPurchasePaymentAdjustmentTypeDialog.updateDisplay();
+			selectPurchasePaymentAdjustmentTypeDialog.setVisible(true);
 			
-			AdjustmentType adjustmentType = selectAdjustmentTypeDialog.getSelectedAdjustmentType();
+			PurchasePaymentAdjustmentType adjustmentType = 
+					selectPurchasePaymentAdjustmentTypeDialog.getSelectedAdjustmentType();
 			if (adjustmentType != null) {
 				((JTextField)getEditorComponent()).setText(adjustmentType.getCode());
 				getCellEditor().stopCellEditing();
@@ -273,7 +274,8 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 
 	}
 
-	private boolean validatePaymentAdjustment(AdjustmentType adjustmentType, long paymentAdjustmentNumber) {
+	private boolean validatePaymentAdjustment(PurchasePaymentAdjustmentType adjustmentType, 
+			long paymentAdjustmentNumber) {
 		boolean valid = false;
 		SupplierPaymentAdjustment paymentAdjustment = supplierPaymentAdjustmentService
 				.findSupplierPaymentAdjustmentBySupplierPaymentAdjustmentNumber(paymentAdjustmentNumber);
@@ -299,7 +301,7 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 			boolean valid = false;
 			if (StringUtils.isEmpty(code)) {
 				showErrorMessage("Adjustment Type must be specified");
-			} else if (adjustmentTypeService.findAdjustmentTypeByCode(code) == null) {
+			} else if (purchasePaymentAdjustmentTypeService.findAdjustmentTypeByCode(code) == null) {
 				showErrorMessage("No Adjustment Type matching code specified");
 			} else {
 				valid = true;

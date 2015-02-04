@@ -3,12 +3,15 @@ package com.pj.magic.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class SupplierPaymentAdjustment {
 
 	private Long id;
 	private Long supplierPaymentAdjustmentNumber;
 	private Supplier supplier;
-	private AdjustmentType adjustmentType;
+	private PurchasePaymentAdjustmentType adjustmentType;
 	private BigDecimal amount;
 	private boolean posted;
 	private Date postDate;
@@ -31,11 +34,11 @@ public class SupplierPaymentAdjustment {
 		this.supplierPaymentAdjustmentNumber = supplierPaymentAdjustmentNumber;
 	}
 
-	public AdjustmentType getAdjustmentType() {
+	public PurchasePaymentAdjustmentType getAdjustmentType() {
 		return adjustmentType;
 	}
 
-	public void setAdjustmentType(AdjustmentType adjustmentType) {
+	public void setAdjustmentType(PurchasePaymentAdjustmentType adjustmentType) {
 		this.adjustmentType = adjustmentType;
 	}
 
@@ -91,4 +94,25 @@ public class SupplierPaymentAdjustment {
 		this.supplier = supplier;
 	}
 
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(id)
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+        if (!(obj instanceof SupplierPaymentAdjustment)) {
+            return false;
+        }
+        SupplierPaymentAdjustment other = (SupplierPaymentAdjustment)obj;		
+		return new EqualsBuilder()
+			.append(id, other.getId())
+			.isEquals();
+	}
+	
 }

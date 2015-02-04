@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 
 import org.springframework.util.StringUtils;
 
-import com.pj.magic.model.AdjustmentType;
+import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 
 public class SupplierPaymentAdjustmentRowItem {
 
 	private SupplierPaymentPaymentAdjustment adjustment;
-	private AdjustmentType adjustmentType;
+	private PurchasePaymentAdjustmentType adjustmentType;
 	private String referenceNumber;
 	private BigDecimal amount;
 
@@ -30,12 +30,16 @@ public class SupplierPaymentAdjustmentRowItem {
 		this.adjustment = adjustment;
 	}
 
-	public AdjustmentType getAdjustmentType() {
+	public PurchasePaymentAdjustmentType getAdjustmentType() {
 		return adjustmentType;
 	}
 
-	public void setAdjustmentType(AdjustmentType adjustmentType) {
+	public void setAdjustmentType(PurchasePaymentAdjustmentType adjustmentType) {
 		this.adjustmentType = adjustmentType;
+	}
+
+	public SupplierPaymentPaymentAdjustment getAdjustment() {
+		return adjustment;
 	}
 
 	public String getReferenceNumber() {

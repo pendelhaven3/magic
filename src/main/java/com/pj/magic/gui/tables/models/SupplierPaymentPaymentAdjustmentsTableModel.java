@@ -10,12 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.PaymentPaymentAdjustmentsTable;
+import com.pj.magic.gui.tables.SupplierPaymentPaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.rowitems.SupplierPaymentAdjustmentRowItem;
-import com.pj.magic.model.AdjustmentType;
+import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
-import com.pj.magic.service.AdjustmentTypeService;
+import com.pj.magic.service.PurchasePaymentAdjustmentTypeService;
 import com.pj.magic.service.SupplierPaymentAdjustmentService;
 import com.pj.magic.service.SupplierPaymentService;
 import com.pj.magic.util.FormatterUtil;
@@ -28,7 +29,7 @@ public class SupplierPaymentPaymentAdjustmentsTableModel extends AbstractTableMo
 	
 	@Autowired private SupplierPaymentService supplierPaymentService;
 	@Autowired private SupplierPaymentAdjustmentService supplierPaymentAdjustmentService;
-	@Autowired private AdjustmentTypeService adjustmentTypeService;
+	@Autowired private PurchasePaymentAdjustmentTypeService purchasePaymentAdjustmentTypeService;
 	
 	private List<SupplierPaymentAdjustmentRowItem> rowItems = new ArrayList<>();
 	private SupplierPayment payment;
@@ -81,8 +82,8 @@ public class SupplierPaymentPaymentAdjustmentsTableModel extends AbstractTableMo
 		
 		String val = (String)value;
 		switch (columnIndex) {
-		case PaymentPaymentAdjustmentsTable.ADJUSTMENT_TYPE_COLUMN_INDEX:
-			AdjustmentType adjustmentType = adjustmentTypeService.findAdjustmentTypeByCode(val);
+		case SupplierPaymentPaymentAdjustmentsTable.ADJUSTMENT_TYPE_COLUMN_INDEX:
+			PurchasePaymentAdjustmentType adjustmentType = purchasePaymentAdjustmentTypeService.findAdjustmentTypeByCode(val);
 			if (val != null && val.equals(rowItem.getAdjustmentType())) {
 				fireTableCellUpdated(rowIndex, columnIndex);
 				return;
@@ -91,7 +92,7 @@ public class SupplierPaymentPaymentAdjustmentsTableModel extends AbstractTableMo
 			rowItem.setReferenceNumber(null);
 			rowItem.setAmount(null);
 			break;
-		case PaymentPaymentAdjustmentsTable.REFERENCE_NUMBER_COLUMN_INDEX:
+		case SupplierPaymentPaymentAdjustmentsTable.REFERENCE_NUMBER_COLUMN_INDEX:
 			columnIndex = PaymentPaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX;
 			
 			if (val.equals(rowItem.getReferenceNumber())) {
@@ -104,7 +105,7 @@ public class SupplierPaymentPaymentAdjustmentsTableModel extends AbstractTableMo
 			rowItem.setAmount(paymentAdjustment.getAmount());
 			
 			break;
-		case PaymentPaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX:
+		case SupplierPaymentPaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX:
 			String amount = (String)value;
 			if (NumberUtil.toBigDecimal(amount).equals(rowItem.getAmount())) {
 				return;

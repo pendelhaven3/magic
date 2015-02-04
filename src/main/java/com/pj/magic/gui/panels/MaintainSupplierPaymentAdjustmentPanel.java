@@ -30,10 +30,10 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
-import com.pj.magic.model.AdjustmentType;
+import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.SupplierPaymentAdjustment;
-import com.pj.magic.service.AdjustmentTypeService;
+import com.pj.magic.service.PurchasePaymentAdjustmentTypeService;
 import com.pj.magic.service.SupplierPaymentAdjustmentService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -47,7 +47,7 @@ public class MaintainSupplierPaymentAdjustmentPanel extends StandardMagicPanel {
 	private static final String SAVE_ACTION_NAME = "save";
 	
 	@Autowired private SupplierPaymentAdjustmentService supplierPaymentAdjustmentService;
-	@Autowired private AdjustmentTypeService adjustmentTypeService;
+	@Autowired private PurchasePaymentAdjustmentTypeService purchasePaymentAdjustmentTypeService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	
 	private SupplierPaymentAdjustment paymentAdjustment;
@@ -56,7 +56,7 @@ public class MaintainSupplierPaymentAdjustmentPanel extends StandardMagicPanel {
 	private MagicTextField supplierCodeField;
 	private EllipsisButton selectSupplierButton;
 	private JLabel supplierNameLabel;
-	private JComboBox<AdjustmentType> adjustmentTypeComboBox;
+	private JComboBox<PurchasePaymentAdjustmentType> adjustmentTypeComboBox;
 	private MagicTextField amountField;
 	private MagicTextField remarksField;
 	private JButton saveButton;
@@ -135,7 +135,8 @@ public class MaintainSupplierPaymentAdjustmentPanel extends StandardMagicPanel {
 		}
 		
 		if (confirm("Save?")) {
-			paymentAdjustment.setAdjustmentType((AdjustmentType)adjustmentTypeComboBox.getSelectedItem());
+			paymentAdjustment.setAdjustmentType(
+					(PurchasePaymentAdjustmentType)adjustmentTypeComboBox.getSelectedItem());
 			paymentAdjustment.setAmount(NumberUtil.toBigDecimal(amountField.getText()));
 			paymentAdjustment.setRemarks(remarksField.getText());
 			
@@ -356,9 +357,11 @@ public class MaintainSupplierPaymentAdjustmentPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay(SupplierPaymentAdjustment paymentAdjustment) {
-		List<AdjustmentType> adjustmentTypes = adjustmentTypeService.getRegularAdjustmentTypes();
+		List<PurchasePaymentAdjustmentType> adjustmentTypes = 
+				purchasePaymentAdjustmentTypeService.getRegularAdjustmentTypes();
 		adjustmentTypeComboBox.setModel(
-				new DefaultComboBoxModel<>(adjustmentTypes.toArray(new AdjustmentType[adjustmentTypes.size()])));
+				new DefaultComboBoxModel<>(adjustmentTypes.toArray(
+						new PurchasePaymentAdjustmentType[adjustmentTypes.size()])));
 		
 		this.paymentAdjustment = paymentAdjustment;
 		if (paymentAdjustment.getId() == null) {
