@@ -56,7 +56,7 @@ public class PurchaseReturnBadStockItemsTable extends MagicTable {
 	@Autowired private PurchaseReturnBadStockItemsTableModel tableModel;
 	
 	private boolean addMode;
-	private PurchaseReturnBadStock adjustmentIn;
+	private PurchaseReturnBadStock purchaseReturnBadStock;
 	private String previousSelectProductCriteria;
 	
 	@Autowired
@@ -164,7 +164,7 @@ public class PurchaseReturnBadStockItemsTable extends MagicTable {
 		}
 		
 		addMode = false;
-		List<PurchaseReturnBadStockItem> items = adjustmentIn.getItems();
+		List<PurchaseReturnBadStockItem> items = purchaseReturnBadStock.getItems();
 //		items.addAll(tableModel.getItems());
 		tableModel.setItems(items);
 		
@@ -177,7 +177,7 @@ public class PurchaseReturnBadStockItemsTable extends MagicTable {
 		int selectedRowIndex = getSelectedRow();
 		PurchaseReturnBadStockItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
-		adjustmentIn.getItems().remove(item);
+		purchaseReturnBadStock.getItems().remove(item);
 		tableModel.removeItem(selectedRowIndex);
 		
 		if (tableModel.hasItems()) {
@@ -194,7 +194,7 @@ public class PurchaseReturnBadStockItemsTable extends MagicTable {
 	}
 	
 	private boolean hasDuplicate(String unit, PurchaseReturnBadStockItemRowItem rowItem) {
-		for (PurchaseReturnBadStockItem item : adjustmentIn.getItems()) {
+		for (PurchaseReturnBadStockItem item : purchaseReturnBadStock.getItems()) {
 			if (item.getProduct().equals(rowItem.getProduct()) 
 					&& item.getUnit().equals(unit) && item != rowItem.getItem()) {
 				return true;
@@ -203,17 +203,17 @@ public class PurchaseReturnBadStockItemsTable extends MagicTable {
 		return tableModel.hasDuplicate(unit, rowItem);
 	}
 	
-	public void setPurchaseReturnBadStock(PurchaseReturnBadStock adjustmentIn) {
+	public void setPurchaseReturnBadStock(PurchaseReturnBadStock purchaseReturnBadStock) {
 		clearSelection();
 		addMode = false;
-		this.adjustmentIn = adjustmentIn;
-		tableModel.setPurchaseReturnBadStock(adjustmentIn);
+		this.purchaseReturnBadStock = purchaseReturnBadStock;
+		tableModel.setPurchaseReturnBadStock(purchaseReturnBadStock);
 		previousSelectProductCriteria = null;
 	}
 	
 	private PurchaseReturnBadStockItem createBlankItem() {
 		PurchaseReturnBadStockItem item = new PurchaseReturnBadStockItem();
-		item.setParent(adjustmentIn);
+		item.setParent(purchaseReturnBadStock);
 		return item;
 	}
 	
@@ -342,7 +342,7 @@ public class PurchaseReturnBadStockItemsTable extends MagicTable {
 	private void openSelectProductDialog(String criteria, String currentlySelectedCode) {
 		previousSelectProductCriteria = criteria;
 		
-		selectProductDialog.searchProducts(criteria, currentlySelectedCode);
+		selectProductDialog.searchProducts(criteria, currentlySelectedCode, purchaseReturnBadStock.getSupplier());
 		selectProductDialog.setVisible(true);
 		
 		Product product = selectProductDialog.getSelectedProduct();
@@ -353,14 +353,14 @@ public class PurchaseReturnBadStockItemsTable extends MagicTable {
 	}
 
 	public void highlightColumn(PurchaseReturnBadStockItem item, int column) {
-		int row = adjustmentIn.getItems().indexOf(item);
+		int row = purchaseReturnBadStock.getItems().indexOf(item);
 		changeSelection(row, column, false, false);
 		editCellAt(row, column);
 		getEditorComponent().requestFocusInWindow();
 	}
 	
 	public void highlight() {
-		if (!adjustmentIn.hasItems()) {
+		if (!purchaseReturnBadStock.hasItems()) {
 			switchToAddMode();
 		} else {
 			changeSelection(0, 0, false, false);
