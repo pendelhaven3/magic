@@ -28,13 +28,13 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.search.BadPurchaseReturnSearchCriteria;
+import com.pj.magic.model.search.PurchaseReturnBadStockSearchCriteria;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class BadPurchaseReturnSearchCriteriaDialog extends MagicDialog {
+public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 
 	private static final int STATUS_ALL = 0;
 	private static final int STATUS_NEW = 1;
@@ -43,16 +43,16 @@ public class BadPurchaseReturnSearchCriteriaDialog extends MagicDialog {
 	@Autowired private SupplierService supplierService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	
-	private MagicTextField badPurchaseReturnNumberField;
+	private MagicTextField purchaseReturnBadStockNumberField;
 	private MagicTextField supplierCodeField;
 	private JLabel supplierNameField;
 	private MagicComboBox<String> statusComboBox;
 	private UtilCalendarModel postDateModel;
 	private JButton searchButton;
-	private BadPurchaseReturnSearchCriteria searchCriteria;
+	private PurchaseReturnBadStockSearchCriteria searchCriteria;
 	private JButton selectSupplierButton;
 	
-	public BadPurchaseReturnSearchCriteriaDialog() {
+	public PurchaseReturnBadStockSearchCriteriaDialog() {
 		setSize(600, 250);
 		setLocationRelativeTo(null);
 		setTitle("Search Bad Purchase Returns");
@@ -67,7 +67,7 @@ public class BadPurchaseReturnSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		badPurchaseReturnNumberField = new MagicTextField();
+		purchaseReturnBadStockNumberField = new MagicTextField();
 		
 		supplierCodeField = new MagicTextField();
 		supplierCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
@@ -91,11 +91,11 @@ public class BadPurchaseReturnSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveBadPurchaseReturnCriteria();
+				savePurchaseReturnBadStockCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(badPurchaseReturnNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(purchaseReturnBadStockNumberField);
 	}
 
 	private void openSelectSupplierDialog() {
@@ -109,11 +109,11 @@ public class BadPurchaseReturnSearchCriteriaDialog extends MagicDialog {
 		}
 	}
 
-	private void saveBadPurchaseReturnCriteria() {
-		searchCriteria = new BadPurchaseReturnSearchCriteria();
+	private void savePurchaseReturnBadStockCriteria() {
+		searchCriteria = new PurchaseReturnBadStockSearchCriteria();
 		
-		if (!StringUtils.isEmpty(badPurchaseReturnNumberField.getText())) {
-			searchCriteria.setBadPurchaseReturnNumber(Long.valueOf(badPurchaseReturnNumberField.getText()));
+		if (!StringUtils.isEmpty(purchaseReturnBadStockNumberField.getText())) {
+			searchCriteria.setPurchaseReturnBadStockNumber(Long.valueOf(purchaseReturnBadStockNumberField.getText()));
 		}
 		
 		Supplier supplier = supplierService.findSupplierByCode(supplierCodeField.getText());
@@ -143,7 +143,7 @@ public class BadPurchaseReturnSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
-		badPurchaseReturnNumberField.onEnterKey(new AbstractAction() {
+		purchaseReturnBadStockNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -165,7 +165,7 @@ public class BadPurchaseReturnSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveBadPurchaseReturnCriteria();
+				savePurchaseReturnBadStockCriteria();
 			}
 		});
 		
@@ -191,8 +191,8 @@ public class BadPurchaseReturnSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		badPurchaseReturnNumberField.setPreferredSize(new Dimension(100, 25));
-		add(badPurchaseReturnNumberField, c);
+		purchaseReturnBadStockNumberField.setPreferredSize(new Dimension(100, 25));
+		add(purchaseReturnBadStockNumberField, c);
 
 		currentRow++;
 		
@@ -270,15 +270,15 @@ public class BadPurchaseReturnSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(), c);
 	}
 	
-	public BadPurchaseReturnSearchCriteria getSearchCriteria() {
-		BadPurchaseReturnSearchCriteria returnCriteria = searchCriteria;
+	public PurchaseReturnBadStockSearchCriteria getSearchCriteria() {
+		PurchaseReturnBadStockSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
 		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		badPurchaseReturnNumberField.setText(null);
+		purchaseReturnBadStockNumberField.setText(null);
 		supplierCodeField.setText(null);
 		supplierNameField.setText(null);
 		statusComboBox.setSelectedIndex(STATUS_ALL);

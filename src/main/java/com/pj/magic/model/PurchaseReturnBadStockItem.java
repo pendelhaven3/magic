@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class BadPurchaseReturnItem {
+public class PurchaseReturnBadStockItem {
 
 	private Long id;
-	private BadPurchaseReturn parent;
+	private PurchaseReturnBadStock parent;
 	private Product product;
 	private String unit;
 	private Integer quantity;
@@ -22,11 +22,11 @@ public class BadPurchaseReturnItem {
 		this.id = id;
 	}
 	
-	public BadPurchaseReturn getParent() {
+	public PurchaseReturnBadStock getParent() {
 		return parent;
 	}
 
-	public void setParent(BadPurchaseReturn parent) {
+	public void setParent(PurchaseReturnBadStock parent) {
 		this.parent = parent;
 	}
 
@@ -67,10 +67,10 @@ public class BadPurchaseReturnItem {
 		if (obj == null) {
 			return false;
 		}
-        if (!(obj instanceof BadPurchaseReturnItem)) {
+        if (!(obj instanceof PurchaseReturnBadStockItem)) {
             return false;
         }
-        BadPurchaseReturnItem other = (BadPurchaseReturnItem)obj;		
+        PurchaseReturnBadStockItem other = (PurchaseReturnBadStockItem)obj;		
 		return new EqualsBuilder()
 			.append(product, other.getProduct())
 			.append(unit, other.getUnit())

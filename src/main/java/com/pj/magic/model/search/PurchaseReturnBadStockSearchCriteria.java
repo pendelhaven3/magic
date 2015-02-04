@@ -4,9 +4,9 @@ import java.util.Date;
 
 import com.pj.magic.model.Supplier;
 
-public class BadPurchaseReturnSearchCriteria {
+public class PurchaseReturnBadStockSearchCriteria {
 
-	private Long badPurchaseReturnNumber;
+	private Long purchaseReturnBadStockNumber;
 	private Boolean posted;
 	private Supplier supplier;
 	private Date postDate;
@@ -27,12 +27,12 @@ public class BadPurchaseReturnSearchCriteria {
 		this.postDate = postDate;
 	}
 
-	public Long getBadPurchaseReturnNumber() {
-		return badPurchaseReturnNumber;
+	public Long getPurchaseReturnBadStockNumber() {
+		return purchaseReturnBadStockNumber;
 	}
 
-	public void setBadPurchaseReturnNumber(Long badPurchaseReturnNumber) {
-		this.badPurchaseReturnNumber = badPurchaseReturnNumber;
+	public void setPurchaseReturnBadStockNumber(Long purchaseReturnBadStockNumber) {
+		this.purchaseReturnBadStockNumber = purchaseReturnBadStockNumber;
 	}
 
 	public Supplier getSupplier() {

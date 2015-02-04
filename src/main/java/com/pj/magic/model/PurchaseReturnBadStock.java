@@ -7,34 +7,23 @@ import java.util.List;
 
 import com.pj.magic.Constants;
 
-/**
- * Purchase Return - Bad Stock
- * 
- * @author PJ Miranda
- *
- */
-public class BadPurchaseReturn {
+public class PurchaseReturnBadStock {
 
 	private Long id;
-	
-	/**
-	 * PRBS No. (Purchase Return Bad Stock No.)
-	 */
-	private Long badPurchaseReturnNumber;
-	
+	private Long purchaseReturnBadStockNumber;
 	private Supplier supplier;
 	private boolean posted;
 	private Date postDate;
 	private User postedBy;
 	private String remarks;
 	
-	private List<BadPurchaseReturnItem> items = new ArrayList<>();
+	private List<PurchaseReturnBadStockItem> items = new ArrayList<>();
 
-	public BadPurchaseReturn() {
+	public PurchaseReturnBadStock() {
 		// default constructor
 	}
 	
-	public BadPurchaseReturn(Long id) {
+	public PurchaseReturnBadStock(Long id) {
 		this.id = id;
 	}
 
@@ -46,12 +35,12 @@ public class BadPurchaseReturn {
 		this.id = id;
 	}
 
-	public Long getBadPurchaseReturnNumber() {
-		return badPurchaseReturnNumber;
+	public Long getPurchaseReturnBadStockNumber() {
+		return purchaseReturnBadStockNumber;
 	}
 
-	public void setBadPurchaseReturnNumber(Long badPurchaseReturnNumber) {
-		this.badPurchaseReturnNumber = badPurchaseReturnNumber;
+	public void setPurchaseReturnBadStockNumber(Long purchaseReturnBadStockNumber) {
+		this.purchaseReturnBadStockNumber = purchaseReturnBadStockNumber;
 	}
 
 	public Supplier getSupplier() {
@@ -62,11 +51,11 @@ public class BadPurchaseReturn {
 		this.supplier = supplier;
 	}
 
-	public List<BadPurchaseReturnItem> getItems() {
+	public List<PurchaseReturnBadStockItem> getItems() {
 		return items;
 	}
 
-	public void setItems(List<BadPurchaseReturnItem> items) {
+	public void setItems(List<PurchaseReturnBadStockItem> items) {
 		this.items = items;
 	}
 
@@ -108,7 +97,7 @@ public class BadPurchaseReturn {
 
 	public BigDecimal getTotalAmount() {
 		BigDecimal total = Constants.ZERO;
-		for (BadPurchaseReturnItem item : items) {
+		for (PurchaseReturnBadStockItem item : items) {
 			total = total.add(item.getAmount());
 		}
 		return total;

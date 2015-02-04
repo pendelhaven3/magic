@@ -26,17 +26,17 @@ import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
-import com.pj.magic.gui.tables.models.BadPurchaseReturnItemsTableModel;
-import com.pj.magic.gui.tables.rowitems.BadPurchaseReturnItemRowItem;
-import com.pj.magic.model.BadPurchaseReturn;
-import com.pj.magic.model.BadPurchaseReturnItem;
+import com.pj.magic.gui.tables.models.PurchaseReturnBadStockItemsTableModel;
+import com.pj.magic.gui.tables.rowitems.PurchaseReturnBadStockItemRowItem;
+import com.pj.magic.model.PurchaseReturnBadStock;
+import com.pj.magic.model.PurchaseReturnBadStockItem;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.KeyUtil;
 import com.pj.magic.util.NumberUtil;
 
 @Component
-public class BadPurchaseReturnItemsTable extends MagicTable {
+public class PurchaseReturnBadStockItemsTable extends MagicTable {
 	
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
@@ -53,14 +53,14 @@ public class BadPurchaseReturnItemsTable extends MagicTable {
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;
-	@Autowired private BadPurchaseReturnItemsTableModel tableModel;
+	@Autowired private PurchaseReturnBadStockItemsTableModel tableModel;
 	
 	private boolean addMode;
-	private BadPurchaseReturn adjustmentIn;
+	private PurchaseReturnBadStock adjustmentIn;
 	private String previousSelectProductCriteria;
 	
 	@Autowired
-	public BadPurchaseReturnItemsTable(BadPurchaseReturnItemsTableModel tableModel) {
+	public PurchaseReturnBadStockItemsTable(PurchaseReturnBadStockItemsTableModel tableModel) {
 		super(tableModel);
 		initializeColumns();
 		initializeModelListener();
@@ -164,7 +164,7 @@ public class BadPurchaseReturnItemsTable extends MagicTable {
 		}
 		
 		addMode = false;
-		List<BadPurchaseReturnItem> items = adjustmentIn.getItems();
+		List<PurchaseReturnBadStockItem> items = adjustmentIn.getItems();
 //		items.addAll(tableModel.getItems());
 		tableModel.setItems(items);
 		
@@ -175,7 +175,7 @@ public class BadPurchaseReturnItemsTable extends MagicTable {
 	
 	public void doDeleteCurrentlySelectedItem() {
 		int selectedRowIndex = getSelectedRow();
-		BadPurchaseReturnItem item = getCurrentlySelectedRowItem().getItem();
+		PurchaseReturnBadStockItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
 		adjustmentIn.getItems().remove(item);
 		tableModel.removeItem(selectedRowIndex);
@@ -189,12 +189,12 @@ public class BadPurchaseReturnItemsTable extends MagicTable {
 		}
 	}
 	
-	public BadPurchaseReturnItemRowItem getCurrentlySelectedRowItem() {
+	public PurchaseReturnBadStockItemRowItem getCurrentlySelectedRowItem() {
 		return tableModel.getRowItem(getSelectedRow());
 	}
 	
-	private boolean hasDuplicate(String unit, BadPurchaseReturnItemRowItem rowItem) {
-		for (BadPurchaseReturnItem item : adjustmentIn.getItems()) {
+	private boolean hasDuplicate(String unit, PurchaseReturnBadStockItemRowItem rowItem) {
+		for (PurchaseReturnBadStockItem item : adjustmentIn.getItems()) {
 			if (item.getProduct().equals(rowItem.getProduct()) 
 					&& item.getUnit().equals(unit) && item != rowItem.getItem()) {
 				return true;
@@ -203,16 +203,16 @@ public class BadPurchaseReturnItemsTable extends MagicTable {
 		return tableModel.hasDuplicate(unit, rowItem);
 	}
 	
-	public void setBadPurchaseReturn(BadPurchaseReturn adjustmentIn) {
+	public void setPurchaseReturnBadStock(PurchaseReturnBadStock adjustmentIn) {
 		clearSelection();
 		addMode = false;
 		this.adjustmentIn = adjustmentIn;
-		tableModel.setBadPurchaseReturn(adjustmentIn);
+		tableModel.setPurchaseReturnBadStock(adjustmentIn);
 		previousSelectProductCriteria = null;
 	}
 	
-	private BadPurchaseReturnItem createBlankItem() {
-		BadPurchaseReturnItem item = new BadPurchaseReturnItem();
+	private PurchaseReturnBadStockItem createBlankItem() {
+		PurchaseReturnBadStockItem item = new PurchaseReturnBadStockItem();
 		item.setParent(adjustmentIn);
 		return item;
 	}
@@ -352,7 +352,7 @@ public class BadPurchaseReturnItemsTable extends MagicTable {
 		}
 	}
 
-	public void highlightColumn(BadPurchaseReturnItem item, int column) {
+	public void highlightColumn(PurchaseReturnBadStockItem item, int column) {
 		int row = adjustmentIn.getItems().indexOf(item);
 		changeSelection(row, column, false, false);
 		editCellAt(row, column);
@@ -444,7 +444,7 @@ public class BadPurchaseReturnItemsTable extends MagicTable {
 			if (StringUtils.isEmpty(unit)) {
 				showErrorMessage("Unit must be specified");
 			} else {
-				BadPurchaseReturnItemRowItem rowItem = getCurrentlySelectedRowItem();
+				PurchaseReturnBadStockItemRowItem rowItem = getCurrentlySelectedRowItem();
 				if (!rowItem.getProduct().hasUnit(unit)) {
 					showErrorMessage("Product does not have unit specified");
 				} else if (hasDuplicate(unit, rowItem)) {

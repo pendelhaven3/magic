@@ -10,26 +10,26 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.tables.BadPurchaseReturnItemsTable;
+import com.pj.magic.gui.tables.PurchaseReturnBadStockItemsTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
-import com.pj.magic.gui.tables.rowitems.BadPurchaseReturnItemRowItem;
-import com.pj.magic.model.BadPurchaseReturn;
-import com.pj.magic.model.BadPurchaseReturnItem;
-import com.pj.magic.service.BadPurchaseReturnService;
+import com.pj.magic.gui.tables.rowitems.PurchaseReturnBadStockItemRowItem;
+import com.pj.magic.model.PurchaseReturnBadStock;
+import com.pj.magic.model.PurchaseReturnBadStockItem;
+import com.pj.magic.service.PurchaseReturnBadStockService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.NumberUtil;
 
 @Component
-public class BadPurchaseReturnItemsTableModel extends AbstractTableModel {
+public class PurchaseReturnBadStockItemsTableModel extends AbstractTableModel {
 	
 	private static final String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
 	
 	@Autowired private ProductService productService;
-	@Autowired private BadPurchaseReturnService badStockReturnService;
+	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;
 	
-	private List<BadPurchaseReturnItemRowItem> rowItems = new ArrayList<>();
-	private BadPurchaseReturn badStockReturn;
+	private List<PurchaseReturnBadStockItemRowItem> rowItems = new ArrayList<>();
+	private PurchaseReturnBadStock purchaseReturnBadStock;
 	
 	@Override
 	public int getColumnCount() {
@@ -43,20 +43,20 @@ public class BadPurchaseReturnItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		BadPurchaseReturnItemRowItem rowItem = rowItems.get(rowIndex);
+		PurchaseReturnBadStockItemRowItem rowItem = rowItems.get(rowIndex);
 		switch (columnIndex) {
-		case BadPurchaseReturnItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+		case PurchaseReturnBadStockItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 			return rowItem.getProductCode();
-		case BadPurchaseReturnItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
+		case PurchaseReturnBadStockItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
 			return (rowItem.getProduct() != null) ? rowItem.getProduct().getDescription() : null;
-		case BadPurchaseReturnItemsTable.UNIT_COLUMN_INDEX:
+		case PurchaseReturnBadStockItemsTable.UNIT_COLUMN_INDEX:
 			return rowItem.getUnit();
-		case BadPurchaseReturnItemsTable.QUANTITY_COLUMN_INDEX:
+		case PurchaseReturnBadStockItemsTable.QUANTITY_COLUMN_INDEX:
 			return rowItem.getQuantity();
-		case BadPurchaseReturnItemsTable.UNIT_COST_COLUMN_INDEX:
+		case PurchaseReturnBadStockItemsTable.UNIT_COST_COLUMN_INDEX:
 			BigDecimal unitCost = rowItem.getUnitCost();
 			return (unitCost != null) ? FormatterUtil.formatAmount(unitCost) : "";
-		case BadPurchaseReturnItemsTable.AMOUNT_COLUMN_INDEX:
+		case PurchaseReturnBadStockItemsTable.AMOUNT_COLUMN_INDEX:
 			BigDecimal amount = rowItem.getAmount();
 			return (amount != null) ? FormatterUtil.formatAmount(amount) : "";
 		default:
@@ -69,9 +69,9 @@ public class BadPurchaseReturnItemsTableModel extends AbstractTableModel {
 		return columnNames[columnIndex];
 	}
 
-	public List<BadPurchaseReturnItem> getItems() {
-		List<BadPurchaseReturnItem> items = new ArrayList<>();
-		for (BadPurchaseReturnItemRowItem rowItem : this.rowItems) {
+	public List<PurchaseReturnBadStockItem> getItems() {
+		List<PurchaseReturnBadStockItem> items = new ArrayList<>();
+		for (PurchaseReturnBadStockItemRowItem rowItem : this.rowItems) {
 			if (rowItem.isValid()) {
 				items.add(rowItem.getItem());
 			}
@@ -79,49 +79,49 @@ public class BadPurchaseReturnItemsTableModel extends AbstractTableModel {
 		return items;
 	}
 	
-	public void setBadPurchaseReturn(BadPurchaseReturn badStockReturn) {
-		this.badStockReturn = badStockReturn;
-		setItems(badStockReturn.getItems());
+	public void setPurchaseReturnBadStock(PurchaseReturnBadStock purchaseReturnBadStock) {
+		this.purchaseReturnBadStock = purchaseReturnBadStock;
+		setItems(purchaseReturnBadStock.getItems());
 	}
 	
-	public void setItems(List<BadPurchaseReturnItem> items) {
+	public void setItems(List<PurchaseReturnBadStockItem> items) {
 		rowItems.clear();
-		for (BadPurchaseReturnItem item : items) {
-			rowItems.add(new BadPurchaseReturnItemRowItem(item));
+		for (PurchaseReturnBadStockItem item : items) {
+			rowItems.add(new PurchaseReturnBadStockItemRowItem(item));
 		}
 		fireTableDataChanged();
 	}
 	
-	public void addItem(BadPurchaseReturnItem item) {
-		rowItems.add(new BadPurchaseReturnItemRowItem(item));
+	public void addItem(PurchaseReturnBadStockItem item) {
+		rowItems.add(new PurchaseReturnBadStockItemRowItem(item));
 		fireTableDataChanged();
 	}
 	
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		BadPurchaseReturnItemRowItem rowItem = rowItems.get(rowIndex);
+		PurchaseReturnBadStockItemRowItem rowItem = rowItems.get(rowIndex);
 		String val = (String)value;
 		switch (columnIndex) {
-		case BadPurchaseReturnItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+		case PurchaseReturnBadStockItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 			if (rowItem.getProduct() != null && rowItem.getProduct().getCode().equals(val)) {
 				return;
 			}
 			rowItem.setProduct(productService.findProductByCode(val));
 			rowItem.setUnit(null);
 			break;
-		case BadPurchaseReturnItemsTable.UNIT_COLUMN_INDEX:
+		case PurchaseReturnBadStockItemsTable.UNIT_COLUMN_INDEX:
 			rowItem.setUnit(val);
 			break;
-		case BadPurchaseReturnItemsTable.QUANTITY_COLUMN_INDEX:
+		case PurchaseReturnBadStockItemsTable.QUANTITY_COLUMN_INDEX:
 			rowItem.setQuantity(Integer.valueOf(val));
 			break;
-		case BadPurchaseReturnItemsTable.UNIT_COST_COLUMN_INDEX:
+		case PurchaseReturnBadStockItemsTable.UNIT_COST_COLUMN_INDEX:
 			rowItem.setUnitCost(NumberUtil.toBigDecimal(val));
 			break;
 		}
 		// TODO: Save only when there is a change
 		if (rowItem.isValid()) {
-			BadPurchaseReturnItem item = rowItem.getItem();
+			PurchaseReturnBadStockItem item = rowItem.getItem();
 			item.setProduct(rowItem.getProduct());
 			item.setUnit(rowItem.getUnit());
 			item.setQuantity(Integer.valueOf(rowItem.getQuantity()));
@@ -135,7 +135,7 @@ public class BadPurchaseReturnItemsTableModel extends AbstractTableModel {
 			}
 			
 			boolean newItem = (item.getId() == null);
-			badStockReturnService.save(item);
+			purchaseReturnBadStockService.save(item);
 			if (newItem) {
 				item.getParent().getItems().add(item);
 			}
@@ -145,10 +145,10 @@ public class BadPurchaseReturnItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if (badStockReturn.isPosted()) {
+		if (purchaseReturnBadStock.isPosted()) {
 			return false;
 		} else {
-			BadPurchaseReturnItemRowItem rowItem = rowItems.get(rowIndex);
+			PurchaseReturnBadStockItemRowItem rowItem = rowItems.get(rowIndex);
 			switch (columnIndex) {
 			case SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 				return true;
@@ -165,13 +165,13 @@ public class BadPurchaseReturnItemsTableModel extends AbstractTableModel {
 		}
 	}
 	
-	public BadPurchaseReturnItemRowItem getRowItem(int rowIndex) {
+	public PurchaseReturnBadStockItemRowItem getRowItem(int rowIndex) {
 		return rowItems.get(rowIndex);
 	}
 	
 	public void removeItem(int rowIndex) {
-		BadPurchaseReturnItemRowItem rowItem = rowItems.remove(rowIndex);
-		badStockReturnService.delete(rowItem.getItem());
+		PurchaseReturnBadStockItemRowItem rowItem = rowItems.remove(rowIndex);
+		purchaseReturnBadStockService.delete(rowItem.getItem());
 		fireTableDataChanged();
 	}
 	
@@ -179,13 +179,13 @@ public class BadPurchaseReturnItemsTableModel extends AbstractTableModel {
 		return !rowItems.isEmpty();
 	}
 	
-	public void clearAndAddItem(BadPurchaseReturnItem item) {
+	public void clearAndAddItem(PurchaseReturnBadStockItem item) {
 		rowItems.clear();
 		addItem(item);
 	}
 
-	public boolean hasDuplicate(BadPurchaseReturnItemRowItem checkItem) {
-		for (BadPurchaseReturnItemRowItem rowItem : rowItems) {
+	public boolean hasDuplicate(PurchaseReturnBadStockItemRowItem checkItem) {
+		for (PurchaseReturnBadStockItemRowItem rowItem : rowItems) {
 			if (rowItem.equals(checkItem) && rowItem != checkItem) {
 				return true;
 			}
@@ -199,16 +199,16 @@ public class BadPurchaseReturnItemsTableModel extends AbstractTableModel {
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex == BadPurchaseReturnItemsTable.UNIT_COST_COLUMN_INDEX
-				|| columnIndex == BadPurchaseReturnItemsTable.AMOUNT_COLUMN_INDEX) {
+		if (columnIndex == PurchaseReturnBadStockItemsTable.UNIT_COST_COLUMN_INDEX
+				|| columnIndex == PurchaseReturnBadStockItemsTable.AMOUNT_COLUMN_INDEX) {
 			return Number.class;
 		} else {
 			return Object.class;
 		}
 	}
 
-	public boolean hasDuplicate(String unit, BadPurchaseReturnItemRowItem checkRowItem) {
-		for (BadPurchaseReturnItemRowItem rowItem : rowItems) {
+	public boolean hasDuplicate(String unit, PurchaseReturnBadStockItemRowItem checkRowItem) {
+		for (PurchaseReturnBadStockItemRowItem rowItem : rowItems) {
 			if (checkRowItem.getProduct().equals(rowItem.getProduct()) 
 					&& unit.equals(rowItem.getUnit()) && rowItem != checkRowItem) {
 				return true;

@@ -19,28 +19,28 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.BadPurchaseReturnSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.PurchaseReturnBadStockSearchCriteriaDialog;
 import com.pj.magic.gui.tables.MagicListTable;
-import com.pj.magic.model.BadPurchaseReturn;
-import com.pj.magic.model.search.BadPurchaseReturnSearchCriteria;
-import com.pj.magic.service.BadPurchaseReturnService;
+import com.pj.magic.model.PurchaseReturnBadStock;
+import com.pj.magic.model.search.PurchaseReturnBadStockSearchCriteria;
+import com.pj.magic.service.PurchaseReturnBadStockService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class BadPurchaseReturnListPanel extends StandardMagicPanel {
+public class PurchaseReturnBadStockListPanel extends StandardMagicPanel {
 	
-	private static final int BAD_PURCHASE_RETURN_NUMBER_COLUMN_INDEX = 0;
+	private static final int PURCHASE_RETURN_BAD_STOCK_NUMBER_COLUMN_INDEX = 0;
 	private static final int SUPPLIER_COLUMN_INDEX = 1;
 	private static final int TOTAL_AMOUNT_COLUMN_INDEX = 2;
 	private static final int STATUS_COLUMN_INDEX = 3;
 	private static final int POST_DATE_COLUMN_INDEX = 4;
 	
-	@Autowired private BadPurchaseReturnService badPurchaseReturnService;
-	@Autowired private BadPurchaseReturnSearchCriteriaDialog badPurchaseReturnSearchCriteriaDialog;
+	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;
+	@Autowired private PurchaseReturnBadStockSearchCriteriaDialog purchaseReturnBadStockSearchCriteriaDialog;
 	
 	private MagicListTable table;
-	private BadPurchaseReturnsTableModel tableModel;
+	private PurchaseReturnBadStocksTableModel tableModel;
 	
 	@Override
 	public void initializeComponents() {
@@ -50,17 +50,17 @@ public class BadPurchaseReturnListPanel extends StandardMagicPanel {
 	}
 
 	private void initializeTable() {
-		tableModel = new BadPurchaseReturnsTableModel();
+		tableModel = new PurchaseReturnBadStocksTableModel();
 		table = new MagicListTable(tableModel);
 	}
 
 	public void updateDisplay() {
-		tableModel.setBadPurchaseReturns(badPurchaseReturnService.getAllNewBadPurchaseReturns());
-		badPurchaseReturnSearchCriteriaDialog.updateDisplay();
+		tableModel.setPurchaseReturnBadStocks(purchaseReturnBadStockService.getAllNewPurchaseReturnBadStocks());
+		purchaseReturnBadStockSearchCriteriaDialog.updateDisplay();
 	}
 
-	public void displayBadPurchaseReturnDetails(BadPurchaseReturn badPurchaseReturn) {
-		getMagicFrame().switchToBadPurchaseReturnPanel(badPurchaseReturn);
+	public void displayPurchaseReturnBadStockDetails(PurchaseReturnBadStock purchaseReturnBadStock) {
+		getMagicFrame().switchToPurchaseReturnBadStockPanel(purchaseReturnBadStock);
 	}
 	
 	@Override
@@ -92,7 +92,7 @@ public class BadPurchaseReturnListPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectBadPurchaseReturn();
+				selectPurchaseReturnBadStock();
 			}
 		});
 		
@@ -100,21 +100,21 @@ public class BadPurchaseReturnListPanel extends StandardMagicPanel {
 			
 			@Override
 			protected void onDoubleClick() {
-				selectBadPurchaseReturn();
+				selectPurchaseReturnBadStock();
 			}
 		});
 	}
 	
-	private void selectBadPurchaseReturn() {
-		displayBadPurchaseReturnDetails(getCurrentlySelectedBadPurchaseReturn());
+	private void selectPurchaseReturnBadStock() {
+		displayPurchaseReturnBadStockDetails(getCurrentlySelectedPurchaseReturnBadStock());
 	}
 
-	public BadPurchaseReturn getCurrentlySelectedBadPurchaseReturn() {
-		return tableModel.getBadPurchaseReturn(table.getSelectedRow());
+	public PurchaseReturnBadStock getCurrentlySelectedPurchaseReturnBadStock() {
+		return tableModel.getPurchaseReturnBadStock(table.getSelectedRow());
 	}
 	
-	protected void switchToNewBadPurchaseReturnPanel() {
-		getMagicFrame().switchToBadPurchaseReturnPanel(new BadPurchaseReturn());
+	protected void switchToNewPurchaseReturnBadStockPanel() {
+		getMagicFrame().switchToPurchaseReturnBadStockPanel(new PurchaseReturnBadStock());
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class BadPurchaseReturnListPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				switchToNewBadPurchaseReturnPanel();
+				switchToNewPurchaseReturnBadStockPanel();
 			}
 		});
 		toolBar.add(addButton);
@@ -139,21 +139,21 @@ public class BadPurchaseReturnListPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				searchBadPurchaseReturns();
+				searchPurchaseReturnBadStocks();
 			}
 		});
 		
 		toolBar.add(searchButton);
 	}
 
-	private void searchBadPurchaseReturns() {
-		badPurchaseReturnSearchCriteriaDialog.setVisible(true);
+	private void searchPurchaseReturnBadStocks() {
+		purchaseReturnBadStockSearchCriteriaDialog.setVisible(true);
 		
-		BadPurchaseReturnSearchCriteria criteria = badPurchaseReturnSearchCriteriaDialog.getSearchCriteria();
+		PurchaseReturnBadStockSearchCriteria criteria = purchaseReturnBadStockSearchCriteriaDialog.getSearchCriteria();
 		if (criteria != null) {
-			List<BadPurchaseReturn> badPurchaseReturns = badPurchaseReturnService.search(criteria);
-			tableModel.setBadPurchaseReturns(badPurchaseReturns);
-			if (!badPurchaseReturns.isEmpty()) {
+			List<PurchaseReturnBadStock> purchaseReturnBadStocks = purchaseReturnBadStockService.search(criteria);
+			tableModel.setPurchaseReturnBadStocks(purchaseReturnBadStocks);
+			if (!purchaseReturnBadStocks.isEmpty()) {
 				table.changeSelection(0, 0, false, false);
 				table.requestFocusInWindow();
 			} else {
@@ -162,21 +162,21 @@ public class BadPurchaseReturnListPanel extends StandardMagicPanel {
 		}
 	}
 
-	private class BadPurchaseReturnsTableModel extends AbstractTableModel {
+	private class PurchaseReturnBadStocksTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = 
 			{"PRBS No.", "Supplier", "Total Amount", "Status", "Post Date"};
 		
-		private List<BadPurchaseReturn> badPurchaseReturns = new ArrayList<>();
+		private List<PurchaseReturnBadStock> purchaseReturnBadStocks = new ArrayList<>();
 		
-		public void setBadPurchaseReturns(List<BadPurchaseReturn> badPurchaseReturns) {
-			this.badPurchaseReturns = badPurchaseReturns;
+		public void setPurchaseReturnBadStocks(List<PurchaseReturnBadStock> purchaseReturnBadStocks) {
+			this.purchaseReturnBadStocks = purchaseReturnBadStocks;
 			fireTableDataChanged();
 		}
 		
 		@Override
 		public int getRowCount() {
-			return badPurchaseReturns.size();
+			return purchaseReturnBadStocks.size();
 		}
 
 		@Override
@@ -191,26 +191,26 @@ public class BadPurchaseReturnListPanel extends StandardMagicPanel {
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			BadPurchaseReturn badPurchaseReturn = badPurchaseReturns.get(rowIndex);
+			PurchaseReturnBadStock purchaseReturnBadStock = purchaseReturnBadStocks.get(rowIndex);
 			switch (columnIndex) {
-			case BAD_PURCHASE_RETURN_NUMBER_COLUMN_INDEX:
-				return badPurchaseReturn.getBadPurchaseReturnNumber();
+			case PURCHASE_RETURN_BAD_STOCK_NUMBER_COLUMN_INDEX:
+				return purchaseReturnBadStock.getPurchaseReturnBadStockNumber();
 			case SUPPLIER_COLUMN_INDEX:
-				return badPurchaseReturn.getSupplier().getName();
+				return purchaseReturnBadStock.getSupplier().getName();
 			case TOTAL_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(badPurchaseReturn.getTotalAmount());
+				return FormatterUtil.formatAmount(purchaseReturnBadStock.getTotalAmount());
 			case STATUS_COLUMN_INDEX:
-				return badPurchaseReturn.getStatus();
+				return purchaseReturnBadStock.getStatus();
 			case POST_DATE_COLUMN_INDEX:
-				return badPurchaseReturn.isPosted() ? 
-						FormatterUtil.formatDateTime(badPurchaseReturn.getPostDate()) : null;
+				return purchaseReturnBadStock.isPosted() ? 
+						FormatterUtil.formatDateTime(purchaseReturnBadStock.getPostDate()) : null;
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
 		}
 		
-		public BadPurchaseReturn getBadPurchaseReturn(int index) {
-			return badPurchaseReturns.get(index);
+		public PurchaseReturnBadStock getPurchaseReturnBadStock(int index) {
+			return purchaseReturnBadStocks.get(index);
 		}
 		
 	}

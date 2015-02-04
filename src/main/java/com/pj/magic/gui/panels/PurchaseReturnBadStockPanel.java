@@ -33,10 +33,10 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
-import com.pj.magic.gui.tables.BadPurchaseReturnItemsTable;
-import com.pj.magic.model.BadPurchaseReturn;
+import com.pj.magic.gui.tables.PurchaseReturnBadStockItemsTable;
+import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.service.BadPurchaseReturnService;
+import com.pj.magic.service.PurchaseReturnBadStockService;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.SupplierService;
@@ -44,24 +44,24 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class BadPurchaseReturnPanel extends StandardMagicPanel {
+public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 
-	private static final Logger logger = LoggerFactory.getLogger(BadPurchaseReturnPanel.class);
+	private static final Logger logger = LoggerFactory.getLogger(PurchaseReturnBadStockPanel.class);
 	
 	private static final String SAVE_SUPPLIER_ACTION_NAME = "SAVE_CUSTOMER_ACTION_NAME";
 	private static final String OPEN_SELECT_SUPPLIER_DIALOG_ACTION_NAME = 
 			"OPEN_SELECT_CUSTOMER_DIALOG_ACTION_NAME";
 	
-	@Autowired private BadPurchaseReturnItemsTable itemsTable;
-	@Autowired private BadPurchaseReturnService badPurchaseReturnService;
+	@Autowired private PurchaseReturnBadStockItemsTable itemsTable;
+	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;
 	@Autowired private SupplierService supplierService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private LoginService loginService;
 	
-	private BadPurchaseReturn badPurchaseReturn;
-	private JLabel badPurchaseReturnNumberField;
+	private PurchaseReturnBadStock purchaseReturnBadStock;
+	private JLabel purchaseReturnBadStockNumberField;
 	private JTextField supplierCodeField;
 	private JLabel supplierNameField;
 	private JButton selectSupplierButton;
@@ -106,9 +106,9 @@ public class BadPurchaseReturnPanel extends StandardMagicPanel {
 	}
 
 	private void saveRemarks() {
-		if (!remarksField.getText().equals(badPurchaseReturn.getRemarks())) {
-			badPurchaseReturn.setRemarks(remarksField.getText());
-			badPurchaseReturnService.save(badPurchaseReturn);
+		if (!remarksField.getText().equals(purchaseReturnBadStock.getRemarks())) {
+			purchaseReturnBadStock.setRemarks(remarksField.getText());
+			purchaseReturnBadStockService.save(purchaseReturnBadStock);
 		}
 	}
 	
@@ -118,15 +118,15 @@ public class BadPurchaseReturnPanel extends StandardMagicPanel {
 		
 		Supplier supplier = selectSupplierDialog.getSelectedSupplier();
 		if (supplier != null) {
-			if (badPurchaseReturn.getSupplier() != null && badPurchaseReturn.getSupplier().equals(supplier)) {
+			if (purchaseReturnBadStock.getSupplier() != null && purchaseReturnBadStock.getSupplier().equals(supplier)) {
 				// skip saving since there is no change
 				remarksField.requestFocusInWindow();
 				return;
 			} else {
-				badPurchaseReturn.setSupplier(supplier);
+				purchaseReturnBadStock.setSupplier(supplier);
 				try {
-					badPurchaseReturnService.save(badPurchaseReturn);
-					updateDisplay(badPurchaseReturn);
+					purchaseReturnBadStockService.save(purchaseReturnBadStock);
+					updateDisplay(purchaseReturnBadStock);
 					remarksField.requestFocusInWindow();
 				} catch (Exception e) {
 					logger.error(e.getMessage(), e);
@@ -166,8 +166,8 @@ public class BadPurchaseReturnPanel extends StandardMagicPanel {
 	}
 
 	private void saveSupplier() {
-		if (badPurchaseReturn.getSupplier() != null) {
-			if (badPurchaseReturn.getSupplier().getCode().equals(supplierCodeField.getText())) {
+		if (purchaseReturnBadStock.getSupplier() != null) {
+			if (purchaseReturnBadStock.getSupplier().getCode().equals(supplierCodeField.getText())) {
 				// skip saving since there is no change in supplier
 				remarksField.requestFocusInWindow();
 				return;
@@ -184,10 +184,10 @@ public class BadPurchaseReturnPanel extends StandardMagicPanel {
 			showErrorMessage("No supplier matching code specified");
 			return;
 		} else {
-			badPurchaseReturn.setSupplier(supplier);
+			purchaseReturnBadStock.setSupplier(supplier);
 			try {
-				badPurchaseReturnService.save(badPurchaseReturn);
-				updateDisplay(badPurchaseReturn);
+				purchaseReturnBadStockService.save(purchaseReturnBadStock);
+				updateDisplay(purchaseReturnBadStock);
 				remarksField.requestFocusInWindow();
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
@@ -201,7 +201,7 @@ public class BadPurchaseReturnPanel extends StandardMagicPanel {
 		if (itemsTable.isEditing()) {
 			itemsTable.getCellEditor().cancelCellEditing();
 		}
-		getMagicFrame().switchToBadPurchaseReturnListPanel();
+		getMagicFrame().switchToPurchaseReturnBadStockListPanel();
 	}
 	
 	private void updateTotalAmountFieldWhenItemsTableChanges() {
@@ -209,51 +209,51 @@ public class BadPurchaseReturnPanel extends StandardMagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalItemsField.setText(String.valueOf(badPurchaseReturn.getTotalItems()));
-				totalAmountField.setText(FormatterUtil.formatAmount(badPurchaseReturn.getTotalAmount()));
+				totalItemsField.setText(String.valueOf(purchaseReturnBadStock.getTotalItems()));
+				totalAmountField.setText(FormatterUtil.formatAmount(purchaseReturnBadStock.getTotalAmount()));
 			}
 		});
 	}
 
-	public void updateDisplay(BadPurchaseReturn badPurchaseReturn) {
-		if (badPurchaseReturn.getId() == null) {
-			this.badPurchaseReturn = badPurchaseReturn;
+	public void updateDisplay(PurchaseReturnBadStock purchaseReturnBadStock) {
+		if (purchaseReturnBadStock.getId() == null) {
+			this.purchaseReturnBadStock = purchaseReturnBadStock;
 			clearDisplay();
 			return;
 		}
 		
-		this.badPurchaseReturn = badPurchaseReturn = badPurchaseReturnService.getBadPurchaseReturn(badPurchaseReturn.getId());
+		this.purchaseReturnBadStock = purchaseReturnBadStock = purchaseReturnBadStockService.getPurchaseReturnBadStock(purchaseReturnBadStock.getId());
 		
-		badPurchaseReturnNumberField.setText(badPurchaseReturn.getBadPurchaseReturnNumber().toString());
-		supplierCodeField.setText(badPurchaseReturn.getSupplier().getCode());
-		supplierCodeField.setEnabled(!badPurchaseReturn.isPosted());
-		supplierNameField.setText(badPurchaseReturn.getSupplier().getName());
-		selectSupplierButton.setEnabled(!badPurchaseReturn.isPosted());
-		statusField.setText(badPurchaseReturn.getStatus());
-		if (badPurchaseReturn.getPostDate() != null) {
-			postDateField.setText(FormatterUtil.formatDate(badPurchaseReturn.getPostDate()));
+		purchaseReturnBadStockNumberField.setText(purchaseReturnBadStock.getPurchaseReturnBadStockNumber().toString());
+		supplierCodeField.setText(purchaseReturnBadStock.getSupplier().getCode());
+		supplierCodeField.setEnabled(!purchaseReturnBadStock.isPosted());
+		supplierNameField.setText(purchaseReturnBadStock.getSupplier().getName());
+		selectSupplierButton.setEnabled(!purchaseReturnBadStock.isPosted());
+		statusField.setText(purchaseReturnBadStock.getStatus());
+		if (purchaseReturnBadStock.getPostDate() != null) {
+			postDateField.setText(FormatterUtil.formatDate(purchaseReturnBadStock.getPostDate()));
 		} else {
 			postDateField.setText(null);
 		}
-		if (badPurchaseReturn.getPostedBy() != null) {
-			postedByField.setText(badPurchaseReturn.getPostedBy().getUsername());
+		if (purchaseReturnBadStock.getPostedBy() != null) {
+			postedByField.setText(purchaseReturnBadStock.getPostedBy().getUsername());
 		} else {
 			postedByField.setText(null);
 		}
-		remarksField.setText(badPurchaseReturn.getRemarks());
-		remarksField.setEnabled(!badPurchaseReturn.isPosted());
-		totalItemsField.setText(String.valueOf(badPurchaseReturn.getTotalItems()));
-		totalAmountField.setText(badPurchaseReturn.getTotalAmount().toString());
-		addItemButton.setEnabled(!badPurchaseReturn.isPosted());
-		deleteItemButton.setEnabled(!badPurchaseReturn.isPosted());
+		remarksField.setText(purchaseReturnBadStock.getRemarks());
+		remarksField.setEnabled(!purchaseReturnBadStock.isPosted());
+		totalItemsField.setText(String.valueOf(purchaseReturnBadStock.getTotalItems()));
+		totalAmountField.setText(purchaseReturnBadStock.getTotalAmount().toString());
+		addItemButton.setEnabled(!purchaseReturnBadStock.isPosted());
+		deleteItemButton.setEnabled(!purchaseReturnBadStock.isPosted());
 		printPreviewButton.setEnabled(true);
 		printButton.setEnabled(true);
 		
-		itemsTable.setBadPurchaseReturn(badPurchaseReturn);
+		itemsTable.setPurchaseReturnBadStock(purchaseReturnBadStock);
 	}
 
 	private void clearDisplay() {
-		badPurchaseReturnNumberField.setText(null);
+		purchaseReturnBadStockNumberField.setText(null);
 		supplierCodeField.setText(null);
 		supplierCodeField.setEnabled(true);
 		supplierNameField.setText(null);
@@ -265,7 +265,7 @@ public class BadPurchaseReturnPanel extends StandardMagicPanel {
 		remarksField.setEnabled(false);
 		totalItemsField.setText(null);
 		totalAmountField.setText(null);
-		itemsTable.setBadPurchaseReturn(badPurchaseReturn);
+		itemsTable.setPurchaseReturnBadStock(purchaseReturnBadStock);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
@@ -293,8 +293,8 @@ public class BadPurchaseReturnPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		badPurchaseReturnNumberField = ComponentUtil.createLabel(200, "");
-		mainPanel.add(badPurchaseReturnNumberField, c);
+		purchaseReturnBadStockNumberField = ComponentUtil.createLabel(200, "");
+		mainPanel.add(purchaseReturnBadStockNumberField, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 3;

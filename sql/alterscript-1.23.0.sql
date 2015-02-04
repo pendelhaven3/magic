@@ -1,4 +1,4 @@
-insert into SEQUENCE (NAME) values ('BAD_PURCHASE_RETURN_NO_SEQ');
+insert into SEQUENCE (NAME) values ('PURCHASE_RETURN_BAD_STOCK_NO_SEQ');
 
 create table BAD_PURCHASE_RETURN (
   ID integer auto_increment,

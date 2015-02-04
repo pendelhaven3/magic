@@ -6,31 +6,31 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.pj.magic.model.BadPurchaseReturnItem;
+import com.pj.magic.model.PurchaseReturnBadStockItem;
 import com.pj.magic.model.Product;
 
 /*
  * Wrapper class to separate table gui concerns of inputting Bad Stock Return items
  * from the business logic of Bad Stock Return item model.
  */
-public class BadPurchaseReturnItemRowItem {
+public class PurchaseReturnBadStockItemRowItem {
 
-	private BadPurchaseReturnItem item;
+	private PurchaseReturnBadStockItem item;
 	private Product product;
 	private String unit;
 	private Integer quantity;
 	private BigDecimal unitCost;
 
-	public BadPurchaseReturnItemRowItem(BadPurchaseReturnItem item) {
+	public PurchaseReturnBadStockItemRowItem(PurchaseReturnBadStockItem item) {
 		this.item = item;
 		reset();
 	}
 	
-	public BadPurchaseReturnItem getItem() {
+	public PurchaseReturnBadStockItem getItem() {
 		return item;
 	}
 
-	public void setItem(BadPurchaseReturnItem item) {
+	public void setItem(PurchaseReturnBadStockItem item) {
 		this.item = item;
 	}
 
@@ -91,10 +91,10 @@ public class BadPurchaseReturnItemRowItem {
 		if (obj == null) {
 			return false;
 		}
-        if (!(obj instanceof BadPurchaseReturnItemRowItem)) {
+        if (!(obj instanceof PurchaseReturnBadStockItemRowItem)) {
             return false;
         }
-        BadPurchaseReturnItemRowItem other = (BadPurchaseReturnItemRowItem)obj;		
+        PurchaseReturnBadStockItemRowItem other = (PurchaseReturnBadStockItemRowItem)obj;		
 		return new EqualsBuilder()
 			.append(product, other.getProduct())
 			.append(unit, other.getUnit())

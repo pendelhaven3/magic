@@ -109,7 +109,7 @@ public class PurchasesMenuPanel extends StandardMagicPanel {
 			getMagicFrame().switchToPurchaseReturnListPanel();
 			break;
 		case BAD_PURCHASE_RETURN:
-			getMagicFrame().switchToBadPurchaseReturnListPanel();
+			getMagicFrame().switchToPurchaseReturnBadStockListPanel();
 			break;
 		}
 	}

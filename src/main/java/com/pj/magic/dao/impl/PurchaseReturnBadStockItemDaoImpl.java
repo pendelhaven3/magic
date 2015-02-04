@@ -13,25 +13,26 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.pj.magic.dao.BadPurchaseReturnItemDao;
-import com.pj.magic.model.BadPurchaseReturn;
-import com.pj.magic.model.BadPurchaseReturnItem;
+import com.pj.magic.dao.PurchaseReturnBadStockItemDao;
+import com.pj.magic.model.PurchaseReturnBadStock;
+import com.pj.magic.model.PurchaseReturnBadStockItem;
 import com.pj.magic.model.Product;
 
 @Repository
-public class BadPurchaseReturnItemDaoImpl extends MagicDao implements BadPurchaseReturnItemDao {
+public class PurchaseReturnBadStockItemDaoImpl extends MagicDao implements PurchaseReturnBadStockItemDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, BAD_PURCHASE_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_COST,"
+			"select a.ID, PURCHASE_RETURN_BAD_STOCK_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_COST,"
 			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
-			+ " from BAD_PURCHASE_RETURN_ITEM a"
+			+ " from PURCHASE_RETURN_BAD_STOCK_ITEM a"
 			+ " join PRODUCT b"
 			+ "   on b.ID = a.PRODUCT_ID";
 	
-	private BadPurchaseReturnItemRowMapper badStockReturnItemRowMapper = new BadPurchaseReturnItemRowMapper();
+	private PurchaseReturnBadStockItemRowMapper purchaseReturnBadStockItemRowMapper = 
+			new PurchaseReturnBadStockItemRowMapper();
 	
 	@Override
-	public void save(BadPurchaseReturnItem item) {
+	public void save(PurchaseReturnBadStockItem item) {
 		if (item.getId() == null) {
 			insert(item);
 		} else {
@@ -40,11 +41,11 @@ public class BadPurchaseReturnItemDaoImpl extends MagicDao implements BadPurchas
 	}
 
 	private static final String INSERT_SQL =
-			"insert into BAD_PURCHASE_RETURN_ITEM"
-			+ " (BAD_PURCHASE_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_COST)"
+			"insert into PURCHASE_RETURN_BAD_STOCK_ITEM"
+			+ " (PURCHASE_RETURN_BAD_STOCK_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_COST)"
 			+ " values (?, ?, ?, ?, ?)";
 	
-	private void insert(final BadPurchaseReturnItem item) {
+	private void insert(final PurchaseReturnBadStockItem item) {
 		KeyHolder holder = new GeneratedKeyHolder();
 		getJdbcTemplate().update(new PreparedStatementCreator() {
 			
@@ -65,10 +66,10 @@ public class BadPurchaseReturnItemDaoImpl extends MagicDao implements BadPurchas
 	}
 
 	private static final String UPDATE_SQL =
-			"update BAD_PURCHASE_RETURN_ITEM set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, UNIT_COST = ?"
+			"update PURCHASE_RETURN_BAD_STOCK_ITEM set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, UNIT_COST = ?"
 			+ " where ID = ?";
 	
-	private void update(BadPurchaseReturnItem item) {
+	private void update(PurchaseReturnBadStockItem item) {
 		getJdbcTemplate().update(UPDATE_SQL,
 				item.getProduct().getId(),
 				item.getUnit(),
@@ -77,27 +78,28 @@ public class BadPurchaseReturnItemDaoImpl extends MagicDao implements BadPurchas
 				item.getId());
 	}
 
-	private static final String FIND_ALL_BY_BAD_PURCHASE_RETURN_SQL = BASE_SELECT_SQL
-			+ " where a.BAD_PURCHASE_RETURN_ID = ?";
+	private static final String FIND_ALL_BY_PURCHASE_RETURN_BAD_STOCK_SQL = BASE_SELECT_SQL
+			+ " where a.PURCHASE_RETURN_BAD_STOCK_ID = ?";
 	
 	@Override
-	public List<BadPurchaseReturnItem> findAllByBadPurchaseReturn(BadPurchaseReturn badStockReturn) {
-		return getJdbcTemplate().query(FIND_ALL_BY_BAD_PURCHASE_RETURN_SQL, badStockReturnItemRowMapper, 
-				badStockReturn.getId());
+	public List<PurchaseReturnBadStockItem> findAllByPurchaseReturnBadStock(
+			PurchaseReturnBadStock purchaseReturnBadStock) {
+		return getJdbcTemplate().query(FIND_ALL_BY_PURCHASE_RETURN_BAD_STOCK_SQL, purchaseReturnBadStockItemRowMapper, 
+				purchaseReturnBadStock.getId());
 	}
 
-	private static final String DELETE_SQL = "delete from BAD_PURCHASE_RETURN_ITEM where ID = ?";
+	private static final String DELETE_SQL = "delete from PURCHASE_RETURN_BAD_STOCK_ITEM where ID = ?";
 	
 	@Override
-	public void delete(BadPurchaseReturnItem item) {
+	public void delete(PurchaseReturnBadStockItem item) {
 		getJdbcTemplate().update(DELETE_SQL, item.getId());
 	}
 
-	private class BadPurchaseReturnItemRowMapper implements RowMapper<BadPurchaseReturnItem> {
+	private class PurchaseReturnBadStockItemRowMapper implements RowMapper<PurchaseReturnBadStockItem> {
 
 		@Override
-		public BadPurchaseReturnItem mapRow(ResultSet rs, int rowNum) throws SQLException {
-			BadPurchaseReturnItem item = new BadPurchaseReturnItem();
+		public PurchaseReturnBadStockItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+			PurchaseReturnBadStockItem item = new PurchaseReturnBadStockItem();
 			item.setId(rs.getLong("ID"));
 			
 			Product product = new Product();

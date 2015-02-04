@@ -23,8 +23,8 @@ import com.pj.magic.gui.panels.AreaInventoryReportListPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportPanel;
 import com.pj.magic.gui.panels.AreaListPanel;
 import com.pj.magic.gui.panels.BackupDataPanel;
-import com.pj.magic.gui.panels.BadPurchaseReturnListPanel;
-import com.pj.magic.gui.panels.BadPurchaseReturnPanel;
+import com.pj.magic.gui.panels.PurchaseReturnBadStockListPanel;
+import com.pj.magic.gui.panels.PurchaseReturnBadStockPanel;
 import com.pj.magic.gui.panels.BadStockReturnListPanel;
 import com.pj.magic.gui.panels.BadStockReturnPanel;
 import com.pj.magic.gui.panels.CashFlowReportPanel;
@@ -105,7 +105,7 @@ import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
-import com.pj.magic.model.BadPurchaseReturn;
+import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.Customer;
@@ -233,8 +233,8 @@ public class MagicFrame extends JFrame {
 			"PURCHASE_PAYMENT_ADJUSTMENT_TYPE_LIST_PANEL";
 	private static final String MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_TYPE_PANEL = 
 			"MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_TYPE_PANEL";
-	private static final String BAD_PURCHASE_RETURN_LIST_PANEL = "BAD_PURCHASE_RETURN_LIST_PANEL";
-	private static final String BAD_PURCHASE_RETURN_PANEL = "BAD_PURCHASE_RETURN_PANEL";
+	private static final String PURCHASE_RETURN_BAD_STOCK_LIST_PANEL = "BAD_PURCHASE_RETURN_LIST_PANEL";
+	private static final String PURCHASE_RETURN_BAD_STOCK_PANEL = "BAD_PURCHASE_RETURN_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -320,8 +320,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private PurchaseReturnPanel purchaseReturnPanel;
 	@Autowired private PurchasePaymentAdjustmentTypeListPanel purchasePaymentAdjustmentTypeListPanel;
 	@Autowired private MaintainPurchasePaymentAdjustmentTypePanel maintainPurchasePaymentAdjustmentTypePanel;
-	@Autowired private BadPurchaseReturnListPanel badPurchaseReturnListPanel;
-	@Autowired private BadPurchaseReturnPanel badPurchaseReturnPanel;
+	@Autowired private PurchaseReturnBadStockListPanel purchaseReturnBadStockListPanel;
+	@Autowired private PurchaseReturnBadStockPanel purchaseReturnBadStockPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -455,8 +455,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(purchasePaymentAdjustmentTypeListPanel, PURCHASE_PAYMENT_ADJUSTMENT_TYPE_LIST_PANEL);
 		panelHolder.add(maintainPurchasePaymentAdjustmentTypePanel, 
 				MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_TYPE_PANEL);
-		panelHolder.add(badPurchaseReturnListPanel, BAD_PURCHASE_RETURN_LIST_PANEL);
-		panelHolder.add(badPurchaseReturnPanel, BAD_PURCHASE_RETURN_PANEL);
+		panelHolder.add(purchaseReturnBadStockListPanel, PURCHASE_RETURN_BAD_STOCK_LIST_PANEL);
+		panelHolder.add(purchaseReturnBadStockPanel, PURCHASE_RETURN_BAD_STOCK_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1115,16 +1115,16 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_TYPE_PANEL);
 	}
 	
-	public void switchToBadPurchaseReturnListPanel() {
+	public void switchToPurchaseReturnBadStockListPanel() {
 		addPanelNameToTitle("Purchase Return (Bad Stock) List");
-		badPurchaseReturnListPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_PURCHASE_RETURN_LIST_PANEL);
+		purchaseReturnBadStockListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_RETURN_BAD_STOCK_LIST_PANEL);
 	}
 
-	public void switchToBadPurchaseReturnPanel(BadPurchaseReturn badPurchaseReturn) {
+	public void switchToPurchaseReturnBadStockPanel(PurchaseReturnBadStock purchaseReturnBadStock) {
 		addPanelNameToTitle("Purchase Return (Bad Stock)");
-		badPurchaseReturnPanel.updateDisplay(badPurchaseReturn);
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_PURCHASE_RETURN_PANEL);
+		purchaseReturnBadStockPanel.updateDisplay(purchaseReturnBadStock);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_RETURN_BAD_STOCK_PANEL);
 	}
 	
 }
