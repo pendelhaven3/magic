@@ -25,10 +25,12 @@ import com.pj.magic.gui.dialog.SelectPurchasePaymentAdjustmentTypeDialog;
 import com.pj.magic.gui.tables.models.SupplierPaymentPaymentAdjustmentsTableModel;
 import com.pj.magic.gui.tables.rowitems.SupplierPaymentAdjustmentRowItem;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
+import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 import com.pj.magic.service.PurchasePaymentAdjustmentTypeService;
+import com.pj.magic.service.PurchaseReturnService;
 import com.pj.magic.service.SupplierPaymentAdjustmentService;
 
 @Component
@@ -46,6 +48,7 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 	@Autowired private PurchasePaymentAdjustmentTypeService purchasePaymentAdjustmentTypeService;
 	@Autowired private SupplierPaymentAdjustmentService supplierPaymentAdjustmentService;
 	@Autowired private SelectPurchasePaymentAdjustmentTypeDialog selectPurchasePaymentAdjustmentTypeDialog;
+	@Autowired private PurchaseReturnService purchaseReturnService;
 	
 	private SupplierPayment payment;
 	
@@ -267,7 +270,13 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 				showErrorMessage("Reference number must be specified");
 			} else {
 				long referenceNumber = Long.parseLong(referenceNumberString);
-				valid = validatePaymentAdjustment(rowItem.getAdjustmentType(), referenceNumber);
+				switch (rowItem.getAdjustmentType().getCode()) {
+				case PurchasePaymentAdjustmentType.PURCHASE_RETURN_GOOD_STOCK_CODE:
+					valid = validatePurchaseReturn(referenceNumber);
+					break;
+				default:
+					valid = validatePaymentAdjustment(rowItem.getAdjustmentType(), referenceNumber);
+				}
 			}
 			return (valid) ? super.stopCellEditing() : false;
 		}
@@ -283,6 +292,20 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 			showErrorMessage("Supplier Payment Adjustment does not exist");
 		} else if (!paymentAdjustment.isPosted()) {
 			showErrorMessage("Supplier Payment Adjustment is not yet posted");
+		} else {
+			valid = true;
+		}
+		return valid;
+	}
+
+	public boolean validatePurchaseReturn(long purchaseReturnNumber) {
+		boolean valid = false;
+		PurchaseReturn purchaseReturn = purchaseReturnService
+				.findPurchaseReturnByPurchaseReturnNumber(purchaseReturnNumber);
+		if (purchaseReturn == null) {
+			showErrorMessage("Purchase Return does not exist");
+		} else if (!purchaseReturn.isPosted()) {
+			showErrorMessage("Purchase Return is not yet posted");
 		} else {
 			valid = true;
 		}

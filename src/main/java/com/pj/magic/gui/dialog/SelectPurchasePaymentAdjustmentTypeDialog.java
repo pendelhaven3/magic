@@ -41,6 +41,9 @@ public class SelectPurchasePaymentAdjustmentTypeDialog extends MagicDialog {
 		tableModel = new PurchasePaymentAdjustmentTypesTableModel();
 		table = new MagicListTable(tableModel);
 		
+		table.getColumnModel().getColumn(CODE_COLUMN_INDEX).setPreferredWidth(100);
+		table.getColumnModel().getColumn(DESCRIPTION_COLUMN_INDEX).setPreferredWidth(200);
+		
 		table.onEnterKey(new AbstractAction() {
 			
 			@Override

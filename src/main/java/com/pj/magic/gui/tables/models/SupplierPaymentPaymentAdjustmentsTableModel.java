@@ -13,10 +13,12 @@ import com.pj.magic.gui.tables.PaymentPaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.SupplierPaymentPaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.rowitems.SupplierPaymentAdjustmentRowItem;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
+import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 import com.pj.magic.service.PurchasePaymentAdjustmentTypeService;
+import com.pj.magic.service.PurchaseReturnService;
 import com.pj.magic.service.SupplierPaymentAdjustmentService;
 import com.pj.magic.service.SupplierPaymentService;
 import com.pj.magic.util.FormatterUtil;
@@ -30,6 +32,7 @@ public class SupplierPaymentPaymentAdjustmentsTableModel extends AbstractTableMo
 	@Autowired private SupplierPaymentService supplierPaymentService;
 	@Autowired private SupplierPaymentAdjustmentService supplierPaymentAdjustmentService;
 	@Autowired private PurchasePaymentAdjustmentTypeService purchasePaymentAdjustmentTypeService;
+	@Autowired private PurchaseReturnService purchaseReturnService;
 	
 	private List<SupplierPaymentAdjustmentRowItem> rowItems = new ArrayList<>();
 	private SupplierPayment payment;
@@ -100,9 +103,20 @@ public class SupplierPaymentPaymentAdjustmentsTableModel extends AbstractTableMo
 			}
 			
 			rowItem.setReferenceNumber(val);
-			SupplierPaymentAdjustment paymentAdjustment = supplierPaymentAdjustmentService
+			
+			switch (rowItem.getAdjustmentType().getCode()) {
+			case PurchasePaymentAdjustmentType.PURCHASE_RETURN_GOOD_STOCK_CODE:
+				PurchaseReturn purchaseReturn = purchaseReturnService
+					.findPurchaseReturnByPurchaseReturnNumber(Long.parseLong(val));
+				rowItem.setAmount(purchaseReturn.getTotalAmount());
+				break;
+			default:
+				SupplierPaymentAdjustment paymentAdjustment = supplierPaymentAdjustmentService
 					.findSupplierPaymentAdjustmentBySupplierPaymentAdjustmentNumber(Long.parseLong(val));
-			rowItem.setAmount(paymentAdjustment.getAmount());
+				rowItem.setAmount(paymentAdjustment.getAmount());
+				break;
+			}
+			
 			
 			break;
 		case SupplierPaymentPaymentAdjustmentsTable.AMOUNT_COLUMN_INDEX:
