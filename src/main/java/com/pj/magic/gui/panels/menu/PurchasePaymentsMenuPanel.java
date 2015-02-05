@@ -86,10 +86,10 @@ public class PurchasePaymentsMenuPanel extends StandardMagicPanel {
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
 		case PURCHASE_PAYMENT_ADJUSTMENT:
-			getMagicFrame().switchToSupplierPaymentAdjustmentListPanel();
+			getMagicFrame().switchToPurchasePaymentAdjustmentListPanel();
 			break;
 		case PURCHASE_PAYMENT:
-			getMagicFrame().switchToSupplierPaymentListPanel();
+			getMagicFrame().switchToPurchasePaymentListPanel();
 			break;
 		}
 	}

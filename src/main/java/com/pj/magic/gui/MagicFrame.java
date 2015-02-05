@@ -48,7 +48,7 @@ import com.pj.magic.gui.panels.MaintainProductCategoryPanel;
 import com.pj.magic.gui.panels.MaintainProductPanel;
 import com.pj.magic.gui.panels.MaintainPurchasePaymentAdjustmentTypePanel;
 import com.pj.magic.gui.panels.MaintainSupplierPanel;
-import com.pj.magic.gui.panels.MaintainSupplierPaymentAdjustmentPanel;
+import com.pj.magic.gui.panels.MaintainPurchasePaymentAdjustmentPanel;
 import com.pj.magic.gui.panels.MaintainUserPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
 import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
@@ -86,9 +86,9 @@ import com.pj.magic.gui.panels.StockCardInventoryReportPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
-import com.pj.magic.gui.panels.SupplierPaymentAdjustmentListPanel;
-import com.pj.magic.gui.panels.SupplierPaymentListPanel;
-import com.pj.magic.gui.panels.SupplierPaymentPanel;
+import com.pj.magic.gui.panels.PurchasePaymentAdjustmentListPanel;
+import com.pj.magic.gui.panels.PurchasePaymentListPanel;
+import com.pj.magic.gui.panels.PurchasePaymentPanel;
 import com.pj.magic.gui.panels.UnpaidSalesInvoicesListPanel;
 import com.pj.magic.gui.panels.UserListPanel;
 import com.pj.magic.gui.panels.menu.AdminMenuPanel;
@@ -129,8 +129,8 @@ import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.SupplierPayment;
-import com.pj.magic.model.SupplierPaymentAdjustment;
+import com.pj.magic.model.PurchasePayment;
+import com.pj.magic.model.PurchasePaymentAdjustment;
 import com.pj.magic.model.User;
 import com.pj.magic.service.SystemService;
 
@@ -220,11 +220,11 @@ public class MagicFrame extends JFrame {
 	private static final String CUSTOMER_SALES_SUMMARY_REPORT_PANEL = "CUSTOMER_SALES_SUMMARY_REPORT_PANEL";
 	private static final String PAYMENT_ADJUSTMENT_LIST_PANEL = "PAYMENT_ADJUSTMENT_LIST_PANEL";
 	private static final String MAINTAIN_PAYMENT_ADJUSTMENT_PANEL = "MAINTAIN_PAYMENT_ADJUSTMENT_PANEL";
-	private static final String SUPPLIER_PAYMENT_LIST_PANEL = "SUPPLIER_PAYMENT_LIST_PANEL";
-	private static final String SUPPLIER_PAYMENT_PANEL = "SUPPLIER_PAYMENT_PANEL";
-	private static final String SUPPLIER_PAYMENT_ADJUSTMENT_LIST_PANEL = 
+	private static final String PURCHASE_PAYMENT_LIST_PANEL = "SUPPLIER_PAYMENT_LIST_PANEL";
+	private static final String PURCHASE_PAYMENT_PANEL = "SUPPLIER_PAYMENT_PANEL";
+	private static final String PURCHASE_PAYMENT_ADJUSTMENT_LIST_PANEL = 
 			"SUPPLIER_PAYMENT_ADJUSTMENT_LIST_PANEL";
-	private static final String MAINTAIN_SUPPLIER_PAYMENT_ADJUSTMENT_PANEL = 
+	private static final String MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_PANEL = 
 			"MAINTAIN_SUPPLIER_PAYMENT_ADJUSTMENT_PANEL";
 	private static final String CREDIT_CARD_LIST_PANEL = "CREDIT_CARD_LIST_PANEL";
 	private static final String MAINTAIN_CREDIT_CARD_PANEL = "MAINTAIN_CREDIT_CARD_PANEL";
@@ -313,10 +313,10 @@ public class MagicFrame extends JFrame {
 	@Autowired private CustomerSalesSummaryReportPanel customerSalesSummaryReportPanel;
 	@Autowired private PaymentAdjustmentListPanel paymentAdjustmentListPanel;
 	@Autowired private MaintainPaymentAdjustmentPanel maintainPaymentAdjustmentPanel;
-	@Autowired private SupplierPaymentListPanel supplierPaymentListPanel;
-	@Autowired private SupplierPaymentPanel supplierPaymentPanel;
-	@Autowired private SupplierPaymentAdjustmentListPanel supplierPaymentAdjustmentListPanel;
-	@Autowired private MaintainSupplierPaymentAdjustmentPanel maintainSupplierPaymentAdjustmentPanel;
+	@Autowired private PurchasePaymentListPanel purchasePaymentListPanel;
+	@Autowired private PurchasePaymentPanel purchasePaymentPanel;
+	@Autowired private PurchasePaymentAdjustmentListPanel purchasePaymentAdjustmentListPanel;
+	@Autowired private MaintainPurchasePaymentAdjustmentPanel maintainPurchasePaymentAdjustmentPanel;
 	@Autowired private CreditCardListPanel creditCardListPanel;
 	@Autowired private MaintainCreditCardPanel maintainCreditCardPanel;
 	@Autowired private PurchaseReturnListPanel purchaseReturnListPanel;
@@ -448,10 +448,10 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(customerSalesSummaryReportPanel, CUSTOMER_SALES_SUMMARY_REPORT_PANEL);
 		panelHolder.add(paymentAdjustmentListPanel, PAYMENT_ADJUSTMENT_LIST_PANEL);
 		panelHolder.add(maintainPaymentAdjustmentPanel, MAINTAIN_PAYMENT_ADJUSTMENT_PANEL);
-		panelHolder.add(supplierPaymentListPanel, SUPPLIER_PAYMENT_LIST_PANEL);
-		panelHolder.add(supplierPaymentPanel, SUPPLIER_PAYMENT_PANEL);
-		panelHolder.add(supplierPaymentAdjustmentListPanel, SUPPLIER_PAYMENT_ADJUSTMENT_LIST_PANEL);
-		panelHolder.add(maintainSupplierPaymentAdjustmentPanel, MAINTAIN_SUPPLIER_PAYMENT_ADJUSTMENT_PANEL);
+		panelHolder.add(purchasePaymentListPanel, PURCHASE_PAYMENT_LIST_PANEL);
+		panelHolder.add(purchasePaymentPanel, PURCHASE_PAYMENT_PANEL);
+		panelHolder.add(purchasePaymentAdjustmentListPanel, PURCHASE_PAYMENT_ADJUSTMENT_LIST_PANEL);
+		panelHolder.add(maintainPurchasePaymentAdjustmentPanel, MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_PANEL);
 		panelHolder.add(creditCardListPanel, CREDIT_CARD_LIST_PANEL);
 		panelHolder.add(maintainCreditCardPanel, MAINTAIN_CREDIT_CARD_PANEL);
 		panelHolder.add(purchaseReturnListPanel, PURCHASE_RETURN_LIST_PANEL);
@@ -1032,37 +1032,37 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PAYMENT_ADJUSTMENT_PANEL);
 	}
 
-	public void switchToSupplierPaymentListPanel() {
-		addPanelNameToTitle("Supplier Payment List");
-		supplierPaymentListPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, SUPPLIER_PAYMENT_LIST_PANEL);
+	public void switchToPurchasePaymentListPanel() {
+		addPanelNameToTitle("Purchase Payment List");
+		purchasePaymentListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_PAYMENT_LIST_PANEL);
 	}
 	
-	public void switchToSupplierPaymentPanel(SupplierPayment supplierPayment) {
-		addPanelNameToTitle("Supplier Payment");
-		supplierPaymentPanel.updateDisplay(supplierPayment);
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, SUPPLIER_PAYMENT_PANEL);
+	public void switchToPurchasePaymentPanel(PurchasePayment purchasePayment) {
+		addPanelNameToTitle("Purchase Payment");
+		purchasePaymentPanel.updateDisplay(purchasePayment);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_PAYMENT_PANEL);
 	}
 
-	public void switchToSupplierPaymentAdjustmentListPanel() {
-		addPanelNameToTitle("Supplier Payment Adjustment List");
-		supplierPaymentAdjustmentListPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, SUPPLIER_PAYMENT_ADJUSTMENT_LIST_PANEL);
+	public void switchToPurchasePaymentAdjustmentListPanel() {
+		addPanelNameToTitle("Purchase Payment Adjustment List");
+		purchasePaymentAdjustmentListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_PAYMENT_ADJUSTMENT_LIST_PANEL);
 	}
 
-	public void switchToAddNewSupplierPaymentAdjustmentPanel() {
-		addPanelNameToTitle("Add New Supplier Payment Adjustment");
-		switchToMaintainSupplierPaymentAdjustmentPanel(new SupplierPaymentAdjustment());
+	public void switchToAddNewPurchasePaymentAdjustmentPanel() {
+		addPanelNameToTitle("Add New Purchase Payment Adjustment");
+		switchToMaintainPurchasePaymentAdjustmentPanel(new PurchasePaymentAdjustment());
 	}
 	
-	public void switchToEditSupplierPaymentAdjustmentPanel(SupplierPaymentAdjustment paymentAdjustment) {
-		addPanelNameToTitle("Edit Supplier Payment Adjustment");
-		switchToMaintainSupplierPaymentAdjustmentPanel(paymentAdjustment);
+	public void switchToEditPurchasePaymentAdjustmentPanel(PurchasePaymentAdjustment paymentAdjustment) {
+		addPanelNameToTitle("Edit Purchase Payment Adjustment");
+		switchToMaintainPurchasePaymentAdjustmentPanel(paymentAdjustment);
 	}
 	
-	public void switchToMaintainSupplierPaymentAdjustmentPanel(SupplierPaymentAdjustment paymentAdjustment) {
-		maintainSupplierPaymentAdjustmentPanel.updateDisplay(paymentAdjustment);
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_SUPPLIER_PAYMENT_ADJUSTMENT_PANEL);
+	public void switchToMaintainPurchasePaymentAdjustmentPanel(PurchasePaymentAdjustment paymentAdjustment) {
+		maintainPurchasePaymentAdjustmentPanel.updateDisplay(paymentAdjustment);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_PANEL);
 	}
 	
 	public void switchToCreditCardListPanel() {
