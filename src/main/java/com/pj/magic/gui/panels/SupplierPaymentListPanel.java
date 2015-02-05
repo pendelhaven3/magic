@@ -113,7 +113,7 @@ public class SupplierPaymentListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToPurchasesMenuPanel();
+		getMagicFrame().switchToPurchasePaymentsMenuPanel();
 	}
 
 	@Override

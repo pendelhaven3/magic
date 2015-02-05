@@ -22,13 +22,10 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
 
 @Component
-public class PurchasesMenuPanel extends StandardMagicPanel {
+public class PurchasePaymentsMenuPanel extends StandardMagicPanel {
 
-	private static final String PRODUCT_CANVASS = "Product Canvass";
-	private static final String RECEIVING_RECEIPT = "Receiving Receipt";
-	private static final String PURCHASE_ORDER = "Purchase Order";
-	private static final String PURCHASE_RETURN = "Purchase Return - Good Stock";
-	private static final String BAD_PURCHASE_RETURN = "Purchase Return - Bad Stock";
+	private static final String PURCHASE_PAYMENT = "Purchase Payment";
+	private static final String PURCHASE_PAYMENT_ADJUSTMENT = "Purchase Payment Adjustment";
 	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
@@ -88,20 +85,11 @@ public class PurchasesMenuPanel extends StandardMagicPanel {
 	
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-		case PURCHASE_ORDER:
-			getMagicFrame().switchToPurchaseOrderListPanel();
+		case PURCHASE_PAYMENT_ADJUSTMENT:
+			getMagicFrame().switchToSupplierPaymentAdjustmentListPanel();
 			break;
-		case RECEIVING_RECEIPT:
-			getMagicFrame().switchToReceivingReceiptListPanel();
-			break;
-		case PRODUCT_CANVASS:
-			getMagicFrame().switchToProductCanvassPanel();
-			break;
-		case PURCHASE_RETURN:
-			getMagicFrame().switchToPurchaseReturnListPanel();
-			break;
-		case BAD_PURCHASE_RETURN:
-			getMagicFrame().switchToPurchaseReturnBadStockListPanel();
+		case PURCHASE_PAYMENT:
+			getMagicFrame().switchToSupplierPaymentListPanel();
 			break;
 		}
 	}
@@ -114,11 +102,8 @@ public class PurchasesMenuPanel extends StandardMagicPanel {
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private final List<String> menuItems = Arrays.asList(
-				PURCHASE_ORDER,
-				RECEIVING_RECEIPT,
-				PRODUCT_CANVASS,
-				PURCHASE_RETURN,
-				BAD_PURCHASE_RETURN
+				PURCHASE_PAYMENT,
+				PURCHASE_PAYMENT_ADJUSTMENT
 		);
 		
 		@Override

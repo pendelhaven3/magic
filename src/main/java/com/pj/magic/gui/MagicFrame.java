@@ -23,8 +23,6 @@ import com.pj.magic.gui.panels.AreaInventoryReportListPanel;
 import com.pj.magic.gui.panels.AreaInventoryReportPanel;
 import com.pj.magic.gui.panels.AreaListPanel;
 import com.pj.magic.gui.panels.BackupDataPanel;
-import com.pj.magic.gui.panels.PurchaseReturnBadStockListPanel;
-import com.pj.magic.gui.panels.PurchaseReturnBadStockPanel;
 import com.pj.magic.gui.panels.BadStockReturnListPanel;
 import com.pj.magic.gui.panels.BadStockReturnPanel;
 import com.pj.magic.gui.panels.CashFlowReportPanel;
@@ -70,6 +68,8 @@ import com.pj.magic.gui.panels.ProductListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderPanel;
 import com.pj.magic.gui.panels.PurchasePaymentAdjustmentTypeListPanel;
+import com.pj.magic.gui.panels.PurchaseReturnBadStockListPanel;
+import com.pj.magic.gui.panels.PurchaseReturnBadStockPanel;
 import com.pj.magic.gui.panels.PurchaseReturnListPanel;
 import com.pj.magic.gui.panels.PurchaseReturnPanel;
 import com.pj.magic.gui.panels.ReceivingReceiptListPanel;
@@ -94,6 +94,7 @@ import com.pj.magic.gui.panels.UserListPanel;
 import com.pj.magic.gui.panels.menu.AdminMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryCheckMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryMenuPanel;
+import com.pj.magic.gui.panels.menu.PurchasePaymentsMenuPanel;
 import com.pj.magic.gui.panels.menu.PurchasesMenuPanel;
 import com.pj.magic.gui.panels.menu.RecordsMaintenanceMenuPanel;
 import com.pj.magic.gui.panels.menu.ReportsPanel;
@@ -105,7 +106,6 @@ import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
-import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.Customer;
@@ -122,6 +122,7 @@ import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.PurchaseReturn;
+import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
@@ -235,6 +236,7 @@ public class MagicFrame extends JFrame {
 			"MAINTAIN_PURCHASE_PAYMENT_ADJUSTMENT_TYPE_PANEL";
 	private static final String PURCHASE_RETURN_BAD_STOCK_LIST_PANEL = "BAD_PURCHASE_RETURN_LIST_PANEL";
 	private static final String PURCHASE_RETURN_BAD_STOCK_PANEL = "BAD_PURCHASE_RETURN_PANEL";
+	private static final String PURCHASE_PAYMENTS_MENU_PANEL = "PURCHASE_PAYMENTS_MENU_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -293,6 +295,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PurchasesMenuPanel purchasesMenuPanel;
 	@Autowired private InventoryMenuPanel inventoryMenuPanel;
 	@Autowired private SalesPaymentsMenuPanel salesPaymentsMenuPanel;
+	@Autowired private PurchasePaymentsMenuPanel purchasePaymentsMenuPanel;
 	@Autowired private StockMovementMenuPanel stockMovementMenuPanel;
 	@Autowired private InventoryCheckMenuPanel inventoryCheckMenuPanel;
 	@Autowired private RecordsMaintenanceMenuPanel recordsMaintenanceMenuPanel;
@@ -427,6 +430,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(purchasesMenuPanel, PURCHASES_MENU_PANEL);
 		panelHolder.add(inventoryMenuPanel, INVENTORY_MENU_PANEL);
 		panelHolder.add(salesPaymentsMenuPanel, SALES_PAYMENTS_MENU_PANEL);
+		panelHolder.add(purchasePaymentsMenuPanel, PURCHASE_PAYMENTS_MENU_PANEL);
 		panelHolder.add(stockMovementMenuPanel, STOCK_MOVEMENT_MENU_PANEL);
 		panelHolder.add(inventoryCheckMenuPanel, INVENTORY_CHECK_MENU_PANEL);
 		panelHolder.add(recordsMaintenanceMenuPanel, RECORDS_MAINTENANCE_MENU_PANEL);
@@ -1125,6 +1129,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Purchase Return (Bad Stock)");
 		purchaseReturnBadStockPanel.updateDisplay(purchaseReturnBadStock);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_RETURN_BAD_STOCK_PANEL);
+	}
+	
+	public void switchToPurchasePaymentsMenuPanel() {
+		addPanelNameToTitle("Purchase Payments Menu");
+		purchasePaymentsMenuPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_PAYMENTS_MENU_PANEL);
 	}
 	
 }
