@@ -21,8 +21,6 @@ import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.ReceivingReceiptService;
 
-// TODO: No need to fetch product details for some cases
-
 @Service
 public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 
@@ -152,6 +150,27 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 		ReceivingReceipt receivingReceipt = 
 				receivingReceiptDao.findByReceivingReceiptNumber(receivingReceiptNumber);
 		return receivingReceipt;
+	}
+
+	@Override
+	public ReceivingReceiptItem findMostRecentReceivingReceiptItem(Supplier supplier, Product product) {
+		ReceivingReceiptItem item = receivingReceiptItemDao
+				.findMostRecentBySupplierAndProduct(supplier, product);
+		item.setProduct(productDao.get(item.getProduct().getId()));
+		item.setParent(receivingReceiptDao.get(item.getParent().getId()));
+		
+		BigDecimal costMultipler = Constants.ONE;
+		if (!item.getParent().isVatInclusive()) {
+			costMultipler = Constants.ONE.add(item.getParent().getVatRate());
+		}
+		
+		item.getProduct().setFinalCost(item.getUnit(), 
+				item.getFinalCost().multiply(costMultipler).setScale(2, RoundingMode.HALF_UP));
+		if (item.getProduct().getUnits().size() > 1) {
+			item.getProduct().autoCalculateCostsOfSmallerUnits(item.getUnit());
+		}
+		
+		return item;
 	}
 	
 }

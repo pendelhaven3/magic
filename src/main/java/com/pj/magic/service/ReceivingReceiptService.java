@@ -2,6 +2,7 @@ package com.pj.magic.service;
 
 import java.util.List;
 
+import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.Supplier;
@@ -26,5 +27,7 @@ public interface ReceivingReceiptService {
 	List<ReceivingReceipt> findAllReceivingReceiptsForPaymentBySupplier(Supplier supplier);
 	
 	ReceivingReceipt findReceivingReceiptByReceivingReceiptNumber(long receivingReceiptNumber);
+	
+	ReceivingReceiptItem findMostRecentReceivingReceiptItem(Supplier supplier, Product product);
 	
 }

@@ -15,8 +15,10 @@ import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.gui.tables.rowitems.PurchaseReturnBadStockItemRowItem;
 import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.PurchaseReturnBadStockItem;
-import com.pj.magic.service.PurchaseReturnBadStockService;
+import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.PurchaseReturnBadStockService;
+import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.NumberUtil;
 
@@ -27,6 +29,7 @@ public class PurchaseReturnBadStockItemsTableModel extends AbstractTableModel {
 	
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;
+	@Autowired private ReceivingReceiptService receivingReceiptService;
 	
 	private List<PurchaseReturnBadStockItemRowItem> rowItems = new ArrayList<>();
 	private PurchaseReturnBadStock purchaseReturnBadStock;
@@ -128,10 +131,9 @@ public class PurchaseReturnBadStockItemsTableModel extends AbstractTableModel {
 			if (item.getUnitCost() != null) {
 				item.setUnitCost(rowItem.getUnitCost());
 			} else {
-				// TODO: Use final cost of supplier!
-				BigDecimal originalUnitPrice = rowItem.getProduct().getFinalCost(rowItem.getUnit());
-				item.setUnitCost(originalUnitPrice);
-				rowItem.setUnitCost(originalUnitPrice);
+				BigDecimal unitCost = getDefaultUnitCost(rowItem);
+				item.setUnitCost(unitCost);
+				rowItem.setUnitCost(unitCost);
 			}
 			
 			boolean newItem = (item.getId() == null);
@@ -143,6 +145,13 @@ public class PurchaseReturnBadStockItemsTableModel extends AbstractTableModel {
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
+	private BigDecimal getDefaultUnitCost(PurchaseReturnBadStockItemRowItem rowItem) {
+		ReceivingReceiptItem receivingReceiptItem =
+				receivingReceiptService.findMostRecentReceivingReceiptItem(
+						purchaseReturnBadStock.getSupplier(), rowItem.getProduct());
+		return receivingReceiptItem.getProduct().getFinalCost(rowItem.getUnit());
+	}
+
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		if (purchaseReturnBadStock.isPosted()) {
