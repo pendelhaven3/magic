@@ -26,10 +26,12 @@ import com.pj.magic.gui.tables.models.SupplierPaymentPaymentAdjustmentsTableMode
 import com.pj.magic.gui.tables.rowitems.SupplierPaymentAdjustmentRowItem;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.PurchaseReturn;
+import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 import com.pj.magic.service.PurchasePaymentAdjustmentTypeService;
+import com.pj.magic.service.PurchaseReturnBadStockService;
 import com.pj.magic.service.PurchaseReturnService;
 import com.pj.magic.service.SupplierPaymentAdjustmentService;
 
@@ -49,6 +51,7 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 	@Autowired private SupplierPaymentAdjustmentService supplierPaymentAdjustmentService;
 	@Autowired private SelectPurchasePaymentAdjustmentTypeDialog selectPurchasePaymentAdjustmentTypeDialog;
 	@Autowired private PurchaseReturnService purchaseReturnService;
+	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;
 	
 	private SupplierPayment payment;
 	
@@ -274,6 +277,9 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 				case PurchasePaymentAdjustmentType.PURCHASE_RETURN_GOOD_STOCK_CODE:
 					valid = validatePurchaseReturn(referenceNumber);
 					break;
+				case PurchasePaymentAdjustmentType.PURCHASE_RETURN_BAD_STOCK_CODE:
+					valid = validatePurchaseReturnBadStock(referenceNumber);
+					break;
 				default:
 					valid = validatePaymentAdjustment(rowItem.getAdjustmentType(), referenceNumber);
 				}
@@ -292,6 +298,20 @@ public class SupplierPaymentPaymentAdjustmentsTable extends MagicTable {
 			showErrorMessage("Supplier Payment Adjustment does not exist");
 		} else if (paymentAdjustment.isPosted()) {
 			showErrorMessage("Supplier Payment Adjustment is already posted");
+		} else {
+			valid = true;
+		}
+		return valid;
+	}
+
+	public boolean validatePurchaseReturnBadStock(long purchaseReturnBadStockNumber) {
+		boolean valid = false;
+		PurchaseReturnBadStock purchaseReturnBadStock = purchaseReturnBadStockService
+				.findPurchaseReturnBadStockByPurchaseReturnBadStockNumber(purchaseReturnBadStockNumber);
+		if (purchaseReturnBadStock == null) {
+			showErrorMessage("Purchase Return Bad Stock does not exist");
+		} else if (purchaseReturnBadStock.isPosted()) {
+			showErrorMessage("Purchase Return Bad Stock is already posted");
 		} else {
 			valid = true;
 		}

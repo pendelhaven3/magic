@@ -14,10 +14,12 @@ import com.pj.magic.gui.tables.SupplierPaymentPaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.rowitems.SupplierPaymentAdjustmentRowItem;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.PurchaseReturn;
+import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.SupplierPayment;
 import com.pj.magic.model.SupplierPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 import com.pj.magic.service.PurchasePaymentAdjustmentTypeService;
+import com.pj.magic.service.PurchaseReturnBadStockService;
 import com.pj.magic.service.PurchaseReturnService;
 import com.pj.magic.service.SupplierPaymentAdjustmentService;
 import com.pj.magic.service.SupplierPaymentService;
@@ -33,6 +35,7 @@ public class SupplierPaymentPaymentAdjustmentsTableModel extends AbstractTableMo
 	@Autowired private SupplierPaymentAdjustmentService supplierPaymentAdjustmentService;
 	@Autowired private PurchasePaymentAdjustmentTypeService purchasePaymentAdjustmentTypeService;
 	@Autowired private PurchaseReturnService purchaseReturnService;
+	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;
 	
 	private List<SupplierPaymentAdjustmentRowItem> rowItems = new ArrayList<>();
 	private SupplierPayment payment;
@@ -109,6 +112,11 @@ public class SupplierPaymentPaymentAdjustmentsTableModel extends AbstractTableMo
 				PurchaseReturn purchaseReturn = purchaseReturnService
 					.findPurchaseReturnByPurchaseReturnNumber(Long.parseLong(val));
 				rowItem.setAmount(purchaseReturn.getTotalAmount());
+				break;
+			case PurchasePaymentAdjustmentType.PURCHASE_RETURN_BAD_STOCK_CODE:
+				PurchaseReturnBadStock purchaseReturnBadStock = purchaseReturnBadStockService
+					.findPurchaseReturnBadStockByPurchaseReturnBadStockNumber(Long.parseLong(val));
+				rowItem.setAmount(purchaseReturnBadStock.getTotalAmount());
 				break;
 			default:
 				SupplierPaymentAdjustment paymentAdjustment = supplierPaymentAdjustmentService

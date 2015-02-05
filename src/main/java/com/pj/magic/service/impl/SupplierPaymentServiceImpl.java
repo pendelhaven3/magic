@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.dao.PurchaseReturnBadStockDao;
 import com.pj.magic.dao.PurchaseReturnDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
 import com.pj.magic.dao.SupplierPaymentAdjustmentDao;
@@ -29,6 +30,7 @@ import com.pj.magic.model.SupplierPaymentPaymentAdjustment;
 import com.pj.magic.model.SupplierPaymentReceivingReceipt;
 import com.pj.magic.model.search.SupplierPaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
+import com.pj.magic.service.PurchaseReturnBadStockService;
 import com.pj.magic.service.PurchaseReturnService;
 import com.pj.magic.service.SupplierPaymentAdjustmentService;
 import com.pj.magic.service.SupplierPaymentService;
@@ -49,6 +51,8 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 	@Autowired private PurchaseReturnService purchaseReturnService;
 	@Autowired private PurchaseReturnDao purchaseReturnDao;
 	@Autowired private SupplierPaymentAdjustmentService supplierPaymentAdjustmentService;
+	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;
+	@Autowired private PurchaseReturnBadStockDao purchaseReturnBadStockDao;
 	
 	@Transactional
 	@Override
@@ -102,6 +106,10 @@ public class SupplierPaymentServiceImpl implements SupplierPaymentService {
 			switch (paymentAdjustment.getAdjustmentType().getCode()) {
 			case PurchasePaymentAdjustmentType.PURCHASE_RETURN_GOOD_STOCK_CODE:
 				purchaseReturnService.post(purchaseReturnDao.findByPurchaseReturnNumber(referenceNumber));
+				break;
+			case PurchasePaymentAdjustmentType.PURCHASE_RETURN_BAD_STOCK_CODE:
+				purchaseReturnBadStockService.post(
+						purchaseReturnBadStockDao.findByPurchaseReturnBadStockNumber(referenceNumber));
 				break;
 			default:
 				supplierPaymentAdjustmentService.post(

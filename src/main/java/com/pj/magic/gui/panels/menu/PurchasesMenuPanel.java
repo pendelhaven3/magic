@@ -30,6 +30,7 @@ public class PurchasesMenuPanel extends StandardMagicPanel {
 	private static final String SUPPLIER_PAYMENT = "Supplier Payment";
 	private static final String SUPPLIER_PAYMENT_ADJUSTMENT = "Supplier Payment Adjustment";
 	private static final String PURCHASE_RETURN = "Purchase Return - Good Stock";
+	private static final String BAD_PURCHASE_RETURN = "Purchase Return - Bad Stock";
 	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
@@ -107,6 +108,9 @@ public class PurchasesMenuPanel extends StandardMagicPanel {
 		case PURCHASE_RETURN:
 			getMagicFrame().switchToPurchaseReturnListPanel();
 			break;
+		case BAD_PURCHASE_RETURN:
+			getMagicFrame().switchToPurchaseReturnBadStockListPanel();
+			break;
 		}
 	}
 
@@ -123,7 +127,8 @@ public class PurchasesMenuPanel extends StandardMagicPanel {
 				PRODUCT_CANVASS,
 				SUPPLIER_PAYMENT,
 				SUPPLIER_PAYMENT_ADJUSTMENT,
-				PURCHASE_RETURN
+				PURCHASE_RETURN,
+				BAD_PURCHASE_RETURN
 		);
 		
 		@Override

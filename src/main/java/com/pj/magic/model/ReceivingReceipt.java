@@ -29,6 +29,14 @@ public class ReceivingReceipt {
 	private boolean vatInclusive;
 	private BigDecimal vatRate;
 
+	public ReceivingReceipt() {
+		// default constructor
+	}
+	
+	public ReceivingReceipt(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}
