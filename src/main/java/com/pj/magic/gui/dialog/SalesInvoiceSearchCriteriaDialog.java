@@ -160,6 +160,15 @@ public class SalesInvoiceSearchCriteriaDialog extends MagicDialog {
 			}
 		});
 		
+		customerCodeField.onF5Key(new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectCustomerDialog();
+			}
+			
+		});
+		
 		searchButton.getInputMap().put(KeyUtil.getEnterKey(), "enter");
 		searchButton.getActionMap().put("enter", new AbstractAction() {
 			
