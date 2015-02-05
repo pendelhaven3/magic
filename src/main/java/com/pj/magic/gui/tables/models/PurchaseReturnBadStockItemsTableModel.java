@@ -113,16 +113,26 @@ public class PurchaseReturnBadStockItemsTableModel extends AbstractTableModel {
 			rowItem.setUnit(null);
 			break;
 		case PurchaseReturnBadStockItemsTable.UNIT_COLUMN_INDEX:
+			if (!StringUtils.isEmpty(rowItem.getUnit()) && rowItem.getUnit().equals(val)) {
+				return;
+			}
 			rowItem.setUnit(val);
+			rowItem.setUnitCost(null);
+			rowItem.getItem().setUnitCost(null);
 			break;
 		case PurchaseReturnBadStockItemsTable.QUANTITY_COLUMN_INDEX:
+			if (rowItem.getQuantity() != null && rowItem.getQuantity().equals(Integer.valueOf(val))) {
+				return;
+			}
 			rowItem.setQuantity(Integer.valueOf(val));
 			break;
 		case PurchaseReturnBadStockItemsTable.UNIT_COST_COLUMN_INDEX:
+			if (rowItem.getUnitCost() != null && rowItem.getUnitCost().equals(NumberUtil.toBigDecimal(val))) {
+				return;
+			}
 			rowItem.setUnitCost(NumberUtil.toBigDecimal(val));
 			break;
 		}
-		// TODO: Save only when there is a change
 		if (rowItem.isValid()) {
 			PurchaseReturnBadStockItem item = rowItem.getItem();
 			item.setProduct(rowItem.getProduct());

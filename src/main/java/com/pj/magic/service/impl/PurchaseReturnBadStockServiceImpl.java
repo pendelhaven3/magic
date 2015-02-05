@@ -36,6 +36,9 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
 		PurchaseReturnBadStock purchaseReturnBadStock = purchaseReturnBadStockDao.get(id);
 		if (purchaseReturnBadStock != null) {
 			purchaseReturnBadStock.setItems(purchaseReturnBadStockItemDao.findAllByPurchaseReturnBadStock(purchaseReturnBadStock));
+			for (PurchaseReturnBadStockItem item : purchaseReturnBadStock.getItems()) {
+				item.setProduct(productDao.get(item.getProduct().getId()));
+			}
 		}
 		return purchaseReturnBadStock;
 	}

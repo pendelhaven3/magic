@@ -55,7 +55,13 @@ public class PurchaseReturnBadStockListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		tableModel.setPurchaseReturnBadStocks(purchaseReturnBadStockService.getAllNewPurchaseReturnBadStocks());
+		List<PurchaseReturnBadStock> purchaseReturnBadStocks = 
+				purchaseReturnBadStockService.getAllNewPurchaseReturnBadStocks();
+		tableModel.setPurchaseReturnBadStocks(purchaseReturnBadStocks);
+		if (!purchaseReturnBadStocks.isEmpty()) {
+			table.changeSelection(0, 0);
+		}
+		
 		purchaseReturnBadStockSearchCriteriaDialog.updateDisplay();
 	}
 
