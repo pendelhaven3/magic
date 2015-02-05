@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -139,9 +140,9 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
-		c.gridx = 2;
+		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.EAST;
+		c.gridwidth = 4;
 		generateButton.setPreferredSize(new Dimension(160, 25));
 		mainPanel.add(generateButton, c);
 		
@@ -178,7 +179,14 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
-		// none
+		productCodeField.onF5Key(new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectProductDialog();
+			}
+			
+		});
 	}
 
 	public void updateDisplay() {
