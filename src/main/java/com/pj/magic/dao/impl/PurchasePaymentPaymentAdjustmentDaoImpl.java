@@ -24,7 +24,7 @@ public class PurchasePaymentPaymentAdjustmentDaoImpl extends MagicDao
 
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, SUPPLIER_PAYMENT_ID, ADJUSTMENT_TYPE_ID, REFERENCE_NO, a.AMOUNT,"
-			+ " b.CODE as ADJUSTMENT_TYPE_CODE"
+			+ " b.CODE as ADJUSTMENT_TYPE_CODE, b.DESCRIPTION as ADJUSTMENT_TYPE_DESCRIPTION"
 			+ " from SUPP_PAYMENT_PAYMNT_ADJ a"
 			+ " join PURCHASE_PAYMENT_ADJ_TYPE b"
 			+ "   on b.ID = a.PURCHASE_PAYMENT_ADJ_TYPE_ID";
@@ -91,8 +91,13 @@ public class PurchasePaymentPaymentAdjustmentDaoImpl extends MagicDao
 			PurchasePaymentPaymentAdjustment adjustment = new PurchasePaymentPaymentAdjustment();
 			adjustment.setId(rs.getLong("ID"));
 			adjustment.setParent(new PurchasePayment(rs.getLong("SUPPLIER_PAYMENT_ID")));
-			adjustment.setAdjustmentType(new PurchasePaymentAdjustmentType(
-					rs.getLong("ADJUSTMENT_TYPE_ID"), rs.getString("ADJUSTMENT_TYPE_CODE")));
+			
+			PurchasePaymentAdjustmentType adjustmentType = new PurchasePaymentAdjustmentType();
+			adjustmentType.setId(rs.getLong("ADJUSTMENT_TYPE_ID"));
+			adjustmentType.setCode(rs.getString("ADJUSTMENT_TYPE_CODE"));
+			adjustmentType.setDescription(rs.getString("ADJUSTMENT_TYPE_DESCRIPTION"));
+			adjustment.setAdjustmentType(adjustmentType);
+			
 			adjustment.setReferenceNumber(rs.getString("REFERENCE_NO"));
 			adjustment.setAmount(rs.getBigDecimal("AMOUNT"));
 			return adjustment;

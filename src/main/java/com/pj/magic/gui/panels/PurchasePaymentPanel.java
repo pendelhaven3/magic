@@ -507,7 +507,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 				printPreview();
 			}
 		});
-//		toolBar.add(printPreviewButton);
+		toolBar.add(printPreviewButton);
 		
 		printButton = new MagicToolBarButton("print", "Print");
 		printButton.addActionListener(new ActionListener() {
@@ -517,18 +517,18 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 				printPaymentSummary();
 			}
 		});	
-//		toolBar.add(printButton);
+		toolBar.add(printButton);
 	}
 
 	private void printPaymentSummary() {
-//		printService.print(supplierPayment);
+		printService.print(purchasePayment);
 	}
 
 	private void printPreview() {
-//		cancelEditing();
-//		printPreviewDialog.updateDisplay(printService.generateReportAsString(supplierPayment));
-//		printPreviewDialog.setUseCondensedFontForPrinting(true);
-//		printPreviewDialog.setVisible(true);
+		cancelEditing();
+		printPreviewDialog.updateDisplay(printService.generateReportAsString(purchasePayment));
+		printPreviewDialog.setUseCondensedFontForPrinting(true);
+		printPreviewDialog.setVisible(true);
 	}
 
 	private void cancelEditing() {

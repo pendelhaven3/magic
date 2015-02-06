@@ -237,4 +237,8 @@ public class PurchasePayment {
 		this.bankTransfers = bankTransfers;
 	}
 
+	public BigDecimal getTotalAmountDue() {
+		return getTotalAmount().subtract(getTotalAdjustments());
+	}
+	
 }

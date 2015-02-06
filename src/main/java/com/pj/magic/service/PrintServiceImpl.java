@@ -3,6 +3,7 @@ package com.pj.magic.service;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
+import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoice;
@@ -833,6 +835,26 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PriceChangesReport report) {
 		try {
 			for (String printPage : generateReportAsString(report)) {
+				PrinterUtil.printWithCondensedFont(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(PurchasePayment purchasePayment) {
+		Map<String, Object> reportData = new HashMap<>();
+		reportData.put("payment", purchasePayment);
+		reportData.put("currentDate", new Date());
+		reportData.put("newLine", "\n");
+		return Arrays.asList(generateReportAsString("reports/purchasePayment.vm", reportData));
+	}
+
+	@Override
+	public void print(PurchasePayment purchasePayment) {
+		try {
+			for (String printPage : generateReportAsString(purchasePayment)) {
 				PrinterUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {

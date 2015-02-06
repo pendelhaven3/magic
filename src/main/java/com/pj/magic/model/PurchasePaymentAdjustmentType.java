@@ -12,8 +12,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name = "PURCHASE_PAYMENT_ADJ_TYPE")
 public class PurchasePaymentAdjustmentType {
 
-	public static final String PURCHASE_RETURN_GOOD_STOCK_CODE = "PRGS";
-	public static final String PURCHASE_RETURN_BAD_STOCK_CODE = "PRBS";
+	public static final String PURCHASE_RETURN_GOOD_STOCK_CODE = "RETURN - GS";
+	public static final String PURCHASE_RETURN_BAD_STOCK_CODE = "RETURN - BS";
 	
 	@Id
 	@GeneratedValue
