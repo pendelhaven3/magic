@@ -23,5 +23,7 @@ public interface ReceivingReceiptDao {
 	List<ReceivingReceipt> findAllForPaymentBySupplier(Supplier supplier);
 
 	ReceivingReceipt findByReceivingReceiptNumber(long receivingReceiptNumber);
+
+	List<ReceivingReceipt> findAllUnpaid();
 	
 }

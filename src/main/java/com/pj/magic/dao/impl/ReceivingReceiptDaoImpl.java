@@ -293,4 +293,21 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 		}
 	}
 
+	private static final String FIND_ALL_UNPAID_SQL = BASE_SELECT_SQL
+			+ " and a.CANCEL_IND = 'N'"
+			+ " and not exists("
+			+ "   select 1"
+			+ "   from SUPP_PAYMENT_RECV_RCPT sprr"
+			+ "   join SUPPLIER_PAYMENT sp"
+			+ "     on sp.ID = sprr.SUPPLIER_PAYMENT_ID"
+			+ "   where sprr.RECEIVING_RECEIPT_ID = a.ID"
+			+ "   and sp.POST_IND = 'Y'"
+			+ " )"
+			+ " order by a.RECEIVED_DT, a.RECEIVING_RECEIPT_NO";
+	
+	@Override
+	public List<ReceivingReceipt> findAllUnpaid() {
+		return getJdbcTemplate().query(FIND_ALL_UNPAID_SQL, receivingReceiptRowMapper);
+	}
+
 }

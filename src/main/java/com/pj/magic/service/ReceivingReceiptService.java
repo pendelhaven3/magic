@@ -29,5 +29,7 @@ public interface ReceivingReceiptService {
 	ReceivingReceipt findReceivingReceiptByReceivingReceiptNumber(long receivingReceiptNumber);
 	
 	ReceivingReceiptItem findMostRecentReceivingReceiptItem(Supplier supplier, Product product);
+
+	List<ReceivingReceipt> findAllUnpaidReceivingReceipts();
 	
 }
