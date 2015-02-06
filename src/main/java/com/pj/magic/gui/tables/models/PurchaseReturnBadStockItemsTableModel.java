@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
 import com.pj.magic.gui.tables.PurchaseReturnBadStockItemsTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.gui.tables.rowitems.PurchaseReturnBadStockItemRowItem;
@@ -159,7 +160,11 @@ public class PurchaseReturnBadStockItemsTableModel extends AbstractTableModel {
 		ReceivingReceiptItem receivingReceiptItem =
 				receivingReceiptService.findMostRecentReceivingReceiptItem(
 						purchaseReturnBadStock.getSupplier(), rowItem.getProduct());
-		return receivingReceiptItem.getProduct().getFinalCost(rowItem.getUnit());
+		if (receivingReceiptItem != null) {
+			return receivingReceiptItem.getProduct().getFinalCost(rowItem.getUnit());
+		} else {
+			return Constants.ZERO;
+		}
 	}
 
 	@Override

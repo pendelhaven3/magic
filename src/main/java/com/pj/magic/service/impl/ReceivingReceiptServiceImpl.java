@@ -156,6 +156,10 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	public ReceivingReceiptItem findMostRecentReceivingReceiptItem(Supplier supplier, Product product) {
 		ReceivingReceiptItem item = receivingReceiptItemDao
 				.findMostRecentBySupplierAndProduct(supplier, product);
+		if (item == null) {
+			return null;
+		}
+		
 		item.setProduct(productDao.get(item.getProduct().getId()));
 		item.setParent(receivingReceiptDao.get(item.getParent().getId()));
 		

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -119,8 +120,12 @@ public class ReceivingReceiptItemDaoImpl extends MagicDao implements ReceivingRe
 	
 	@Override
 	public ReceivingReceiptItem findMostRecentBySupplierAndProduct(Supplier supplier, Product product) {
-		return getJdbcTemplate().queryForObject(FIND_MOST_RECENT_BY_SUPPLIER_AND_PRODUCT_SQL,
-				receivingReceiptItemRowMapper, product.getId(), product.getMaxUnit(), supplier.getId());
+		try {
+			return getJdbcTemplate().queryForObject(FIND_MOST_RECENT_BY_SUPPLIER_AND_PRODUCT_SQL,
+					receivingReceiptItemRowMapper, product.getId(), product.getMaxUnit(), supplier.getId());
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
 	}
 
 }
