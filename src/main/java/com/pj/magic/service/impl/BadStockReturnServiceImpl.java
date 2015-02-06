@@ -90,11 +90,6 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 		}
 	}
 
-	@Override
-	public List<BadStockReturn> getAllBadStockReturns() {
-		return search(new BadStockReturnSearchCriteria());
-	}
-
 	@Transactional
 	@Override
 	public void markAsPaid(BadStockReturn badStockReturn) {
