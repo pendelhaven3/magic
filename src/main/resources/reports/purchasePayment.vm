@@ -26,7 +26,7 @@ Less: Purchase Adj
 #foreach($adjustment in $payment.paymentAdjustments)
 ##RETURN - GS      34          74.50
 ##CC REBATE         3       2,000.00     2,074.50
-$report.field($adjustment.adjustmentType.description, 11) $report.field($adjustment.referenceNumber, 7, "right")     $report.field($adjustment.amount, 10, "right")
+$report.field($adjustment.adjustmentType.code, 11) $report.field($adjustment.referenceNumber, 7, "right")     $report.field($adjustment.amount, 10, "right")
 #end
 ----------- -------     ---------- ------------
                                 

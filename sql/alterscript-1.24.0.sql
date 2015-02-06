@@ -1,0 +1,2 @@
+update PURCHASE_PAYMENT_ADJ_TYPE set CODE = 'RETURN - GS' where CODE = 'PRGS';
+update PURCHASE_PAYMENT_ADJ_TYPE set CODE = 'RETURN - BS' where CODE = 'PRBS';
