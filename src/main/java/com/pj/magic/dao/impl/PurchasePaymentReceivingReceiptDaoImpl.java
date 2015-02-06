@@ -23,7 +23,7 @@ public class PurchasePaymentReceivingReceiptDaoImpl extends MagicDao implements 
 
 	private static final String BASE_SELECT_SQL =
 			"   select a.ID, SUPPLIER_PAYMENT_ID, RECEIVING_RECEIPT_ID,"
-			+ " b.RECEIVING_RECEIPT_NO, b.RECEIVED_DT, b.VAT_INCLUSIVE, b.VAT_RATE"
+			+ " b.RECEIVING_RECEIPT_NO, b.RECEIVED_DT, b.VAT_INCLUSIVE, b.VAT_RATE, b.REFERENCE_NO"
 			+ " from SUPP_PAYMENT_RECV_RCPT a"
 			+ " join RECEIVING_RECEIPT b"
 			+ "   on b.ID = a.RECEIVING_RECEIPT_ID";
@@ -98,6 +98,7 @@ public class PurchasePaymentReceivingReceiptDaoImpl extends MagicDao implements 
 			receivingReceipt.setReceivedDate(rs.getDate("RECEIVED_DT"));
 			receivingReceipt.setVatInclusive("Y".equals(rs.getString("VAT_INCLUSIVE")));
 			receivingReceipt.setVatRate(rs.getBigDecimal("VAT_RATE"));
+			receivingReceipt.setReferenceNumber(rs.getString("REFERENCE_NO"));
 			paymentReceivingReceipt.setReceivingReceipt(receivingReceipt);
 			
 			return paymentReceivingReceipt;
