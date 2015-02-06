@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -241,7 +242,13 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
-		// none
+		productCodeField.onF5Key(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectProductDialog();
+			}
+		});
 	}
 
 	public void updateDisplay() {

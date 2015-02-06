@@ -353,6 +353,14 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 			}
 		});
 		
+		customerCodeField.onF5Key(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectCustomerDialog();
+			}
+		});
+		
 		saveButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_ACTION_NAME);
 		saveButton.getActionMap().put(SAVE_ACTION_NAME, new AbstractAction() {
 			

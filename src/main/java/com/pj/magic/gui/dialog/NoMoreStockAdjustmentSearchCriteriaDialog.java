@@ -157,6 +157,14 @@ public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
 			}
 		});
 		
+		customerCodeField.onF5Key(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectCustomerDialog();
+			}
+		});
+		
 		customerCodeField.getInputMap().put(KeyUtil.getEnterKey(), "enter");
 		customerCodeField.getActionMap().put("enter", new AbstractAction() {
 			

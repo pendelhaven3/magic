@@ -151,6 +151,14 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 			}
 		});
 		
+		supplierCodeField.onF5Key(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectSupplierDialog();
+			}
+		});
+		
 		supplierCodeField.getInputMap().put(KeyUtil.getEnterKey(), "enter");
 		supplierCodeField.getActionMap().put("enter", new AbstractAction() {
 			

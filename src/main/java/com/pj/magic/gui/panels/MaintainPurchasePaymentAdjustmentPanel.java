@@ -346,6 +346,14 @@ public class MaintainPurchasePaymentAdjustmentPanel extends StandardMagicPanel {
 			}
 		});
 		
+		supplierCodeField.onF5Key(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectSupplierDialog();
+			}
+		});
+		
 		saveButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_ACTION_NAME);
 		saveButton.getActionMap().put(SAVE_ACTION_NAME, new AbstractAction() {
 			
