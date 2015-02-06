@@ -847,6 +847,7 @@ public class PrintServiceImpl implements PrintService {
 		Map<String, Object> reportData = new HashMap<>();
 		reportData.put("payment", purchasePayment);
 		reportData.put("currentDate", new Date());
+		reportData.put("newLine", "\n");
 		return Arrays.asList(generateReportAsString("reports/purchasePayment.vm", reportData));
 	}
 

@@ -1,4 +1,5 @@
 #set( $charsPerLine = 56 )
+#set( $space = " " )
 $report.center("JC HARMONY SELLING INC", $charsPerLine)
 $report.center("PAYMENT VOUCHER", $charsPerLine)
 
@@ -26,7 +27,8 @@ Less: Purchase Adj
 #foreach($adjustment in $payment.paymentAdjustments)
 ##RETURN - GS      34          74.50
 ##CC REBATE         3       2,000.00     2,074.50
-$report.field($adjustment.adjustmentType.code, 11) $report.field($adjustment.referenceNumber, 7, "right")     $report.field($adjustment.amount, 10, "right")
+$report.field($adjustment.adjustmentType.code, 11) $report.field($adjustment.referenceNumber, 7, "right")     $report.field($adjustment.amount, 10, "right") #if($velocityCount == $payment.paymentAdjustments.size())$report.field($payment.totalAdjustments, 12, "right")#end$space
+##Workaround: Without the $space reference, this line will not have line break
 #end
 ----------- -------     ---------- ------------
                                 
