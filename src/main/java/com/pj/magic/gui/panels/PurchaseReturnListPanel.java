@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PurchaseReturnSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchPurchaseReturnsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.search.PurchaseReturnSearchCriteria;
@@ -38,7 +38,7 @@ public class PurchaseReturnListPanel extends StandardMagicPanel {
 	private static final int POST_DATE_COLUMN_INDEX = 5;
 	
 	@Autowired private PurchaseReturnService purchaseReturnService;
-	@Autowired private PurchaseReturnSearchCriteriaDialog purchaseReturnSearchCriteriaDialog;
+	@Autowired private SearchPurchaseReturnsDialog searchPurchaseReturnsDialog;
 	
 	private MagicListTable table;
 	private PurchaseReturnsTableModel tableModel;
@@ -49,7 +49,7 @@ public class PurchaseReturnListPanel extends StandardMagicPanel {
 		if (!purchaseReturns.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
-		purchaseReturnSearchCriteriaDialog.updateDisplay();
+		searchPurchaseReturnsDialog.updateDisplay();
 	}
 
 	@Override
@@ -144,9 +144,9 @@ public class PurchaseReturnListPanel extends StandardMagicPanel {
 	}
 	
 	private void searchPurchaseReturns() {
-		purchaseReturnSearchCriteriaDialog.setVisible(true);
+		searchPurchaseReturnsDialog.setVisible(true);
 		
-		PurchaseReturnSearchCriteria criteria = purchaseReturnSearchCriteriaDialog.getSearchCriteria();
+		PurchaseReturnSearchCriteria criteria = searchPurchaseReturnsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<PurchaseReturn> purchaseReturns = purchaseReturnService.search(criteria);
 			tableModel.setPurchaseReturns(purchaseReturns);

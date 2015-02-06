@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.StockQuantityConversionSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchStockQuantityConversionsDialog;
 import com.pj.magic.gui.tables.StockQuantityConversionsTable;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.search.StockQuantityConversionSearchCriteria;
@@ -32,7 +32,7 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 	
 	@Autowired private StockQuantityConversionsTable table;
 	@Autowired private StockQuantityConversionService stockQuantityConversionService;
-	@Autowired private StockQuantityConversionSearchCriteriaDialog stockQuantityConversionSearchCriteriaDialog;
+	@Autowired private SearchStockQuantityConversionsDialog searchStockQuantityConversionsDialog;
 	
 	@Override
 	public void initializeComponents() {
@@ -42,7 +42,7 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 	public void updateDisplay() {
 		table.setStockQuantityConversions(
 				stockQuantityConversionService.getAllNonPostedStockQuantityConversions());
-		stockQuantityConversionSearchCriteriaDialog.updateDisplay();
+		searchStockQuantityConversionsDialog.updateDisplay();
 	}
 
 	public void displayStockQuantityConversionDetails(StockQuantityConversion stockQuantityConversion) {
@@ -122,10 +122,10 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 	}
 
 	private void searchStockQuantityConversions() {
-		stockQuantityConversionSearchCriteriaDialog.setVisible(true);
+		searchStockQuantityConversionsDialog.setVisible(true);
 		
 		StockQuantityConversionSearchCriteria criteria = 
-				stockQuantityConversionSearchCriteriaDialog.getSearchCriteria();
+				searchStockQuantityConversionsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<StockQuantityConversion> stockQuantityConversions = 
 					stockQuantityConversionService.search(criteria);

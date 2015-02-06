@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PurchasePaymentSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchPurchasePaymentsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
@@ -36,7 +36,7 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 	private static final int POST_DATE_COLUMN_INDEX = 3;
 	
 	@Autowired private PurchasePaymentService purchasePaymentService;
-	@Autowired private PurchasePaymentSearchCriteriaDialog purchasePaymentSearchCriteriaDialog;
+	@Autowired private SearchPurchasePaymentsDialog searchPurchasePaymentsDialog;
 	
 	private MagicListTable table;
 	private PurchasePaymentsTableModel tableModel;
@@ -47,7 +47,7 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 		if (!purchasePayments.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
-		purchasePaymentSearchCriteriaDialog.updateDisplay();
+		searchPurchasePaymentsDialog.updateDisplay();
 	}
 
 	@Override
@@ -141,9 +141,9 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 	}
 
 	private void searchPurchasePayments() {
-		purchasePaymentSearchCriteriaDialog.setVisible(true);
+		searchPurchasePaymentsDialog.setVisible(true);
 		
-		PurchasePaymentSearchCriteria criteria = purchasePaymentSearchCriteriaDialog.getSearchCriteria();
+		PurchasePaymentSearchCriteria criteria = searchPurchasePaymentsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<PurchasePayment> payments = purchasePaymentService.searchPurchasePayments(criteria);
 			tableModel.setPurchasePayments(payments);

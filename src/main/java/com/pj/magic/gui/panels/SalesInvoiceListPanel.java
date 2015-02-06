@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
-import com.pj.magic.gui.dialog.SalesInvoiceSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchSalesInvoicesDialog;
 import com.pj.magic.gui.tables.SalesInvoicesTable;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
@@ -28,7 +28,7 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 
 	@Autowired private SalesInvoicesTable table;
 	@Autowired private SalesInvoiceService salesInvoiceService;
-	@Autowired private SalesInvoiceSearchCriteriaDialog salesInvoiceSearchCriteriaDialog;
+	@Autowired private SearchSalesInvoicesDialog searchSalesInvoicesDialog;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	
@@ -44,7 +44,7 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	
 	public void updateDisplay() {
 		table.setSalesInvoices(salesInvoiceService.getAllNewSalesInvoices());
-		salesInvoiceSearchCriteriaDialog.updateDisplay();
+		searchSalesInvoicesDialog.updateDisplay();
 	}
 
 	public void displaySalesInvoiceDetails(SalesInvoice salesInvoice) {
@@ -85,9 +85,9 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	}
 
 	private void searchSalesInvoices() {
-		salesInvoiceSearchCriteriaDialog.setVisible(true);
+		searchSalesInvoicesDialog.setVisible(true);
 		
-		SalesInvoiceSearchCriteria criteria = salesInvoiceSearchCriteriaDialog.getSearchCriteria();
+		SalesInvoiceSearchCriteria criteria = searchSalesInvoicesDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
 			table.setSalesInvoices(salesInvoices);

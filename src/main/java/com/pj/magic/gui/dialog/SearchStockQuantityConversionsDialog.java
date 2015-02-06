@@ -27,7 +27,7 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class StockQuantityConversionSearchCriteriaDialog extends MagicDialog {
+public class SearchStockQuantityConversionsDialog extends MagicDialog {
 
 	private MagicTextField stockQuantityConversionNumberField;
 	private JComboBox<String> statusComboBox;
@@ -35,7 +35,7 @@ public class StockQuantityConversionSearchCriteriaDialog extends MagicDialog {
 	private JButton searchButton;
 	private StockQuantityConversionSearchCriteria searchCriteria;
 	
-	public StockQuantityConversionSearchCriteriaDialog() {
+	public SearchStockQuantityConversionsDialog() {
 		setSize(360, 190);
 		setLocationRelativeTo(null);
 		setTitle("Search Stock Quantity Conversions");

@@ -27,7 +27,7 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class AdjustmentInSearchCriteriaDialog extends MagicDialog {
+public class SearchAdjustmentInsDialog extends MagicDialog {
 
 	private MagicTextField adjustmentInNumberField;
 	private JComboBox<String> statusComboBox;
@@ -35,7 +35,7 @@ public class AdjustmentInSearchCriteriaDialog extends MagicDialog {
 	private JButton searchButton;
 	private AdjustmentInSearchCriteria searchCriteria;
 	
-	public AdjustmentInSearchCriteriaDialog() {
+	public SearchAdjustmentInsDialog() {
 		setSize(380, 190);
 		setLocationRelativeTo(null);
 		setTitle("Search Adjustment Ins");

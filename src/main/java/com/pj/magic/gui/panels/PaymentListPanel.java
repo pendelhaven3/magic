@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PaymentSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchPaymentsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.PaymentsTableModel;
 import com.pj.magic.model.Payment;
@@ -34,7 +34,7 @@ public class PaymentListPanel extends StandardMagicPanel {
 	private static final String VIEW_PAYMENT_ACTION_NAME = "VIEW_PAYMENT_ACTION_NAME";
 	
 	@Autowired private PaymentService paymentService;
-	@Autowired private PaymentSearchCriteriaDialog paymentSearchCriteriaDialog;
+	@Autowired private SearchPaymentsDialog searchPaymentsDialog;
 	
 	private JTable table;
 	private PaymentsTableModel tableModel = new PaymentsTableModel();
@@ -45,7 +45,7 @@ public class PaymentListPanel extends StandardMagicPanel {
 		if (!payments.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
-		paymentSearchCriteriaDialog.updateDisplay();
+		searchPaymentsDialog.updateDisplay();
 	}
 
 	@Override
@@ -132,9 +132,9 @@ public class PaymentListPanel extends StandardMagicPanel {
 	}
 
 	private void searchPayments() {
-		paymentSearchCriteriaDialog.setVisible(true);
+		searchPaymentsDialog.setVisible(true);
 		
-		PaymentSearchCriteria criteria = paymentSearchCriteriaDialog.getSearchCriteria();
+		PaymentSearchCriteria criteria = searchPaymentsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<Payment> payments = paymentService.searchPayments(criteria);
 			tableModel.setPayments(payments);

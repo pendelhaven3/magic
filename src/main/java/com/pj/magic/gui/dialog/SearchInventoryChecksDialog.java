@@ -9,26 +9,30 @@ import java.awt.event.ActionListener;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.model.search.CustomerSearchCriteria;
+import com.pj.magic.model.search.InventoryCheckSearchCriteria;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class CustomerSearchCriteriaDialog extends MagicDialog {
+public class SearchInventoryChecksDialog extends MagicDialog {
 
-	private MagicTextField nameField;
+	private MagicTextField codeOrDescriptionField;
+	private JComboBox<String> statusComboBox;
 	private JButton searchButton;
-	private CustomerSearchCriteria searchCriteria;
+	private InventoryCheckSearchCriteria searchCriteria;
 	
-	public CustomerSearchCriteriaDialog() {
-		setSize(350, 150);
+	public SearchInventoryChecksDialog() {
+		setSize(450, 190);
 		setLocationRelativeTo(null);
-		setTitle("Search Customers");
+		setTitle("Search Inventory Check Summary Items");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
 	}
 
@@ -40,29 +44,44 @@ public class CustomerSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		nameField = new MagicTextField();
-		nameField.setMaximumLength(50);
+		codeOrDescriptionField = new MagicTextField();
+		codeOrDescriptionField.setMaximumLength(30);
+		
+		statusComboBox = new MagicComboBox<>();
+		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "With Discrepancy", "Without Discrepancy"}));
 		
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveCustomerSearchCriteria();
+				saveInventoryCheckCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(nameField);
+		focusOnComponentWhenThisPanelIsDisplayed(codeOrDescriptionField);
 	}
 
-	private void saveCustomerSearchCriteria() {
-		searchCriteria = new CustomerSearchCriteria();
-		searchCriteria.setNameLike(nameField.getText());
+	private void saveInventoryCheckCriteria() {
+		searchCriteria = new InventoryCheckSearchCriteria();
+		searchCriteria.setCodeOrDescriptionLike(codeOrDescriptionField.getText());
+		
+		if (statusComboBox.getSelectedIndex() != 0) {
+			switch (statusComboBox.getSelectedIndex()) {
+			case 1:
+				searchCriteria.setWithDiscrepancy(true);
+				break;
+			case 2:
+				searchCriteria.setWithDiscrepancy(false);
+				break;
+			}
+		}
+		
 		setVisible(false);
 	}
 
 	private void registerKeyBindings() {
-		nameField.onEnterKey(new AbstractAction() {
+		codeOrDescriptionField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -75,7 +94,7 @@ public class CustomerSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveCustomerSearchCriteria();
+				saveInventoryCheckCriteria();
 			}
 		});
 		
@@ -94,22 +113,38 @@ public class CustomerSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(100, "Name:"), c);
+		add(ComponentUtil.createLabel(140, "Code/Description:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		nameField.setPreferredSize(new Dimension(150, 25));
-		add(nameField, c);
+		codeOrDescriptionField.setPreferredSize(new Dimension(200, 25));
+		add(codeOrDescriptionField, c);
 
 		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createVerticalFiller(5), c);
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(140, "Status:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		statusComboBox.setPreferredSize(new Dimension(200, 25));
+		add(statusComboBox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		add(ComponentUtil.createVerticalFiller(15), c);
 		
 		currentRow++;
 		
@@ -130,15 +165,16 @@ public class CustomerSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(), c);
 	}
 	
-	public CustomerSearchCriteria getSearchCriteria() {
-		CustomerSearchCriteria returnCriteria = searchCriteria;
+	public InventoryCheckSearchCriteria getSearchCriteria() {
+		InventoryCheckSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
 		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		nameField.setText(null);
+		codeOrDescriptionField.setText(null);
+		statusComboBox.setSelectedIndex(0);
 	}
 	
 }

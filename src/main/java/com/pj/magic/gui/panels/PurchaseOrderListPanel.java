@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PurchaseOrderSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchPurchaseOrdersDialog;
 import com.pj.magic.gui.tables.PurchaseOrdersTable;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.search.PurchaseOrderSearchCriteria;
@@ -26,7 +26,7 @@ import com.pj.magic.util.ComponentUtil;
 public class PurchaseOrderListPanel extends StandardMagicPanel {
 	
 	@Autowired private PurchaseOrdersTable table;
-	@Autowired private PurchaseOrderSearchCriteriaDialog purchaseOrderSearchCriteriaDialog;
+	@Autowired private SearchPurchaseOrdersDialog searchPurchaseOrdersDialog;
 	@Autowired private PurchaseOrderService purchaseOrderService;
 	
 	@Override
@@ -37,7 +37,7 @@ public class PurchaseOrderListPanel extends StandardMagicPanel {
 	public void updateDisplay() {
 		List<PurchaseOrder> purchaseOrders = purchaseOrderService.getAllNonPostedPurchaseOrders();
 		table.setPurchaseOrders(purchaseOrders);
-		purchaseOrderSearchCriteriaDialog.updateDisplay();
+		searchPurchaseOrdersDialog.updateDisplay();
 	}
 
 	public void displayPurchaseOrderDetails(PurchaseOrder stockQuantityConversion) {
@@ -106,9 +106,9 @@ public class PurchaseOrderListPanel extends StandardMagicPanel {
 	}
 
 	private void searchPurchaseOrders() {
-		purchaseOrderSearchCriteriaDialog.setVisible(true);
+		searchPurchaseOrdersDialog.setVisible(true);
 		
-		PurchaseOrderSearchCriteria criteria = purchaseOrderSearchCriteriaDialog.getSearchCriteria();
+		PurchaseOrderSearchCriteria criteria = searchPurchaseOrdersDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<PurchaseOrder> purchaseOrders = purchaseOrderService.search(criteria);
 			table.setPurchaseOrders(purchaseOrders);

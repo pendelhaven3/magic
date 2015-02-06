@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.ProductSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchProductsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ProductsTableModel;
 import com.pj.magic.model.Product;
@@ -34,7 +34,7 @@ public class ProductListPanel extends StandardMagicPanel {
 	private static final String EDIT_PRODUCT_ACTION_NAME = "editProduct";
 	
 	@Autowired private ProductService productService;
-	@Autowired private ProductSearchCriteriaDialog productSearchCriteriaDialog;
+	@Autowired private SearchProductsDialog searchProductsDialog;
 	
 	private JTable table;
 	private ProductsTableModel tableModel = new ProductsTableModel();
@@ -45,7 +45,7 @@ public class ProductListPanel extends StandardMagicPanel {
 		if (!products.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
-		productSearchCriteriaDialog.updateDisplay();
+		searchProductsDialog.updateDisplay();
 	}
 
 	@Override
@@ -77,9 +77,9 @@ public class ProductListPanel extends StandardMagicPanel {
 	}
 
 	private void searchProducts() {
-		productSearchCriteriaDialog.setVisible(true);
+		searchProductsDialog.setVisible(true);
 		
-		ProductSearchCriteria criteria = productSearchCriteriaDialog.getSearchCriteria();
+		ProductSearchCriteria criteria = searchProductsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<Product> products = productService.searchProducts(criteria);
 			tableModel.setProducts(products);
@@ -159,7 +159,7 @@ public class ProductListPanel extends StandardMagicPanel {
 		tableModel.setProducts(productService.getAllProducts());
 		table.changeSelection(0, 0, false, false);
 		table.requestFocusInWindow();
-		productSearchCriteriaDialog.updateDisplay();
+		searchProductsDialog.updateDisplay();
 	}
 	
 }

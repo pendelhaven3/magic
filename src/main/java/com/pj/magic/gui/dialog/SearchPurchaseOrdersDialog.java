@@ -5,40 +5,41 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
-
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
-import com.pj.magic.gui.component.DatePickerFormatter;
+import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.model.search.AdjustmentOutSearchCriteria;
+import com.pj.magic.model.Supplier;
+import com.pj.magic.model.search.PurchaseOrderSearchCriteria;
+import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
+public class SearchPurchaseOrdersDialog extends MagicDialog {
 
-	private MagicTextField adjustmentOutNumberField;
-	private JComboBox<String> statusComboBox;
-	private UtilCalendarModel postDateModel;
-	private JButton searchButton;
-	private AdjustmentOutSearchCriteria searchCriteria;
+	@Autowired private SupplierService supplierService;
 	
-	public AdjustmentOutSearchCriteriaDialog() {
-		setSize(400, 190);
+	private MagicTextField purchaseOrderNumberField;
+	private MagicComboBox<Supplier> supplierComboBox;
+	private MagicComboBox<String> statusComboBox;
+	private JButton searchButton;
+	private PurchaseOrderSearchCriteria searchCriteria;
+	
+	public SearchPurchaseOrdersDialog() {
+		setSize(530, 210);
 		setLocationRelativeTo(null);
-		setTitle("Search Adjustment Outs");
+		setTitle("Search Purchase Orders");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
 	}
 
@@ -50,62 +51,53 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		adjustmentOutNumberField = new MagicTextField();
-		adjustmentOutNumberField.setNumbersOnly(true);
-		adjustmentOutNumberField.setMaximumLength(10);
+		purchaseOrderNumberField = new MagicTextField();
 		
-		statusComboBox = new JComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "Not Posted", "Posted"}));
+		supplierComboBox = new MagicComboBox<>();
 		
-		postDateModel = new UtilCalendarModel();
+		statusComboBox = new MagicComboBox<>();
+		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "Non-Posted", "Posted"}));
 		
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveAdjustmentOutCriteria();
+				savePurchaseOrderCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(adjustmentOutNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(purchaseOrderNumberField);
 	}
 
-	private void saveAdjustmentOutCriteria() {
-		searchCriteria = new AdjustmentOutSearchCriteria();
-		if (!StringUtils.isEmpty(adjustmentOutNumberField.getText())) {
-			searchCriteria.setAdjustmentOutNumber(Long.valueOf(adjustmentOutNumberField.getText()));
+	private void savePurchaseOrderCriteria() {
+		searchCriteria = new PurchaseOrderSearchCriteria();
+		
+		if (!StringUtils.isEmpty(purchaseOrderNumberField.getText())) {
+			searchCriteria.setPurchaseOrderNumber(Long.valueOf(purchaseOrderNumberField.getText()));
+			
 		}
+		
+		searchCriteria.setSupplier((Supplier)supplierComboBox.getSelectedItem());
 		
 		if (statusComboBox.getSelectedIndex() != 0) {
-			switch (statusComboBox.getSelectedIndex()) {
-			case 1:
-				searchCriteria.setPosted(false);
-				break;
-			case 2:
-				searchCriteria.setPosted(true);
-				break;
-			}
-		}
-		
-		if (postDateModel.getValue() != null) {
-			searchCriteria.setPostDate(postDateModel.getValue().getTime());
+			searchCriteria.setPosted(statusComboBox.getSelectedIndex() == 2);
 		}
 		
 		setVisible(false);
 	}
 
 	private void registerKeyBindings() {
-		adjustmentOutNumberField.onEnterKey(new AbstractAction() {
+		purchaseOrderNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				statusComboBox.requestFocusInWindow();
+				supplierComboBox.requestFocusInWindow();
 			}
 		});
 		
-		statusComboBox.getInputMap().put(KeyUtil.getEnterKey(), "enter");
-		statusComboBox.getActionMap().put("enter", new AbstractAction() {
+		supplierComboBox.getInputMap().put(KeyUtil.getEnterKey(), "enter");
+		supplierComboBox.getActionMap().put("enter", new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -118,7 +110,7 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveAdjustmentOutCriteria();
+				savePurchaseOrderCriteria();
 			}
 		});
 		
@@ -137,15 +129,15 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(160, "Adjustment Out No.:"), c);
+		add(ComponentUtil.createLabel(150, "Purchase Order No.:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		adjustmentOutNumberField.setPreferredSize(new Dimension(100, 25));
-		add(adjustmentOutNumberField, c);
+		purchaseOrderNumberField.setPreferredSize(new Dimension(100, 25));
+		add(purchaseOrderNumberField, c);
 
 		currentRow++;
 		
@@ -153,7 +145,23 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(80, "Status:"), c);
+		add(ComponentUtil.createLabel(120, "Supplier:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		supplierComboBox.setPreferredSize(new Dimension(300, 25));
+		add(supplierComboBox, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(120, "Status:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
@@ -168,25 +176,8 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(140, "Post Date:"), c);
-
-		c = new GridBagConstraints();
-		c.weightx = 1.0;
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		
-		JDatePanelImpl datePanel = new JDatePanelImpl(postDateModel);
-		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
-		add(datePicker, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		add(ComponentUtil.createVerticalFiller(10), c);
+		c.anchor = GridBagConstraints.CENTER;
+		add(ComponentUtil.createFiller(1, 5), c);
 		
 		currentRow++;
 		
@@ -207,17 +198,22 @@ public class AdjustmentOutSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(), c);
 	}
 	
-	public AdjustmentOutSearchCriteria getSearchCriteria() {
-		AdjustmentOutSearchCriteria returnCriteria = searchCriteria;
+	public PurchaseOrderSearchCriteria getSearchCriteria() {
+		PurchaseOrderSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
 		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		adjustmentOutNumberField.setText(null);
+		purchaseOrderNumberField.setText(null);
+
+		List<Supplier> suppliers = supplierService.getAllSuppliers();
+		suppliers.add(0, null);
+		supplierComboBox.setModel(
+				new DefaultComboBoxModel<>(suppliers.toArray(new Supplier[suppliers.size()])));
+		
 		statusComboBox.setSelectedIndex(0);
-		postDateModel.setValue(null);
 	}
 	
 }

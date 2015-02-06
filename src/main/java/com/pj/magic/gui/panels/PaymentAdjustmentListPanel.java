@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PaymentAdjustmentSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchPaymentAdjustmentsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.search.PaymentAdjustmentSearchCriteria;
@@ -38,7 +38,7 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 	private static final int POST_DATE_COLUMN_INDEX = 5;
 	
 	@Autowired private PaymentAdjustmentService paymentAdjustmentService;
-	@Autowired private PaymentAdjustmentSearchCriteriaDialog paymentAdjustmentSearchCriteriaDialog;
+	@Autowired private SearchPaymentAdjustmentsDialog searchPaymentAdjustmentsDialog;
 	
 	private MagicListTable table;
 	private PaymentAdjustmentsTableModel tableModel;
@@ -60,7 +60,7 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 		if (!paymentAdjustments.isEmpty()) {
 			table.changeSelection(0, 0);
 		}
-		paymentAdjustmentSearchCriteriaDialog.updateDisplay();
+		searchPaymentAdjustmentsDialog.updateDisplay();
 	}
 
 	@Override
@@ -149,9 +149,9 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 	}
 
 	private void searchPaymentAdjustments() {
-		paymentAdjustmentSearchCriteriaDialog.setVisible(true);
+		searchPaymentAdjustmentsDialog.setVisible(true);
 		
-		PaymentAdjustmentSearchCriteria criteria = paymentAdjustmentSearchCriteriaDialog.getSearchCriteria();
+		PaymentAdjustmentSearchCriteria criteria = searchPaymentAdjustmentsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<PaymentAdjustment> adjustmentIns = paymentAdjustmentService.search(criteria);
 			tableModel.setPaymentAdjustments(adjustmentIns);

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.ReceivingReceiptSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchReceivingReceiptsDialog;
 import com.pj.magic.gui.tables.ReceivingReceiptsTable;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
@@ -27,7 +27,7 @@ public class ReceivingReceiptListPanel extends StandardMagicPanel {
 	
 	@Autowired private ReceivingReceiptsTable table;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
-	@Autowired private ReceivingReceiptSearchCriteriaDialog receivingReceiptSearchCriteriaDialog;
+	@Autowired private SearchReceivingReceiptsDialog searchReceivingReceiptsDialog;
 	
 	@Override
 	public void initializeComponents() {
@@ -37,7 +37,7 @@ public class ReceivingReceiptListPanel extends StandardMagicPanel {
 	public void updateDisplay() {
 		List<ReceivingReceipt> receivingReceipts = receivingReceiptService.getNewReceivingReceipts();
 		table.setReceivingReceipts(receivingReceipts);
-		receivingReceiptSearchCriteriaDialog.updateDisplay();
+		searchReceivingReceiptsDialog.updateDisplay();
 	}
 
 	@Override
@@ -96,9 +96,9 @@ public class ReceivingReceiptListPanel extends StandardMagicPanel {
 	}
 
 	private void searchReceivingReceipts() {
-		receivingReceiptSearchCriteriaDialog.setVisible(true);
+		searchReceivingReceiptsDialog.setVisible(true);
 		
-		ReceivingReceiptSearchCriteria criteria = receivingReceiptSearchCriteriaDialog.getSearchCriteria();
+		ReceivingReceiptSearchCriteria criteria = searchReceivingReceiptsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<ReceivingReceipt> receivingReceipts = receivingReceiptService.search(criteria);
 			table.setReceivingReceipts(receivingReceipts);

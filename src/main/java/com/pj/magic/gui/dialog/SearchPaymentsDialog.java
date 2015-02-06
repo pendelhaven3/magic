@@ -28,35 +28,34 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Customer;
-import com.pj.magic.model.search.NoMoreStockAdjustmentSearchCriteria;
+import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
+public class SearchPaymentsDialog extends MagicDialog {
 
-	private static final int STATUS_ALL = 0;
 	private static final int STATUS_NEW = 1;
 	private static final int STATUS_POSTED = 2;
-	private static final int STATUS_PAID = 3;
+	private static final int STATUS_CANCELLED = 3;
 	
 	@Autowired private CustomerService customerService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	
-	private MagicTextField noMoreStockAdjustmentNumberField;
+	private MagicTextField paymentNumberField;
 	private MagicTextField customerCodeField;
 	private JLabel customerNameField;
 	private MagicComboBox<String> statusComboBox;
 	private UtilCalendarModel postDateModel;
 	private JButton searchButton;
-	private NoMoreStockAdjustmentSearchCriteria searchCriteria;
+	private PaymentSearchCriteria searchCriteria;
 	private JButton selectCustomerButton;
 	
-	public NoMoreStockAdjustmentSearchCriteriaDialog() {
+	public SearchPaymentsDialog() {
 		setSize(600, 250);
 		setLocationRelativeTo(null);
-		setTitle("Search No More Stock Adjustments");
+		setTitle("Search Payments");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
 	}
 
@@ -68,7 +67,7 @@ public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		noMoreStockAdjustmentNumberField = new MagicTextField();
+		paymentNumberField = new MagicTextField();
 		
 		customerCodeField = new MagicTextField();
 		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
@@ -83,7 +82,7 @@ public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
 		});
 		
 		statusComboBox = new MagicComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted/Unpaid", "Paid"}));
+		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted", "Cancelled"}));
 		
 		postDateModel = new UtilCalendarModel();
 		
@@ -92,11 +91,11 @@ public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveNoMoreStockAdjustmentCriteria();
+				savePaymentCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(noMoreStockAdjustmentNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(paymentNumberField);
 	}
 
 	private void openSelectCustomerDialog() {
@@ -110,11 +109,11 @@ public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
 		}
 	}
 
-	private void saveNoMoreStockAdjustmentCriteria() {
-		searchCriteria = new NoMoreStockAdjustmentSearchCriteria();
+	private void savePaymentCriteria() {
+		searchCriteria = new PaymentSearchCriteria();
 		
-		if (!StringUtils.isEmpty(noMoreStockAdjustmentNumberField.getText())) {
-			searchCriteria.setNoMoreStockAdjustmentNumber(Long.valueOf(noMoreStockAdjustmentNumberField.getText()));
+		if (!StringUtils.isEmpty(paymentNumberField.getText())) {
+			searchCriteria.setPaymentNumber(Long.valueOf(paymentNumberField.getText()));
 		}
 		
 		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
@@ -125,18 +124,17 @@ public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
 			customerNameField.setText(null);
 		}
 		
-		if (statusComboBox.getSelectedIndex() != STATUS_ALL) {
+		if (statusComboBox.getSelectedIndex() != 0) {
 			switch (statusComboBox.getSelectedIndex()) {
 			case STATUS_NEW:
 				searchCriteria.setPosted(false);
-				searchCriteria.setPaid(false);
+				searchCriteria.setCancelled(false);
 				break;
 			case STATUS_POSTED:
 				searchCriteria.setPosted(true);
-				searchCriteria.setPaid(false);
 				break;
-			case STATUS_PAID:
-				searchCriteria.setPaid(true);
+			case STATUS_CANCELLED:
+				searchCriteria.setCancelled(true);
 				break;
 			}
 		}
@@ -149,7 +147,7 @@ public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
-		noMoreStockAdjustmentNumberField.onEnterKey(new AbstractAction() {
+		paymentNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -179,7 +177,7 @@ public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveNoMoreStockAdjustmentCriteria();
+				savePaymentCriteria();
 			}
 		});
 		
@@ -198,15 +196,15 @@ public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "NMS No.:"), c);
+		add(ComponentUtil.createLabel(150, "Payment No.:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		noMoreStockAdjustmentNumberField.setPreferredSize(new Dimension(100, 25));
-		add(noMoreStockAdjustmentNumberField, c);
+		paymentNumberField.setPreferredSize(new Dimension(100, 25));
+		add(paymentNumberField, c);
 
 		currentRow++;
 		
@@ -284,18 +282,18 @@ public class NoMoreStockAdjustmentSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(), c);
 	}
 	
-	public NoMoreStockAdjustmentSearchCriteria getSearchCriteria() {
-		NoMoreStockAdjustmentSearchCriteria returnCriteria = searchCriteria;
+	public PaymentSearchCriteria getSearchCriteria() {
+		PaymentSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
 		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		noMoreStockAdjustmentNumberField.setText(null);
+		paymentNumberField.setText(null);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
-		statusComboBox.setSelectedIndex(STATUS_ALL);
+		statusComboBox.setSelectedIndex(0);
 		postDateModel.setValue(null);
 	}
 	

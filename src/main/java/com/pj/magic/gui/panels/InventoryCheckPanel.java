@@ -32,7 +32,7 @@ import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.ActualCountDetailsDialog;
-import com.pj.magic.gui.dialog.InventoryCheckSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchInventoryChecksDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.InventoryCheckSummaryTable;
 import com.pj.magic.model.InventoryCheck;
@@ -55,7 +55,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	@Autowired private ActualCountDetailsDialog actualCountDetailsDialog;
-	@Autowired private InventoryCheckSearchCriteriaDialog inventoryCheckSearchCriteriaDialog;
+	@Autowired private SearchInventoryChecksDialog searchInventoryChecksDialog;
 	
 	private InventoryCheck inventoryCheck;
 	private UtilCalendarModel inventoryDateModel;
@@ -156,7 +156,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		searchButton.setEnabled(true);
 		
 		summaryTable.setItems(inventoryCheck.getSummaryItems());
-		inventoryCheckSearchCriteriaDialog.updateDisplay();
+		searchInventoryChecksDialog.updateDisplay();
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			
@@ -367,8 +367,8 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	}
 
 	private void searchSummaryItems() {
-		inventoryCheckSearchCriteriaDialog.setVisible(true);
-		InventoryCheckSearchCriteria criteria = inventoryCheckSearchCriteriaDialog.getSearchCriteria();
+		searchInventoryChecksDialog.setVisible(true);
+		InventoryCheckSearchCriteria criteria = searchInventoryChecksDialog.getSearchCriteria();
 		refreshInventoryCheck();
 		summaryTable.setItems(inventoryCheck.searchSummaryItems(criteria));
 	}
@@ -380,7 +380,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	private void showAllSummaryItems() {
 		refreshInventoryCheck();
 		summaryTable.setItems(inventoryCheck.getSummaryItems());
-		inventoryCheckSearchCriteriaDialog.updateDisplay();
+		searchInventoryChecksDialog.updateDisplay();
 	}
 
 	private void print() {

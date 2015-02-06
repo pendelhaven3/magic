@@ -34,7 +34,7 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.EditProductPriceDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
-import com.pj.magic.gui.dialog.ProductSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchProductsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
@@ -57,7 +57,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private EditProductPriceDialog editProductPriceDialog;
 	@Autowired private ProductService productService;
-	@Autowired private ProductSearchCriteriaDialog productSearchCriteriaDialog;
+	@Autowired private SearchProductsDialog searchProductsDialog;
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	
@@ -196,7 +196,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay(PricingScheme pricingScheme) {
-		productSearchCriteriaDialog.updateDisplay();
+		searchProductsDialog.updateDisplay();
 		
 		this.pricingScheme = pricingScheme;
 		if (pricingScheme.getId() == null) {
@@ -389,8 +389,8 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	}
 
 	protected void searchProducts() {
-		productSearchCriteriaDialog.setVisible(true);
-		ProductSearchCriteria criteria = productSearchCriteriaDialog.getSearchCriteria();
+		searchProductsDialog.setVisible(true);
+		ProductSearchCriteria criteria = searchProductsDialog.getSearchCriteria();
 		if (criteria != null) {
 			criteria.setPricingScheme(pricingScheme);
 			List<Product> products = productService.searchProducts(criteria);

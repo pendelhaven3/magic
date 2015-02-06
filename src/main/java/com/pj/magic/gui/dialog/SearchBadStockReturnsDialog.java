@@ -28,34 +28,35 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Customer;
-import com.pj.magic.model.search.PaymentSearchCriteria;
+import com.pj.magic.model.search.BadStockReturnSearchCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class PaymentSearchCriteriaDialog extends MagicDialog {
+public class SearchBadStockReturnsDialog extends MagicDialog {
 
+	private static final int STATUS_ALL = 0;
 	private static final int STATUS_NEW = 1;
 	private static final int STATUS_POSTED = 2;
-	private static final int STATUS_CANCELLED = 3;
+	private static final int STATUS_PAID = 3;
 	
 	@Autowired private CustomerService customerService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	
-	private MagicTextField paymentNumberField;
+	private MagicTextField badStockReturnNumberField;
 	private MagicTextField customerCodeField;
 	private JLabel customerNameField;
 	private MagicComboBox<String> statusComboBox;
 	private UtilCalendarModel postDateModel;
 	private JButton searchButton;
-	private PaymentSearchCriteria searchCriteria;
+	private BadStockReturnSearchCriteria searchCriteria;
 	private JButton selectCustomerButton;
 	
-	public PaymentSearchCriteriaDialog() {
+	public SearchBadStockReturnsDialog() {
 		setSize(600, 250);
 		setLocationRelativeTo(null);
-		setTitle("Search Payments");
+		setTitle("Search Bad Stock Returns");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
 	}
 
@@ -67,7 +68,7 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		paymentNumberField = new MagicTextField();
+		badStockReturnNumberField = new MagicTextField();
 		
 		customerCodeField = new MagicTextField();
 		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
@@ -82,7 +83,7 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 		});
 		
 		statusComboBox = new MagicComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted", "Cancelled"}));
+		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted/Unpaid", "Paid"}));
 		
 		postDateModel = new UtilCalendarModel();
 		
@@ -91,11 +92,11 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePaymentCriteria();
+				saveBadStockReturnCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(paymentNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(badStockReturnNumberField);
 	}
 
 	private void openSelectCustomerDialog() {
@@ -109,11 +110,11 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 		}
 	}
 
-	private void savePaymentCriteria() {
-		searchCriteria = new PaymentSearchCriteria();
+	private void saveBadStockReturnCriteria() {
+		searchCriteria = new BadStockReturnSearchCriteria();
 		
-		if (!StringUtils.isEmpty(paymentNumberField.getText())) {
-			searchCriteria.setPaymentNumber(Long.valueOf(paymentNumberField.getText()));
+		if (!StringUtils.isEmpty(badStockReturnNumberField.getText())) {
+			searchCriteria.setBadStockReturnNumber(Long.valueOf(badStockReturnNumberField.getText()));
 		}
 		
 		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
@@ -124,17 +125,18 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 			customerNameField.setText(null);
 		}
 		
-		if (statusComboBox.getSelectedIndex() != 0) {
+		if (statusComboBox.getSelectedIndex() != STATUS_ALL) {
 			switch (statusComboBox.getSelectedIndex()) {
 			case STATUS_NEW:
 				searchCriteria.setPosted(false);
-				searchCriteria.setCancelled(false);
+				searchCriteria.setPaid(false);
 				break;
 			case STATUS_POSTED:
 				searchCriteria.setPosted(true);
+				searchCriteria.setPaid(false);
 				break;
-			case STATUS_CANCELLED:
-				searchCriteria.setCancelled(true);
+			case STATUS_PAID:
+				searchCriteria.setPaid(true);
 				break;
 			}
 		}
@@ -147,7 +149,7 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
-		paymentNumberField.onEnterKey(new AbstractAction() {
+		badStockReturnNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -177,7 +179,7 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePaymentCriteria();
+				saveBadStockReturnCriteria();
 			}
 		});
 		
@@ -196,15 +198,15 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Payment No.:"), c);
+		add(ComponentUtil.createLabel(160, "Bad Stock Return No.:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		paymentNumberField.setPreferredSize(new Dimension(100, 25));
-		add(paymentNumberField, c);
+		badStockReturnNumberField.setPreferredSize(new Dimension(100, 25));
+		add(badStockReturnNumberField, c);
 
 		currentRow++;
 		
@@ -282,18 +284,18 @@ public class PaymentSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(), c);
 	}
 	
-	public PaymentSearchCriteria getSearchCriteria() {
-		PaymentSearchCriteria returnCriteria = searchCriteria;
+	public BadStockReturnSearchCriteria getSearchCriteria() {
+		BadStockReturnSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
 		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		paymentNumberField.setText(null);
+		badStockReturnNumberField.setText(null);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
-		statusComboBox.setSelectedIndex(0);
+		statusComboBox.setSelectedIndex(STATUS_ALL);
 		postDateModel.setValue(null);
 	}
 	

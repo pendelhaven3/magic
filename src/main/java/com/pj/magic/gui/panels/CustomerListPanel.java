@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.CustomerSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchCustomersDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.CustomersTableModel;
 import com.pj.magic.model.Customer;
@@ -35,7 +35,7 @@ public class CustomerListPanel extends StandardMagicPanel {
 	
 	@Autowired private CustomerService customerService;
 	@Autowired private CustomersTableModel tableModel;
-	@Autowired private CustomerSearchCriteriaDialog customerSearchCriteriaDialog;
+	@Autowired private SearchCustomersDialog searchCustomersDialog;
 	
 	private JTable table;
 	
@@ -151,13 +151,13 @@ public class CustomerListPanel extends StandardMagicPanel {
 			table.changeSelection(0, 0, false, false);
 		}
 		table.requestFocusInWindow();
-		customerSearchCriteriaDialog.updateDisplay();
+		searchCustomersDialog.updateDisplay();
 	}
 
 	private void searchCustomers() {
-		customerSearchCriteriaDialog.setVisible(true);
+		searchCustomersDialog.setVisible(true);
 		
-		CustomerSearchCriteria criteria = customerSearchCriteriaDialog.getSearchCriteria();
+		CustomerSearchCriteria criteria = searchCustomersDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<Customer> customers = customerService.searchCustomers(criteria);
 			tableModel.setCustomers(customers);

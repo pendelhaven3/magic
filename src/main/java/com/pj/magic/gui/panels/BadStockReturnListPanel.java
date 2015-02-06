@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.BadStockReturnSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchBadStockReturnsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.search.BadStockReturnSearchCriteria;
@@ -37,7 +37,7 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	private static final int PAID_DATE_COLUMN_INDEX = 4;
 	
 	@Autowired private BadStockReturnService badStockReturnService;
-	@Autowired private BadStockReturnSearchCriteriaDialog badStockReturnSearchCriteriaDialog;
+	@Autowired private SearchBadStockReturnsDialog searchBadStockReturnsDialog;
 	
 	private MagicListTable table;
 	private BadStockReturnsTableModel tableModel;
@@ -56,7 +56,7 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		tableModel.setBadStockReturns(badStockReturnService.getUnpaidBadStockReturns());
-		badStockReturnSearchCriteriaDialog.updateDisplay();
+		searchBadStockReturnsDialog.updateDisplay();
 	}
 
 	public void displayBadStockReturnDetails(BadStockReturn badStockReturn) {
@@ -147,9 +147,9 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	}
 
 	private void searchBadStockReturns() {
-		badStockReturnSearchCriteriaDialog.setVisible(true);
+		searchBadStockReturnsDialog.setVisible(true);
 		
-		BadStockReturnSearchCriteria criteria = badStockReturnSearchCriteriaDialog.getSearchCriteria();
+		BadStockReturnSearchCriteria criteria = searchBadStockReturnsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<BadStockReturn> badStockReturns = badStockReturnService.search(criteria);
 			tableModel.setBadStockReturns(badStockReturns);

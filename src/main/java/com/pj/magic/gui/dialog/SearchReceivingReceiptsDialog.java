@@ -13,33 +13,44 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
+import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.search.PurchaseOrderSearchCriteria;
+import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
+public class SearchReceivingReceiptsDialog extends MagicDialog {
 
+	private static final int STATUS_NEW = 1;
+	private static final int STATUS_POSTED = 2;
+	private static final int STATUS_CANCELLED = 3;
+	
 	@Autowired private SupplierService supplierService;
 	
-	private MagicTextField purchaseOrderNumberField;
+	private MagicTextField receivingReceiptNumberField;
 	private MagicComboBox<Supplier> supplierComboBox;
 	private MagicComboBox<String> statusComboBox;
+	private UtilCalendarModel receivedDateModel;
 	private JButton searchButton;
-	private PurchaseOrderSearchCriteria searchCriteria;
+	private ReceivingReceiptSearchCriteria searchCriteria;
 	
-	public PurchaseOrderSearchCriteriaDialog() {
-		setSize(530, 210);
+	public SearchReceivingReceiptsDialog() {
+		setSize(530, 250);
 		setLocationRelativeTo(null);
-		setTitle("Search Purchase Orders");
+		setTitle("Search Receiving Receipts");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
 	}
 
@@ -51,44 +62,61 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		purchaseOrderNumberField = new MagicTextField();
+		receivingReceiptNumberField = new MagicTextField();
+		receivingReceiptNumberField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
 		
 		supplierComboBox = new MagicComboBox<>();
 		
 		statusComboBox = new MagicComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "Non-Posted", "Posted"}));
+		statusComboBox.setModel(new DefaultComboBoxModel<>(
+				new String[] {"All", "New", "Posted", "Cancelled"}));
+		
+		receivedDateModel = new UtilCalendarModel();
 		
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePurchaseOrderCriteria();
+				saveReceivingReceiptCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(purchaseOrderNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(receivingReceiptNumberField);
 	}
 
-	private void savePurchaseOrderCriteria() {
-		searchCriteria = new PurchaseOrderSearchCriteria();
+	private void saveReceivingReceiptCriteria() {
+		searchCriteria = new ReceivingReceiptSearchCriteria();
 		
-		if (!StringUtils.isEmpty(purchaseOrderNumberField.getText())) {
-			searchCriteria.setPurchaseOrderNumber(Long.valueOf(purchaseOrderNumberField.getText()));
+		if (!StringUtils.isEmpty(receivingReceiptNumberField.getText())) {
+			searchCriteria.setReceivingReceiptNumber(Long.valueOf(receivingReceiptNumberField.getText()));
 			
 		}
 		
 		searchCriteria.setSupplier((Supplier)supplierComboBox.getSelectedItem());
 		
-		if (statusComboBox.getSelectedIndex() != 0) {
-			searchCriteria.setPosted(statusComboBox.getSelectedIndex() == 2);
+		switch (statusComboBox.getSelectedIndex()) {
+		case STATUS_NEW:
+			searchCriteria.setPosted(false);
+			searchCriteria.setCancelled(false);
+			break;
+		case STATUS_POSTED:
+			searchCriteria.setPosted(true);
+			break;
+		case STATUS_CANCELLED:
+			searchCriteria.setCancelled(true);
+			break;
+		}
+		
+		if (receivedDateModel.getValue() != null) {
+			searchCriteria.setReceivedDate(receivedDateModel.getValue().getTime());
 		}
 		
 		setVisible(false);
 	}
 
 	private void registerKeyBindings() {
-		purchaseOrderNumberField.onEnterKey(new AbstractAction() {
+		receivingReceiptNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -110,7 +138,7 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePurchaseOrderCriteria();
+				saveReceivingReceiptCriteria();
 			}
 		});
 		
@@ -129,15 +157,15 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(150, "Purchase Order No.:"), c);
+		add(ComponentUtil.createLabel(170, "Receiving Receipt No.:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		purchaseOrderNumberField.setPreferredSize(new Dimension(100, 25));
-		add(purchaseOrderNumberField, c);
+		receivingReceiptNumberField.setPreferredSize(new Dimension(100, 25));
+		add(receivingReceiptNumberField, c);
 
 		currentRow++;
 		
@@ -176,6 +204,24 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(120, "Received Date:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePanelImpl datePanel = new JDatePanelImpl(receivedDateModel);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		add(datePicker, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.CENTER;
 		add(ComponentUtil.createFiller(1, 5), c);
 		
@@ -198,15 +244,15 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(), c);
 	}
 	
-	public PurchaseOrderSearchCriteria getSearchCriteria() {
-		PurchaseOrderSearchCriteria returnCriteria = searchCriteria;
+	public ReceivingReceiptSearchCriteria getSearchCriteria() {
+		ReceivingReceiptSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
 		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		purchaseOrderNumberField.setText(null);
+		receivingReceiptNumberField.setText(null);
 
 		List<Supplier> suppliers = supplierService.getAllSuppliers();
 		suppliers.add(0, null);
@@ -214,6 +260,8 @@ public class PurchaseOrderSearchCriteriaDialog extends MagicDialog {
 				new DefaultComboBoxModel<>(suppliers.toArray(new Supplier[suppliers.size()])));
 		
 		statusComboBox.setSelectedIndex(0);
+		
+		receivedDateModel.setValue(null);
 	}
 	
 }

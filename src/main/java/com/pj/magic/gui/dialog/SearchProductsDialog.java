@@ -29,7 +29,7 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class ProductSearchCriteriaDialog extends MagicDialog {
+public class SearchProductsDialog extends MagicDialog {
 
 	@Autowired private ManufacturerService manufacturerService;
 	@Autowired private ProductCategoryService categoryService;
@@ -41,7 +41,7 @@ public class ProductSearchCriteriaDialog extends MagicDialog {
 	private JButton searchButton;
 	private ProductSearchCriteria searchCriteria;
 	
-	public ProductSearchCriteriaDialog() {
+	public SearchProductsDialog() {
 		setSize(500, 210);
 		setLocationRelativeTo(null);
 		setTitle("Search Products");

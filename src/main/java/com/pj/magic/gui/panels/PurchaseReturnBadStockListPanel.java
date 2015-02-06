@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PurchaseReturnBadStockSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchPurchaseReturnBadStocksDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.search.PurchaseReturnBadStockSearchCriteria;
@@ -37,7 +37,7 @@ public class PurchaseReturnBadStockListPanel extends StandardMagicPanel {
 	private static final int POST_DATE_COLUMN_INDEX = 4;
 	
 	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;
-	@Autowired private PurchaseReturnBadStockSearchCriteriaDialog purchaseReturnBadStockSearchCriteriaDialog;
+	@Autowired private SearchPurchaseReturnBadStocksDialog searchPurchaseReturnBadStocksDialog;
 	
 	private MagicListTable table;
 	private PurchaseReturnBadStocksTableModel tableModel;
@@ -62,7 +62,7 @@ public class PurchaseReturnBadStockListPanel extends StandardMagicPanel {
 			table.changeSelection(0, 0);
 		}
 		
-		purchaseReturnBadStockSearchCriteriaDialog.updateDisplay();
+		searchPurchaseReturnBadStocksDialog.updateDisplay();
 	}
 
 	public void displayPurchaseReturnBadStockDetails(PurchaseReturnBadStock purchaseReturnBadStock) {
@@ -153,9 +153,9 @@ public class PurchaseReturnBadStockListPanel extends StandardMagicPanel {
 	}
 
 	private void searchPurchaseReturnBadStocks() {
-		purchaseReturnBadStockSearchCriteriaDialog.setVisible(true);
+		searchPurchaseReturnBadStocksDialog.setVisible(true);
 		
-		PurchaseReturnBadStockSearchCriteria criteria = purchaseReturnBadStockSearchCriteriaDialog.getSearchCriteria();
+		PurchaseReturnBadStockSearchCriteria criteria = searchPurchaseReturnBadStocksDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<PurchaseReturnBadStock> purchaseReturnBadStocks = purchaseReturnBadStockService.search(criteria);
 			tableModel.setPurchaseReturnBadStocks(purchaseReturnBadStocks);

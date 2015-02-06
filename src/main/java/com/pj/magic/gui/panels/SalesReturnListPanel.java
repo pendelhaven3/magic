@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.SalesReturnSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchSalesReturnsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.SalesReturnsTableModel;
 import com.pj.magic.model.SalesReturn;
@@ -29,7 +29,7 @@ import com.pj.magic.util.ComponentUtil;
 public class SalesReturnListPanel extends StandardMagicPanel {
 
 	@Autowired private SalesReturnService salesReturnService;
-	@Autowired private SalesReturnSearchCriteriaDialog salesReturnSearchCriteriaDialog;
+	@Autowired private SearchSalesReturnsDialog searchSalesReturnsDialog;
 	
 	private MagicListTable table;
 	private SalesReturnsTableModel tableModel = new SalesReturnsTableModel();
@@ -40,7 +40,7 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 		if (!salesReturns.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
-		salesReturnSearchCriteriaDialog.updateDisplay();
+		searchSalesReturnsDialog.updateDisplay();
 	}
 
 	@Override
@@ -130,9 +130,9 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 	}
 	
 	private void searchSalesReturns() {
-		salesReturnSearchCriteriaDialog.setVisible(true);
+		searchSalesReturnsDialog.setVisible(true);
 		
-		SalesReturnSearchCriteria criteria = salesReturnSearchCriteriaDialog.getSearchCriteria();
+		SalesReturnSearchCriteria criteria = searchSalesReturnsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<SalesReturn> salesReturns = salesReturnService.search(criteria);
 			tableModel.setSalesReturns(salesReturns);

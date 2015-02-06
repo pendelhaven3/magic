@@ -5,12 +5,15 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -18,44 +21,47 @@ import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
-import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.search.PurchaseReturnBadStockSearchCriteria;
+import com.pj.magic.model.search.PurchasePaymentAdjustmentSearchCriteria;
+import com.pj.magic.service.AdjustmentTypeService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
+public class SearchPurchasePaymentAdjustmentsDialog extends MagicDialog {
 
 	private static final int STATUS_ALL = 0;
 	private static final int STATUS_NEW = 1;
 	private static final int STATUS_POSTED = 2;
 	
-	@Autowired private SupplierService supplierService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
+	@Autowired private AdjustmentTypeService adjustmentTypeService;
+	@Autowired private SupplierService supplierService;
 	
-	private MagicTextField purchaseReturnBadStockNumberField;
+	private MagicTextField paymentAdjustmentNumberField;
 	private MagicTextField supplierCodeField;
-	private JLabel supplierNameField;
-	private MagicComboBox<String> statusComboBox;
+	private JButton selectSupplierButton;
+	private JLabel supplierNameLabel;
+	private JComboBox<AdjustmentType> adjustmentTypeComboBox;
+	private JComboBox<String> statusComboBox;
 	private UtilCalendarModel postDateModel;
 	private JButton searchButton;
-	private PurchaseReturnBadStockSearchCriteria searchCriteria;
-	private JButton selectSupplierButton;
+	private PurchasePaymentAdjustmentSearchCriteria searchCriteria;
 	
-	public PurchaseReturnBadStockSearchCriteriaDialog() {
+	public SearchPurchasePaymentAdjustmentsDialog() {
 		setSize(600, 250);
 		setLocationRelativeTo(null);
-		setTitle("Search Bad Purchase Returns");
+		setTitle("Search Purchase Payment Adjustments");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
 	}
 
@@ -67,10 +73,14 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		purchaseReturnBadStockNumberField = new MagicTextField();
+		paymentAdjustmentNumberField = new MagicTextField();
+		paymentAdjustmentNumberField.setNumbersOnly(true);
+		paymentAdjustmentNumberField.setMaximumLength(10);
 		
 		supplierCodeField = new MagicTextField();
-		supplierCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
+		supplierCodeField.setMaximumLength(Constants.SUPPLIER_CODE_MAXIMUM_LENGTH);
+		
+		supplierNameLabel = new JLabel();
 		
 		selectSupplierButton = new EllipsisButton();
 		selectSupplierButton.addActionListener(new ActionListener() {
@@ -81,7 +91,9 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 			}
 		});
 		
-		statusComboBox = new MagicComboBox<>();
+		adjustmentTypeComboBox = new JComboBox<>();
+		
+		statusComboBox = new JComboBox<>();
 		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted"}));
 		
 		postDateModel = new UtilCalendarModel();
@@ -91,38 +103,39 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePurchaseReturnBadStockCriteria();
+				savePaymentAdjustmentCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(purchaseReturnBadStockNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(paymentAdjustmentNumberField);
 	}
 
 	private void openSelectSupplierDialog() {
 		selectSupplierDialog.searchSuppliers(supplierCodeField.getText());
 		selectSupplierDialog.setVisible(true);
 		
-		Supplier supplier = selectSupplierDialog.getSelectedSupplier();
+		Supplier supplier = selectSupplierDialog.getSelectedSupplier();	
 		if (supplier != null) {
 			supplierCodeField.setText(supplier.getCode());
-			supplierNameField.setText(supplier.getName());
+			supplierNameLabel.setText(supplier.getName());
 		}
 	}
 
-	private void savePurchaseReturnBadStockCriteria() {
-		searchCriteria = new PurchaseReturnBadStockSearchCriteria();
-		
-		if (!StringUtils.isEmpty(purchaseReturnBadStockNumberField.getText())) {
-			searchCriteria.setPurchaseReturnBadStockNumber(Long.valueOf(purchaseReturnBadStockNumberField.getText()));
+	private void savePaymentAdjustmentCriteria() {
+		searchCriteria = new PurchasePaymentAdjustmentSearchCriteria();
+		if (!StringUtils.isEmpty(paymentAdjustmentNumberField.getText())) {
+			searchCriteria.setPaymentAdjustmentNumber(Long.valueOf(paymentAdjustmentNumberField.getText()));
 		}
 		
 		Supplier supplier = supplierService.findSupplierByCode(supplierCodeField.getText());
 		searchCriteria.setSupplier(supplier);
 		if (supplier != null) {
-			supplierNameField.setText(supplier.getName());
+			supplierNameLabel.setText(supplier.getName());
 		} else {
-			supplierNameField.setText(null);
+			supplierNameLabel.setText(null);
 		}
+		
+		searchCriteria.setAdjustmentType((AdjustmentType)adjustmentTypeComboBox.getSelectedItem());
 		
 		if (statusComboBox.getSelectedIndex() != STATUS_ALL) {
 			switch (statusComboBox.getSelectedIndex()) {
@@ -134,7 +147,7 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 				break;
 			}
 		}
-
+		
 		if (postDateModel.getValue() != null) {
 			searchCriteria.setPostDate(postDateModel.getValue().getTime());
 		}
@@ -143,15 +156,16 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
-		purchaseReturnBadStockNumberField.onEnterKey(new AbstractAction() {
+		paymentAdjustmentNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				supplierCodeField.requestFocusInWindow();
+				statusComboBox.requestFocusInWindow();
 			}
 		});
 		
-		supplierCodeField.onF5Key(new AbstractAction() {
+		supplierCodeField.getInputMap().put(KeyUtil.getF5Key(), "openSelectSupplierDialog");
+		supplierCodeField.getActionMap().put("openSelectSupplierDialog", new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -159,8 +173,8 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 			}
 		});
 		
-		supplierCodeField.getInputMap().put(KeyUtil.getEnterKey(), "enter");
-		supplierCodeField.getActionMap().put("enter", new AbstractAction() {
+		statusComboBox.getInputMap().put(KeyUtil.getEnterKey(), "enter");
+		statusComboBox.getActionMap().put("enter", new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -173,7 +187,7 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePurchaseReturnBadStockCriteria();
+				savePaymentAdjustmentCriteria();
 			}
 		});
 		
@@ -192,15 +206,15 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(160, "PRBS No.:"), c);
+		add(ComponentUtil.createLabel(140, "Payment Adj. No.:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		purchaseReturnBadStockNumberField.setPreferredSize(new Dimension(100, 25));
-		add(purchaseReturnBadStockNumberField, c);
+		paymentAdjustmentNumberField.setPreferredSize(new Dimension(100, 25));
+		add(paymentAdjustmentNumberField, c);
 
 		currentRow++;
 		
@@ -208,14 +222,14 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(120, "Supplier:"), c);
+		add(ComponentUtil.createLabel(80, "Supplier:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(createCustomerPanel(), c);
+		add(createSupplierPanel(), c);
 
 		currentRow++;
 		
@@ -223,7 +237,23 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(120, "Status:"), c);
+		add(ComponentUtil.createLabel(120, "Adjustment Type:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		adjustmentTypeComboBox.setPreferredSize(new Dimension(150, 25));
+		add(adjustmentTypeComboBox, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(80, "Status:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
@@ -250,14 +280,13 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 		JDatePanelImpl datePanel = new JDatePanelImpl(postDateModel);
 		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
 		add(datePicker, c);
-
+		
 		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.CENTER;
-		add(ComponentUtil.createFiller(1, 5), c);
+		add(ComponentUtil.createVerticalFiller(10), c);
 		
 		currentRow++;
 		
@@ -275,25 +304,10 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(), c);
+		add(Box.createGlue(), c);
 	}
 	
-	public PurchaseReturnBadStockSearchCriteria getSearchCriteria() {
-		PurchaseReturnBadStockSearchCriteria returnCriteria = searchCriteria;
-		searchCriteria = null;
-		return returnCriteria;
-	}
-	
-	public void updateDisplay() {
-		searchCriteria = null;
-		purchaseReturnBadStockNumberField.setText(null);
-		supplierCodeField.setText(null);
-		supplierNameField.setText(null);
-		statusComboBox.setSelectedIndex(STATUS_ALL);
-		postDateModel.setValue(null);
-	}
-	
-	private JPanel createCustomerPanel() {
+	private JPanel createSupplierPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		
@@ -323,10 +337,32 @@ public class PurchaseReturnBadStockSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 3;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		supplierNameField = ComponentUtil.createLabel(200);
-		panel.add(supplierNameField, c);
+		supplierNameLabel = ComponentUtil.createLabel(200);
+		panel.add(supplierNameLabel, c);
 		
 		return panel;
+	}
+
+	public PurchasePaymentAdjustmentSearchCriteria getSearchCriteria() {
+		PurchasePaymentAdjustmentSearchCriteria returnCriteria = searchCriteria;
+		searchCriteria = null;
+		return returnCriteria;
+	}
+	
+	public void updateDisplay() {
+		searchCriteria = null;
+		paymentAdjustmentNumberField.setText(null);
+		supplierCodeField.setText(null);
+		supplierNameLabel.setText(null);
+		
+		List<AdjustmentType> adjustmentTypes = adjustmentTypeService.getRegularAdjustmentTypes();
+		adjustmentTypeComboBox.setModel(
+				new DefaultComboBoxModel<>(adjustmentTypes.toArray(new AdjustmentType[adjustmentTypes.size()])));
+		adjustmentTypeComboBox.insertItemAt(null, 0);
+		adjustmentTypeComboBox.setSelectedItem(null);
+		
+		statusComboBox.setSelectedIndex(0);
+		postDateModel.setValue(null);
 	}
 	
 }

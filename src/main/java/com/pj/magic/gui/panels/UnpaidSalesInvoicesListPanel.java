@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
-import com.pj.magic.gui.dialog.SalesInvoiceSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchSalesInvoicesDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
@@ -36,7 +36,7 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	private static final int NET_AMOUNT_COLUMN_INDEX = 3;
 	
 	@Autowired private SalesInvoiceService salesInvoiceService;
-	@Autowired private SalesInvoiceSearchCriteriaDialog salesInvoiceSearchCriteriaDialog;
+	@Autowired private SearchSalesInvoicesDialog searchSalesInvoicesDialog;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	
@@ -67,7 +67,7 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	
 	public void updateDisplay() {
 		tableModel.setSalesInvoices(salesInvoiceService.findAllUnpaidSalesInvoices());
-		salesInvoiceSearchCriteriaDialog.updateDisplay();
+		searchSalesInvoicesDialog.updateDisplay();
 	}
 
 	@Override

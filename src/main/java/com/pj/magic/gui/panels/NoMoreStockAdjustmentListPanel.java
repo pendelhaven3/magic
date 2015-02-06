@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.NoMoreStockAdjustmentSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchNoMoreStockAdjustmentsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.search.NoMoreStockAdjustmentSearchCriteria;
@@ -31,7 +31,7 @@ import com.pj.magic.util.FormatterUtil;
 public class NoMoreStockAdjustmentListPanel extends StandardMagicPanel {
 
 	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
-	@Autowired private NoMoreStockAdjustmentSearchCriteriaDialog noMoreStockAdjustmentSearchCriteriaDialog;
+	@Autowired private SearchNoMoreStockAdjustmentsDialog searchNoMoreStockAdjustmentsDialog;
 	
 	private MagicListTable table;
 	private NoMoreStockAdjustmentsTableModel tableModel = new NoMoreStockAdjustmentsTableModel();
@@ -42,7 +42,7 @@ public class NoMoreStockAdjustmentListPanel extends StandardMagicPanel {
 		if (!noMoreStockAdjustments.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
-		noMoreStockAdjustmentSearchCriteriaDialog.updateDisplay();
+		searchNoMoreStockAdjustmentsDialog.updateDisplay();
 	}
 
 	@Override
@@ -132,9 +132,9 @@ public class NoMoreStockAdjustmentListPanel extends StandardMagicPanel {
 	}
 	
 	private void searchNoMoreStockAdjustments() {
-		noMoreStockAdjustmentSearchCriteriaDialog.setVisible(true);
+		searchNoMoreStockAdjustmentsDialog.setVisible(true);
 		
-		NoMoreStockAdjustmentSearchCriteria criteria = noMoreStockAdjustmentSearchCriteriaDialog.getSearchCriteria();
+		NoMoreStockAdjustmentSearchCriteria criteria = searchNoMoreStockAdjustmentsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<NoMoreStockAdjustment> noMoreStockAdjustments = noMoreStockAdjustmentService.search(criteria);
 			tableModel.setNoMoreStockAdjustments(noMoreStockAdjustments);

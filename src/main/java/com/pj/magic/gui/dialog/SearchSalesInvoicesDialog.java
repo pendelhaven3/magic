@@ -34,7 +34,7 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class SalesInvoiceSearchCriteriaDialog extends MagicDialog {
+public class SearchSalesInvoicesDialog extends MagicDialog {
 
 	@Autowired private CustomerService customerService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
@@ -48,7 +48,7 @@ public class SalesInvoiceSearchCriteriaDialog extends MagicDialog {
 	private SalesInvoiceSearchCriteria searchCriteria;
 	private JButton selectCustomerButton;
 	
-	public SalesInvoiceSearchCriteriaDialog() {
+	public SearchSalesInvoicesDialog() {
 		setSize(600, 250);
 		setLocationRelativeTo(null);
 		setTitle("Search Sales Invoices");

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.AdjustmentInSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchAdjustmentInsDialog;
 import com.pj.magic.gui.tables.AdjustmentInsTable;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.search.AdjustmentInSearchCriteria;
@@ -33,7 +33,7 @@ public class AdjustmentInListPanel extends StandardMagicPanel {
 	
 	@Autowired private AdjustmentInsTable table;
 	@Autowired private AdjustmentInService adjustmentInService;
-	@Autowired private AdjustmentInSearchCriteriaDialog adjustmentInSearchCriteriaDialog;
+	@Autowired private SearchAdjustmentInsDialog searchAdjustmentInsDialog;
 	
 	@Override
 	public void initializeComponents() {
@@ -42,7 +42,7 @@ public class AdjustmentInListPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		table.setAdjustmentIns(adjustmentInService.getAllNonPostedAdjustmentIns());
-		adjustmentInSearchCriteriaDialog.updateDisplay();
+		searchAdjustmentInsDialog.updateDisplay();
 	}
 
 	public void displayAdjustmentInDetails(AdjustmentIn AdjustmentIn) {
@@ -120,9 +120,9 @@ public class AdjustmentInListPanel extends StandardMagicPanel {
 	}
 
 	private void searchAdjustmentIns() {
-		adjustmentInSearchCriteriaDialog.setVisible(true);
+		searchAdjustmentInsDialog.setVisible(true);
 		
-		AdjustmentInSearchCriteria criteria = adjustmentInSearchCriteriaDialog.getSearchCriteria();
+		AdjustmentInSearchCriteria criteria = searchAdjustmentInsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<AdjustmentIn> adjustmentIns = adjustmentInService.search(criteria);
 			table.setAdjustmentIns(adjustmentIns);

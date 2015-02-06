@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PurchasePaymentAdjustmentSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchPurchasePaymentAdjustmentsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.PurchasePaymentAdjustment;
 import com.pj.magic.model.search.PurchasePaymentAdjustmentSearchCriteria;
@@ -38,7 +38,7 @@ public class PurchasePaymentAdjustmentListPanel extends StandardMagicPanel {
 	private static final int POST_DATE_COLUMN_INDEX = 5;
 	
 	@Autowired private PurchasePaymentAdjustmentService purchasePaymentAdjustmentService;
-	@Autowired private PurchasePaymentAdjustmentSearchCriteriaDialog purchasePaymentAdjustmentSearchCriteriaDialog;
+	@Autowired private SearchPurchasePaymentAdjustmentsDialog searchPurchasePaymentAdjustmentsDialog;
 	
 	private MagicListTable table;
 	private PurchasePaymentAdjustmentsTableModel tableModel;
@@ -61,7 +61,7 @@ public class PurchasePaymentAdjustmentListPanel extends StandardMagicPanel {
 		if (!paymentAdjustments.isEmpty()) {
 			table.changeSelection(0, 0);
 		}
-		purchasePaymentAdjustmentSearchCriteriaDialog.updateDisplay();
+		searchPurchasePaymentAdjustmentsDialog.updateDisplay();
 	}
 
 	@Override
@@ -150,10 +150,10 @@ public class PurchasePaymentAdjustmentListPanel extends StandardMagicPanel {
 	}
 
 	private void searchPaymentAdjustments() {
-		purchasePaymentAdjustmentSearchCriteriaDialog.setVisible(true);
+		searchPurchasePaymentAdjustmentsDialog.setVisible(true);
 		
 		PurchasePaymentAdjustmentSearchCriteria criteria = 
-				purchasePaymentAdjustmentSearchCriteriaDialog.getSearchCriteria();
+				searchPurchasePaymentAdjustmentsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<PurchasePaymentAdjustment> adjustmentIns = purchasePaymentAdjustmentService.search(criteria);
 			tableModel.setPaymentAdjustments(adjustmentIns);

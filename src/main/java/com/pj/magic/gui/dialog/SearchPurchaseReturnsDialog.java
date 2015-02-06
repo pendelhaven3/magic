@@ -28,34 +28,34 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
+import com.pj.magic.model.search.PurchaseReturnSearchCriteria;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
+public class SearchPurchaseReturnsDialog extends MagicDialog {
 
+	private static final int STATUS_ALL = 0;
 	private static final int STATUS_NEW = 1;
 	private static final int STATUS_POSTED = 2;
-	private static final int STATUS_CANCELLED = 3;
 	
 	@Autowired private SupplierService supplierService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	
-	private MagicTextField purchasePaymentNumberField;
+	private MagicTextField salesReturnNumberField;
 	private MagicTextField supplierCodeField;
 	private JLabel supplierNameField;
 	private MagicComboBox<String> statusComboBox;
 	private UtilCalendarModel postDateModel;
 	private JButton searchButton;
-	private PurchasePaymentSearchCriteria searchCriteria;
+	private PurchaseReturnSearchCriteria searchCriteria;
 	private JButton selectSupplierButton;
 	
-	public PurchasePaymentSearchCriteriaDialog() {
+	public SearchPurchaseReturnsDialog() {
 		setSize(600, 250);
 		setLocationRelativeTo(null);
-		setTitle("Search Purchase Payments");
+		setTitle("Search Purchase Returns");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
 	}
 
@@ -67,12 +67,12 @@ public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		purchasePaymentNumberField = new MagicTextField();
+		salesReturnNumberField = new MagicTextField();
 		
 		supplierCodeField = new MagicTextField();
-		supplierCodeField.setMaximumLength(Constants.SUPPLIER_CODE_MAXIMUM_LENGTH);
+		supplierCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
 		
-		selectSupplierButton = new EllipsisButton("Select Supplier");
+		selectSupplierButton = new EllipsisButton();
 		selectSupplierButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -82,7 +82,7 @@ public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
 		});
 		
 		statusComboBox = new MagicComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted"}));
+		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted/Unpaid", "Paid"}));
 		
 		postDateModel = new UtilCalendarModel();
 		
@@ -91,11 +91,11 @@ public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveSearchCriteria();
+				savePurchaseReturnCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(purchasePaymentNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(salesReturnNumberField);
 	}
 
 	private void openSelectSupplierDialog() {
@@ -109,11 +109,11 @@ public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
 		}
 	}
 
-	private void saveSearchCriteria() {
-		searchCriteria = new PurchasePaymentSearchCriteria();
+	private void savePurchaseReturnCriteria() {
+		searchCriteria = new PurchaseReturnSearchCriteria();
 		
-		if (!StringUtils.isEmpty(purchasePaymentNumberField.getText())) {
-			searchCriteria.setPaymentNumber(Long.valueOf(purchasePaymentNumberField.getText()));
+		if (!StringUtils.isEmpty(salesReturnNumberField.getText())) {
+			searchCriteria.setPurchaseReturnNumber(Long.valueOf(salesReturnNumberField.getText()));
 		}
 		
 		Supplier supplier = supplierService.findSupplierByCode(supplierCodeField.getText());
@@ -124,17 +124,13 @@ public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
 			supplierNameField.setText(null);
 		}
 		
-		if (statusComboBox.getSelectedIndex() != 0) {
+		if (statusComboBox.getSelectedIndex() != STATUS_ALL) {
 			switch (statusComboBox.getSelectedIndex()) {
 			case STATUS_NEW:
 				searchCriteria.setPosted(false);
-				searchCriteria.setCancelled(false);
 				break;
 			case STATUS_POSTED:
 				searchCriteria.setPosted(true);
-				break;
-			case STATUS_CANCELLED:
-				searchCriteria.setCancelled(true);
 				break;
 			}
 		}
@@ -147,7 +143,7 @@ public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
-		purchasePaymentNumberField.onEnterKey(new AbstractAction() {
+		salesReturnNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -177,7 +173,7 @@ public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				saveSearchCriteria();
+				savePurchaseReturnCriteria();
 			}
 		});
 		
@@ -196,15 +192,15 @@ public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(180, "Purchase Payment No.:"), c);
+		add(ComponentUtil.createLabel(160, "Purchase Return No.:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		purchasePaymentNumberField.setPreferredSize(new Dimension(100, 25));
-		add(purchasePaymentNumberField, c);
+		salesReturnNumberField.setPreferredSize(new Dimension(100, 25));
+		add(salesReturnNumberField, c);
 
 		currentRow++;
 		
@@ -219,7 +215,7 @@ public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(createCustomerPanel(), c);
+		add(createSupplierPanel(), c);
 
 		currentRow++;
 		
@@ -282,22 +278,22 @@ public class PurchasePaymentSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(), c);
 	}
 	
-	public PurchasePaymentSearchCriteria getSearchCriteria() {
-		PurchasePaymentSearchCriteria returnCriteria = searchCriteria;
+	public PurchaseReturnSearchCriteria getSearchCriteria() {
+		PurchaseReturnSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
 		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		purchasePaymentNumberField.setText(null);
+		salesReturnNumberField.setText(null);
 		supplierCodeField.setText(null);
 		supplierNameField.setText(null);
-		statusComboBox.setSelectedIndex(0);
+		statusComboBox.setSelectedIndex(STATUS_ALL);
 		postDateModel.setValue(null);
 	}
 	
-	private JPanel createCustomerPanel() {
+	private JPanel createSupplierPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		

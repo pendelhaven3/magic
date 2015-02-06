@@ -28,13 +28,13 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.model.search.PurchaseReturnSearchCriteria;
+import com.pj.magic.model.search.PurchaseReturnBadStockSearchCriteria;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
 @Component
-public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
+public class SearchPurchaseReturnBadStocksDialog extends MagicDialog {
 
 	private static final int STATUS_ALL = 0;
 	private static final int STATUS_NEW = 1;
@@ -43,19 +43,19 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 	@Autowired private SupplierService supplierService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	
-	private MagicTextField salesReturnNumberField;
+	private MagicTextField purchaseReturnBadStockNumberField;
 	private MagicTextField supplierCodeField;
 	private JLabel supplierNameField;
 	private MagicComboBox<String> statusComboBox;
 	private UtilCalendarModel postDateModel;
 	private JButton searchButton;
-	private PurchaseReturnSearchCriteria searchCriteria;
+	private PurchaseReturnBadStockSearchCriteria searchCriteria;
 	private JButton selectSupplierButton;
 	
-	public PurchaseReturnSearchCriteriaDialog() {
+	public SearchPurchaseReturnBadStocksDialog() {
 		setSize(600, 250);
 		setLocationRelativeTo(null);
-		setTitle("Search Purchase Returns");
+		setTitle("Search Bad Purchase Returns");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
 	}
 
@@ -67,7 +67,7 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		salesReturnNumberField = new MagicTextField();
+		purchaseReturnBadStockNumberField = new MagicTextField();
 		
 		supplierCodeField = new MagicTextField();
 		supplierCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
@@ -82,7 +82,7 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 		});
 		
 		statusComboBox = new MagicComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted/Unpaid", "Paid"}));
+		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted"}));
 		
 		postDateModel = new UtilCalendarModel();
 		
@@ -91,11 +91,11 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePurchaseReturnCriteria();
+				savePurchaseReturnBadStockCriteria();
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(salesReturnNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(purchaseReturnBadStockNumberField);
 	}
 
 	private void openSelectSupplierDialog() {
@@ -109,11 +109,11 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 		}
 	}
 
-	private void savePurchaseReturnCriteria() {
-		searchCriteria = new PurchaseReturnSearchCriteria();
+	private void savePurchaseReturnBadStockCriteria() {
+		searchCriteria = new PurchaseReturnBadStockSearchCriteria();
 		
-		if (!StringUtils.isEmpty(salesReturnNumberField.getText())) {
-			searchCriteria.setPurchaseReturnNumber(Long.valueOf(salesReturnNumberField.getText()));
+		if (!StringUtils.isEmpty(purchaseReturnBadStockNumberField.getText())) {
+			searchCriteria.setPurchaseReturnBadStockNumber(Long.valueOf(purchaseReturnBadStockNumberField.getText()));
 		}
 		
 		Supplier supplier = supplierService.findSupplierByCode(supplierCodeField.getText());
@@ -143,7 +143,7 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
-		salesReturnNumberField.onEnterKey(new AbstractAction() {
+		purchaseReturnBadStockNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -173,7 +173,7 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				savePurchaseReturnCriteria();
+				savePurchaseReturnBadStockCriteria();
 			}
 		});
 		
@@ -192,15 +192,15 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(160, "Purchase Return No.:"), c);
+		add(ComponentUtil.createLabel(160, "PRBS No.:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		salesReturnNumberField.setPreferredSize(new Dimension(100, 25));
-		add(salesReturnNumberField, c);
+		purchaseReturnBadStockNumberField.setPreferredSize(new Dimension(100, 25));
+		add(purchaseReturnBadStockNumberField, c);
 
 		currentRow++;
 		
@@ -215,7 +215,7 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(createSupplierPanel(), c);
+		add(createCustomerPanel(), c);
 
 		currentRow++;
 		
@@ -278,22 +278,22 @@ public class PurchaseReturnSearchCriteriaDialog extends MagicDialog {
 		add(ComponentUtil.createFiller(), c);
 	}
 	
-	public PurchaseReturnSearchCriteria getSearchCriteria() {
-		PurchaseReturnSearchCriteria returnCriteria = searchCriteria;
+	public PurchaseReturnBadStockSearchCriteria getSearchCriteria() {
+		PurchaseReturnBadStockSearchCriteria returnCriteria = searchCriteria;
 		searchCriteria = null;
 		return returnCriteria;
 	}
 	
 	public void updateDisplay() {
 		searchCriteria = null;
-		salesReturnNumberField.setText(null);
+		purchaseReturnBadStockNumberField.setText(null);
 		supplierCodeField.setText(null);
 		supplierNameField.setText(null);
 		statusComboBox.setSelectedIndex(STATUS_ALL);
 		postDateModel.setValue(null);
 	}
 	
-	private JPanel createSupplierPanel() {
+	private JPanel createCustomerPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		

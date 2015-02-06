@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.AdjustmentOutSearchCriteriaDialog;
+import com.pj.magic.gui.dialog.SearchAdjustmentOutsDialog;
 import com.pj.magic.gui.tables.AdjustmentOutsTable;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.search.AdjustmentOutSearchCriteria;
@@ -32,7 +32,7 @@ public class AdjustmentOutListPanel extends StandardMagicPanel {
 	
 	@Autowired private AdjustmentOutsTable table;
 	@Autowired private AdjustmentOutService adjustmentOutService;
-	@Autowired private AdjustmentOutSearchCriteriaDialog adjustmentOutSearchCriteriaDialog;
+	@Autowired private SearchAdjustmentOutsDialog searchAdjustmentOutsDialog;
 	
 	@Override
 	public void initializeComponents() {
@@ -41,7 +41,7 @@ public class AdjustmentOutListPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		table.setAdjustmentOuts(adjustmentOutService.getAllNonPostedAdjustmentOuts());
-		adjustmentOutSearchCriteriaDialog.updateDisplay();
+		searchAdjustmentOutsDialog.updateDisplay();
 	}
 
 	public void displayAdjustmentOutDetails(AdjustmentOut AdjustmentOut) {
@@ -118,9 +118,9 @@ public class AdjustmentOutListPanel extends StandardMagicPanel {
 	}
 
 	private void searchAdjustmentOuts() {
-		adjustmentOutSearchCriteriaDialog.setVisible(true);
+		searchAdjustmentOutsDialog.setVisible(true);
 		
-		AdjustmentOutSearchCriteria criteria = adjustmentOutSearchCriteriaDialog.getSearchCriteria();
+		AdjustmentOutSearchCriteria criteria = searchAdjustmentOutsDialog.getSearchCriteria();
 		if (criteria != null) {
 			List<AdjustmentOut> adjustmentIns = adjustmentOutService.search(criteria);
 			table.setAdjustmentOuts(adjustmentIns);
