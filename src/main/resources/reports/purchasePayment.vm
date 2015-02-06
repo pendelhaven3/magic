@@ -22,6 +22,7 @@ $report.field($receivingReceipt.receivedDate) $report.field($receivingReceipt.re
                          SUB TOTAL $report.field($payment.totalAmount, 12, "right")
                                    ------------
 
+#if (!$payment.paymentAdjustments.isEmpty())
 Less: Purchase Adj
 ----------- -------     ----------
 #foreach($adjustment in $payment.paymentAdjustments)
@@ -31,13 +32,15 @@ $report.field($adjustment.adjustmentType.code, 11) $report.field($adjustment.ref
 ##Workaround: Without the $space reference, this line will not have line break
 #end
 ----------- -------     ---------- ------------
-                                
+
+#end                                
 TOTAL AMOUNT DUE                   $report.field($payment.totalAmountDue, 12, "right")
                                    ============
 
 --------------------------------------------------------
 $report.center("PAYMENT", $charsPerLine)
 
+#if (!$payment.checkPayments.isEmpty())
 CHECK:
 ---------- ---------------- ------------ ---------------
 #foreach($checkPayment in $payment.checkPayments)
@@ -45,6 +48,8 @@ CHECK:
 $report.field($checkPayment.checkDate) $report.field($checkPayment.bank, 16) $report.field($checkPayment.amount, 12, "right") $report.field($checkPayment.checkNumber, 15)
 #end
 
+#end
+#if (!$payment.creditCardPayments.isEmpty())
 CREDIT CARD:
 ---------- ---------------- ------------ ---------------
 #foreach($creditCardPayment in $payment.creditCardPayments)
@@ -52,11 +57,15 @@ CREDIT CARD:
 $report.field($creditCardPayment.transactionDate) $report.field($creditCardPayment.creditCard.toString(), 16) $report.field($creditCardPayment.amount, 12, "right") $report.field($creditCardPayment.approvalCode, 15)
 #end
 
+#end
+#if (!$payment.bankTransfers.isEmpty())
 BANK TRANSFER:
 ---------- ---------------- ------------ ---------------
 #foreach($bankTransfer in $payment.bankTransfers)
 ##1/30/2015 JCHS BDO SAVINGS 1,000,000.00 123123192873182
 $report.field($bankTransfer.transferDate) $report.field($bankTransfer.bank, 16) $report.field($bankTransfer.amount, 12, "right") $report.field($bankTransfer.referenceNumber, 15)
+#end
+
 #end
 --------------------------------------------------------
 
