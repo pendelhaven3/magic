@@ -11,7 +11,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -19,6 +24,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,10 +35,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +62,7 @@ import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.Unit;
+import com.pj.magic.service.ExcelService;
 import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.PrintService;
@@ -60,6 +70,7 @@ import com.pj.magic.service.ProductService;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
@@ -79,6 +90,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private ExcelService excelService;
 	
 	private PurchaseOrder purchaseOrder;
 	private JLabel purchaseOrderNumberField;
@@ -100,8 +112,10 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	private MagicToolBarButton deleteItemButton;
 	private MagicToolBarButton printPreviewButton;
 	private MagicToolBarButton printButton;
+	private MagicToolBarButton toExcelButton;
 	private JButton selectSupplierButton;
 	private JButton deleteButton;
+	private JFileChooser excelFileChooser;
 	
 	@Override
 	protected void initializeComponents() {
@@ -158,6 +172,22 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 				selectSupplier();
 			}
 		});
+		
+		excelFileChooser = new JFileChooser();
+		excelFileChooser.setCurrentDirectory(new File(FileUtil.getDesktopFolderPath()));
+		excelFileChooser.setFileFilter(new FileFilter() {
+			
+			@Override
+			public String getDescription() {
+				return "Excel workbook (*.xlsx)";
+			}
+			
+			@Override
+			public boolean accept(File f) {
+				return FilenameUtils.getExtension(f.getName()).equals("xlsx");
+			}
+		});
+		
 	}
 
 	private void saveVatInclusive() {
@@ -966,8 +996,47 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			}
 		});	
 		toolBar.add(printButton);
+		
+		toExcelButton = new MagicToolBarButton("excel", "Generate Excel spreadsheet from Purchase Order");
+		toExcelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				generateExcelSpreadsheetFromPurchaseOrder();
+			}
+		});	
+		toolBar.add(toExcelButton);
 	}
 
+	private void generateExcelSpreadsheetFromPurchaseOrder() {
+		excelFileChooser.setSelectedFile(new File(generateDefaultSpreadsheetName() + ".xlsx"));
+		
+		int returnVal = excelFileChooser.showSaveDialog(this);
+		if (returnVal != JFileChooser.APPROVE_OPTION) {
+			return;
+		}
+		
+		try (
+			XSSFWorkbook workbook = excelService.generateSpreadsheet(purchaseOrder);
+			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
+		) {
+			workbook.write(out);
+			showMessage("Excel spreadsheet generated successfully");
+		} catch (IOException e) {
+			showErrorMessage("Unexpected error during excel generation");
+		}
+	}
+
+	private String generateDefaultSpreadsheetName() {
+		return new StringBuilder()
+			.append(purchaseOrder.getSupplier().getName())
+			.append(" - ")
+			.append(new SimpleDateFormat("MMM-dd-yyyy").format(new Date()))
+			.append(" - PO ")
+			.append(purchaseOrder.getPurchaseOrderNumber())
+			.toString();
+	}
+	
 	private void deletePurchaseOrder() {
 		if (confirm("Do you really want to delete this Purchase Order?")) {
 			try {

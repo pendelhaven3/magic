@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 
 import javax.swing.BorderFactory;
@@ -51,6 +50,7 @@ import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
@@ -101,7 +101,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		statusField.setCursor(new Cursor(Cursor.HAND_CURSOR));
 		
 		excelFileChooser = new JFileChooser();
-		excelFileChooser.setCurrentDirectory(new File(getDesktopFolderPath()));
+		excelFileChooser.setCurrentDirectory(new File(FileUtil.getDesktopFolderPath()));
 		excelFileChooser.setFileFilter(new FileFilter() {
 			
 			@Override
@@ -610,10 +610,6 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			.toString();
 	}
 
-	private String getDesktopFolderPath() {
-		return Paths.get(System.getProperty("user.home"), "Desktop").toAbsolutePath().toString();
-	}
-	
 	protected void cancelSalesInvoice() {
 		if (confirm("Cancel this Sales Invoice?")) {
 			try {
