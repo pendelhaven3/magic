@@ -129,6 +129,7 @@ public class PurchaseReturnBadStockItemsTableModel extends AbstractTableModel {
 			break;
 		case PurchaseReturnBadStockItemsTable.UNIT_COST_COLUMN_INDEX:
 			if (rowItem.getUnitCost() != null && rowItem.getUnitCost().equals(NumberUtil.toBigDecimal(val))) {
+				fireTableCellUpdated(rowIndex, columnIndex);
 				return;
 			}
 			rowItem.setUnitCost(NumberUtil.toBigDecimal(val));
