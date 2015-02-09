@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
-import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
 import com.pj.magic.model.User;
@@ -27,7 +26,7 @@ import com.pj.magic.service.LoginService;
 import com.pj.magic.util.ListUtil;
 
 @Component
-public class RecordsMaintenanceMenuPanel extends StandardMagicPanel {
+public class RecordsMaintenanceMenuPanel extends MenuPanel {
 
 	private static final String AREA_LIST = "Area List";
 	private static final String ADJUSTMENT_TYPE_LIST = "Adjustment Type List";

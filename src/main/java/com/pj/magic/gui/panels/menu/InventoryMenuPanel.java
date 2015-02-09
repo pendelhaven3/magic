@@ -19,14 +19,13 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
-import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
 import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
 
 @Component
-public class InventoryMenuPanel extends StandardMagicPanel {
+public class InventoryMenuPanel extends MenuPanel {
 
 	private static final String PRICE_CHANGES_REPORT = "Price Changes Report";
 	private static final String PRICING_SCHEME = "Pricing Scheme";

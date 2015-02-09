@@ -17,12 +17,11 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
-import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
 
 @Component
-public class AdminMenuPanel extends StandardMagicPanel {
+public class AdminMenuPanel extends MenuPanel {
 
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;

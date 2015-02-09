@@ -17,12 +17,11 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
-import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
 
 @Component
-public class PurchasesMenuPanel extends StandardMagicPanel {
+public class PurchasesMenuPanel extends MenuPanel {
 
 	private static final String PRODUCT_CANVASS = "Product Canvass";
 	private static final String RECEIVING_RECEIPT = "Receiving Receipt";
