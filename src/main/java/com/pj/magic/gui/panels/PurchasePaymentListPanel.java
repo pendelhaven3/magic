@@ -23,6 +23,7 @@ import com.pj.magic.gui.dialog.SearchPurchasePaymentsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -37,6 +38,7 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 	
 	@Autowired private PurchasePaymentService purchasePaymentService;
 	@Autowired private SearchPurchasePaymentsDialog searchPurchasePaymentsDialog;
+	@Autowired private LoginService loginService;
 	
 	private MagicListTable table;
 	private PurchasePaymentsTableModel tableModel;
@@ -113,7 +115,11 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToPurchasePaymentsMenuPanel();
+		if (loginService.getLoggedInUser().isSupervisor()) {
+			getMagicFrame().switchToPurchasePaymentsMenuPanel();
+		} else {
+			getMagicFrame().switchToMainMenuPanel();
+		}
 	}
 
 	@Override

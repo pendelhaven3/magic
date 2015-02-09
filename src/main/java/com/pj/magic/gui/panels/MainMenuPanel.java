@@ -184,7 +184,11 @@ public class MainMenuPanel extends StandardMagicPanel {
 			getMagicFrame().switchToSalesPaymentsMenuPanel();
 			break;
 		case PURCHASE_PAYMENT:
-			getMagicFrame().switchToPurchasePaymentsMenuPanel();
+			if (loginService.getLoggedInUser().isSupervisor()) {
+				getMagicFrame().switchToPurchasePaymentsMenuPanel();
+			} else {
+				getMagicFrame().switchToPurchasePaymentListPanel();
+			}
 			break;
 		case STOCK_MOVEMENT:
 			getMagicFrame().switchToStockMovementMenuPanel();
@@ -245,7 +249,6 @@ public class MainMenuPanel extends StandardMagicPanel {
 			menuItems.addAll(allMenuItems);
 			if (!user.isSupervisor()) {
 				menuItems.remove(ADMIN);
-				menuItems.remove(PURCHASE_PAYMENT);
 			}
 			fireTableDataChanged();
 		}
