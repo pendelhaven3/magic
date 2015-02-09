@@ -12,6 +12,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchasePayment;
+import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
@@ -102,5 +103,10 @@ public interface PrintService {
 	List<String> generateReportAsString(PurchasePayment purchasePayment);
 
 	void print(PurchasePayment purchasePayment);
+
+	List<String> generateReportAsString(
+			PurchaseReturnBadStock purchaseReturnBadStock);
+
+	void print(PurchaseReturnBadStock purchaseReturnBadStock);
 	
 }

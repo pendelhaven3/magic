@@ -41,6 +41,8 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.PurchasePayment;
+import com.pj.magic.model.PurchaseReturnBadStock;
+import com.pj.magic.model.PurchaseReturnBadStockItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoice;
@@ -92,6 +94,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int CASH_FLOW_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int REMITTANCE_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int PRICE_CHANGES_REPORT_ITEMS_PER_PAGE = 52;
+	private static final int PURCHASE_RETURN_BAD_STOCK_ITEMS_PER_PAGE = 44;
 	
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
@@ -856,6 +859,36 @@ public class PrintServiceImpl implements PrintService {
 		try {
 			for (String printPage : generateReportAsString(purchasePayment)) {
 				PrinterUtil.printWithCondensedFont(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(PurchaseReturnBadStock purchaseReturnBadStock) {
+		List<List<PurchaseReturnBadStockItem>> pageItems = Lists.partition(purchaseReturnBadStock.getItems(), 
+				PURCHASE_RETURN_BAD_STOCK_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("currentDate", new Date());
+			reportData.put("purchaseReturnBadStock", purchaseReturnBadStock);
+			reportData.put("remarks", StringUtils.defaultString(purchaseReturnBadStock.getRemarks()));
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/purchaseReturnBadStock.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(PurchaseReturnBadStock purchaseReturnBadStock) {
+		try {
+			for (String printPage : generateReportAsString(purchaseReturnBadStock)) {
+				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);

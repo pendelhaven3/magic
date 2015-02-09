@@ -525,21 +525,21 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				printPreviewDialog.updateDisplay(printService.generateReportAsString(badPurchaseReturn));
-//				printPreviewDialog.setVisible(true);
+				printPreviewDialog.updateDisplay(printService.generateReportAsString(purchaseReturnBadStock));
+				printPreviewDialog.setVisible(true);
 			}
 		});
-//		toolBar.add(printPreviewButton);
+		toolBar.add(printPreviewButton);
 		
 		printButton = new MagicToolBarButton("print", "Print");
 		printButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				printService.print(badPurchaseReturn);
+				printService.print(purchaseReturnBadStock);
 			}
 		});
-//		toolBar.add(printButton);
+		toolBar.add(printButton);
 	}
 
 }
