@@ -69,6 +69,7 @@ import com.pj.magic.gui.panels.PurchaseOrderListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderPanel;
 import com.pj.magic.gui.panels.PurchasePaymentAdjustmentListPanel;
 import com.pj.magic.gui.panels.PurchasePaymentAdjustmentTypeListPanel;
+import com.pj.magic.gui.panels.PurchasePaymentBankTransfersReportPanel;
 import com.pj.magic.gui.panels.PurchasePaymentListPanel;
 import com.pj.magic.gui.panels.PurchasePaymentPanel;
 import com.pj.magic.gui.panels.PurchaseReturnBadStockListPanel;
@@ -239,6 +240,8 @@ public class MagicFrame extends JFrame {
 	private static final String PURCHASE_RETURN_BAD_STOCK_PANEL = "BAD_PURCHASE_RETURN_PANEL";
 	private static final String PURCHASE_PAYMENTS_MENU_PANEL = "PURCHASE_PAYMENTS_MENU_PANEL";
 	private static final String UNPAID_RECEIVING_RECEIPTS_LIST_PANEL = "UNPAID_RECEIVING_RECEIPTS_LIST_PANEL";
+	private static final String PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT_PANEL = 
+			"PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -328,6 +331,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PurchaseReturnBadStockListPanel purchaseReturnBadStockListPanel;
 	@Autowired private PurchaseReturnBadStockPanel purchaseReturnBadStockPanel;
 	@Autowired private UnpaidReceivingReceiptsListPanel unpaidReceivingReceiptsListPanel;
+	@Autowired private PurchasePaymentBankTransfersReportPanel purchasePaymentBankTransfersReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -465,6 +469,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(purchaseReturnBadStockListPanel, PURCHASE_RETURN_BAD_STOCK_LIST_PANEL);
 		panelHolder.add(purchaseReturnBadStockPanel, PURCHASE_RETURN_BAD_STOCK_PANEL);
 		panelHolder.add(unpaidReceivingReceiptsListPanel, UNPAID_RECEIVING_RECEIPTS_LIST_PANEL);
+		panelHolder.add(purchasePaymentBankTransfersReportPanel, PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1145,6 +1150,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Unpaid Receiving Receipts List");
 		unpaidReceivingReceiptsListPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, UNPAID_RECEIVING_RECEIPTS_LIST_PANEL);
+	}
+
+	public void switchToPurchasePaymentBankTransfersReportPanel() {
+		addPanelNameToTitle("Purchase Payment Bank Transfers Report");
+		purchasePaymentBankTransfersReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT_PANEL);
 	}
 	
 }

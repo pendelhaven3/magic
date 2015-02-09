@@ -27,6 +27,7 @@ import com.pj.magic.model.PurchasePaymentBankTransfer;
 import com.pj.magic.model.PurchasePaymentCashPayment;
 import com.pj.magic.model.PurchasePaymentCheckPayment;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
+import com.pj.magic.model.search.PurchasePaymentBankTransferSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PurchasePaymentAdjustmentService;
@@ -209,6 +210,12 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 	@Override
 	public void delete(PurchasePaymentBankTransfer bankTransfer) {
 		purchasePaymentBankTransferDao.delete(bankTransfer);
+	}
+
+	@Override
+	public List<PurchasePaymentBankTransfer> searchBankTransfers(
+			PurchasePaymentBankTransferSearchCriteria criteria) {
+		return purchasePaymentBankTransferDao.search(criteria);
 	}
 	
 }

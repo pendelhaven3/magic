@@ -34,6 +34,8 @@ public class ReportsPanel extends StandardMagicPanel {
 	private static final String UNPAID_SALES_INVOICES_LIST = "Unpaid Sales Invoices List";
 	private static final String CUSTOMER_SALES_SUMMARY_REPORT = "Customer Sales Summary Report";
 	private static final String UNPAID_RECEIVING_RECEIPTS_LIST = "Unpaid Receiving Receipts List";
+	private static final String PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT = 
+			"Purchase Payment Bank Transfers Report";
 
 	@Autowired private LoginService loginService;
 	
@@ -114,6 +116,9 @@ public class ReportsPanel extends StandardMagicPanel {
 		case UNPAID_RECEIVING_RECEIPTS_LIST:
 			getMagicFrame().switchToUnpaidReceivingReceiptsListPanel();
 			break;
+		case PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT:
+			getMagicFrame().switchToPurchasePaymentBankTransfersReportPanel();
+			break;
 		}
 	}
 
@@ -130,7 +135,8 @@ public class ReportsPanel extends StandardMagicPanel {
 				REMITTANCE_REPORT,
 				POSTED_SALES_AND_PROFIT_REPORT,
 				CUSTOMER_SALES_SUMMARY_REPORT,
-				UNPAID_RECEIVING_RECEIPTS_LIST
+				UNPAID_RECEIVING_RECEIPTS_LIST,
+				PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
