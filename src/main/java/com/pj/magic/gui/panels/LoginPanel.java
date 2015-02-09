@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
 import com.pj.magic.exception.InvalidUsernamePasswordException;
+import com.pj.magic.gui.component.MagicButton;
 import com.pj.magic.gui.component.MagicPasswordField;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.service.LoginService;
@@ -29,7 +29,7 @@ public class LoginPanel extends AbstractMagicPanel {
 	
 	private MagicTextField usernameField;
 	private MagicPasswordField passwordField;
-	private JButton loginButton;
+	private MagicButton loginButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -38,7 +38,7 @@ public class LoginPanel extends AbstractMagicPanel {
 		
 		passwordField = new MagicPasswordField();
 		
-		loginButton = new JButton("Login");
+		loginButton = new MagicButton("Login");
 		loginButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -145,6 +145,14 @@ public class LoginPanel extends AbstractMagicPanel {
 		});
 		
 		passwordField.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				login();
+			}
+		});
+		
+		loginButton.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
