@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -226,6 +227,17 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 		}, product.getId());
 	}
 
+	private static final String UNPAID_WHERE_CLAUSE_SQL = 
+			" and a.CANCEL_IND = 'N'"
+			+ " and not exists("
+			+ "   select 1"
+			+ "   from SUPP_PAYMENT_RECV_RCPT sprr"
+			+ "   join SUPPLIER_PAYMENT sp"
+			+ "     on sp.ID = sprr.SUPPLIER_PAYMENT_ID"
+			+ "   where sprr.RECEIVING_RECEIPT_ID = a.ID"
+			+ "   and sp.POST_IND = 'Y'"
+			+ " )";
+	
 	@Override
 	public List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
@@ -257,7 +269,17 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			params.add(DbUtil.toMySqlDateString(criteria.getReceivedDate()));
 		}
 		
-		sql.append(" order by a.ID desc");
+		if (criteria.getPaid() != null) {
+			if (!criteria.getPaid()) {
+				sql.append(UNPAID_WHERE_CLAUSE_SQL);
+			}
+		}
+		
+		if (!StringUtils.isEmpty(criteria.getOrderBy())) {
+			sql.append(" order by ").append(criteria.getOrderBy());
+		} else {
+			sql.append(" order by a.ID desc");
+		}
 		
 		return getJdbcTemplate().query(sql.toString(), receivingReceiptRowMapper, params.toArray());
 	}

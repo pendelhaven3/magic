@@ -11,6 +11,8 @@ public class ReceivingReceiptSearchCriteria {
 	private Boolean posted;
 	private Boolean cancelled;
 	private Date receivedDate;
+	private Boolean paid;
+	private String orderBy;
 	
 	public Long getReceivingReceiptNumber() {
 		return receivingReceiptNumber;
@@ -50,6 +52,22 @@ public class ReceivingReceiptSearchCriteria {
 
 	public void setCancelled(Boolean cancelled) {
 		this.cancelled = cancelled;
+	}
+
+	public Boolean getPaid() {
+		return paid;
+	}
+
+	public void setPaid(Boolean paid) {
+		this.paid = paid;
+	}
+
+	public String getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
 	}
 
 }
