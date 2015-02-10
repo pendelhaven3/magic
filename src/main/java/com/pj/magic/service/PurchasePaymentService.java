@@ -10,6 +10,7 @@ import com.pj.magic.model.PurchasePaymentCashPayment;
 import com.pj.magic.model.PurchasePaymentCheckPayment;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
 import com.pj.magic.model.search.PurchasePaymentBankTransferSearchCriteria;
+import com.pj.magic.model.search.PurchasePaymentCheckPaymentSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
 
 public interface PurchasePaymentService {
@@ -52,5 +53,8 @@ public interface PurchasePaymentService {
 	void delete(PurchasePaymentBankTransfer bankTransfer);
 
 	List<PurchasePaymentBankTransfer> searchBankTransfers(PurchasePaymentBankTransferSearchCriteria criteria);
+
+	List<PurchasePaymentCheckPayment> searchCheckPayments(
+			PurchasePaymentCheckPaymentSearchCriteria criteria);
 	
 }

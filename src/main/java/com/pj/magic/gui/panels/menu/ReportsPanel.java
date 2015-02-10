@@ -35,6 +35,8 @@ public class ReportsPanel extends MenuPanel {
 	private static final String UNPAID_RECEIVING_RECEIPTS_LIST = "Unpaid Receiving Receipts List";
 	private static final String PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT = 
 			"Purchase Payment Bank Transfers Report";
+	private static final String PURCHASE_PAYMENT_CHECK_PAYMENTS_REPORT = 
+			"Purchase Payment Check Payments Report";
 
 	@Autowired private LoginService loginService;
 	
@@ -118,6 +120,9 @@ public class ReportsPanel extends MenuPanel {
 		case PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT:
 			getMagicFrame().switchToPurchasePaymentBankTransfersReportPanel();
 			break;
+		case PURCHASE_PAYMENT_CHECK_PAYMENTS_REPORT:
+			getMagicFrame().switchToPurchasePaymentCheckPaymentsReportPanel();
+			break;
 		}
 	}
 
@@ -135,7 +140,8 @@ public class ReportsPanel extends MenuPanel {
 				POSTED_SALES_AND_PROFIT_REPORT,
 				CUSTOMER_SALES_SUMMARY_REPORT,
 				UNPAID_RECEIVING_RECEIPTS_LIST,
-				PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT
+				PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT,
+				PURCHASE_PAYMENT_CHECK_PAYMENTS_REPORT
 		);
 		
 		private List<String> menuItems = new ArrayList<>();

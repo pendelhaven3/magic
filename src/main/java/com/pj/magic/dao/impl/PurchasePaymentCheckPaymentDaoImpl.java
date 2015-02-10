@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -18,13 +19,16 @@ import com.pj.magic.dao.PurchasePaymentCheckPaymentDao;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentCheckPayment;
+import com.pj.magic.model.search.PurchasePaymentCheckPaymentSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements PurchasePaymentCheckPaymentDao {
 
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, SUPPLIER_PAYMENT_ID, BANK, CHECK_DT, CHECK_NO, AMOUNT,"
-			+ " b.SUPPLIER_ID, c.NAME as SUPPLIER_NAME"
+			+ " b.SUPPLIER_ID, c.NAME as SUPPLIER_NAME,"
+			+ " b.SUPPLIER_PAYMENT_NO"
 			+ " from SUPP_PAYMENT_CHECK_PYMNT a"
 			+ " join SUPPLIER_PAYMENT b"
 			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
@@ -96,7 +100,12 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 		public PurchasePaymentCheckPayment mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PurchasePaymentCheckPayment check = new PurchasePaymentCheckPayment();
 			check.setId(rs.getLong("ID"));
-			check.setParent(new PurchasePayment(rs.getLong("SUPPLIER_PAYMENT_ID")));
+			
+			PurchasePayment payment = new PurchasePayment();
+			payment.setId(rs.getLong("SUPPLIER_PAYMENT_ID"));
+			payment.setPurchasePaymentNumber(rs.getLong("SUPPLIER_PAYMENT_NO"));
+			check.setParent(payment);
+			
 			check.setBank(rs.getString("BANK"));
 			check.setCheckDate(rs.getDate("CHECK_DT"));
 			check.setCheckNumber(rs.getString("CHECK_NO"));
@@ -123,6 +132,38 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 	@Override
 	public void delete(PurchasePaymentCheckPayment checkPayment) {
 		getJdbcTemplate().update(DELETE_SQL, checkPayment.getId());
+	}
+
+	@Override
+	public List<PurchasePaymentCheckPayment> search(PurchasePaymentCheckPaymentSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		if (criteria.getSupplier() != null) {
+			sql.append(" and c.ID = ?");
+			params.add(criteria.getSupplier().getId());
+		}
+		
+		if (criteria.getPosted() != null) {
+			sql.append(" and b.POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+
+		if (criteria.getFromDate() != null) {
+			sql.append(" and b.POST_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getFromDate()));
+		}
+		
+		if (criteria.getToDate() != null) {
+			sql.append(" and b.POST_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
+		}
+		
+		sql.append(" order by a.ID desc");
+		
+		return getJdbcTemplate().query(sql.toString(), checkPaymentRowMapper, params.toArray());
 	}
 
 }
