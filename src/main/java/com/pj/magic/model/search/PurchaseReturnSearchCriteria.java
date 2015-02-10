@@ -14,6 +14,7 @@ public class PurchaseReturnSearchCriteria {
 	private Date postDateFrom;
 	private Date postDateTo;
 	private ReceivingReceipt receivingReceipt;
+	private Boolean paid;
 
 	public Long getPurchaseReturnNumber() {
 		return purchaseReturnNumber;
@@ -69,6 +70,14 @@ public class PurchaseReturnSearchCriteria {
 
 	public void setReceivingReceipt(ReceivingReceipt receivingReceipt) {
 		this.receivingReceipt = receivingReceipt;
+	}
+
+	public Boolean getPaid() {
+		return paid;
+	}
+
+	public void setPaid(Boolean paid) {
+		this.paid = paid;
 	}
 
 }

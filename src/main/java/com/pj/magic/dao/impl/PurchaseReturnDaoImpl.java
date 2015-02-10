@@ -165,6 +165,11 @@ public class PurchaseReturnDaoImpl extends MagicDao implements PurchaseReturnDao
 			params.add(criteria.getPosted() ? "Y" : "N");
 		}
 		
+		if (criteria.getPaid() != null) {
+			sql.append(" and a.PAID_IND = ?");
+			params.add(criteria.getPaid() ? "Y" : "N");
+		}
+		
 		if (criteria.getSupplier() != null) {
 			sql.append(" and b.SUPPLIER_ID = ?");
 			params.add(criteria.getSupplier().getId());
