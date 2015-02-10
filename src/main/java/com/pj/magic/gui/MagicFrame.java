@@ -100,7 +100,7 @@ import com.pj.magic.gui.panels.menu.InventoryMenuPanel;
 import com.pj.magic.gui.panels.menu.PurchasePaymentsMenuPanel;
 import com.pj.magic.gui.panels.menu.PurchasesMenuPanel;
 import com.pj.magic.gui.panels.menu.RecordsMaintenanceMenuPanel;
-import com.pj.magic.gui.panels.menu.ReportsPanel;
+import com.pj.magic.gui.panels.menu.ReportsMenuPanel;
 import com.pj.magic.gui.panels.menu.SalesMenuPanel;
 import com.pj.magic.gui.panels.menu.SalesPaymentsMenuPanel;
 import com.pj.magic.gui.panels.menu.StockMovementMenuPanel;
@@ -295,7 +295,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private MaintainPaymentTerminalAssignmentPanel maintainPaymentTerminalAssignmentPanel;
 	@Autowired private SalesReturnListPanel salesReturnListPanel;
 	@Autowired private SalesReturnPanel salesReturnPanel;
-	@Autowired private ReportsPanel reportsPanel;
+	@Autowired private ReportsMenuPanel reportsPanel;
 	@Autowired private UnpaidSalesInvoicesListPanel unpaidSalesInvoicesListPanel;
 	@Autowired private PostedSalesAndProfitReportPanel postedSalesAndProfitReportPanel;
 	@Autowired private BackupDataPanel backupDataPanel;

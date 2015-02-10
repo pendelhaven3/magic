@@ -25,7 +25,7 @@ import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
 
 @Component
-public class ReportsPanel extends MenuPanel {
+public class ReportsMenuPanel extends MenuPanel {
 
 	private static final String POSTED_SALES_AND_PROFIT_REPORT = "Posted Sales and Profit Report";
 	private static final String REMITTANCE_REPORT = "Remittance Report";
