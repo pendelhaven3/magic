@@ -96,7 +96,7 @@ public class PurchaseReturnDaoImpl extends MagicDao implements PurchaseReturnDao
 
 	private static final String UPDATE_SQL =
 			"update PURCHASE_RETURN set RECEIVING_RECEIPT_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
-			+ " REMARKS = ? where ID = ?";
+			+ " REMARKS = ?, PAID_IND = ?, PAID_DT = ?, PAID_BY = ? where ID = ?";
 	
 	private void update(PurchaseReturn purchaseReturn) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -105,6 +105,9 @@ public class PurchaseReturnDaoImpl extends MagicDao implements PurchaseReturnDao
 				purchaseReturn.isPosted() ? purchaseReturn.getPostDate() : null,
 				purchaseReturn.isPosted() ? purchaseReturn.getPostedBy().getId() : null,
 				purchaseReturn.getRemarks(),
+				purchaseReturn.isPaid() ? "Y" : "N",
+				purchaseReturn.isPaid() ? purchaseReturn.getPaidDate() : null,
+				purchaseReturn.isPaid() ? purchaseReturn.getPaidBy().getId() : null,
 				purchaseReturn.getId());
 	}
 	

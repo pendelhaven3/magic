@@ -76,7 +76,11 @@ public class PurchaseReturn {
 	}
 
 	public String getStatus() {
-		return (posted) ? "Posted" : "New";
+		if (paid) {
+			return "Paid";
+		} else {
+			return (posted) ? "Posted/Unpaid" : "New";
+		}
 	}
 
 	public BigDecimal getTotalAmount() {
