@@ -1,3 +1,15 @@
+version 1.26.0
+
+1. Added Purchase Return Bad Stock printout
+2. Added Purchase Return Bank Transfers report
+3. Added Purchase Return Check Payments report
+4. Added paid status to Purchase Return Good Stock
+
+version 1.25.0
+
+1. Added Unpaid Receiving Receipts List
+2. Added Excel generation from Purchase Order
+
 version 1.24.1
 
 1. Fixed bug in Purchase Return Bad Stock when Supplier has no Receiving Receipt record yet
