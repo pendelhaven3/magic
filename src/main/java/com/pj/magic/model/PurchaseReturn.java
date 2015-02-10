@@ -7,6 +7,12 @@ import java.util.List;
 
 import com.pj.magic.Constants;
 
+/**
+ * Model class for Purchase Return Good Stock
+ * 
+ * @author PJ Miranda
+ *
+ */
 public class PurchaseReturn {
 
 	private Long id;
@@ -17,6 +23,9 @@ public class PurchaseReturn {
 	private User postedBy;
 	private String remarks;
 	private List<PurchaseReturnItem> items = new ArrayList<>();
+	private boolean paid;
+	private Date paidDate;
+	private User paidBy;
 
 	public PurchaseReturn() {
 		// default constructor
@@ -108,6 +117,30 @@ public class PurchaseReturn {
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+	public boolean isPaid() {
+		return paid;
+	}
+
+	public void setPaid(boolean paid) {
+		this.paid = paid;
+	}
+
+	public Date getPaidDate() {
+		return paidDate;
+	}
+
+	public void setPaidDate(Date paidDate) {
+		this.paidDate = paidDate;
+	}
+
+	public User getPaidBy() {
+		return paidBy;
+	}
+
+	public void setPaidBy(User paidBy) {
+		this.paidBy = paidBy;
 	}
 	
 }

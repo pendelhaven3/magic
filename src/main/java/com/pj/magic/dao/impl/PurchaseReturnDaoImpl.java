@@ -31,15 +31,19 @@ public class PurchaseReturnDaoImpl extends MagicDao implements PurchaseReturnDao
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, PURCHASE_RETURN_NO, RECEIVING_RECEIPT_ID, b.RECEIVING_RECEIPT_NO, "
 			+ " a.POST_IND, a.POST_DT, a.POST_BY, a.REMARKS,"
+			+ " a.PAID_IND, a.PAID_DT, a.PAID_BY,"
 			+ " b.SUPPLIER_ID, c.CODE as SUPPLIER_CODE, c.NAME as SUPPLIER_NAME,"
-			+ " d.USERNAME as POST_BY_USERNAME"
+			+ " d.USERNAME as POST_BY_USERNAME,"
+			+ " e.USERNAME as PAID_BY_USERNAME"
 			+ " from PURCHASE_RETURN a"
 			+ " join RECEIVING_RECEIPT b"
 			+ "   on b.ID = a.RECEIVING_RECEIPT_ID"
 			+ " join SUPPLIER c"
 			+ "   on c.ID = b.SUPPLIER_ID"
 			+ " left join USER d"
-			+ "   on d.ID = a.POST_BY";
+			+ "   on d.ID = a.POST_BY"
+			+ " left join USER e"
+			+ "   on e.ID = a.PAID_BY";
 	
 	private PurchaseReturnRowMapper purchaseReturnRowMapper = new PurchaseReturnRowMapper();
 	
@@ -64,8 +68,14 @@ public class PurchaseReturnDaoImpl extends MagicDao implements PurchaseReturnDao
 			
 			purchaseReturn.setPosted("Y".equals(rs.getString("POST_IND")));
 			if (purchaseReturn.isPosted()) {
-				purchaseReturn.setPostDate(rs.getTimestamp("POST_DT"));
+				purchaseReturn.setPostDate(rs.getDate("POST_DT"));
 				purchaseReturn.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			}
+			
+			purchaseReturn.setPaid("Y".equals(rs.getString("PAID_IND")));
+			if (purchaseReturn.isPaid()) {
+				purchaseReturn.setPaidDate(rs.getDate("PAID_DT"));
+				purchaseReturn.setPaidBy(new User(rs.getLong("PAID_BY"), rs.getString("PAID_BY_USERNAME")));
 			}
 			
 			purchaseReturn.setRemarks(rs.getString("REMARKS"));
