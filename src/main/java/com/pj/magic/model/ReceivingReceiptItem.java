@@ -146,4 +146,8 @@ public class ReceivingReceiptItem implements Comparable<ReceivingReceiptItem> {
 		this.currentCost = currentCost;
 	}
 	
+	public BigDecimal getFinalCostWithVat() {
+		return getFinalCost().multiply(parent.getVatMultiplier());
+	}
+	
 }

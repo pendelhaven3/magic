@@ -46,7 +46,7 @@ public class PurchaseReturnItem {
 		if (receivingReceiptItem == null || quantity == null) {
 			return null;
 		} else {
-			return receivingReceiptItem.getFinalCost().multiply(new BigDecimal(quantity));
+			return getUnitCost().multiply(new BigDecimal(quantity));
 		}
 	}
 
@@ -54,7 +54,7 @@ public class PurchaseReturnItem {
 		if (receivingReceiptItem == null) {
 			return null;
 		} else {
-			return receivingReceiptItem.getFinalCost();
+			return receivingReceiptItem.getFinalCostWithVat();
 		}
 	}
 	

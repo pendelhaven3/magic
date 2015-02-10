@@ -17,6 +17,7 @@ import com.pj.magic.dao.PurchaseReturnItemDao;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.PurchaseReturnItem;
+import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 
 @Repository
@@ -26,12 +27,15 @@ public class PurchaseReturnItemDaoImpl extends MagicDao implements PurchaseRetur
 			"select a.ID, PURCHASE_RETURN_ID, a.QUANTITY, b.PRODUCT_ID, "
 			+ " c.CODE as PRODUCT_CODE, c.DESCRIPTION as PRODUCT_DESCRIPTION,"
 			+ " a.RECEIVING_RECEIPT_ITEM_ID, b.UNIT, b.QUANTITY as RECEIVING_RECEIPT_ITEM_QUANTITY,"
-			+ " b.COST as UNIT_COST, b.DISCOUNT_1, b.DISCOUNT_2, b.DISCOUNT_3, b.FLAT_RATE_DISCOUNT"
+			+ " b.COST as UNIT_COST, b.DISCOUNT_1, b.DISCOUNT_2, b.DISCOUNT_3, b.FLAT_RATE_DISCOUNT,"
+			+ " d.VAT_INCLUSIVE, d.VAT_RATE"
 			+ " from PURCHASE_RETURN_ITEM a"
 			+ " join RECEIVING_RECEIPT_ITEM b"
 			+ "   on b.ID = a.RECEIVING_RECEIPT_ITEM_ID"
 			+ " join PRODUCT c"
-			+ "   on c.ID = b.PRODUCT_ID";
+			+ "   on c.ID = b.PRODUCT_ID"
+			+ " join RECEIVING_RECEIPT d"
+			+ "   on d.ID = b.RECEIVING_RECEIPT_ID";
 	
 	private PurchaseReturnItemRowMapper purchaseReturnItemRowMapper = new PurchaseReturnItemRowMapper();
 	
@@ -68,6 +72,12 @@ public class PurchaseReturnItemDaoImpl extends MagicDao implements PurchaseRetur
 			receivingReceiptItem.setDiscount2(rs.getBigDecimal("DISCOUNT_2"));
 			receivingReceiptItem.setDiscount3(rs.getBigDecimal("DISCOUNT_3"));
 			receivingReceiptItem.setFlatRateDiscount(rs.getBigDecimal("FLAT_RATE_DISCOUNT"));
+			
+			ReceivingReceipt receivingReceipt = new ReceivingReceipt();
+			receivingReceipt.setVatRate(rs.getBigDecimal("VAT_RATE"));
+			receivingReceipt.setVatInclusive("Y".equals(rs.getString("VAT_INCLUSIVE")));
+			receivingReceiptItem.setParent(receivingReceipt);
+			
 			item.setReceivingReceiptItem(receivingReceiptItem);
 			
 			return item;
