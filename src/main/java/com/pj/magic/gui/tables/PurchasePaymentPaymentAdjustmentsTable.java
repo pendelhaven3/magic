@@ -324,8 +324,10 @@ public class PurchasePaymentPaymentAdjustmentsTable extends MagicTable {
 				.findPurchaseReturnByPurchaseReturnNumber(purchaseReturnNumber);
 		if (purchaseReturn == null) {
 			showErrorMessage("Purchase Return does not exist");
-		} else if (purchaseReturn.isPosted()) {
-			showErrorMessage("Purchase Return is already posted");
+		} else if (!purchaseReturn.isPosted()) {
+			showErrorMessage("Purchase Return is not yet posted");
+		} else if (purchaseReturn.isPaid()) {
+			showErrorMessage("Purchase Return is already paid");
 		} else {
 			valid = true;
 		}

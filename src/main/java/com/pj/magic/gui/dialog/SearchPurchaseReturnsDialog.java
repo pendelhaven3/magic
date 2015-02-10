@@ -38,7 +38,8 @@ public class SearchPurchaseReturnsDialog extends MagicDialog {
 
 	private static final int STATUS_ALL = 0;
 	private static final int STATUS_NEW = 1;
-	private static final int STATUS_POSTED = 2;
+	private static final int STATUS_POSTED_UNPAID = 2;
+	private static final int STATUS_PAID = 3;
 	
 	@Autowired private SupplierService supplierService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
@@ -129,8 +130,12 @@ public class SearchPurchaseReturnsDialog extends MagicDialog {
 			case STATUS_NEW:
 				searchCriteria.setPosted(false);
 				break;
-			case STATUS_POSTED:
+			case STATUS_POSTED_UNPAID:
 				searchCriteria.setPosted(true);
+				searchCriteria.setPaid(false);
+				break;
+			case STATUS_PAID:
+				searchCriteria.setPaid(true);
 				break;
 			}
 		}

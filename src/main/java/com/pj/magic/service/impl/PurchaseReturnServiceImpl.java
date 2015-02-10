@@ -12,7 +12,7 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PurchaseReturnDao;
 import com.pj.magic.dao.PurchaseReturnItemDao;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.PurchaseReturn;	
+import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.PurchaseReturnItem;
 import com.pj.magic.model.search.PurchaseReturnSearchCriteria;
 import com.pj.magic.service.LoginService;
@@ -126,6 +126,15 @@ public class PurchaseReturnServiceImpl implements PurchaseReturnService {
 					receivingReceiptService.getReceivingReceipt(purchaseReturn.getReceivingReceipt().getId()));
 		}
 		return purchaseReturn;
+	}
+
+	@Override
+	public void markAsPaid(PurchaseReturn purchaseReturn) {
+		PurchaseReturn updated = purchaseReturnDao.get(purchaseReturn.getId());
+		updated.setPaid(true);
+		updated.setPaidDate(new Date());
+		updated.setPaidBy(loginService.getLoggedInUser());
+		purchaseReturnDao.save(updated);
 	}
 
 }

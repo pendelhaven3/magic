@@ -106,7 +106,8 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 			long referenceNumber = Long.parseLong(paymentAdjustment.getReferenceNumber());
 			switch (paymentAdjustment.getAdjustmentType().getCode()) {
 			case PurchasePaymentAdjustmentType.PURCHASE_RETURN_GOOD_STOCK_CODE:
-				purchaseReturnService.post(purchaseReturnDao.findByPurchaseReturnNumber(referenceNumber));
+				purchaseReturnService.markAsPaid(
+						purchaseReturnDao.findByPurchaseReturnNumber(referenceNumber));
 				break;
 			case PurchasePaymentAdjustmentType.PURCHASE_RETURN_BAD_STOCK_CODE:
 				purchaseReturnBadStockService.post(

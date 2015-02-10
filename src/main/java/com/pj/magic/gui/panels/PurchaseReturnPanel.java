@@ -441,7 +441,7 @@ public class PurchaseReturnPanel extends StandardMagicPanel {
 				postPurchaseReturn();
 			}
 		});
-//		toolBar.add(postButton);
+		toolBar.add(postButton);
 		
 		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {

@@ -22,10 +22,8 @@ public interface PurchaseReturnService {
 
 	List<PurchaseReturn> search(PurchaseReturnSearchCriteria criteria);
 	
-//	List<PurchaseReturn> findPostedPurchaseReturnsByPurchaseInvoice(PurchaseInvoice purchaseInvoice);
-//
-//	List<PurchaseReturn> findAllPaymentPurchaseReturns(Payment payment, PurchaseInvoice purchaseInvoice);
-//
 	PurchaseReturn findPurchaseReturnByPurchaseReturnNumber(long purchaseReturnNumber);
+
+	void markAsPaid(PurchaseReturn purchaseReturn);
 	
 }
