@@ -3,14 +3,15 @@ package com.pj.magic.service;
 import java.util.List;
 
 import com.pj.magic.model.PurchasePayment;
-import com.pj.magic.model.PurchasePaymentPaymentAdjustment;
-import com.pj.magic.model.PurchasePaymentReceivingReceipt;
 import com.pj.magic.model.PurchasePaymentBankTransfer;
 import com.pj.magic.model.PurchasePaymentCashPayment;
 import com.pj.magic.model.PurchasePaymentCheckPayment;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
+import com.pj.magic.model.PurchasePaymentPaymentAdjustment;
+import com.pj.magic.model.PurchasePaymentReceivingReceipt;
 import com.pj.magic.model.search.PurchasePaymentBankTransferSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentCheckPaymentSearchCriteria;
+import com.pj.magic.model.search.PurchasePaymentCreditCardPaymentSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
 
 public interface PurchasePaymentService {
@@ -54,7 +55,9 @@ public interface PurchasePaymentService {
 
 	List<PurchasePaymentBankTransfer> searchBankTransfers(PurchasePaymentBankTransferSearchCriteria criteria);
 
-	List<PurchasePaymentCheckPayment> searchCheckPayments(
-			PurchasePaymentCheckPaymentSearchCriteria criteria);
+	List<PurchasePaymentCheckPayment> searchCheckPayments(PurchasePaymentCheckPaymentSearchCriteria criteria);
+
+	List<PurchasePaymentCreditCardPayment> searchCreditCardPayments(
+			PurchasePaymentCreditCardPaymentSearchCriteria criteria);
 	
 }

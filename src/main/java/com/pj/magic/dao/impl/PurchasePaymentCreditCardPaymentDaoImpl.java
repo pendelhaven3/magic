@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -18,16 +19,25 @@ import com.pj.magic.dao.PurchasePaymentCreditCardPaymentDao;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
+import com.pj.magic.model.Supplier;
+import com.pj.magic.model.search.PurchasePaymentCreditCardPaymentSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements PurchasePaymentCreditCardPaymentDao {
 
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, SUPPLIER_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE,"
-			+ " b.USER as CREDIT_CARD_USER, b.BANK as CREDIT_CARD_BANK"
+			+ " b.SUPPLIER_PAYMENT_NO,"
+			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK,"
+			+ " d.NAME as SUPPLIER_NAME"
 			+ " from SUPP_PAYMENT_CREDITCARD_PYMNT a"
-			+ " join CREDIT_CARD b"
-			+ "   on b.ID = a.CREDIT_CARD_ID";
+			+ " join SUPPLIER_PAYMENT b"
+			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
+			+ " join CREDIT_CARD C"
+			+ "   on c.ID = a.CREDIT_CARD_ID"
+			+ " join SUPPLIER d"
+			+ "   on d.ID = b.SUPPLIER_ID";
 	
 	private PurchasePaymentCreditCardPaymentRowMapper creditCardPaymentRowMapper = 
 			new PurchasePaymentCreditCardPaymentRowMapper();
@@ -94,7 +104,16 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 		public PurchasePaymentCreditCardPayment mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PurchasePaymentCreditCardPayment creditCardPayment = new PurchasePaymentCreditCardPayment();
 			creditCardPayment.setId(rs.getLong("ID"));
-			creditCardPayment.setParent(new PurchasePayment(rs.getLong("SUPPLIER_PAYMENT_ID")));
+			
+			PurchasePayment purchasePayment = new PurchasePayment();
+			purchasePayment.setId(rs.getLong("SUPPLIER_PAYMENT_ID"));
+			purchasePayment.setPurchasePaymentNumber(rs.getLong("SUPPLIER_PAYMENT_NO"));
+			
+			Supplier supplier = new Supplier();
+			supplier.setName(rs.getString("SUPPLIER_NAME"));
+			purchasePayment.setSupplier(supplier);
+			creditCardPayment.setParent(purchasePayment);
+			
 			creditCardPayment.setAmount(rs.getBigDecimal("AMOUNT"));
 			
 			CreditCard creditCard = new CreditCard();
@@ -123,6 +142,39 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 	@Override
 	public void delete(PurchasePaymentCreditCardPayment cashPayment) {
 		getJdbcTemplate().update(DELETE_SQL, cashPayment.getId());
+	}
+
+	@Override
+	public List<PurchasePaymentCreditCardPayment> search(
+			PurchasePaymentCreditCardPaymentSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		if (criteria.getSupplier() != null) {
+			sql.append(" and c.ID = ?");
+			params.add(criteria.getSupplier().getId());
+		}
+		
+		if (criteria.getPosted() != null) {
+			sql.append(" and b.POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+
+		if (criteria.getFromDate() != null) {
+			sql.append(" and a.TRANSACTION_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getFromDate()));
+		}
+		
+		if (criteria.getToDate() != null) {
+			sql.append(" and a.TRANSACTION_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
+		}
+		
+		sql.append(" order by a.ID desc");
+		
+		return getJdbcTemplate().query(sql.toString(), creditCardPaymentRowMapper, params.toArray());
 	}
 
 }
