@@ -162,7 +162,7 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
-		sql.append(" order by a.ID desc");
+		sql.append(" order by a.TRANSFER_DT, c.NAME, b.SUPPLIER_PAYMENT_NO, a.BANK");
 		
 		return getJdbcTemplate().query(sql.toString(), bankTransferRowMapper, params.toArray());
 	}

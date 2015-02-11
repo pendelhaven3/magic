@@ -34,7 +34,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			+ " from SUPP_PAYMENT_CREDITCARD_PYMNT a"
 			+ " join SUPPLIER_PAYMENT b"
 			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
-			+ " join CREDIT_CARD C"
+			+ " join CREDIT_CARD c"
 			+ "   on c.ID = a.CREDIT_CARD_ID"
 			+ " join SUPPLIER d"
 			+ "   on d.ID = b.SUPPLIER_ID";
@@ -172,7 +172,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
-		sql.append(" order by a.ID desc");
+		sql.append(" order by a.TRANSACTION_DT, d.NAME, b.SUPPLIER_PAYMENT_NO");
 		
 		return getJdbcTemplate().query(sql.toString(), creditCardPaymentRowMapper, params.toArray());
 	}
