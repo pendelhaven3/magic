@@ -37,7 +37,7 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 			+ " join PRODUCT_PRICE d"
 			+ "   on d.PRODUCT_ID = c.ID"
 			+ "   and d.PRICING_SCHEME_ID = b.PRICING_SCHEME_ID"
-			+ " join MANUFACTURER e"
+			+ " left join MANUFACTURER e"
 			+ "   on e.ID = c.MANUFACTURER_ID";
 
 	private SalesRequisitionItemRowMapper salesRequisitionItemRowMapper =
@@ -163,10 +163,12 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 				product.setUnitPrice(Unit.PIECES, rs.getBigDecimal("UNIT_PRICE_PCS"));
 			}
 			
-			Manufacturer manufacturer = new Manufacturer();
-			manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
-			manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
-			product.setManufacturer(manufacturer);
+			if (rs.getLong("MANUFACTURER_ID") != 0) {
+				Manufacturer manufacturer = new Manufacturer();
+				manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
+				manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
+				product.setManufacturer(manufacturer);
+			}
 			
 			return product;
 		}

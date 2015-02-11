@@ -198,7 +198,9 @@ public class SalesRequisition {
 	public List<Manufacturer> getAllItemProductManufacturers() {
 		Set<Manufacturer> manufacturers = new HashSet<>();
 		for (SalesRequisitionItem item : items) {
-			manufacturers.add(item.getProduct().getManufacturer());
+			if (item.getProduct().getManufacturer() != null) {
+				manufacturers.add(item.getProduct().getManufacturer());
+			}
 		}
 		return ListUtil.asSortedList(new ArrayList<>(manufacturers));
 	}
@@ -206,7 +208,7 @@ public class SalesRequisition {
 	public BigDecimal getSalesByManufacturer(Manufacturer manufacturer) {
 		BigDecimal total = Constants.ZERO;
 		for (SalesRequisitionItem item : items) {
-			if (item.getProduct().getManufacturer().equals(manufacturer)) {
+			if (manufacturer.equals(item.getProduct().getManufacturer())) {
 				total = total.add(item.getAmount());
 			}
 		}
