@@ -336,7 +336,7 @@ public class PurchasePaymentCheckPaymentsReportPanel extends StandardMagicPanel 
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Total Check Payments:"), c);
+		mainPanel.add(ComponentUtil.createLabel(180, "Total Check Payments:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;

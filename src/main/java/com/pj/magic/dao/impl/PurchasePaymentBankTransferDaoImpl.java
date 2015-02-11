@@ -153,12 +153,12 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 		}
 
 		if (criteria.getFromDate() != null) {
-			sql.append(" and b.POST_DT >= ?");
+			sql.append(" and a.TRANSFER_DT >= ?");
 			params.add(DbUtil.toMySqlDateString(criteria.getFromDate()));
 		}
 		
 		if (criteria.getToDate() != null) {
-			sql.append(" and b.POST_DT <= ?");
+			sql.append(" and a.TRANSFER_DT <= ?");
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
