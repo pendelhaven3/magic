@@ -15,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.SalesRequisitionItemDao;
+import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
@@ -26,15 +27,18 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, SALES_REQUISITION_ID, a.PRODUCT_ID, UNIT, QUANTITY,"
 			+ " c.UNIT_IND_CSE, c.UNIT_IND_TIE, c.UNIT_IND_CTN, c.UNIT_IND_DOZ, c.UNIT_IND_PCS,"
-			+ " d.UNIT_PRICE_CSE, d.UNIT_PRICE_TIE, d.UNIT_PRICE_CTN, d.UNIT_PRICE_DOZ, d.UNIT_PRICE_PCS"
+			+ " d.UNIT_PRICE_CSE, d.UNIT_PRICE_TIE, d.UNIT_PRICE_CTN, d.UNIT_PRICE_DOZ, d.UNIT_PRICE_PCS,"
+			+ " c.MANUFACTURER_ID, e.NAME as MANUFACTURER_NAME"
 			+ " from SALES_REQUISITION_ITEM a"
 			+ " join SALES_REQUISITION b"
 			+ "   on b.ID = a.SALES_REQUISITION_ID"
 			+ " join PRODUCT c"
 			+ "   on c.ID = a.PRODUCT_ID"
 			+ " join PRODUCT_PRICE d"
-			+ " 	on d.PRODUCT_ID = c.ID"
-			+ "     and d.PRICING_SCHEME_ID = b.PRICING_SCHEME_ID";
+			+ "   on d.PRODUCT_ID = c.ID"
+			+ "   and d.PRICING_SCHEME_ID = b.PRICING_SCHEME_ID"
+			+ " join MANUFACTURER e"
+			+ "   on e.ID = c.MANUFACTURER_ID";
 
 	private SalesRequisitionItemRowMapper salesRequisitionItemRowMapper =
 			new SalesRequisitionItemRowMapper();
@@ -158,6 +162,12 @@ public class SalesRequisitionItemDaoImpl extends MagicDao implements SalesRequis
 				product.addUnit(Unit.PIECES);
 				product.setUnitPrice(Unit.PIECES, rs.getBigDecimal("UNIT_PRICE_PCS"));
 			}
+			
+			Manufacturer manufacturer = new Manufacturer();
+			manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
+			manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
+			product.setManufacturer(manufacturer);
+			
 			return product;
 		}
 		

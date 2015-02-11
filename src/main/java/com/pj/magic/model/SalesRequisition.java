@@ -4,10 +4,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import com.pj.magic.Constants;
+import com.pj.magic.util.ListUtil;
 
 public class SalesRequisition {
 
@@ -188,6 +193,24 @@ public class SalesRequisition {
 	
 	public void setTransactionDate(Date transactionDate) {
 		this.transactionDate = transactionDate;
+	}
+	
+	public List<Manufacturer> getAllItemProductManufacturers() {
+		Set<Manufacturer> manufacturers = new HashSet<>();
+		for (SalesRequisitionItem item : items) {
+			manufacturers.add(item.getProduct().getManufacturer());
+		}
+		return ListUtil.asSortedList(new ArrayList<>(manufacturers));
+	}
+
+	public BigDecimal getSalesByManufacturer(Manufacturer manufacturer) {
+		BigDecimal total = Constants.ZERO;
+		for (SalesRequisitionItem item : items) {
+			if (item.getProduct().getManufacturer().equals(manufacturer)) {
+				total = total.add(item.getAmount());
+			}
+		}
+		return total;
 	}
 	
 }

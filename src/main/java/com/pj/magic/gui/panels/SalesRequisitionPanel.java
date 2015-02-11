@@ -52,6 +52,7 @@ import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SalesByManufacturerDialog;
 import com.pj.magic.gui.dialog.SalesRequisitionPostExceptionsDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
@@ -87,6 +88,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private SalesRequisitionPostExceptionsDialog postExceptionsDialog;
+	@Autowired private SalesByManufacturerDialog salesByManufacturerDialog;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -901,6 +903,22 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		});
 		
 		toolBar.add(postButton);
+		
+		MagicToolBarButton showByManufacturerTotalButton = 
+				new MagicToolBarButton("factory", "Show Sales Items Total By Manufacturer");
+		showByManufacturerTotalButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showSalesByManufacturerDialog(salesRequisition);
+			}
+		});
+		toolBar.add(showByManufacturerTotalButton);
+	}
+
+	private void showSalesByManufacturerDialog(SalesRequisition salesRequisition) {
+		salesByManufacturerDialog.updateDisplay(salesRequisition);
+		salesByManufacturerDialog.setVisible(true);
 	}
 
 	private JPanel createItemsTableToolBar() {

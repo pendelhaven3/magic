@@ -3,7 +3,7 @@ package com.pj.magic.model;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class Manufacturer {
+public class Manufacturer implements Comparable<Manufacturer> {
 
 	private Long id;
 	private String name;
@@ -48,6 +48,11 @@ public class Manufacturer {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public int compareTo(Manufacturer o) {
+		return name.compareTo(o.getName());
 	}
 	
 }
