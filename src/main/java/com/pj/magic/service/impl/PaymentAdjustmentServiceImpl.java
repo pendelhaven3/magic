@@ -77,4 +77,12 @@ public class PaymentAdjustmentServiceImpl implements PaymentAdjustmentService {
 		return paymentAdjustmentDao.search(criteria);
 	}
 
+	@Override
+	public List<PaymentAdjustment> getUnpaidPaymentAdjustments() {
+		PaymentAdjustmentSearchCriteria criteria = new PaymentAdjustmentSearchCriteria();
+		criteria.setPaid(false);
+		
+		return search(criteria);
+	}
+
 }

@@ -55,7 +55,7 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		List<PaymentAdjustment> paymentAdjustments = paymentAdjustmentService.getAllPaymentAdjustments();
+		List<PaymentAdjustment> paymentAdjustments = paymentAdjustmentService.getUnpaidPaymentAdjustments();
 		tableModel.setPaymentAdjustments(paymentAdjustments);
 		if (!paymentAdjustments.isEmpty()) {
 			table.changeSelection(0, 0);

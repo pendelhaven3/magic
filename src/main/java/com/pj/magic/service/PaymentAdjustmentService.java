@@ -20,5 +20,7 @@ public interface PaymentAdjustmentService {
 	PaymentAdjustment findPaymentAdjustmentByPaymentAdjustmentNumber(long paymentAdjustmentNumber);
 
 	List<PaymentAdjustment> search(PaymentAdjustmentSearchCriteria criteria);
+
+	List<PaymentAdjustment> getUnpaidPaymentAdjustments();
 	
 }
