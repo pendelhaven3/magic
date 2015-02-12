@@ -1,8 +1,13 @@
 package com.pj.magic.gui.tables;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
+import javax.swing.AbstractAction;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -29,6 +34,7 @@ public class PaymentSalesInvoicesTable extends MagicTable {
 	public static final int ADJUSTMENT_AMOUNT_COLUMN_INDEX = 3;
 	public static final int AMOUNT_DUE_COLUMN_INDEX = 4;
 	public static final int DUE_DATE_COLUMN_INDEX = 5;
+	private static final String DELETE_ITEM_ACTION_NAME = "DELETE_ITEM_ACTION_NAME";
 	
 	@Autowired private PaymentSalesInvoicesTableModel tableModel;
 	
@@ -39,8 +45,22 @@ public class PaymentSalesInvoicesTable extends MagicTable {
 		super(tableModel);
 		initializeColumns();
 		initializeModelListener();
+		registerKeyBindings();
 	}
 	
+	private void registerKeyBindings() {
+		getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+			.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
+		
+		getActionMap().put(DELETE_ITEM_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeCurrentlySelectedItem();
+			}
+		});
+	}
+
 	private void initializeModelListener() {
 		getModel().addTableModelListener(new TableModelListener() {
 			
@@ -107,6 +127,10 @@ public class PaymentSalesInvoicesTable extends MagicTable {
 	}
 
 	public void removeCurrentlySelectedItem() {
+		if (!payment.isNew()) {
+			return;
+		}
+		
 		if (getSelectedRow() != -1) {
 			if (confirm("Do you wish to delete the selected item?")) {
 				doDeleteCurrentlySelectedItem();

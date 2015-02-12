@@ -119,10 +119,8 @@ public class PaymentCashPaymentsTable extends MagicTable {
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), CANCEL_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0), F10_ACTION_NAME);
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), F5_ACTION_NAME);
-		/*
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ITEM_ACTION_NAME);
 		
-		*/
 		ActionMap actionMap = getActionMap();
 		actionMap.put(CANCEL_ACTION_NAME, new AbstractAction() {
 			
@@ -147,7 +145,6 @@ public class PaymentCashPaymentsTable extends MagicTable {
 				}
 			}
 		});
-		/*
 		actionMap.put(DELETE_ITEM_ACTION_NAME, new AbstractAction() {
 			
 			@Override
@@ -155,8 +152,6 @@ public class PaymentCashPaymentsTable extends MagicTable {
 				removeCurrentlySelectedItem();
 			}
 		});
-		*/
-		
 	}
 	
 	private void openSelectDateDialog() {
@@ -197,6 +192,10 @@ public class PaymentCashPaymentsTable extends MagicTable {
 	}
 	
 	public void removeCurrentlySelectedItem() {
+		if (!payment.isNew()) {
+			return;
+		}
+		
 		if (getSelectedRow() != -1) {
 			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
 				if (confirm("Do you wish to delete the selected item?")) {
