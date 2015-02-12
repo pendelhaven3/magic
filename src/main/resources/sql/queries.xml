@@ -86,4 +86,50 @@ group by CUSTOMER_ID
 order by cust.NAME
 	]]>
 	</entry>
+	<entry name="salesByManufacturerReport">
+	<![CDATA[
+select m.NAME as MANUFACTURER_NAME, sum(AMOUNT) as TOTAL_AMOUNT
+from (
+	select MANUFACTURER_ID, sum(NET_AMOUNT) as AMOUNT
+	from (
+		select c.MANUFACTURER_ID,
+		b.UNIT_PRICE * b.QUANTITY * (1 - DISCOUNT_1/100) * (1 - DISCOUNT_2/100) * (1 - DISCOUNT_3/100) - FLAT_RATE_DISCOUNT as NET_AMOUNT
+		from SALES_INVOICE a
+		join SALES_INVOICE_ITEM b
+		  on b.SALES_INVOICE_ID = a.ID
+		join PRODUCT c
+		  on c.ID = b.PRODUCT_ID
+		where a.MARK_IND = 'Y'
+		and (a.CUSTOMER_ID = :customer or '' = :customer)
+        and a.TRANSACTION_DT >= :fromDate
+        and a.TRANSACTION_DT <= :toDate
+	) agg
+	group by MANUFACTURER_ID
+    union all
+	select MANUFACTURER_ID, -1 * sum(NET_AMOUNT) as AMOUNT
+	from (
+		select e.MANUFACTURER_ID,
+		c.UNIT_PRICE * b.QUANTITY * (1 - DISCOUNT_1/100) * (1 - DISCOUNT_2/100) * (1 - DISCOUNT_3/100) - (FLAT_RATE_DISCOUNT / c.QUANTITY * b.QUANTITY) as NET_AMOUNT
+		from SALES_RETURN a
+		join SALES_RETURN_ITEM b
+		  on b.SALES_RETURN_ID = a.ID
+		join SALES_INVOICE_ITEM c
+		  on c.ID = b.SALES_INVOICE_ITEM_ID
+		join SALES_INVOICE d
+		  on d.ID = a.SALES_INVOICE_ID
+		join PRODUCT e
+		  on e.ID = c.PRODUCT_ID
+		where a.POST_IND = 'Y'
+		and (d.CUSTOMER_ID = :customer or '' = :customer)
+        and a.POST_DT >= :fromDate
+        and a.POST_DT < date_add(:toDate, interval 1 day)
+	) agg
+	group by MANUFACTURER_ID
+) main
+join MANUFACTURER m
+  on m.ID = main.MANUFACTURER_ID
+group by MANUFACTURER_ID
+order by m.NAME
+	]]>
+	</entry>
 </root>

@@ -6,6 +6,8 @@ import java.util.List;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.InventoryReport;
+import com.pj.magic.model.report.SalesByManufacturerReport;
+import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 
 public interface ReportService {
@@ -16,5 +18,7 @@ public interface ReportService {
 	InventoryReport getInventoryReport();
 
 	CustomerSalesSummaryReport getCustomerSalesSummaryReport(Date fromDate, Date toDate);
+
+	SalesByManufacturerReport getManufacturerSalesReport(SalesByManufacturerReportSearchCriteria criteria);
 	
 }

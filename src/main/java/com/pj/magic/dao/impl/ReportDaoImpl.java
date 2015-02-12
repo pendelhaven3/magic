@@ -13,12 +13,15 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ReportDao;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.report.InventoryReportItem;
+import com.pj.magic.model.report.SalesByManufacturerReportItem;
+import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 import com.pj.magic.util.DbUtil;
 import com.pj.magic.util.QueriesUtil;
@@ -305,6 +308,39 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 						item.setTotalCost(rs.getBigDecimal("TOTAL_COST"));
 						item.setTotalProfit(rs.getBigDecimal("TOTAL_PROFIT"));
 						
+						return item;
+					}
+			
+		});
+	}
+
+	@Override
+	public List<SalesByManufacturerReportItem> searchSalesByManufacturerReportItems(
+			SalesByManufacturerReportSearchCriteria criteria) {
+		String sql = QueriesUtil.getSql("salesByManufacturerReport");
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("fromDate", DbUtil.toMySqlDateString(criteria.getFromDate()));
+		params.put("toDate", DbUtil.toMySqlDateString(criteria.getToDate()));
+		if (criteria.getCustomer() != null) {
+			params.put("customer", criteria.getCustomer().getId());
+		} else {
+			params.put("customer", "");
+		}
+		
+		return getNamedParameterJdbcTemplate().query(sql,
+				params,
+				new RowMapper<SalesByManufacturerReportItem>() {
+
+					@Override
+					public SalesByManufacturerReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+						SalesByManufacturerReportItem item = new SalesByManufacturerReportItem();
+						
+						Manufacturer manufacturer = new Manufacturer();
+						manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
+						item.setManufacturer(manufacturer);
+						
+						item.setAmount(rs.getBigDecimal("TOTAL_AMOUNT"));
 						return item;
 					}
 			

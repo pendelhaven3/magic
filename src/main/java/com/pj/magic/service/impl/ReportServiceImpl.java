@@ -10,6 +10,8 @@ import com.pj.magic.dao.ReportDao;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.InventoryReport;
+import com.pj.magic.model.report.SalesByManufacturerReport;
+import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 import com.pj.magic.service.ReportService;
 
@@ -35,6 +37,13 @@ public class ReportServiceImpl implements ReportService {
 	public CustomerSalesSummaryReport getCustomerSalesSummaryReport(Date fromDate, Date toDate) {
 		CustomerSalesSummaryReport report = new CustomerSalesSummaryReport();
 		report.setItems(reportDao.searchCustomerSalesSummaryReportItems(fromDate, toDate));
+		return report;
+	}
+
+	@Override
+	public SalesByManufacturerReport getManufacturerSalesReport(SalesByManufacturerReportSearchCriteria criteria) {
+		SalesByManufacturerReport report = new SalesByManufacturerReport();
+		report.setItems(reportDao.searchSalesByManufacturerReportItems(criteria));
 		return report;
 	}
 
