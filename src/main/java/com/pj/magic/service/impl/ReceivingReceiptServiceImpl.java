@@ -13,6 +13,8 @@ import com.pj.magic.Constants;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ReceivingReceiptDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
+import com.pj.magic.exception.AlreadyCancelledException;
+import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
@@ -74,6 +76,15 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	@Override
 	public void post(ReceivingReceipt receivingReceipt) {
 		ReceivingReceipt updated = getReceivingReceipt(receivingReceipt.getId());
+		
+		if (updated.isPosted()) {
+			throw new AlreadyPostedException();
+		}
+		
+		if (updated.isCancelled()) {
+			throw new AlreadyCancelledException();
+		}
+		
 		BigDecimal costMultipler = Constants.ONE;
 		if (!updated.isVatInclusive()) {
 			costMultipler = Constants.ONE.add(updated.getVatRate());

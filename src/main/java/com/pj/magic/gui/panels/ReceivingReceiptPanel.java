@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.exception.AlreadyCancelledException;
+import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -433,6 +435,12 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 			try {
 				receivingReceiptService.post(receivingReceipt);
 				showMessage("Post successful!");
+				updateDisplay(receivingReceipt);
+			} catch (AlreadyPostedException e) {
+				showErrorMessage("Receiving Receipt already posted");
+				updateDisplay(receivingReceipt);
+			} catch (AlreadyCancelledException e) {
+				showErrorMessage("Receiving Receipt already cancelled");
 				updateDisplay(receivingReceipt);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
