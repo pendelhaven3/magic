@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -31,6 +33,7 @@ import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.tables.StockCardInventoryReportTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.StockCardInventoryReportItem;
+import com.pj.magic.model.Unit;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
@@ -50,6 +53,11 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	private UtilCalendarModel toDateModel;
 	private JButton generateButton;
 	private EllipsisButton selectProductButton;
+	private JCheckBox caseUnitCheckBox;
+	private JCheckBox tieUnitCheckBox;
+	private JCheckBox cartonUnitCheckBox;
+	private JCheckBox dozenUnitCheckBox;
+	private JCheckBox piecesUnitCheckBox;
 	
 	@Override
 	protected void initializeComponents() {
@@ -70,6 +78,12 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		
 		fromDateModel = new UtilCalendarModel();
 		toDateModel = new UtilCalendarModel();
+		
+		caseUnitCheckBox = new JCheckBox();
+		tieUnitCheckBox = new JCheckBox();
+		cartonUnitCheckBox = new JCheckBox();
+		dozenUnitCheckBox = new JCheckBox();
+		piecesUnitCheckBox = new JCheckBox();
 		
 		generateButton = new JButton("Generate");
 		generateButton.addActionListener(new ActionListener() {
@@ -117,6 +131,21 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		}
 		if (toDateModel.getValue() != null) {
 			criteria.setToDate(toDateModel.getValue().getTime());
+		}
+		if (caseUnitCheckBox.isSelected()) {
+			criteria.getUnits().add(Unit.CASE);
+		}
+		if (tieUnitCheckBox.isSelected()) {
+			criteria.getUnits().add(Unit.TIE);
+		}
+		if (cartonUnitCheckBox.isSelected()) {
+			criteria.getUnits().add(Unit.CARTON);
+		}
+		if (dozenUnitCheckBox.isSelected()) {
+			criteria.getUnits().add(Unit.DOZEN);
+		}
+		if (piecesUnitCheckBox.isSelected()) {
+			criteria.getUnits().add(Unit.PIECES);
 		}
 		
 		List<StockCardInventoryReportItem> items = reportService.getStockCardInventoryReport(criteria);
@@ -196,6 +225,20 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Units: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(createUnitsPanel(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createVerticalFiller(20), c);
@@ -229,14 +272,74 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		mainPanel.add(itemsTableScrollPane, c);
 	}
 
-	private JPanel createProductPanel() {
-		productCodeField.setPreferredSize(new Dimension(150, 25));
-		productDescriptionLabel.setPreferredSize(new Dimension(300, 20));
+	private JPanel createUnitsPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
 		
+		c.insets.right = 3;
+		panel.add(caseUnitCheckBox, c);
+		
+		c.insets.right = 10;
+		panel.add(new JLabel("CSE"), c);
+		
+		c.insets.right = 3;
+		panel.add(tieUnitCheckBox, c);
+		
+		c.insets.right = 10;
+		panel.add(new JLabel("TIE"), c);
+		
+		c.insets.right = 3;
+		panel.add(cartonUnitCheckBox, c);
+		
+		c.insets.right = 10;
+		panel.add(new JLabel("CTN"), c);
+		
+		c.insets.right = 3;
+		panel.add(dozenUnitCheckBox, c);
+		
+		c.insets.right = 10;
+		panel.add(new JLabel("DOZ"), c);
+		
+		c.insets.right = 3;
+		panel.add(piecesUnitCheckBox, c);
+		
+		c.insets.right = 10;
+		panel.add(new JLabel("PCS"), c);
+		
+		return panel;
+	}
+
+	private JPanel createProductPanel() {
 		JPanel panel = new JPanel();
-		panel.add(productCodeField);
-		panel.add(selectProductButton);
-		panel.add(productDescriptionLabel);
+		panel.setLayout(new GridBagLayout());
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		productCodeField.setPreferredSize(new Dimension(150, 25));
+		panel.add(productCodeField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		selectProductButton.setPreferredSize(new Dimension(30, 25));
+		panel.add(selectProductButton, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(Box.createHorizontalStrut(10), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		productDescriptionLabel.setPreferredSize(new Dimension(300, 20));
+		panel.add(productDescriptionLabel, c);
+		
 		return panel;
 	}
 

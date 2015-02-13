@@ -166,6 +166,11 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
+		if (!criteria.getUnits().isEmpty()) {
+			sql.append(" and UNIT in (")
+				.append(DbUtil.toSqlInValues(criteria.getUnits())).append(")");
+		}
+		
 		sql.append(" order by TRANSACTION_DT desc, TRANSACTION_TYPE, TRANSACTION_NO, TRANSACTION_TYPE_KEY");
 		
 		return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
