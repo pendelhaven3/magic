@@ -10,7 +10,7 @@ public class PaymentCheckPaymentSearchCriteria {
 
 	private Date paymentDate;
 	private Customer customer;
-	private Boolean paid;
+	private Boolean posted;
 	private PaymentTerminal paymentTerminal;
 	private TimePeriod timePeriod;
 
@@ -30,12 +30,12 @@ public class PaymentCheckPaymentSearchCriteria {
 		this.customer = customer;
 	}
 
-	public Boolean getPaid() {
-		return paid;
+	public Boolean getPosted() {
+		return posted;
 	}
 
-	public void setPaid(Boolean paid) {
-		this.paid = paid;
+	public void setPosted(Boolean posted) {
+		this.posted = posted;
 	}
 
 	public PaymentTerminal getPaymentTerminal() {

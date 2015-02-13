@@ -147,7 +147,7 @@ public class RemittanceReportPanel extends StandardMagicPanel {
 	
 	private List<PaymentCheckPayment> searchCheckPayments() {
 		PaymentCheckPaymentSearchCriteria criteria = new PaymentCheckPaymentSearchCriteria();
-		criteria.setPaid(true);
+		criteria.setPosted(true);
 		criteria.setPaymentDate(reportDateModel.getValue().getTime());
 		criteria.setPaymentTerminal((PaymentTerminal)paymentTerminalComboBox.getSelectedItem());
 		

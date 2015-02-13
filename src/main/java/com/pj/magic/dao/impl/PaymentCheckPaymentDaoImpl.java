@@ -139,9 +139,9 @@ public class PaymentCheckPaymentDaoImpl extends MagicDao implements PaymentCheck
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
 		sql.append(" where 1 = 1");
 		
-		if (criteria.getPaid() != null) {
+		if (criteria.getPosted() != null) {
 			sql.append(" and b.POST_IND = ?");
-			params.add(criteria.getPaid() ? "Y" : "N");
+			params.add(criteria.getPosted() ? "Y" : "N");
 		}
 		
 		if (criteria.getPaymentDate() != null) {
