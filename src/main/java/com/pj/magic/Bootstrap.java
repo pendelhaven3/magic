@@ -54,8 +54,8 @@ public class Bootstrap {
 	private void loadProductsFromExcelFile() throws Exception {
 		try (
 			InputStream in = getClass().getClassLoader().getResourceAsStream("data/products.xls"); // TODO: study XSSF
-		) {
 			Workbook workbook = new HSSFWorkbook(in);
+		) {
 			Sheet sheet = workbook.getSheetAt(0);
 			final Iterator<Row> rows = sheet.iterator();
 			rows.next();
