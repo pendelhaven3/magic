@@ -28,6 +28,7 @@ import com.pj.magic.gui.panels.BadStockReturnPanel;
 import com.pj.magic.gui.panels.CashFlowReportPanel;
 import com.pj.magic.gui.panels.ChangePasswordPanel;
 import com.pj.magic.gui.panels.CreditCardListPanel;
+import com.pj.magic.gui.panels.CustomerCheckPaymentsReportPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.CustomerSalesSummaryReportPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
@@ -250,6 +251,7 @@ public class MagicFrame extends JFrame {
 	private static final String PURCHASE_PAYMENT_CREDIT_CARD_PAYMENTS_REPORT_PANEL = 
 			"PURCHASE_PAYMENT_CREDIT_CARD_PAYMENTS_REPORT_PANEL";
 	private static final String SALES_BY_MANUFACTURER_REPORT_PANEL = "SALES_BY_MANUFACTURER_REPORT_PANEL";
+	private static final String CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL = "CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -343,6 +345,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PurchasePaymentCheckPaymentsReportPanel purchasePaymentCheckPaymentsReportPanel;
 	@Autowired private PurchasePaymentCreditCardPaymentsReportPanel purchasePaymentCreditCardPaymentsReportPanel;
 	@Autowired private SalesByManufacturerReportPanel salesByManufacturerReportPanel;
+	@Autowired private CustomerCheckPaymentsReportPanel customerCheckPaymentsReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -485,6 +488,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(purchasePaymentCreditCardPaymentsReportPanel, 
 				PURCHASE_PAYMENT_CREDIT_CARD_PAYMENTS_REPORT_PANEL);
 		panelHolder.add(salesByManufacturerReportPanel, SALES_BY_MANUFACTURER_REPORT_PANEL);
+		panelHolder.add(customerCheckPaymentsReportPanel, CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1190,6 +1194,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Sales By Manufacturer Report");
 		salesByManufacturerReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_BY_MANUFACTURER_REPORT_PANEL);
+	}
+	
+	public void switchToCustomerCheckPaymentsReportPanel() {
+		addPanelNameToTitle("Customer Check Payments Report");
+		customerCheckPaymentsReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL);
 	}
 	
 }

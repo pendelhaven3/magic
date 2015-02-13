@@ -30,7 +30,8 @@ public class PaymentCheckPaymentDaoImpl extends MagicDao implements PaymentCheck
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, PAYMENT_ID, BANK, CHECK_DT, CHECK_NO, AMOUNT,"
 			+ " b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME,"
-			+ " b.PAYMENT_TERMINAL_ID, d.NAME as PAYMENT_TERMINAL_NAME"
+			+ " b.PAYMENT_TERMINAL_ID, d.NAME as PAYMENT_TERMINAL_NAME,"
+			+ " b.PAYMENT_NO"
 			+ " from PAYMENT_CHECK_PAYMENT a"
 			+ " join PAYMENT b"
 			+ "   on b.ID = a.PAYMENT_ID"
@@ -102,7 +103,12 @@ public class PaymentCheckPaymentDaoImpl extends MagicDao implements PaymentCheck
 		public PaymentCheckPayment mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PaymentCheckPayment check = new PaymentCheckPayment();
 			check.setId(rs.getLong("ID"));
-			check.setParent(new Payment(rs.getLong("PAYMENT_ID")));
+			
+			Payment payment = new Payment();
+			payment.setId(rs.getLong("PAYMENT_ID"));
+			payment.setPaymentNumber(rs.getLong("PAYMENT_NO"));
+			check.setParent(payment);
+			
 			check.setBank(rs.getString("BANK"));
 			check.setCheckDate(rs.getDate("CHECK_DT"));
 			check.setCheckNumber(rs.getString("CHECK_NO"));
@@ -168,7 +174,26 @@ public class PaymentCheckPaymentDaoImpl extends MagicDao implements PaymentCheck
 			params.add(criteria.getPaymentTerminal().getId());
 		}
 		
-		sql.append(" order by c.NAME, CHECK_DT");
+		if (criteria.getCheckDateFrom() != null) {
+			sql.append(" and a.CHECK_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getCheckDateFrom()));
+		}
+		
+		if (criteria.getCheckDateTo() != null) {
+			sql.append(" and a.CHECK_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getCheckDateTo()));
+		}
+		
+		if (criteria.getCustomer() != null) {
+			sql.append(" and b.CUSTOMER_ID = ?");
+			params.add(criteria.getCustomer().getId());
+		}
+		
+		if (criteria.getOrderBy() != null) {
+			sql.append(" order by ").append(criteria.getOrderBy());
+		} else {
+			sql.append(" order by c.NAME, CHECK_DT");
+		}
 		
 		return getJdbcTemplate().query(sql.toString(), checkRowMapper, params.toArray());
 	}

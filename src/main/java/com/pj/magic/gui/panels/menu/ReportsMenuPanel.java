@@ -40,6 +40,7 @@ public class ReportsMenuPanel extends MenuPanel {
 	private static final String PURCHASE_PAYMENT_CREDIT_CARD_PAYMENTS_REPORT = 
 			"Purchase Payment Credit Card Payments Report";
 	private static final String SALES_BY_MANUFACTURER_REPORT = "Sales By Manufacturer Report";
+	private static final String CUSTOMER_CHECK_PAYMENTS_REPORT = "Customer Check Payments Report";
 
 	@Autowired private LoginService loginService;
 	
@@ -132,6 +133,9 @@ public class ReportsMenuPanel extends MenuPanel {
 		case SALES_BY_MANUFACTURER_REPORT:
 			getMagicFrame().switchToSalesByManufacturerReportPanel();
 			break;
+		case CUSTOMER_CHECK_PAYMENTS_REPORT:
+			getMagicFrame().switchToCustomerCheckPaymentsReportPanel();
+			break;
 		}
 	}
 
@@ -148,6 +152,7 @@ public class ReportsMenuPanel extends MenuPanel {
 				REMITTANCE_REPORT,
 				POSTED_SALES_AND_PROFIT_REPORT,
 				CUSTOMER_SALES_SUMMARY_REPORT,
+				CUSTOMER_CHECK_PAYMENTS_REPORT,
 				UNPAID_RECEIVING_RECEIPTS_LIST,
 				PURCHASE_PAYMENT_BANK_TRANSFERS_REPORT,
 				PURCHASE_PAYMENT_CHECK_PAYMENTS_REPORT,
