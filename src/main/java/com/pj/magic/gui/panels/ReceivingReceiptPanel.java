@@ -1,5 +1,6 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -7,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -34,6 +37,7 @@ import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.AuditTrailStatusDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.ReceivingReceiptItemsTable;
 import com.pj.magic.model.ReceivingReceipt;
@@ -44,6 +48,7 @@ import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.HtmlUtil;
 
 @Component
 public class ReceivingReceiptPanel extends StandardMagicPanel {
@@ -57,6 +62,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private AuditTrailStatusDialog statusDialog;
 	
 	private ReceivingReceipt receivingReceipt;
 	private JLabel receivingReceiptNumberField;
@@ -115,6 +121,16 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
+		statusField.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				statusDialog.updateDisplay(receivingReceipt);
+				statusDialog.setVisible(true);
+			}
+			
+		});
+		statusField.setCursor(new Cursor(Cursor.HAND_CURSOR));
 	}
 
 	@Override
@@ -147,7 +163,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		receivingReceiptNumberField.setText(receivingReceipt.getReceivingReceiptNumber().toString());
 		relatedPurchaseOrderNumberField.setText(receivingReceipt.getRelatedPurchaseOrderNumber().toString());
 		supplierField.setText(receivingReceipt.getSupplier().getName());
-		statusField.setText(receivingReceipt.getStatus());
+		statusField.setText(HtmlUtil.blueUnderline(receivingReceipt.getStatus()));
 		paymentTermField.setText(receivingReceipt.getPaymentTerm().getName());
 		updateReceivedDateField();
 		referenceNumberField.setText(receivingReceipt.getReferenceNumber());
