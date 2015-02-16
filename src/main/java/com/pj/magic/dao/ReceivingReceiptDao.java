@@ -24,6 +24,4 @@ public interface ReceivingReceiptDao {
 
 	ReceivingReceipt findByReceivingReceiptNumber(long receivingReceiptNumber);
 
-	List<ReceivingReceipt> findAllUnpaid();
-	
 }

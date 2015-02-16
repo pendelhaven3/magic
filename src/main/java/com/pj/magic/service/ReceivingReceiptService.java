@@ -30,6 +30,4 @@ public interface ReceivingReceiptService {
 	
 	ReceivingReceiptItem findMostRecentReceivingReceiptItem(Supplier supplier, Product product);
 
-	List<ReceivingReceipt> findAllUnpaidReceivingReceipts();
-	
 }

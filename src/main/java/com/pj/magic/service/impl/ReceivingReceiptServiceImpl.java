@@ -188,13 +188,4 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 		return item;
 	}
 
-	@Override
-	public List<ReceivingReceipt> findAllUnpaidReceivingReceipts() {
-		List<ReceivingReceipt> receivingReceipts = receivingReceiptDao.findAllUnpaid();
-		for (ReceivingReceipt receivingReceipt : receivingReceipts) {
-			receivingReceipt.setItems(receivingReceiptItemDao.findAllByReceivingReceipt(receivingReceipt));
-		}
-		return receivingReceipts;
-	}
-	
 }
