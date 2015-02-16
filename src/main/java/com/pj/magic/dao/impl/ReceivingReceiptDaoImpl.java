@@ -236,7 +236,8 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			+ "     on sp.ID = sprr.SUPPLIER_PAYMENT_ID"
 			+ "   where sprr.RECEIVING_RECEIPT_ID = a.ID"
 			+ "   and sp.POST_IND = 'Y'"
-			+ " )";
+			+ " )"
+			+ " and a.RECEIVED_DT >= '2015-01-01'";
 	
 	@Override
 	public List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria) {
@@ -294,7 +295,8 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			+ "     on pay.ID = sprr.SUPPLIER_PAYMENT_ID"
 			+ "   where sprr.RECEIVING_RECEIPT_ID = a.ID"
 			+ "   and pay.CANCEL_IND = 'N'"
-			+ " )";
+			+ " )"
+			+ " and a.RECEIVED_DT >= '2015-01-01'";
 	
 	@Override
 	public List<ReceivingReceipt> findAllForPaymentBySupplier(Supplier supplier) {
