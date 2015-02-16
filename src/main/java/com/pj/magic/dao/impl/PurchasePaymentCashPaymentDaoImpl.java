@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -18,6 +19,8 @@ import com.pj.magic.dao.PurchasePaymentCashPaymentDao;
 import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentCashPayment;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.PurchasePaymentCashPaymentSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PurchasePaymentCashPaymentDaoImpl extends MagicDao implements PurchasePaymentCashPaymentDao {
@@ -117,6 +120,31 @@ public class PurchasePaymentCashPaymentDaoImpl extends MagicDao implements Purch
 	@Override
 	public void delete(PurchasePaymentCashPayment cashPayment) {
 		getJdbcTemplate().update(DELETE_SQL, cashPayment.getId());
+	}
+
+	@Override
+	public List<PurchasePaymentCashPayment> search(PurchasePaymentCashPaymentSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		if (criteria.getPosted() != null) {
+			sql.append(" and c.POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+
+		if (criteria.getFromDate() != null) {
+			sql.append(" and a.PAID_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getFromDate()));
+		}
+		
+		if (criteria.getToDate() != null) {
+			sql.append(" and a.PAID_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
+		}
+		
+		return getJdbcTemplate().query(sql.toString(), cashPaymentRowMapper, params.toArray());
 	}
 
 }

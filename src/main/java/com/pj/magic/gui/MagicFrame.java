@@ -31,6 +31,7 @@ import com.pj.magic.gui.panels.CreditCardListPanel;
 import com.pj.magic.gui.panels.CustomerCheckPaymentsReportPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.CustomerSalesSummaryReportPanel;
+import com.pj.magic.gui.panels.DisbursementReportPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
 import com.pj.magic.gui.panels.InventoryCheckPanel;
 import com.pj.magic.gui.panels.InventoryReportPanel;
@@ -252,6 +253,7 @@ public class MagicFrame extends JFrame {
 			"PURCHASE_PAYMENT_CREDIT_CARD_PAYMENTS_REPORT_PANEL";
 	private static final String SALES_BY_MANUFACTURER_REPORT_PANEL = "SALES_BY_MANUFACTURER_REPORT_PANEL";
 	private static final String CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL = "CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL";
+	private static final String DISBURSEMENT_REPORT_PANEL = "DISBURSEMENT_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -346,6 +348,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PurchasePaymentCreditCardPaymentsReportPanel purchasePaymentCreditCardPaymentsReportPanel;
 	@Autowired private SalesByManufacturerReportPanel salesByManufacturerReportPanel;
 	@Autowired private CustomerCheckPaymentsReportPanel customerCheckPaymentsReportPanel;
+	@Autowired private DisbursementReportPanel disbursementReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -489,6 +492,7 @@ public class MagicFrame extends JFrame {
 				PURCHASE_PAYMENT_CREDIT_CARD_PAYMENTS_REPORT_PANEL);
 		panelHolder.add(salesByManufacturerReportPanel, SALES_BY_MANUFACTURER_REPORT_PANEL);
 		panelHolder.add(customerCheckPaymentsReportPanel, CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL);
+		panelHolder.add(disbursementReportPanel, DISBURSEMENT_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1200,6 +1204,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Customer Check Payments Report");
 		customerCheckPaymentsReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL);
+	}
+
+	public void switchToDisbursementReportPanel() {
+		addPanelNameToTitle("Disbursement Report");
+		disbursementReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, DISBURSEMENT_REPORT_PANEL);
 	}
 	
 }

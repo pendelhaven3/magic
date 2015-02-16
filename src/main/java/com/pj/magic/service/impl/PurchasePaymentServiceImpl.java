@@ -28,6 +28,7 @@ import com.pj.magic.model.PurchasePaymentCashPayment;
 import com.pj.magic.model.PurchasePaymentCheckPayment;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
 import com.pj.magic.model.search.PurchasePaymentBankTransferSearchCriteria;
+import com.pj.magic.model.search.PurchasePaymentCashPaymentSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentCheckPaymentSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentCreditCardPaymentSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
@@ -231,6 +232,12 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 	public List<PurchasePaymentCreditCardPayment> searchCreditCardPayments(
 			PurchasePaymentCreditCardPaymentSearchCriteria criteria) {
 		return purchasePaymentCreditCardPaymentDao.search(criteria);
+	}
+
+	@Override
+	public List<PurchasePaymentCashPayment> searchCashPayments(
+			PurchasePaymentCashPaymentSearchCriteria criteria) {
+		return purchasePaymentCashPaymentDao.search(criteria);
 	}
 	
 }
