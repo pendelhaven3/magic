@@ -706,11 +706,11 @@ create table PURCHASE_PAYMENT (
   CANCEL_IND char(1) default 'N' not null,
   CANCEL_DT date null,
   CANCEL_BY integer null,
-  constraint SUPPLIER_PAYMENT$PK primary key (ID),
-  constraint SUPPLIER_PAYMENT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),
-  constraint SUPPLIER_PAYMENT$FK2 foreign key (POST_BY) references USER (ID),
-  constraint SUPPLIER_PAYMENT$FK3 foreign key (ENCODER) references USER (ID),
-  constraint SUPPLIER_PAYMENT$FK4 foreign key (CANCEL_BY) references USER (ID)
+  constraint PURCHASE_PAYMENT$PK primary key (ID),
+  constraint PURCHASE_PAYMENT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),
+  constraint PURCHASE_PAYMENT$FK2 foreign key (POST_BY) references USER (ID),
+  constraint PURCHASE_PAYMENT$FK3 foreign key (ENCODER) references USER (ID),
+  constraint PURCHASE_PAYMENT$FK4 foreign key (CANCEL_BY) references USER (ID)
 );
 
 create table SUPP_PAYMENT_RECV_RCPT (
