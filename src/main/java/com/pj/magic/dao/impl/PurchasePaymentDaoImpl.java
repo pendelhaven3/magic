@@ -16,8 +16,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PurchasePaymentDao;
-import com.pj.magic.model.Supplier;
+import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PurchasePayment;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
 import com.pj.magic.util.DbUtil;
@@ -32,14 +33,17 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 			+ " POST_IND, POST_DT, POST_BY,"
 			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME, "
 			+ " c.USERNAME as ENCODER_USERNAME,"
-			+ " d.USERNAME as POST_BY_USERNAME"
+			+ " d.USERNAME as POST_BY_USERNAME,"
+			+ " e.NAME as PAYMENT_TERM_NAME"
 			+ " from SUPPLIER_PAYMENT a"
 			+ " join SUPPLIER b"
 			+ "   on b.ID = a.SUPPLIER_ID"
 			+ " join USER c"
 			+ "   on c.ID = a.ENCODER"
 			+ " left join USER d"
-			+ "   on d.ID = a.POST_BY";
+			+ "   on d.ID = a.POST_BY"
+			+ " left join PAYMENT_TERM e"
+			+ "   on e.ID = b.PAYMENT_TERM_ID";
 	
 	private PurchasePaymentRowMapper purchasePaymentRowMapper = new PurchasePaymentRowMapper();
 	
@@ -152,12 +156,7 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 			purchasePayment.setId(rs.getLong("ID"));
 			purchasePayment.setPurchasePaymentNumber(rs.getLong("SUPPLIER_PAYMENT_NO"));
 			purchasePayment.setEncoder(new User(rs.getLong("ENCODER"), rs.getString("ENCODER_USERNAME")));
-			
-			Supplier supplier = new Supplier();
-			supplier.setId(rs.getLong("SUPPLIER_ID"));
-			supplier.setCode(rs.getString("SUPPLIER_CODE"));
-			supplier.setName(rs.getString("SUPPLIER_NAME"));
-			purchasePayment.setSupplier(supplier);
+			purchasePayment.setSupplier(mapSupplier(rs));
 			
 			purchasePayment.setPosted("Y".equals(rs.getString("POST_IND")));
 			if (purchasePayment.isPosted()) {
@@ -168,6 +167,19 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 			return purchasePayment;
 		}
 		
+	}
+
+	public Supplier mapSupplier(ResultSet rs) throws SQLException {
+		Supplier supplier = new Supplier();
+		supplier.setId(rs.getLong("SUPPLIER_ID"));
+		supplier.setCode(rs.getString("SUPPLIER_CODE"));
+		supplier.setName(rs.getString("SUPPLIER_NAME"));
+		
+		PaymentTerm paymentTerm = new PaymentTerm();
+		paymentTerm.setName(rs.getString("PAYMENT_TERM_NAME"));
+		supplier.setPaymentTerm(paymentTerm);
+		
+		return supplier;
 	}
 	
 }

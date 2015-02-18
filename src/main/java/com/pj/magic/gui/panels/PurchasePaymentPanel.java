@@ -83,6 +83,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	private JLabel statusLabel;
 	private MagicTextField supplierCodeField;
 	private JLabel supplierNameLabel;
+	private JLabel paymentTermLabel;
 	private JLabel totalAmountLabel;
 	private JLabel totalCashPaymentsLabel;
 	private JLabel totalCreditCardPaymentsLabel;
@@ -225,6 +226,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		supplierCodeField.setText(purchasePayment.getSupplier().getCode());
 		supplierCodeField.setEnabled(!purchasePayment.isPosted());
 		supplierNameLabel.setText(purchasePayment.getSupplier().getName());
+		paymentTermLabel.setText(purchasePayment.getSupplier().getPaymentTerm().getName());
 		totalAmountLabel.setText(FormatterUtil.formatAmount(purchasePayment.getTotalAmount()));
 		totalCashPaymentsLabel.setText(FormatterUtil.formatAmount(purchasePayment.getTotalCashPayments()));
 		totalCreditCardPaymentsLabel.setText(
@@ -268,6 +270,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		supplierCodeField.setEnabled(true);
 		supplierCodeField.setText(null);
 		supplierNameLabel.setText(null);
+		paymentTermLabel.setText(null);
 		selectSupplierButton.setEnabled(true);
 		
 		receivingReceiptsTable.clearDisplay();
@@ -400,6 +403,21 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		supplierNameLabel = ComponentUtil.createLabel(190, "");
 		
 		mainPanel.add(createSupplierPanel(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Payment Term:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentTermLabel = ComponentUtil.createLabel(100);
+		mainPanel.add(paymentTermLabel, c);
 		
 		currentRow++;
 		
