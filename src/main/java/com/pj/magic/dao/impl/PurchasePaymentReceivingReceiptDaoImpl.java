@@ -24,14 +24,14 @@ public class PurchasePaymentReceivingReceiptDaoImpl extends MagicDao implements 
 	private static final String BASE_SELECT_SQL =
 			"   select a.ID, SUPPLIER_PAYMENT_ID, RECEIVING_RECEIPT_ID,"
 			+ " b.RECEIVING_RECEIPT_NO, b.RECEIVED_DT, b.VAT_INCLUSIVE, b.VAT_RATE, b.REFERENCE_NO"
-			+ " from SUPP_PAYMENT_RECV_RCPT a"
+			+ " from PURCHASE_PAYMENT_RECEIVING_RECEIPT a"
 			+ " join RECEIVING_RECEIPT b"
 			+ "   on b.ID = a.RECEIVING_RECEIPT_ID";
 	
 	private PurchasePaymentReceivingReceiptRowMapper rowMapper = new PurchasePaymentReceivingReceiptRowMapper();
 	
 	private static final String INSERT_SQL =
-			"insert into SUPP_PAYMENT_RECV_RCPT"
+			"insert into PURCHASE_PAYMENT_RECEIVING_RECEIPT"
 			+ " (SUPPLIER_PAYMENT_ID, RECEIVING_RECEIPT_ID) values (?, ?)";
 	
 	@Override
@@ -67,14 +67,14 @@ public class PurchasePaymentReceivingReceiptDaoImpl extends MagicDao implements 
 	}
 
 	private static final String DELETE_ALL_BY_SUPPLIER_PAYMENT_SQL = 
-			"delete from SUPP_PAYMENT_RECV_RCPT where SUPPLIER_PAYMENT_ID = ?";
+			"delete from PURCHASE_PAYMENT_RECEIVING_RECEIPT where SUPPLIER_PAYMENT_ID = ?";
 	
 	@Override
 	public void deleteAllByPurchasePayment(PurchasePayment purchasePayment) {
 		getJdbcTemplate().update(DELETE_ALL_BY_SUPPLIER_PAYMENT_SQL, purchasePayment.getId());
 	}
 
-	private static final String DELETE_SQL = "delete from SUPP_PAYMENT_RECV_RCPT where ID = ?";
+	private static final String DELETE_SQL = "delete from PURCHASE_PAYMENT_RECEIVING_RECEIPT where ID = ?";
 	
 	@Override
 	public void delete(PurchasePaymentReceivingReceipt paymentReceivingReceipt) {

@@ -10,3 +10,6 @@ alter table PURCHASE_PAYMENT drop foreign key SUPPLIER_PAYMENT$FK, add constrain
 alter table PURCHASE_PAYMENT drop foreign key SUPPLIER_PAYMENT$FK2, add constraint PURCHASE_PAYMENT$FK2 foreign key (POST_BY) references USER (ID);
 alter table PURCHASE_PAYMENT drop foreign key SUPPLIER_PAYMENT$FK3, add constraint PURCHASE_PAYMENT$FK3 foreign key (ENCODER) references USER (ID);
 alter table PURCHASE_PAYMENT drop foreign key SUPPLIER_PAYMENT$FK4, add constraint PURCHASE_PAYMENT$FK4 foreign key (CANCEL_BY) references USER (ID);
+
+rename table SUPP_PAYMENT_RECV_RCPT to PURCHASE_PAYMENT_RECEIVING_RECEIPT;
+

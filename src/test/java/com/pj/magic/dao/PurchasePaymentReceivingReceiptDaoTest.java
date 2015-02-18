@@ -55,7 +55,7 @@ public class PurchasePaymentReceivingReceiptDaoTest extends IntegrationTest {
 		insertTestReceivingReceipt();
 		insertTestPurchasePayment();
 		
-		jdbcTemplate.update("insert into SUPP_PAYMENT_RECV_RCPT (ID, SUPPLIER_PAYMENT_ID,"
+		jdbcTemplate.update("insert into PURCHASE_PAYMENT_RECEIVING_RECEIPT (ID, SUPPLIER_PAYMENT_ID,"
 				+ " RECEIVING_RECEIPT_ID) values (1, 1, 1)");
 	}
 

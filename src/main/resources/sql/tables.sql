@@ -713,7 +713,7 @@ create table PURCHASE_PAYMENT (
   constraint PURCHASE_PAYMENT$FK4 foreign key (CANCEL_BY) references USER (ID)
 );
 
-create table SUPP_PAYMENT_RECV_RCPT (
+create table PURCHASE_PAYMENT_RECEIVING_RECEIPT (
   ID integer auto_increment,
   SUPPLIER_PAYMENT_ID integer not null,
   RECEIVING_RECEIPT_ID integer not null,
