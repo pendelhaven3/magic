@@ -231,11 +231,11 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			" and a.CANCEL_IND = 'N'"
 			+ " and not exists("
 			+ "   select 1"
-			+ "   from SUPP_PAYMENT_RECV_RCPT sprr"
-			+ "   join SUPPLIER_PAYMENT sp"
-			+ "     on sp.ID = sprr.SUPPLIER_PAYMENT_ID"
-			+ "   where sprr.RECEIVING_RECEIPT_ID = a.ID"
-			+ "   and sp.POST_IND = 'Y'"
+			+ "   from PURCHASE_PAYMENT_RECEIVING_RECEIPT pprr"
+			+ "   join PURCHASE_PAYMENT pp"
+			+ "     on pp.ID = pprr.PURCHASE_PAYMENT_ID"
+			+ "   where pprr.RECEIVING_RECEIPT_ID = a.ID"
+			+ "   and pp.POST_IND = 'Y'"
 			+ " )"
 			+ " and a.RECEIVED_DT >= '2015-01-01'";
 	
@@ -290,11 +290,11 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			+ " and a.CANCEL_IND = 'N'"
 			+ " and not exists ("
 			+ "   select 1"
-			+ "   from SUPP_PAYMENT_RECV_RCPT sprr"
-			+ "   join SUPPLIER_PAYMENT pay"
-			+ "     on pay.ID = sprr.SUPPLIER_PAYMENT_ID"
-			+ "   where sprr.RECEIVING_RECEIPT_ID = a.ID"
-			+ "   and pay.CANCEL_IND = 'N'"
+			+ "   from PURCHASE_PAYMENT_RECEIVING_RECEIPT pprr"
+			+ "   join PURCHASE_PAYMENT pp"
+			+ "     on pp.ID = pprr.PURCHASE_PAYMENT_ID"
+			+ "   where pprr.RECEIVING_RECEIPT_ID = a.ID"
+			+ "   and pp.CANCEL_IND = 'N'"
 			+ " )"
 			+ " and a.RECEIVED_DT >= '2015-01-01'";
 	
