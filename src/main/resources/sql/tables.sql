@@ -715,10 +715,10 @@ create table PURCHASE_PAYMENT (
 
 create table PURCHASE_PAYMENT_RECEIVING_RECEIPT (
   ID integer auto_increment,
-  SUPPLIER_PAYMENT_ID integer not null,
+  PURCHASE_PAYMENT_ID integer not null,
   RECEIVING_RECEIPT_ID integer not null,
   constraint PURCHASE_PAYMENT_RECEIVING_RECEIPT$PK primary key (ID),
-  constraint PURCHASE_PAYMENT_RECEIVING_RECEIPT$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
+  constraint PURCHASE_PAYMENT_RECEIVING_RECEIPT$FK foreign key (PURCHASE_PAYMENT_ID) references PURCHASE_PAYMENT (ID),
   constraint PURCHASE_PAYMENT_RECEIVING_RECEIPT$FK2 foreign key (RECEIVING_RECEIPT_ID) references RECEIVING_RECEIPT (ID)
 );
 
