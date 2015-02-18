@@ -109,6 +109,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private MagicToolBarButton addItemButton;
 	private MagicToolBarButton deleteItemButton;
 	private MagicToolBarButton postButton;
+	private MagicToolBarButton showSalesByManufacturerButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -413,6 +414,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		postButton.setEnabled(!salesRequisition.isPosted());
 		addItemButton.setEnabled(!salesRequisition.isPosted());
 		deleteItemButton.setEnabled(!salesRequisition.isPosted());
+		showSalesByManufacturerButton.setEnabled(true);
 	}
 
 	private void updateTransactionDateField() {
@@ -444,6 +446,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		postButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
+		showSalesByManufacturerButton.setEnabled(false);
 	}
 
 	private java.awt.Component createCustomerNamePanel() {
@@ -904,16 +907,16 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		
 		toolBar.add(postButton);
 		
-		MagicToolBarButton showByManufacturerTotalButton = 
+		showSalesByManufacturerButton = 
 				new MagicToolBarButton("factory", "Show Sales Items Total By Manufacturer");
-		showByManufacturerTotalButton.addActionListener(new ActionListener() {
+		showSalesByManufacturerButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				showSalesByManufacturerDialog(salesRequisition);
 			}
 		});
-		toolBar.add(showByManufacturerTotalButton);
+		toolBar.add(showSalesByManufacturerButton);
 	}
 
 	private void showSalesByManufacturerDialog(SalesRequisition salesRequisition) {
