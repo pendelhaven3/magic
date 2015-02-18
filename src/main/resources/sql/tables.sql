@@ -784,15 +784,15 @@ create table SUPP_PAYMENT_PAYMNT_ADJ (
   constraint SUPP_PAYMENT_PAYMNT_ADJ$FK2 foreign key (PURCHASE_PAYMENT_ADJ_TYPE_ID) references PURCHASE_PAYMENT_ADJ_TYPE (ID)
 );
 
-create table SUPP_PAYMENT_BANK_TRANSFER (
+create table PURCHASE_PAYMENT_BANK_TRANSFER (
   ID integer auto_increment,
-  SUPPLIER_PAYMENT_ID integer not null,
+  PURCHASE_PAYMENT_ID integer not null,
   BANK varchar(20) not null,
   REFERENCE_NO varchar(20) not null,
   AMOUNT numeric(10, 2) not null,
   TRANSFER_DT date not null,
-  constraint SUPP_PAYMENT_BANK_TRANSFER$PK primary key (ID),
-  constraint SUPP_PAYMENT_BANK_TRANSFER$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID)
+  constraint PURCHASE_PAYMENT_BANK_TRANSFER$PK primary key (ID),
+  constraint PURCHASE_PAYMENT_BANK_TRANSFER$FK foreign key (PURCHASE_PAYMENT_ID) references PURCHASE_PAYMENT (ID)
 );
 
 create table PURCHASE_RETURN (

@@ -44,8 +44,8 @@ public class PurchasePaymentBankTransferDaoTest extends IntegrationTest {
 	private void insertTestBankTransfer() {
 		insertTestPurchasePayment();
 		
-		jdbcTemplate.update("insert into SUPP_PAYMENT_BANK_TRANSFER"
-				+ " (ID, SUPPLIER_PAYMENT_ID, BANK, AMOUNT, TRANSFER_DT, REFERENCE_NO)"
+		jdbcTemplate.update("insert into PURCHASE_PAYMENT_BANK_TRANSFER"
+				+ " (ID, PURCHASE_PAYMENT_ID, BANK, AMOUNT, TRANSFER_DT, REFERENCE_NO)"
 				+ " values"
 				+ " (1, 1, 'BANK', 100, now(), 'REF_NO')");
 	}
