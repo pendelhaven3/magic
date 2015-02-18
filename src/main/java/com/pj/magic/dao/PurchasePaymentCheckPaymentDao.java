@@ -12,8 +12,6 @@ public interface PurchasePaymentCheckPaymentDao {
 
 	List<PurchasePaymentCheckPayment> findAllByPurchasePayment(PurchasePayment purchasePayment);
 
-	void deleteAllByPurchasePayment(PurchasePayment purchasePayment);
-
 	void delete(PurchasePaymentCheckPayment checkPayment);
 
 	List<PurchasePaymentCheckPayment> search(
