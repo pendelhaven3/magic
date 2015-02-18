@@ -773,15 +773,15 @@ create table PURCHASE_PAYMENT_ADJUSTMENT (
   constraint PURCHASE_PAYMENT_ADJUSTMENT$FK3 foreign key (POST_BY) references USER (ID)
 );
 
-create table SUPP_PAYMENT_PAYMNT_ADJ (
+create table PURCHASE_PAYMENT_PAYMENT_ADJUSTMENT (
   ID integer auto_increment,
-  SUPPLIER_PAYMENT_ID integer not null,
+  PURCHASE_PAYMENT_ID integer not null,
   PURCHASE_PAYMENT_ADJ_TYPE_ID integer not null,
   REFERENCE_NO varchar(30) not null,
   AMOUNT numeric(10, 2) not null,
-  constraint SUPP_PAYMENT_PAYMNT_ADJ$PK primary key (ID),
-  constraint SUPP_PAYMENT_PAYMNT_ADJ$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
-  constraint SUPP_PAYMENT_PAYMNT_ADJ$FK2 foreign key (PURCHASE_PAYMENT_ADJ_TYPE_ID) references PURCHASE_PAYMENT_ADJ_TYPE (ID)
+  constraint PURCHASE_PAYMENT_PAYMENT_ADJUSTMENT$PK primary key (ID),
+  constraint PURCHASE_PAYMENT_PAYMENT_ADJUSTMENT$FK foreign key (PURCHASE_PAYMENT_ID) references PURCHASE_PAYMENT (ID),
+  constraint PURCHASE_PAYMENT_PAYMENT_ADJUSTMENT$FK2 foreign key (PURCHASE_PAYMENT_ADJ_TYPE_ID) references PURCHASE_PAYMENT_ADJ_TYPE (ID)
 );
 
 create table PURCHASE_PAYMENT_BANK_TRANSFER (

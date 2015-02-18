@@ -23,9 +23,9 @@ public class PurchasePaymentPaymentAdjustmentDaoImpl extends MagicDao
 		implements PurchasePaymentPaymentAdjustmentDao {
 
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, SUPPLIER_PAYMENT_ID, ADJUSTMENT_TYPE_ID, REFERENCE_NO, a.AMOUNT,"
+			"select a.ID, PURCHASE_PAYMENT_ID, PURCHASE_PAYMENT_ADJ_TYPE_ID, REFERENCE_NO, a.AMOUNT,"
 			+ " b.CODE as ADJUSTMENT_TYPE_CODE, b.DESCRIPTION as ADJUSTMENT_TYPE_DESCRIPTION"
-			+ " from SUPP_PAYMENT_PAYMNT_ADJ a"
+			+ " from PURCHASE_PAYMENT_PAYMENT_ADJUSTMENT a"
 			+ " join PURCHASE_PAYMENT_ADJ_TYPE b"
 			+ "   on b.ID = a.PURCHASE_PAYMENT_ADJ_TYPE_ID";
 	
@@ -41,8 +41,8 @@ public class PurchasePaymentPaymentAdjustmentDaoImpl extends MagicDao
 	}
 
 	private static final String INSERT_SQL = 
-			"insert into SUPP_PAYMENT_PAYMNT_ADJ"
-			+ " (SUPPLIER_PAYMENT_ID, PURCHASE_PAYMENT_ADJ_TYPE_ID, REFERENCE_NO, AMOUNT) values (?, ?, ?, ?)";
+			"insert into PURCHASE_PAYMENT_PAYMENT_ADJUSTMENT"
+			+ " (PURCHASE_PAYMENT_ID, PURCHASE_PAYMENT_ADJ_TYPE_ID, REFERENCE_NO, AMOUNT) values (?, ?, ?, ?)";
 	
 	private void insert(final PurchasePaymentPaymentAdjustment adjustment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -64,8 +64,8 @@ public class PurchasePaymentPaymentAdjustmentDaoImpl extends MagicDao
 	}
 
 	private static final String UPDATE_SQL = 
-			"update SUPP_PAYMENT_PAYMNT_ADJ"
-			+ " set ADJUSTMENT_TYPE_ID = ?, REFERENCE_NO = ?, AMOUNT = ?"
+			"update PURCHASE_PAYMENT_PAYMENT_ADJUSTMENT"
+			+ " set PURCHASE_PAYMENT_ADJ_TYPE_ID = ?, REFERENCE_NO = ?, AMOUNT = ?"
 			+ " where ID = ?";
 	
 	private void update(PurchasePaymentPaymentAdjustment adjustment) {
@@ -76,12 +76,12 @@ public class PurchasePaymentPaymentAdjustmentDaoImpl extends MagicDao
 				adjustment.getId());
 	}
 
-	private static final String FIND_ALL_BY_SUPPLIER_PAYMENT_SQL = BASE_SELECT_SQL
-			+ " where a.SUPPLIER_PAYMENT_ID = ?";
+	private static final String FIND_ALL_BY_PURCHASE_PAYMENT_SQL = BASE_SELECT_SQL
+			+ " where a.PURCHASE_PAYMENT_ID = ?";
 	
 	@Override
 	public List<PurchasePaymentPaymentAdjustment> findAllByPurchasePayment(PurchasePayment purchasePayment) {
-		return getJdbcTemplate().query(FIND_ALL_BY_SUPPLIER_PAYMENT_SQL, adjustmentRowMapper, purchasePayment.getId());
+		return getJdbcTemplate().query(FIND_ALL_BY_PURCHASE_PAYMENT_SQL, adjustmentRowMapper, purchasePayment.getId());
 	}
 
 	private class PurchasePaymentAdjustmentRowMapper implements RowMapper<PurchasePaymentPaymentAdjustment> {
@@ -90,10 +90,10 @@ public class PurchasePaymentPaymentAdjustmentDaoImpl extends MagicDao
 		public PurchasePaymentPaymentAdjustment mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PurchasePaymentPaymentAdjustment adjustment = new PurchasePaymentPaymentAdjustment();
 			adjustment.setId(rs.getLong("ID"));
-			adjustment.setParent(new PurchasePayment(rs.getLong("SUPPLIER_PAYMENT_ID")));
+			adjustment.setParent(new PurchasePayment(rs.getLong("PURCHASE_PAYMENT_ID")));
 			
 			PurchasePaymentAdjustmentType adjustmentType = new PurchasePaymentAdjustmentType();
-			adjustmentType.setId(rs.getLong("ADJUSTMENT_TYPE_ID"));
+			adjustmentType.setId(rs.getLong("PURCHASE_PAYMENT_ADJ_TYPE_ID"));
 			adjustmentType.setCode(rs.getString("ADJUSTMENT_TYPE_CODE"));
 			adjustmentType.setDescription(rs.getString("ADJUSTMENT_TYPE_DESCRIPTION"));
 			adjustment.setAdjustmentType(adjustmentType);
@@ -105,15 +105,15 @@ public class PurchasePaymentPaymentAdjustmentDaoImpl extends MagicDao
 		
 	}
 	
-	private static final String DELETE_ALL_BY_SUPPLIER_PAYMENT_SQL =
-			"delete from SUPP_PAYMENT_PAYMNT_ADJ where SUPPLIER_PAYMENT_ID = ?";
+	private static final String DELETE_ALL_BY_PURCHASE_PAYMENT_SQL =
+			"delete from PURCHASE_PAYMENT_PAYMENT_ADJUSTMENT where PURCHASE_PAYMENT_ID = ?";
 
 	@Override
 	public void deleteAllByPurchasePayment(PurchasePayment purchasePayment) {
-		getJdbcTemplate().update(DELETE_ALL_BY_SUPPLIER_PAYMENT_SQL, purchasePayment.getId());
+		getJdbcTemplate().update(DELETE_ALL_BY_PURCHASE_PAYMENT_SQL, purchasePayment.getId());
 	}
 
-	private static final String DELETE_SQL = "delete from SUPP_PAYMENT_PAYMNT_ADJ where ID = ?";
+	private static final String DELETE_SQL = "delete from PURCHASE_PAYMENT_PAYMENT_ADJUSTMENT where ID = ?";
 	
 	@Override
 	public void delete(PurchasePaymentPaymentAdjustment paymentAdjustment) {
