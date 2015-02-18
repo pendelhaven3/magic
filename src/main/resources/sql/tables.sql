@@ -717,9 +717,9 @@ create table PURCHASE_PAYMENT_RECEIVING_RECEIPT (
   ID integer auto_increment,
   SUPPLIER_PAYMENT_ID integer not null,
   RECEIVING_RECEIPT_ID integer not null,
-  constraint SUPP_PAYMENT_RECV_RCPT$PK primary key (ID),
-  constraint SUPP_PAYMENT_RECV_RCPT$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
-  constraint SUPP_PAYMENT_RECV_RCPT$FK2 foreign key (RECEIVING_RECEIPT_ID) references RECEIVING_RECEIPT (ID)
+  constraint PURCHASE_PAYMENT_RECEIVING_RECEIPT$PK primary key (ID),
+  constraint PURCHASE_PAYMENT_RECEIVING_RECEIPT$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
+  constraint PURCHASE_PAYMENT_RECEIVING_RECEIPT$FK2 foreign key (RECEIVING_RECEIPT_ID) references RECEIVING_RECEIPT (ID)
 );
 
 create table SUPP_PAYMENT_CASH_PYMNT (
