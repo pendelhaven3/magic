@@ -18,6 +18,14 @@ public class PurchasePaymentAdjustment {
 	private User postedBy;
 	private String remarks;
 
+	public PurchasePaymentAdjustment() {
+		// default constructor
+	}
+	
+	public PurchasePaymentAdjustment(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}

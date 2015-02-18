@@ -26,15 +26,16 @@ import com.pj.magic.util.DbUtil;
 @Repository
 public class PurchasePaymentAdjustmentDaoImpl extends MagicDao implements PurchasePaymentAdjustmentDao {
 
-	private static final String PURCHASE_PAYMENT_ADJUSTMENT_NUMBER_SEQUENCE = "SUPP_PAYMENT_ADJUSTMENT_NO_SEQ";
+	private static final String PURCHASE_PAYMENT_ADJUSTMENT_NUMBER_SEQUENCE = 
+			"PURCHASE_PAYMENT_ADJUSTMENT_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, SUPP_PAYMENT_ADJUSTMENT_NO, SUPPLIER_ID, PURCHASE_PAYMENT_ADJ_TYPE_ID, AMOUNT,"
+			"select a.ID, PURCHASE_PAYMENT_ADJUSTMENT_NO, SUPPLIER_ID, PURCHASE_PAYMENT_ADJ_TYPE_ID, AMOUNT,"
 			+ " POST_IND, POST_DT, POST_BY, a.REMARKS,"
 			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
 			+ " d.CODE as ADJUSTMENT_TYPE_CODE"
-			+ " from SUPP_PAYMENT_ADJUSTMENT a"
+			+ " from PURCHASE_PAYMENT_ADJUSTMENT a"
 			+ " join SUPPLIER b"
 			+ "   on b.ID = a.SUPPLIER_ID"
 			+ " left join USER c"
@@ -66,7 +67,7 @@ public class PurchasePaymentAdjustmentDaoImpl extends MagicDao implements Purcha
 	}
 
 	private static final String UPDATE_SQL = 
-			"update SUPP_PAYMENT_ADJUSTMENT set SUPPLIER_ID = ?, PURCHASE_PAYMENT_ADJ_TYPE_ID = ?, AMOUNT = ?,"
+			"update PURCHASE_PAYMENT_ADJUSTMENT set SUPPLIER_ID = ?, PURCHASE_PAYMENT_ADJ_TYPE_ID = ?, AMOUNT = ?,"
 			+ " POST_IND = ?, POST_DT = ?, POST_BY = ?, REMARKS = ? where ID = ?";
 	
 	private void update(PurchasePaymentAdjustment paymentAdjustment) {
@@ -82,8 +83,8 @@ public class PurchasePaymentAdjustmentDaoImpl extends MagicDao implements Purcha
 	}
 
 	private static final String INSERT_SQL =
-			"insert into SUPP_PAYMENT_ADJUSTMENT"
-			+ " (SUPP_PAYMENT_ADJUSTMENT_NO, SUPPLIER_ID, PURCHASE_PAYMENT_ADJ_TYPE_ID, AMOUNT, REMARKS)"
+			"insert into PURCHASE_PAYMENT_ADJUSTMENT"
+			+ " (PURCHASE_PAYMENT_ADJUSTMENT_NO, SUPPLIER_ID, PURCHASE_PAYMENT_ADJ_TYPE_ID, AMOUNT, REMARKS)"
 			+ " values"
 			+ " (?, ?, ?, ?, ?)";
 	
@@ -119,7 +120,7 @@ public class PurchasePaymentAdjustmentDaoImpl extends MagicDao implements Purcha
 		public PurchasePaymentAdjustment mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PurchasePaymentAdjustment paymentAdjustment = new PurchasePaymentAdjustment();
 			paymentAdjustment.setId(rs.getLong("ID"));
-			paymentAdjustment.setPurchasePaymentAdjustmentNumber(rs.getLong("SUPP_PAYMENT_ADJUSTMENT_NO"));
+			paymentAdjustment.setPurchasePaymentAdjustmentNumber(rs.getLong("PURCHASE_PAYMENT_ADJUSTMENT_NO"));
 			paymentAdjustment.setAmount(rs.getBigDecimal("AMOUNT"));
 			
 			Supplier supplier = new Supplier();
@@ -146,13 +147,13 @@ public class PurchasePaymentAdjustmentDaoImpl extends MagicDao implements Purcha
 		
 	}
 
-	private static final String FIND_BY_SUPPLIER_PAYMENT_ADJUSTMENT_NUMBER_SQL = BASE_SELECT_SQL
-			+ " where a.SUPP_PAYMENT_ADJUSTMENT_NO = ?";
+	private static final String FIND_BY_PURCHASE_PAYMENT_ADJUSTMENT_NUMBER_SQL = BASE_SELECT_SQL
+			+ " where a.PURCHASE_PAYMENT_ADJUSTMENT_NO = ?";
 	
 	@Override
 	public PurchasePaymentAdjustment findByPurchasePaymentAdjustmentNumber(long purchasePaymentAdjustmentNumber) {
 		try {
-			return getJdbcTemplate().queryForObject(FIND_BY_SUPPLIER_PAYMENT_ADJUSTMENT_NUMBER_SQL, 
+			return getJdbcTemplate().queryForObject(FIND_BY_PURCHASE_PAYMENT_ADJUSTMENT_NUMBER_SQL, 
 					paymentAdjustmentRowMapper, purchasePaymentAdjustmentNumber);
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
@@ -167,7 +168,7 @@ public class PurchasePaymentAdjustmentDaoImpl extends MagicDao implements Purcha
 		List<Object> params = new ArrayList<>();
 		
 		if (criteria.getPaymentAdjustmentNumber() != null) {
-			sql.append(" and a.SUPP_PAYMENT_ADJUSTMENT_NO = ?");
+			sql.append(" and a.PURCHASE_PAYMENT_ADJUSTMENT_NO = ?");
 			params.add(criteria.getPaymentAdjustmentNumber());
 		}
 		
@@ -201,7 +202,7 @@ public class PurchasePaymentAdjustmentDaoImpl extends MagicDao implements Purcha
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDateTo()));
 		}
 		
-		sql.append(" order by SUPP_PAYMENT_ADJUSTMENT_NO desc");
+		sql.append(" order by PURCHASE_PAYMENT_ADJUSTMENT_NO desc");
 		
 		return getJdbcTemplate().query(sql.toString(), paymentAdjustmentRowMapper, params.toArray());
 	}

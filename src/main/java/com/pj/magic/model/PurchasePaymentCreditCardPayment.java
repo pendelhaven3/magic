@@ -15,6 +15,14 @@ public class PurchasePaymentCreditCardPayment {
 	private Date transactionDate;
 	private String approvalCode;
 
+	public PurchasePaymentCreditCardPayment() {
+		// default constructor
+	}
+
+	public PurchasePaymentCreditCardPayment(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}

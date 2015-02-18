@@ -25,11 +25,11 @@ import com.pj.magic.util.DbUtil;
 public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements PurchasePaymentBankTransferDao {
 
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, SUPPLIER_PAYMENT_ID, BANK, AMOUNT, REFERENCE_NO, TRANSFER_DT,"
-			+ " b.SUPPLIER_PAYMENT_NO, b.SUPPLIER_ID, c.NAME as SUPPLIER_NAME"
-			+ " from SUPP_PAYMENT_BANK_TRANSFER a"
-			+ " join SUPPLIER_PAYMENT b"
-			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
+			"select a.ID, PURCHASE_PAYMENT_ID, BANK, AMOUNT, REFERENCE_NO, TRANSFER_DT,"
+			+ " b.PURCHASE_PAYMENT_NO, b.SUPPLIER_ID, c.NAME as SUPPLIER_NAME"
+			+ " from PURCHASE_PAYMENT_BANK_TRANSFER a"
+			+ " join PURCHASE_PAYMENT b"
+			+ "   on b.ID = a.PURCHASE_PAYMENT_ID"
 			+ " join SUPPLIER c"
 			+ "   on c.ID = b.SUPPLIER_ID";
 	
@@ -46,8 +46,8 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 	}
 
 	private static final String INSERT_SQL = 
-			"insert into SUPP_PAYMENT_BANK_TRANSFER"
-			+ " (SUPPLIER_PAYMENT_ID, BANK, AMOUNT, REFERENCE_NO, TRANSFER_DT) values (?, ?, ?, ?, ?)";
+			"insert into PURCHASE_PAYMENT_BANK_TRANSFER"
+			+ " (PURCHASE_PAYMENT_ID, BANK, AMOUNT, REFERENCE_NO, TRANSFER_DT) values (?, ?, ?, ?, ?)";
 	
 	private void insert(final PurchasePaymentBankTransfer bankTransfer) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -70,7 +70,7 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 	}
 
 	private static final String UPDATE_SQL = 
-			"update SUPP_PAYMENT_BANK_TRANSFER"
+			"update PURCHASE_PAYMENT_BANK_TRANSFER"
 			+ " set BANK = ?, AMOUNT = ?, REFERENCE_NO = ?, TRANSFER_DT = ?"
 			+ " where ID = ?";
 	
@@ -83,12 +83,12 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 				bankTransfer.getId());
 	}
 
-	private static final String FIND_ALL_BY_SUPPLIER_PAYMENT_SQL = BASE_SELECT_SQL
-			+ " where a.SUPPLIER_PAYMENT_ID = ?";
+	private static final String FIND_ALL_BY_PURCHASE_PAYMENT_SQL = BASE_SELECT_SQL
+			+ " where a.PURCHASE_PAYMENT_ID = ?";
 	
 	@Override
 	public List<PurchasePaymentBankTransfer> findAllByPurchasePayment(PurchasePayment purchasePayment) {
-		return getJdbcTemplate().query(FIND_ALL_BY_SUPPLIER_PAYMENT_SQL, bankTransferRowMapper, 
+		return getJdbcTemplate().query(FIND_ALL_BY_PURCHASE_PAYMENT_SQL, bankTransferRowMapper, 
 				purchasePayment.getId());
 	}
 
@@ -100,8 +100,8 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 			bankTransfer.setId(rs.getLong("ID"));
 			
 			PurchasePayment payment = new PurchasePayment();
-			payment.setId(rs.getLong("SUPPLIER_PAYMENT_ID"));
-			payment.setPurchasePaymentNumber(rs.getLong("SUPPLIER_PAYMENT_NO"));
+			payment.setId(rs.getLong("PURCHASE_PAYMENT_ID"));
+			payment.setPurchasePaymentNumber(rs.getLong("PURCHASE_PAYMENT_NO"));
 			
 			Supplier supplier = new Supplier();
 			supplier.setId(rs.getLong("SUPPLIER_ID"));
@@ -120,15 +120,7 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 		
 	}
 	
-	private static final String DELETE_ALL_BY_PURCHASE_PAYMENT_SQL =
-			"delete from SUPP_PAYMENT_BANK_TRANSFER where SUPPLIER_PAYMENT_ID = ?";
-
-	@Override
-	public void deleteAllByPurchasePayment(PurchasePayment purchasePayment) {
-		getJdbcTemplate().update(DELETE_ALL_BY_PURCHASE_PAYMENT_SQL, purchasePayment.getId());
-	}
-	
-	private static final String DELETE_SQL = "delete from SUPP_PAYMENT_BANK_TRANSFER where ID = ?";
+	private static final String DELETE_SQL = "delete from PURCHASE_PAYMENT_BANK_TRANSFER where ID = ?";
 	
 	@Override
 	public void delete(PurchasePaymentBankTransfer bankTransfer) {
@@ -162,7 +154,7 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
-		sql.append(" order by a.TRANSFER_DT, c.NAME, b.SUPPLIER_PAYMENT_NO, a.BANK");
+		sql.append(" order by a.TRANSFER_DT, c.NAME, b.PURCHASE_PAYMENT_NO, a.BANK");
 		
 		return getJdbcTemplate().query(sql.toString(), bankTransferRowMapper, params.toArray());
 	}

@@ -15,6 +15,14 @@ public class PurchasePaymentBankTransfer {
 	private String referenceNumber;
 	private Date transferDate;
 
+	public PurchasePaymentBankTransfer() {
+		// default constructor
+	}
+	
+	public PurchasePaymentBankTransfer(long id) {
+		this.id = id;
+	}
+	
 	@Override
 	public int hashCode() {
 		return new HashCodeBuilder()

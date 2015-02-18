@@ -14,6 +14,14 @@ public class PurchasePaymentCashPayment {
 	private Date paidDate;
 	private User paidBy;
 
+	public PurchasePaymentCashPayment() {
+		// default constructor
+	}
+	
+	public PurchasePaymentCashPayment(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}

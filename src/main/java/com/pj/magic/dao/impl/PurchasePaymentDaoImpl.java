@@ -26,16 +26,16 @@ import com.pj.magic.util.DbUtil;
 @Repository
 public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentDao {
 
-	private static final String PURCHASE_PAYMENT_NUMBER_SEQUENCE = "SUPPLIER_PAYMENT_NO_SEQ";
+	private static final String PURCHASE_PAYMENT_NUMBER_SEQUENCE = "PURCHASE_PAYMENT_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, SUPPLIER_PAYMENT_NO, SUPPLIER_ID, ENCODER,"
+			"select a.ID, PURCHASE_PAYMENT_NO, SUPPLIER_ID, ENCODER,"
 			+ " POST_IND, POST_DT, POST_BY,"
 			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME, "
 			+ " c.USERNAME as ENCODER_USERNAME,"
 			+ " d.USERNAME as POST_BY_USERNAME,"
 			+ " e.NAME as PAYMENT_TERM_NAME"
-			+ " from SUPPLIER_PAYMENT a"
+			+ " from PURCHASE_PAYMENT a"
 			+ " join SUPPLIER b"
 			+ "   on b.ID = a.SUPPLIER_ID"
 			+ " join USER c"
@@ -57,8 +57,8 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 	}
 
 	private static final String INSERT_SQL =
-			"insert into SUPPLIER_PAYMENT"
-			+ " (SUPPLIER_PAYMENT_NO, SUPPLIER_ID, CREATE_DT, ENCODER) values (?, ?, curdate(), ?)";
+			"insert into PURCHASE_PAYMENT"
+			+ " (PURCHASE_PAYMENT_NO, SUPPLIER_ID, CREATE_DT, ENCODER) values (?, ?, curdate(), ?)";
 	
 	private void insert(final PurchasePayment purchasePayment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -85,7 +85,7 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 	}
 	
 	private static final String UPDATE_SQL =
-			"update SUPPLIER_PAYMENT set SUPPLIER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
+			"update PURCHASE_PAYMENT set SUPPLIER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
 			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ? where ID = ?";
 	
 	private void update(PurchasePayment payment) {
@@ -134,7 +134,7 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 		}
 		
 		if (criteria.getPaymentNumber() != null) {
-			sql.append(" and a.SUPPLIER_PAYMENT_NO = ?");
+			sql.append(" and a.PURCHASE_PAYMENT_NO = ?");
 			params.add(criteria.getPaymentNumber());
 		}
 		
@@ -143,7 +143,7 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 		}
 		
-		sql.append(" order by a.SUPPLIER_PAYMENT_NO desc");
+		sql.append(" order by a.PURCHASE_PAYMENT_NO desc");
 		
 		return getJdbcTemplate().query(sql.toString(), purchasePaymentRowMapper, params.toArray());
 	}
@@ -154,7 +154,7 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 		public PurchasePayment mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PurchasePayment purchasePayment = new PurchasePayment();
 			purchasePayment.setId(rs.getLong("ID"));
-			purchasePayment.setPurchasePaymentNumber(rs.getLong("SUPPLIER_PAYMENT_NO"));
+			purchasePayment.setPurchasePaymentNumber(rs.getLong("PURCHASE_PAYMENT_NO"));
 			purchasePayment.setEncoder(new User(rs.getLong("ENCODER"), rs.getString("ENCODER_USERNAME")));
 			purchasePayment.setSupplier(mapSupplier(rs));
 			

@@ -6,7 +6,7 @@ import com.pj.magic.model.PurchasePaymentAdjustmentType;
 
 public interface PurchasePaymentAdjustmentTypeDao {
 
-	void save(PurchasePaymentAdjustmentType type);
+	void save(PurchasePaymentAdjustmentType adjustmentType);
 	
 	List<PurchasePaymentAdjustmentType> getAll();
 	
