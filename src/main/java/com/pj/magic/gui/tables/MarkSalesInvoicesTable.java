@@ -20,7 +20,6 @@ public class MarkSalesInvoicesTable extends MagicListTable {
 	public static final int ENCODER_COLUMN_INDEX = 3;
 	public static final int NET_AMOUNT_COLUMN_INDEX = 4;
 	public static final int MARK_COLUMN_INDEX = 5;
-	public static final int CANCEL_COLUMN_INDEX = 6;
 
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private MarkSalesInvoicesTableModel tableModel;
@@ -44,7 +43,6 @@ public class MarkSalesInvoicesTable extends MagicListTable {
 		columnModel.getColumn(ENCODER_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(NET_AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(MARK_COLUMN_INDEX).setPreferredWidth(50);
-		columnModel.getColumn(CANCEL_COLUMN_INDEX).setPreferredWidth(50);
 	}
 
 	public void update() {

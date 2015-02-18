@@ -34,7 +34,7 @@ public class MarkSalesInvoicePanel extends StandardMagicPanel {
 	
 	@Override
 	protected void initializeComponents() {
-		markButton = new JButton("Mark/Cancel Sales Invoices");
+		markButton = new JButton("Mark Sales Invoices");
 		markButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -92,7 +92,7 @@ public class MarkSalesInvoicePanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		markToolBarButton = new MagicToolBarButton("post", "Mark/Cancel Sales Invoices");
+		markToolBarButton = new MagicToolBarButton("post", "Mark Sales Invoices");
 		markToolBarButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -105,10 +105,10 @@ public class MarkSalesInvoicePanel extends StandardMagicPanel {
 	}
 
 	private void markSalesInvoices() {
-		if (confirm("Mark/Cancel Sales Invoices?")) {
+		if (confirm("Mark Sales Invoices?")) {
 			try {
-				salesInvoiceService.markOrCancelSalesInvoices(table.getSalesInvoices());
-				showMessage("Sales Invoices Marked/Cancelled");
+				salesInvoiceService.markSalesInvoices(table.getSalesInvoices());
+				showMessage("Sales Invoices Marked");
 				updateDisplay();
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);

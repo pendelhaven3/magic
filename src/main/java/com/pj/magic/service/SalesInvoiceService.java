@@ -24,7 +24,7 @@ public interface SalesInvoiceService {
 
 	List<SalesInvoice> getNewSalesInvoices();
 
-	void markOrCancelSalesInvoices(List<SalesInvoice> salesInvoices);
+	void markSalesInvoices(List<SalesInvoice> salesInvoices);
 
 	void save(SalesInvoiceItem item);
 

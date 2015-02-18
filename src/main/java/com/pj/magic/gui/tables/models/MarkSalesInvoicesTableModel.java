@@ -15,7 +15,7 @@ import com.pj.magic.util.FormatterUtil;
 public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 
 	private static final String[] COLUMN_NAMES = 
-		{"SI No.", "Transaction Date", "Customer", "Encoder", "Net Amount", "Mark", "Cancel"};
+		{"SI No.", "Transaction Date", "Customer", "Encoder", "Net Amount", "Mark"};
 	
 	private List<SalesInvoice> salesInvoices = new ArrayList<>();
 	
@@ -45,8 +45,6 @@ public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 			return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
 		case MarkSalesInvoicesTable.MARK_COLUMN_INDEX:
 			return salesInvoice.isMarked();
-		case MarkSalesInvoicesTable.CANCEL_COLUMN_INDEX:
-			return salesInvoice.isCancelled();
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
@@ -59,8 +57,7 @@ public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == MarkSalesInvoicesTable.MARK_COLUMN_INDEX ||
-				columnIndex == MarkSalesInvoicesTable.CANCEL_COLUMN_INDEX;
+		return columnIndex == MarkSalesInvoicesTable.MARK_COLUMN_INDEX;
 	}
 	
 	public void setSalesInvoices(List<SalesInvoice> salesInvoices) {
@@ -74,7 +71,6 @@ public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 		case MarkSalesInvoicesTable.NET_AMOUNT_COLUMN_INDEX:
 			return Number.class;
 		case MarkSalesInvoicesTable.MARK_COLUMN_INDEX:
-		case MarkSalesInvoicesTable.CANCEL_COLUMN_INDEX:
 			return Boolean.class;
 		default:
 			return Object.class;
@@ -87,21 +83,11 @@ public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case MarkSalesInvoicesTable.MARK_COLUMN_INDEX:
 			salesInvoice.setMarked(!salesInvoice.isMarked());
-			if (salesInvoice.isMarked()) {
-				salesInvoice.setCancelled(false);
-			}
-			break;
-		case MarkSalesInvoicesTable.CANCEL_COLUMN_INDEX:
-			salesInvoice.setCancelled(!salesInvoice.isCancelled());
-			if (salesInvoice.isCancelled()) {
-				salesInvoice.setMarked(false);
-			}
 			break;
 		default:
 			throw new RuntimeException("Setting invalid column index: " + columnIndex);
 		}
 		fireTableCellUpdated(rowIndex, MarkSalesInvoicesTable.MARK_COLUMN_INDEX);
-		fireTableCellUpdated(rowIndex, MarkSalesInvoicesTable.CANCEL_COLUMN_INDEX);
 	}
 
 	public List<SalesInvoice> getSalesInvoices() {

@@ -123,12 +123,10 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 
 	@Transactional
 	@Override
-	public void markOrCancelSalesInvoices(List<SalesInvoice> salesInvoices) {
+	public void markSalesInvoices(List<SalesInvoice> salesInvoices) {
 		for (SalesInvoice salesInvoice : salesInvoices) {
 			if (salesInvoice.isMarked()) {
 				mark(salesInvoice);
-			} else if (salesInvoice.isCancelled()) {
-				cancel(salesInvoice);
 			}
 		}
 	}
