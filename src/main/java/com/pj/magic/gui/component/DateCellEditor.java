@@ -1,10 +1,9 @@
-package com.pj.magic.gui.tables;
+package com.pj.magic.gui.component;
 
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.util.DateUtil;
 
 public class DateCellEditor extends MagicCellEditor {
