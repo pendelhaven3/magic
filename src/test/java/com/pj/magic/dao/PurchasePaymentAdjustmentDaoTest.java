@@ -71,7 +71,8 @@ public class PurchasePaymentAdjustmentDaoTest extends IntegrationTest {
 		insertTestSupplier();
 		insertTestPurchasePaymentAdjustmentType();
 		
-		jdbcTemplate.update("insert into SUPP_PAYMENT_ADJUSTMENT (ID, SUPP_PAYMENT_ADJUSTMENT_NO, SUPPLIER_ID,"
+		jdbcTemplate.update("insert into PURCHASE_PAYMENT_ADJUSTMENT"
+				+ " (ID, PURCHASE_PAYMENT_ADJUSTMENT_NO, SUPPLIER_ID,"
 				+ " PURCHASE_PAYMENT_ADJ_TYPE_ID, AMOUNT) values"
 				+ " (1, 1, 1, 1, 100)");
 	}
