@@ -167,19 +167,19 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 			return purchasePayment;
 		}
 		
+		private Supplier mapSupplier(ResultSet rs) throws SQLException {
+			Supplier supplier = new Supplier();
+			supplier.setId(rs.getLong("SUPPLIER_ID"));
+			supplier.setCode(rs.getString("SUPPLIER_CODE"));
+			supplier.setName(rs.getString("SUPPLIER_NAME"));
+			
+			PaymentTerm paymentTerm = new PaymentTerm();
+			paymentTerm.setName(rs.getString("PAYMENT_TERM_NAME"));
+			supplier.setPaymentTerm(paymentTerm);
+			
+			return supplier;
+		}
+		
 	}
 
-	public Supplier mapSupplier(ResultSet rs) throws SQLException {
-		Supplier supplier = new Supplier();
-		supplier.setId(rs.getLong("SUPPLIER_ID"));
-		supplier.setCode(rs.getString("SUPPLIER_CODE"));
-		supplier.setName(rs.getString("SUPPLIER_NAME"));
-		
-		PaymentTerm paymentTerm = new PaymentTerm();
-		paymentTerm.setName(rs.getString("PAYMENT_TERM_NAME"));
-		supplier.setPaymentTerm(paymentTerm);
-		
-		return supplier;
-	}
-	
 }
