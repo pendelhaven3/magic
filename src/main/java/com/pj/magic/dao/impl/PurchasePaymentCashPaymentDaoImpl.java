@@ -107,14 +107,6 @@ public class PurchasePaymentCashPaymentDaoImpl extends MagicDao implements Purch
 		
 	}
 	
-	private static final String DELETE_ALL_BY_PURCHASE_PAYMENT_SQL =
-			"delete from SUPP_PAYMENT_CASH_PYMNT where SUPPLIER_PAYMENT_ID = ?";
-
-	@Override
-	public void deleteAllByPurchasePayment(PurchasePayment purchasePayment) {
-		getJdbcTemplate().update(DELETE_ALL_BY_PURCHASE_PAYMENT_SQL, purchasePayment.getId());
-	}
-
 	private static final String DELETE_SQL = "delete from SUPP_PAYMENT_CASH_PYMNT where ID = ?";
 	
 	@Override

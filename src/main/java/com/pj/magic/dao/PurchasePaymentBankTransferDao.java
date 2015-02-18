@@ -12,8 +12,6 @@ public interface PurchasePaymentBankTransferDao {
 
 	List<PurchasePaymentBankTransfer> findAllByPurchasePayment(PurchasePayment purchasePayment);
 
-	void deleteAllByPurchasePayment(PurchasePayment purchasePayment);
-
 	void delete(PurchasePaymentBankTransfer bankTransfer);
 
 	List<PurchasePaymentBankTransfer> search(PurchasePaymentBankTransferSearchCriteria criteria);
