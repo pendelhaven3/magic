@@ -6,6 +6,14 @@ public class PurchasePaymentReceivingReceipt {
 	private PurchasePayment parent;
 	private ReceivingReceipt receivingReceipt;
 
+	public PurchasePaymentReceivingReceipt() {
+		// default constructor
+	}
+	
+	public PurchasePaymentReceivingReceipt(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}

@@ -26,6 +26,10 @@ public class PurchasePaymentAdjustmentType {
 		// default constructor
 	}
 	
+	public PurchasePaymentAdjustmentType(long id) {
+		this.id = id;
+	}
+	
 	public PurchasePaymentAdjustmentType(long id, String code) {
 		this.id = id;
 		this.code = code;

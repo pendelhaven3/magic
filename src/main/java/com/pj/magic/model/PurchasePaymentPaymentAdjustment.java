@@ -13,6 +13,14 @@ public class PurchasePaymentPaymentAdjustment {
 	private BigDecimal amount;
 	private String referenceNumber;
 
+	public PurchasePaymentPaymentAdjustment() {
+		// default constructor
+	}
+	
+	public PurchasePaymentPaymentAdjustment(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}

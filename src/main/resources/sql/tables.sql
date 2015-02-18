@@ -580,9 +580,9 @@ create table PAYMENT_PAYMENT_ADJUSTMENT (
   ADJUSTMENT_TYPE_ID integer not null,
   REFERENCE_NO varchar(30) null,
   AMOUNT numeric(10, 2) not null,
-  constraint PAYMENT_ADJUSTMENT$PK primary key (ID),
-  constraint PAYMENT_ADJUSTMENT$FK foreign key (PAYMENT_ID) references PAYMENT (ID),
-  constraint PAYMENT_ADJUSTMENT$FK2 foreign key (ADJUSTMENT_TYPE_ID) references ADJUSTMENT_TYPE (ID)
+  constraint PAYMENT_PAYMENT_ADJUSTMENT$PK primary key (ID),
+  constraint PAYMENT_PAYMENT_ADJUSTMENT$FK foreign key (PAYMENT_ID) references PAYMENT (ID),
+  constraint PAYMENT_PAYMENT_ADJUSTMENT$FK2 foreign key (ADJUSTMENT_TYPE_ID) references ADJUSTMENT_TYPE (ID)
 );
 
 create table PAYMENT_SALES_RETURN (
@@ -686,6 +686,14 @@ create table CREDIT_CARD (
   constraint CREDIT_CARD$PK primary key (ID)
 );
 
+create table PURCHASE_PAYMENT_ADJ_TYPE (
+  ID integer auto_increment,
+  CODE varchar(12) not null,
+  DESCRIPTION varchar(100) not null,
+  constraint PURCHASE_PAYMENT_ADJ_TYPE$PK primary key (ID),
+  constraint PURCHASE_PAYMENT_ADJ_TYPE$UK unique (CODE)
+);
+
 create table SUPPLIER_PAYMENT (
   ID integer auto_increment,
   SUPPLIER_PAYMENT_NO integer not null,
@@ -752,7 +760,7 @@ create table SUPP_PAYMENT_ADJUSTMENT (
   ID integer auto_increment,
   SUPP_PAYMENT_ADJUSTMENT_NO integer not null,
   SUPPLIER_ID integer not null,
-  ADJUSTMENT_TYPE_ID integer not null,
+  PURCHASE_PAYMENT_ADJ_TYPE_ID integer not null,
   AMOUNT numeric(8, 2) not null,
   POST_IND char(1) default 'N' not null,
   POST_DT date null,
@@ -761,16 +769,15 @@ create table SUPP_PAYMENT_ADJUSTMENT (
   constraint SUPP_PAYMENT_ADJUSTMENT$PK primary key (ID),
   constraint SUPP_PAYMENT_ADJUSTMENT$UK unique (SUPP_PAYMENT_ADJUSTMENT_NO),
   constraint SUPP_PAYMENT_ADJUSTMENT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),
-  constraint SUPP_PAYMENT_ADJUSTMENT$FK2 foreign key (ADJUSTMENT_TYPE_ID) references ADJUSTMENT_TYPE (ID),
+  constraint SUPP_PAYMENT_ADJUSTMENT$FK2 foreign key (PURCHASE_PAYMENT_ADJ_TYPE_ID) references PURCHASE_PAYMENT_ADJ_TYPE (ID),
   constraint SUPP_PAYMENT_ADJUSTMENT$FK3 foreign key (POST_BY) references USER (ID)
 );
 
 create table SUPP_PAYMENT_PAYMNT_ADJ (
   ID integer auto_increment,
   SUPPLIER_PAYMENT_ID integer not null,
-  ADJUSTMENT_TYPE_ID integer null,
-  PURCHASE_PAYMENT_ADJ_TYPE_ID integer null,
-  REFERENCE_NO varchar(30) null,
+  PURCHASE_PAYMENT_ADJ_TYPE_ID integer not null,
+  REFERENCE_NO varchar(30) not null,
   AMOUNT numeric(10, 2) not null,
   constraint SUPP_PAYMENT_PAYMNT_ADJ$PK primary key (ID),
   constraint SUPP_PAYMENT_PAYMNT_ADJ$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
@@ -814,14 +821,6 @@ create table PURCHASE_RETURN_ITEM (
   constraint PURCHASE_RETURN_ITEM$PK primary key (ID),
   constraint PURCHASE_RETURN_ITEM$FK foreign key (PURCHASE_RETURN_ID) references PURCHASE_RETURN (ID),
   constraint PURCHASE_RETURN_ITEM$FK2 foreign key (RECEIVING_RECEIPT_ITEM_ID) references RECEIVING_RECEIPT_ITEM (ID)
-);
-
-create table PURCHASE_PAYMENT_ADJ_TYPE (
-  ID integer auto_increment,
-  CODE varchar(12) not null,
-  DESCRIPTION varchar(100) not null,
-  constraint PURCHASE_PAYMENT_ADJ_TYPE$PK primary key (ID),
-  constraint PURCHASE_PAYMENT_ADJ_TYPE$UK unique (CODE)
 );
 
 create table PURCHASE_RETURN_BAD_STOCK (

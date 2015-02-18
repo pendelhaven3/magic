@@ -15,6 +15,14 @@ public class PurchasePaymentCheckPayment {
 	private String checkNumber;
 	private BigDecimal amount;
 
+	public PurchasePaymentCheckPayment() {
+		// default constructor
+	}
+	
+	public PurchasePaymentCheckPayment(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}
