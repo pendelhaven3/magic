@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
+import com.pj.magic.gui.dialog.SalesByManufacturerDialog;
 import com.pj.magic.gui.dialog.SalesInvoiceStatusDialog;
 import com.pj.magic.gui.tables.SalesInvoiceItemsTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
@@ -65,6 +66,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private SalesInvoiceStatusDialog salesInvoiceStatusDialog;
 	@Autowired private ExcelService excelService;
+	@Autowired private SalesByManufacturerDialog salesByManufacturerDialog;
 	
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
@@ -579,6 +581,22 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(toExcelButton);
+		
+		MagicToolBarButton showByManufacturerTotalButton = 
+				new MagicToolBarButton("factory", "Show Sales Items Total By Manufacturer");
+		showByManufacturerTotalButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showSalesByManufacturerDialog(salesInvoice);
+			}
+		});
+		toolBar.add(showByManufacturerTotalButton);
+	}
+
+	private void showSalesByManufacturerDialog(SalesInvoice salesInvoice) {
+		salesByManufacturerDialog.updateDisplay(salesInvoice);
+		salesByManufacturerDialog.setVisible(true);
 	}
 
 	private void generateExcelSpreadsheetFromSalesInvoice() {

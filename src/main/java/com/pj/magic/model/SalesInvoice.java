@@ -4,11 +4,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.time.DateUtils;
 
 import com.pj.magic.Constants;
+import com.pj.magic.util.ListUtil;
 
 public class SalesInvoice {
 
@@ -324,6 +327,26 @@ public class SalesInvoice {
 			}
 		}
 		return null;
+	}
+
+	public BigDecimal getSalesByManufacturer(Manufacturer manufacturer) {
+		BigDecimal total = Constants.ZERO;
+		for (SalesInvoiceItem item : items) {
+			if (manufacturer.equals(item.getProduct().getManufacturer())) {
+				total = total.add(item.getAmount());
+			}
+		}
+		return total;
+	}
+
+	public List<Manufacturer> getAllItemProductManufacturers() {
+		Set<Manufacturer> manufacturers = new HashSet<>();
+		for (SalesInvoiceItem item : items) {
+			if (item.getProduct().getManufacturer() != null) {
+				manufacturers.add(item.getProduct().getManufacturer());
+			}
+		}
+		return ListUtil.asSortedList(new ArrayList<>(manufacturers));
 	}
 	
 }

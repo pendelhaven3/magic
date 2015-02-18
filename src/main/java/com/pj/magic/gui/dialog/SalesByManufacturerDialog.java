@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Manufacturer;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.util.FormatterUtil;
 
@@ -27,6 +28,7 @@ public class SalesByManufacturerDialog extends MagicDialog {
 	private MagicListTable table;
 	private ManufacturersTableModel tableModel;
 	private SalesRequisition salesRequisition;
+	private SalesInvoice salesInvoice;
 	
 	public SalesByManufacturerDialog() {
 		setSize(600, 300);
@@ -73,6 +75,7 @@ public class SalesByManufacturerDialog extends MagicDialog {
 	
 	public void updateDisplay(SalesRequisition salesRequisition) {
 		this.salesRequisition = salesRequisition;
+		this.salesInvoice = null;
 		List<Manufacturer> manufacturers = salesRequisition.getAllItemProductManufacturers();
 		tableModel.setManufacturers(manufacturers);
 		if (!manufacturers.isEmpty()) {
@@ -122,12 +125,26 @@ public class SalesByManufacturerDialog extends MagicDialog {
 			case MANUFACTURER_COLUMN_INDEX:
 				return manufacturer.getName();
 			case AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesRequisition.getSalesByManufacturer(manufacturer));
+				if (salesRequisition != null) {
+					return FormatterUtil.formatAmount(salesRequisition.getSalesByManufacturer(manufacturer));
+				} else if (salesInvoice != null) {
+					return FormatterUtil.formatAmount(salesInvoice.getSalesByManufacturer(manufacturer));
+				}
 			default:
 				throw new RuntimeException("Error fetching invalid column index: " + columnIndex);
 			}
 		}
 		
+	}
+
+	public void updateDisplay(SalesInvoice salesInvoice) {
+		this.salesInvoice = salesInvoice;
+		this.salesRequisition = null;
+		List<Manufacturer> manufacturers = salesInvoice.getAllItemProductManufacturers();
+		tableModel.setManufacturers(manufacturers);
+		if (!manufacturers.isEmpty()) {
+			table.changeSelection(0, 0);
+		}
 	}
 	
 }
