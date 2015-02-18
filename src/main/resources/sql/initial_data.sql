@@ -10,7 +10,7 @@ insert into SEQUENCE (NAME) values ('PAYMENT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('BAD_STOCK_RETURN_NO_SEQ');
 insert into SEQUENCE (NAME) values ('NO_MORE_STOCK_ADJUSTMENT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('PAYMENT_ADJUSTMENT_NO_SEQ');
-insert into SEQUENCE (NAME) values ('SUPPLIER_PAYMENT_NO_SEQ');
+insert into SEQUENCE (NAME) values ('PURCHASE_PAYMENT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('SUPP_PAYMENT_ADJUSTMENT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('PURCHASE_RETURN_NO_SEQ');
 insert into SEQUENCE (NAME) values ('PURCHASE_RETURN_BAD_STOCK_NO_SEQ');

@@ -26,7 +26,7 @@ import com.pj.magic.util.DbUtil;
 @Repository
 public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentDao {
 
-	private static final String PURCHASE_PAYMENT_NUMBER_SEQUENCE = "SUPPLIER_PAYMENT_NO_SEQ";
+	private static final String PURCHASE_PAYMENT_NUMBER_SEQUENCE = "PURCHASE_PAYMENT_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, SUPPLIER_PAYMENT_NO, SUPPLIER_ID, ENCODER,"
