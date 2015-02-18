@@ -41,8 +41,8 @@ public class PurchasePaymentCashPaymentDaoTest extends IntegrationTest {
 	private void insertTestCashPayment() {
 		insertTestPurchasePayment();
 		
-		jdbcTemplate.update("insert into SUPP_PAYMENT_CASH_PYMNT"
-				+ " (ID, SUPPLIER_PAYMENT_ID, AMOUNT, PAID_DT, PAID_BY)"
+		jdbcTemplate.update("insert into PURCHASE_PAYMENT_CASH_PAYMENT"
+				+ " (ID, PURCHASE_PAYMENT_ID, AMOUNT, PAID_DT, PAID_BY)"
 				+ " values"
 				+ " (1, 1, 100, now(), 1)");
 	}

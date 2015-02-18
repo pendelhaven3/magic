@@ -722,15 +722,15 @@ create table PURCHASE_PAYMENT_RECEIVING_RECEIPT (
   constraint PURCHASE_PAYMENT_RECEIVING_RECEIPT$FK2 foreign key (RECEIVING_RECEIPT_ID) references RECEIVING_RECEIPT (ID)
 );
 
-create table SUPP_PAYMENT_CASH_PYMNT (
+create table PURCHASE_PAYMENT_CASH_PAYMENT (
   ID integer auto_increment,
-  SUPPLIER_PAYMENT_ID integer not null,
+  PURCHASE_PAYMENT_ID integer not null,
   AMOUNT numeric(10, 2) not null,
   PAID_DT date not null,
   PAID_BY integer not null,
-  constraint SUPP_PAYMENT_CASH_PYMNT$PK primary key (ID),
-  constraint SUPP_PAYMENT_CASH_PYMNT$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
-  constraint SUPP_PAYMENT_CASH_PYMNT$FK2 foreign key (PAID_BY) references USER (ID)
+  constraint PURCHASE_PAYMENT_CASH_PAYMENT$PK primary key (ID),
+  constraint PURCHASE_PAYMENT_CASH_PAYMENT$FK foreign key (PURCHASE_PAYMENT_ID) references PURCHASE_PAYMENT (ID),
+  constraint PURCHASE_PAYMENT_CASH_PAYMENT$FK2 foreign key (PAID_BY) references USER (ID)
 );
 
 create table SUPP_PAYMENT_CHECK_PYMNT (
