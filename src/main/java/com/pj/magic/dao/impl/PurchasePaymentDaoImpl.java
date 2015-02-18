@@ -35,7 +35,7 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 			+ " c.USERNAME as ENCODER_USERNAME,"
 			+ " d.USERNAME as POST_BY_USERNAME,"
 			+ " e.NAME as PAYMENT_TERM_NAME"
-			+ " from SUPPLIER_PAYMENT a"
+			+ " from PURCHASE_PAYMENT a"
 			+ " join SUPPLIER b"
 			+ "   on b.ID = a.SUPPLIER_ID"
 			+ " join USER c"
@@ -57,7 +57,7 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 	}
 
 	private static final String INSERT_SQL =
-			"insert into SUPPLIER_PAYMENT"
+			"insert into PURCHASE_PAYMENT"
 			+ " (SUPPLIER_PAYMENT_NO, SUPPLIER_ID, CREATE_DT, ENCODER) values (?, ?, curdate(), ?)";
 	
 	private void insert(final PurchasePayment purchasePayment) {
@@ -85,7 +85,7 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 	}
 	
 	private static final String UPDATE_SQL =
-			"update SUPPLIER_PAYMENT set SUPPLIER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
+			"update PURCHASE_PAYMENT set SUPPLIER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
 			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ? where ID = ?";
 	
 	private void update(PurchasePayment payment) {

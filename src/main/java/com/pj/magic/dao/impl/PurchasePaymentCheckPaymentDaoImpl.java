@@ -30,7 +30,7 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 			+ " b.SUPPLIER_ID, c.NAME as SUPPLIER_NAME,"
 			+ " b.SUPPLIER_PAYMENT_NO"
 			+ " from SUPP_PAYMENT_CHECK_PYMNT a"
-			+ " join SUPPLIER_PAYMENT b"
+			+ " join PURCHASE_PAYMENT b"
 			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
 			+ " join SUPPLIER c"
 			+ "   on c.ID = b.SUPPLIER_ID";

@@ -32,7 +32,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK,"
 			+ " d.NAME as SUPPLIER_NAME"
 			+ " from SUPP_PAYMENT_CREDITCARD_PYMNT a"
-			+ " join SUPPLIER_PAYMENT b"
+			+ " join PURCHASE_PAYMENT b"
 			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
 			+ " join CREDIT_CARD c"
 			+ "   on c.ID = a.CREDIT_CARD_ID"

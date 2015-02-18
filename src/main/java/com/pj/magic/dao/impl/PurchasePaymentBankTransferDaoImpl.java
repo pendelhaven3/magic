@@ -28,7 +28,7 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 			"select a.ID, SUPPLIER_PAYMENT_ID, BANK, AMOUNT, REFERENCE_NO, TRANSFER_DT,"
 			+ " b.SUPPLIER_PAYMENT_NO, b.SUPPLIER_ID, c.NAME as SUPPLIER_NAME"
 			+ " from SUPP_PAYMENT_BANK_TRANSFER a"
-			+ " join SUPPLIER_PAYMENT b"
+			+ " join PURCHASE_PAYMENT b"
 			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
 			+ " join SUPPLIER c"
 			+ "   on c.ID = b.SUPPLIER_ID";

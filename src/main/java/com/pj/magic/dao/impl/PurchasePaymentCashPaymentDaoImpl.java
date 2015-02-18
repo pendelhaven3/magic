@@ -31,7 +31,7 @@ public class PurchasePaymentCashPaymentDaoImpl extends MagicDao implements Purch
 			+ " from SUPP_PAYMENT_CASH_PYMNT a"
 			+ " join USER b"
 			+ "   on b.ID = a.PAID_BY"
-			+ " join SUPPLIER_PAYMENT c"
+			+ " join PURCHASE_PAYMENT c"
 			+ "   on c.ID = a.SUPPLIER_PAYMENT_ID";
 	
 	private PurchasePaymentCashPaymentRowMapper cashPaymentRowMapper = 

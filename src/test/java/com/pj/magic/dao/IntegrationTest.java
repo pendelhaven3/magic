@@ -42,7 +42,7 @@ public abstract class IntegrationTest extends AbstractTransactionalJUnit4SpringC
 		insertTestUser();
 		
 		jdbcTemplate.update(
-				"insert into SUPPLIER_PAYMENT (ID, SUPPLIER_PAYMENT_NO, SUPPLIER_ID, CREATE_DT, ENCODER) "
+				"insert into PURCHASE_PAYMENT (ID, SUPPLIER_PAYMENT_NO, SUPPLIER_ID, CREATE_DT, ENCODER) "
 				+ " values (1, 1, 1, now(), 1)");
 	}
 	
