@@ -28,7 +28,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, SUPPLIER_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE,"
-			+ " b.SUPPLIER_PAYMENT_NO,"
+			+ " b.PURCHASE_PAYMENT_NO,"
 			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK,"
 			+ " d.NAME as SUPPLIER_NAME"
 			+ " from SUPP_PAYMENT_CREDITCARD_PYMNT a"
@@ -107,7 +107,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			
 			PurchasePayment purchasePayment = new PurchasePayment();
 			purchasePayment.setId(rs.getLong("SUPPLIER_PAYMENT_ID"));
-			purchasePayment.setPurchasePaymentNumber(rs.getLong("SUPPLIER_PAYMENT_NO"));
+			purchasePayment.setPurchasePaymentNumber(rs.getLong("PURCHASE_PAYMENT_NO"));
 			
 			Supplier supplier = new Supplier();
 			supplier.setName(rs.getString("SUPPLIER_NAME"));
@@ -164,7 +164,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
-		sql.append(" order by a.TRANSACTION_DT, d.NAME, b.SUPPLIER_PAYMENT_NO");
+		sql.append(" order by a.TRANSACTION_DT, d.NAME, b.PURCHASE_PAYMENT_NO");
 		
 		return getJdbcTemplate().query(sql.toString(), creditCardPaymentRowMapper, params.toArray());
 	}

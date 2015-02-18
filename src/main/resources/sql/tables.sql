@@ -694,9 +694,9 @@ create table PURCHASE_PAYMENT_ADJ_TYPE (
   constraint PURCHASE_PAYMENT_ADJ_TYPE$UK unique (CODE)
 );
 
-create table SUPPLIER_PAYMENT (
+create table PURCHASE_PAYMENT (
   ID integer auto_increment,
-  SUPPLIER_PAYMENT_NO integer not null,
+  PURCHASE_PAYMENT_NO integer not null,
   SUPPLIER_ID integer not null,
   POST_IND char(1) default 'N' not null,
   POST_DT date null,

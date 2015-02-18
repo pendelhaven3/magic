@@ -28,7 +28,7 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, SUPPLIER_PAYMENT_ID, BANK, CHECK_DT, CHECK_NO, AMOUNT,"
 			+ " b.SUPPLIER_ID, c.NAME as SUPPLIER_NAME,"
-			+ " b.SUPPLIER_PAYMENT_NO"
+			+ " b.PURCHASE_PAYMENT_NO"
 			+ " from SUPP_PAYMENT_CHECK_PYMNT a"
 			+ " join PURCHASE_PAYMENT b"
 			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
@@ -103,7 +103,7 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 			
 			PurchasePayment payment = new PurchasePayment();
 			payment.setId(rs.getLong("SUPPLIER_PAYMENT_ID"));
-			payment.setPurchasePaymentNumber(rs.getLong("SUPPLIER_PAYMENT_NO"));
+			payment.setPurchasePaymentNumber(rs.getLong("PURCHASE_PAYMENT_NO"));
 			check.setParent(payment);
 			
 			check.setBank(rs.getString("BANK"));
@@ -153,7 +153,7 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
-		sql.append(" order by a.CHECK_DT, c.NAME, b.SUPPLIER_PAYMENT_NO, a.BANK");
+		sql.append(" order by a.CHECK_DT, c.NAME, b.PURCHASE_PAYMENT_NO, a.BANK");
 		
 		return getJdbcTemplate().query(sql.toString(), checkPaymentRowMapper, params.toArray());
 	}

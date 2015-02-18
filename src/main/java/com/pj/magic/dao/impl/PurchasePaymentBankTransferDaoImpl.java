@@ -26,7 +26,7 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, SUPPLIER_PAYMENT_ID, BANK, AMOUNT, REFERENCE_NO, TRANSFER_DT,"
-			+ " b.SUPPLIER_PAYMENT_NO, b.SUPPLIER_ID, c.NAME as SUPPLIER_NAME"
+			+ " b.PURCHASE_PAYMENT_NO, b.SUPPLIER_ID, c.NAME as SUPPLIER_NAME"
 			+ " from SUPP_PAYMENT_BANK_TRANSFER a"
 			+ " join PURCHASE_PAYMENT b"
 			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
@@ -101,7 +101,7 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 			
 			PurchasePayment payment = new PurchasePayment();
 			payment.setId(rs.getLong("SUPPLIER_PAYMENT_ID"));
-			payment.setPurchasePaymentNumber(rs.getLong("SUPPLIER_PAYMENT_NO"));
+			payment.setPurchasePaymentNumber(rs.getLong("PURCHASE_PAYMENT_NO"));
 			
 			Supplier supplier = new Supplier();
 			supplier.setId(rs.getLong("SUPPLIER_ID"));
@@ -154,7 +154,7 @@ public class PurchasePaymentBankTransferDaoImpl extends MagicDao implements Purc
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
-		sql.append(" order by a.TRANSFER_DT, c.NAME, b.SUPPLIER_PAYMENT_NO, a.BANK");
+		sql.append(" order by a.TRANSFER_DT, c.NAME, b.PURCHASE_PAYMENT_NO, a.BANK");
 		
 		return getJdbcTemplate().query(sql.toString(), bankTransferRowMapper, params.toArray());
 	}
