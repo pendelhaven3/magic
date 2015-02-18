@@ -29,10 +29,10 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.model.AdjustmentType;
+import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.PurchasePaymentAdjustmentSearchCriteria;
-import com.pj.magic.service.AdjustmentTypeService;
+import com.pj.magic.service.PurchasePaymentAdjustmentTypeService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
@@ -45,14 +45,14 @@ public class SearchPurchasePaymentAdjustmentsDialog extends MagicDialog {
 	private static final int STATUS_POSTED = 2;
 	
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
-	@Autowired private AdjustmentTypeService adjustmentTypeService;
+	@Autowired private PurchasePaymentAdjustmentTypeService adjustmentTypeService;
 	@Autowired private SupplierService supplierService;
 	
 	private MagicTextField paymentAdjustmentNumberField;
 	private MagicTextField supplierCodeField;
 	private JButton selectSupplierButton;
 	private JLabel supplierNameLabel;
-	private JComboBox<AdjustmentType> adjustmentTypeComboBox;
+	private JComboBox<PurchasePaymentAdjustmentType> adjustmentTypeComboBox;
 	private JComboBox<String> statusComboBox;
 	private UtilCalendarModel postDateModel;
 	private JButton searchButton;
@@ -135,7 +135,8 @@ public class SearchPurchasePaymentAdjustmentsDialog extends MagicDialog {
 			supplierNameLabel.setText(null);
 		}
 		
-		searchCriteria.setAdjustmentType((AdjustmentType)adjustmentTypeComboBox.getSelectedItem());
+		searchCriteria.setAdjustmentType(
+				(PurchasePaymentAdjustmentType)adjustmentTypeComboBox.getSelectedItem());
 		
 		if (statusComboBox.getSelectedIndex() != STATUS_ALL) {
 			switch (statusComboBox.getSelectedIndex()) {
@@ -355,9 +356,11 @@ public class SearchPurchasePaymentAdjustmentsDialog extends MagicDialog {
 		supplierCodeField.setText(null);
 		supplierNameLabel.setText(null);
 		
-		List<AdjustmentType> adjustmentTypes = adjustmentTypeService.getRegularAdjustmentTypes();
+		List<PurchasePaymentAdjustmentType> adjustmentTypes = 
+				adjustmentTypeService.getRegularAdjustmentTypes();
 		adjustmentTypeComboBox.setModel(
-				new DefaultComboBoxModel<>(adjustmentTypes.toArray(new AdjustmentType[adjustmentTypes.size()])));
+				new DefaultComboBoxModel<>(adjustmentTypes.toArray(
+						new PurchasePaymentAdjustmentType[adjustmentTypes.size()])));
 		adjustmentTypeComboBox.insertItemAt(null, 0);
 		adjustmentTypeComboBox.setSelectedItem(null);
 		

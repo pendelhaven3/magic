@@ -2,14 +2,14 @@ package com.pj.magic.model.search;
 
 import java.util.Date;
 
-import com.pj.magic.model.AdjustmentType;
+import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.Supplier;
 
 public class PurchasePaymentAdjustmentSearchCriteria {
 
 	private Long purchasePaymentAdjustmentNumber;
 	private Supplier supplier;
-	private AdjustmentType adjustmentType;
+	private PurchasePaymentAdjustmentType adjustmentType;
 	private Boolean posted;
 	private Date postDate;
 	private Date postDateFrom;
@@ -31,11 +31,19 @@ public class PurchasePaymentAdjustmentSearchCriteria {
 		this.supplier = supplier;
 	}
 
-	public AdjustmentType getAdjustmentType() {
+	public Long getPurchasePaymentAdjustmentNumber() {
+		return purchasePaymentAdjustmentNumber;
+	}
+
+	public void setPurchasePaymentAdjustmentNumber(Long purchasePaymentAdjustmentNumber) {
+		this.purchasePaymentAdjustmentNumber = purchasePaymentAdjustmentNumber;
+	}
+
+	public PurchasePaymentAdjustmentType getAdjustmentType() {
 		return adjustmentType;
 	}
 
-	public void setAdjustmentType(AdjustmentType adjustmentType) {
+	public void setAdjustmentType(PurchasePaymentAdjustmentType adjustmentType) {
 		this.adjustmentType = adjustmentType;
 	}
 
