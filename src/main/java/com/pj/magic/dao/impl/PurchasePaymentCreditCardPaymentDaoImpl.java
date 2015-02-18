@@ -27,13 +27,13 @@ import com.pj.magic.util.DbUtil;
 public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements PurchasePaymentCreditCardPaymentDao {
 
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, SUPPLIER_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE,"
+			"select a.ID, PURCHASE_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE,"
 			+ " b.PURCHASE_PAYMENT_NO,"
 			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK,"
 			+ " d.NAME as SUPPLIER_NAME"
-			+ " from SUPP_PAYMENT_CREDITCARD_PYMNT a"
+			+ " from PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT a"
 			+ " join PURCHASE_PAYMENT b"
-			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
+			+ "   on b.ID = a.PURCHASE_PAYMENT_ID"
 			+ " join CREDIT_CARD c"
 			+ "   on c.ID = a.CREDIT_CARD_ID"
 			+ " join SUPPLIER d"
@@ -52,8 +52,8 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 	}
 
 	private static final String INSERT_SQL = 
-			"insert into SUPP_PAYMENT_CREDITCARD_PYMNT"
-			+ " (SUPPLIER_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE) values (?, ?, ?, ?, ?)";
+			"insert into PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT"
+			+ " (PURCHASE_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE) values (?, ?, ?, ?, ?)";
 	
 	private void insert(final PurchasePaymentCreditCardPayment creditCardPayment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -76,7 +76,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 	}
 
 	private static final String UPDATE_SQL = 
-			"update SUPP_PAYMENT_CREDITCARD_PYMNT"
+			"update PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT"
 			+ " set AMOUNT = ?, CREDIT_CARD_ID = ?, TRANSACTION_DT = ?, APPROVAL_CODE = ?"
 			+ " where ID = ?";
 	
@@ -89,12 +89,12 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 				cashPayment.getId());
 	}
 
-	private static final String FIND_ALL_BY_SUPPLIER_PAYMENT_SQL = BASE_SELECT_SQL
-			+ " where a.SUPPLIER_PAYMENT_ID = ?";
+	private static final String FIND_ALL_BY_PURCHASE_PAYMENT_SQL = BASE_SELECT_SQL
+			+ " where a.PURCHASE_PAYMENT_ID = ?";
 	
 	@Override
 	public List<PurchasePaymentCreditCardPayment> findAllByPurchasePayment(PurchasePayment purchasePayment) {
-		return getJdbcTemplate().query(FIND_ALL_BY_SUPPLIER_PAYMENT_SQL, creditCardPaymentRowMapper, 
+		return getJdbcTemplate().query(FIND_ALL_BY_PURCHASE_PAYMENT_SQL, creditCardPaymentRowMapper, 
 				purchasePayment.getId());
 	}
 
@@ -106,7 +106,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			creditCardPayment.setId(rs.getLong("ID"));
 			
 			PurchasePayment purchasePayment = new PurchasePayment();
-			purchasePayment.setId(rs.getLong("SUPPLIER_PAYMENT_ID"));
+			purchasePayment.setId(rs.getLong("PURCHASE_PAYMENT_ID"));
 			purchasePayment.setPurchasePaymentNumber(rs.getLong("PURCHASE_PAYMENT_NO"));
 			
 			Supplier supplier = new Supplier();
@@ -129,7 +129,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 		
 	}
 	
-	private static final String DELETE_SQL = "delete from SUPP_PAYMENT_CREDITCARD_PYMNT where ID = ?";
+	private static final String DELETE_SQL = "delete from PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT where ID = ?";
 	
 	@Override
 	public void delete(PurchasePaymentCreditCardPayment cashPayment) {

@@ -43,8 +43,8 @@ public class PurchasePaymentCheckPaymentDaoTest extends IntegrationTest {
 	private void insertTestCheckPayment() {
 		insertTestPurchasePayment();
 		
-		jdbcTemplate.update("insert into SUPP_PAYMENT_CHECK_PYMNT"
-				+ " (ID, SUPPLIER_PAYMENT_ID, AMOUNT, BANK, CHECK_DT, CHECK_NO)"
+		jdbcTemplate.update("insert into PURCHASE_PAYMENT_CHECK_PAYMENT"
+				+ " (ID, PURCHASE_PAYMENT_ID, AMOUNT, BANK, CHECK_DT, CHECK_NO)"
 				+ " values"
 				+ " (1, 1, 100, 'BANK', now(), 'CHECK_NO')");
 	}

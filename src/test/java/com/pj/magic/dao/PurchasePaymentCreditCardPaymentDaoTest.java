@@ -51,8 +51,8 @@ public class PurchasePaymentCreditCardPaymentDaoTest extends IntegrationTest {
 		insertTestPurchasePayment();
 		insertTestCreditCard();
 		
-		jdbcTemplate.update("insert into SUPP_PAYMENT_CREDITCARD_PYMNT"
-				+ " (ID, SUPPLIER_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE)"
+		jdbcTemplate.update("insert into PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT"
+				+ " (ID, PURCHASE_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE)"
 				+ " values"
 				+ " (1, 1, 100, 1, now(), 'APPROVAL CODE')");
 	}

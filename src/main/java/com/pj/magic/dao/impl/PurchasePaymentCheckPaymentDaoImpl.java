@@ -26,12 +26,12 @@ import com.pj.magic.util.DbUtil;
 public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements PurchasePaymentCheckPaymentDao {
 
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, SUPPLIER_PAYMENT_ID, BANK, CHECK_DT, CHECK_NO, AMOUNT,"
+			"select a.ID, PURCHASE_PAYMENT_ID, BANK, CHECK_DT, CHECK_NO, AMOUNT,"
 			+ " b.SUPPLIER_ID, c.NAME as SUPPLIER_NAME,"
 			+ " b.PURCHASE_PAYMENT_NO"
-			+ " from SUPP_PAYMENT_CHECK_PYMNT a"
+			+ " from PURCHASE_PAYMENT_CHECK_PAYMENT a"
 			+ " join PURCHASE_PAYMENT b"
-			+ "   on b.ID = a.SUPPLIER_PAYMENT_ID"
+			+ "   on b.ID = a.PURCHASE_PAYMENT_ID"
 			+ " join SUPPLIER c"
 			+ "   on c.ID = b.SUPPLIER_ID";
 	
@@ -48,8 +48,8 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 	}
 
 	private static final String INSERT_SQL = 
-			"insert into SUPP_PAYMENT_CHECK_PYMNT"
-			+ " (SUPPLIER_PAYMENT_ID, BANK, CHECK_DT, CHECK_NO, AMOUNT) values (?, ?, ?, ?, ?)";
+			"insert into PURCHASE_PAYMENT_CHECK_PAYMENT"
+			+ " (PURCHASE_PAYMENT_ID, BANK, CHECK_DT, CHECK_NO, AMOUNT) values (?, ?, ?, ?, ?)";
 	
 	private void insert(final PurchasePaymentCheckPayment checkPayment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -72,7 +72,7 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 	}
 
 	private static final String UPDATE_SQL = 
-			"update SUPP_PAYMENT_CHECK_PYMNT"
+			"update PURCHASE_PAYMENT_CHECK_PAYMENT"
 			+ " set BANK = ?, CHECK_DT = ?, CHECK_NO = ?, AMOUNT = ?"
 			+ " where ID = ?";
 	
@@ -85,12 +85,12 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 				checkPayment.getId());
 	}
 
-	private static final String FIND_ALL_BY_SUPPLIER_PAYMENT_SQL = BASE_SELECT_SQL
-			+ " where a.SUPPLIER_PAYMENT_ID = ?";
+	private static final String FIND_ALL_BY_PURCHASE_PAYMENT_SQL = BASE_SELECT_SQL
+			+ " where a.PURCHASE_PAYMENT_ID = ?";
 	
 	@Override
 	public List<PurchasePaymentCheckPayment> findAllByPurchasePayment(PurchasePayment purchasePayment) {
-		return getJdbcTemplate().query(FIND_ALL_BY_SUPPLIER_PAYMENT_SQL, checkPaymentRowMapper, 
+		return getJdbcTemplate().query(FIND_ALL_BY_PURCHASE_PAYMENT_SQL, checkPaymentRowMapper, 
 				purchasePayment.getId());
 	}
 
@@ -102,7 +102,7 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 			check.setId(rs.getLong("ID"));
 			
 			PurchasePayment payment = new PurchasePayment();
-			payment.setId(rs.getLong("SUPPLIER_PAYMENT_ID"));
+			payment.setId(rs.getLong("PURCHASE_PAYMENT_ID"));
 			payment.setPurchasePaymentNumber(rs.getLong("PURCHASE_PAYMENT_NO"));
 			check.setParent(payment);
 			
@@ -119,7 +119,7 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 		
 	}
 	
-	private static final String DELETE_SQL = "delete from SUPP_PAYMENT_CHECK_PYMNT where ID = ?";
+	private static final String DELETE_SQL = "delete from PURCHASE_PAYMENT_CHECK_PAYMENT where ID = ?";
 	
 	@Override
 	public void delete(PurchasePaymentCheckPayment checkPayment) {

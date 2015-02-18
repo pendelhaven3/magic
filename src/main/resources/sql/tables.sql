@@ -733,27 +733,27 @@ create table PURCHASE_PAYMENT_CASH_PAYMENT (
   constraint PURCHASE_PAYMENT_CASH_PAYMENT$FK2 foreign key (PAID_BY) references USER (ID)
 );
 
-create table SUPP_PAYMENT_CHECK_PYMNT (
+create table PURCHASE_PAYMENT_CHECK_PAYMENT (
   ID integer auto_increment,
-  SUPPLIER_PAYMENT_ID integer not null,
+  PURCHASE_PAYMENT_ID integer not null,
   BANK varchar(30) not null,
   CHECK_DT date not null,
   CHECK_NO varchar(50) not null,
   AMOUNT numeric(10, 2) not null,
-  constraint SUPP_PAYMENT_CHECK_PYMNT$PK primary key (ID),
-  constraint SUPP_PAYMENT_CHECK_PYMNT$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID)
+  constraint PURCHASE_PAYMENT_CHECK_PAYMENT$PK primary key (ID),
+  constraint PURCHASE_PAYMENT_CHECK_PAYMENT$FK foreign key (PURCHASE_PAYMENT_ID) references PURCHASE_PAYMENT (ID)
 );
 
-create table SUPP_PAYMENT_CREDITCARD_PYMNT (
+create table PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT (
   ID integer auto_increment,
-  SUPPLIER_PAYMENT_ID integer not null,
+  PURCHASE_PAYMENT_ID integer not null,
   AMOUNT numeric(10, 2) not null,
   CREDIT_CARD_ID integer not null,
   TRANSACTION_DT date not null,
   APPROVAL_CODE varchar(20) not null,
-  constraint SUPP_PAYMENT_CREDITCARD_PYMNT$PK primary key (ID),
-  constraint SUPP_PAYMENT_CREDITCARD_PYMNT$FK foreign key (SUPPLIER_PAYMENT_ID) references SUPPLIER_PAYMENT (ID),
-  constraint SUPP_PAYMENT_CREDITCARD_PYMNT$FK2 foreign key (CREDIT_CARD_ID) references CREDIT_CARD (ID)
+  constraint PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT$PK primary key (ID),
+  constraint PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT$FK foreign key (PURCHASE_PAYMENT_ID) references PURCHASE_PAYMENT (ID),
+  constraint PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT$FK2 foreign key (CREDIT_CARD_ID) references CREDIT_CARD (ID)
 );
 
 create table SUPP_PAYMENT_ADJUSTMENT (
