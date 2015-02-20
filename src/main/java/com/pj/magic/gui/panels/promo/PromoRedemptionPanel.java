@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -24,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.exception.AlreadyPostedException;
+import com.pj.magic.exception.NothingToRedeemException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -97,8 +100,10 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalAmountLabel.setText(FormatterUtil.formatAmount(promoRedemption.getTotalAmount()));
-				prizeTableModel.fireTableRowsUpdated(0, 0);
+				if (!promoRedemption.isPosted()) {
+					totalAmountLabel.setText(FormatterUtil.formatAmount(promoRedemption.getTotalAmount()));
+					prizeTableModel.fireTableRowsUpdated(0, 0);
+				}
 			}
 			
 		});
@@ -428,7 +433,27 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	}
 
 	private void postPromoRedemption() {
-		showMessage("Tada! Under construction!");
+		if (promoRedemption.getPrizeQuantity() == 0) {
+			showErrorMessage("Not enough Sales Invoice amount to be able redeem anything");
+			return;
+		}
+		
+		if (confirm("Do you want to post this Promo Redemption?")) {
+			try {
+				promoRedemptionService.post(promoRedemption);
+				JOptionPane.showMessageDialog(this, "Promo Redemption posted");
+				updateDisplay(promoRedemption);
+			} catch (NothingToRedeemException e) {
+				showErrorMessage("Not enough Sales Invoice amount to be able redeem anything");
+				updateDisplay(promoRedemption);
+			} catch (AlreadyPostedException e) {
+				showErrorMessage("Promo Redemption is already posted");
+				updateDisplay(promoRedemption);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred during posting!");
+			}
+		}
 	}
 
 	@Override
@@ -454,6 +479,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		promoRedemptionNumberLabel.setText(promoRedemption.getPromoRedemptionNumber().toString());
 		customerCodeField.setText(promoRedemption.getCustomer().getCode());
 		customerNameLabel.setText(promoRedemption.getCustomer().getName());
+		totalAmountLabel.setText(FormatterUtil.formatAmount(promoRedemption.getTotalAmount()));
 		
 		salesInvoicesTableModel.setPromoRedemption(promoRedemption);
 		

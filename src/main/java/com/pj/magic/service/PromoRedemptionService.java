@@ -21,5 +21,7 @@ public interface PromoRedemptionService {
 	PromoRedemption getPromoRedemption(long id);
 
 	void delete(PromoRedemptionSalesInvoice salesInvoice);
+
+	void post(PromoRedemption promoRedemption);
 	
 }

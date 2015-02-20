@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -10,12 +11,15 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
+import com.pj.magic.exception.AlreadyPostedException;
+import com.pj.magic.exception.NothingToRedeemException;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.service.SalesInvoiceService;
 
@@ -26,6 +30,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private PromoRedemptionSalesInvoiceDao promoRedemptionSalesInvoiceDao;
 	@Autowired private SalesInvoiceItemDao salesInvoiceItemDao;
+	@Autowired private LoginService loginService;
 	
 	@Transactional
 	@Override
@@ -70,6 +75,26 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Override
 	public void delete(PromoRedemptionSalesInvoice salesInvoice) {
 		promoRedemptionSalesInvoiceDao.delete(salesInvoice);
+	}
+
+	@Transactional
+	@Override
+	public void post(PromoRedemption promoRedemption) {
+		PromoRedemption updated = getPromoRedemption(promoRedemption.getId());
+		
+		if (updated.isPosted()) {
+			throw new AlreadyPostedException();
+		}
+		
+		if (updated.getPrizeQuantity() == 0) {
+			throw new NothingToRedeemException();
+		}
+		
+		updated.setPosted(true);
+		updated.setPostDate(new Date());
+		updated.setPostedBy(loginService.getLoggedInUser());
+		updated.setPrizeQuantity(updated.getPrizeQuantity());
+		promoRedemptionDao.save(updated);
 	}
 
 }
