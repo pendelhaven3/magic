@@ -108,6 +108,8 @@ import com.pj.magic.gui.panels.menu.ReportsMenuPanel;
 import com.pj.magic.gui.panels.menu.SalesMenuPanel;
 import com.pj.magic.gui.panels.menu.SalesPaymentsMenuPanel;
 import com.pj.magic.gui.panels.menu.StockMovementMenuPanel;
+import com.pj.magic.gui.panels.promo.PromoRedemptionListPanel;
+import com.pj.magic.gui.panels.promo.PromoRedemptionPanel;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentType;
@@ -126,6 +128,7 @@ import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentAdjustment;
@@ -254,6 +257,8 @@ public class MagicFrame extends JFrame {
 	private static final String SALES_BY_MANUFACTURER_REPORT_PANEL = "SALES_BY_MANUFACTURER_REPORT_PANEL";
 	private static final String CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL = "CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL";
 	private static final String DISBURSEMENT_REPORT_PANEL = "DISBURSEMENT_REPORT_PANEL";
+	private static final String PROMO_REDEMPTION_PANEL = "PROMO_REDEMPTION_PANEL";
+	private static final String PROMO_REDEMPTION_LIST_PANEL = "PROMO_REDEMPTION_LIST_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -349,6 +354,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private SalesByManufacturerReportPanel salesByManufacturerReportPanel;
 	@Autowired private CustomerCheckPaymentsReportPanel customerCheckPaymentsReportPanel;
 	@Autowired private DisbursementReportPanel disbursementReportPanel;
+	@Autowired private PromoRedemptionPanel promoRedemptionPanel;
+	@Autowired private PromoRedemptionListPanel promoRedemptionListPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -493,6 +500,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(salesByManufacturerReportPanel, SALES_BY_MANUFACTURER_REPORT_PANEL);
 		panelHolder.add(customerCheckPaymentsReportPanel, CUSTOMER_CHECK_PAYMENTS_REPORT_PANEL);
 		panelHolder.add(disbursementReportPanel, DISBURSEMENT_REPORT_PANEL);
+		panelHolder.add(promoRedemptionPanel, PROMO_REDEMPTION_PANEL);
+		panelHolder.add(promoRedemptionListPanel, PROMO_REDEMPTION_LIST_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1210,6 +1219,18 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Disbursement Report");
 		disbursementReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, DISBURSEMENT_REPORT_PANEL);
+	}
+
+	public void switchToPromoRedemptionPanel(PromoRedemption promoRedemption) {
+		addPanelNameToTitle("Promo Redemption");
+		promoRedemptionPanel.updateDisplay(promoRedemption);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_REDEMPTION_PANEL);
+	}
+	
+	public void switchToPromoRedemptionListPanel() {
+		addPanelNameToTitle("Promo Redemption List");
+		promoRedemptionListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_REDEMPTION_LIST_PANEL);
 	}
 	
 }

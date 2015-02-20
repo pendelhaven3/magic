@@ -46,6 +46,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 	private static final String PRODUCT_MAINTENANCE_AND_PRICING_SCHEMES = "<html>Product Maintenance<br>and Pricing Schemes</html>";
 	private static final String PURCHASES = "Purchases";
 	private static final String SALES = "Sales";
+	private static final String PROMO_REDEMPTION = "Promo Redemption";
 
 	private static final Map<String, String> MENU_ITEM_IMAGE_MAP = new HashMap<>();
 	
@@ -211,6 +212,9 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case CHANGE_PASSWORD:
 			getMagicFrame().switchToChangePasswordPanel();
 			break;
+		case PROMO_REDEMPTION:
+			getMagicFrame().switchToPromoRedemptionListPanel();
+			break;
 		}
 	}
 
@@ -227,6 +231,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				PRODUCT_MAINTENANCE_AND_PRICING_SCHEMES,
 				SALES_PAYMENT,
 				PURCHASE_PAYMENT,
+				PROMO_REDEMPTION,
 				STOCK_MOVEMENT,
 				REPORTS,
 				INVENTORY_CHECK,

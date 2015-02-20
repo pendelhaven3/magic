@@ -98,10 +98,12 @@ public class SalesInvoiceItemDaoImpl extends MagicDao implements SalesInvoiceIte
 			product.setCode(rs.getString("PRODUCT_CODE"));
 			product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
 			
-			Manufacturer manufacturer = new Manufacturer();
-			manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
-			manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
-			product.setManufacturer(manufacturer);
+			if (rs.getLong("MANUFACTURER_ID") != 0) {
+				Manufacturer manufacturer = new Manufacturer();
+				manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
+				manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
+				product.setManufacturer(manufacturer);
+			}
 			
 			return product;
 		}
