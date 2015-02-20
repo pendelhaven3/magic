@@ -14,6 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.slf4j.Logger;
@@ -63,6 +65,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	private MagicListTable prizesTable;
 	private SalesInvoicesTableModel salesInvoicesTableModel;
 	private PromoRedemptionPrizesTableModel prizesTableModel;
+	private JLabel totalAmountLabel;
 	private MagicToolBarButton addSalesInvoiceButton;
 	private MagicToolBarButton removeSalesInvoiceButton;
 	private MagicToolBarButton postButton;
@@ -84,6 +87,17 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		});
 		
 		initializeTable();
+		initializeModelListener();
+	}
+
+	private void initializeModelListener() {
+		salesInvoicesTableModel.addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				totalAmountLabel.setText(FormatterUtil.formatAmount(promoRedemption.getTotalAmount()));
+			}
+		});
 	}
 
 	private void openSelectCustomerDialog() {
@@ -297,7 +311,6 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		int currentRow = 0;
 		
 		GridBagConstraints c = new GridBagConstraints();
-		
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -313,6 +326,17 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		JScrollPane salesInvoicesScrollPane = new JScrollPane(salesInvoicesTable);
 		salesInvoicesScrollPane.setPreferredSize(new Dimension(200, 150));
 		panel.add(salesInvoicesScrollPane, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.EAST;
+		c.gridwidth = 2;
+		totalAmountLabel = ComponentUtil.createRightLabel(100);
+		panel.add(ComponentUtil.createGenericPanel(
+				new JLabel("Total Amount: "), totalAmountLabel, Box.createHorizontalStrut(10)), c);
 		
 		return panel;
 	}
@@ -349,6 +373,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			if (confirm("Do you wish to delete the selected item?")) {
 				PromoRedemptionSalesInvoice salesInvoice = 
 						salesInvoicesTableModel.getPromoRedemptionSalesInvoice(selectedRow);
+				salesInvoicesTable.clearSelection();
 				promoRedemption.getSalesInvoices().remove(salesInvoice);
 				salesInvoicesTableModel.removeItem(salesInvoice);
 				
@@ -434,6 +459,10 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		promoRedemptionNumberLabel.setText(null);
 		customerCodeField.setText(null);
 		customerNameLabel.setText(null);
+		totalAmountLabel.setText(null);
+		
+		salesInvoicesTableModel.clear();
+		
 		addSalesInvoiceButton.setEnabled(false);
 		removeSalesInvoiceButton.setEnabled(false);
 		postButton.setEnabled(false);
@@ -447,6 +476,11 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		
 		public void setPromoRedemption(PromoRedemption promoRedemption) {
 			this.salesInvoices = promoRedemption.getSalesInvoices();
+			fireTableDataChanged();
+		}
+
+		public void clear() {
+			salesInvoices.clear();
 			fireTableDataChanged();
 		}
 

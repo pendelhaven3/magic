@@ -1,8 +1,11 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.pj.magic.Constants;
 
 public class PromoRedemption {
 
@@ -89,6 +92,15 @@ public class PromoRedemption {
 
 	public String getStatus() {
 		return (posted) ? "Posted" : "New";
+	}
+
+	public BigDecimal getTotalAmount() {
+		BigDecimal total = Constants.ZERO;
+		for (PromoRedemptionSalesInvoice salesInvoice : salesInvoices) {
+			total = total.add(salesInvoice.getSalesInvoice().getSalesByManufacturer(
+					promo.getManufacturer()));
+		}
+		return total;
 	}
 
 }
