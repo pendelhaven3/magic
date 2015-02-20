@@ -270,6 +270,16 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			params.add(DbUtil.toMySqlDateString(criteria.getReceivedDate()));
 		}
 		
+		if (criteria.getReceivedDateFrom() != null) {
+			sql.append(" and a.RECEIVED_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getReceivedDateFrom()));
+		}
+		
+		if (criteria.getReceivedDateTo() != null) {
+			sql.append(" and a.RECEIVED_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getReceivedDateTo()));
+		}
+		
 		if (criteria.getPaid() != null) {
 			if (!criteria.getPaid()) {
 				sql.append(UNPAID_WHERE_CLAUSE_SQL);

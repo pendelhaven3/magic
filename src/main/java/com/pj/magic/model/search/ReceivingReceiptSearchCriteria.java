@@ -13,6 +13,8 @@ public class ReceivingReceiptSearchCriteria {
 	private Date receivedDate;
 	private Boolean paid;
 	private String orderBy;
+	private Date receivedDateFrom;
+	private Date receivedDateTo;
 	
 	public Long getReceivingReceiptNumber() {
 		return receivingReceiptNumber;
@@ -68,6 +70,22 @@ public class ReceivingReceiptSearchCriteria {
 
 	public void setOrderBy(String orderBy) {
 		this.orderBy = orderBy;
+	}
+
+	public Date getReceivedDateFrom() {
+		return receivedDateFrom;
+	}
+
+	public void setReceivedDateFrom(Date receivedDateFrom) {
+		this.receivedDateFrom = receivedDateFrom;
+	}
+
+	public Date getReceivedDateTo() {
+		return receivedDateTo;
+	}
+
+	public void setReceivedDateTo(Date receivedDateTo) {
+		this.receivedDateTo = receivedDateTo;
 	}
 
 }
