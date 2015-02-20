@@ -213,7 +213,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 			getMagicFrame().switchToChangePasswordPanel();
 			break;
 		case PROMO_REDEMPTION:
-			getMagicFrame().switchToPromoRedemptionListPanel();
+			getMagicFrame().switchToPromoRedemptionPromoListPanel();
 			break;
 		}
 	}

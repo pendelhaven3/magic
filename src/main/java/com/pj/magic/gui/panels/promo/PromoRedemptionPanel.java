@@ -65,6 +65,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	private PromoRedemptionPrizesTableModel prizesTableModel;
 	private MagicToolBarButton addSalesInvoiceButton;
 	private MagicToolBarButton removeSalesInvoiceButton;
+	private MagicToolBarButton postButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -382,6 +383,19 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		postButton = new MagicToolBarButton("post", "Post");
+		postButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				postPromoRedemption();
+			}
+		});
+		toolBar.add(postButton);
+	}
+
+	private void postPromoRedemption() {
+		showMessage("Tada! Under construction!");
 	}
 
 	@Override
@@ -410,8 +424,10 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		
 		salesInvoicesTableModel.setPromoRedemption(promoRedemption);
 		
-		addSalesInvoiceButton.setEnabled(true);
-		removeSalesInvoiceButton.setEnabled(true);
+		boolean isNew = !promoRedemption.isPosted();
+		addSalesInvoiceButton.setEnabled(isNew);
+		removeSalesInvoiceButton.setEnabled(isNew);
+		postButton.setEnabled(isNew);
 	}
 	
 	private void clearDisplay() {
@@ -420,6 +436,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		customerNameLabel.setText(null);
 		addSalesInvoiceButton.setEnabled(false);
 		removeSalesInvoiceButton.setEnabled(false);
+		postButton.setEnabled(false);
 	}
 
 	private class SalesInvoicesTableModel extends AbstractTableModel {

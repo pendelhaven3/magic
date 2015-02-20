@@ -6,6 +6,7 @@ public class Promo {
 
 	private Long id;
 	private Long promoNumber;
+	private String name;
 	
 	// TODO: Move promo mechanics to separate class
 	private BigDecimal targetAmount;
@@ -49,6 +50,14 @@ public class Promo {
 
 	public void setManufacturer(Manufacturer manufacturer) {
 		this.manufacturer = manufacturer;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

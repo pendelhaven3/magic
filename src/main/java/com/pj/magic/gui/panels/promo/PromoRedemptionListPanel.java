@@ -141,7 +141,7 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToPromoRedemptionPromoListPanel();
 	}
 
 	@Override
