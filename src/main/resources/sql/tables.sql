@@ -855,20 +855,13 @@ create table PROMO (
   NAME varchar(100) not null,
   TARGET_AMOUNT numeric(8, 2) not null,
   MANUFACTURER_ID integer not null,
-  primary key (ID),
-  unique key PROMO$UK (PROMO_NO),
-  constraint PROMO$FK foreign key (MANUFACTURER_ID) references MANUFACTURER (ID)
-);
-
-create table PROMO_PRIZE (
-  ID integer auto_increment,
-  PROMO_ID integer not null,
   PRODUCT_ID integer not null,
   UNIT char(3) not null,
   QUANTITY integer not null,
   primary key (ID),
-  constraint PROMO_PRIZE$FK foreign key (PROMO_ID) references PROMO (ID),
-  constraint PROMO_PRIZE$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+  unique key PROMO$UK (PROMO_NO),
+  constraint PROMO$FK foreign key (MANUFACTURER_ID) references MANUFACTURER (ID),
+  constraint PROMO$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
 
 create table PROMO_REDEMPTION (
@@ -876,6 +869,7 @@ create table PROMO_REDEMPTION (
   PROMO_ID integer not null,
   PROMO_REDEMPTION_NO integer not null,
   CUSTOMER_ID integer not null,
+  PRIZE_QUANTITY integer(3) default 0 not null,
   POST_IND char(1) default 'N' not null,
   POST_DT date null,
   POST_BY integer null,
@@ -891,15 +885,4 @@ create table PROMO_REDEMPTION_SALES_INVOICE (
   SALES_INVOICE_ID integer not null,
   primary key (ID),
   constraint PROMO_REDEMPTION_SALES_INVOICE$FK foreign key (PROMO_REDEMPTION_ID) references PROMO_REDEMPTION (ID)
-);
-
-create table PROMO_REDEMPTION_PRIZE (
-  ID integer auto_increment,
-  PROMO_REDEMPTION_ID integer not null,
-  PRODUCT_ID integer not null,
-  UNIT char(3) not null,
-  QUANTITY integer not null,
-  primary key (ID),
-  constraint PROMO_REDEMPTION_PRIZE$FK foreign key (PROMO_REDEMPTION_ID) references PROMO_REDEMPTION (ID),
-  constraint PROMO_REDEMPTION_PRIZE$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );

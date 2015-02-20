@@ -11,6 +11,7 @@ public class Promo {
 	// TODO: Move promo mechanics to separate class
 	private BigDecimal targetAmount;
 	private Manufacturer manufacturer;
+	private PromoPrize prize;
 
 	public Promo() {
 		// default constructor
@@ -58,6 +59,14 @@ public class Promo {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public PromoPrize getPrize() {
+		return prize;
+	}
+
+	public void setPrize(PromoPrize prize) {
+		this.prize = prize;
 	}
 
 }

@@ -92,8 +92,8 @@ public class PromoRedemptionPromoListPanel extends StandardMagicPanel {
 		});
 	}
 
-	protected void selectPromo() {
-		getMagicFrame().switchToPromoRedemptionListPanel();
+	private void selectPromo() {
+		getMagicFrame().switchToPromoRedemptionListPanel(tableModel.getPromo(table.getSelectedRow()));
 	}
 
 	@Override
@@ -117,6 +117,10 @@ public class PromoRedemptionPromoListPanel extends StandardMagicPanel {
 			fireTableDataChanged();
 		}
 		
+		public Promo getPromo(int rowIndex) {
+			return promos.get(rowIndex);
+		}
+
 		@Override
 		public int getRowCount() {
 			return promos.size();

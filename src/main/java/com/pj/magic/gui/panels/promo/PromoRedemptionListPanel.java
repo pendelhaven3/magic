@@ -23,6 +23,7 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.util.ComponentUtil;
@@ -38,8 +39,10 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 	
 	private MagicListTable table;
 	private PromoRedemptionsTableModel tableModel;
+	private Promo promo;
 	
-	public void updateDisplay() {
+	public void updateDisplay(Promo promo) {
+		this.promo = promo;
 		List<PromoRedemption> promoRedemptions = promoRedemptionService.getAllPromoRedemptions();
 		tableModel.setPromoRedemptions(promoRedemptions);
 		if (!promoRedemptions.isEmpty()) {
@@ -136,7 +139,10 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 	}
 
 	private void switchToNewPromoRedemptionPanel() {
-		getMagicFrame().switchToPromoRedemptionPanel(new PromoRedemption());
+		PromoRedemption promoRedemption = new PromoRedemption();
+		promoRedemption.setPromo(promo);
+		
+		getMagicFrame().switchToPromoRedemptionPanel(promoRedemption);
 	}
 
 	@Override

@@ -17,6 +17,7 @@ public class PromoRedemption {
 	private Date postDate;
 	private User postedBy;
 	private List<PromoRedemptionSalesInvoice> salesInvoices = new ArrayList<>();
+	private Integer prizeQuantity;
 
 	public PromoRedemption() {
 		// default constructor
@@ -101,6 +102,18 @@ public class PromoRedemption {
 					promo.getManufacturer()));
 		}
 		return total;
+	}
+
+	public Integer getPrizeQuantity() {
+		if (posted) {
+			return prizeQuantity;
+		} else {
+			return getTotalAmount().divideToIntegralValue(getPromo().getTargetAmount()).intValue();
+		}
+	}
+
+	public void setPrizeQuantity(Integer prizeQuantity) {
+		this.prizeQuantity = prizeQuantity;
 	}
 
 }

@@ -33,8 +33,8 @@ import com.pj.magic.gui.dialog.SelectSalesInvoicesForPromoRedemptionDialog;
 import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PromoPrize;
 import com.pj.magic.model.PromoRedemption;
-import com.pj.magic.model.PromoRedemptionPrize;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.PromoRedemptionService;
@@ -64,7 +64,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	private MagicListTable salesInvoicesTable;
 	private MagicListTable prizesTable;
 	private SalesInvoicesTableModel salesInvoicesTableModel;
-	private PromoRedemptionPrizesTableModel prizesTableModel;
+	private PromoRedemptionPrizesTableModel prizeTableModel;
 	private JLabel totalAmountLabel;
 	private MagicToolBarButton addSalesInvoiceButton;
 	private MagicToolBarButton removeSalesInvoiceButton;
@@ -86,8 +86,10 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			}
 		});
 		
-		initializeTable();
+		initializeTables();
 		initializeModelListener();
+		
+		focusOnComponentWhenThisPanelIsDisplayed(customerCodeField);
 	}
 
 	private void initializeModelListener() {
@@ -96,7 +98,9 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			@Override
 			public void tableChanged(TableModelEvent e) {
 				totalAmountLabel.setText(FormatterUtil.formatAmount(promoRedemption.getTotalAmount()));
+				prizeTableModel.fireTableRowsUpdated(0, 0);
 			}
+			
 		});
 	}
 
@@ -125,12 +129,16 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		}
 	}
 
-	private void initializeTable() {
+	private void initializeTables() {
 		salesInvoicesTableModel = new SalesInvoicesTableModel();
 		salesInvoicesTable = new MagicListTable(salesInvoicesTableModel);
 		
-		prizesTableModel = new PromoRedemptionPrizesTableModel();
-		prizesTable = new MagicListTable(prizesTableModel);
+		prizeTableModel = new PromoRedemptionPrizesTableModel();
+		prizesTable = new MagicListTable(prizeTableModel);
+		
+		prizesTable.getColumnModel().getColumn(ITEM_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
+		prizesTable.getColumnModel().getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(50);
+		prizesTable.getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(50);
 	}
 	
 	@Override
@@ -429,7 +437,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToPromoRedemptionListPanel();
+		getMagicFrame().switchToPromoRedemptionListPanel(promoRedemption.getPromo());
 	}
 
 	public void updateDisplay(PromoRedemption promoRedemption) {
@@ -538,13 +546,6 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 
 		private final String[] columnNames = {"Item Description", "Unit", "Quantity"};
 		
-		private List<PromoRedemptionPrize> promoRedemptionPrizes = new ArrayList<>();
-		
-		public void setPromoRedemptionPrizes(List<PromoRedemptionPrize> promoRedemptionPrizes) {
-			this.promoRedemptionPrizes = promoRedemptionPrizes;
-			fireTableDataChanged();
-		}
-		
 		@Override
 		public String getColumnName(int column) {
 			return columnNames[column];
@@ -552,24 +553,29 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		
 		@Override
 		public int getRowCount() {
-			return promoRedemptionPrizes.size();
+			return 1;
 		}
 
 		@Override
 		public int getColumnCount() {
 			return columnNames.length;
 		}
+		
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			return (columnIndex == QUANTITY_COLUMN_INDEX) ? Number.class : String.class;
+		}
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			PromoRedemptionPrize promoRedemptionPrize = promoRedemptionPrizes.get(rowIndex);
+			PromoPrize prize = promoRedemption.getPromo().getPrize();
 			switch (columnIndex) {
 			case ITEM_DESCRIPTION_COLUMN_INDEX:
-				return promoRedemptionPrize.getProduct().getDescription();
+				return prize.getProduct().getDescription();
 			case UNIT_COLUMN_INDEX:
-				return promoRedemptionPrize.getUnit();
+				return prize.getUnit();
 			case QUANTITY_COLUMN_INDEX:
-				return promoRedemptionPrize.getQuantity();
+				return promoRedemption.getPrizeQuantity().toString();
 			default:
 				return null;
 			}

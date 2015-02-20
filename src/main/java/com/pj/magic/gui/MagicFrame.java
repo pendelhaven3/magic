@@ -129,6 +129,7 @@ import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
+import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchasePayment;
@@ -1231,9 +1232,9 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_REDEMPTION_PANEL);
 	}
 	
-	public void switchToPromoRedemptionListPanel() {
+	public void switchToPromoRedemptionListPanel(Promo promo) {
 		addPanelNameToTitle("Promo Redemption List");
-		promoRedemptionListPanel.updateDisplay();
+		promoRedemptionListPanel.updateDisplay(promo);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_REDEMPTION_LIST_PANEL);
 	}
 	

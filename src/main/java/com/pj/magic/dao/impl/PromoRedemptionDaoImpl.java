@@ -17,7 +17,9 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
+import com.pj.magic.model.PromoPrize;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.User;
 
@@ -25,18 +27,21 @@ import com.pj.magic.model.User;
 public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PROMO_ID, PROMO_REDEMPTION_NO, CUSTOMER_ID,"
+			"select a.ID, PROMO_ID, PROMO_REDEMPTION_NO, CUSTOMER_ID, PRIZE_QUANTITY,"
 			+ " POST_IND, POST_DT, POST_BY,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
-			+ " d.TARGET_AMOUNT, d.MANUFACTURER_ID"
+			+ " d.TARGET_AMOUNT, d.MANUFACTURER_ID, d.PRODUCT_ID, d.UNIT, d.QUANTITY,"
+			+ " e.DESCRIPTION as PRODUCT_DESCRIPTION"
 			+ " from PROMO_REDEMPTION a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_id"
 			+ " left join USER c"
 			+ "   on c.ID = a.POST_BY"
 			+ " join PROMO d"
-			+ "   on d.ID = a.PROMO_ID";
+			+ "   on d.ID = a.PROMO_ID"
+			+ " join PRODUCT e"
+			+ "   on e.ID = d.PRODUCT_ID";
 	
 	// TODO: Use separate sequence for each promo
 	private static final String PROMO_REDEMPTION_NUMBER_SEQUENCE = "PROMO_REDEMPTION_NO_SEQ";
@@ -79,7 +84,18 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 		return getNextSequenceValue(PROMO_REDEMPTION_NUMBER_SEQUENCE);
 	}
 
+	private static final String UPDATE_SQL = "update PROMO_REDEMPTION"
+			+ " set CUSTOMER_ID = ?, PRIZE_QUANTITY = ?, POST_IND = ?, POST_DT = ?,"
+			+ " POST_BY = ? where ID = ?";
+	
 	private void update(PromoRedemption promoRedemption) {
+		getJdbcTemplate().update(UPDATE_SQL,
+				promoRedemption.getCustomer().getId(),
+				promoRedemption.getPrizeQuantity(),
+				promoRedemption.isPosted() ? "Y" : "N",
+				promoRedemption.isPosted() ? promoRedemption.getPostDate() : null,
+				promoRedemption.isPosted() ? promoRedemption.getPostedBy().getId() : null,
+				promoRedemption.getId());
 	}
 
 	private static final String GET_SQL = BASE_SELECT_SQL
@@ -101,12 +117,11 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			PromoRedemption promoRedemption = new PromoRedemption();
 			promoRedemption.setId(rs.getLong("ID"));
 			promoRedemption.setPromoRedemptionNumber(rs.getLong("PROMO_REDEMPTION_NO"));
+			promoRedemption.setPromo(mapPromo(rs));
 			
-			Promo promo = new Promo();
-			promo.setId(rs.getLong("PROMO_ID"));
-			promo.setTargetAmount(rs.getBigDecimal("TARGET_AMOUNT"));
-			promo.setManufacturer(new Manufacturer(rs.getLong("MANUFACTURER_ID")));
-			promoRedemption.setPromo(promo);
+			if (rs.getInt("PRIZE_QUANTITY") > 0) {
+				promoRedemption.setPrizeQuantity(rs.getInt("PRIZE_QUANTITY"));
+			}
 			
 			Customer customer = new Customer();
 			customer.setId(rs.getLong("CUSTOMER_ID"));
@@ -122,6 +137,26 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			}
 			
 			return promoRedemption;
+		}
+
+		private Promo mapPromo(ResultSet rs) throws SQLException {
+			Promo promo = new Promo();
+			promo.setId(rs.getLong("PROMO_ID"));
+			promo.setTargetAmount(rs.getBigDecimal("TARGET_AMOUNT"));
+			promo.setManufacturer(new Manufacturer(rs.getLong("MANUFACTURER_ID")));
+			
+			Product product = new Product();
+			product.setId(rs.getLong("PRODUCT_ID"));
+			product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
+			
+			PromoPrize prize = new PromoPrize();
+			prize.setProduct(product);
+			prize.setUnit(rs.getString("UNIT"));
+			prize.setQuantity(rs.getInt("QUANTITY"));
+			
+			promo.setPrize(prize);
+			
+			return promo;
 		}
 		
 	}
