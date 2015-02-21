@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
 import com.pj.magic.exception.AlreadyPostedException;
+import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.NothingToRedeemException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
@@ -480,6 +481,8 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			} catch (AlreadyPostedException e) {
 				showErrorMessage("Promo Redemption is already posted");
 				updateDisplay(promoRedemption);
+			} catch (NotEnoughStocksException e) {
+				showErrorMessage("Not enough stocks of promo prize");
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");

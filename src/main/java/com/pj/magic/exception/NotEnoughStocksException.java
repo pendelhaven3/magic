@@ -10,6 +10,10 @@ public class NotEnoughStocksException extends RuntimeException {
 	private StockQuantityConversionItem stockQuantityConversionItem;
 	private AdjustmentOutItem adjustmentOutItem;
 
+	public NotEnoughStocksException() {
+		
+	}
+	
 	public NotEnoughStocksException(SalesRequisitionItem item) {
 		this.salesRequisitionItem = item;
 	}
