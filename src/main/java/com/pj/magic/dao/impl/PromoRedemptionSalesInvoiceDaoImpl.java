@@ -17,7 +17,7 @@ public class PromoRedemptionSalesInvoiceDaoImpl extends MagicDao implements Prom
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PROMO_REDEMPTION_ID, SALES_INVOICE_ID,"
-			+ " b.SALES_INVOICE_NO"
+			+ " b.SALES_INVOICE_NO, b.TRANSACTION_DT"
 			+ " from PROMO_REDEMPTION_SALES_INVOICE a"
 			+ " join SALES_INVOICE b"
 			+ "   on b.ID = a.SALES_INVOICE_ID";
@@ -53,6 +53,7 @@ public class PromoRedemptionSalesInvoiceDaoImpl extends MagicDao implements Prom
 			SalesInvoice salesInvoice = new SalesInvoice();
 			salesInvoice.setId(rs.getLong("SALES_INVOICE_ID"));
 			salesInvoice.setSalesInvoiceNumber(rs.getLong("SALES_INVOICE_NO"));
+			salesInvoice.setTransactionDate(rs.getDate("TRANSACTION_DT"));
 			promoRedemptionSalesInvoice.setSalesInvoice(salesInvoice);
 			
 			return promoRedemptionSalesInvoice;

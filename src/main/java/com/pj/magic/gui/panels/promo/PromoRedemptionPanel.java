@@ -31,6 +31,7 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.dialog.SelectSalesInvoicesForPromoRedemptionDialog;
 import com.pj.magic.gui.panels.StandardMagicPanel;
@@ -40,6 +41,7 @@ import com.pj.magic.model.PromoPrize;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -58,6 +60,8 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	@Autowired private PromoRedemptionService promoRedemptionService;
 	@Autowired private SelectSalesInvoicesForPromoRedemptionDialog selectSalesInvoicesForPromoRedemptionDialog;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private PrintService printService;
 	
 	private PromoRedemption promoRedemption;
 	private JLabel promoRedemptionNumberLabel;
@@ -72,6 +76,8 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	private MagicToolBarButton addSalesInvoiceButton;
 	private MagicToolBarButton removeSalesInvoiceButton;
 	private MagicToolBarButton postButton;
+	private MagicToolBarButton printPreviewButton;
+	private MagicToolBarButton printButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -430,6 +436,31 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(postButton);
+		
+		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreview();
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(promoRedemption);
+			}
+		});
+		toolBar.add(printButton);
+	}
+
+	protected void printPreview() {
+		printPreviewDialog.updateDisplay(printService.generateReportAsString(promoRedemption));
+		printPreviewDialog.setVisible(true);
 	}
 
 	private void postPromoRedemption() {
@@ -487,6 +518,8 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		addSalesInvoiceButton.setEnabled(isNew);
 		removeSalesInvoiceButton.setEnabled(isNew);
 		postButton.setEnabled(isNew);
+		printPreviewButton.setEnabled(!isNew);
+		printButton.setEnabled(!isNew);
 	}
 	
 	private void clearDisplay() {
@@ -500,6 +533,8 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		addSalesInvoiceButton.setEnabled(false);
 		removeSalesInvoiceButton.setEnabled(false);
 		postButton.setEnabled(false);
+		printPreviewButton.setEnabled(false);
+		printButton.setEnabled(false);
 	}
 
 	private class SalesInvoicesTableModel extends AbstractTableModel {

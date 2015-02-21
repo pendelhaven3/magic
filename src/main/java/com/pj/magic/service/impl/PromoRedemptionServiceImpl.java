@@ -1,5 +1,7 @@
 package com.pj.magic.service.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -45,7 +47,11 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		criteria.setUnredeemedPromo(promo);
 		criteria.setCustomer(customer);
 		criteria.setPaid(true);
-		criteria.setTransactionDateFrom(new Date());
+		try {
+			criteria.setTransactionDateFrom(new SimpleDateFormat("MM/dd/yyyy").parse("02/21/2015"));
+		} catch (ParseException e) {
+			// do nothing!
+		}
 		
 		return salesInvoiceService.search(criteria);
 	}
@@ -92,10 +98,10 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 			throw new NothingToRedeemException();
 		}
 		
+		updated.setPrizeQuantity(updated.getPrizeQuantity());
 		updated.setPosted(true);
 		updated.setPostDate(new Date());
 		updated.setPostedBy(loginService.getLoggedInUser());
-		updated.setPrizeQuantity(updated.getPrizeQuantity());
 		promoRedemptionDao.save(updated);
 	}
 
