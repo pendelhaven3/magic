@@ -44,6 +44,8 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
 		criteria.setUnredeemedPromo(promo);
 		criteria.setCustomer(customer);
+		criteria.setPaid(true);
+		criteria.setTransactionDateFrom(new Date());
 		
 		return salesInvoiceService.search(criteria);
 	}
