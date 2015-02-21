@@ -1,0 +1,23 @@
+#set( $charsPerLine = 63 )
+$report.center("JC HARMONY SELLING INC.", $charsPerLine)
+$report.center("251 GEN.P.ALVAREZ ST.CALOOCAN CITY", $charsPerLine)
+$report.center("TEL.NO.3621785 3195946", $charsPerLine)
+
+$report.center("PROMO REDEMPTION", $charsPerLine)
+
+Promo Name : P&G JOLLIBEE GC GIVEAWAY
+Customer   : $promoRedemption.customer.name
+
+   Tran. Date S.I. #  Net Amount
+   ---------- ------ ------------
+##   11/28/2014 366237   146,906.86
+#foreach($redemptionSalesInvoice in $promoRedemption.salesInvoices)
+   $report.field($redemptionSalesInvoice.salesInvoice.transactionDate) $report.field($redemptionSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($redemptionSalesInvoice.salesInvoice.getSalesByManufacturer($promoRedemption.promo.manufacturer), 12, "right")
+#end
+                     ------------
+           TOTALS => $report.field($promoRedemption.totalAmount, 12, "right")
+                     ============
+
+Prize(s)
+
+$promoRedemption.prizeQuantity PCS JOLLIBEE P50 GIFT CERTIFICATE 

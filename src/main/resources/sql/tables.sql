@@ -848,3 +848,41 @@ create table PURCHASE_RETURN_BAD_STOCK_ITEM (
   constraint PURCHASE_RETURN_BAD_STOCK_ITEM$FK foreign key (PURCHASE_RETURN_BAD_STOCK_ID) references PURCHASE_RETURN_BAD_STOCK (ID),
   constraint PURCHASE_RETURN_BAD_STOCK_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
+
+create table PROMO (
+  ID integer auto_increment,
+  PROMO_NO integer not null,
+  NAME varchar(100) not null,
+  TARGET_AMOUNT numeric(8, 2) not null,
+  MANUFACTURER_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT char(3) not null,
+  QUANTITY integer not null,
+  primary key (ID),
+  unique key PROMO$UK (PROMO_NO),
+  constraint PROMO$FK foreign key (MANUFACTURER_ID) references MANUFACTURER (ID),
+  constraint PROMO$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);
+
+create table PROMO_REDEMPTION (
+  ID integer auto_increment,
+  PROMO_ID integer not null,
+  PROMO_REDEMPTION_NO integer not null,
+  CUSTOMER_ID integer not null,
+  PRIZE_QUANTITY integer(3) default 0 not null,
+  POST_IND char(1) default 'N' not null,
+  POST_DT date null,
+  POST_BY integer null,
+  primary key (ID),
+  constraint PROMO_REDEMPTION$FK foreign key (PROMO_ID) references PROMO (ID),
+  constraint PROMO_REDEMPTION$FK2 foreign key (CUSTOMER_ID) references CUSTOMER (ID),
+  constraint PROMO_REDEMPTION$FK3 foreign key (POST_BY) references USER (ID)
+);
+
+create table PROMO_REDEMPTION_SALES_INVOICE (
+  ID integer auto_increment,
+  PROMO_REDEMPTION_ID integer not null,
+  SALES_INVOICE_ID integer not null,
+  primary key (ID),
+  constraint PROMO_REDEMPTION_SALES_INVOICE$FK foreign key (PROMO_REDEMPTION_ID) references PROMO_REDEMPTION (ID)
+);

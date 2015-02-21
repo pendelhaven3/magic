@@ -38,6 +38,7 @@ import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.PurchasePayment;
@@ -888,6 +889,25 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PurchaseReturnBadStock purchaseReturnBadStock) {
 		try {
 			for (String printPage : generateReportAsString(purchaseReturnBadStock)) {
+				PrinterUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(PromoRedemption promoRedemption) {
+		Map<String, Object> reportData = new HashMap<>();
+		reportData.put("promoRedemption", promoRedemption);
+		
+		return Arrays.asList(generateReportAsString("reports/promoRedemption.vm", reportData));
+	}
+
+	@Override
+	public void print(PromoRedemption promoRedemption) {
+		try {
+			for (String printPage : generateReportAsString(promoRedemption)) {
 				PrinterUtil.print(printPage);
 			}
 		} catch (PrintException e) {

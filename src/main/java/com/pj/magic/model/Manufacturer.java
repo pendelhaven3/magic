@@ -8,6 +8,14 @@ public class Manufacturer implements Comparable<Manufacturer> {
 	private Long id;
 	private String name;
 
+	public Manufacturer() {
+		// default constructor
+	}
+	
+	public Manufacturer(long id) {
+		this.id = id;
+	}
+	
 	public Long getId() {
 		return id;
 	}

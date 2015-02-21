@@ -208,6 +208,16 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			+ "   and p.POST_IND = 'Y'"
 			+ " )";
 	
+	private static final String UNREDEEMED_PROMO_WHERE_CLAUSE_SQL =
+			" and not exists("
+			+ "   select 1"
+			+ "   from PROMO_REDEMPTION_SALES_INVOICE prsi"
+			+ "   join PROMO_REDEMPTION pr"
+			+ "     on pr.ID = prsi.PROMO_REDEMPTION_ID"
+			+ "   where prsi.SALES_INVOICE_ID = a.ID"
+			+ "   and pr.PROMO_ID = ?"
+			+ " )";
+	
 	@Override
 	public List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
@@ -255,6 +265,11 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			} else {
 				sql.append(UNPAID_WHERE_CLAUSE_SQL);
 			}
+		}
+		
+		if (criteria.getUnredeemedPromo() != null) {
+			sql.append(UNREDEEMED_PROMO_WHERE_CLAUSE_SQL);
+			params.add(criteria.getUnredeemedPromo().getId());
 		}
 		
 		if (!StringUtils.isEmpty(criteria.getOrderBy())) {
