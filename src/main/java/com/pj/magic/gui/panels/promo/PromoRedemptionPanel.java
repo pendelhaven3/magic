@@ -508,6 +508,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 				promoRedemptionService.getPromoRedemption(promoRedemption.getId());
 		
 		promoRedemptionNumberLabel.setText(promoRedemption.getPromoRedemptionNumber().toString());
+		customerCodeField.setEnabled(!promoRedemption.isPosted());
 		customerCodeField.setText(promoRedemption.getCustomer().getCode());
 		customerNameLabel.setText(promoRedemption.getCustomer().getName());
 		totalAmountLabel.setText(FormatterUtil.formatAmount(promoRedemption.getTotalAmount()));
@@ -515,6 +516,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		salesInvoicesTableModel.setPromoRedemption(promoRedemption);
 		
 		boolean isNew = !promoRedemption.isPosted();
+		selectCustomerButton.setEnabled(isNew);
 		addSalesInvoiceButton.setEnabled(isNew);
 		removeSalesInvoiceButton.setEnabled(isNew);
 		postButton.setEnabled(isNew);
@@ -524,12 +526,14 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	
 	private void clearDisplay() {
 		promoRedemptionNumberLabel.setText(null);
+		customerCodeField.setEnabled(true);
 		customerCodeField.setText(null);
 		customerNameLabel.setText(null);
 		totalAmountLabel.setText(null);
 		
 		salesInvoicesTableModel.clear();
 		
+		selectCustomerButton.setEnabled(true);
 		addSalesInvoiceButton.setEnabled(false);
 		removeSalesInvoiceButton.setEnabled(false);
 		postButton.setEnabled(false);
