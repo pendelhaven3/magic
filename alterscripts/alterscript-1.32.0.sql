@@ -84,3 +84,6 @@ create table PROMO_REDEMPTION_SALES_INVOICE (
   primary key (ID),
   constraint PROMO_REDEMPTION_SALES_INVOICE$FK foreign key (PROMO_REDEMPTION_ID) references PROMO_REDEMPTION (ID)
 );
+
+insert into SEQUENCE (NAME) values ('PROMO_REDEMPTION_NO_SEQ');
+
