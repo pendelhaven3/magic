@@ -59,6 +59,8 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	private JLabel customerNameLabel;
 	private EllipsisButton selectCustomerButton;
 	private JButton searchButton;
+	private JLabel totalItemsLabel;
+	private JLabel totalAmountLabel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -90,11 +92,24 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	}
 
 	private void searchSalesInvoices() {
+		String customerCode = customerCodeField.getText();
+		if (!StringUtils.isEmpty(customerCode)) {
+			Customer customer = customerService.findCustomerByCode(customerCode);
+			if (customer != null) {
+				customerCodeField.setText(customer.getCode());
+				customerNameLabel.setText(customer.getName());
+			} else {
+				customerNameLabel.setText(null);
+			}
+		}
+		
 		UnpaidSalesInvoicesReport report = createUnpaidSalesInvoicesReport();
 		tableModel.setSalesInvoices(report.getSalesInvoices());
 		if (!report.getSalesInvoices().isEmpty()) {
 			table.changeSelection(0, 0);
 		}
+		totalItemsLabel.setText(String.valueOf(report.getSalesInvoices().size()));
+		totalAmountLabel.setText(FormatterUtil.formatAmount(report.getTotalAmount()));
 	}
 
 	private void openSelectCustomerDialog() {
@@ -172,7 +187,6 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(Box.createVerticalStrut(10), c);
 		
 		currentRow++;
@@ -189,7 +203,6 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(Box.createVerticalStrut(20), c);
 		
 		currentRow++;
@@ -202,7 +215,17 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 		c.gridwidth = 3;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setPreferredSize(new Dimension(400, 250));
 		mainPanel.add(scrollPane, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 3;
+		c.anchor = GridBagConstraints.EAST;
+		mainPanel.add(createTotalsPanel(), c);
 	}
 
 	private JPanel createCustomerPanel() {
@@ -262,11 +285,13 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	}
 
 	private void print() {
+		searchSalesInvoices();
 		UnpaidSalesInvoicesReport report = createUnpaidSalesInvoicesReport();
 		printService.print(report);
 	}
 
 	private void printPreview() {
+		searchSalesInvoices();
 		UnpaidSalesInvoicesReport report = createUnpaidSalesInvoicesReport();
 		printPreviewDialog.updateDisplay(printService.generateReportAsString(report));
 		printPreviewDialog.setVisible(true);
@@ -279,14 +304,7 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 		
 		String customerCode = customerCodeField.getText();
 		if (!StringUtils.isEmpty(customerCode)) {
-			Customer customer = customerService.findCustomerByCode(customerCode);
-			if (customer != null) {
-				criteria.setCustomer(customer);
-				customerCodeField.setText(customer.getCode());
-				customerNameLabel.setText(customer.getName());
-			} else {
-				customerNameLabel.setText(null);
-			}
+			criteria.setCustomer(customerService.findCustomerByCode(customerCode));
 		}
 		
 		UnpaidSalesInvoicesReport report = new UnpaidSalesInvoicesReport();
@@ -294,6 +312,47 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 		return report;
 	}
 
+	private JPanel createTotalsPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalItemsLabel = ComponentUtil.createRightLabel(100);
+		panel.add(totalItemsLabel, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		panel.add(Box.createHorizontalStrut(10), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAmountLabel = ComponentUtil.createRightLabel(100);
+		panel.add(totalAmountLabel, c);
+		
+		return panel;
+	}
+	
 	private class SalesInvoicesTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = {"SI No.", "Transaction Date", "Customer", "Net Amount"};
