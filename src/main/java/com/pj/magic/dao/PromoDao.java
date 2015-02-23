@@ -7,5 +7,7 @@ import java.util.List;
 public interface PromoDao {
 
 	List<Promo> getAll();
+
+	Promo get(long id);
 	
 }

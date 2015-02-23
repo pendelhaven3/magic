@@ -32,7 +32,7 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
 			+ " d.TARGET_AMOUNT, d.MANUFACTURER_ID, d.PRODUCT_ID, d.UNIT, d.QUANTITY,"
-			+ " e.DESCRIPTION as PRODUCT_DESCRIPTION"
+			+ " e.DESCRIPTION as PRODUCT_DESCRIPTION, e.MANUFACTURER_ID as PRODUCT_MANUFACTURER_ID"
 			+ " from PROMO_REDEMPTION a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_id"

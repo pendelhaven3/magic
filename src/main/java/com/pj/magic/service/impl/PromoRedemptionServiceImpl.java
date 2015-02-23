@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.PromoDao;
 import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
@@ -38,11 +39,12 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Autowired private SalesInvoiceItemDao salesInvoiceItemDao;
 	@Autowired private LoginService loginService;
 	@Autowired private ProductDao productDao;
+	@Autowired private PromoDao promoDao;
 	
 	@Transactional
 	@Override
 	public void save(PromoRedemption promoRedemption) {
-		promoRedemption.setPromo(new Promo(1L)); // TODO: hardcoded promo id
+		promoRedemption.setPromo(promoDao.get(1L)); // TODO: hardcoded promo id
 		promoRedemptionDao.save(promoRedemption);
 	}
 

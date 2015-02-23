@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -58,6 +59,17 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 			return prize;
 		}
 		
+	}
+
+	private static final String GET_SQL = BASE_SELECT_SQL + " where a.ID = ?";
+	
+	@Override
+	public Promo get(long id) {
+		try {
+			return getJdbcTemplate().queryForObject(GET_SQL, promoRowMapper, id);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
 	}
 
 }
