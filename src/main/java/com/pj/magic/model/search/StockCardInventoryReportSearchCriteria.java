@@ -11,8 +11,8 @@ public class StockCardInventoryReportSearchCriteria {
 	private Product product;
 	private Date fromDate;
 	private Date toDate;
-	private List<String> units = new ArrayList<>();
 	private List<String> transactionTypes = new ArrayList<>();
+	private String unit;
 
 	public Product getProduct() {
 		return product;
@@ -38,16 +38,16 @@ public class StockCardInventoryReportSearchCriteria {
 		this.toDate = toDate;
 	}
 
-	public List<String> getUnits() {
-		return units;
-	}
-
-	public void setUnits(List<String> units) {
-		this.units = units;
-	}
-
 	public List<String> getTransactionTypes() {
 		return transactionTypes;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 
 }

@@ -12,6 +12,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -54,11 +55,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	private UtilCalendarModel toDateModel;
 	private JButton generateButton;
 	private EllipsisButton selectProductButton;
-	private JCheckBox caseUnitCheckBox;
-	private JCheckBox tieUnitCheckBox;
-	private JCheckBox cartonUnitCheckBox;
-	private JCheckBox dozenUnitCheckBox;
-	private JCheckBox piecesUnitCheckBox;
+	private JComboBox<String> unitComboBox;
 	private JCheckBox salesInvoiceTransactionTypeCheckBox;
 	private JCheckBox stockQuantityConversionTransactionTypeCheckBox;
 	private JCheckBox salesReturnTransactionTypeCheckBox;
@@ -91,11 +88,8 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		fromDateModel = new UtilCalendarModel();
 		toDateModel = new UtilCalendarModel();
 		
-		caseUnitCheckBox = new JCheckBox();
-		tieUnitCheckBox = new JCheckBox();
-		cartonUnitCheckBox = new JCheckBox();
-		dozenUnitCheckBox = new JCheckBox();
-		piecesUnitCheckBox = new JCheckBox();
+		unitComboBox = new JComboBox<>(
+				new String[] {null, Unit.PIECES, Unit.DOZEN, Unit.CARTON, Unit.TIE, Unit.CASE});
 		
 		salesInvoiceTransactionTypeCheckBox = new JCheckBox();
 		receivingReceiptTransactionTypeCheckBox = new JCheckBox();
@@ -156,20 +150,8 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		if (toDateModel.getValue() != null) {
 			criteria.setToDate(toDateModel.getValue().getTime());
 		}
-		if (caseUnitCheckBox.isSelected()) {
-			criteria.getUnits().add(Unit.CASE);
-		}
-		if (tieUnitCheckBox.isSelected()) {
-			criteria.getUnits().add(Unit.TIE);
-		}
-		if (cartonUnitCheckBox.isSelected()) {
-			criteria.getUnits().add(Unit.CARTON);
-		}
-		if (dozenUnitCheckBox.isSelected()) {
-			criteria.getUnits().add(Unit.DOZEN);
-		}
-		if (piecesUnitCheckBox.isSelected()) {
-			criteria.getUnits().add(Unit.PIECES);
+		if (unitComboBox.getSelectedItem() != null) {
+			criteria.setUnit((String)unitComboBox.getSelectedItem());
 		}
 		setTransactionTypeCriteria(criteria);
 		
@@ -303,14 +285,15 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Units: "), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Unit: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.gridwidth = 4;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(createUnitsPanel(), c);
+		unitComboBox.setPreferredSize(new Dimension(60, 25));
+		mainPanel.add(unitComboBox, c);
 		
 		currentRow++;
 		
@@ -410,43 +393,6 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		panel.add(new JLabel("Adjustment Out"), c);
 		panel.add(promoRedemptionTransactionTypeCheckBox, c);
 		panel.add(new JLabel("Promo Redemption"), c);
-		
-		return panel;
-	}
-
-	private JPanel createUnitsPanel() {
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		
-		c.insets.right = 3;
-		panel.add(caseUnitCheckBox, c);
-		
-		c.insets.right = 10;
-		panel.add(new JLabel("CSE"), c);
-		
-		c.insets.right = 3;
-		panel.add(tieUnitCheckBox, c);
-		
-		c.insets.right = 10;
-		panel.add(new JLabel("TIE"), c);
-		
-		c.insets.right = 3;
-		panel.add(cartonUnitCheckBox, c);
-		
-		c.insets.right = 10;
-		panel.add(new JLabel("CTN"), c);
-		
-		c.insets.right = 3;
-		panel.add(dozenUnitCheckBox, c);
-		
-		c.insets.right = 10;
-		panel.add(new JLabel("DOZ"), c);
-		
-		c.insets.right = 3;
-		panel.add(piecesUnitCheckBox, c);
-		
-		c.insets.right = 10;
-		panel.add(new JLabel("PCS"), c);
 		
 		return panel;
 	}
