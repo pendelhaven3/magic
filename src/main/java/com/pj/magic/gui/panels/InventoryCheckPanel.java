@@ -138,11 +138,6 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		this.inventoryCheck = inventoryCheckService.getInventoryCheck(inventoryCheck.getId());
 		inventoryCheck = this.inventoryCheck;
 		
-		for (InventoryCheckSummaryItem item : inventoryCheck.getSummaryItems()) {
-			System.out.println(item.getProduct().getCode());
-			System.out.println(item.getBeginningInventory());
-		}
-		
 		updateInventoryDateField(inventoryCheck.getInventoryDate());
 		datePicker.getComponents()[1].setVisible(false);
 		totalBeginningValueField.setText(FormatterUtil.formatAmount(inventoryCheck.getTotalBeginningValue()));
