@@ -149,5 +149,14 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 			return null;
 		}
 	}
+
+	private static final String FIND_ALL_BY_INVENTORY_CHECK_SQL = BASE_SELECT_SQL
+			+ " where a.INVENTORY_CHECK_ID = ?";
+	
+	@Override
+	public List<AreaInventoryReport> findAllByInventoryCheck(InventoryCheck inventoryCheck) {
+		return getJdbcTemplate().query(FIND_ALL_BY_INVENTORY_CHECK_SQL, areaInventoryReportRowMapper,
+				inventoryCheck.getId());
+	}
 	
 }

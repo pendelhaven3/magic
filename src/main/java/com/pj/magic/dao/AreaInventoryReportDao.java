@@ -14,5 +14,7 @@ public interface AreaInventoryReportDao {
 	List<AreaInventoryReport> getAll();
 	
 	AreaInventoryReport findByInventoryCheckAndReportNumber(InventoryCheck inventoryCheck, int reportNumber);
+
+	List<AreaInventoryReport> findAllByInventoryCheck(InventoryCheck inventoryCheck);
 	
 }

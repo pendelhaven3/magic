@@ -22,5 +22,7 @@ public interface AreaInventoryReportService {
 	
 	AreaInventoryReport findByInventoryCheckAndReportNumber(
 			InventoryCheck inventoryCheck, int reportNumber);
+
+	List<AreaInventoryReport> findAllAreaInventoryReportsByInventoryCheck(InventoryCheck inventoryCheck);
 	
 }

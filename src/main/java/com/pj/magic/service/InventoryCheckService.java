@@ -21,5 +21,5 @@ public interface InventoryCheckService {
 	void delete(InventoryCheck inventoryCheck);
 
 	List<AreaInventoryReportItem> getItemActualCountDetails(InventoryCheckSummaryItem item);
-	
+
 }

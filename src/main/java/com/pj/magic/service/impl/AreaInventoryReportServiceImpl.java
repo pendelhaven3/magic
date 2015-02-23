@@ -72,4 +72,10 @@ public class AreaInventoryReportServiceImpl implements AreaInventoryReportServic
 		return areaInventoryReportDao.findByInventoryCheckAndReportNumber(inventoryCheck, reportNumber);
 	}
 
+	@Override
+	public List<AreaInventoryReport> findAllAreaInventoryReportsByInventoryCheck(
+			InventoryCheck inventoryCheck) {
+		return areaInventoryReportDao.findAllByInventoryCheck(inventoryCheck);
+	}
+
 }
