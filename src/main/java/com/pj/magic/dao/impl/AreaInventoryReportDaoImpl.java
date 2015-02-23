@@ -19,19 +19,23 @@ import com.pj.magic.dao.AreaInventoryReportDao;
 import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.User;
 
 @Repository
 public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventoryReportDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, INVENTORY_CHECK_ID, REPORT_NO, AREA_ID, CHECKER, DOUBLE_CHECKER,"
+			"select a.ID, INVENTORY_CHECK_ID, REPORT_NO, AREA_ID, CHECKER, DOUBLE_CHECKER, a.CREATE_BY,"
 			+ " b.INVENTORY_DT, b.POST_IND,"
-			+ " c.NAME as AREA_NAME"
+			+ " c.NAME as AREA_NAME,"
+			+ " d.USERNAME as CREATE_BY_USERNAME"
 			+ " from AREA_INV_REPORT a"
 			+ " join INVENTORY_CHECK b"
 			+ "   on b.ID = a.INVENTORY_CHECK_ID"
 			+ " left join AREA c"
-			+ "   on c.ID = a.AREA_ID";
+			+ "   on c.ID = a.AREA_ID"
+			+ " join USER d"
+			+ "   on d.ID = a.CREATE_BY";
 	
 	private AreaInventoryReportRowMapper areaInventoryReportRowMapper = new AreaInventoryReportRowMapper();
 	
@@ -57,8 +61,8 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 
 	private static final String INSERT_SQL =
 			"insert into AREA_INV_REPORT"
-			+ " (INVENTORY_CHECK_ID, REPORT_NO, AREA_ID, CHECKER, DOUBLE_CHECKER)"
-			+ " values (?, ?, ?, ?, ?)";
+			+ " (INVENTORY_CHECK_ID, REPORT_NO, AREA_ID, CHECKER, DOUBLE_CHECKER, CREATE_BY)"
+			+ " values (?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final AreaInventoryReport areaInventoryReport) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -77,6 +81,7 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 				}
 				ps.setString(4, areaInventoryReport.getChecker());
 				ps.setString(5, areaInventoryReport.getDoubleChecker());
+				ps.setLong(6,  areaInventoryReport.getCreatedBy().getId());
 				return ps;
 			}
 		}, holder);
@@ -124,6 +129,8 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 			}
 			areaInventoryReport.setChecker(rs.getString("CHECKER"));
 			areaInventoryReport.setDoubleChecker(rs.getString("DOUBLE_CHECKER"));
+			areaInventoryReport.setCreatedBy(
+					new User(rs.getLong("CREATE_BY"), rs.getString("CREATE_BY_USERNAME")));
 			return areaInventoryReport;
 		}
 		

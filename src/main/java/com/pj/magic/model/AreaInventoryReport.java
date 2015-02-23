@@ -11,6 +11,7 @@ public class AreaInventoryReport {
 	private Area area;
 	private String checker;
 	private String doubleChecker;
+	private User createdBy;
 	private List<AreaInventoryReportItem> items = new ArrayList<>();
 
 	public Long getId() {
@@ -75,6 +76,14 @@ public class AreaInventoryReport {
 	
 	public int getTotalNumberOfItems() {
 		return items.size();
+	}
+
+	public User getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(User createdBy) {
+		this.createdBy = createdBy;
 	}
 	
 }

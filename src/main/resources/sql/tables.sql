@@ -437,10 +437,12 @@ create table AREA_INV_REPORT (
   AREA_ID integer null,
   CHECKER varchar(50) null,
   DOUBLE_CHECKER varchar(50) null,
+  CREATE_BY integer null,
   constraint AREA_INV_REPORT$PK primary key (ID),
   constraint AREA_INV_REPORT$UK unique (INVENTORY_CHECK_ID, REPORT_NO),
   constraint AREA_INV_REPORT$FK foreign key (INVENTORY_CHECK_ID) references INVENTORY_CHECK (ID),
-  constraint AREA_INV_REPORT$FK2 foreign key (AREA_ID) references AREA (ID)
+  constraint AREA_INV_REPORT$FK2 foreign key (AREA_ID) references AREA (ID),
+  constraint AREA_INV_REPORT$FK3 foreign key (CREATE_BY) references USER (ID)
 );
 
 create table AREA_INV_REPORT_ITEM (

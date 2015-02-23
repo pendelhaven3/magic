@@ -11,6 +11,7 @@ import java.awt.event.FocusEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -52,6 +53,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	
 	private AreaInventoryReport areaInventoryReport;
 	private JLabel inventoryDateField;
+	private JLabel encoderLabel;
 	private MagicTextField reportNumberField; // TODO: change to combobox later
 	private JComboBox<Area> areaComboBox;
 	private MagicTextField checkerField;
@@ -211,6 +213,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		
 		boolean posted = areaInventoryReport.getParent().isPosted();
 		
+		encoderLabel.setText(areaInventoryReport.getCreatedBy().getUsername());
 		reportNumberField.setText(areaInventoryReport.getReportNumber().toString());
 		reportNumberField.setEnabled(!posted);
 		areaComboBox.setEnabled(!posted);
@@ -228,6 +231,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	}
 
 	private void clearDisplay() {
+		encoderLabel.setText(null);
 		reportNumberField.setText(null);
 		reportNumberField.setEnabled(true);
 		areaComboBox.setEnabled(false);
@@ -273,12 +277,23 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		inventoryDateField = ComponentUtil.createLabel(100);
 		mainPanel.add(inventoryDateField, c);
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
+		mainPanel.add(Box.createHorizontalStrut(50), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(50, 1), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Encoder:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		encoderLabel = ComponentUtil.createLabel(100);
+		mainPanel.add(encoderLabel, c);
 		
 		currentRow++;
 		

@@ -13,6 +13,7 @@ import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.service.AreaInventoryReportService;
+import com.pj.magic.service.LoginService;
 
 @Service
 public class AreaInventoryReportServiceImpl implements AreaInventoryReportService {
@@ -20,6 +21,7 @@ public class AreaInventoryReportServiceImpl implements AreaInventoryReportServic
 	@Autowired private AreaInventoryReportDao areaInventoryReportDao;
 	@Autowired private AreaInventoryReportItemDao areaInventoryReportItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private LoginService loginService;
 	
 	@Override
 	public List<AreaInventoryReport> getAllAreaInventoryReports() {
@@ -28,13 +30,14 @@ public class AreaInventoryReportServiceImpl implements AreaInventoryReportServic
 
 	@Override
 	public void save(AreaInventoryReport areaInventoryReport) {
+		if (areaInventoryReport.getId() == null) {
+			areaInventoryReport.setCreatedBy(loginService.getLoggedInUser());
+		}
 		areaInventoryReportDao.save(areaInventoryReport);
 	}
 
 	@Override
 	public void delete(AreaInventoryReport inventoryCheck) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
