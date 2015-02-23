@@ -447,9 +447,19 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		productDescriptionLabel.setText(null);
 		fromDateModel.setValue(null);
 		toDateModel.setValue(null);
+		unitComboBox.setSelectedItem(null);
 		totalLessQuantityLabel.setText(null);
 		totalAddQuantityLabel.setText(null);
 		table.setItems(new ArrayList<StockCardInventoryReportItem>());
+		
+		salesInvoiceTransactionTypeCheckBox.setSelected(false);
+		receivingReceiptTransactionTypeCheckBox.setSelected(false);
+		stockQuantityConversionTransactionTypeCheckBox.setSelected(false);
+		adjustmentInTransactionTypeCheckBox.setSelected(false);
+		adjustmentOutTransactionTypeCheckBox.setSelected(false);
+		salesReturnTransactionTypeCheckBox.setSelected(false);
+		inventoryCheckTransactionTypeCheckBox.setSelected(false);
+		promoRedemptionTransactionTypeCheckBox.setSelected(false);
 	}
 
 	@Override
