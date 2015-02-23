@@ -1,5 +1,6 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -7,23 +8,35 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
+import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
+import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
+import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
+import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.SalesInvoiceService;
+import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
@@ -37,14 +50,64 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
+	@Autowired private SelectCustomerDialog selectCustomerDialog;
+	@Autowired private CustomerService customerService;
 	
 	private MagicListTable table;
 	private SalesInvoicesTableModel tableModel;
+	private MagicTextField customerCodeField;
+	private JLabel customerNameLabel;
+	private EllipsisButton selectCustomerButton;
+	private JButton searchButton;
 	
 	@Override
 	protected void initializeComponents() {
+		customerCodeField = new MagicTextField();
+		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
+		
+		customerNameLabel = new JLabel();
+		
+		selectCustomerButton = new EllipsisButton("Select Customer (F5)");
+		selectCustomerButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectCustomerDialog();
+			}
+		});
+		
+		searchButton = new JButton("Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchSalesInvoices();
+			}
+		});
+		
 		initializeTable();
 		focusOnComponentWhenThisPanelIsDisplayed(table);
+	}
+
+	private void searchSalesInvoices() {
+		UnpaidSalesInvoicesReport report = createUnpaidSalesInvoicesReport();
+		tableModel.setSalesInvoices(report.getSalesInvoices());
+		if (!report.getSalesInvoices().isEmpty()) {
+			table.changeSelection(0, 0);
+		}
+	}
+
+	private void openSelectCustomerDialog() {
+		selectCustomerDialog.searchCustomers(customerCodeField.getText());
+		selectCustomerDialog.setVisible(true);
+		
+		Customer customer = selectCustomerDialog.getSelectedCustomer();
+		if (customer != null) {
+			customerCodeField.setText(customer.getCode());
+			customerNameLabel.setText(customer.getName());
+		} else {
+			customerNameLabel.setText(null);
+		}
 	}
 
 	private void initializeTable() {
@@ -64,32 +127,117 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	}
 	
 	public void updateDisplay() {
-		List<SalesInvoice> salesInvoices = salesInvoiceService.findAllUnpaidSalesInvoices();
-		tableModel.setSalesInvoices(salesInvoices);
-		if (!salesInvoices.isEmpty()) {
-			table.changeSelection(0, 0);
-		}
+		customerCodeField.setText(null);
+		customerNameLabel.setText(null);
+		
+		searchSalesInvoices();
 	}
 
 	@Override
 	protected void registerKeyBindings() {
-		// none
+		customerCodeField.onF5Key(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectCustomerDialog();
+			}
+		});
 	}
 
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
+		int currentRow = 0;
 		
 		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createHorizontalStrut(50), c);
+
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Customer:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(createCustomerPanel(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(Box.createVerticalStrut(10), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		searchButton.setPreferredSize(new Dimension(100, 25));
+		mainPanel.add(searchButton, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(Box.createVerticalStrut(20), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
-		c.gridy = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 3;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		mainPanel.add(scrollPane, c);
 	}
 
+	private JPanel createCustomerPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		customerCodeField.setPreferredSize(new Dimension(100, 25));
+		panel.add(customerCodeField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		selectCustomerButton.setPreferredSize(new Dimension(30, 25));
+		panel.add(selectCustomerButton, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(Box.createHorizontalStrut(10), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		customerNameLabel.setPreferredSize(new Dimension(300, 25));
+		panel.add(customerNameLabel, c);
+		
+		return panel;
+	}
+	
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
 		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
@@ -125,8 +273,24 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	}
 
 	private UnpaidSalesInvoicesReport createUnpaidSalesInvoicesReport() {
+		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
+		criteria.setPaid(false);
+		criteria.setOrderBy("a.TRANSACTION_DT, a.SALES_INVOICE_NO");
+		
+		String customerCode = customerCodeField.getText();
+		if (!StringUtils.isEmpty(customerCode)) {
+			Customer customer = customerService.findCustomerByCode(customerCode);
+			if (customer != null) {
+				criteria.setCustomer(customer);
+				customerCodeField.setText(customer.getCode());
+				customerNameLabel.setText(customer.getName());
+			} else {
+				customerNameLabel.setText(null);
+			}
+		}
+		
 		UnpaidSalesInvoicesReport report = new UnpaidSalesInvoicesReport();
-		report.setSalesInvoices(salesInvoiceService.findAllUnpaidSalesInvoices());
+		report.setSalesInvoices(salesInvoiceService.search(criteria));
 		return report;
 	}
 
