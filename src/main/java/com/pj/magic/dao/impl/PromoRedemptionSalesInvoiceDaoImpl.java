@@ -67,5 +67,13 @@ public class PromoRedemptionSalesInvoiceDaoImpl extends MagicDao implements Prom
 	public void delete(PromoRedemptionSalesInvoice salesInvoice) {
 		getJdbcTemplate().update(DELETE_SQL, salesInvoice.getId());
 	}
+
+	private static final String DELETE_ALL_BY_PROMO_REDEMPTION_SQL = 
+			"delete from PROMO_REDEMPTION_SALES_INVOICE where PROMO_REDEMPTION_ID = ?";
+	
+	@Override
+	public void deleteAllByPromoRedemption(PromoRedemption promoRedemption) {
+		getJdbcTemplate().update(DELETE_ALL_BY_PROMO_REDEMPTION_SQL, promoRedemption.getId());
+	}
 	
 }

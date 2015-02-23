@@ -13,4 +13,6 @@ public interface PromoRedemptionSalesInvoiceDao {
 
 	void delete(PromoRedemptionSalesInvoice salesInvoice);
 
+	void deleteAllByPromoRedemption(PromoRedemption promoRedemption);
+
 }
