@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
@@ -27,6 +28,7 @@ import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.search.AreaInventoryReportSearchCriteria;
 import com.pj.magic.service.AreaInventoryReportService;
 import com.pj.magic.service.InventoryCheckService;
+import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
@@ -45,6 +47,7 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private AreaInventoryReportsTableModel tableModel;
 	private JButton addButton;
+	private JLabel totalItemsLabel;
 	
 	@Override
 	public void initializeComponents() {
@@ -63,7 +66,7 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 		if (inventoryCheck != null) {
 			List<AreaInventoryReport> areaInventoryReports = 
 					areaInventoryReportService.findAllAreaInventoryReportsByInventoryCheck(inventoryCheck);
-			tableModel.setAreaInventoryReports(areaInventoryReports);
+			updateFields(areaInventoryReports);
 			if (!areaInventoryReports.isEmpty()) {
 				table.changeSelection(0, 0);
 			}
@@ -88,6 +91,7 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
@@ -95,6 +99,14 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		mainPanel.add(scrollPane, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.EAST;
+		mainPanel.add(createTotalsPanel(), c);
 	}
 	
 	@Override
@@ -174,8 +186,34 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 
 	private void updateFields(List<AreaInventoryReport> areaInventoryReports) {
 		tableModel.setAreaInventoryReports(areaInventoryReports);
+		totalItemsLabel.setText(FormatterUtil.formatInteger(areaInventoryReports.size()));
 	}
 
+	private JPanel createTotalsPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalItemsLabel = ComponentUtil.createRightLabel(100);
+		panel.add(totalItemsLabel, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		panel.add(Box.createHorizontalStrut(10), c);
+		
+		return panel;
+	}
+	
 	private class AreaInventoryReportsTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = {"Inventory Date", "Report No.", "Area", "Encoder", "Status"};
