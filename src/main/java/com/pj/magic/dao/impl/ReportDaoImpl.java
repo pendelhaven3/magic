@@ -54,6 +54,11 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 				.append(DbUtil.toSqlInValues(criteria.getUnits())).append(")");
 		}
 		
+		if (!criteria.getTransactionTypes().isEmpty()) {
+			sql.append(" and TRANSACTION_TYPE in (")
+				.append(DbUtil.toSqlInValues(criteria.getTransactionTypes())).append(")");
+		}
+		
 		sql.append(" order by TRANSACTION_DT desc, TRANSACTION_TYPE, TRANSACTION_NO, TRANSACTION_TYPE_KEY");
 		
 		return getNamedParameterJdbcTemplate().query(sql.toString(), params, rowMapper);

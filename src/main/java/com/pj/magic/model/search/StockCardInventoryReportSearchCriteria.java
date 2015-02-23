@@ -12,6 +12,7 @@ public class StockCardInventoryReportSearchCriteria {
 	private Date fromDate;
 	private Date toDate;
 	private List<String> units = new ArrayList<>();
+	private List<String> transactionTypes = new ArrayList<>();
 
 	public Product getProduct() {
 		return product;
@@ -43,6 +44,10 @@ public class StockCardInventoryReportSearchCriteria {
 
 	public void setUnits(List<String> units) {
 		this.units = units;
+	}
+
+	public List<String> getTransactionTypes() {
+		return transactionTypes;
 	}
 
 }

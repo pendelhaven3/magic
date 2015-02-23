@@ -38,6 +38,7 @@ import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class StockCardInventoryReportPanel extends StandardMagicPanel {
@@ -58,6 +59,15 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	private JCheckBox cartonUnitCheckBox;
 	private JCheckBox dozenUnitCheckBox;
 	private JCheckBox piecesUnitCheckBox;
+	private JCheckBox salesInvoiceTransactionTypeCheckBox;
+	private JCheckBox stockQuantityConversionTransactionTypeCheckBox;
+	private JCheckBox salesReturnTransactionTypeCheckBox;
+	private JCheckBox adjustmentInTransactionTypeCheckBox;
+	private JCheckBox adjustmentOutTransactionTypeCheckBox;
+	private JCheckBox receivingReceiptTransactionTypeCheckBox;
+	private JCheckBox inventoryCheckTransactionTypeCheckBox;
+	private JCheckBox promoRedemptionTransactionTypeCheckBox;
+	
 	private JLabel totalLessQuantityLabel;
 	private JLabel totalAddQuantityLabel;
 	
@@ -87,6 +97,15 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		dozenUnitCheckBox = new JCheckBox();
 		piecesUnitCheckBox = new JCheckBox();
 		
+		salesInvoiceTransactionTypeCheckBox = new JCheckBox();
+		receivingReceiptTransactionTypeCheckBox = new JCheckBox();
+		stockQuantityConversionTransactionTypeCheckBox = new JCheckBox();
+		adjustmentOutTransactionTypeCheckBox = new JCheckBox();
+		adjustmentInTransactionTypeCheckBox = new JCheckBox();
+		salesReturnTransactionTypeCheckBox = new JCheckBox();
+		inventoryCheckTransactionTypeCheckBox = new JCheckBox();
+		promoRedemptionTransactionTypeCheckBox = new JCheckBox();
+		
 		generateButton = new JButton("Generate");
 		generateButton.addActionListener(new ActionListener() {
 			
@@ -113,7 +132,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		}
 	}
 
-	protected void generateStockCardInventoryReport() {
+	private void generateStockCardInventoryReport() {
 		String productCode = productCodeField.getText();
 		if (StringUtils.isEmpty(productCode)) {
 			showErrorMessage("Product Code must be specified");
@@ -152,14 +171,43 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		if (piecesUnitCheckBox.isSelected()) {
 			criteria.getUnits().add(Unit.PIECES);
 		}
+		setTransactionTypeCriteria(criteria);
 		
 		List<StockCardInventoryReportItem> items = reportService.getStockCardInventoryReport(criteria);
 		table.setItems(items);
 		if (items.isEmpty()) {
 			showErrorMessage("No records found");
 		}
-		totalLessQuantityLabel.setText(String.valueOf(getTotalLessQuantity(items)));
-		totalAddQuantityLabel.setText(String.valueOf(getTotalAddQuantity(items)));
+		totalLessQuantityLabel.setText(FormatterUtil.formatInteger(getTotalLessQuantity(items)));
+		totalAddQuantityLabel.setText(FormatterUtil.formatInteger(getTotalAddQuantity(items)));
+	}
+
+	private void setTransactionTypeCriteria(StockCardInventoryReportSearchCriteria criteria) {
+		List<String> transactionTypes = criteria.getTransactionTypes();
+		if (salesInvoiceTransactionTypeCheckBox.isSelected()) {
+			transactionTypes.add("SALES INVOICE");
+		}
+		if (stockQuantityConversionTransactionTypeCheckBox.isSelected()) {
+			transactionTypes.add("STOCK QTY CONVERSION");
+		}
+		if (adjustmentInTransactionTypeCheckBox.isSelected()) {
+			transactionTypes.add("ADJUSTMENT IN");
+		}
+		if (adjustmentOutTransactionTypeCheckBox.isSelected()) {
+			transactionTypes.add("ADJUSTMENT OUT");
+		}
+		if (receivingReceiptTransactionTypeCheckBox.isSelected()) {
+			transactionTypes.add("RECEIVING RECEIPT");
+		}
+		if (salesReturnTransactionTypeCheckBox.isSelected()) {
+			transactionTypes.add("SALES RETURN");
+		}
+		if (inventoryCheckTransactionTypeCheckBox.isSelected()) {
+			transactionTypes.add("INVENTORY CHECK");
+		}
+		if (promoRedemptionTransactionTypeCheckBox.isSelected()) {
+			transactionTypes.add("PROMO REDEMPTION");
+		}
 	}
 
 	private static int getTotalLessQuantity(List<StockCardInventoryReportItem> items) {
@@ -260,8 +308,24 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
+		c.gridwidth = 4;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(createUnitsPanel(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.NORTHWEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Transaction Type: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.gridwidth = 4;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(createTransactionTypesPanel(), c);
 		
 		currentRow++;
 		
@@ -306,6 +370,48 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		c.gridwidth = 7;
 		c.anchor = GridBagConstraints.EAST;
 		mainPanel.add(createTotalsPanel(), c);
+	}
+
+	private JPanel createTransactionTypesPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.WEST;
+		c.insets.right = 5;
+		
+		c.gridy = currentRow;
+		panel.add(salesInvoiceTransactionTypeCheckBox, c);
+		panel.add(new JLabel("Sales Invoice"), c);
+		panel.add(receivingReceiptTransactionTypeCheckBox, c);
+		panel.add(new JLabel("Receiving Receipt"), c);
+		
+		currentRow++;
+		
+		c.gridy = currentRow;
+		panel.add(stockQuantityConversionTransactionTypeCheckBox, c);
+		panel.add(new JLabel("Stock Quantity Conversion"), c);
+		panel.add(salesReturnTransactionTypeCheckBox, c);
+		panel.add(new JLabel("Sales Return"), c);
+		
+		currentRow++;
+		
+		c.gridy = currentRow;
+		panel.add(adjustmentInTransactionTypeCheckBox, c);
+		panel.add(new JLabel("Adjustment In"), c);
+		panel.add(inventoryCheckTransactionTypeCheckBox, c);
+		panel.add(new JLabel("Inventory Check"), c);
+		
+		currentRow++;
+		
+		c.gridy = currentRow;
+		panel.add(adjustmentOutTransactionTypeCheckBox, c);
+		panel.add(new JLabel("Adjustment Out"), c);
+		panel.add(promoRedemptionTransactionTypeCheckBox, c);
+		panel.add(new JLabel("Promo Redemption"), c);
+		
+		return panel;
 	}
 
 	private JPanel createUnitsPanel() {

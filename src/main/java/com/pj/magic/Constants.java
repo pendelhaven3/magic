@@ -15,6 +15,7 @@ public class Constants {
 	public static final String DATETIME_FORMAT = "MM/dd/yyyy h:mm aa";
 	public static final String TIME_FORMAT = "h:mm aa";
 	public static final String AMOUNT_FORMAT = "#,##0.00";
+	public static final String INTEGER_FORMAT = "#,##0";
 	public static final Color PASTEL_BLUE = new Color(204, 229, 255);
 	public static final String ENTER_KEY_ACTION_NAME = "onEnterKey";
 	public static final String ESCAPE_KEY_ACTION_NAME = "onEscapeKey";

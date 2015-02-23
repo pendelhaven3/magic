@@ -25,4 +25,8 @@ public class FormatterUtil {
 		return new DecimalFormat(Constants.AMOUNT_FORMAT).format(amount);
 	}
 	
+	public static final String formatInteger(int number) {
+		return new DecimalFormat(Constants.INTEGER_FORMAT).format(number);
+	}
+	
 }
