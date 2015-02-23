@@ -544,6 +544,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 				return;
 			}
 			showMessage("Area Inventory Report marked as reviewed");
+			updateDisplay(areaInventoryReport);
 		}
 	}
 

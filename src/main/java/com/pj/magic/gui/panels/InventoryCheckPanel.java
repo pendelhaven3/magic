@@ -32,13 +32,15 @@ import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.ActualCountDetailsDialog;
-import com.pj.magic.gui.dialog.SearchInventoryChecksDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
+import com.pj.magic.gui.dialog.SearchInventoryChecksDialog;
 import com.pj.magic.gui.tables.InventoryCheckSummaryTable;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
+import com.pj.magic.model.search.AreaInventoryReportSearchCriteria;
 import com.pj.magic.model.search.InventoryCheckSearchCriteria;
 import com.pj.magic.model.util.InventoryCheckReportType;
+import com.pj.magic.service.AreaInventoryReportService;
 import com.pj.magic.service.InventoryCheckService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
@@ -56,6 +58,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	@Autowired private ActualCountDetailsDialog actualCountDetailsDialog;
 	@Autowired private SearchInventoryChecksDialog searchInventoryChecksDialog;
+	@Autowired private AreaInventoryReportService areaInventoryReportService;
 	
 	private InventoryCheck inventoryCheck;
 	private UtilCalendarModel inventoryDateModel;
@@ -415,6 +418,12 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	}
 
 	private void postInventoryCheck() {
+		if (!areAllAreaInventoryReportsReviewed()) {
+			showErrorMessage(
+					"All Area Inventory Reports must be marked as reviewed before posting Inventory Check");
+			return;
+		}
+		
 		if (confirm("Post Inventory Check?")) {
 			try {
 				inventoryCheckService.post(inventoryCheck);
@@ -425,6 +434,13 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 				showErrorMessage("Unexpected error!");
 			}
 		}
+	}
+
+	private boolean areAllAreaInventoryReportsReviewed() {
+		AreaInventoryReportSearchCriteria criteria = new AreaInventoryReportSearchCriteria();
+		criteria.setInventoryCheck(inventoryCheck);
+		criteria.setReviewed(false);
+		return areaInventoryReportService.search(criteria).isEmpty();
 	}
 
 }
