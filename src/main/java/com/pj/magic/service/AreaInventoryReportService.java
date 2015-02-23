@@ -5,6 +5,7 @@ import java.util.List;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.search.AreaInventoryReportSearchCriteria;
 
 public interface AreaInventoryReportService {
 
@@ -26,5 +27,7 @@ public interface AreaInventoryReportService {
 	List<AreaInventoryReport> findAllAreaInventoryReportsByInventoryCheck(InventoryCheck inventoryCheck);
 
 	void markAsReviewed(AreaInventoryReport areaInventoryReport);
+
+	List<AreaInventoryReport> search(AreaInventoryReportSearchCriteria criteria);
 	
 }

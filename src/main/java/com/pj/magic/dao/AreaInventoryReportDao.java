@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.search.AreaInventoryReportSearchCriteria;
 
 public interface AreaInventoryReportDao {
 
@@ -16,5 +17,7 @@ public interface AreaInventoryReportDao {
 	AreaInventoryReport findByInventoryCheckAndReportNumber(InventoryCheck inventoryCheck, int reportNumber);
 
 	List<AreaInventoryReport> findAllByInventoryCheck(InventoryCheck inventoryCheck);
+
+	List<AreaInventoryReport> search(AreaInventoryReportSearchCriteria criteria);
 	
 }

@@ -12,6 +12,7 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.search.AreaInventoryReportSearchCriteria;
 import com.pj.magic.service.AreaInventoryReportService;
 import com.pj.magic.service.LoginService;
 
@@ -82,6 +83,11 @@ public class AreaInventoryReportServiceImpl implements AreaInventoryReportServic
 	public void markAsReviewed(AreaInventoryReport areaInventoryReport) {
 		areaInventoryReport.setReviewed(true);
 		areaInventoryReportDao.save(areaInventoryReport);
+	}
+
+	@Override
+	public List<AreaInventoryReport> search(AreaInventoryReportSearchCriteria criteria) {
+		return areaInventoryReportDao.search(criteria);
 	}
 
 }

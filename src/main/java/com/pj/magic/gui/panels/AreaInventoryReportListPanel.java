@@ -20,9 +20,11 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SearchAreaInventoryReportsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.search.AreaInventoryReportSearchCriteria;
 import com.pj.magic.service.AreaInventoryReportService;
 import com.pj.magic.service.InventoryCheckService;
 import com.pj.magic.util.FormatterUtil;
@@ -38,6 +40,7 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 	
 	@Autowired private AreaInventoryReportService areaInventoryReportService;
 	@Autowired private InventoryCheckService inventoryCheckService;
+	@Autowired private SearchAreaInventoryReportsDialog searchAreaInventoryReportsDialog;
 	
 	private MagicListTable table;
 	private AreaInventoryReportsTableModel tableModel;
@@ -58,10 +61,10 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 		InventoryCheck inventoryCheck = inventoryCheckService.getNonPostedInventoryCheck();
 		addButton.setEnabled(inventoryCheck != null);
 		if (inventoryCheck != null) {
-			List<AreaInventoryReport> reports = 
+			List<AreaInventoryReport> areaInventoryReports = 
 					areaInventoryReportService.findAllAreaInventoryReportsByInventoryCheck(inventoryCheck);
-			tableModel.setAreaInventoryReports(reports);
-			if (!reports.isEmpty()) {
+			tableModel.setAreaInventoryReports(areaInventoryReports);
+			if (!areaInventoryReports.isEmpty()) {
 				table.changeSelection(0, 0);
 			}
 		} else {
@@ -140,6 +143,37 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(addButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchAreaInventoryReports();
+			}
+		});
+		
+		toolBar.add(searchButton);
+	}
+
+	private void searchAreaInventoryReports() {
+		searchAreaInventoryReportsDialog.setVisible(true);
+		
+		AreaInventoryReportSearchCriteria criteria = searchAreaInventoryReportsDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<AreaInventoryReport> areaInventoryReports = areaInventoryReportService.search(criteria);
+			updateFields(areaInventoryReports);
+			if (!areaInventoryReports.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
+	}
+
+	private void updateFields(List<AreaInventoryReport> areaInventoryReports) {
+		tableModel.setAreaInventoryReports(areaInventoryReports);
 	}
 
 	private class AreaInventoryReportsTableModel extends AbstractTableModel {
@@ -187,8 +221,8 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 			return columnNames[column];
 		}
 		
-		public void setAreaInventoryReports(List<AreaInventoryReport> inventoryChecks) {
-			this.areaInventoryReports = inventoryChecks;
+		public void setAreaInventoryReports(List<AreaInventoryReport> areaInventoryReports) {
+			this.areaInventoryReports = areaInventoryReports;
 			fireTableDataChanged();
 		}
 		

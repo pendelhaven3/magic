@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -20,6 +21,7 @@ import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.AreaInventoryReportSearchCriteria;
 
 @Repository
 public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventoryReportDao {
@@ -160,6 +162,26 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 	public List<AreaInventoryReport> findAllByInventoryCheck(InventoryCheck inventoryCheck) {
 		return getJdbcTemplate().query(FIND_ALL_BY_INVENTORY_CHECK_SQL, areaInventoryReportRowMapper,
 				inventoryCheck.getId());
+	}
+
+	@Override
+	public List<AreaInventoryReport> search(AreaInventoryReportSearchCriteria criteria) {
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		List<Object> params = new ArrayList<>();
+		
+		if (criteria.getInventoryCheck() != null) {
+			sql.append(" and a.INVENTORY_CHECK_ID = ?");
+			params.add(criteria.getInventoryCheck().getId());
+		}
+		
+		if (criteria.getReviewed() != null) {
+			sql.append(" and a.REVIEW_IND = ?");
+			params.add(criteria.getReviewed() ? "Y" : "N");
+		}
+		
+		sql.append(" order by b.INVENTORY_DT, a.REPORT_NO");
+		
+		return getJdbcTemplate().query(sql.toString(), areaInventoryReportRowMapper, params.toArray());
 	}
 	
 }
