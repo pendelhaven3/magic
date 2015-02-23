@@ -52,7 +52,6 @@ public class UnpaidReceivingReceiptsListPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private ReceivingReceiptsTableModel tableModel;
 	private JLabel totalAmountLabel;
-	private MagicTextField receivingReceiptNumberField;
 	private MagicTextField supplierCodeField;
 	private JLabel supplierNameLabel;
 	private EllipsisButton selectSupplierButton;
@@ -60,9 +59,6 @@ public class UnpaidReceivingReceiptsListPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void initializeComponents() {
-		receivingReceiptNumberField = new MagicTextField();
-		receivingReceiptNumberField.setNumbersOnly(true);
-		
 		supplierCodeField = new MagicTextField();
 		supplierCodeField.setMaximumLength(Constants.SUPPLIER_CODE_MAXIMUM_LENGTH);
 		
@@ -147,22 +143,6 @@ public class UnpaidReceivingReceiptsListPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		mainPanel.add(Box.createHorizontalStrut(50), c);
 
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "RR No.:"), c);
-		
-		c = new GridBagConstraints();
-		c.weightx = 1.0;
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		receivingReceiptNumberField.setPreferredSize(new Dimension(100, 25));
-		mainPanel.add(receivingReceiptNumberField, c);
-		
-		currentRow++;
-		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
@@ -289,10 +269,6 @@ public class UnpaidReceivingReceiptsListPanel extends StandardMagicPanel {
 		criteria.setPaid(false);
 		criteria.setOrderBy("a.RECEIVED_DT, a.RECEIVING_RECEIPT_NO");
 		
-		if (!StringUtils.isEmpty(receivingReceiptNumberField.getText())) {
-			criteria.setReceivingReceiptNumber(Long.valueOf(receivingReceiptNumberField.getText()));
-		}
-		
 		String supplierCode = supplierCodeField.getText();
 		if (!StringUtils.isEmpty(supplierCode)) {
 			Supplier supplier = supplierService.findSupplierByCode(supplierCode);
@@ -301,7 +277,6 @@ public class UnpaidReceivingReceiptsListPanel extends StandardMagicPanel {
 				supplierCodeField.setText(supplier.getCode());
 				supplierNameLabel.setText(supplier.getName());
 			} else {
-				supplierCodeField.setText(null);
 				supplierNameLabel.setText(null);
 			}
 		}
