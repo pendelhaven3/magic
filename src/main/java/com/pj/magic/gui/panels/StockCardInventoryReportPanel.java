@@ -58,6 +58,8 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	private JCheckBox cartonUnitCheckBox;
 	private JCheckBox dozenUnitCheckBox;
 	private JCheckBox piecesUnitCheckBox;
+	private JLabel totalLessQuantityLabel;
+	private JLabel totalAddQuantityLabel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -93,6 +95,9 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 				generateStockCardInventoryReport();
 			}
 		});
+		
+		totalLessQuantityLabel = new JLabel();
+		totalAddQuantityLabel = new JLabel();
 		
 		focusOnComponentWhenThisPanelIsDisplayed(productCodeField);
 	}
@@ -153,6 +158,28 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		if (items.isEmpty()) {
 			showErrorMessage("No records found");
 		}
+		totalLessQuantityLabel.setText(String.valueOf(getTotalLessQuantity(items)));
+		totalAddQuantityLabel.setText(String.valueOf(getTotalAddQuantity(items)));
+	}
+
+	private static int getTotalLessQuantity(List<StockCardInventoryReportItem> items) {
+		int total = 0;
+		for (StockCardInventoryReportItem item : items) {
+			if (item.getLessQuantity() != null) {
+				total += item.getLessQuantity();
+			}
+		}
+		return total;
+	}
+
+	private static int getTotalAddQuantity(List<StockCardInventoryReportItem> items) {
+		int total = 0;
+		for (StockCardInventoryReportItem item : items) {
+			if (item.getAddQuantity() != null) {
+				total += item.getAddQuantity();
+			}
+		}
+		return total;
 	}
 
 	@Override
@@ -270,6 +297,15 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		JScrollPane itemsTableScrollPane = new JScrollPane(table);
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
 		mainPanel.add(itemsTableScrollPane, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 7;
+		c.anchor = GridBagConstraints.EAST;
+		mainPanel.add(createTotalsPanel(), c);
 	}
 
 	private JPanel createUnitsPanel() {
@@ -359,6 +395,8 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		productDescriptionLabel.setText(null);
 		fromDateModel.setValue(null);
 		toDateModel.setValue(null);
+		totalLessQuantityLabel.setText(null);
+		totalAddQuantityLabel.setText(null);
 		table.setItems(new ArrayList<StockCardInventoryReportItem>());
 	}
 
@@ -372,4 +410,47 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		// none
 	}
 
+	private JPanel createTotalsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Total Less Quantity:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalLessQuantityLabel = ComponentUtil.createRightLabel(50);
+		panel.add(totalLessQuantityLabel, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		panel.add(Box.createHorizontalStrut(10), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Total Add Quantity:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAddQuantityLabel = ComponentUtil.createRightLabel(50);
+		panel.add(totalAddQuantityLabel, c);
+		
+		return panel;
+	}
+	
 }
