@@ -58,7 +58,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		criteria.setUnredeemedPromo(promo);
 		criteria.setCustomer(customer);
 		try {
-			criteria.setTransactionDateFrom(new SimpleDateFormat("MM/dd/yyyy").parse("02/21/2015"));
+			criteria.setTransactionDateFrom(new SimpleDateFormat("MM/dd/yyyy").parse("02/23/2015"));
 		} catch (ParseException e) {
 			// do nothing!
 		}
