@@ -13,6 +13,7 @@ public class AreaInventoryReport {
 	private String doubleChecker;
 	private User createdBy;
 	private boolean reviewed;
+	private String reviewer;
 	private List<AreaInventoryReportItem> items = new ArrayList<>();
 
 	public Long getId() {
@@ -97,6 +98,14 @@ public class AreaInventoryReport {
 	
 	public String getStatus() {
 		return (reviewed) ? "Reviewed" : "New";
+	}
+
+	public String getReviewer() {
+		return reviewer;
+	}
+
+	public void setReviewer(String reviewer) {
+		this.reviewer = reviewer;
 	}
 	
 }

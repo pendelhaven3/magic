@@ -40,14 +40,11 @@ import com.pj.magic.service.AreaService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
-import com.pj.magic.util.KeyUtil;
 
 @Component
 public class AreaInventoryReportPanel extends StandardMagicPanel {
 
 	private static final Logger logger = LoggerFactory.getLogger(AreaInventoryReportPanel.class);
-	
-	private static final String FOCUS_NEXT_FIELD_ACTION_NAME = "focusNextField";
 	
 	@Autowired private AreaInventoryReportItemsTable itemsTable;
 	@Autowired private AreaInventoryReportService areaInventoryReportService;
@@ -63,6 +60,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	private JComboBox<Area> areaComboBox;
 	private MagicTextField checkerField;
 	private MagicTextField doubleCheckerField;
+	private MagicTextField reviewerField;
 	private JLabel totalItemsField;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
@@ -110,6 +108,16 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 			}
 		});
 		
+		reviewerField = new MagicTextField();
+		reviewerField.setMaximumLength(50);
+		reviewerField.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				saveReviewer();
+			}
+		});
+		
 		updateTotalAmountFieldWhenItemsTableChanges();
 		focusOnComponentWhenThisPanelIsDisplayed(reportNumberField);
 	}
@@ -133,7 +141,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		});
 	}
 
-	protected void saveReportNumberField() {
+	private void saveReportNumberField() {
 		if (StringUtils.isEmpty(reportNumberField.getText())) {
 			showErrorMessage("Report No. must be specified");
 			reportNumberField.requestFocusInWindow();
@@ -157,14 +165,21 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		}
 	}
 
-	protected void saveDoubleChecker() {
+	private void saveReviewer() {
+		if (!reviewerField.getText().equals(areaInventoryReport.getReviewer())) {
+			areaInventoryReport.setReviewer(reviewerField.getText());
+			areaInventoryReportService.save(areaInventoryReport);
+		}
+	}
+
+	private void saveDoubleChecker() {
 		if (!doubleCheckerField.getText().equals(areaInventoryReport.getDoubleChecker())) {
 			areaInventoryReport.setDoubleChecker(doubleCheckerField.getText());
 			areaInventoryReportService.save(areaInventoryReport);
 		}
 	}
 
-	protected void saveCheckerField() {
+	private void saveCheckerField() {
 		if (!checkerField.getText().equals(areaInventoryReport.getChecker())) {
 			areaInventoryReport.setChecker(checkerField.getText());
 			areaInventoryReportService.save(areaInventoryReport);
@@ -176,10 +191,10 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		setFocusOnNextFieldOnEnterKey(reportNumberField);
 		setFocusOnNextFieldOnEnterKey(areaComboBox);
 		setFocusOnNextFieldOnEnterKey(checkerField);
+		setFocusOnNextFieldOnEnterKey(doubleCheckerField);
 		
-		doubleCheckerField.getInputMap().put(KeyUtil.getEnterKey(), FOCUS_NEXT_FIELD_ACTION_NAME);
-		doubleCheckerField.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
-
+		reviewerField.onEnterKey(new AbstractAction() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				itemsTable.highlight();
@@ -201,6 +216,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		focusOrder.add(areaComboBox);
 		focusOrder.add(checkerField);
 		focusOrder.add(doubleCheckerField);
+		focusOrder.add(reviewerField);
 	}
 	
 	public void updateDisplay(AreaInventoryReport areaInventoryReport) {
@@ -229,6 +245,8 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		checkerField.setText(areaInventoryReport.getChecker());
 		doubleCheckerField.setEnabled(editable);
 		doubleCheckerField.setText(areaInventoryReport.getDoubleChecker());
+		reviewerField.setEnabled(editable);
+		reviewerField.setText(areaInventoryReport.getReviewer());
 		totalItemsField.setText(String.valueOf(areaInventoryReport.getTotalNumberOfItems()));
 		
 		itemsTable.setAreaInventoryReport(areaInventoryReport);
@@ -248,6 +266,8 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		checkerField.setText(null);
 		doubleCheckerField.setEnabled(false);
 		doubleCheckerField.setText(null);
+		reviewerField.setEnabled(false);
+		reviewerField.setText(null);
 		totalItemsField.setText(null);
 		itemsTable.setAreaInventoryReport(areaInventoryReport);
 		addItemButton.setEnabled(false);
@@ -379,18 +399,29 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 0;
+		c = new GridBagConstraints();
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(50, 10), c);
+		mainPanel.add(ComponentUtil.createLabel(100, "Reviewer:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		reviewerField.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(reviewerField, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createVerticalStrut(10), c);
 		
 		currentRow++;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 6;
@@ -399,6 +430,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 
 		currentRow++;
 		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;

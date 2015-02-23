@@ -28,7 +28,7 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, INVENTORY_CHECK_ID, REPORT_NO, AREA_ID, CHECKER, DOUBLE_CHECKER, a.CREATE_BY,"
-			+ " a.REVIEW_IND,"
+			+ " a.REVIEW_IND, a.REVIEWER,"
 			+ " b.INVENTORY_DT, b.POST_IND,"
 			+ " c.NAME as AREA_NAME,"
 			+ " d.USERNAME as CREATE_BY_USERNAME"
@@ -64,8 +64,8 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 
 	private static final String INSERT_SQL =
 			"insert into AREA_INV_REPORT"
-			+ " (INVENTORY_CHECK_ID, REPORT_NO, AREA_ID, CHECKER, DOUBLE_CHECKER, CREATE_BY)"
-			+ " values (?, ?, ?, ?, ?, ?)";
+			+ " (INVENTORY_CHECK_ID, REPORT_NO, AREA_ID, CHECKER, DOUBLE_CHECKER, CREATE_BY, REVIEWER)"
+			+ " values (?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final AreaInventoryReport areaInventoryReport) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -85,6 +85,7 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 				ps.setString(4, areaInventoryReport.getChecker());
 				ps.setString(5, areaInventoryReport.getDoubleChecker());
 				ps.setLong(6,  areaInventoryReport.getCreatedBy().getId());
+				ps.setString(7, areaInventoryReport.getReviewer());
 				return ps;
 			}
 		}, holder);
@@ -94,8 +95,8 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 
 	private static final String UPDATE_SQL =
 			"update AREA_INV_REPORT"
-			+ " set REPORT_NO = ?, AREA_ID = ?, CHECKER = ?, DOUBLE_CHECKER = ?, REVIEW_IND = ?"
-			+ " where ID = ?";
+			+ " set REPORT_NO = ?, AREA_ID = ?, CHECKER = ?, DOUBLE_CHECKER = ?, REVIEW_IND = ?,"
+			+ " REVIEWER = ? where ID = ?";
 	
 	private void update(AreaInventoryReport areaInventoryReport) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -104,6 +105,7 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 				areaInventoryReport.getChecker(),
 				areaInventoryReport.getDoubleChecker(),
 				(areaInventoryReport.isReviewed()) ? "Y" : "N",
+				areaInventoryReport.getReviewer(),
 				areaInventoryReport.getId());
 	}
 
@@ -136,6 +138,7 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 			areaInventoryReport.setCreatedBy(
 					new User(rs.getLong("CREATE_BY"), rs.getString("CREATE_BY_USERNAME")));
 			areaInventoryReport.setReviewed("Y".equals(rs.getString("REVIEW_IND")));
+			areaInventoryReport.setReviewer(rs.getString("REVIEWER"));
 			return areaInventoryReport;
 		}
 		
