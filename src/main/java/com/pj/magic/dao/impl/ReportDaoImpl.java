@@ -34,6 +34,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
 			StockCardInventoryReportSearchCriteria criteria) {
 		StringBuilder sql = new StringBuilder(QueriesUtil.getSql("stockCardInventoryReport"));
+		sql.append(" where 1 = 1");
 		
 		Map<String, Object> params = new HashMap<>();
 		params.put("product", criteria.getProduct().getId());
