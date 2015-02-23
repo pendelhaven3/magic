@@ -137,12 +137,25 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "     on c.ID = a.INVENTORY_CHECK_ID"
 			+ "   where b.PRODUCT_ID = ?"
 			+ "   and c.POST_IND = 'Y'"
+			+ "   union all"
+			+ "   select a.POST_DT, a.PROMO_REDEMPTION_NO as TRANSACTION_NO,"
+			+ "   c.NAME as CUSTOMER_SUPPLIER_NAME,"
+			+ "   'PROMO REDEMPTION' as TRANSACTION_TYPE, 'PROMO REDEMPTION' as TRANSACTION_TYPE_KEY, b.UNIT, a.PRIZE_QUANTITY as QUANTITY,"
+			+ "   null as UNIT_COST_OR_PRICE, null as REFERENCE_NO"
+			+ "   from PROMO_REDEMPTION a"
+			+ "   join PROMO b"
+			+ "     on b.ID = a.PROMO_ID"
+			+ "   join CUSTOMER c"
+			+ "     on c.ID = a.CUSTOMER_ID"
+			+ "   where b.PRODUCT_ID = ?"
+			+ "   and a.POST_IND = 'Y'"
 			+ " ) m";
 	
 	@Override
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
 			StockCardInventoryReportSearchCriteria criteria) {
 		List<Object> params = new ArrayList<>();
+		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
 		params.add(criteria.getProduct().getId());
