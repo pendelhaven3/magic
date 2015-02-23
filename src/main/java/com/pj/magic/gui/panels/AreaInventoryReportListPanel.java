@@ -30,9 +30,10 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class AreaInventoryReportListPanel extends StandardMagicPanel {
 	
-	public static final int INVENTORY_DATE_COLUMN_INDEX = 0;
-	public static final int REPORT_NUMBER_COLUMN_INDEX = 1;
-	public static final int AREA_COLUMN_INDEX = 2;
+	private static final int INVENTORY_DATE_COLUMN_INDEX = 0;
+	private static final int REPORT_NUMBER_COLUMN_INDEX = 1;
+	private static final int AREA_COLUMN_INDEX = 2;
+	private static final int ENCODER_COLUMN_INDEX = 3;
 	
 	@Autowired private AreaInventoryReportService areaInventoryReportService;
 	@Autowired private InventoryCheckService inventoryCheckService;
@@ -142,7 +143,7 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 
 	private class AreaInventoryReportsTableModel extends AbstractTableModel {
 
-		private final String[] COLUMN_NAMES = {"Inventory Date", "Report No.", "Area"};
+		private final String[] columnNames = {"Inventory Date", "Report No.", "Area", "Encoder"};
 		
 		private List<AreaInventoryReport> areaInventoryReports = new ArrayList<>();
 		
@@ -158,7 +159,7 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 
 		@Override
 		public int getColumnCount() {
-			return COLUMN_NAMES.length;
+			return columnNames.length;
 		}
 
 		@Override
@@ -171,6 +172,8 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 				return areaInventoryReport.getReportNumber();
 			case AREA_COLUMN_INDEX:
 				return areaInventoryReport.getArea();
+			case ENCODER_COLUMN_INDEX:
+				return areaInventoryReport.getCreatedBy().getUsername();
 			default:
 				throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 			}
@@ -178,7 +181,7 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 		
 		@Override
 		public String getColumnName(int column) {
-			return COLUMN_NAMES[column];
+			return columnNames[column];
 		}
 		
 		public void setAreaInventoryReports(List<AreaInventoryReport> inventoryChecks) {
