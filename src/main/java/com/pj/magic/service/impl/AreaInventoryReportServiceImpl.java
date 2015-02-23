@@ -78,4 +78,10 @@ public class AreaInventoryReportServiceImpl implements AreaInventoryReportServic
 		return areaInventoryReportDao.findAllByInventoryCheck(inventoryCheck);
 	}
 
+	@Override
+	public void markAsReviewed(AreaInventoryReport areaInventoryReport) {
+		areaInventoryReport.setReviewed(true);
+		areaInventoryReportDao.save(areaInventoryReport);
+	}
+
 }

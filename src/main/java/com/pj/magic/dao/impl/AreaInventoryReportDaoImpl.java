@@ -26,6 +26,7 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, INVENTORY_CHECK_ID, REPORT_NO, AREA_ID, CHECKER, DOUBLE_CHECKER, a.CREATE_BY,"
+			+ " a.REVIEW_IND,"
 			+ " b.INVENTORY_DT, b.POST_IND,"
 			+ " c.NAME as AREA_NAME,"
 			+ " d.USERNAME as CREATE_BY_USERNAME"
@@ -91,7 +92,7 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 
 	private static final String UPDATE_SQL =
 			"update AREA_INV_REPORT"
-			+ " set REPORT_NO = ?, AREA_ID = ?, CHECKER = ?, DOUBLE_CHECKER = ?"
+			+ " set REPORT_NO = ?, AREA_ID = ?, CHECKER = ?, DOUBLE_CHECKER = ?, REVIEW_IND = ?"
 			+ " where ID = ?";
 	
 	private void update(AreaInventoryReport areaInventoryReport) {
@@ -100,6 +101,7 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 				(areaInventoryReport.getArea() != null) ? areaInventoryReport.getArea().getId() : null,
 				areaInventoryReport.getChecker(),
 				areaInventoryReport.getDoubleChecker(),
+				(areaInventoryReport.isReviewed()) ? "Y" : "N",
 				areaInventoryReport.getId());
 	}
 
@@ -131,6 +133,7 @@ public class AreaInventoryReportDaoImpl extends MagicDao implements AreaInventor
 			areaInventoryReport.setDoubleChecker(rs.getString("DOUBLE_CHECKER"));
 			areaInventoryReport.setCreatedBy(
 					new User(rs.getLong("CREATE_BY"), rs.getString("CREATE_BY_USERNAME")));
+			areaInventoryReport.setReviewed("Y".equals(rs.getString("REVIEW_IND")));
 			return areaInventoryReport;
 		}
 		

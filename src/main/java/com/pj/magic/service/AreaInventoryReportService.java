@@ -24,5 +24,7 @@ public interface AreaInventoryReportService {
 			InventoryCheck inventoryCheck, int reportNumber);
 
 	List<AreaInventoryReport> findAllAreaInventoryReportsByInventoryCheck(InventoryCheck inventoryCheck);
+
+	void markAsReviewed(AreaInventoryReport areaInventoryReport);
 	
 }

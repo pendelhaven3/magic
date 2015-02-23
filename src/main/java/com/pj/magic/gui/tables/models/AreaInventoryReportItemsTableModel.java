@@ -27,7 +27,7 @@ public class AreaInventoryReportItemsTableModel extends AbstractTableModel {
 	private boolean editable;
 	
 	public void setAreaInventoryReport(AreaInventoryReport areaInventoryReport) {
-		editable = !areaInventoryReport.getParent().isPosted();
+		editable = !(areaInventoryReport.getParent().isPosted() || areaInventoryReport.isReviewed());
 		setItems(areaInventoryReport.getItems());
 	}
 	

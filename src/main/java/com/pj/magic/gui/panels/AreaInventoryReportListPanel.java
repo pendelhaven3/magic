@@ -34,6 +34,7 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 	private static final int REPORT_NUMBER_COLUMN_INDEX = 1;
 	private static final int AREA_COLUMN_INDEX = 2;
 	private static final int ENCODER_COLUMN_INDEX = 3;
+	private static final int STATUS_COLUMN_INDEX = 4;
 	
 	@Autowired private AreaInventoryReportService areaInventoryReportService;
 	@Autowired private InventoryCheckService inventoryCheckService;
@@ -143,7 +144,7 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 
 	private class AreaInventoryReportsTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"Inventory Date", "Report No.", "Area", "Encoder"};
+		private final String[] columnNames = {"Inventory Date", "Report No.", "Area", "Encoder", "Status"};
 		
 		private List<AreaInventoryReport> areaInventoryReports = new ArrayList<>();
 		
@@ -174,6 +175,8 @@ public class AreaInventoryReportListPanel extends StandardMagicPanel {
 				return areaInventoryReport.getArea();
 			case ENCODER_COLUMN_INDEX:
 				return areaInventoryReport.getCreatedBy().getUsername();
+			case STATUS_COLUMN_INDEX:
+				return areaInventoryReport.getStatus();
 			default:
 				throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 			}

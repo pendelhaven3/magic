@@ -12,6 +12,7 @@ public class AreaInventoryReport {
 	private String checker;
 	private String doubleChecker;
 	private User createdBy;
+	private boolean reviewed;
 	private List<AreaInventoryReportItem> items = new ArrayList<>();
 
 	public Long getId() {
@@ -84,6 +85,18 @@ public class AreaInventoryReport {
 
 	public void setCreatedBy(User createdBy) {
 		this.createdBy = createdBy;
+	}
+
+	public boolean isReviewed() {
+		return reviewed;
+	}
+
+	public void setReviewed(boolean reviewed) {
+		this.reviewed = reviewed;
+	}
+	
+	public String getStatus() {
+		return (reviewed) ? "Reviewed" : "New";
 	}
 	
 }

@@ -438,6 +438,7 @@ create table AREA_INV_REPORT (
   CHECKER varchar(50) null,
   DOUBLE_CHECKER varchar(50) null,
   CREATE_BY integer null,
+  REVIEW_IND char(1) default 'N' not null,
   constraint AREA_INV_REPORT$PK primary key (ID),
   constraint AREA_INV_REPORT$UK unique (INVENTORY_CHECK_ID, REPORT_NO),
   constraint AREA_INV_REPORT$FK foreign key (INVENTORY_CHECK_ID) references INVENTORY_CHECK (ID),

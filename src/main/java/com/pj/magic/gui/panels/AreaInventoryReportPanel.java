@@ -23,6 +23,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +45,8 @@ import com.pj.magic.util.KeyUtil;
 @Component
 public class AreaInventoryReportPanel extends StandardMagicPanel {
 
+	private static final Logger logger = LoggerFactory.getLogger(AreaInventoryReportPanel.class);
+	
 	private static final String FOCUS_NEXT_FIELD_ACTION_NAME = "focusNextField";
 	
 	@Autowired private AreaInventoryReportItemsTable itemsTable;
@@ -54,13 +58,15 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	private AreaInventoryReport areaInventoryReport;
 	private JLabel inventoryDateField;
 	private JLabel encoderLabel;
-	private MagicTextField reportNumberField; // TODO: change to combobox later
+	private JLabel statusLabel;
+	private MagicTextField reportNumberField;
 	private JComboBox<Area> areaComboBox;
 	private MagicTextField checkerField;
 	private MagicTextField doubleCheckerField;
 	private JLabel totalItemsField;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
+	private JButton markAsReviewedButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -199,6 +205,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	
 	public void updateDisplay(AreaInventoryReport areaInventoryReport) {
 		inventoryDateField.setText(FormatterUtil.formatDate(areaInventoryReport.getParent().getInventoryDate()));
+		statusLabel.setText(areaInventoryReport.getStatus());
 		
 		if (areaInventoryReport.getId() == null) {
 			this.areaInventoryReport = areaInventoryReport;
@@ -211,23 +218,24 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		
 		updateComboBoxes();
 		
-		boolean posted = areaInventoryReport.getParent().isPosted();
+		boolean editable = !(areaInventoryReport.getParent().isPosted() || areaInventoryReport.isReviewed());
 		
 		encoderLabel.setText(areaInventoryReport.getCreatedBy().getUsername());
 		reportNumberField.setText(areaInventoryReport.getReportNumber().toString());
-		reportNumberField.setEnabled(!posted);
-		areaComboBox.setEnabled(!posted);
+		reportNumberField.setEnabled(editable);
+		areaComboBox.setEnabled(editable);
 		areaComboBox.setSelectedItem(areaInventoryReport.getArea());
-		checkerField.setEnabled(!posted);
+		checkerField.setEnabled(editable);
 		checkerField.setText(areaInventoryReport.getChecker());
-		doubleCheckerField.setEnabled(!posted);
+		doubleCheckerField.setEnabled(editable);
 		doubleCheckerField.setText(areaInventoryReport.getDoubleChecker());
 		totalItemsField.setText(String.valueOf(areaInventoryReport.getTotalNumberOfItems()));
 		
 		itemsTable.setAreaInventoryReport(areaInventoryReport);
 		
-		addItemButton.setEnabled(!posted);
-		deleteItemButton.setEnabled(!posted);
+		addItemButton.setEnabled(editable);
+		deleteItemButton.setEnabled(editable);
+		markAsReviewedButton.setEnabled(editable);
 	}
 
 	private void clearDisplay() {
@@ -244,6 +252,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		itemsTable.setAreaInventoryReport(areaInventoryReport);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
+		markAsReviewedButton.setEnabled(false);
 	}
 
 	private void updateComboBoxes() {
@@ -294,6 +303,21 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		encoderLabel = ComponentUtil.createLabel(100);
 		mainPanel.add(encoderLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Status:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		statusLabel = ComponentUtil.createLabel(100);
+		mainPanel.add(statusLabel, c);
 		
 		currentRow++;
 		
@@ -446,6 +470,16 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		markAsReviewedButton = new MagicToolBarButton("post", "Mark as Reviewed");
+		markAsReviewedButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				markAreaInventoryReportAsReviewed();
+			}
+		});
+		toolBar.add(markAsReviewedButton);
+		
 		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {
 			
@@ -466,6 +500,19 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+	}
+
+	private void markAreaInventoryReportAsReviewed() {
+		if (confirm("Mark Area Inventory Report as reviewed?")) {
+			try {
+				areaInventoryReportService.markAsReviewed(areaInventoryReport);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred during saving");
+				return;
+			}
+			showMessage("Area Inventory Report marked as reviewed");
+		}
 	}
 
 }
