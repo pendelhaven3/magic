@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -492,6 +493,13 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
+		customerCodeField.onF5Key(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectCustomerDialog();
+			}
+		});
 	}
 
 	@Override
