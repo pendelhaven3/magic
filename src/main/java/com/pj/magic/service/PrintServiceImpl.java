@@ -57,7 +57,6 @@ import com.pj.magic.model.report.CashFlowReportItem;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
 import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
 import com.pj.magic.model.report.PriceChangesReport;
-import com.pj.magic.model.report.PriceChangesReportItemGroup;
 import com.pj.magic.model.report.RemittanceReport;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
 import com.pj.magic.model.util.InventoryCheckReportType;
@@ -108,8 +107,6 @@ public class PrintServiceImpl implements PrintService {
 	private static final int LEFT_PADDING_SIZE_FOR_CONDENSED_FONT = 25;
 	public static final String LEFT_PADDING_FOR_CONDENSED_FONT =
 			StringUtils.repeat(" ", LEFT_PADDING_SIZE_FOR_CONDENSED_FONT);
-	
-	private static final int PRICE_CHANGES_REPORT_ITEM_GROUP_HEADER_FOOTER_LINES = 7;
 	
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private UserDao userDao;
@@ -800,41 +797,47 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public List<String> generateReportAsString(PriceChangesReport report) {
-		List<List<PriceChangesReportItemGroup>> pageItems = 
-				partitionPriceChangesReportItemGroups(report.getItemsGroupedByDate());
+		Map<String, Object> reportData = new HashMap<>();
+		reportData.put("priceChangesReport", report);
+		reportData.put("itemGroups", report.getItemsGroupedByDate());
+		reportData.put("charsPerLine", PRICE_CHANGES_REPORT_CHARACTERS_PER_LINE);
+		
+		String reportBody = generateReportAsString("reports/priceChangesReport-body.vm", reportData);
+		List<String> pages = partitionText(reportBody, PRICE_CHANGES_REPORT_ITEMS_PER_PAGE);
+		reportData.put("totalPages", pages.size());
+		
 		List<String> printPages = new ArrayList<>();
-		for (int i = 0; i < pageItems.size(); i++) {
-			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("priceChangesReport", report);
-			reportData.put("charsPerLine", PRICE_CHANGES_REPORT_CHARACTERS_PER_LINE);
-			reportData.put("itemGroups", pageItems.get(i));
+		for (int i = 0; i < pages.size(); i++) {
 			reportData.put("currentPage", i + 1);
-			reportData.put("totalPages", pageItems.size());
-			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			printPages.add(generateReportAsString("reports/priceChangesReport.vm", reportData));
+			StringBuilder sb = new StringBuilder();
+			sb.append(generateReportAsString("reports/priceChangesReport-header.vm", reportData));
+			sb.append(pages.get(i));
+			printPages.add(sb.toString());
 		}
 		return printPages;
 	}
 
-	private List<List<PriceChangesReportItemGroup>> partitionPriceChangesReportItemGroups(
-			List<PriceChangesReportItemGroup> itemGroups) {
-		List<List<PriceChangesReportItemGroup>> pageItems = new ArrayList<>();
-		List<PriceChangesReportItemGroup> pageItem = new ArrayList<>();
-		int counter = 0;
-		for (PriceChangesReportItemGroup itemGroup : itemGroups) {
-			if (counter + itemGroup.getItems().size() + PRICE_CHANGES_REPORT_ITEM_GROUP_HEADER_FOOTER_LINES 
-					> PRICE_CHANGES_REPORT_ITEMS_PER_PAGE) {
-				pageItems.add(pageItem);
-				pageItem = new ArrayList<>();
-				counter = 0;
+	private static List<String> partitionText(String text, int numberOfLines) {
+		String[] lines = text.split("\n");
+		List<String> group = new ArrayList<>();
+		StringBuilder sb = new StringBuilder();
+		int lineCount = 0;
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			sb.append(line).append("\n");
+			lineCount++;
+			if (lineCount == numberOfLines) {
+				group.add(sb.toString());
+				sb = new StringBuilder();
+				lineCount = 0;
 			}
-			pageItem.add(itemGroup);
-			counter += itemGroup.getItems().size() + PRICE_CHANGES_REPORT_ITEM_GROUP_HEADER_FOOTER_LINES;
 		}
-		pageItems.add(pageItem);
-		return pageItems;
+		if (sb.length() > 0) {
+			group.add(sb.toString());
+		}
+		return group;
 	}
-
+	
 	@Override
 	public void print(PriceChangesReport report) {
 		try {
