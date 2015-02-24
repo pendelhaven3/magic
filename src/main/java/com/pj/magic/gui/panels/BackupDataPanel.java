@@ -20,7 +20,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.filechooser.FileFilter;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +61,18 @@ public class BackupDataPanel extends StandardMagicPanel {
 		});
 		
 		restoreFileChooser = new JFileChooser();
+		restoreFileChooser.setFileFilter(new FileFilter() {
+			
+			@Override
+			public String getDescription() {
+				return "Backup files (*.7z)";
+			}
+			
+			@Override
+			public boolean accept(File f) {
+				return FilenameUtils.getExtension(f.getName()).equals("7z");
+			}
+		});
 		
 		restoreButton = new JButton("Restore Data");
 		restoreButton.addActionListener(new ActionListener() {
@@ -83,8 +98,19 @@ public class BackupDataPanel extends StandardMagicPanel {
 
 				public Integer doInBackground() throws Exception {
 					Process process = Runtime.getRuntime().exec(
+							new String[] { "cmd.exe", "/c", constructDecompressBackupFileCommand(file)});
+					int result = process.waitFor();
+					if (result != 0) {
+						return result;
+					}
+					
+					System.out.println(constructRestoreCommand(file));
+					process = Runtime.getRuntime().exec(
 							new String[] { "cmd.exe", "/c", constructRestoreCommand(file) });
-					return process.waitFor();
+					result = process.waitFor();
+					System.out.println(result);
+					System.out.println(IOUtils.toString(process.getErrorStream()));
+					return result;
 				}
 
 				public void done() {
@@ -120,10 +146,18 @@ public class BackupDataPanel extends StandardMagicPanel {
 				ApplicationProperties.getProperty("db.user"),
 				ApplicationProperties.getProperty("db.password"),
 				ApplicationProperties.getProperty("db.name"),
-				file.getAbsolutePath()
+				file.getAbsolutePath().replaceAll(".7z", "")
 		);
 	}
 
+	private String constructDecompressBackupFileCommand(File file) {
+		String command = "7z e \"{0}\" -o\"{1}\"";
+		return MessageFormat.format(command, 
+				file.getAbsolutePath(),
+				file.getParentFile().getAbsolutePath()
+		);
+	}
+	
 	private void backupData() {
 		if (!isMysqlInstalled()) {
 			showErrorMessage("Backup cannot be done through this terminal");
@@ -132,10 +166,10 @@ public class BackupDataPanel extends StandardMagicPanel {
 		
 		try {
 			Process process = Runtime.getRuntime().exec(
-					new String[] {"cmd.exe", "/c", constructBackupCommand()}); // TODO: zip output
-			int result = process.waitFor();
-			if (result == 0) {
-				showMessage("Backup completed.\n" + backupFilename);
+					new String[] {"cmd.exe", "/c", constructBackupCommand()});
+			process.waitFor();
+			if (Files.exists(Paths.get(backupFilename + ".7z"))) {
+				showMessage("Backup completed.\n" + backupFilename + ".7z");
 			} else {
 				showMessage("Backup failed");
 			}
@@ -146,12 +180,13 @@ public class BackupDataPanel extends StandardMagicPanel {
 	}
 
 	private String constructBackupCommand() {
-		String command = "mysqldump -u{0} -p{1} --database {2} -r \"{3}\"";
+		String command = "mysqldump -u{0} -p{1} --databases {2} | 7z.exe a \"{3}.7z\" -si \"{4}\"";
 		backupFilename = constructBackupFilename();
 		return MessageFormat.format(command, 
 				ApplicationProperties.getProperty("db.user"),
 				ApplicationProperties.getProperty("db.password"),
 				ApplicationProperties.getProperty("db.name"),
+				backupFilename,
 				backupFilename
 		);
 	}
@@ -235,4 +270,5 @@ public class BackupDataPanel extends StandardMagicPanel {
 				ApplicationProperties.getProperty("db.password")
 		);
 	}
+	
 }
