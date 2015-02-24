@@ -108,6 +108,7 @@ import com.pj.magic.gui.panels.menu.ReportsMenuPanel;
 import com.pj.magic.gui.panels.menu.SalesMenuPanel;
 import com.pj.magic.gui.panels.menu.SalesPaymentsMenuPanel;
 import com.pj.magic.gui.panels.menu.StockMovementMenuPanel;
+import com.pj.magic.gui.panels.promo.PromoListPanel;
 import com.pj.magic.gui.panels.promo.PromoRedemptionListPanel;
 import com.pj.magic.gui.panels.promo.PromoRedemptionPanel;
 import com.pj.magic.gui.panels.promo.PromoRedemptionPromoListPanel;
@@ -262,6 +263,7 @@ public class MagicFrame extends JFrame {
 	private static final String PROMO_REDEMPTION_PANEL = "PROMO_REDEMPTION_PANEL";
 	private static final String PROMO_REDEMPTION_LIST_PANEL = "PROMO_REDEMPTION_LIST_PANEL";
 	private static final String PROMO_REDEMPTION_PROMO_LIST_PANEL = "PROMO_REDEMPTION_PROMO_LIST_PANEL";
+	private static final String PROMO_LIST_PANEL = "PROMO_LIST_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -360,6 +362,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PromoRedemptionPanel promoRedemptionPanel;
 	@Autowired private PromoRedemptionListPanel promoRedemptionListPanel;
 	@Autowired private PromoRedemptionPromoListPanel promoRedemptionPromoListPanel;
+	@Autowired private PromoListPanel promoListPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -507,6 +510,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(promoRedemptionPanel, PROMO_REDEMPTION_PANEL);
 		panelHolder.add(promoRedemptionListPanel, PROMO_REDEMPTION_LIST_PANEL);
 		panelHolder.add(promoRedemptionPromoListPanel, PROMO_REDEMPTION_PROMO_LIST_PANEL);
+		panelHolder.add(promoListPanel, PROMO_LIST_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1242,6 +1246,15 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Promo Redemption - Select Promo");
 		promoRedemptionPromoListPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_REDEMPTION_PROMO_LIST_PANEL);
+	}
+
+	public void switchToPromoListPanel() {
+		addPanelNameToTitle("Promo List");
+		promoListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_LIST_PANEL);
+	}
+
+	public void switchToPromoPanel(Promo promo) {
 	}
 	
 }
