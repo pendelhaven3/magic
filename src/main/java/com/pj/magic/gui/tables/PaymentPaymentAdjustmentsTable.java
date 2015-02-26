@@ -297,6 +297,8 @@ public class PaymentPaymentAdjustmentsTable extends MagicTable {
 				.findBadStockReturnByBadStockReturnNumber(badStockReturnNumber);
 		if (badStockReturn == null) {
 			showErrorMessage("Bad Stock Return does not exist");
+		} else if (!badStockReturn.getCustomer().equals(payment.getCustomer())) {
+			showErrorMessage("Bad Stock Return is for a different customer");
 		} else if (badStockReturn.isPaid()) {
 			showErrorMessage("Bad Stock Return is already paid");
 		} else if (!badStockReturn.isPosted()) {
@@ -313,6 +315,8 @@ public class PaymentPaymentAdjustmentsTable extends MagicTable {
 				.findPaymentAdjustmentByPaymentAdjustmentNumber(paymentAdjustmentNumber);
 		if (paymentAdjustment == null || !paymentAdjustment.getAdjustmentType().equals(adjustmentType)) {
 			showErrorMessage("Payment Adjustment does not exist");
+		} else if (!paymentAdjustment.getCustomer().equals(payment.getCustomer())) {
+			showErrorMessage("Payment Adjustment is for a different customer");
 		} else if (paymentAdjustment.isPaid()) {
 			showErrorMessage("Payment Adjustment is already paid");
 		} else if (!paymentAdjustment.isPosted()) {
@@ -329,6 +333,8 @@ public class PaymentPaymentAdjustmentsTable extends MagicTable {
 				.findSalesReturnBySalesReturnNumber(salesReturnNumber);
 		if (salesReturn == null) {
 			showErrorMessage("Sales Return does not exist");
+		} else if (!salesReturn.getSalesInvoice().getCustomer().equals(payment.getCustomer())) {
+			showErrorMessage("Sales Return is for a different customer");
 		} else if (salesReturn.isPaid()) {
 			showErrorMessage("Sales Return is already paid");
 		} else if (!salesReturn.isPosted()) {
@@ -345,6 +351,8 @@ public class PaymentPaymentAdjustmentsTable extends MagicTable {
 				.findNoMoreStockAdjustmentByNoMoreStockAdjustmentNumber(noMoreStockAdjustmentNumber);
 		if (noMoreStockAdjustment == null) {
 			showErrorMessage("No More Stock Adjustment does not exist");
+		} else if (!noMoreStockAdjustment.getSalesInvoice().getCustomer().equals(payment.getCustomer())) {
+			showErrorMessage("No More Stock Adjustment is for a different customer");
 		} else if (noMoreStockAdjustment.isPaid()) {
 			showErrorMessage("No More Stock Adjustment is already paid");
 		} else if (!noMoreStockAdjustment.isPosted()) {
