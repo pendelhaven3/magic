@@ -12,9 +12,16 @@ public class ListUtil {
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> DefaultComboBoxModel<T> toDefaultComboBoxModel(List<T> list) {
+		return toDefaultComboBoxModel(list, false);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> DefaultComboBoxModel<T> toDefaultComboBoxModel(List<T> list, boolean insertDefaultNull) {
 		DefaultComboBoxModel<T> model = new DefaultComboBoxModel<>((T[])list.toArray());
+		if (insertDefaultNull) {
+			model.insertElementAt(null, 0);
+		}
 		return model;
 	}
 	

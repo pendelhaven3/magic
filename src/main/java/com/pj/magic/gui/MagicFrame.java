@@ -109,6 +109,7 @@ import com.pj.magic.gui.panels.menu.SalesMenuPanel;
 import com.pj.magic.gui.panels.menu.SalesPaymentsMenuPanel;
 import com.pj.magic.gui.panels.menu.StockMovementMenuPanel;
 import com.pj.magic.gui.panels.promo.PromoListPanel;
+import com.pj.magic.gui.panels.promo.PromoPanel;
 import com.pj.magic.gui.panels.promo.PromoRedemptionListPanel;
 import com.pj.magic.gui.panels.promo.PromoRedemptionPanel;
 import com.pj.magic.gui.panels.promo.PromoRedemptionPromoListPanel;
@@ -264,6 +265,7 @@ public class MagicFrame extends JFrame {
 	private static final String PROMO_REDEMPTION_LIST_PANEL = "PROMO_REDEMPTION_LIST_PANEL";
 	private static final String PROMO_REDEMPTION_PROMO_LIST_PANEL = "PROMO_REDEMPTION_PROMO_LIST_PANEL";
 	private static final String PROMO_LIST_PANEL = "PROMO_LIST_PANEL";
+	private static final String PROMO_PANEL = "PROMO_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -363,6 +365,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PromoRedemptionListPanel promoRedemptionListPanel;
 	@Autowired private PromoRedemptionPromoListPanel promoRedemptionPromoListPanel;
 	@Autowired private PromoListPanel promoListPanel;
+	@Autowired private PromoPanel promoPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -511,6 +514,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(promoRedemptionListPanel, PROMO_REDEMPTION_LIST_PANEL);
 		panelHolder.add(promoRedemptionPromoListPanel, PROMO_REDEMPTION_PROMO_LIST_PANEL);
 		panelHolder.add(promoListPanel, PROMO_LIST_PANEL);
+		panelHolder.add(promoPanel, PROMO_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1255,6 +1259,9 @@ public class MagicFrame extends JFrame {
 	}
 
 	public void switchToPromoPanel(Promo promo) {
+		addPanelNameToTitle("Promo");
+		promoPanel.updateDisplay(promo);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_PANEL);
 	}
 	
 }

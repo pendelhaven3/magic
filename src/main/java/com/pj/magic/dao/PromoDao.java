@@ -9,5 +9,7 @@ public interface PromoDao {
 	List<Promo> getAll();
 
 	Promo get(long id);
+
+	void save(Promo promo);
 	
 }

@@ -7,5 +7,9 @@ import java.util.List;
 public interface PromoService {
 
 	List<Promo> getAllPromos();
+
+	void save(Promo promo);
+
+	Promo getPromo(long id);
 	
 }
