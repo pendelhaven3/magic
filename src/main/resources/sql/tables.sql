@@ -878,6 +878,7 @@ create table PROMO_REDEMPTION (
   POST_DT date null,
   POST_BY integer null,
   primary key (ID),
+  unique key PROMO_REDEMPTION$UK (PROMO_ID, PROMO_REDEMPTION_NO),
   constraint PROMO_REDEMPTION$FK foreign key (PROMO_ID) references PROMO (ID),
   constraint PROMO_REDEMPTION$FK2 foreign key (CUSTOMER_ID) references CUSTOMER (ID),
   constraint PROMO_REDEMPTION$FK3 foreign key (POST_BY) references USER (ID)
@@ -889,4 +890,11 @@ create table PROMO_REDEMPTION_SALES_INVOICE (
   SALES_INVOICE_ID integer not null,
   primary key (ID),
   constraint PROMO_REDEMPTION_SALES_INVOICE$FK foreign key (PROMO_REDEMPTION_ID) references PROMO_REDEMPTION (ID)
+);
+
+create table PROMO_REDEMPTION_SEQUENCE (
+  PROMO_ID integer not null,
+  VALUE integer default 0 not null,
+  constraint PROMO_REDEMPTION_SEQUENCE$UK unique (PROMO_ID),
+  constraint PROMO_REDEMPTION_SEQUENCE$FK foreign key (PROMO_ID) references PROMO (ID) 
 );

@@ -46,9 +46,6 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			+ " join MANUFACTURER f"
 			+ "   on f.ID = d.MANUFACTURER_ID";
 	
-	// TODO: Use separate sequence for each promo
-	private static final String PROMO_REDEMPTION_NUMBER_SEQUENCE = "PROMO_REDEMPTION_NO_SEQ";
-	
 	private PromoRedemptionRowMapper promoRedemptionRowMapper = new PromoRedemptionRowMapper();
 	
 	@Override
@@ -72,7 +69,7 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, promoRedemption.getPromo().getId());
-				ps.setLong(2, getNextPromoRedemptionNumber());
+				ps.setLong(2, getNextPromoRedemptionNumber(promoRedemption.getPromo()));
 				ps.setLong(3, promoRedemption.getCustomer().getId());
 				return ps;
 			}
@@ -83,10 +80,18 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 		promoRedemption.setPromoRedemptionNumber(updated.getPromoRedemptionNumber());
 	}
 
-	private long getNextPromoRedemptionNumber() {
-		return getNextSequenceValue(PROMO_REDEMPTION_NUMBER_SEQUENCE);
+	private static final String GET_SEQUENCE_NEXT_VALUE_SQL = 
+			"select VALUE + 1 from PROMO_REDEMPTION_SEQUENCE where PROMO_ID = ? for update";
+	
+	private static final String UPDATE_SEQUENCE_VALUE_SQL =
+			"update PROMO_REDEMPTION_SEQUENCE set VALUE = ? where PROMO_ID = ?";
+	
+	private long getNextPromoRedemptionNumber(Promo promo) {
+		Long value = getJdbcTemplate().queryForObject(GET_SEQUENCE_NEXT_VALUE_SQL, Long.class, promo.getId());
+		getJdbcTemplate().update(UPDATE_SEQUENCE_VALUE_SQL, value, promo.getId());
+		return value;
 	}
-
+	
 	private static final String UPDATE_SQL = "update PROMO_REDEMPTION"
 			+ " set CUSTOMER_ID = ?, PRIZE_QUANTITY = ?, POST_IND = ?, POST_DT = ?,"
 			+ " POST_BY = ? where ID = ?";
