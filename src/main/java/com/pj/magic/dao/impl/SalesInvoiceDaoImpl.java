@@ -163,13 +163,6 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 		
 	}
 
-	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by a.ID desc";
-	
-	@Override
-	public List<SalesInvoice> getAll() {
-		return getJdbcTemplate().query(GET_ALL_SQL, salesInvoiceRowMapper);
-	}
-
 	private static final String UPDATE_SQL =
 			"update SALES_INVOICE"
 			+ " set MARK_IND = ?, MARK_DT = ?, MARK_BY = ?,"
@@ -312,21 +305,4 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				customer.getId());
 	}
 
-	private static final String FIND_ALL_UNPAID_SQL = BASE_SELECT_SQL
-			+ " and a.CANCEL_IND = 'N'"
-			+ " and not exists("
-			+ "   select 1"
-			+ "   from PAYMENT_SALES_INVOICE psi"
-			+ "   join PAYMENT p"
-			+ "     on p.ID = psi.PAYMENT_ID"
-			+ "   where psi.SALES_INVOICE_ID = a.ID"
-			+ "   and p.POST_IND = 'Y'"
-			+ " )"
-			+ " order by a.TRANSACTION_DT, a.SALES_INVOICE_NO";
-	
-	@Override
-	public List<SalesInvoice> findAllUnpaid() {
-		return getJdbcTemplate().query(FIND_ALL_UNPAID_SQL, salesInvoiceRowMapper);
-	}
-	
 }

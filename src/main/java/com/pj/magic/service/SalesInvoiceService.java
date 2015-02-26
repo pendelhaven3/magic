@@ -10,8 +10,6 @@ import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 
 public interface SalesInvoiceService {
 
-	List<SalesInvoice> getAllSalesInvoices();
-	
 	void save(SalesInvoice salesInvoice);
 
 	SalesInvoice get(long id);
@@ -36,6 +34,4 @@ public interface SalesInvoiceService {
 	
 	List<SalesInvoice> findAllSalesInvoicesForPaymentByCustomer(Customer customer);
 
-	List<SalesInvoice> findAllUnpaidSalesInvoices();
-	
 }

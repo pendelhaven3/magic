@@ -46,15 +46,6 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		}
 	}
 
-	@Override
-	public List<SalesInvoice> getAllSalesInvoices() {
-		List<SalesInvoice> salesInvoices = salesInvoiceDao.getAll();
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			loadSalesInvoiceDetails(salesInvoice);
-		}
-		return salesInvoices;
-	}
-
 	private void loadSalesInvoiceDetails(SalesInvoice salesInvoice) {
 		salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
 		Collections.sort(salesInvoice.getItems());
@@ -174,13 +165,4 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		return salesInvoices;
 	}
 
-	@Override
-	public List<SalesInvoice> findAllUnpaidSalesInvoices() {
-		List<SalesInvoice> salesInvoices = salesInvoiceDao.findAllUnpaid();
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
-		}
-		return salesInvoices;
-	}
-	
 }

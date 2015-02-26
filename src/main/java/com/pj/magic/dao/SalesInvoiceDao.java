@@ -12,14 +12,10 @@ public interface SalesInvoiceDao {
 	
 	SalesInvoice get(long id);
 
-	List<SalesInvoice> getAll();
-
 	List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria);
 	
 	SalesInvoice findBySalesInvoiceNumber(long salesInvoiceNumber);
 
 	List<SalesInvoice> findAllForPaymentByCustomer(Customer customer);
 
-	List<SalesInvoice> findAllUnpaid();
-	
 }
