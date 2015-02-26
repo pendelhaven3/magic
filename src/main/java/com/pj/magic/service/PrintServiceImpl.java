@@ -474,8 +474,6 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public List<String> generateReportAsString(AreaInventoryReport areaInventoryReport) {
-		Collections.sort(areaInventoryReport.getItems());
-		
 		String inventoryDate = FormatterUtil.formatDate(areaInventoryReport.getParent().getInventoryDate());
 		
 		List<List<AreaInventoryReportItem>> pageItems = Lists.partition(areaInventoryReport.getItems(), 
