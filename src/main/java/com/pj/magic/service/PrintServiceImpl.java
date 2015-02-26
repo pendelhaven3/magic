@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.dao.UserDao;
@@ -904,7 +905,35 @@ public class PrintServiceImpl implements PrintService {
 		Map<String, Object> reportData = new HashMap<>();
 		reportData.put("promoRedemption", promoRedemption);
 		
-		return Arrays.asList(generateReportAsString("reports/promoRedemption.vm", reportData));
+		return Arrays.asList(centerReport(generateReportAsString("reports/promoRedemption.vm", reportData)));
+	}
+
+	private static String centerReport(String reportString) {
+		List<String> lines = Arrays.asList(reportString.split("\r\n"));
+		final int maxColumns = getMaximumColumn(lines);
+		List<String> paddedLines = Lists.transform(lines, new Function<String, String>() {
+
+			@Override
+			public String apply(String input) {
+				if (!StringUtils.isEmpty(input)) {
+					return ReportUtil.center(StringUtils.rightPad(input, maxColumns));
+				} else {
+					return input;
+				}
+			}
+			
+		});
+		return StringUtils.join(paddedLines, "\n");
+	}
+
+	private static int getMaximumColumn(List<String> lines) {
+		int maxColumns = 0;
+		for (String line : lines) {
+			if (line.length() > maxColumns) {
+				maxColumns = line.length();
+			}
+		}
+		return maxColumns;
 	}
 
 	@Override
