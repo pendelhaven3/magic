@@ -295,6 +295,8 @@ public class PurchasePaymentPaymentAdjustmentsTable extends MagicTable {
 				.findPurchasePaymentAdjustmentByPurchasePaymentAdjustmentNumber(paymentAdjustmentNumber);
 		if (paymentAdjustment == null || !paymentAdjustment.getAdjustmentType().equals(adjustmentType)) {
 			showErrorMessage("Purchase Payment Adjustment does not exist");
+		} else if (!paymentAdjustment.getSupplier().equals(payment.getSupplier())) {
+			showErrorMessage("Purchase Payment Adjustment is for a different supplier");
 		} else if (paymentAdjustment.isPosted()) {
 			showErrorMessage("Purchase Payment Adjustment is already posted");
 		} else {
@@ -309,6 +311,8 @@ public class PurchasePaymentPaymentAdjustmentsTable extends MagicTable {
 				.findPurchaseReturnBadStockByPurchaseReturnBadStockNumber(purchaseReturnBadStockNumber);
 		if (purchaseReturnBadStock == null) {
 			showErrorMessage("Purchase Return Bad Stock does not exist");
+		} else if (!purchaseReturnBadStock.getSupplier().equals(payment.getSupplier())) {
+			showErrorMessage("Purchase Return Bad Stock is for a different supplier");
 		} else if (purchaseReturnBadStock.isPosted()) {
 			showErrorMessage("Purchase Return Bad Stock is already posted");
 		} else {
@@ -323,6 +327,8 @@ public class PurchasePaymentPaymentAdjustmentsTable extends MagicTable {
 				.findPurchaseReturnByPurchaseReturnNumber(purchaseReturnNumber);
 		if (purchaseReturn == null) {
 			showErrorMessage("Purchase Return does not exist");
+		} else if (!purchaseReturn.getReceivingReceipt().getSupplier().equals(payment.getSupplier())) {
+			showErrorMessage("Purchase Return is for a different supplier");
 		} else if (!purchaseReturn.isPosted()) {
 			showErrorMessage("Purchase Return is not yet posted");
 		} else if (purchaseReturn.isPaid()) {
