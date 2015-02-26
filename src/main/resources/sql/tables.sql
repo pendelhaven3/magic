@@ -857,6 +857,7 @@ create table PROMO (
   ID integer auto_increment,
   PROMO_NO integer not null,
   NAME varchar(100) not null,
+  PROMO_TYPE_ID integer not null,
   TARGET_AMOUNT numeric(8, 2) not null,
   MANUFACTURER_ID integer not null,
   PRODUCT_ID integer not null,

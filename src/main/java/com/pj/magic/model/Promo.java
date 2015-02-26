@@ -10,6 +10,7 @@ public class Promo {
 	private Long id;
 	private Long promoNumber;
 	private String name;
+	private PromoType promoType;
 	
 	// TODO: Move promo mechanics to separate class
 	private BigDecimal targetAmount;
@@ -80,6 +81,14 @@ public class Promo {
 				prize.getQuantity().toString(),
 				prize.getUnit(),
 				prize.getProduct().getDescription());
+	}
+
+	public PromoType getPromoType() {
+		return promoType;
+	}
+
+	public void setPromoType(PromoType promoType) {
+		this.promoType = promoType;
 	}
 
 }

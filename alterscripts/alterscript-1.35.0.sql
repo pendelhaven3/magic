@@ -12,3 +12,6 @@ alter table PROMO_REDEMPTION add constraint PROMO_REDEMPTION$UK unique key (PROM
 insert into PROMO_REDEMPTION_SEQUENCE (PROMO_ID, VALUE) values (1, (select VALUE from SEQUENCE where NAME = 'PROMO_REDEMPTION_NO_SEQ'));
 
 delete from SEQUENCE where NAME = 'PROMO_REDEMPTION_NO_SEQ';
+
+alter table PROMO add PROMO_TYPE_ID integer default 1 not null;
+alter table PROMO change PROMO_TYPE_ID PROMO_TYPE_ID integer not null;

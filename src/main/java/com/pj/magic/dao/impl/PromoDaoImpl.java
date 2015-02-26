@@ -19,12 +19,13 @@ import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoPrize;
+import com.pj.magic.model.PromoType;
 
 @Repository
 public class PromoDaoImpl extends MagicDao implements PromoDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PROMO_NO, a.NAME, TARGET_AMOUNT, a.MANUFACTURER_ID,"
+			"select a.ID, PROMO_NO, a.NAME, PROMO_TYPE_ID, TARGET_AMOUNT, a.MANUFACTURER_ID,"
 			+ " PRODUCT_ID, b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION, UNIT, QUANTITY,"
 			+ " c.NAME as MANUFACTURER_NAME"
 			+ " from PROMO a"
@@ -50,6 +51,7 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 			promo.setId(rs.getLong("ID"));
 			promo.setPromoNumber(rs.getLong("PROMO_NO"));
 			promo.setName(rs.getString("NAME"));
+			promo.setPromoType(PromoType.getPromoType(rs.getLong("PROMO_TYPE_ID")));
 			promo.setTargetAmount(rs.getBigDecimal("TARGET_AMOUNT"));
 			
 			Manufacturer manufacturer = new Manufacturer();
@@ -100,8 +102,8 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 
 	private static final String INSERT_SQL =
 			"insert into PROMO"
-			+ " (PROMO_NO, NAME, MANUFACTURER_ID, TARGET_AMOUNT, PRODUCT_ID, UNIT, QUANTITY)"
-			+ " values (?, ?, ?, ?, ?, ?, ?)";
+			+ " (PROMO_NO, NAME, PROMO_TYPE_ID, MANUFACTURER_ID, TARGET_AMOUNT, PRODUCT_ID, UNIT, QUANTITY)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Promo promo) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -113,11 +115,12 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, getNextPromoNumber());
 				ps.setString(2, promo.getName());
-				ps.setLong(3, promo.getManufacturer().getId());
-				ps.setBigDecimal(4, promo.getTargetAmount());
-				ps.setLong(5, promo.getPrize().getProduct().getId());
-				ps.setString(6, promo.getPrize().getUnit());
-				ps.setInt(7, promo.getPrize().getQuantity());
+				ps.setLong(3, promo.getPromoType().getId());
+				ps.setLong(4, promo.getManufacturer().getId());
+				ps.setBigDecimal(5, promo.getTargetAmount());
+				ps.setLong(6, promo.getPrize().getProduct().getId());
+				ps.setString(7, promo.getPrize().getUnit());
+				ps.setInt(8, promo.getPrize().getQuantity());
 				return ps;
 			}
 

@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.Constants;
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.MagicButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.SelectProductDialog;
@@ -34,6 +34,7 @@ import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoPrize;
+import com.pj.magic.model.PromoType;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ProductService;
@@ -48,7 +49,6 @@ public class PromoPanel extends StandardMagicPanel {
 
 	private static final Logger logger = LoggerFactory.getLogger(PromoPanel.class);
 	private static final String NEXT_FIELD_ACTION_NAME = "nextField";
-	private static final String SAVE_ACTION_NAME = "save";
 	
 	@Autowired private PromoService promoService;
 	@Autowired private ProductService productService;
@@ -58,7 +58,7 @@ public class PromoPanel extends StandardMagicPanel {
 	private Promo promo;
 	private JLabel promoNumberLabel;
 	private MagicTextField nameField;
-	private JComboBox<String> promoTypeComboBox;
+	private JComboBox<PromoType> promoTypeComboBox;
 	private JComboBox<Manufacturer> manufacturerComboBox;
 	private MagicTextField targetAmountField;
 	private MagicTextField productCodeField;
@@ -66,7 +66,7 @@ public class PromoPanel extends StandardMagicPanel {
 	private EllipsisButton selectProductButton;
 	private JComboBox<String> unitComboBox;
 	private MagicTextField quantityField;
-	private JButton saveButton;
+	private MagicButton saveButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -76,8 +76,7 @@ public class PromoPanel extends StandardMagicPanel {
 		nameField.setMaximumLength(50);
 		
 		promoTypeComboBox = new JComboBox<>();
-		promoTypeComboBox.setModel(ListUtil.toDefaultComboBoxModel(
-				Arrays.asList("Buy X amount of Manufacturer")));
+		promoTypeComboBox.setModel(ListUtil.toDefaultComboBoxModel(PromoType.getPromoTypes()));
 		
 		manufacturerComboBox = new JComboBox<>();
 		
@@ -104,7 +103,7 @@ public class PromoPanel extends StandardMagicPanel {
 		quantityField = new MagicTextField();
 		quantityField.setNumbersOnly(true);
 		
-		saveButton = new JButton("Save");
+		saveButton = new MagicButton("Save");
 		saveButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -146,6 +145,7 @@ public class PromoPanel extends StandardMagicPanel {
 		
 		if (confirm("Save Promo?")) {
 			promo.setName(nameField.getText());
+			promo.setPromoType((PromoType)promoTypeComboBox.getSelectedItem());
 			promo.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
 			promo.setTargetAmount(NumberUtil.toBigDecimal(targetAmountField.getText()));
 			promo.setPrize(new PromoPrize());
@@ -170,6 +170,7 @@ public class PromoPanel extends StandardMagicPanel {
 	private boolean validatePromo() {
 		try {
 			validateMandatoryField(nameField, "Name");
+			validateMandatoryField(promoTypeComboBox, "Promo Type");
 			validateMandatoryField(manufacturerComboBox, "Manufacturer");
 			validateMandatoryField(targetAmountField, "Target Amount");
 			validateMandatoryField(productCodeField, "Product Code");
@@ -233,6 +234,21 @@ public class PromoPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		nameField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(nameField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Promo Type: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		promoTypeComboBox.setPreferredSize(new Dimension(400, 25));
+		mainPanel.add(promoTypeComboBox, c);
 		
 		currentRow++;
 		
@@ -371,8 +387,7 @@ public class PromoPanel extends StandardMagicPanel {
 			}
 		});
 		
-		saveButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SAVE_ACTION_NAME);
-		saveButton.getActionMap().put(SAVE_ACTION_NAME, new AbstractAction() {
+		saveButton.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -395,6 +410,7 @@ public class PromoPanel extends StandardMagicPanel {
 		
 		promoNumberLabel.setText(String.valueOf(promo.getPromoNumber()));
 		nameField.setText(promo.getName());
+		promoTypeComboBox.setSelectedItem(promo.getPromoType());
 		manufacturerComboBox.setSelectedItem(promo.getManufacturer());
 		targetAmountField.setText(FormatterUtil.formatAmount(promo.getTargetAmount()));
 		productCodeField.setText(promo.getPrize().getProduct().getCode());
