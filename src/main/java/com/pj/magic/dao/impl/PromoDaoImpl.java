@@ -25,10 +25,13 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PROMO_NO, a.NAME, TARGET_AMOUNT, a.MANUFACTURER_ID,"
-			+ " PRODUCT_ID, b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION, UNIT, QUANTITY"
+			+ " PRODUCT_ID, b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION, UNIT, QUANTITY,"
+			+ " c.NAME as MANUFACTURER_NAME"
 			+ " from PROMO a"
 			+ " join PRODUCT b"
-			+ "   on b.ID = a.PRODUCT_ID";
+			+ "   on b.ID = a.PRODUCT_ID"
+			+ " join MANUFACTURER c"
+			+ "   on c.ID = a.MANUFACTURER_ID";
 	
 	private static final String PROMO_NUMBER_SEQUENCE = "PROMO_NO_SEQ";
 	
@@ -48,7 +51,12 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 			promo.setPromoNumber(rs.getLong("PROMO_NO"));
 			promo.setName(rs.getString("NAME"));
 			promo.setTargetAmount(rs.getBigDecimal("TARGET_AMOUNT"));
-			promo.setManufacturer(new Manufacturer(rs.getLong("MANUFACTURER_ID")));
+			
+			Manufacturer manufacturer = new Manufacturer();
+			manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
+			manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
+			promo.setManufacturer(manufacturer);
+			
 			promo.setPrize(mapPromoPrize(rs));
 			return promo;
 		}

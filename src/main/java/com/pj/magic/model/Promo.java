@@ -1,6 +1,9 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
+
+import com.pj.magic.util.FormatterUtil;
 
 public class Promo {
 
@@ -67,6 +70,16 @@ public class Promo {
 
 	public void setPrize(PromoPrize prize) {
 		this.prize = prize;
+	}
+
+	public String getMechanicsDescription() {
+		String mechanics = "For every P{0} worth of {1} products, get {2} {3} {4}";
+		return MessageFormat.format(mechanics,
+				FormatterUtil.formatAmount(targetAmount),
+				manufacturer.getName(),
+				prize.getQuantity().toString(),
+				prize.getUnit(),
+				prize.getProduct().getDescription());
 	}
 
 }

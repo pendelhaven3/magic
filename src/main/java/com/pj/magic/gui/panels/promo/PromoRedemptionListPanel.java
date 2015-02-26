@@ -40,14 +40,18 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private PromoRedemptionsTableModel tableModel;
 	private Promo promo;
+	private JLabel promoNameLabel;
+	private JLabel promoMechanicsLabel;
 	
 	public void updateDisplay(Promo promo) {
 		this.promo = promo;
-		List<PromoRedemption> promoRedemptions = promoRedemptionService.getAllPromoRedemptions();
+		List<PromoRedemption> promoRedemptions = promoRedemptionService.getPromoRedemptionsByPromo(promo);
 		tableModel.setPromoRedemptions(promoRedemptions);
 		if (!promoRedemptions.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
+		promoNameLabel.setText(promo.getName());
+		promoMechanicsLabel.setText("<html>" + promo.getMechanicsDescription() + "</html>");
 	}
 
 	@Override
@@ -79,14 +83,15 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(200, "P&G - Jollibee GC Promo"), c);
+		promoNameLabel = ComponentUtil.createLabel(300);
+		mainPanel.add(promoNameLabel, c);
 		
 		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
+		c.anchor = GridBagConstraints.NORTHWEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Mechanics:"), c);
 		
 		c = new GridBagConstraints();
@@ -94,7 +99,8 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(new JLabel("For every 1,500 worth of P&G products, get a P50 Jollibee gift certificate"), c);
+		promoMechanicsLabel = new JLabel();
+		mainPanel.add(promoMechanicsLabel, c);
 		
 		currentRow++;
 		

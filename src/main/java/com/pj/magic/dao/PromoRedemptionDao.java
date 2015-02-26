@@ -2,6 +2,7 @@ package com.pj.magic.dao;
 
 import java.util.List;
 
+import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
 
 public interface PromoRedemptionDao {
@@ -10,6 +11,6 @@ public interface PromoRedemptionDao {
 
 	PromoRedemption get(long id);
 
-	List<PromoRedemption> getAll();
+	List<PromoRedemption> findAllByPromo(Promo promo);
 	
 }

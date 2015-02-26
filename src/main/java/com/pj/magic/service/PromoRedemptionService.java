@@ -16,12 +16,12 @@ public interface PromoRedemptionService {
 	
 	void save(PromoRedemptionSalesInvoice salesInvoice);
 
-	List<PromoRedemption> getAllPromoRedemptions();
-	
 	PromoRedemption getPromoRedemption(long id);
 
 	void delete(PromoRedemptionSalesInvoice salesInvoice);
 
 	void post(PromoRedemption promoRedemption);
+
+	List<PromoRedemption> getPromoRedemptionsByPromo(Promo promo);
 	
 }

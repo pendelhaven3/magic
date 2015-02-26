@@ -73,11 +73,6 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	}
 
 	@Override
-	public List<PromoRedemption> getAllPromoRedemptions() {
-		return promoRedemptionDao.getAll();
-	}
-
-	@Override
 	public PromoRedemption getPromoRedemption(long id) {
 		PromoRedemption promoRedemption = promoRedemptionDao.get(id);
 		promoRedemption.setSalesInvoices(promoRedemptionSalesInvoiceDao
@@ -123,6 +118,11 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		
 		product.addUnitQuantity(prize.getUnit(), -1 * updated.getPrizeQuantity());
 		productDao.updateAvailableQuantities(product);
+	}
+
+	@Override
+	public List<PromoRedemption> getPromoRedemptionsByPromo(Promo promo) {
+		return promoRedemptionDao.findAllByPromo(promo);
 	}
 
 }

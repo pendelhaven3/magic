@@ -161,11 +161,12 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 		
 	}
 
-	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by a.PROMO_REDEMPTION_NO desc";
+	private static final String FIND_ALL_BY_PROMO_SQL = BASE_SELECT_SQL
+			+ " where a.PROMO_ID = ? order by PROMO_REDEMPTION_NO desc";
 	
 	@Override
-	public List<PromoRedemption> getAll() {
-		return getJdbcTemplate().query(GET_ALL_SQL, promoRedemptionRowMapper);
+	public List<PromoRedemption> findAllByPromo(Promo promo) {
+		return getJdbcTemplate().query(FIND_ALL_BY_PROMO_SQL, promoRedemptionRowMapper, promo.getId());
 	}
 	
 }
