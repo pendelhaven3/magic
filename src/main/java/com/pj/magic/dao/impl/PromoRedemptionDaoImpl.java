@@ -31,8 +31,9 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			+ " POST_IND, POST_DT, POST_BY,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
-			+ " d.TARGET_AMOUNT, d.MANUFACTURER_ID, d.PRODUCT_ID, d.UNIT, d.QUANTITY,"
-			+ " e.DESCRIPTION as PRODUCT_DESCRIPTION, e.MANUFACTURER_ID as PRODUCT_MANUFACTURER_ID"
+			+ " d.NAME as PROMO_NAME, d.TARGET_AMOUNT, d.MANUFACTURER_ID, d.PRODUCT_ID, d.UNIT, d.QUANTITY,"
+			+ " e.DESCRIPTION as PRODUCT_DESCRIPTION, e.MANUFACTURER_ID as PRODUCT_MANUFACTURER_ID,"
+			+ " f.NAME as MANUFACTURER_NAME"
 			+ " from PROMO_REDEMPTION a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_id"
@@ -41,7 +42,9 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			+ " join PROMO d"
 			+ "   on d.ID = a.PROMO_ID"
 			+ " join PRODUCT e"
-			+ "   on e.ID = d.PRODUCT_ID";
+			+ "   on e.ID = d.PRODUCT_ID"
+			+ " join MANUFACTURER f"
+			+ "   on f.ID = d.MANUFACTURER_ID";
 	
 	// TODO: Use separate sequence for each promo
 	private static final String PROMO_REDEMPTION_NUMBER_SEQUENCE = "PROMO_REDEMPTION_NO_SEQ";
@@ -142,8 +145,13 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 		private Promo mapPromo(ResultSet rs) throws SQLException {
 			Promo promo = new Promo();
 			promo.setId(rs.getLong("PROMO_ID"));
+			promo.setName(rs.getString("PROMO_NAME"));
 			promo.setTargetAmount(rs.getBigDecimal("TARGET_AMOUNT"));
-			promo.setManufacturer(new Manufacturer(rs.getLong("MANUFACTURER_ID")));
+			
+			Manufacturer manufacturer = new Manufacturer();
+			manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
+			manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
+			promo.setManufacturer(manufacturer);
 			
 			Product product = new Product();
 			product.setId(rs.getLong("PRODUCT_ID"));

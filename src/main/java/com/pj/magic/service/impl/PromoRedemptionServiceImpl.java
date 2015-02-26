@@ -45,7 +45,6 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Override
 	public void save(PromoRedemption promoRedemption) {
 		boolean isNew = (promoRedemption.getId() == null);
-		promoRedemption.setPromo(promoDao.get(1L)); // TODO: hardcoded promo id
 		promoRedemptionDao.save(promoRedemption);
 		if (!isNew) {
 			promoRedemptionSalesInvoiceDao.deleteAllByPromoRedemption(promoRedemption);

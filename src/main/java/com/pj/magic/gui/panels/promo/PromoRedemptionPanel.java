@@ -66,6 +66,8 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	
 	private PromoRedemption promoRedemption;
+	private JLabel promoNameLabel;
+	private JLabel promoMechanicsLabel;
 	private JLabel promoRedemptionNumberLabel;
 	private MagicTextField customerCodeField;
 	private JLabel customerNameLabel;
@@ -83,6 +85,9 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void initializeComponents() {
+		promoNameLabel = new JLabel();
+		promoMechanicsLabel = new JLabel();
+		
 		customerCodeField = new MagicTextField();
 		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
 		
@@ -175,7 +180,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(200, "P&G - Jollibee GC Promo"), c);
+		mainPanel.add(promoNameLabel, c);
 		
 		currentRow++;
 		
@@ -190,7 +195,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(new JLabel("For every 1,500 worth of P&G products, get a P50 Jollibee gift certificate"), c);
+		mainPanel.add(promoMechanicsLabel, c);
 		
 		currentRow++;
 		
@@ -242,8 +247,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	}
 
 	private JPanel createCustomerPanel() {
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
+		JPanel panel = new JPanel(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -509,6 +513,9 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 
 	public void updateDisplay(PromoRedemption promoRedemption) {
 		this.promoRedemption = promoRedemption;
+		
+		promoNameLabel.setText(promoRedemption.getPromo().getName());
+		promoMechanicsLabel.setText(promoRedemption.getPromo().getMechanicsDescription());
 		
 		if (promoRedemption.getId() == null) {
 			clearDisplay();

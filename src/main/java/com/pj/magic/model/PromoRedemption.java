@@ -108,7 +108,8 @@ public class PromoRedemption {
 		if (posted) {
 			return prizeQuantity;
 		} else {
-			return getTotalAmount().divideToIntegralValue(getPromo().getTargetAmount()).intValue();
+			return getTotalAmount().divideToIntegralValue(getPromo().getTargetAmount()).intValue()
+					* promo.getPrize().getQuantity();
 		}
 	}
 
