@@ -2,10 +2,11 @@ package com.pj.magic.service;
 
 import java.util.List;
 
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
-import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
+import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.search.PaymentCashPaymentSearchCriteria;
 import com.pj.magic.model.search.PaymentCheckPaymentSearchCriteria;
@@ -50,4 +51,6 @@ public interface PaymentService {
 	
 	List<PaymentCheckPayment> searchPaymentCheckPayments(PaymentCheckPaymentSearchCriteria criteria);
 
+	List<PaymentSalesInvoice> findAllUnpaidSalesInvoices(Customer customer);
+	
 }

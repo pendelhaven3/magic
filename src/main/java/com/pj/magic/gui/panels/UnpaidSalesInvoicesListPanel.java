@@ -30,12 +30,13 @@ import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.report.UnpaidSalesInvoicesReport;
-import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.CustomerService;
+import com.pj.magic.service.PaymentService;
 import com.pj.magic.service.PrintService;
-import com.pj.magic.service.SalesInvoiceService;
+import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -46,8 +47,10 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	private static final int TRANSACTION_DATE_COLUMN_INDEX = 1;
 	private static final int CUSTOMER_COLUMN_INDEX = 2;
 	private static final int NET_AMOUNT_COLUMN_INDEX = 3;
+	private static final int ADJUSTED_AMOUNT_COLUMN_INDEX = 4;
+	private static final int AMOUNT_DUE_COLUMN_INDEX = 5;
 	
-	@Autowired private SalesInvoiceService salesInvoiceService;
+	@Autowired private PaymentService paymentService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
@@ -60,7 +63,9 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 	private EllipsisButton selectCustomerButton;
 	private JButton searchButton;
 	private JLabel totalItemsLabel;
-	private JLabel totalAmountLabel;
+	private JLabel totalNetAmountLabel;
+	private JLabel totalAdjustedAmountLabel;
+	private JLabel totalAmountDueLabel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -109,7 +114,9 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 			table.changeSelection(0, 0);
 		}
 		totalItemsLabel.setText(String.valueOf(report.getSalesInvoices().size()));
-		totalAmountLabel.setText(FormatterUtil.formatAmount(report.getTotalAmount()));
+		totalNetAmountLabel.setText(FormatterUtil.formatAmount(report.getTotalNetAmount()));
+		totalAdjustedAmountLabel.setText(FormatterUtil.formatAmount(report.getTotalAdjustedAmount()));
+		totalAmountDueLabel.setText(FormatterUtil.formatAmount(report.getTotalAmountDue()));
 	}
 
 	private void openSelectCustomerDialog() {
@@ -134,6 +141,8 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 		columnModel.getColumn(TRANSACTION_DATE_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(CUSTOMER_COLUMN_INDEX).setPreferredWidth(300);
 		columnModel.getColumn(NET_AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(ADJUSTED_AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(AMOUNT_DUE_COLUMN_INDEX).setPreferredWidth(100);
 	}
 
 	@Override
@@ -294,21 +303,20 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 		searchSalesInvoices();
 		UnpaidSalesInvoicesReport report = createUnpaidSalesInvoicesReport();
 		printPreviewDialog.updateDisplay(printService.generateReportAsString(report));
+		printPreviewDialog.setColumnsPerLine(PrintServiceImpl.UNPAID_SALES_INVOICE_REPORT_CHARACTERS_PER_LINE);
+		printPreviewDialog.setUseCondensedFontForPrinting(true);
 		printPreviewDialog.setVisible(true);
 	}
 
 	private UnpaidSalesInvoicesReport createUnpaidSalesInvoicesReport() {
-		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
-		criteria.setPaid(false);
-		criteria.setOrderBy("a.TRANSACTION_DT, a.SALES_INVOICE_NO");
-		
+		Customer customer = null;
 		String customerCode = customerCodeField.getText();
 		if (!StringUtils.isEmpty(customerCode)) {
-			criteria.setCustomer(customerService.findCustomerByCode(customerCode));
+			customer = customerService.findCustomerByCode(customerCode);
 		}
 		
 		UnpaidSalesInvoicesReport report = new UnpaidSalesInvoicesReport();
-		report.setSalesInvoices(salesInvoiceService.search(criteria));
+		report.setSalesInvoices(paymentService.findAllUnpaidSalesInvoices(customer));
 		return report;
 	}
 
@@ -340,26 +348,58 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
+		panel.add(ComponentUtil.createLabel(140, "Total Net Amount:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountLabel = ComponentUtil.createRightLabel(100);
-		panel.add(totalAmountLabel, c);
+		totalNetAmountLabel = ComponentUtil.createRightLabel(100);
+		panel.add(totalNetAmountLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(140, "Total Adj. Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAdjustedAmountLabel = ComponentUtil.createRightLabel(100);
+		panel.add(totalAdjustedAmountLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(140, "Total Amount Due:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAmountDueLabel = ComponentUtil.createRightLabel(100);
+		panel.add(totalAmountDueLabel, c);
 		
 		return panel;
 	}
 	
 	private class SalesInvoicesTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"SI No.", "Transaction Date", "Customer", "Net Amount"};
+		private final String[] columnNames = {"SI No.", "Transaction Date", "Customer", "Net Amount", "Adj. Amount", "Amount Due"};
 		
-		private List<SalesInvoice> salesInvoices = new ArrayList<>();
+		private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 		
-		public void setSalesInvoices(List<SalesInvoice> salesInvoices) {
+		public void setSalesInvoices(List<PaymentSalesInvoice> salesInvoices) {
 			this.salesInvoices = salesInvoices;
 			fireTableDataChanged();
 		}
@@ -376,7 +416,8 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			SalesInvoice salesInvoice = salesInvoices.get(rowIndex);
+			PaymentSalesInvoice paymentSalesInvoice = salesInvoices.get(rowIndex);
+			SalesInvoice salesInvoice = paymentSalesInvoice.getSalesInvoice();
 			switch (columnIndex) {
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
 				return salesInvoice.getSalesInvoiceNumber();
@@ -386,6 +427,10 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 				return salesInvoice.getCustomer().getName();
 			case NET_AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
+			case ADJUSTED_AMOUNT_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(paymentSalesInvoice.getAdjustedAmount());
+			case AMOUNT_DUE_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(paymentSalesInvoice.getAmountDue());
 			default:
 				throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 			}
@@ -393,10 +438,13 @@ public class UnpaidSalesInvoicesListPanel extends StandardMagicPanel {
 		
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			if (columnIndex == NET_AMOUNT_COLUMN_INDEX) {
+			switch (columnIndex) {
+			case NET_AMOUNT_COLUMN_INDEX:
+			case ADJUSTED_AMOUNT_COLUMN_INDEX:
+			case AMOUNT_DUE_COLUMN_INDEX:
 				return Number.class;
-			} else {
-				return Object.class;
+			default:
+				return String.class;
 			}
 		}
 		

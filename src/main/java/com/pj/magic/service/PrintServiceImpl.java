@@ -37,6 +37,7 @@ import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCheckPayment;
+import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PromoRedemption;
@@ -97,6 +98,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int PRICE_CHANGES_REPORT_ITEMS_PER_PAGE = 52;
 	private static final int PURCHASE_RETURN_BAD_STOCK_ITEMS_PER_PAGE = 44;
 	
+	public static final int UNPAID_SALES_INVOICE_REPORT_CHARACTERS_PER_LINE = 90;
 	public static final int PRICE_LIST_CHARACTERS_PER_LINE = 84;
 	public static final int SALES_INVOICE_REPORT_COST_PROFIT_CHARACTERS_PER_LINE = 113;
 	public static final int POSTED_SALES_AND_PROFIT_REPORT_CHARACTERS_PER_LINE = 129;
@@ -599,12 +601,13 @@ public class PrintServiceImpl implements PrintService {
 	public List<String> generateReportAsString(UnpaidSalesInvoicesReport report) {
 		String currentDate = FormatterUtil.formatDate(new Date());
 		
-		List<List<SalesInvoice>> pageItems = Lists.partition(report.getSalesInvoices(), 
+		List<List<PaymentSalesInvoice>> pageItems = Lists.partition(report.getSalesInvoices(), 
 				UNPAID_SALES_INVOICE_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("totalAmount", report.getTotalAmount());
+			reportData.put("salesInvoicesReport", report);
+			reportData.put("charsPerLine", UNPAID_SALES_INVOICE_REPORT_CHARACTERS_PER_LINE);
 			reportData.put("currentDate", currentDate);
 			reportData.put("salesInvoices", pageItems.get(i));
 			reportData.put("currentPage", i + 1);
@@ -619,7 +622,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(UnpaidSalesInvoicesReport report) {
 		try {
 			for (String printPage : generateReportAsString(report)) {
-				PrinterUtil.print(printPage);
+				PrinterUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);

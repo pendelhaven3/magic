@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,10 +19,12 @@ import com.pj.magic.dao.PaymentDao;
 import com.pj.magic.dao.PaymentPaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentSalesInvoiceDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
+import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
@@ -37,6 +40,7 @@ import com.pj.magic.model.search.PaymentCashPaymentSearchCriteria;
 import com.pj.magic.model.search.PaymentCheckPaymentSearchCriteria;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
+import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentService;
@@ -59,6 +63,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private BadStockReturnDao badStockReturnDao;
 	@Autowired private NoMoreStockAdjustmentDao noMoreStockAdjustmentDao;
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
+	@Autowired private SalesInvoiceDao salesInvoiceDao;
 	
 	@Transactional
 	@Override
@@ -298,6 +303,36 @@ public class PaymentServiceImpl implements PaymentService {
 	public List<PaymentCheckPayment> searchPaymentCheckPayments(
 			PaymentCheckPaymentSearchCriteria criteria) {
 		return paymentCheckPaymentDao.search(criteria);
+	}
+
+	@Override
+	public List<PaymentSalesInvoice> findAllUnpaidSalesInvoices(Customer customer) {
+		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
+		criteria.setCustomer(customer);
+		criteria.setPaid(false);
+		criteria.setOrderBy("a.TRANSACTION_DT, a.SALES_INVOICE_NO");
+		
+		List<SalesInvoice> salesInvoices = salesInvoiceDao.search(criteria);
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
+		}
+		
+		List<PaymentSalesInvoice> paymentSalesInvoices = new ArrayList<>();
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			PaymentSalesInvoice paymentSalesInvoice = new PaymentSalesInvoice();
+			paymentSalesInvoice.setSalesInvoice(salesInvoice);
+			paymentSalesInvoice.setSalesReturns(findPostedSalesReturns(salesInvoice));
+			paymentSalesInvoices.add(paymentSalesInvoice);
+		}
+		
+		return paymentSalesInvoices;
+	}
+
+	private List<SalesReturn> findPostedSalesReturns(SalesInvoice salesInvoice) {
+		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
+		criteria.setSalesInvoice(salesInvoice);
+		criteria.setPosted(true);
+		return salesReturnService.search(criteria);
 	}
 	
 }
