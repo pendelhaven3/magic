@@ -146,7 +146,7 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 	}
 
 	private static final String INSERT_NEW_PROMO_REDEMPTION_SEQUENCE_SQL =
-			"delete from PROMO_REDEMPTION_SEQUENCE (PROMO_ID, VALUE) values (?, 0)";
+			"insert PROMO_REDEMPTION_SEQUENCE (PROMO_ID, VALUE) values (?, 0)";
 	
 	@Override
 	public void insertNewPromoRedemptionSequence(Promo promo) {
