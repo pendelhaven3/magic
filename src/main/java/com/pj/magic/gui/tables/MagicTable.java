@@ -152,4 +152,16 @@ public class MagicTable extends JTable {
 		changeSelection(0, 0, false, false);
 	}
 	
+	protected void onF5Key(Action action) {
+		InputMap inputMap = getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		inputMap.put(KeyUtil.getF5Key(), Constants.F5_KEY_ACTION_NAME);
+		getActionMap().put(Constants.F5_KEY_ACTION_NAME, action);
+	}
+	
+	protected void onEscapeKey(Action action) {
+		InputMap inputMap = getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		inputMap.put(KeyUtil.getEscapeKey(), Constants.ESCAPE_KEY_ACTION_NAME);
+		getActionMap().put(Constants.ESCAPE_KEY_ACTION_NAME, action);
+	}
+	
 }

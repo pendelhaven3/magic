@@ -2,6 +2,8 @@ package com.pj.magic.model;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.pj.magic.util.FormatterUtil;
 
@@ -16,7 +18,9 @@ public class Promo {
 	private BigDecimal targetAmount;
 	private Manufacturer manufacturer;
 	private PromoPrize prize;
-
+	
+	private List<PromoType2Rule> promoType2Rules = new ArrayList<>();
+	
 	public Promo() {
 		// default constructor
 	}
@@ -89,6 +93,14 @@ public class Promo {
 
 	public void setPromoType(PromoType promoType) {
 		this.promoType = promoType;
+	}
+
+	public List<PromoType2Rule> getPromoType2Rules() {
+		return promoType2Rules;
+	}
+
+	public void setPromoType2Rules(List<PromoType2Rule> promoType2Rules) {
+		this.promoType2Rules = promoType2Rules;
 	}
 
 }

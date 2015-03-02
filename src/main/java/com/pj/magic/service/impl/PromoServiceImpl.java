@@ -7,13 +7,18 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PromoDao;
+import com.pj.magic.dao.PromoType2RuleDao;
 import com.pj.magic.model.Promo;
+import com.pj.magic.model.PromoType2Rule;
 
 @Service
 public class PromoServiceImpl implements PromoService {
 
 	@Autowired private PromoDao promoDao;
+	@Autowired private PromoType2RuleDao promoType2RuleDao;
+	@Autowired private ProductDao productDao;
 	
 	@Override
 	public List<Promo> getAllPromos() {
@@ -28,7 +33,29 @@ public class PromoServiceImpl implements PromoService {
 
 	@Override
 	public Promo getPromo(long id) {
-		return promoDao.get(id);
+		Promo promo = promoDao.get(id);
+		switch (promo.getPromoType().getId().intValue()) {
+		case 2:
+			promo.setPromoType2Rules(promoType2RuleDao.findAllByPromo(promo));
+			for (PromoType2Rule rule : promo.getPromoType2Rules()) {
+				rule.setPromoProduct(productDao.get(rule.getPromoProduct().getId()));
+				rule.setFreeProduct(productDao.get(rule.getFreeProduct().getId()));
+			}
+			break;
+		}
+		return promo;
+	}
+
+	@Transactional
+	@Override
+	public void save(PromoType2Rule rule) {
+		promoType2RuleDao.save(rule);
+	}
+
+	@Transactional
+	@Override
+	public void delete(PromoType2Rule rule) {
+		promoType2RuleDao.delete(rule);
 	}
 
 }

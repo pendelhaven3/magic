@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -29,9 +30,9 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 			+ " PRODUCT_ID, b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION, UNIT, QUANTITY,"
 			+ " c.NAME as MANUFACTURER_NAME"
 			+ " from PROMO a"
-			+ " join PRODUCT b"
+			+ " left join PRODUCT b"
 			+ "   on b.ID = a.PRODUCT_ID"
-			+ " join MANUFACTURER c"
+			+ " left join MANUFACTURER c"
 			+ "   on c.ID = a.MANUFACTURER_ID";
 	
 	private static final String PROMO_NUMBER_SEQUENCE = "PROMO_NO_SEQ";
@@ -54,12 +55,16 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 			promo.setPromoType(PromoType.getPromoType(rs.getLong("PROMO_TYPE_ID")));
 			promo.setTargetAmount(rs.getBigDecimal("TARGET_AMOUNT"));
 			
-			Manufacturer manufacturer = new Manufacturer();
-			manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
-			manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
-			promo.setManufacturer(manufacturer);
+			if (rs.getLong("MANUFACTURER_ID") != 0) {
+				Manufacturer manufacturer = new Manufacturer();
+				manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
+				manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
+				promo.setManufacturer(manufacturer);
+			}
 			
-			promo.setPrize(mapPromoPrize(rs));
+			if (rs.getLong("PRODUCT_ID")!= 0) {
+				promo.setPrize(mapPromoPrize(rs));
+			}
 			return promo;
 		}
 		
@@ -116,11 +121,21 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 				ps.setLong(1, getNextPromoNumber());
 				ps.setString(2, promo.getName());
 				ps.setLong(3, promo.getPromoType().getId());
-				ps.setLong(4, promo.getManufacturer().getId());
+				if (promo.getManufacturer() != null) {
+					ps.setLong(4, promo.getManufacturer().getId());
+				} else {
+					ps.setNull(4, Types.INTEGER);
+				}
 				ps.setBigDecimal(5, promo.getTargetAmount());
-				ps.setLong(6, promo.getPrize().getProduct().getId());
-				ps.setString(7, promo.getPrize().getUnit());
-				ps.setInt(8, promo.getPrize().getQuantity());
+				if (promo.getPrize() != null) {
+					ps.setLong(6, promo.getPrize().getProduct().getId());
+					ps.setString(7, promo.getPrize().getUnit());
+					ps.setInt(8, promo.getPrize().getQuantity());
+				} else {
+					ps.setNull(6, Types.INTEGER);
+					ps.setNull(7, Types.VARCHAR);
+					ps.setNull(8, Types.INTEGER);
+				}
 				return ps;
 			}
 
@@ -142,11 +157,11 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 	private void update(Promo promo) {
 		getJdbcTemplate().update(UPDATE_SQL,
 				promo.getName(),
-				promo.getManufacturer().getId(),
+				(promo.getManufacturer() != null) ? promo.getManufacturer().getId() : null,
 				promo.getTargetAmount(),
-				promo.getPrize().getProduct().getId(),
-				promo.getPrize().getUnit(),
-				promo.getPrize().getQuantity(),
+				(promo.getPrize() != null) ? promo.getPrize().getProduct().getId() : null,
+				(promo.getPrize() != null) ? promo.getPrize().getUnit() : null,
+				(promo.getPrize() != null) ? promo.getPrize().getQuantity() : null,
 				promo.getId());
 	}
 

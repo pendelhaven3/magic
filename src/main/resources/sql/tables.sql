@@ -899,3 +899,18 @@ create table PROMO_REDEMPTION_SEQUENCE (
   constraint PROMO_REDEMPTION_SEQUENCE$UK unique (PROMO_ID),
   constraint PROMO_REDEMPTION_SEQUENCE$FK foreign key (PROMO_ID) references PROMO (ID) 
 );
+
+create table PROMO_TYPE_2_RULE (
+  ID integer auto_increment,
+  PROMO_ID integer not null,
+  PROMO_PRODUCT_ID integer not null,
+  PROMO_UNIT char(3) not null,
+  PROMO_QUANTITY integer not null,
+  FREE_PRODUCT_ID integer not null,
+  FREE_UNIT char(3) not null,
+  FREE_QUANTITY integer not null,
+  primary key (ID),
+  constraint PROMO_TYPE_2_RULE$FK foreign key (PROMO_ID) references PROMO (ID),
+  constraint PROMO_TYPE_2_RULE$FK2 foreign key (PROMO_PRODUCT_ID) references PRODUCT (ID),
+  constraint PROMO_TYPE_2_RULE$FK3 foreign key (FREE_PRODUCT_ID) references PRODUCT (ID)
+);

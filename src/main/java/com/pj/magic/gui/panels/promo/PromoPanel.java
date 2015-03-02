@@ -1,5 +1,6 @@
 package com.pj.magic.gui.panels.promo;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -11,10 +12,12 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
@@ -28,8 +31,10 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.panels.StandardMagicPanel;
+import com.pj.magic.gui.tables.PromoType2RulesTable;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
@@ -54,11 +59,14 @@ public class PromoPanel extends StandardMagicPanel {
 	@Autowired private ProductService productService;
 	@Autowired private ManufacturerService manufacturerService;
 	@Autowired private SelectProductDialog selectProductDialog;
+	@Autowired private PromoType2RulesTable promoType2RulesTable;
 	
 	private Promo promo;
 	private JLabel promoNumberLabel;
 	private MagicTextField nameField;
 	private JComboBox<PromoType> promoTypeComboBox;
+	private JPanel promoType1Panel;
+	private JPanel promoType2Panel;
 	private JComboBox<Manufacturer> manufacturerComboBox;
 	private MagicTextField targetAmountField;
 	private MagicTextField productCodeField;
@@ -67,6 +75,8 @@ public class PromoPanel extends StandardMagicPanel {
 	private JComboBox<String> unitComboBox;
 	private MagicTextField quantityField;
 	private MagicButton saveButton;
+	private JButton addRuleButton;
+	private JButton removeRuleButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -76,7 +86,7 @@ public class PromoPanel extends StandardMagicPanel {
 		nameField.setMaximumLength(50);
 		
 		promoTypeComboBox = new JComboBox<>();
-		promoTypeComboBox.setModel(ListUtil.toDefaultComboBoxModel(PromoType.getPromoTypes()));
+		promoTypeComboBox.setModel(ListUtil.toDefaultComboBoxModel(PromoType.getPromoTypes(), true));
 		
 		manufacturerComboBox = new JComboBox<>();
 		
@@ -98,7 +108,7 @@ public class PromoPanel extends StandardMagicPanel {
 		
 		unitComboBox = new JComboBox<>();
 		unitComboBox.setModel(ListUtil.toDefaultComboBoxModel(
-				Arrays.asList(Unit.PIECES, Unit.TIE, Unit.CARTON, Unit.DOZEN, Unit.PIECES)));
+				Arrays.asList(Unit.CASE, Unit.TIE, Unit.CARTON, Unit.DOZEN, Unit.PIECES)));
 		
 		quantityField = new MagicTextField();
 		quantityField.setNumbersOnly(true);
@@ -139,13 +149,78 @@ public class PromoPanel extends StandardMagicPanel {
 	}
 	
 	private void savePromo() {
-		if (!validatePromo()) {
+		if (promo.getId() == null) {
+			saveNewPromo();
+		} else {
+			switch (promo.getPromoType().getId().intValue()) {
+			case 1:
+				savePromoType1();
+				break;
+			case 2:
+				savePromoType2();
+				break;
+			}
+		}
+	}
+
+	private void savePromoType2() {
+		if (!validatePromoType2()) {
+			return;
+		}
+		
+		if (confirm("Save Promo?")) {
+			promo.setName(nameField.getText());
+			try {
+				promoService.save(promo);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Error occurred during saving!");
+				return;
+			}
+			
+			showMessage("Saved!");
+			updateDisplay(promo);
+		}
+	}
+
+	private boolean validatePromoType2() {
+		try {
+			validateMandatoryField(nameField, "Name");
+		} catch (ValidationException e) {
+			return false;
+		}
+		return true;
+	}
+
+	private void saveNewPromo() {
+		if (!validateNewPromo()) {
 			return;
 		}
 		
 		if (confirm("Save Promo?")) {
 			promo.setName(nameField.getText());
 			promo.setPromoType((PromoType)promoTypeComboBox.getSelectedItem());
+			
+			try {
+				promoService.save(promo);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Error occurred during saving!");
+				return;
+			}
+			
+			showMessage("Saved!");
+			updateDisplay(promo);
+		}
+	}
+
+	private void savePromoType1() {
+		if (!validatePromoType1()) {
+			return;
+		}
+		
+		if (confirm("Save Promo?")) {
+			promo.setName(nameField.getText());
 			promo.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
 			promo.setTargetAmount(NumberUtil.toBigDecimal(targetAmountField.getText()));
 			promo.setPrize(new PromoPrize());
@@ -166,11 +241,20 @@ public class PromoPanel extends StandardMagicPanel {
 			updateDisplay(promo);
 		}
 	}
-
-	private boolean validatePromo() {
+	
+	private boolean validateNewPromo() {
 		try {
 			validateMandatoryField(nameField, "Name");
 			validateMandatoryField(promoTypeComboBox, "Promo Type");
+		} catch (ValidationException e) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean validatePromoType1() {
+		try {
+			validateMandatoryField(nameField, "Name");
 			validateMandatoryField(manufacturerComboBox, "Manufacturer");
 			validateMandatoryField(targetAmountField, "Target Amount");
 			validateMandatoryField(productCodeField, "Product Code");
@@ -255,74 +339,18 @@ public class PromoPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
+		c.gridwidth = 2;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Manufacturer: "), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		manufacturerComboBox.setPreferredSize(new Dimension(300, 25));
-		mainPanel.add(manufacturerComboBox, c);
+		mainPanel.add(createPromoType1Panel(), c);
 		
 		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
+		c.gridwidth = 2;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Target Amount: "), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		targetAmountField.setPreferredSize(new Dimension(100, 25));
-		mainPanel.add(targetAmountField, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Product: "), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(createProductPanel(), c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(60, "Unit: "), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		unitComboBox.setPreferredSize(new Dimension(100, 25));
-		mainPanel.add(unitComboBox, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Quantity: "), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		quantityField.setPreferredSize(new Dimension(100, 25));
-		mainPanel.add(quantityField, c);
+		mainPanel.add(createPromoType2Panel(), c);
 		
 		currentRow++;
 		
@@ -343,10 +371,179 @@ public class PromoPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createVerticalStrut(20), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(Box.createGlue(), c);
+	}
+
+	private JPanel createPromoType2Panel() {
+		promoType2Panel = new JPanel(new GridBagLayout());
+		promoType2Panel.setVisible(false);
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		promoType2Panel.add(Box.createVerticalStrut(20), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		promoType2Panel.add(createPromoType2RulesTableToolBar(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		
+		JScrollPane scrollPane = new JScrollPane(promoType2RulesTable);
+		scrollPane.setPreferredSize(new Dimension(900, 200));
+		promoType2Panel.add(scrollPane, c);
+		
+		return promoType2Panel;
+	}
+
+	private JPanel createPromoType2RulesTableToolBar() {
+		JPanel panel = new JPanel();
+		
+		addRuleButton = new MagicToolBarButton("plus_small", "Add Rule", true);
+		addRuleButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addPromoType2Rule();
+			}
+		});
+		panel.add(addRuleButton, BorderLayout.WEST);
+		
+		removeRuleButton = new MagicToolBarButton("minus_small", "Delete", true);
+		removeRuleButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removePromoType2Rule();
+			}
+		});
+		panel.add(removeRuleButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+
+	private void removePromoType2Rule() {
+		promoType2RulesTable.removeCurrentlySelectedRule();
+	}
+
+	private void addPromoType2Rule() {
+		promoType2RulesTable.addNewRow();
+	}
+
+	private JPanel createPromoType1Panel() {
+		promoType1Panel = new JPanel(new GridBagLayout());
+		promoType1Panel.setVisible(false);
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		promoType1Panel.add(Box.createVerticalStrut(20), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		promoType1Panel.add(ComponentUtil.createLabel(150, "Manufacturer: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		manufacturerComboBox.setPreferredSize(new Dimension(300, 25));
+		promoType1Panel.add(manufacturerComboBox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		promoType1Panel.add(ComponentUtil.createLabel(150, "Target Amount: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		targetAmountField.setPreferredSize(new Dimension(100, 25));
+		promoType1Panel.add(targetAmountField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		promoType1Panel.add(ComponentUtil.createLabel(100, "Product: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		promoType1Panel.add(createProductPanel(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		promoType1Panel.add(ComponentUtil.createLabel(60, "Unit: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		unitComboBox.setPreferredSize(new Dimension(100, 25));
+		promoType1Panel.add(unitComboBox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		promoType1Panel.add(ComponentUtil.createLabel(100, "Quantity: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		quantityField.setPreferredSize(new Dimension(100, 25));
+		promoType1Panel.add(quantityField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		promoType1Panel.add(Box.createGlue(), c);
+		
+		return promoType1Panel;
 	}
 
 	private JPanel createProductPanel() {
@@ -410,24 +607,46 @@ public class PromoPanel extends StandardMagicPanel {
 		
 		promoNumberLabel.setText(String.valueOf(promo.getPromoNumber()));
 		nameField.setText(promo.getName());
+		promoTypeComboBox.setEnabled(false);
 		promoTypeComboBox.setSelectedItem(promo.getPromoType());
-		manufacturerComboBox.setSelectedItem(promo.getManufacturer());
-		targetAmountField.setText(FormatterUtil.formatAmount(promo.getTargetAmount()));
-		productCodeField.setText(promo.getPrize().getProduct().getCode());
-		productDescriptionLabel.setText(promo.getPrize().getProduct().getDescription());
-		unitComboBox.setSelectedItem(promo.getPrize().getUnit());
-		quantityField.setText(promo.getPrize().getQuantity().toString());
+		
+		promoType1Panel.setVisible(promo.getPromoType().getId() == 1L);
+		promoType2Panel.setVisible(promo.getPromoType().getId() == 2L);
+		
+		if (promo.getPromoType().getId() == 1L) {
+			manufacturerComboBox.setSelectedItem(promo.getManufacturer());
+			if (promo.getPrize() != null) {
+				targetAmountField.setText(FormatterUtil.formatAmount(promo.getTargetAmount()));
+				productCodeField.setText(promo.getPrize().getProduct().getCode());
+				productDescriptionLabel.setText(promo.getPrize().getProduct().getDescription());
+				unitComboBox.setSelectedItem(promo.getPrize().getUnit());
+				quantityField.setText(promo.getPrize().getQuantity().toString());
+			} else {
+				targetAmountField.setText(null);
+				productCodeField.setText(null);
+				productDescriptionLabel.setText(null);
+				unitComboBox.setSelectedItem(null);
+				quantityField.setText(null);
+			}
+		} else if (promo.getPromoType().getId() == 2L) {
+			promoType2RulesTable.setPromo(promo);
+		}
 	}
 
 	private void clearDisplay() {
 		promoNumberLabel.setText(null);
 		nameField.setText(null);
+		promoTypeComboBox.setEnabled(true);
+		promoTypeComboBox.setSelectedIndex(0);
 		manufacturerComboBox.setSelectedIndex(0);
 		targetAmountField.setText(null);
 		productCodeField.setText(null);
 		productDescriptionLabel.setText(null);
 		unitComboBox.setSelectedItem(null);
 		quantityField.setText(null);
+		
+		promoType1Panel.setVisible(false);
+		promoType2Panel.setVisible(false);
 	}
 
 	@Override

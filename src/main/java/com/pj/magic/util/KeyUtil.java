@@ -23,4 +23,8 @@ public class KeyUtil {
 		return KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0);
 	}
 
+	public static KeyStroke getEscapeKey() {
+		return KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+	}
+
 }
