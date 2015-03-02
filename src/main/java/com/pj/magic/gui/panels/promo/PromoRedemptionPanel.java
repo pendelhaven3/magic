@@ -39,12 +39,15 @@ import com.pj.magic.gui.dialog.SelectSalesInvoicesForPromoRedemptionDialog;
 import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoPrize;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
+import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PromoRedemptionService;
+import com.pj.magic.service.impl.PromoService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -64,6 +67,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	@Autowired private SelectSalesInvoicesForPromoRedemptionDialog selectSalesInvoicesForPromoRedemptionDialog;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
+	@Autowired private PromoService promoService;
 	
 	private PromoRedemption promoRedemption;
 	private JLabel promoNameLabel;
@@ -75,7 +79,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	private MagicListTable salesInvoicesTable;
 	private MagicListTable prizesTable;
 	private SalesInvoicesTableModel salesInvoicesTableModel;
-	private PromoRedemptionPrizesTableModel prizeTableModel;
+	private PromoRedemptionPrizesTableModel prizesTableModel;
 	private JLabel totalAmountLabel;
 	private MagicToolBarButton addSalesInvoiceButton;
 	private MagicToolBarButton removeSalesInvoiceButton;
@@ -115,7 +119,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			public void tableChanged(TableModelEvent e) {
 				if (!promoRedemption.isPosted()) {
 					totalAmountLabel.setText(FormatterUtil.formatAmount(promoRedemption.getTotalAmount()));
-					prizeTableModel.fireTableRowsUpdated(0, 0);
+					prizesTableModel.fireTableRowsUpdated(0, 0);
 				}
 			}
 			
@@ -151,8 +155,8 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		salesInvoicesTableModel = new SalesInvoicesTableModel();
 		salesInvoicesTable = new MagicListTable(salesInvoicesTableModel);
 		
-		prizeTableModel = new PromoRedemptionPrizesTableModel();
-		prizesTable = new MagicListTable(prizeTableModel);
+		prizesTableModel = new PromoRedemptionPrizesTableModel();
+		prizesTable = new MagicListTable(prizesTableModel);
 		
 		prizesTable.getColumnModel().getColumn(ITEM_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
 		prizesTable.getColumnModel().getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(50);
@@ -514,9 +518,6 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	public void updateDisplay(PromoRedemption promoRedemption) {
 		this.promoRedemption = promoRedemption;
 		
-		promoNameLabel.setText(promoRedemption.getPromo().getName());
-		promoMechanicsLabel.setText(promoRedemption.getPromo().getMechanicsDescription());
-		
 		if (promoRedemption.getId() == null) {
 			clearDisplay();
 			return;
@@ -525,6 +526,8 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		this.promoRedemption = promoRedemption = 
 				promoRedemptionService.getPromoRedemption(promoRedemption.getId());
 		
+		promoNameLabel.setText(promoRedemption.getPromo().getName());
+		promoMechanicsLabel.setText(promoRedemption.getPromo().getMechanicsDescription());
 		promoRedemptionNumberLabel.setText(promoRedemption.getPromoRedemptionNumber().toString());
 		customerCodeField.setEnabled(!promoRedemption.isPosted());
 		customerCodeField.setText(promoRedemption.getCustomer().getCode());
@@ -532,6 +535,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		totalAmountLabel.setText(FormatterUtil.formatAmount(promoRedemption.getTotalAmount()));
 		
 		salesInvoicesTableModel.setPromoRedemption(promoRedemption);
+		prizesTableModel.setPromoRedemption(promoRedemption);
 		
 		boolean isNew = !promoRedemption.isPosted();
 		selectCustomerButton.setEnabled(isNew);
@@ -543,6 +547,11 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	}
 	
 	private void clearDisplay() {
+		promoRedemption.setPromo(promoService.getPromo(promoRedemption.getPromo().getId()));
+		prizesTableModel.setPromoRedemption(promoRedemption);
+		promoNameLabel.setText(promoRedemption.getPromo().getName());
+		promoMechanicsLabel.setText(promoRedemption.getPromo().getMechanicsDescription());
+		
 		promoRedemptionNumberLabel.setText(null);
 		customerCodeField.setEnabled(true);
 		customerCodeField.setText(null);
@@ -550,6 +559,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		totalAmountLabel.setText(null);
 		
 		salesInvoicesTableModel.clear();
+		prizesTableModel.clear();
 		
 		selectCustomerButton.setEnabled(true);
 		addSalesInvoiceButton.setEnabled(false);
@@ -629,14 +639,33 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 
 		private final String[] columnNames = {"Item Description", "Unit", "Quantity"};
 		
+		private PromoRedemption promoRedemption;
+		
 		@Override
 		public String getColumnName(int column) {
 			return columnNames[column];
 		}
 		
+		public void clear() {
+			promoRedemption = null;
+			fireTableDataChanged();
+		}
+
 		@Override
 		public int getRowCount() {
-			return 1;
+			if (promoRedemption == null) {
+				return 0;
+			}
+			
+			Promo promo = promoRedemption.getPromo();
+			long promoTypeId = promo.getPromoType().getId();
+			if (promoTypeId == 1L) {
+				return 1;
+			} else if (promoTypeId == 2L) {
+				return promo.getPromoType2Rules().size();
+			} else {
+				return 0;
+			}
 		}
 
 		@Override
@@ -651,19 +680,52 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			PromoPrize prize = promoRedemption.getPromo().getPrize();
+			Promo promo = promoRedemption.getPromo();
+			long promoTypeId = promo.getPromoType().getId();
+			if (promoTypeId == 1L) {
+				return getValueAtForPromoType1(rowIndex, columnIndex);
+			} else if (promoTypeId == 2L) {
+				return getValueAtForPromoType2(rowIndex, columnIndex);
+			} else {
+				return null;
+			}
+		}
+		
+		public Object getValueAtForPromoType2(int rowIndex, int columnIndex) {
+			Promo promo = promoRedemption.getPromo();
+			PromoType2Rule rule = promo.getPromoType2Rules().get(rowIndex);
+			switch (columnIndex) {
+			case ITEM_DESCRIPTION_COLUMN_INDEX:
+				return rule.getFreeProduct().getDescription();
+			case UNIT_COLUMN_INDEX:
+				return rule.getFreeUnit();
+			case QUANTITY_COLUMN_INDEX:
+				return promoRedemption.getFreeQuantity(rule);
+			default:
+				return null;
+			}
+		}
+
+		public Object getValueAtForPromoType1(int rowIndex, int columnIndex) {
+			Promo promo = promoRedemption.getPromo();
+			PromoPrize prize = promo.getPrize();
 			switch (columnIndex) {
 			case ITEM_DESCRIPTION_COLUMN_INDEX:
 				return prize.getProduct().getDescription();
 			case UNIT_COLUMN_INDEX:
 				return prize.getUnit();
 			case QUANTITY_COLUMN_INDEX:
-				return promoRedemption.getPrizeQuantity().toString();
+				return promoRedemption.getPrizeQuantity();
 			default:
 				return null;
 			}
 		}
 		
+		public void setPromoRedemption(PromoRedemption promoRedemption) {
+			this.promoRedemption = promoRedemption;
+			fireTableDataChanged();
+		}
+		
 	}
-	
+
 }

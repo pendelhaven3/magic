@@ -117,4 +117,20 @@ public class PromoRedemption {
 		this.prizeQuantity = prizeQuantity;
 	}
 
+	public int getFreeQuantity(PromoType2Rule rule) {
+		return getTotalQuantityByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit())
+				/ rule.getPromoQuantity() * rule.getFreeQuantity();
+	}
+	
+	public int getTotalQuantityByProductAndUnit(Product product, String unit) {
+		int total = 0;
+		for (PromoRedemptionSalesInvoice salesInvoice : salesInvoices) {
+			SalesInvoiceItem item = salesInvoice.getSalesInvoice().findItemByProductAndUnit(product, unit);
+			if (item != null) {
+				total += item.getQuantity();
+			}
+		}
+		return total;
+	}
+
 }

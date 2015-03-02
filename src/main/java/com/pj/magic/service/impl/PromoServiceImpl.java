@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PromoDao;
+import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.dao.PromoType2RuleDao;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType2Rule;
@@ -19,6 +20,7 @@ public class PromoServiceImpl implements PromoService {
 	@Autowired private PromoDao promoDao;
 	@Autowired private PromoType2RuleDao promoType2RuleDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private PromoRedemptionDao promoRedemptionDao;
 	
 	@Override
 	public List<Promo> getAllPromos() {
@@ -28,7 +30,11 @@ public class PromoServiceImpl implements PromoService {
 	@Transactional
 	@Override
 	public void save(Promo promo) {
+		boolean isNew = (promo.getId() == null);
 		promoDao.save(promo);
+		if (isNew) {
+			promoRedemptionDao.insertNewPromoRedemptionSequence(promo);
+		}
 	}
 
 	@Override

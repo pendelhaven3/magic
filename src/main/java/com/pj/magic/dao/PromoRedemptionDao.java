@@ -12,5 +12,7 @@ public interface PromoRedemptionDao {
 	PromoRedemption get(long id);
 
 	List<PromoRedemption> findAllByPromo(Promo promo);
+
+	void insertNewPromoRedemptionSequence(Promo promo);
 	
 }

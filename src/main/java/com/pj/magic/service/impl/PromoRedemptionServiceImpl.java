@@ -38,6 +38,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Autowired private PromoRedemptionSalesInvoiceDao promoRedemptionSalesInvoiceDao;
 	@Autowired private SalesInvoiceItemDao salesInvoiceItemDao;
 	@Autowired private LoginService loginService;
+	@Autowired private PromoService promoService;
 	@Autowired private ProductDao productDao;
 	@Autowired private PromoDao promoDao;
 	
@@ -74,6 +75,8 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Override
 	public PromoRedemption getPromoRedemption(long id) {
 		PromoRedemption promoRedemption = promoRedemptionDao.get(id);
+		promoRedemption.setPromo(promoService.getPromo(promoRedemption.getPromo().getId()));
+		
 		promoRedemption.setSalesInvoices(promoRedemptionSalesInvoiceDao
 				.findAllByPromoRedemption(promoRedemption));
 		for (PromoRedemptionSalesInvoice promoRedemptionSalesInvoice : promoRedemption.getSalesInvoices()) {

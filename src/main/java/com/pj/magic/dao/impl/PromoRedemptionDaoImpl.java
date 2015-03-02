@@ -16,10 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.model.Customer;
-import com.pj.magic.model.Manufacturer;
-import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
-import com.pj.magic.model.PromoPrize;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.User;
 
@@ -30,21 +27,12 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			"select a.ID, PROMO_ID, PROMO_REDEMPTION_NO, CUSTOMER_ID, PRIZE_QUANTITY,"
 			+ " POST_IND, POST_DT, POST_BY,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
-			+ " c.USERNAME as POST_BY_USERNAME,"
-			+ " d.NAME as PROMO_NAME, d.TARGET_AMOUNT, d.MANUFACTURER_ID, d.PRODUCT_ID, d.UNIT, d.QUANTITY,"
-			+ " e.DESCRIPTION as PRODUCT_DESCRIPTION, e.MANUFACTURER_ID as PRODUCT_MANUFACTURER_ID,"
-			+ " f.NAME as MANUFACTURER_NAME"
+			+ " c.USERNAME as POST_BY_USERNAME"
 			+ " from PROMO_REDEMPTION a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_id"
 			+ " left join USER c"
-			+ "   on c.ID = a.POST_BY"
-			+ " join PROMO d"
-			+ "   on d.ID = a.PROMO_ID"
-			+ " join PRODUCT e"
-			+ "   on e.ID = d.PRODUCT_ID"
-			+ " join MANUFACTURER f"
-			+ "   on f.ID = d.MANUFACTURER_ID";
+			+ "   on c.ID = a.POST_BY";
 	
 	private PromoRedemptionRowMapper promoRedemptionRowMapper = new PromoRedemptionRowMapper();
 	
@@ -125,7 +113,7 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			PromoRedemption promoRedemption = new PromoRedemption();
 			promoRedemption.setId(rs.getLong("ID"));
 			promoRedemption.setPromoRedemptionNumber(rs.getLong("PROMO_REDEMPTION_NO"));
-			promoRedemption.setPromo(mapPromo(rs));
+			promoRedemption.setPromo(new Promo(rs.getLong("PROMO_ID")));
 			
 			if (rs.getInt("PRIZE_QUANTITY") > 0) {
 				promoRedemption.setPrizeQuantity(rs.getInt("PRIZE_QUANTITY"));
@@ -147,31 +135,6 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			return promoRedemption;
 		}
 
-		private Promo mapPromo(ResultSet rs) throws SQLException {
-			Promo promo = new Promo();
-			promo.setId(rs.getLong("PROMO_ID"));
-			promo.setName(rs.getString("PROMO_NAME"));
-			promo.setTargetAmount(rs.getBigDecimal("TARGET_AMOUNT"));
-			
-			Manufacturer manufacturer = new Manufacturer();
-			manufacturer.setId(rs.getLong("MANUFACTURER_ID"));
-			manufacturer.setName(rs.getString("MANUFACTURER_NAME"));
-			promo.setManufacturer(manufacturer);
-			
-			Product product = new Product();
-			product.setId(rs.getLong("PRODUCT_ID"));
-			product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
-			
-			PromoPrize prize = new PromoPrize();
-			prize.setProduct(product);
-			prize.setUnit(rs.getString("UNIT"));
-			prize.setQuantity(rs.getInt("QUANTITY"));
-			
-			promo.setPrize(prize);
-			
-			return promo;
-		}
-		
 	}
 
 	private static final String FIND_ALL_BY_PROMO_SQL = BASE_SELECT_SQL
@@ -180,6 +143,14 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 	@Override
 	public List<PromoRedemption> findAllByPromo(Promo promo) {
 		return getJdbcTemplate().query(FIND_ALL_BY_PROMO_SQL, promoRedemptionRowMapper, promo.getId());
+	}
+
+	private static final String INSERT_NEW_PROMO_REDEMPTION_SEQUENCE_SQL =
+			"delete from PROMO_REDEMPTION_SEQUENCE (PROMO_ID, VALUE) values (?, 0)";
+	
+	@Override
+	public void insertNewPromoRedemptionSequence(Promo promo) {
+		getJdbcTemplate().update(INSERT_NEW_PROMO_REDEMPTION_SEQUENCE_SQL, promo.getId());
 	}
 	
 }
