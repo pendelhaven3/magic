@@ -17,6 +17,7 @@ public class PromoRedemption {
 	private Date postDate;
 	private User postedBy;
 	private List<PromoRedemptionSalesInvoice> salesInvoices = new ArrayList<>();
+	private List<PromoRedemptionReward> rewards = new ArrayList<>();
 	private Integer prizeQuantity;
 
 	public PromoRedemption() {
@@ -131,6 +132,24 @@ public class PromoRedemption {
 			}
 		}
 		return total;
+	}
+
+	public List<PromoRedemptionReward> getRewards() {
+		return rewards;
+	}
+
+	public void setRewards(List<PromoRedemptionReward> rewards) {
+		this.rewards = rewards;
+	}
+
+	public PromoRedemptionReward getRewardByRule(PromoType2Rule rule) {
+		for (PromoRedemptionReward reward : rewards) {
+			if (reward.getProduct().equals(rule.getFreeProduct()) 
+					&& reward.getUnit().equals(rule.getFreeUnit())) {
+				return reward;
+			}
+		}
+		return null;
 	}
 
 }

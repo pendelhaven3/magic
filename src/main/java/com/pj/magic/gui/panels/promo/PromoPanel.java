@@ -610,10 +610,10 @@ public class PromoPanel extends StandardMagicPanel {
 		promoTypeComboBox.setEnabled(false);
 		promoTypeComboBox.setSelectedItem(promo.getPromoType());
 		
-		promoType1Panel.setVisible(promo.getPromoType().getId() == 1L);
-		promoType2Panel.setVisible(promo.getPromoType().getId() == 2L);
+		promoType1Panel.setVisible(promo.getPromoType().isType1());
+		promoType2Panel.setVisible(promo.getPromoType().isType2());
 		
-		if (promo.getPromoType().getId() == 1L) {
+		if (promo.getPromoType().isType1()) {
 			manufacturerComboBox.setSelectedItem(promo.getManufacturer());
 			if (promo.getPrize() != null) {
 				targetAmountField.setText(FormatterUtil.formatAmount(promo.getTargetAmount()));
@@ -628,7 +628,7 @@ public class PromoPanel extends StandardMagicPanel {
 				unitComboBox.setSelectedItem(null);
 				quantityField.setText(null);
 			}
-		} else if (promo.getPromoType().getId() == 2L) {
+		} else if (promo.getPromoType().isType2()) {
 			promoType2RulesTable.setPromo(promo);
 		}
 	}

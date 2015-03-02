@@ -914,3 +914,14 @@ create table PROMO_TYPE_2_RULE (
   constraint PROMO_TYPE_2_RULE$FK2 foreign key (PROMO_PRODUCT_ID) references PRODUCT (ID),
   constraint PROMO_TYPE_2_RULE$FK3 foreign key (FREE_PRODUCT_ID) references PRODUCT (ID)
 );
+
+create table PROMO_REDEMPTION_REWARD (
+  ID integer auto_increment,
+  PROMO_REDEMPTION_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT char(3) not null,
+  QUANTITY integer not null,
+  primary key (ID),
+  constraint PROMO_REDEMPTION_REWARD$FK foreign key (PROMO_REDEMPTION_ID) references PROMO_REDEMPTION (ID),
+  constraint PROMO_REDEMPTION_REWARD$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);

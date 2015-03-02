@@ -21,3 +21,14 @@ alter table PROMO change MANUFACTURER_ID MANUFACTURER_ID integer null;
 alter table PROMO change PRODUCT_ID PRODUCT_ID integer null;
 alter table PROMO change UNIT UNIT char(3) null;
 alter table PROMO change QUANTITY QUANTITY integer null;
+
+create table PROMO_REDEMPTION_REWARD (
+  ID integer auto_increment,
+  PROMO_REDEMPTION_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT char(3) not null,
+  QUANTITY integer not null,
+  primary key (ID),
+  constraint PROMO_REDEMPTION_REWARD$FK foreign key (PROMO_REDEMPTION_ID) references PROMO_REDEMPTION (ID),
+  constraint PROMO_REDEMPTION_REWARD$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);

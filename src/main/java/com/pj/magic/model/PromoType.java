@@ -74,4 +74,12 @@ public class PromoType {
 			.isEquals();
 	}
 	
+	public boolean isType1() {
+		return id.longValue() == 1L;
+	}
+	
+	public boolean isType2() {
+		return id.longValue() == 2L;
+	}
+	
 }

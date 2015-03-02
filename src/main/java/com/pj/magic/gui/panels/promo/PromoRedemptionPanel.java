@@ -42,6 +42,7 @@ import com.pj.magic.model.Customer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoPrize;
 import com.pj.magic.model.PromoRedemption;
+import com.pj.magic.model.PromoRedemptionReward;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.SalesInvoice;
@@ -474,10 +475,10 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	}
 
 	private void postPromoRedemption() {
-		if (promoRedemption.getPrizeQuantity() == 0) {
-			showErrorMessage("Not enough Sales Invoice amount to be able redeem anything");
-			return;
-		}
+//		if (promoRedemption.getPrizeQuantity() == 0) {
+//			showErrorMessage("Not enough Sales Invoice amount to be able redeem anything");
+//			return;
+//		}
 		
 		if (confirm("Do you want to post this Promo Redemption?")) {
 			try {
@@ -658,10 +659,9 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			}
 			
 			Promo promo = promoRedemption.getPromo();
-			long promoTypeId = promo.getPromoType().getId();
-			if (promoTypeId == 1L) {
+			if (promo.getPromoType().isType1()) {
 				return 1;
-			} else if (promoTypeId == 2L) {
+			} else if (promo.getPromoType().isType2()) {
 				return promo.getPromoType2Rules().size();
 			} else {
 				return 0;
@@ -681,10 +681,9 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Promo promo = promoRedemption.getPromo();
-			long promoTypeId = promo.getPromoType().getId();
-			if (promoTypeId == 1L) {
+			if (promo.getPromoType().isType1()) {
 				return getValueAtForPromoType1(rowIndex, columnIndex);
-			} else if (promoTypeId == 2L) {
+			} else if (promo.getPromoType().isType2()) {
 				return getValueAtForPromoType2(rowIndex, columnIndex);
 			} else {
 				return null;
@@ -700,7 +699,12 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			case UNIT_COLUMN_INDEX:
 				return rule.getFreeUnit();
 			case QUANTITY_COLUMN_INDEX:
-				return promoRedemption.getFreeQuantity(rule);
+				if (promoRedemption.isPosted()) {
+					PromoRedemptionReward reward = promoRedemption.getRewardByRule(rule);
+					return (reward != null) ? reward.getQuantity() : 0;
+				} else {
+					return promoRedemption.getFreeQuantity(rule);
+				}
 			default:
 				return null;
 			}
