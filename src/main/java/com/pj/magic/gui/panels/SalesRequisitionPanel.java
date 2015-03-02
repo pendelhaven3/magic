@@ -52,6 +52,7 @@ import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.AvailedPromosDialog;
 import com.pj.magic.gui.dialog.SalesByManufacturerDialog;
 import com.pj.magic.gui.dialog.SalesRequisitionPostExceptionsDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
@@ -89,6 +90,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private SalesRequisitionPostExceptionsDialog postExceptionsDialog;
 	@Autowired private SalesByManufacturerDialog salesByManufacturerDialog;
+	@Autowired private AvailedPromosDialog availedPromosDialog;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -110,6 +112,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private MagicToolBarButton deleteItemButton;
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton showSalesByManufacturerButton;
+	private MagicToolBarButton showAvailedPromosButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -447,6 +450,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
 		showSalesByManufacturerButton.setEnabled(false);
+		showAvailedPromosButton.setEnabled(false);
 	}
 
 	private java.awt.Component createCustomerNamePanel() {
@@ -917,6 +921,20 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(showSalesByManufacturerButton);
+		
+		showAvailedPromosButton = new MagicToolBarButton("", "Show Availed Promos");
+		showAvailedPromosButton.addActionListener(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showAvailedPromosDialog();
+			}
+		});
+	}
+
+	private void showAvailedPromosDialog() {
+		availedPromosDialog.updateDisplay(salesRequisition);
+		availedPromosDialog.setVisible(true);
 	}
 
 	private void showSalesByManufacturerDialog(SalesRequisition salesRequisition) {
