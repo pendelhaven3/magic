@@ -29,6 +29,7 @@ public class PromoListPanel extends StandardMagicPanel {
 
 	private static final int PROMO_NUMBER_COLUMN_INDEX = 0;
 	private static final int NAME_COLUMN_INDEX = 1;
+	private static final int ACTIVE_COLUMN_INDEX = 2;
 	
 	@Autowired private PromoService promoService;
 	
@@ -110,7 +111,7 @@ public class PromoListPanel extends StandardMagicPanel {
 	
 	private class PromosTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"Promo No.", "Name"};
+		private final String[] columnNames = {"Promo No.", "Name", "Active?"};
 
 		private List<Promo> promos = new ArrayList<>();
 		
@@ -146,8 +147,10 @@ public class PromoListPanel extends StandardMagicPanel {
 				return promo.getPromoNumber().toString();
 			case NAME_COLUMN_INDEX:
 				return promo.getName();
+			case ACTIVE_COLUMN_INDEX:
+				return promo.isActive() ? "Yes" : "No";
 			default:
-				return null;
+				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
 		}
 		

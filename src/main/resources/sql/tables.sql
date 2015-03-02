@@ -863,6 +863,7 @@ create table PROMO (
   PRODUCT_ID integer not null,
   UNIT char(3) not null,
   QUANTITY integer not null,
+  ACTIVE_IND char(1) default 'Y' not null,
   primary key (ID),
   unique key PROMO$UK (PROMO_NO),
   constraint PROMO$FK foreign key (MANUFACTURER_ID) references MANUFACTURER (ID),

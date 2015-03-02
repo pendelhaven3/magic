@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -65,6 +66,7 @@ public class PromoPanel extends StandardMagicPanel {
 	private JLabel promoNumberLabel;
 	private MagicTextField nameField;
 	private JComboBox<PromoType> promoTypeComboBox;
+	private JCheckBox activeCheckBox;
 	private JPanel promoType1Panel;
 	private JPanel promoType2Panel;
 	private JComboBox<Manufacturer> manufacturerComboBox;
@@ -87,6 +89,8 @@ public class PromoPanel extends StandardMagicPanel {
 		
 		promoTypeComboBox = new JComboBox<>();
 		promoTypeComboBox.setModel(ListUtil.toDefaultComboBoxModel(PromoType.getPromoTypes(), true));
+		
+		activeCheckBox = new JCheckBox();
 		
 		manufacturerComboBox = new JComboBox<>();
 		
@@ -140,6 +144,7 @@ public class PromoPanel extends StandardMagicPanel {
 	protected void initializeFocusOrder(List<JComponent> focusOrder) {
 		focusOrder.add(nameField);
 		focusOrder.add(promoTypeComboBox);
+		focusOrder.add(activeCheckBox);
 		focusOrder.add(manufacturerComboBox);
 		focusOrder.add(targetAmountField);
 		focusOrder.add(productCodeField);
@@ -169,7 +174,7 @@ public class PromoPanel extends StandardMagicPanel {
 		}
 		
 		if (confirm("Save Promo?")) {
-			promo.setName(nameField.getText());
+			setCommonFieldsForSaving();
 			try {
 				promoService.save(promo);
 			} catch (Exception e) {
@@ -181,6 +186,11 @@ public class PromoPanel extends StandardMagicPanel {
 			showMessage("Saved!");
 			updateDisplay(promo);
 		}
+	}
+
+	private void setCommonFieldsForSaving() {
+		promo.setName(nameField.getText());
+		promo.setActive(activeCheckBox.isSelected());
 	}
 
 	private boolean validatePromoType2() {
@@ -198,9 +208,8 @@ public class PromoPanel extends StandardMagicPanel {
 		}
 		
 		if (confirm("Save Promo?")) {
-			promo.setName(nameField.getText());
+			setCommonFieldsForSaving();
 			promo.setPromoType((PromoType)promoTypeComboBox.getSelectedItem());
-			
 			try {
 				promoService.save(promo);
 			} catch (Exception e) {
@@ -220,7 +229,7 @@ public class PromoPanel extends StandardMagicPanel {
 		}
 		
 		if (confirm("Save Promo?")) {
-			promo.setName(nameField.getText());
+			setCommonFieldsForSaving();
 			promo.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
 			promo.setTargetAmount(NumberUtil.toBigDecimal(targetAmountField.getText()));
 			promo.setPrize(new PromoPrize());
@@ -333,6 +342,20 @@ public class PromoPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		promoTypeComboBox.setPreferredSize(new Dimension(400, 25));
 		mainPanel.add(promoTypeComboBox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(new JLabel("Active?"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(activeCheckBox, c);
 		
 		currentRow++;
 		
@@ -609,6 +632,7 @@ public class PromoPanel extends StandardMagicPanel {
 		nameField.setText(promo.getName());
 		promoTypeComboBox.setEnabled(false);
 		promoTypeComboBox.setSelectedItem(promo.getPromoType());
+		activeCheckBox.setSelected(promo.isActive());
 		
 		promoType1Panel.setVisible(promo.getPromoType().isType1());
 		promoType2Panel.setVisible(promo.getPromoType().isType2());
@@ -638,6 +662,7 @@ public class PromoPanel extends StandardMagicPanel {
 		nameField.setText(null);
 		promoTypeComboBox.setEnabled(true);
 		promoTypeComboBox.setSelectedIndex(0);
+		activeCheckBox.setSelected(true);
 		manufacturerComboBox.setSelectedIndex(0);
 		targetAmountField.setText(null);
 		productCodeField.setText(null);

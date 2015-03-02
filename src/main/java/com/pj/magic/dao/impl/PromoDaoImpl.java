@@ -28,6 +28,7 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PROMO_NO, a.NAME, PROMO_TYPE_ID, TARGET_AMOUNT, a.MANUFACTURER_ID,"
 			+ " PRODUCT_ID, b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION, UNIT, QUANTITY,"
+			+ " a.ACTIVE_IND,"
 			+ " c.NAME as MANUFACTURER_NAME"
 			+ " from PROMO a"
 			+ " left join PRODUCT b"
@@ -54,6 +55,7 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 			promo.setName(rs.getString("NAME"));
 			promo.setPromoType(PromoType.getPromoType(rs.getLong("PROMO_TYPE_ID")));
 			promo.setTargetAmount(rs.getBigDecimal("TARGET_AMOUNT"));
+			promo.setActive("Y".equals(rs.getString("ACTIVE_IND")));
 			
 			if (rs.getLong("MANUFACTURER_ID") != 0) {
 				Manufacturer manufacturer = new Manufacturer();
@@ -107,8 +109,9 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 
 	private static final String INSERT_SQL =
 			"insert into PROMO"
-			+ " (PROMO_NO, NAME, PROMO_TYPE_ID, MANUFACTURER_ID, TARGET_AMOUNT, PRODUCT_ID, UNIT, QUANTITY)"
-			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
+			+ " (PROMO_NO, NAME, PROMO_TYPE_ID, MANUFACTURER_ID, TARGET_AMOUNT, PRODUCT_ID, UNIT, QUANTITY,"
+			+ " ACTIVE_IND)"
+			+ " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Promo promo) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -136,6 +139,7 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 					ps.setNull(7, Types.VARCHAR);
 					ps.setNull(8, Types.INTEGER);
 				}
+				ps.setString(9, promo.isActive() ? "Y" : "N");
 				return ps;
 			}
 
@@ -152,7 +156,7 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 
 	private static final String UPDATE_SQL = 
 			"update PROMO set NAME = ?, MANUFACTURER_ID = ?, TARGET_AMOUNT = ?, PRODUCT_ID = ?,"
-			+ " UNIT = ?, QUANTITY = ? where ID = ?";
+			+ " UNIT = ?, QUANTITY = ?, ACTIVE_IND = ? where ID = ?";
 	
 	private void update(Promo promo) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -162,6 +166,7 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 				(promo.getPrize() != null) ? promo.getPrize().getProduct().getId() : null,
 				(promo.getPrize() != null) ? promo.getPrize().getUnit() : null,
 				(promo.getPrize() != null) ? promo.getPrize().getQuantity() : null,
+				promo.isActive() ? "Y" : "N",
 				promo.getId());
 	}
 

@@ -10,6 +10,7 @@ public class Promo {
 	private Long promoNumber;
 	private String name;
 	private PromoType promoType;
+	private boolean active;
 	
 	// TODO: Move promo mechanics to separate class
 	private BigDecimal targetAmount;
@@ -100,6 +101,14 @@ public class Promo {
 
 	public void setPromoType2Rules(List<PromoType2Rule> promoType2Rules) {
 		this.promoType2Rules = promoType2Rules;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 }
