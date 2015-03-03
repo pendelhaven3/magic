@@ -126,4 +126,19 @@ public class Promo {
 		return rewards;
 	}
 
+	public List<PromoRedemptionReward> evaluate(SalesInvoice salesInvoice) {
+		List<PromoRedemptionReward> rewards = new ArrayList<>();
+		for (PromoType2Rule rule : promoType2Rules) {
+			SalesInvoiceItem item = salesInvoice.findItemByProductAndUnit(
+					rule.getPromoProduct(), rule.getPromoUnit());
+			if (item != null) {
+				PromoRedemptionReward reward = rule.evaluate(item);
+				if (reward != null) {
+					rewards.add(reward);
+				}
+			}
+		}
+		return rewards;
+	}
+
 }

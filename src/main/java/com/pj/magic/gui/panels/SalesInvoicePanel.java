@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SalesByManufacturerDialog;
 import com.pj.magic.gui.dialog.SalesInvoiceStatusDialog;
@@ -67,6 +68,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	@Autowired private SalesInvoiceStatusDialog salesInvoiceStatusDialog;
 	@Autowired private ExcelService excelService;
 	@Autowired private SalesByManufacturerDialog salesByManufacturerDialog;
+	@Autowired private AvailedPromoRewardsDialog availedPromoRewardsDialog;
 	
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
@@ -592,6 +594,22 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(showByManufacturerTotalButton);
+		
+		JButton showAvailedPromoRewardsButton = 
+				new MagicToolBarButton("present", "Show Availed Promo Rewards");
+		showAvailedPromoRewardsButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showAvailedPromoRewards();
+			}
+		});
+		toolBar.add(showAvailedPromoRewardsButton);
+	}
+
+	private void showAvailedPromoRewards() {
+		availedPromoRewardsDialog.updateDisplay(salesInvoice);
+		availedPromoRewardsDialog.setVisible(true);
 	}
 
 	private void showSalesByManufacturerDialog(SalesInvoice salesInvoice) {
