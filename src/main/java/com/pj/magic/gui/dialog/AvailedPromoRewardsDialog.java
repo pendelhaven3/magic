@@ -17,9 +17,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemptionReward;
-import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.SalesRequisition;
-import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.impl.PromoService;
 
 @Component
@@ -91,16 +89,7 @@ public class AvailedPromoRewardsDialog extends MagicDialog {
 		List<PromoRedemptionReward> rewards = new ArrayList<>();
 		for (Promo promo : promoService.getAllActivePromos()) {
 			if (promo.getPromoType().isType2()) {
-				for (PromoType2Rule rule : promo.getPromoType2Rules()) {
-					SalesRequisitionItem item = salesRequisition.findItemByProductAndUnit(
-							rule.getPromoProduct(), rule.getPromoUnit());
-					if (item != null) {
-						PromoRedemptionReward reward = rule.evaluate(item);
-						if (reward != null) {
-							rewards.add(reward);
-						}
-					}
-				}
+				rewards.addAll(promo.evaluate(salesRequisition));
 			}
 		}
 		return rewards;

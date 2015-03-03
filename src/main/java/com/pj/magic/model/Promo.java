@@ -111,4 +111,19 @@ public class Promo {
 		this.active = active;
 	}
 
+	public List<PromoRedemptionReward> evaluate(SalesRequisition salesRequisition) {
+		List<PromoRedemptionReward> rewards = new ArrayList<>();
+		for (PromoType2Rule rule : promoType2Rules) {
+			SalesRequisitionItem item = salesRequisition.findItemByProductAndUnit(
+					rule.getPromoProduct(), rule.getPromoUnit());
+			if (item != null) {
+				PromoRedemptionReward reward = rule.evaluate(item);
+				if (reward != null) {
+					rewards.add(reward);
+				}
+			}
+		}
+		return rewards;
+	}
+
 }

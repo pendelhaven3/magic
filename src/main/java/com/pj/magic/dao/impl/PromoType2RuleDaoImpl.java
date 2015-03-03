@@ -76,7 +76,19 @@ public class PromoType2RuleDaoImpl extends MagicDao implements PromoType2RuleDao
 		}
 	}
 
+	private static final String UPDATE_SQL =
+			"update PROMO_TYPE_2_RULE set PROMO_PRODUCT_ID = ?, PROMO_UNIT = ?, PROMO_QUANTITY = ?,"
+			+ " FREE_PRODUCT_ID = ?, FREE_UNIT = ?, FREE_QUANTITY = ? where ID = ?";
+	
 	private void update(PromoType2Rule rule) {
+		getJdbcTemplate().update(UPDATE_SQL,
+				rule.getPromoProduct().getId(),
+				rule.getPromoUnit(),
+				rule.getPromoQuantity(),
+				rule.getFreeProduct().getId(),
+				rule.getFreeUnit(),
+				rule.getFreeQuantity(),
+				rule.getId());
 	}
 
 	private class PromoType2RuleRowMapper implements RowMapper<PromoType2Rule> {

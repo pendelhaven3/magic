@@ -9,16 +9,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pj.magic.Constants;
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.UserDao;
+import com.pj.magic.exception.NotEnoughPromoStocksException;
 import com.pj.magic.exception.SalesRequisitionItemNotEnoughStocksException;
 import com.pj.magic.exception.SalesRequisitionItemPostException;
 import com.pj.magic.exception.SalesRequisitionPostException;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.Promo;
+import com.pj.magic.model.PromoRedemptionReward;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.LoginService;
@@ -37,6 +43,8 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private UserDao userDao;
 	@Autowired private LoginService loginService;
 	@Autowired private SystemService systemService;
+	@Autowired private PromoService promoService;
+	@Autowired private SalesInvoiceItemDao salesInvoiceItemDao;
 	
 	@Transactional
 	@Override
@@ -102,12 +110,10 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 				exception.add(new SalesRequisitionItemPostException(item, "Selling price less than cost"));
 			}
 				
-			// [PJ 08/06/2014] Do not update product quantity inside sales requisition object
-			// because it has to be "rolled back" manually when an exception happens during posting
 			Product product = productDao.get(item.getProduct().getId());
 			if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity())) {
 				exception.add(new SalesRequisitionItemNotEnoughStocksException(item));
-			} else if (exception.isEmpty()) { // No need to update anymore if validation error already encountered
+			} else if (exception.isEmpty()) {
 				product.subtractUnitQuantity(item.getUnit(), item.getQuantity());
 				productDao.updateAvailableQuantities(product);
 			}
@@ -125,6 +131,33 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		salesInvoice.setVatAmount(salesInvoice.getTotalNetAmount().multiply(systemService.getVatRate())
 				.setScale(2, RoundingMode.HALF_UP));
 		salesInvoiceService.save(salesInvoice);
+		
+		for (Promo promo : promoService.getAllActivePromos()) {
+			List<PromoRedemptionReward> rewards = promo.evaluate(salesRequisition);
+			if (!rewards.isEmpty()) {
+				for (PromoRedemptionReward reward : rewards) {
+					Product product = productDao.get(reward.getProduct().getId());
+					
+					if (product.getUnitQuantity(reward.getUnit()) < reward.getQuantity().intValue()) {
+						throw new NotEnoughPromoStocksException();
+					}
+					
+					product.addUnitQuantity(reward.getUnit(), -1 * reward.getQuantity());
+					productDao.updateAvailableQuantities(product);
+					
+					SalesInvoiceItem item = new SalesInvoiceItem();
+					item.setParent(salesInvoice);
+					item.setProduct(reward.getProduct());
+					item.setUnit(reward.getUnit());
+					item.setQuantity(reward.getQuantity());
+					item.setUnitPrice(Constants.ZERO);
+					item.setCost(Constants.ZERO);
+					
+					salesInvoiceItemDao.save(item);
+				}
+			}
+		}
+		
 		return salesInvoice;
 	}
 
