@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,7 @@ public class AvailedPromoRewardsDialog extends MagicDialog {
 	private AvailedPromoRewardsTableModel tableModel;
 	
 	public AvailedPromoRewardsDialog() {
-		setSize(600, 300);
+		setSize(800, 300);
 		setLocationRelativeTo(null);
 		setTitle("Availed Promo Rewards");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
@@ -44,14 +45,21 @@ public class AvailedPromoRewardsDialog extends MagicDialog {
 
 	@PostConstruct
 	public void initialize() {
-		initializeComponents();
+		initializeTable();
 		registerKeyBindings();
 		layoutComponents();
 	}
 
-	private void initializeComponents() {
+	private void initializeTable() {
 		tableModel = new AvailedPromoRewardsTableModel();
 		table = new MagicListTable(tableModel);
+		
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(PROMO_COLUMN_INDEX).setPreferredWidth(200);
+		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(200);
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(40);
+		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(40);
 	}
 
 	private void registerKeyBindings() {
@@ -116,7 +124,7 @@ public class AvailedPromoRewardsDialog extends MagicDialog {
 
 	private class AvailedPromoRewardsTableModel extends AbstractTableModel {
 		
-		private final String[] columnNames = {"Promo", "Product Code", "Description", "Unit", "Quantity"};
+		private final String[] columnNames = {"Promo", "Product Code", "Description", "Unit", "Qty"};
 		
 		private List<PromoRedemptionReward> rewards = new ArrayList<>();
 		
