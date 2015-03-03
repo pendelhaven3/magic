@@ -16,5 +16,7 @@ public interface PromoService {
 	void save(PromoType2Rule rule);
 
 	void delete(PromoType2Rule rule);
+
+	List<Promo> getAllActivePromos();
 	
 }

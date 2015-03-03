@@ -170,4 +170,13 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 				promo.getId());
 	}
 
+	private static final String FIND_ALL_BY_ACTIVE_SQL = BASE_SELECT_SQL
+			+ " where a.ACTIVE_IND = ?";
+	
+	@Override
+	public List<Promo> findAllByActive(boolean active) {
+		return getJdbcTemplate().query(FIND_ALL_BY_ACTIVE_SQL, promoRowMapper, 
+				active ? "Y" : "N");
+	}
+
 }

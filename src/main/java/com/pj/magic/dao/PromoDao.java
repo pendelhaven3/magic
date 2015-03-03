@@ -11,5 +11,7 @@ public interface PromoDao {
 	Promo get(long id);
 
 	void save(Promo promo);
+
+	List<Promo> findAllByActive(boolean active);
 	
 }

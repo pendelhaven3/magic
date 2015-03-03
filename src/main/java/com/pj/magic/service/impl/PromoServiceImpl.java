@@ -40,16 +40,21 @@ public class PromoServiceImpl implements PromoService {
 	@Override
 	public Promo getPromo(long id) {
 		Promo promo = promoDao.get(id);
+		loadPromoDetails(promo);
+		return promo;
+	}
+
+	private void loadPromoDetails(Promo promo) {
 		switch (promo.getPromoType().getId().intValue()) {
 		case 2:
 			promo.setPromoType2Rules(promoType2RuleDao.findAllByPromo(promo));
 			for (PromoType2Rule rule : promo.getPromoType2Rules()) {
+				rule.setParent(promo);
 				rule.setPromoProduct(productDao.get(rule.getPromoProduct().getId()));
 				rule.setFreeProduct(productDao.get(rule.getFreeProduct().getId()));
 			}
 			break;
 		}
-		return promo;
 	}
 
 	@Transactional
@@ -62,6 +67,15 @@ public class PromoServiceImpl implements PromoService {
 	@Override
 	public void delete(PromoType2Rule rule) {
 		promoType2RuleDao.delete(rule);
+	}
+
+	@Override
+	public List<Promo> getAllActivePromos() {
+		List<Promo> promos = promoDao.findAllByActive(true);
+		for (Promo promo : promos) {
+			loadPromoDetails(promo);
+		}
+		return promos;
 	}
 
 }

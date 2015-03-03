@@ -75,4 +75,21 @@ public class PromoType2Rule {
 		this.freeQuantity = freeQuantity;
 	}
 
+	public PromoRedemptionReward evaluate(SalesRequisitionItem item) {
+		if (item.getProduct().getId().equals(promoProduct.getId())
+				&& item.getUnit().equals(promoUnit)
+				&& item.getQuantity().intValue() >= promoQuantity.intValue()) {
+			PromoRedemptionReward reward = new PromoRedemptionReward();
+			reward.setProduct(freeProduct);
+			reward.setUnit(freeUnit);
+			reward.setQuantity(item.getQuantity().intValue() / promoQuantity.intValue() 
+					* freeQuantity.intValue());
+			reward.setParent(new PromoRedemption());
+			reward.getParent().setPromo(parent);
+			return reward;
+		} else {
+			return null;
+		}
+	}
+	
 }

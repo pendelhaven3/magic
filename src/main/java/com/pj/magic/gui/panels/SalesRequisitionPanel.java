@@ -52,6 +52,7 @@ import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
 import com.pj.magic.gui.dialog.SalesByManufacturerDialog;
 import com.pj.magic.gui.dialog.SalesRequisitionPostExceptionsDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
@@ -89,6 +90,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private SalesRequisitionPostExceptionsDialog postExceptionsDialog;
 	@Autowired private SalesByManufacturerDialog salesByManufacturerDialog;
+	@Autowired private AvailedPromoRewardsDialog availedPromoRewardsDialog;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -110,6 +112,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private MagicToolBarButton deleteItemButton;
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton showSalesByManufacturerButton;
+	private MagicToolBarButton showAvailedPromoRewardsButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -917,6 +920,21 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(showSalesByManufacturerButton);
+		
+		showAvailedPromoRewardsButton = new MagicToolBarButton("present", "Show Availed Promos");
+		showAvailedPromoRewardsButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showAvailedPromoRewardsButton();
+			}
+		});
+		toolBar.add(showAvailedPromoRewardsButton);
+	}
+
+	private void showAvailedPromoRewardsButton() {
+		availedPromoRewardsDialog.updateDisplay(salesRequisition);
+		availedPromoRewardsDialog.setVisible(true);
 	}
 
 	private void showSalesByManufacturerDialog(SalesRequisition salesRequisition) {

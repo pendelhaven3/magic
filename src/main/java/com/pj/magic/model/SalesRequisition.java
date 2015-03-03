@@ -214,5 +214,14 @@ public class SalesRequisition {
 		}
 		return total;
 	}
+
+	public SalesRequisitionItem findItemByProductAndUnit(Product product, String unit) {
+		for (SalesRequisitionItem item : items) {
+			if (product.getId().equals(item.getProduct().getId()) && unit.equals(item.getUnit())) {
+				return item;
+			}
+		}
+		return null;
+	}
 	
 }

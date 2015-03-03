@@ -85,6 +85,7 @@ public class PromoType2RuleDaoImpl extends MagicDao implements PromoType2RuleDao
 		public PromoType2Rule mapRow(ResultSet rs, int rowNum) throws SQLException {
 			PromoType2Rule rule = new PromoType2Rule();
 			rule.setId(rs.getLong("ID"));
+			rule.setParent(new Promo(rs.getLong("PROMO_ID")));
 			rule.setPromoProduct(new Product(rs.getLong("PROMO_PRODUCT_ID")));
 			rule.setPromoUnit(rs.getString("PROMO_UNIT"));
 			rule.setPromoQuantity(rs.getInt("PROMO_QUANTITY"));
@@ -101,7 +102,12 @@ public class PromoType2RuleDaoImpl extends MagicDao implements PromoType2RuleDao
 	
 	@Override
 	public List<PromoType2Rule> findAllByPromo(Promo promo) {
-		return getJdbcTemplate().query(FIND_ALL_BY_PROMO_SQL, ruleRowMapper, promo.getId());
+		List<PromoType2Rule> rules = 
+				getJdbcTemplate().query(FIND_ALL_BY_PROMO_SQL, ruleRowMapper, promo.getId());
+		for (PromoType2Rule rule : rules) {
+			rule.setParent(promo);
+		}
+		return rules;
 	}
 
 	private static final String DELETE_SQL = "delete from PROMO_TYPE_2_RULE where ID = ?";
