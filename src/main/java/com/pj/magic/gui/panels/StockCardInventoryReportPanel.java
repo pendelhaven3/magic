@@ -35,6 +35,7 @@ import com.pj.magic.gui.tables.StockCardInventoryReportTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.Unit;
+import com.pj.magic.model.search.ProductSearchCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
@@ -116,7 +117,10 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	}
 
 	protected void openSelectProductDialog() {
-		selectProductDialog.searchProducts(productCodeField.getText());
+		ProductSearchCriteria criteria = new ProductSearchCriteria();
+		criteria.setCodeOrDescriptionLike(productCodeField.getText());
+		
+		selectProductDialog.searchProducts(criteria);
 		selectProductDialog.setVisible(true);
 		
 		Product product = selectProductDialog.getSelectedProduct();

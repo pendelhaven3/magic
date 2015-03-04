@@ -48,7 +48,7 @@ public class SelectProductDialog extends MagicDialog {
 			new UnitPricesAndQuantitiesTableModel();
 	private UnitCostsAndQuantitiesTableModel unitCostsAndQuantitiesTableModel =
 			new UnitCostsAndQuantitiesTableModel();
-	private JTable productsTable;
+	private MagicListTable productsTable;
 	private JTable unitPricesAndQuantitiesTable;
 	private JTable unitCostsAndQuantitiesTable;
 	private JPanel infoTablePanel;
@@ -236,6 +236,15 @@ public class SelectProductDialog extends MagicDialog {
 		}
 		
 		((CardLayout)infoTablePanel.getLayout()).show(infoTablePanel, UNIT_COST_INFO_TABLE);
+	}
+
+	public void searchProducts(ProductSearchCriteria criteria) {
+		List<Product> products = productService.searchProducts(criteria);
+		productsTableModel.setProducts(products);
+		if (!products.isEmpty()) {
+			productsTable.selectFirstRow();
+		}
+		((CardLayout)infoTablePanel.getLayout()).show(infoTablePanel, UNIT_PRICE_INFO_TABLE);
 	}
 	
 }
