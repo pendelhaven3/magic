@@ -98,19 +98,28 @@ public class PromoRedemption {
 
 	public BigDecimal getTotalAmount() {
 		BigDecimal total = Constants.ZERO;
-		for (PromoRedemptionSalesInvoice salesInvoice : salesInvoices) {
-			total = total.add(salesInvoice.getSalesInvoice().getSalesByManufacturer(
-					promo.getManufacturer()));
+		if (promo.getPromoType().isType1()) {
+			PromoType1Rule rule = promo.getPromoType1Rule();
+			for (PromoRedemptionSalesInvoice salesInvoice : salesInvoices) {
+				total = total.add(salesInvoice.getSalesInvoice().getSalesByManufacturer(
+						rule.getManufacturer()));
+			}
 		}
 		return total;
 	}
 
+	// TODO: Remove PROMO_REDEMPTION.PRIZE_QUANTITY
 	public Integer getPrizeQuantity() {
+		if (promo.getPromoType().isType2()) {
+			return 0;
+		}
+		
 		if (posted) {
 			return prizeQuantity;
 		} else {
-			return getTotalAmount().divideToIntegralValue(getPromo().getTargetAmount()).intValue()
-					* promo.getPrize().getQuantity();
+			PromoType1Rule rule = promo.getPromoType1Rule();
+			return getTotalAmount().divideToIntegralValue(rule.getTargetAmount()).intValue()
+					* rule.getQuantity();
 		}
 	}
 

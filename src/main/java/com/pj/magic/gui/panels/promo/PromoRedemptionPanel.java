@@ -40,10 +40,10 @@ import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Promo;
-import com.pj.magic.model.PromoPrize;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PromoRedemptionReward;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
+import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.PrintService;
@@ -51,6 +51,7 @@ import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.service.impl.PromoService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.HtmlUtil;
 
 @Component
 public class PromoRedemptionPanel extends StandardMagicPanel {
@@ -192,7 +193,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
+		c.anchor = GridBagConstraints.NORTHWEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Mechanics:"), c);
 		
 		c = new GridBagConstraints();
@@ -528,7 +529,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 				promoRedemptionService.getPromoRedemption(promoRedemption.getId());
 		
 		promoNameLabel.setText(promoRedemption.getPromo().getName());
-		promoMechanicsLabel.setText(promoRedemption.getPromo().getMechanicsDescription());
+		promoMechanicsLabel.setText(HtmlUtil.html(promoRedemption.getPromo().getMechanicsDescription()));
 		promoRedemptionNumberLabel.setText(promoRedemption.getPromoRedemptionNumber().toString());
 		customerCodeField.setEnabled(!promoRedemption.isPosted());
 		customerCodeField.setText(promoRedemption.getCustomer().getCode());
@@ -621,8 +622,12 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
 				return salesInvoice.getSalesInvoiceNumber();
 			case AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getSalesByManufacturer(
-						promoRedemption.getPromo().getManufacturer()));
+				if (promoRedemption.getPromo().getPromoType().isType1()) {
+					PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
+					return FormatterUtil.formatAmount(salesInvoice.getSalesByManufacturer(
+							rule.getManufacturer()));
+				}
+				return null;
 			default:
 				return null;
 			}
@@ -712,12 +717,12 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 
 		public Object getValueAtForPromoType1(int rowIndex, int columnIndex) {
 			Promo promo = promoRedemption.getPromo();
-			PromoPrize prize = promo.getPrize();
+			PromoType1Rule rule = promo.getPromoType1Rule();
 			switch (columnIndex) {
 			case ITEM_DESCRIPTION_COLUMN_INDEX:
-				return prize.getProduct().getDescription();
+				return rule.getProduct().getDescription();
 			case UNIT_COLUMN_INDEX:
-				return prize.getUnit();
+				return rule.getUnit();
 			case QUANTITY_COLUMN_INDEX:
 				return promoRedemption.getPrizeQuantity();
 			default:

@@ -22,10 +22,10 @@ import com.pj.magic.exception.NothingToRedeemException;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
-import com.pj.magic.model.PromoPrize;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PromoRedemptionReward;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
+import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
@@ -155,14 +155,14 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 			throw new NothingToRedeemException();
 		}
 		
-		PromoPrize prize = promoRedemption.getPromo().getPrize();
-		Product product = productDao.get(prize.getProduct().getId());
+		PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
+		Product product = productDao.get(rule.getProduct().getId());
 		
-		if (product.getUnitQuantity(prize.getUnit()) < promoRedemption.getPrizeQuantity()) {
+		if (product.getUnitQuantity(rule.getUnit()) < promoRedemption.getPrizeQuantity()) {
 			throw new NotEnoughStocksException();
 		}
 		
-		product.addUnitQuantity(prize.getUnit(), -1 * promoRedemption.getPrizeQuantity());
+		product.addUnitQuantity(rule.getUnit(), -1 * promoRedemption.getPrizeQuantity());
 		productDao.updateAvailableQuantities(product);
 	}
 

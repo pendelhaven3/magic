@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PromoDao;
 import com.pj.magic.dao.PromoRedemptionDao;
+import com.pj.magic.dao.PromoType1RuleDao;
 import com.pj.magic.dao.PromoType2RuleDao;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType2Rule;
@@ -18,6 +19,7 @@ import com.pj.magic.model.PromoType2Rule;
 public class PromoServiceImpl implements PromoService {
 
 	@Autowired private PromoDao promoDao;
+	@Autowired private PromoType1RuleDao promoType1RuleDao;
 	@Autowired private PromoType2RuleDao promoType2RuleDao;
 	@Autowired private ProductDao productDao;
 	@Autowired private PromoRedemptionDao promoRedemptionDao;
@@ -34,6 +36,10 @@ public class PromoServiceImpl implements PromoService {
 		promoDao.save(promo);
 		if (isNew) {
 			promoRedemptionDao.insertNewPromoRedemptionSequence(promo);
+		} else {
+			if (promo.getPromoType().isType1()) {
+				promoType1RuleDao.save(promo.getPromoType1Rule());
+			}
 		}
 	}
 
@@ -46,6 +52,9 @@ public class PromoServiceImpl implements PromoService {
 
 	private void loadPromoDetails(Promo promo) {
 		switch (promo.getPromoType().getId().intValue()) {
+		case 1:
+			promo.setPromoType1Rule(promoType1RuleDao.findByPromo(promo));
+			break;
 		case 2:
 			promo.setPromoType2Rules(promoType2RuleDao.findAllByPromo(promo));
 			for (PromoType2Rule rule : promo.getPromoType2Rules()) {

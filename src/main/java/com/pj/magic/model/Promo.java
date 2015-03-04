@@ -1,8 +1,10 @@
 package com.pj.magic.model;
 
-import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.pj.magic.util.FormatterUtil;
 
 public class Promo {
 
@@ -12,11 +14,7 @@ public class Promo {
 	private PromoType promoType;
 	private boolean active;
 	
-	// TODO: Move promo mechanics to separate class
-	private BigDecimal targetAmount;
-	private Manufacturer manufacturer;
-	private PromoPrize prize;
-	
+	private PromoType1Rule promoType1Rule;
 	private List<PromoType2Rule> promoType2Rules = new ArrayList<>();
 	
 	public Promo() {
@@ -43,22 +41,6 @@ public class Promo {
 		this.promoNumber = promoNumber;
 	}
 
-	public BigDecimal getTargetAmount() {
-		return targetAmount;
-	}
-
-	public void setTargetAmount(BigDecimal targetAmount) {
-		this.targetAmount = targetAmount;
-	}
-
-	public Manufacturer getManufacturer() {
-		return manufacturer;
-	}
-
-	public void setManufacturer(Manufacturer manufacturer) {
-		this.manufacturer = manufacturer;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -67,24 +49,34 @@ public class Promo {
 		this.name = name;
 	}
 
-	public PromoPrize getPrize() {
-		return prize;
-	}
-
-	public void setPrize(PromoPrize prize) {
-		this.prize = prize;
-	}
-
 	public String getMechanicsDescription() {
-		return "INSERT PROMO MECHANICS HERE";
-		
-//		String mechanics = "For every P{0} worth of {1} products, get {2} {3} {4}";
-//		return MessageFormat.format(mechanics,
-//				FormatterUtil.formatAmount(targetAmount),
-//				manufacturer.getName(),
-//				prize.getQuantity().toString(),
-//				prize.getUnit(),
-//				prize.getProduct().getDescription());
+		if (promoType.isType1()) {
+			String mechanics = "For every P{0} worth of {1} products, get {2} {3} {4}";
+			return MessageFormat.format(mechanics,
+					FormatterUtil.formatAmount(promoType1Rule.getTargetAmount()),
+					promoType1Rule.getManufacturer().getName(),
+					promoType1Rule.getQuantity().toString(),
+					promoType1Rule.getUnit(),
+					promoType1Rule.getProduct().getDescription());
+		} else if (promoType.isType2()) {
+			StringBuilder sb = new StringBuilder();
+			for (PromoType2Rule rule : promoType2Rules) {
+				String mechanics = "Buy {0} {1} {2}, get {3} {4} {5} free";
+				if (sb.length() > 0) {
+					sb.append("\n");
+				}
+				sb.append(MessageFormat.format(mechanics, 
+						rule.getPromoQuantity(),
+						rule.getPromoUnit(),
+						rule.getPromoProduct().getDescription(),
+						rule.getFreeQuantity(),
+						rule.getFreeUnit(),
+						rule.getFreeProduct().getDescription()));
+			}
+			return sb.toString();
+		} else {
+			return null;
+		}
 	}
 
 	public PromoType getPromoType() {
@@ -139,6 +131,14 @@ public class Promo {
 			}
 		}
 		return rewards;
+	}
+
+	public PromoType1Rule getPromoType1Rule() {
+		return promoType1Rule;
+	}
+
+	public void setPromoType1Rule(PromoType1Rule promoType1Rule) {
+		this.promoType1Rule = promoType1Rule;
 	}
 
 }

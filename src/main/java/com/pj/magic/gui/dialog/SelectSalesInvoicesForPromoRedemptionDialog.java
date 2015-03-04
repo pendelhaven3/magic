@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.UnpaidSalesInvoicesTable;
 import com.pj.magic.model.PromoRedemption;
+import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.util.ComponentUtil;
@@ -187,8 +188,12 @@ public class SelectSalesInvoicesForPromoRedemptionDialog extends MagicDialog {
 			case TRANSACTION_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(salesInvoice.getTransactionDate());
 			case AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(salesInvoice.getSalesByManufacturer(
-						promoRedemption.getPromo().getManufacturer()));
+				if (promoRedemption.getPromo().getPromoType().isType1()) {
+					PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
+					return FormatterUtil.formatAmount(salesInvoice.getSalesByManufacturer(
+							rule.getManufacturer()));
+				}
+				return "-";
 			default:
 				throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 			}

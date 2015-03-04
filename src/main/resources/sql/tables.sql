@@ -858,16 +858,9 @@ create table PROMO (
   PROMO_NO integer not null,
   NAME varchar(100) not null,
   PROMO_TYPE_ID integer not null,
-  TARGET_AMOUNT numeric(8, 2) not null,
-  MANUFACTURER_ID integer not null,
-  PRODUCT_ID integer not null,
-  UNIT char(3) not null,
-  QUANTITY integer not null,
   ACTIVE_IND char(1) default 'Y' not null,
   primary key (ID),
-  unique key PROMO$UK (PROMO_NO),
-  constraint PROMO$FK foreign key (MANUFACTURER_ID) references MANUFACTURER (ID),
-  constraint PROMO$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+  unique key PROMO$UK (PROMO_NO)
 );
 
 create table PROMO_REDEMPTION (
@@ -899,6 +892,20 @@ create table PROMO_REDEMPTION_SEQUENCE (
   VALUE integer default 0 not null,
   constraint PROMO_REDEMPTION_SEQUENCE$UK unique (PROMO_ID),
   constraint PROMO_REDEMPTION_SEQUENCE$FK foreign key (PROMO_ID) references PROMO (ID) 
+);
+
+create table PROMO_TYPE_1_RULE (
+  ID integer auto_increment,
+  PROMO_ID integer not null,
+  TARGET_AMOUNT numeric(8, 2) not null,
+  MANUFACTURER_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT char(3) not null,
+  QUANTITY integer not null,
+  primary key (ID),
+  constraint PROMO_TYPE_1_RULE$FK foreign key (PROMO_ID) references PROMO (ID),
+  constraint PROMO_TYPE_1_RULE$FK2 foreign key (MANUFACTURER_ID) references MANUFACTURER (ID),
+  constraint PROMO_TYPE_1_RULE$FK3 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
 
 create table PROMO_TYPE_2_RULE (

@@ -39,8 +39,8 @@ import com.pj.magic.gui.tables.PromoType2RulesTable;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
-import com.pj.magic.model.PromoPrize;
 import com.pj.magic.model.PromoType;
+import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ProductService;
@@ -230,13 +230,16 @@ public class PromoPanel extends StandardMagicPanel {
 		
 		if (confirm("Save Promo?")) {
 			setCommonFieldsForSaving();
-			promo.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
-			promo.setTargetAmount(NumberUtil.toBigDecimal(targetAmountField.getText()));
-			promo.setPrize(new PromoPrize());
-			promo.getPrize().setProduct(
-					productService.findProductByCode(productCodeField.getText()));
-			promo.getPrize().setUnit((String)unitComboBox.getSelectedItem());
-			promo.getPrize().setQuantity(Integer.valueOf(quantityField.getText()));
+			if (promo.getPromoType1Rule() == null) {
+				promo.setPromoType1Rule(new PromoType1Rule());
+			}
+			PromoType1Rule rule = promo.getPromoType1Rule();
+			rule.setParent(promo);
+			rule.setTargetAmount(NumberUtil.toBigDecimal(targetAmountField.getText()));
+			rule.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
+			rule.setProduct(productService.findProductByCode(productCodeField.getText()));
+			rule.setUnit((String)unitComboBox.getSelectedItem());
+			rule.setQuantity(Integer.valueOf(quantityField.getText()));
 			
 			try {
 				promoService.save(promo);
@@ -638,14 +641,16 @@ public class PromoPanel extends StandardMagicPanel {
 		promoType2Panel.setVisible(promo.getPromoType().isType2());
 		
 		if (promo.getPromoType().isType1()) {
-			manufacturerComboBox.setSelectedItem(promo.getManufacturer());
-			if (promo.getPrize() != null) {
-				targetAmountField.setText(FormatterUtil.formatAmount(promo.getTargetAmount()));
-				productCodeField.setText(promo.getPrize().getProduct().getCode());
-				productDescriptionLabel.setText(promo.getPrize().getProduct().getDescription());
-				unitComboBox.setSelectedItem(promo.getPrize().getUnit());
-				quantityField.setText(promo.getPrize().getQuantity().toString());
+			PromoType1Rule rule = promo.getPromoType1Rule();
+			if (rule != null) {
+				manufacturerComboBox.setSelectedItem(rule.getManufacturer());
+				targetAmountField.setText(FormatterUtil.formatAmount(rule.getTargetAmount()));
+				productCodeField.setText(rule.getProduct().getCode());
+				productDescriptionLabel.setText(rule.getProduct().getDescription());
+				unitComboBox.setSelectedItem(rule.getUnit());
+				quantityField.setText(rule.getQuantity().toString());
 			} else {
+				manufacturerComboBox.setSelectedIndex(0);
 				targetAmountField.setText(null);
 				productCodeField.setText(null);
 				productDescriptionLabel.setText(null);

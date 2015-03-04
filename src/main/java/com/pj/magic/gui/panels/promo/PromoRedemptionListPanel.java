@@ -1,5 +1,6 @@
 package com.pj.magic.gui.panels.promo;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -26,7 +27,9 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.service.PromoRedemptionService;
+import com.pj.magic.service.impl.PromoService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.HtmlUtil;
 
 @Component
 public class PromoRedemptionListPanel extends StandardMagicPanel {
@@ -36,6 +39,7 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 	private static final int STATUS_COLUMN_INDEX = 2;
 	
 	@Autowired private PromoRedemptionService promoRedemptionService;
+	@Autowired private PromoService promoService;
 	
 	private MagicListTable table;
 	private PromoRedemptionsTableModel tableModel;
@@ -44,14 +48,14 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 	private JLabel promoMechanicsLabel;
 	
 	public void updateDisplay(Promo promo) {
-		this.promo = promo;
+		this.promo = promo = promoService.getPromo(promo.getId());
 		List<PromoRedemption> promoRedemptions = promoRedemptionService.getPromoRedemptionsByPromo(promo);
 		tableModel.setPromoRedemptions(promoRedemptions);
 		if (!promoRedemptions.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
 		promoNameLabel.setText(promo.getName());
-		promoMechanicsLabel.setText("<html>" + promo.getMechanicsDescription() + "</html>");
+		promoMechanicsLabel.setText(HtmlUtil.html(promo.getMechanicsDescription()));
 	}
 
 	@Override
@@ -116,7 +120,10 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 3;
-		mainPanel.add(new JScrollPane(table), c);
+		
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setPreferredSize(new Dimension(600, 200));
+		mainPanel.add(scrollPane, c);
 	}
 
 	@Override
