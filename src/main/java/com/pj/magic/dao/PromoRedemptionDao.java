@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
+import com.pj.magic.model.SalesInvoice;
 
 public interface PromoRedemptionDao {
 
@@ -14,5 +15,7 @@ public interface PromoRedemptionDao {
 	List<PromoRedemption> findAllByPromo(Promo promo);
 
 	void insertNewPromoRedemptionSequence(Promo promo);
+
+	List<PromoRedemption> findAllBySalesInvoice(SalesInvoice salesInvoice);
 	
 }

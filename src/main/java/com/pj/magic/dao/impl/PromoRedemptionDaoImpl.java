@@ -18,6 +18,7 @@ import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.User;
 
 @Repository
@@ -27,12 +28,15 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			"select a.ID, PROMO_ID, PROMO_REDEMPTION_NO, CUSTOMER_ID, PRIZE_QUANTITY,"
 			+ " POST_IND, POST_DT, POST_BY,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
-			+ " c.USERNAME as POST_BY_USERNAME"
+			+ " c.USERNAME as POST_BY_USERNAME,"
+			+ " d.NAME as PROMO_NAME"
 			+ " from PROMO_REDEMPTION a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_id"
 			+ " left join USER c"
-			+ "   on c.ID = a.POST_BY";
+			+ "   on c.ID = a.POST_BY"
+			+ " join PROMO d"
+			+ "   on d.ID = a.PROMO_ID";
 	
 	private PromoRedemptionRowMapper promoRedemptionRowMapper = new PromoRedemptionRowMapper();
 	
@@ -113,7 +117,11 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			PromoRedemption promoRedemption = new PromoRedemption();
 			promoRedemption.setId(rs.getLong("ID"));
 			promoRedemption.setPromoRedemptionNumber(rs.getLong("PROMO_REDEMPTION_NO"));
-			promoRedemption.setPromo(new Promo(rs.getLong("PROMO_ID")));
+			
+			Promo promo = new Promo();
+			promo.setId(rs.getLong("PROMO_ID"));
+			promo.setName(rs.getString("PROMO_NAME"));
+			promoRedemption.setPromo(promo);
 			
 			if (rs.getInt("PRIZE_QUANTITY") > 0) {
 				promoRedemption.setPrizeQuantity(rs.getInt("PRIZE_QUANTITY"));
@@ -151,6 +159,21 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 	@Override
 	public void insertNewPromoRedemptionSequence(Promo promo) {
 		getJdbcTemplate().update(INSERT_NEW_PROMO_REDEMPTION_SEQUENCE_SQL, promo.getId());
+	}
+
+	private static final String FIND_ALL_BY_SALES_INVOICE_SQL = BASE_SELECT_SQL
+			+ " where exists ("
+			+ "   select 1"
+			+ "   from PROMO_REDEMPTION_SALES_INVOICE prsi"
+			+ "   where prsi.PROMO_REDEMPTION_ID = a.ID"
+			+ "   and prsi.SALES_INVOICE_ID = ?"
+			+ " )"
+			+ " and a.POST_IND = 'Y'";
+	
+	@Override
+	public List<PromoRedemption> findAllBySalesInvoice(SalesInvoice salesInvoice) {
+		return getJdbcTemplate().query(FIND_ALL_BY_SALES_INVOICE_SQL, promoRedemptionRowMapper,
+				salesInvoice.getId());	
 	}
 	
 }

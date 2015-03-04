@@ -171,4 +171,13 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		return promoRedemptionDao.findAllByPromo(promo);
 	}
 
+	@Override
+	public List<PromoRedemption> findAllBySalesInvoice(SalesInvoice salesInvoice) {
+		List<PromoRedemption> promoRedemptions = promoRedemptionDao.findAllBySalesInvoice(salesInvoice);
+		for (PromoRedemption promoRedemption : promoRedemptions) {
+			promoRedemption.setRewards(promoRedemptionRewardDao.findAllByPromoRedemption(promoRedemption));
+		}
+		return promoRedemptions;
+	}
+
 }

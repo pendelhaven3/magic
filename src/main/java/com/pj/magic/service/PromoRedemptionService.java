@@ -23,5 +23,7 @@ public interface PromoRedemptionService {
 	void post(PromoRedemption promoRedemption);
 
 	List<PromoRedemption> getPromoRedemptionsByPromo(Promo promo);
+
+	List<PromoRedemption> findAllBySalesInvoice(SalesInvoice salesInvoice);
 	
 }

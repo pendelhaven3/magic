@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.Constants;
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.PromoRedemptionDao;
+import com.pj.magic.dao.PromoRedemptionRewardDao;
+import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
@@ -22,7 +25,9 @@ import com.pj.magic.exception.SalesRequisitionItemPostException;
 import com.pj.magic.exception.SalesRequisitionPostException;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
+import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PromoRedemptionReward;
+import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesRequisition;
@@ -45,6 +50,9 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private SystemService systemService;
 	@Autowired private PromoService promoService;
 	@Autowired private SalesInvoiceItemDao salesInvoiceItemDao;
+	@Autowired private PromoRedemptionDao promoRedemptionDao;
+	@Autowired private PromoRedemptionSalesInvoiceDao promoRedemptionSalesInvoiceDao;
+	@Autowired private PromoRedemptionRewardDao promoRedemptionRewardDao;
 	
 	@Transactional
 	@Override
@@ -132,9 +140,31 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 				.setScale(2, RoundingMode.HALF_UP));
 		salesInvoiceService.save(salesInvoice);
 		
+		postAvailedPromoRewards(salesInvoice);
+		
+		return salesInvoice;
+	}
+
+	private void postAvailedPromoRewards(SalesInvoice salesInvoice) {
 		for (Promo promo : promoService.getAllActivePromos()) {
-			List<PromoRedemptionReward> rewards = promo.evaluate(salesRequisition);
+			List<PromoRedemptionReward> rewards = promo.evaluate(salesInvoice);
 			if (!rewards.isEmpty()) {
+				PromoRedemption promoRedemption = new PromoRedemption();
+				promoRedemption.setPromo(promo);
+				promoRedemption.setCustomer(salesInvoice.getCustomer());
+				promoRedemptionDao.save(promoRedemption);
+				
+				promoRedemption.setPosted(true);
+				promoRedemption.setPostDate(new Date());
+				promoRedemption.setPostedBy(loginService.getLoggedInUser());
+				promoRedemption.setPrizeQuantity(0); // TODO: remove this
+				promoRedemptionDao.save(promoRedemption);
+				
+				PromoRedemptionSalesInvoice promoRedemptionSalesInvoice = new PromoRedemptionSalesInvoice();
+				promoRedemptionSalesInvoice.setParent(promoRedemption);
+				promoRedemptionSalesInvoice.setSalesInvoice(salesInvoice);
+				promoRedemptionSalesInvoiceDao.save(promoRedemptionSalesInvoice);
+				
 				for (PromoRedemptionReward reward : rewards) {
 					Product product = productDao.get(reward.getProduct().getId());
 					
@@ -154,11 +184,12 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 					item.setCost(Constants.ZERO);
 					
 					salesInvoiceItemDao.save(item);
+					
+					reward.setParent(promoRedemption);
+					promoRedemptionRewardDao.save(reward);
 				}
 			}
 		}
-		
-		return salesInvoice;
 	}
 
 	@Override

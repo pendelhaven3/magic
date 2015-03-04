@@ -17,9 +17,11 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Promo;
+import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PromoRedemptionReward;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
+import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.service.impl.PromoService;
 
 @Component
@@ -32,6 +34,7 @@ public class AvailedPromoRewardsDialog extends MagicDialog {
 	private static final int QUANTITY_COLUMN_INDEX = 4;
 	
 	@Autowired private PromoService promoService;
+	@Autowired private PromoRedemptionService promoRedemptionService;
 	
 	private MagicListTable table;
 	private AvailedPromoRewardsTableModel tableModel;
@@ -113,11 +116,10 @@ public class AvailedPromoRewardsDialog extends MagicDialog {
 	}
 	
 	private List<PromoRedemptionReward> getAvailedPromoRewards(SalesInvoice salesInvoice) {
+		List<PromoRedemption> promoRedemptions = promoRedemptionService.findAllBySalesInvoice(salesInvoice);
 		List<PromoRedemptionReward> rewards = new ArrayList<>();
-		for (Promo promo : promoService.getAllActivePromos()) {
-			if (promo.getPromoType().isType2()) {
-				rewards.addAll(promo.evaluate(salesInvoice));
-			}
+		for (PromoRedemption promoRedemption : promoRedemptions) {
+			rewards.addAll(promoRedemption.getRewards());
 		}
 		return rewards;
 	}

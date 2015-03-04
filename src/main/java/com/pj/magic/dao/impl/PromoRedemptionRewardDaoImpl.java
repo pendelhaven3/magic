@@ -17,7 +17,7 @@ public class PromoRedemptionRewardDaoImpl extends MagicDao implements PromoRedem
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PROMO_REDEMPTION_ID, PRODUCT_ID, UNIT, QUANTITY,"
-			+ " b.CODE as PRODUCT_CODE"
+			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
 			+ " from PROMO_REDEMPTION_REWARD a"
 			+ " join PRODUCT b"
 			+ "   on b.ID = a.PRODUCT_ID";
@@ -42,8 +42,12 @@ public class PromoRedemptionRewardDaoImpl extends MagicDao implements PromoRedem
 	
 	@Override
 	public List<PromoRedemptionReward> findAllByPromoRedemption(PromoRedemption promoRedemption) {
-		return getJdbcTemplate().query(FIND_ALL_BY_PROMO_REDEMPTION_SQL, 
+		List<PromoRedemptionReward> rewards = getJdbcTemplate().query(FIND_ALL_BY_PROMO_REDEMPTION_SQL, 
 				rewardRowMapper, promoRedemption.getId());
+		for (PromoRedemptionReward reward : rewards) {
+			reward.setParent(promoRedemption);
+		}
+		return rewards;
 	}
 
 	private class PromoRedemptionRewardRowMapper implements RowMapper<PromoRedemptionReward> {
@@ -57,6 +61,7 @@ public class PromoRedemptionRewardDaoImpl extends MagicDao implements PromoRedem
 			Product product = new Product();
 			product.setId(rs.getLong("PRODUCT_ID"));
 			product.setCode(rs.getString("PRODUCT_CODE"));
+			product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
 			reward.setProduct(product);
 			
 			reward.setUnit(rs.getString("UNIT"));
