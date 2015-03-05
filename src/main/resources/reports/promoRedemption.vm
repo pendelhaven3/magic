@@ -5,7 +5,7 @@ Customer   : $promoRedemption.customer.name
    ---------- ------ ------------
 ##   11/28/2014 366237   146,906.86
 #foreach($redemptionSalesInvoice in $promoRedemption.salesInvoices)
-   $report.field($redemptionSalesInvoice.salesInvoice.transactionDate) $report.field($redemptionSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($redemptionSalesInvoice.salesInvoice.getSalesByManufacturer($promoRedemption.promo.manufacturer), 12, "right")
+   $report.field($redemptionSalesInvoice.salesInvoice.transactionDate) $report.field($redemptionSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($redemptionSalesInvoice.salesInvoice.getSalesByManufacturer($promoRedemption.promo.promoType1Rule.manufacturer), 12, "right")
 #end
                      ------------
            TOTALS => $report.field($promoRedemption.totalAmount, 12, "right")
