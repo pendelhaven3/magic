@@ -470,7 +470,7 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 	
 	private class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
 
-		private Product product;
+		private Product product = new Product();
 		
 		public void setProduct(Product product) {
 			this.product = product;

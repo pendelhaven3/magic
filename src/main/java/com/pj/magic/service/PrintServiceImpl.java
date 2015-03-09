@@ -364,7 +364,7 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public List<String> generateReportAsString(InventoryCheck inventoryCheck, InventoryCheckReportType reportType) {
-		List<InventoryCheckSummaryItem> items = null;
+		List<InventoryCheckSummaryItem> items = Collections.emptyList();
 		String title = null;
 		BigDecimal totalValue = null;
 		

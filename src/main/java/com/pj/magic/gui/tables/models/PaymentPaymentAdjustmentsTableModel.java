@@ -92,7 +92,7 @@ public class PaymentPaymentAdjustmentsTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case PaymentPaymentAdjustmentsTable.ADJUSTMENT_TYPE_COLUMN_INDEX:
 			AdjustmentType adjustmentType = adjustmentTypeService.findAdjustmentTypeByCode(val);
-			if (val != null && val.equals(rowItem.getAdjustmentType())) {
+			if (val != null && val.equals(rowItem.getAdjustmentType().getCode())) {
 				fireTableCellUpdated(rowIndex, columnIndex);
 				return;
 			}

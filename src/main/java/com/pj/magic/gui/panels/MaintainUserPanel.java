@@ -115,7 +115,7 @@ public class MaintainUserPanel extends StandardMagicPanel {
 		}
 		
 		User existing = userService.findUserByUsername(usernameField.getText());
-		if (existing != null && existing.getId() != user.getId()) {
+		if (existing != null && existing.getId().equals(user.getId())) {
 			showErrorMessage("Username is already taken by another user");
 			usernameField.requestFocusInWindow();
 			return false;

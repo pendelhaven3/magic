@@ -90,7 +90,7 @@ public class PurchasePaymentPaymentAdjustmentsTableModel extends AbstractTableMo
 		switch (columnIndex) {
 		case PurchasePaymentPaymentAdjustmentsTable.ADJUSTMENT_TYPE_COLUMN_INDEX:
 			PurchasePaymentAdjustmentType adjustmentType = purchasePaymentAdjustmentTypeService.findAdjustmentTypeByCode(val);
-			if (val != null && val.equals(rowItem.getAdjustmentType())) {
+			if (val != null && val.equals(rowItem.getAdjustmentType().getCode())) {
 				fireTableCellUpdated(rowIndex, columnIndex);
 				return;
 			}

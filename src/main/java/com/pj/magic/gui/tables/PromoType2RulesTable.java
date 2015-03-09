@@ -317,6 +317,7 @@ public class PromoType2RulesTable extends MagicTable {
 		
 		public ProductCodeCellEditor(JTextField textField, boolean promo) {
 			super(textField);
+			fieldName = (promo) ? "Promo" : "Free";
 		}
 		
 		@Override
