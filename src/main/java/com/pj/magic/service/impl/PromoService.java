@@ -2,6 +2,7 @@ package com.pj.magic.service.impl;
 
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType2Rule;
+import com.pj.magic.model.PromoType3RulePromoProduct;
 
 import java.util.List;
 
@@ -18,5 +19,9 @@ public interface PromoService {
 	void delete(PromoType2Rule rule);
 
 	List<Promo> getAllActivePromos();
+
+	void save(PromoType3RulePromoProduct promoProduct);
+
+	void delete(PromoType3RulePromoProduct promoProduct);
 	
 }

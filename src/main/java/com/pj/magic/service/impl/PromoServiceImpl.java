@@ -12,8 +12,12 @@ import com.pj.magic.dao.PromoDao;
 import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.dao.PromoType1RuleDao;
 import com.pj.magic.dao.PromoType2RuleDao;
+import com.pj.magic.dao.PromoType3RuleDao;
+import com.pj.magic.dao.PromoType3RulePromoProductDao;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType2Rule;
+import com.pj.magic.model.PromoType3Rule;
+import com.pj.magic.model.PromoType3RulePromoProduct;
 
 @Service
 public class PromoServiceImpl implements PromoService {
@@ -21,8 +25,10 @@ public class PromoServiceImpl implements PromoService {
 	@Autowired private PromoDao promoDao;
 	@Autowired private PromoType1RuleDao promoType1RuleDao;
 	@Autowired private PromoType2RuleDao promoType2RuleDao;
+	@Autowired private PromoType3RuleDao promoType3RuleDao;
 	@Autowired private ProductDao productDao;
 	@Autowired private PromoRedemptionDao promoRedemptionDao;
+	@Autowired private PromoType3RulePromoProductDao promoType3RulePromoProductDao;
 	
 	@Override
 	public List<Promo> getAllPromos() {
@@ -39,6 +45,8 @@ public class PromoServiceImpl implements PromoService {
 		} else {
 			if (promo.getPromoType().isType1()) {
 				promoType1RuleDao.save(promo.getPromoType1Rule());
+			} else if (promo.getPromoType().isType3()) {
+				promoType3RuleDao.save(promo.getPromoType3Rule());
 			}
 		}
 	}
@@ -63,6 +71,13 @@ public class PromoServiceImpl implements PromoService {
 				rule.setFreeProduct(productDao.get(rule.getFreeProduct().getId()));
 			}
 			break;
+		case 3:
+			PromoType3Rule rule = promoType3RuleDao.findByPromo(promo);
+			if (rule != null) {
+				rule.setPromoProducts(promoType3RulePromoProductDao.findAllByRule(rule));
+			}
+			promo.setPromoType3Rule(rule);
+			break;
 		}
 	}
 
@@ -85,6 +100,18 @@ public class PromoServiceImpl implements PromoService {
 			loadPromoDetails(promo);
 		}
 		return promos;
+	}
+
+	@Transactional
+	@Override
+	public void save(PromoType3RulePromoProduct promoProduct) {
+		promoType3RulePromoProductDao.save(promoProduct);
+	}
+
+	@Transactional
+	@Override
+	public void delete(PromoType3RulePromoProduct promoProduct) {
+		promoType3RulePromoProductDao.delete(promoProduct);		
 	}
 
 }

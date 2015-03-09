@@ -1,8 +1,13 @@
 package com.pj.magic.util;
 
+import org.apache.commons.lang.StringUtils;
+
 public class HtmlUtil {
 
 	public static final String html(String text) {
+		if (StringUtils.isEmpty(text)) {
+			return StringUtils.EMPTY;
+		}
 		String body = text.replaceAll("\n", "<br>");
 		return new StringBuilder().append("<html>").append(body).append("</html>").toString();
 	}

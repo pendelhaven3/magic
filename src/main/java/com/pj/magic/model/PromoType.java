@@ -12,8 +12,9 @@ public class PromoType {
 	
 	static {
 		promoTypes = new ArrayList<>();
-		promoTypes.add(new PromoType(1L, "Buy X amount of Manufacturer products"));
-		promoTypes.add(new PromoType(2L, "Buy X quantity of product"));
+		promoTypes.add(new PromoType(1L, "Buy X amount of Manufacturer products, get Y product free"));
+		promoTypes.add(new PromoType(2L, "Buy X quantity of product, get Y product free"));
+		promoTypes.add(new PromoType(3L, "Buy X amount of selected products, get Y product free"));
 	}
 	
 	public static List<PromoType> getPromoTypes() {
@@ -80,6 +81,10 @@ public class PromoType {
 	
 	public boolean isType2() {
 		return id.longValue() == 2L;
+	}
+	
+	public boolean isType3() {
+		return id.longValue() == 3L;
 	}
 	
 }

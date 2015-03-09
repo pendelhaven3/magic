@@ -15,7 +15,8 @@ public class Promo {
 	private boolean active;
 	
 	private PromoType1Rule promoType1Rule;
-	private List<PromoType2Rule> promoType2Rules = new ArrayList<>();
+	private List<PromoType2Rule> promoType2Rules;
+	private PromoType3Rule promoType3Rule;
 	
 	public Promo() {
 		// default constructor
@@ -139,6 +140,14 @@ public class Promo {
 
 	public void setPromoType1Rule(PromoType1Rule promoType1Rule) {
 		this.promoType1Rule = promoType1Rule;
+	}
+
+	public PromoType3Rule getPromoType3Rule() {
+		return promoType3Rule;
+	}
+
+	public void setPromoType3Rule(PromoType3Rule promoType3Rule) {
+		this.promoType3Rule = promoType3Rule;
 	}
 
 }
