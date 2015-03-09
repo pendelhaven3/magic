@@ -218,7 +218,6 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		statusLabel.setPreferredSize(new Dimension(100, 20));
 		mainPanel.add(statusLabel, c);
 		
 		currentRow++;
