@@ -67,7 +67,7 @@ public class CashFlowReportItem {
 		referenceNumber = paymentAdjustment.getPaymentAdjustmentNumber();
 		customer = paymentAdjustment.getCustomer();
 		transactionDate = paymentAdjustment.getPostDate();
-		amount = paymentAdjustment.getAmount();
+		amount = paymentAdjustment.getAmount().negate();
 		paymentTerminal = paymentAdjustment.getPaymentTerminal();
 	}
 
