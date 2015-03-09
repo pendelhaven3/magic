@@ -15,6 +15,7 @@ import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
@@ -85,6 +86,8 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 	private JComboBox<PaymentTerminal> paymentTerminalComboBox;
 	private JComboBox<String> timePeriodComboBox;
 	private JButton searchButton;
+	private JLabel totalItemsLabel;
+	private JLabel totalAmountLabel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -119,11 +122,7 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		List<CashFlowReportItem> items = doSearchCashFlowReportItems();
-		tableModel.setItems(items);
-		if (items.isEmpty()) {
-			showErrorMessage("No records found");
-		}
+		updateFields(createCashFlowReport());
 	}
 
 	private List<CashFlowReportItem> doSearchCashFlowReportItems() {
@@ -302,11 +301,16 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 		paymentDateModel.setValue(Calendar.getInstance());
 		paymentTerminalComboBox.setSelectedItem(null);
 		timePeriodComboBox.setSelectedIndex(0);
-		List<CashFlowReportItem> items = doSearchCashFlowReportItems();
-		tableModel.setItems(items);
-		if (!items.isEmpty()) {
+		updateFields(createCashFlowReport());
+	}
+
+	private void updateFields(CashFlowReport report) {
+		tableModel.setItems(report.getItems());
+		if (!report.getItems().isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
+		totalItemsLabel.setText(String.valueOf(report.getItems().size()));
+		totalAmountLabel.setText(FormatterUtil.formatAmount(report.getTotalAmount()));
 	}
 
 	@Override
@@ -399,8 +403,57 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 		c.gridwidth = 5;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setPreferredSize(new Dimension(600, 400));
+		scrollPane.setPreferredSize(new Dimension(600, 200));
 		mainPanel.add(scrollPane, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		mainPanel.add(createTotalsPanel(), c);
+	}
+
+	private JPanel createTotalsPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalItemsLabel = ComponentUtil.createRightLabel(100);
+		panel.add(totalItemsLabel, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		panel.add(Box.createHorizontalStrut(10), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAmountLabel = ComponentUtil.createRightLabel(100);
+		panel.add(totalAmountLabel, c);
+		
+		return panel;
 	}
 
 	@Override
