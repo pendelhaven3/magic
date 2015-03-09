@@ -72,4 +72,8 @@ public class PromoType1Rule {
 		return id == null;
 	}
 
+	public BigDecimal getQualifyingAmount(SalesInvoice salesInvoice) {
+		return null;
+	}
+
 }

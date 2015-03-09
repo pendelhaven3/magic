@@ -147,6 +147,10 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 
 	private void postAvailedPromoRewards(SalesInvoice salesInvoice) {
 		for (Promo promo : promoService.getAllActivePromos()) {
+			if (!promo.getPromoType().isType2()) {
+				continue;
+			}
+			
 			List<PromoRedemptionReward> rewards = promo.evaluate(salesInvoice);
 			if (!rewards.isEmpty()) {
 				PromoRedemption promoRedemption = new PromoRedemption();

@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +46,7 @@ import com.pj.magic.model.PromoRedemptionReward;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.PromoType2Rule;
+import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PromoRedemptionService;
@@ -121,7 +123,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			public void tableChanged(TableModelEvent e) {
 				if (!promoRedemption.isPosted()) {
 					totalAmountLabel.setText(FormatterUtil.formatAmount(promoRedemption.getTotalAmount()));
-					prizesTableModel.fireTableRowsUpdated(0, 0);
+					prizesTableModel.fireTableDataChanged();
 				}
 			}
 			
@@ -622,12 +624,18 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			case SALES_INVOICE_NUMBER_COLUMN_INDEX:
 				return salesInvoice.getSalesInvoiceNumber();
 			case AMOUNT_COLUMN_INDEX:
-				if (promoRedemption.getPromo().getPromoType().isType1()) {
+				switch (promoRedemption.getPromo().getPromoType()) {
+				case PROMO_TYPE_1:
 					PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
 					return FormatterUtil.formatAmount(salesInvoice.getSalesByManufacturer(
 							rule.getManufacturer()));
+				case PROMO_TYPE_3:
+					BigDecimal amount = 
+						promoRedemption.getPromo().getPromoType3Rule().getQualifyingAmount(salesInvoice);
+					return FormatterUtil.formatAmount(amount);
+				default:
+					return null;
 				}
-				return null;
 			default:
 				return null;
 			}
@@ -669,6 +677,8 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 				return 1;
 			case PROMO_TYPE_2:
 				return promo.getPromoType2Rules().size();
+			case PROMO_TYPE_3:
+				return 1;
 			default:
 				return 0;
 			}
@@ -687,15 +697,39 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Promo promo = promoRedemption.getPromo();
-			if (promo.getPromoType().isType1()) {
+			switch (promo.getPromoType()) {
+			case PROMO_TYPE_1:
 				return getValueAtForPromoType1(rowIndex, columnIndex);
-			} else if (promo.getPromoType().isType2()) {
+			case PROMO_TYPE_2:
 				return getValueAtForPromoType2(rowIndex, columnIndex);
-			} else {
+			case PROMO_TYPE_3:
+				return getValueAtForPromoType3(rowIndex, columnIndex);
+			default:
 				return null;
 			}
 		}
 		
+		public Object getValueAtForPromoType3(int rowIndex, int columnIndex) {
+			Promo promo = promoRedemption.getPromo();
+			PromoType3Rule rule = promo.getPromoType3Rule();
+			
+			switch (columnIndex) {
+			case ITEM_DESCRIPTION_COLUMN_INDEX:
+				return rule.getFreeProduct().getDescription();
+			case UNIT_COLUMN_INDEX:
+				return rule.getFreeUnit();
+			case QUANTITY_COLUMN_INDEX:
+				PromoRedemptionReward reward = promoRedemption.getFreeQuantity(rule);
+				if (reward != null) {
+					return reward.getQuantity();
+				} else {
+					return 0;
+				}
+			default:
+				return null;
+			}
+		}
+
 		public Object getValueAtForPromoType2(int rowIndex, int columnIndex) {
 			Promo promo = promoRedemption.getPromo();
 			PromoType2Rule rule = promo.getPromoType2Rules().get(rowIndex);

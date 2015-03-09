@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.pj.magic.Constants;
 
 public class PromoRedemption {
@@ -98,13 +100,25 @@ public class PromoRedemption {
 
 	public BigDecimal getTotalAmount() {
 		BigDecimal total = Constants.ZERO;
-		if (promo.getPromoType().isType1()) {
+		
+		switch (promo.getPromoType()) {
+		case PROMO_TYPE_1:
 			PromoType1Rule rule = promo.getPromoType1Rule();
 			for (PromoRedemptionSalesInvoice salesInvoice : salesInvoices) {
 				total = total.add(salesInvoice.getSalesInvoice().getSalesByManufacturer(
 						rule.getManufacturer()));
 			}
+			break;
+		case PROMO_TYPE_2:
+			break;
+		case PROMO_TYPE_3:
+			PromoType3Rule type3Rule = promo.getPromoType3Rule();
+			for (PromoRedemptionSalesInvoice salesInvoice : salesInvoices) {
+				total = total.add(type3Rule.getQualifyingAmount(salesInvoice.getSalesInvoice()));
+			}
+			break;
 		}
+		
 		return total;
 	}
 
@@ -159,6 +173,19 @@ public class PromoRedemption {
 			}
 		}
 		return null;
+	}
+
+	public PromoRedemptionReward getFreeQuantity(PromoType3Rule rule) {
+		List<SalesInvoice> salesInvoices = new ArrayList<>(Collections2.transform(this.salesInvoices, 
+				new Function<PromoRedemptionSalesInvoice, SalesInvoice>() {
+
+					@Override
+					public SalesInvoice apply(PromoRedemptionSalesInvoice input) {
+						return input.getSalesInvoice();
+					}
+				}));
+		
+		return rule.evaluate(salesInvoices);
 	}
 
 }

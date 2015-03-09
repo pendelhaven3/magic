@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pj.magic.Constants;
+
 public class PromoType3Rule {
 
 	private Long id;
@@ -89,6 +91,35 @@ public class PromoType3Rule {
 			}
 		}
 		return false;
+	}
+
+	public PromoRedemptionReward evaluate(List<SalesInvoice> salesInvoices) {
+		BigDecimal total = Constants.ZERO;
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			total = total.add(getQualifyingAmount(salesInvoice));
+		}
+		
+		if (total.compareTo(targetAmount) == -1) {
+			return null;
+		} else {
+			PromoRedemptionReward reward = new PromoRedemptionReward();
+			reward.setProduct(freeProduct);
+			reward.setUnit(freeUnit);
+			reward.setQuantity(freeQuantity * total.divideToIntegralValue(targetAmount).intValue());
+			return reward;
+		}
+	}
+
+	public BigDecimal getQualifyingAmount(SalesInvoice salesInvoice) {
+		BigDecimal total = Constants.ZERO;
+		for (PromoType3RulePromoProduct promoProduct : promoProducts) {
+			for (SalesInvoiceItem item : salesInvoice.getItems()) {
+				if (item.getProduct().getId().equals(promoProduct.getProduct().getId())) {
+					total = total.add(item.getAmount());
+				}
+			}
+		}
+		return total;
 	}
 
 }
