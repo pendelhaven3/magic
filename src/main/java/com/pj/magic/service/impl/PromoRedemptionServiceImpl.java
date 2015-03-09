@@ -2,6 +2,7 @@ package com.pj.magic.service.impl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PromoDao;
 import com.pj.magic.dao.PromoRedemptionDao;
@@ -27,6 +30,7 @@ import com.pj.magic.model.PromoRedemptionReward;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.PromoType2Rule;
+import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.LoginService;
@@ -120,10 +124,48 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		updated.setPostedBy(loginService.getLoggedInUser());
 		promoRedemptionDao.save(updated);
 		
-		if (updated.getPromo().getPromoType().isType1()) {
+		switch (updated.getPromo().getPromoType()) {
+		case PROMO_TYPE_1:
 			postForPromoType1(updated);
-		} else if (updated.getPromo().getPromoType().isType2()) {
+			break;
+		case PROMO_TYPE_2:
 			postForPromoType2(updated);
+			break;
+		case PROMO_TYPE_3:
+			postForPromoType3(updated);
+			break;
+		}
+	}
+
+	private void postForPromoType3(PromoRedemption promoRedemption) {
+		PromoType3Rule rule = promoRedemption.getPromo().getPromoType3Rule();
+		List<SalesInvoice> salesInvoices = new ArrayList<>(Collections2.transform(
+				promoRedemption.getSalesInvoices(), 
+				new Function<PromoRedemptionSalesInvoice, SalesInvoice>() {
+
+					@Override
+					public SalesInvoice apply(PromoRedemptionSalesInvoice input) {
+						return input.getSalesInvoice();
+					}
+				}));
+		
+		PromoRedemptionReward reward = rule.evaluate(salesInvoices);
+		if (reward != null) {
+			int freeQuantity = reward.getQuantity().intValue();
+			Product product = productDao.get(rule.getFreeProduct().getId());
+			
+			if (product.getUnitQuantity(rule.getFreeUnit()) < freeQuantity) {
+				throw new NotEnoughStocksException();
+			}
+			
+			product.addUnitQuantity(rule.getFreeUnit(), -1 * freeQuantity);
+			productDao.updateAvailableQuantities(product);
+			
+			reward.setParent(promoRedemption);
+			reward.setProduct(rule.getFreeProduct());
+			reward.setUnit(rule.getFreeUnit());
+			reward.setQuantity(freeQuantity);
+			promoRedemptionRewardDao.save(reward);
 		}
 	}
 

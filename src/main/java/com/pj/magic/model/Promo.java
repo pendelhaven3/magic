@@ -51,18 +51,21 @@ public class Promo {
 	}
 
 	public String getMechanicsDescription() {
-		if (promoType.isType1()) {
-			String mechanics = "For every P{0} worth of {1} products, get {2} {3} {4}";
+		String mechanics = null;
+		
+		switch (promoType) {
+		case PROMO_TYPE_1:
+			mechanics = "For every P{0} worth of {1} products, get {2} {3} {4}";
 			return MessageFormat.format(mechanics,
 					FormatterUtil.formatAmount(promoType1Rule.getTargetAmount()),
 					promoType1Rule.getManufacturer().getName(),
 					promoType1Rule.getQuantity().toString(),
 					promoType1Rule.getUnit(),
 					promoType1Rule.getProduct().getDescription());
-		} else if (promoType.isType2()) {
+		case PROMO_TYPE_2:
 			StringBuilder sb = new StringBuilder();
 			for (PromoType2Rule rule : promoType2Rules) {
-				String mechanics = "Buy {0} {1} {2}, get {3} {4} {5} free";
+				mechanics = "Buy {0} {1} {2}, get {3} {4} {5} free";
 				if (sb.length() > 0) {
 					sb.append("\n");
 				}
@@ -75,7 +78,14 @@ public class Promo {
 						rule.getFreeProduct().getDescription()));
 			}
 			return sb.toString();
-		} else {
+		case PROMO_TYPE_3:
+			mechanics = "Buy {0} worth of participating products, get {1} {2} {3} free";
+			return MessageFormat.format(mechanics,
+					FormatterUtil.formatAmount(promoType3Rule.getTargetAmount()),
+					promoType3Rule.getFreeQuantity().toString(),
+					promoType3Rule.getFreeUnit(),
+					promoType3Rule.getFreeProduct().getDescription());
+		default:
 			return null;
 		}
 	}
