@@ -664,11 +664,12 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			}
 			
 			Promo promo = promoRedemption.getPromo();
-			if (promo.getPromoType().isType1()) {
+			switch (promo.getPromoType()) {
+			case PROMO_TYPE_1:
 				return 1;
-			} else if (promo.getPromoType().isType2()) {
+			case PROMO_TYPE_2:
 				return promo.getPromoType2Rules().size();
-			} else {
+			default:
 				return 0;
 			}
 		}
