@@ -9,6 +9,8 @@ import com.pj.magic.Constants;
 
 public class FormatterUtil {
 
+	private static final String DATE_IN_FILENAME_FORMAT = "MMM-dd-yyyy";
+	
 	public static final String formatDate(Date date) {
 		return new SimpleDateFormat(Constants.DATE_FORMAT).format(date);
 	}
@@ -27,6 +29,10 @@ public class FormatterUtil {
 	
 	public static final String formatInteger(int number) {
 		return new DecimalFormat(Constants.INTEGER_FORMAT).format(number);
+	}
+	
+	public static final String formatDateInFilename(Date date) {
+		return new SimpleDateFormat(DATE_IN_FILENAME_FORMAT).format(date);
 	}
 	
 }

@@ -6,12 +6,17 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,6 +27,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +35,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
+import com.pj.magic.gui.component.ExcelFileFilter;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -40,11 +47,14 @@ import com.pj.magic.gui.tables.models.ProductPricesTableModel;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.search.ProductSearchCriteria;
+import com.pj.magic.service.ExcelService;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FileUtil;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class MaintainPricingSchemePanel extends StandardMagicPanel {
@@ -60,6 +70,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	@Autowired private SearchProductsDialog searchProductsDialog;
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private ExcelService excelService;
 	
 	private PricingScheme pricingScheme;
 	private MagicTextField nameField;
@@ -70,6 +81,8 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	private JButton showAllButton;
 	private JButton printButton;
 	private JButton printPreviewButton;
+	private JButton toExcelButton;
+	private JFileChooser excelFileChooser;
 	
 	@Override
 	protected void initializeComponents() {
@@ -86,6 +99,10 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		});
 		
 		pricesTable = new MagicListTable(pricesTableModel);
+		
+		excelFileChooser = new JFileChooser();
+		excelFileChooser.setCurrentDirectory(new File(FileUtil.getDesktopFolderPath()));
+		excelFileChooser.setFileFilter(ExcelFileFilter.getInstance());
 	}
 
 	@Override
@@ -355,6 +372,46 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+		
+		toExcelButton = new MagicToolBarButton("excel", "Generate Excel spreadsheet of Selling Price & Cost");
+		toExcelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				generateExcelSpreadsheetOfSellingPriceAndCost();
+			}
+		});
+		toolBar.add(toExcelButton);
+	}
+
+	private void generateExcelSpreadsheetOfSellingPriceAndCost() {
+		excelFileChooser.setSelectedFile(new File(generateDefaultSpreadsheetName()));
+		
+		int returnVal = excelFileChooser.showSaveDialog(this);
+		if (returnVal != JFileChooser.APPROVE_OPTION) {
+			return;
+		}
+		
+		PricingScheme pricingScheme = new PricingScheme();
+		pricingScheme.setProducts(pricesTableModel.getProducts());
+		
+		try (
+			XSSFWorkbook workbook = excelService.generateSpreadsheet(pricingScheme);
+			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
+		) {
+			workbook.write(out);
+			showMessage("Excel spreadsheet generated successfully");
+		} catch (IOException e) {
+			showErrorMessage("Unexpected error during excel generation");
+		}
+	}
+
+	private String generateDefaultSpreadsheetName() {
+		return new StringBuilder()
+			.append("Selling Price And Cost (")
+			.append(FormatterUtil.formatDateInFilename(new Date()))
+			.append(").xlsx")
+			.toString();
 	}
 
 	private void printPreviewPricingScheme() {

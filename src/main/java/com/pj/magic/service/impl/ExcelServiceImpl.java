@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -12,10 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.SupplierDao;
+import com.pj.magic.model.PricingScheme;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
+import com.pj.magic.model.Unit;
 import com.pj.magic.model.util.CellStyleBuilder;
 import com.pj.magic.service.ExcelService;
 import com.pj.magic.util.FormatterUtil;
@@ -292,6 +296,152 @@ public class ExcelServiceImpl implements ExcelService {
 		sheet.autoSizeColumn(5);
 		sheet.autoSizeColumn(7);
 		sheet.autoSizeColumn(8);
+		
+		return workbook;
+	}
+
+	@Override
+	public XSSFWorkbook generateSpreadsheet(PricingScheme pricingScheme) throws IOException {
+		XSSFWorkbook workbook = new XSSFWorkbook(
+					getClass().getResourceAsStream("/excel/sellingPriceAndCost.xlsx"));
+		Sheet sheet = workbook.getSheetAt(0);
+		
+		CellStyle amountFormat = CellStyleBuilder.createStyle(workbook).setAmountFormat(true).build();
+		CellStyle amountFormatWithRightBorder = 
+				CellStyleBuilder.createStyle(workbook).setAmountFormat(true)
+				.setBorderRight(CellStyle.BORDER_THIN).build();
+		CellStyle rightBorder = CellStyleBuilder.createStyle(workbook)
+				.setBorderRight(CellStyle.BORDER_THIN).build();
+		
+		int currentRow = 2;
+		for (Product product : pricingScheme.getProducts()) {
+			Row row = sheet.createRow(currentRow);
+			
+			row.createCell(0).setCellValue(product.getCode());
+			
+			Cell cell = row.createCell(1);
+			cell.setCellValue(product.getDescription());
+			cell.setCellStyle(rightBorder);
+			
+			if (product.hasActiveUnit(Unit.CASE)) {
+				cell = row.createCell(2);
+				cell.setCellValue(product.getUnitPrice(Unit.CASE).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(7);
+				cell.setCellValue(product.getFinalCost(Unit.CASE).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(12);
+				cell.setCellValue(product.getFlatProfit(Unit.CASE).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(17);
+				cell.setCellValue(product.getPercentProfit(Unit.CASE).doubleValue());
+				cell.setCellStyle(amountFormat);
+			}
+			
+			if (product.hasActiveUnit(Unit.TIE)) {
+				cell = row.createCell(3);
+				cell.setCellValue(product.getUnitPrice(Unit.TIE).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(8);
+				cell.setCellValue(product.getFinalCost(Unit.TIE).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(13);
+				cell.setCellValue(product.getFlatProfit(Unit.TIE).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(18);
+				cell.setCellValue(product.getPercentProfit(Unit.TIE).doubleValue());
+				cell.setCellStyle(amountFormat);
+			}
+			
+			if (product.hasActiveUnit(Unit.CARTON)) {
+				cell = row.createCell(4);
+				cell.setCellValue(product.getUnitPrice(Unit.CARTON).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(9);
+				cell.setCellValue(product.getFinalCost(Unit.CARTON).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(14);
+				cell.setCellValue(product.getFlatProfit(Unit.CARTON).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(19);
+				cell.setCellValue(product.getPercentProfit(Unit.CARTON).doubleValue());
+				cell.setCellStyle(amountFormat);
+			}
+			
+			if (product.hasActiveUnit(Unit.DOZEN)) {
+				cell = row.createCell(5);
+				cell.setCellValue(product.getUnitPrice(Unit.DOZEN).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(10);
+				cell.setCellValue(product.getFinalCost(Unit.DOZEN).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(15);
+				cell.setCellValue(product.getFlatProfit(Unit.DOZEN).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(20);
+				cell.setCellValue(product.getPercentProfit(Unit.DOZEN).doubleValue());
+				cell.setCellStyle(amountFormat);
+			}
+		
+			if (product.hasActiveUnit(Unit.PIECES)) {
+				cell = row.createCell(6);
+				cell.setCellValue(product.getUnitPrice(Unit.PIECES).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(11);
+				cell.setCellValue(product.getFinalCost(Unit.PIECES).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(16);
+				cell.setCellValue(product.getFlatProfit(Unit.PIECES).doubleValue());
+				cell.setCellStyle(amountFormat);
+				
+				cell = row.createCell(21);
+				cell.setCellValue(product.getPercentProfit(Unit.PIECES).doubleValue());
+				cell.setCellStyle(amountFormat);
+			}
+			
+			cell = row.getCell(6);
+			if (cell == null) {
+				cell = row.createCell(6);
+			}
+			cell.setCellStyle(amountFormatWithRightBorder);
+			
+			cell = row.getCell(11);
+			if (cell == null) {
+				cell = row.createCell(11);
+			}
+			cell.setCellStyle(amountFormatWithRightBorder);
+			
+			cell = row.getCell(16);
+			if (cell == null) {
+				cell = row.createCell(16);
+			}
+			cell.setCellStyle(amountFormatWithRightBorder);
+			
+			cell = row.getCell(21);
+			if (cell == null) {
+				cell = row.createCell(21);
+			}
+			cell.setCellStyle(amountFormatWithRightBorder);
+			
+			currentRow++;
+		}
+		
+		sheet.autoSizeColumn(0);
+		sheet.autoSizeColumn(1);
 		
 		return workbook;
 	}
