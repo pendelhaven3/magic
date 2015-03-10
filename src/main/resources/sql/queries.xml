@@ -239,19 +239,20 @@ from (
 	where b.PRODUCT_ID = :product
 	and c.POST_IND = 'Y'
 	union all
-	select a.POST_DT, a.PROMO_REDEMPTION_NO as TRANSACTION_NO,
+	select b.POST_DT, b.PROMO_REDEMPTION_NO as TRANSACTION_NO,
 		d.NAME as CUSTOMER_SUPPLIER_NAME,
-		'PROMO REDEMPTION' as TRANSACTION_TYPE, 'PROMO REDEMPTION' as TRANSACTION_TYPE_KEY, c.UNIT, a.PRIZE_QUANTITY as QUANTITY,
+		'PROMO REDEMPTION' as TRANSACTION_TYPE, 'PROMO REDEMPTION' as TRANSACTION_TYPE_KEY, a.UNIT, a.QUANTITY,
 		null as UNIT_COST_OR_PRICE, null as REFERENCE_NO
-	from PROMO_REDEMPTION a
-	join PROMO b
-		on b.ID = a.PROMO_ID
-	join PROMO_TYPE_1_RULE c
-		on c.PROMO_ID = b.ID
+	from PROMO_REDEMPTION_REWARD a
+	join PROMO_REDEMPTION b
+		on b.ID = a.PROMO_REDEMPTION_ID
+	join PROMO c
+		on c.ID = b.PROMO_ID
 	join CUSTOMER d
-		on d.ID = a.CUSTOMER_ID
-	where a.POST_IND = 'Y'
-	and c.PRODUCT_ID = :product
+		on d.ID = b.CUSTOMER_ID
+	where b.POST_IND = 'Y'
+	and a.PRODUCT_ID = :product
+	and c.PROMO_TYPE_ID in (1, 3)
 ) m
 	</entry>
 </root>
