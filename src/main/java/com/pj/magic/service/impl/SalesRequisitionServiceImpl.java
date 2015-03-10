@@ -161,7 +161,6 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 				promoRedemption.setPosted(true);
 				promoRedemption.setPostDate(new Date());
 				promoRedemption.setPostedBy(loginService.getLoggedInUser());
-				promoRedemption.setPrizeQuantity(0); // TODO: remove this
 				promoRedemptionDao.save(promoRedemption);
 				
 				PromoRedemptionSalesInvoice promoRedemptionSalesInvoice = new PromoRedemptionSalesInvoice();

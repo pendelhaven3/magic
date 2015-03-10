@@ -25,7 +25,7 @@ import com.pj.magic.model.User;
 public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PROMO_ID, PROMO_REDEMPTION_NO, CUSTOMER_ID, PRIZE_QUANTITY,"
+			"select a.ID, PROMO_ID, PROMO_REDEMPTION_NO, CUSTOMER_ID,"
 			+ " POST_IND, POST_DT, POST_BY,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
@@ -85,13 +85,12 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 	}
 	
 	private static final String UPDATE_SQL = "update PROMO_REDEMPTION"
-			+ " set CUSTOMER_ID = ?, PRIZE_QUANTITY = ?, POST_IND = ?, POST_DT = ?,"
+			+ " set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?,"
 			+ " POST_BY = ? where ID = ?";
 	
 	private void update(PromoRedemption promoRedemption) {
 		getJdbcTemplate().update(UPDATE_SQL,
 				promoRedemption.getCustomer().getId(),
-				promoRedemption.getPrizeQuantity(),
 				promoRedemption.isPosted() ? "Y" : "N",
 				promoRedemption.isPosted() ? promoRedemption.getPostDate() : null,
 				promoRedemption.isPosted() ? promoRedemption.getPostedBy().getId() : null,
@@ -122,10 +121,6 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			promo.setId(rs.getLong("PROMO_ID"));
 			promo.setName(rs.getString("PROMO_NAME"));
 			promoRedemption.setPromo(promo);
-			
-			if (rs.getInt("PRIZE_QUANTITY") > 0) {
-				promoRedemption.setPrizeQuantity(rs.getInt("PRIZE_QUANTITY"));
-			}
 			
 			Customer customer = new Customer();
 			customer.setId(rs.getLong("CUSTOMER_ID"));

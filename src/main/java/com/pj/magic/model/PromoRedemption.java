@@ -18,9 +18,8 @@ public class PromoRedemption {
 	private boolean posted;
 	private Date postDate;
 	private User postedBy;
-	private List<PromoRedemptionSalesInvoice> salesInvoices = new ArrayList<>();
+	private List<PromoRedemptionSalesInvoice> redemptionSalesInvoices = new ArrayList<>();
 	private List<PromoRedemptionReward> rewards = new ArrayList<>();
-	private Integer prizeQuantity;
 
 	public PromoRedemption() {
 		// default constructor
@@ -86,14 +85,25 @@ public class PromoRedemption {
 		this.postedBy = postedBy;
 	}
 
-	public List<PromoRedemptionSalesInvoice> getSalesInvoices() {
-		return salesInvoices;
+	public List<PromoRedemptionSalesInvoice> getRedemptionSalesInvoices() {
+		return redemptionSalesInvoices;
 	}
 
-	public void setSalesInvoices(List<PromoRedemptionSalesInvoice> salesInvoices) {
-		this.salesInvoices = salesInvoices;
+	public void setRedemptionSalesInvoices(List<PromoRedemptionSalesInvoice> redemptionSalesInvoices) {
+		this.redemptionSalesInvoices = redemptionSalesInvoices;
 	}
 
+	public List<SalesInvoice> getSalesInvoices() {
+		return new ArrayList<>(Collections2.transform(redemptionSalesInvoices,
+				new Function<PromoRedemptionSalesInvoice, SalesInvoice>() {
+
+					@Override
+					public SalesInvoice apply(PromoRedemptionSalesInvoice input) {
+						return input.getSalesInvoice();
+					}
+				}));
+	}
+	
 	public String getStatus() {
 		return (posted) ? "Posted" : "New";
 	}
@@ -104,7 +114,7 @@ public class PromoRedemption {
 		switch (promo.getPromoType()) {
 		case PROMO_TYPE_1:
 			PromoType1Rule rule = promo.getPromoType1Rule();
-			for (PromoRedemptionSalesInvoice salesInvoice : salesInvoices) {
+			for (PromoRedemptionSalesInvoice salesInvoice : redemptionSalesInvoices) {
 				total = total.add(salesInvoice.getSalesInvoice().getSalesByManufacturer(
 						rule.getManufacturer()));
 			}
@@ -113,32 +123,13 @@ public class PromoRedemption {
 			break;
 		case PROMO_TYPE_3:
 			PromoType3Rule type3Rule = promo.getPromoType3Rule();
-			for (PromoRedemptionSalesInvoice salesInvoice : salesInvoices) {
+			for (PromoRedemptionSalesInvoice salesInvoice : redemptionSalesInvoices) {
 				total = total.add(type3Rule.getQualifyingAmount(salesInvoice.getSalesInvoice()));
 			}
 			break;
 		}
 		
 		return total;
-	}
-
-	// TODO: Remove PROMO_REDEMPTION.PRIZE_QUANTITY
-	public Integer getPrizeQuantity() {
-		if (promo.getPromoType().isType2()) {
-			return 0;
-		}
-		
-		if (posted) {
-			return prizeQuantity;
-		} else {
-			PromoType1Rule rule = promo.getPromoType1Rule();
-			return getTotalAmount().divideToIntegralValue(rule.getTargetAmount()).intValue()
-					* rule.getQuantity();
-		}
-	}
-
-	public void setPrizeQuantity(Integer prizeQuantity) {
-		this.prizeQuantity = prizeQuantity;
 	}
 
 	public int getFreeQuantity(PromoType2Rule rule) {
@@ -148,7 +139,7 @@ public class PromoRedemption {
 	
 	public int getTotalQuantityByProductAndUnit(Product product, String unit) {
 		int total = 0;
-		for (PromoRedemptionSalesInvoice salesInvoice : salesInvoices) {
+		for (PromoRedemptionSalesInvoice salesInvoice : redemptionSalesInvoices) {
 			SalesInvoiceItem item = salesInvoice.getSalesInvoice().findItemByProductAndUnit(product, unit);
 			if (item != null) {
 				total += item.getQuantity();
@@ -176,7 +167,7 @@ public class PromoRedemption {
 	}
 
 	public PromoRedemptionReward getFreeQuantity(PromoType3Rule rule) {
-		List<SalesInvoice> salesInvoices = new ArrayList<>(Collections2.transform(this.salesInvoices, 
+		List<SalesInvoice> salesInvoices = new ArrayList<>(Collections2.transform(this.redemptionSalesInvoices, 
 				new Function<PromoRedemptionSalesInvoice, SalesInvoice>() {
 
 					@Override
@@ -187,5 +178,5 @@ public class PromoRedemption {
 		
 		return rule.evaluate(salesInvoices);
 	}
-
+	
 }

@@ -407,7 +407,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 				PromoRedemptionSalesInvoice salesInvoice = 
 						salesInvoicesTableModel.getPromoRedemptionSalesInvoice(selectedRow);
 				salesInvoicesTable.clearSelection();
-				promoRedemption.getSalesInvoices().remove(salesInvoice);
+				promoRedemption.getRedemptionSalesInvoices().remove(salesInvoice);
 				salesInvoicesTableModel.removeItem(salesInvoice);
 				
 				if (!salesInvoicesTableModel.getSalesInvoices().isEmpty()) {
@@ -433,7 +433,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 				redemptionSalesInvoice.setParent(promoRedemption);
 				redemptionSalesInvoice.setSalesInvoice(salesInvoice);
 				promoRedemptionService.save(redemptionSalesInvoice);
-				promoRedemption.getSalesInvoices().add(redemptionSalesInvoice);
+				promoRedemption.getRedemptionSalesInvoices().add(redemptionSalesInvoice);
 			}
 			salesInvoicesTableModel.setPromoRedemption(promoRedemption);
 		}
@@ -580,7 +580,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		private List<PromoRedemptionSalesInvoice> salesInvoices = new ArrayList<>();
 		
 		public void setPromoRedemption(PromoRedemption promoRedemption) {
-			this.salesInvoices = promoRedemption.getSalesInvoices();
+			this.salesInvoices = promoRedemption.getRedemptionSalesInvoices();
 			fireTableDataChanged();
 		}
 
@@ -751,15 +751,23 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		}
 
 		public Object getValueAtForPromoType1(int rowIndex, int columnIndex) {
-			Promo promo = promoRedemption.getPromo();
-			PromoType1Rule rule = promo.getPromoType1Rule();
+			PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
 			switch (columnIndex) {
 			case ITEM_DESCRIPTION_COLUMN_INDEX:
 				return rule.getProduct().getDescription();
 			case UNIT_COLUMN_INDEX:
 				return rule.getUnit();
 			case QUANTITY_COLUMN_INDEX:
-				return promoRedemption.getPrizeQuantity();
+				if (promoRedemption.isPosted()) {
+					return promoRedemption.getRewards().get(0).getQuantity();
+				} else {
+					PromoRedemptionReward reward = rule.evaluate(promoRedemption.getSalesInvoices());
+					if (reward != null) {
+						return reward.getQuantity();
+					} else {
+						return 0;
+					}
+				}
 			default:
 				return null;
 			}

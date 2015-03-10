@@ -85,9 +85,9 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		PromoRedemption promoRedemption = promoRedemptionDao.get(id);
 		promoRedemption.setPromo(promoService.getPromo(promoRedemption.getPromo().getId()));
 		
-		promoRedemption.setSalesInvoices(promoRedemptionSalesInvoiceDao
+		promoRedemption.setRedemptionSalesInvoices(promoRedemptionSalesInvoiceDao
 				.findAllByPromoRedemption(promoRedemption));
-		for (PromoRedemptionSalesInvoice promoRedemptionSalesInvoice : promoRedemption.getSalesInvoices()) {
+		for (PromoRedemptionSalesInvoice promoRedemptionSalesInvoice : promoRedemption.getRedemptionSalesInvoices()) {
 			SalesInvoice salesInvoice = promoRedemptionSalesInvoice.getSalesInvoice();
 			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
 		}
@@ -114,16 +114,6 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 			throw new AlreadyPostedException();
 		}
 		
-		if (updated.getPromo().getPromoType().isType1()) {
-			updated.setPrizeQuantity(updated.getPrizeQuantity());
-		} else {
-			updated.setPrizeQuantity(0);
-		}
-		updated.setPosted(true);
-		updated.setPostDate(new Date());
-		updated.setPostedBy(loginService.getLoggedInUser());
-		promoRedemptionDao.save(updated);
-		
 		switch (updated.getPromo().getPromoType()) {
 		case PROMO_TYPE_1:
 			postForPromoType1(updated);
@@ -135,12 +125,17 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 			postForPromoType3(updated);
 			break;
 		}
+		
+		updated.setPosted(true);
+		updated.setPostDate(new Date());
+		updated.setPostedBy(loginService.getLoggedInUser());
+		promoRedemptionDao.save(updated);
 	}
 
 	private void postForPromoType3(PromoRedemption promoRedemption) {
 		PromoType3Rule rule = promoRedemption.getPromo().getPromoType3Rule();
 		List<SalesInvoice> salesInvoices = new ArrayList<>(Collections2.transform(
-				promoRedemption.getSalesInvoices(), 
+				promoRedemption.getRedemptionSalesInvoices(), 
 				new Function<PromoRedemptionSalesInvoice, SalesInvoice>() {
 
 					@Override
@@ -193,19 +188,22 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	}
 
 	private void postForPromoType1(PromoRedemption promoRedemption) {
-		if (promoRedemption.getPrizeQuantity() == 0) {
+		PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
+		PromoRedemptionReward reward = rule.evaluate(promoRedemption.getSalesInvoices());
+		if (reward == null) {
 			throw new NothingToRedeemException();
 		}
 		
-		PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
 		Product product = productDao.get(rule.getProduct().getId());
-		
-		if (product.getUnitQuantity(rule.getUnit()) < promoRedemption.getPrizeQuantity()) {
+		if (product.getUnitQuantity(rule.getUnit()) < rule.getQuantity().intValue()) {
 			throw new NotEnoughStocksException();
 		}
 		
-		product.addUnitQuantity(rule.getUnit(), -1 * promoRedemption.getPrizeQuantity());
+		product.addUnitQuantity(rule.getUnit(), -1 * reward.getQuantity().intValue());
 		productDao.updateAvailableQuantities(product);
+		
+		reward.setParent(promoRedemption);
+		promoRedemptionRewardDao.save(reward);
 	}
 
 	@Override

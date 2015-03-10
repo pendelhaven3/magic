@@ -1,6 +1,9 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.pj.magic.Constants;
 
 public class PromoType1Rule {
 
@@ -72,8 +75,21 @@ public class PromoType1Rule {
 		return id == null;
 	}
 
-	public BigDecimal getQualifyingAmount(SalesInvoice salesInvoice) {
-		return null;
+	public PromoRedemptionReward evaluate(List<SalesInvoice> salesInvoices) {
+		BigDecimal total = Constants.ZERO;
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			total = total.add(salesInvoice.getSalesByManufacturer(manufacturer));
+		}
+		
+		if (total.compareTo(targetAmount) != -1) {
+			PromoRedemptionReward reward = new PromoRedemptionReward();
+			reward.setProduct(product);
+			reward.setUnit(unit);
+			reward.setQuantity(total.divideToIntegralValue(targetAmount).intValue() * quantity);
+			return reward;
+		} else {
+			return null;
+		}
 	}
 
 }
