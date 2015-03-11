@@ -4,12 +4,12 @@ Customer   : $promoRedemption.customer.name
    Tran. Date S.I. #    Amount
    ---------- ------ ------------
 ##   11/28/2014 366237   146,906.86
-#foreach($redemptionSalesInvoice in $promoRedemption.salesInvoices)
+#foreach($salesInvoice in $promoRedemption.salesInvoices)
 #if($promoRedemption.promo.promoType.type1)
-   $report.field($redemptionSalesInvoice.salesInvoice.transactionDate) $report.field($redemptionSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($redemptionSalesInvoice.salesInvoice.getSalesByManufacturer($promoRedemption.promo.promoType1Rule.manufacturer), 12, "right")
+   $report.field($salesInvoice.transactionDate) $report.field($salesInvoice.salesInvoiceNumber, 6, "right") $report.field($salesInvoice.getSalesByManufacturer($promoRedemption.promo.promoType1Rule.manufacturer), 12, "right")
 #end
 #if($promoRedemption.promo.promoType.type3)
-   $report.field($redemptionSalesInvoice.salesInvoice.transactionDate) $report.field($redemptionSalesInvoice.salesInvoice.salesInvoiceNumber, 6, "right") $report.field($promoRedemption.promo.promoType3Rule.getQualifyingAmount($redemptionSalesInvoice.salesInvoice), 12, "right")
+   $report.field($salesInvoice.transactionDate) $report.field($salesInvoice.salesInvoiceNumber, 6, "right") $report.field($promoRedemption.promo.promoType3Rule.getQualifyingAmount($salesInvoice), 12, "right")
 #end
 #end
                      ------------
@@ -19,7 +19,7 @@ Customer   : $promoRedemption.customer.name
 Reward(s)
 
 #if($promoRedemption.promo.promoType.type1)
-$promoRedemption.prizeQuantity $promoRedemption.promo.promoType1Rule.unit $promoRedemption.promo.promoType1Rule.product.description
+$promoRedemption.rewards.get(0).quantity $promoRedemption.promo.promoType1Rule.unit $promoRedemption.promo.promoType1Rule.product.description
 #end
 #if($promoRedemption.promo.promoType.type3)
 #set( $promoRedemptionReward = $promoRedemption.rewards.get(0) )
