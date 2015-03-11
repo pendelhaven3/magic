@@ -178,5 +178,17 @@ public class PromoRedemption {
 		
 		return rule.evaluate(salesInvoices);
 	}
+
+	public int getTotalRewards() {
+		return rewards.size();
+	}
+	
+	public int getTotalRewardQuantity() {
+		int total = 0;
+		for (PromoRedemptionReward reward : rewards) {
+			total += reward.getQuantity();
+		}
+		return total;
+	}
 	
 }

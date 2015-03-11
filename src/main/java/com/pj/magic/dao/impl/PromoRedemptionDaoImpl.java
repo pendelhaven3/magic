@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -20,6 +21,7 @@ import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.PromoRedemptionSearchCriteria;
 
 @Repository
 public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionDao {
@@ -169,6 +171,39 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 	public List<PromoRedemption> findAllBySalesInvoice(SalesInvoice salesInvoice) {
 		return getJdbcTemplate().query(FIND_ALL_BY_SALES_INVOICE_SQL, promoRedemptionRowMapper,
 				salesInvoice.getId());	
+	}
+
+	private static final String SALES_INVOICE_WHERE_CLAUSE_SQL =
+			"   and exists ("
+			+ "   select 1"
+			+ "   from PROMO_REDEMPTION_SALES_INVOICE prsi"
+			+ "   where prsi.PROMO_REDEMPTION_ID = a.ID"
+			+ "   and prsi.SALES_INVOICE_ID = ?"
+			+ " )";
+	
+	@Override
+	public List<PromoRedemption> search(PromoRedemptionSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		if (criteria.getPosted() != null) {
+			sql.append(" and POST_IND = ?");
+			params.add(criteria.getPosted() ? "Y" : "N");
+		}
+		
+		if (criteria.getSalesInvoice() != null) {
+			sql.append(SALES_INVOICE_WHERE_CLAUSE_SQL);
+			params.add(criteria.getSalesInvoice().getId());
+		}
+		
+		if (criteria.getPromoType() != null) {
+			sql.append(" and d.PROMO_TYPE_ID = ?");
+			params.add(criteria.getPromoType().getId());
+		}
+		
+		return getJdbcTemplate().query(sql.toString(), promoRedemptionRowMapper, params.toArray());
 	}
 	
 }

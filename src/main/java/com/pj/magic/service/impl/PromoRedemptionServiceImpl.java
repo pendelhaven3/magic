@@ -28,10 +28,12 @@ import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PromoRedemptionReward;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
+import com.pj.magic.model.PromoType;
 import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.search.PromoRedemptionSearchCriteria;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PromoRedemptionService;
@@ -217,6 +219,29 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		for (PromoRedemption promoRedemption : promoRedemptions) {
 			promoRedemption.setRewards(promoRedemptionRewardDao.findAllByPromoRedemption(promoRedemption));
 		}
+		return promoRedemptions;
+	}
+
+	private List<PromoRedemption> search(PromoRedemptionSearchCriteria criteria) {
+		List<PromoRedemption> promoRedemptions = promoRedemptionDao.search(criteria);
+		for (PromoRedemption promoRedemption : promoRedemptions) {
+			promoRedemption.setRewards(promoRedemptionRewardDao.findAllByPromoRedemption(promoRedemption));
+		}
+		return promoRedemptions;
+	}
+
+	@Override
+	public List<PromoRedemption> findAllAvailedPromoRedemptions(SalesInvoice salesInvoice) {
+		PromoRedemptionSearchCriteria criteria = new PromoRedemptionSearchCriteria();
+		criteria.setSalesInvoice(salesInvoice);
+		criteria.setPosted(true);
+		criteria.setPromoType(PromoType.PROMO_TYPE_2);
+		
+		List<PromoRedemption> promoRedemptions = search(criteria);
+		for (PromoRedemption promoRedemption : promoRedemptions) {
+			promoRedemption.setPromo(promoService.getPromo(promoRedemption.getPromo().getId()));
+		}
+		
 		return promoRedemptions;
 	}
 

@@ -26,4 +26,6 @@ public interface PromoRedemptionService {
 
 	List<PromoRedemption> findAllBySalesInvoice(SalesInvoice salesInvoice);
 	
+	List<PromoRedemption> findAllAvailedPromoRedemptions(SalesInvoice salesInvoice);
+	
 }

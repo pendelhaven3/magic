@@ -113,6 +113,7 @@ public class PrintServiceImpl implements PrintService {
 	
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private UserDao userDao;
+	@Autowired private PromoRedemptionService promoRedemptionService;
 	
 	public PrintServiceImpl() {
 		Velocity.setProperty("file.resource.loader.class", 
@@ -279,24 +280,46 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public List<String> generateReportAsString(SalesInvoice salesInvoice) {
-		Collections.sort(salesInvoice.getItems());
+		List<PromoRedemption> promoRedemptions = 
+				promoRedemptionService.findAllAvailedPromoRedemptions(salesInvoice);
 		
-		String transactionDate = FormatterUtil.formatDate(salesInvoice.getTransactionDate());
+		Collections.sort(salesInvoice.getItems());
 		
 		List<List<SalesInvoiceItem>> pageItems = Lists.partition(salesInvoice.getItems(), 
 				SALES_INVOICE_ITEMS_PER_PAGE);
+		
+		Map<String, Object> reportData = new HashMap<>();
+		reportData.put("salesInvoice", salesInvoice);
+		reportData.put("promoRedemptions", promoRedemptions);
+		reportData.put("totalPages", pageItems.size());
+		reportData.put("totalItems", salesInvoice.getItems().size() + getTotalRewards(promoRedemptions));
+		reportData.put("totalQuantity", salesInvoice.getTotalQuantity() + 
+				getTotalRewardQuantity(promoRedemptions));
+		
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
-			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("salesInvoice", salesInvoice);
-			reportData.put("items", pageItems.get(i));
-			reportData.put("transactionDate", transactionDate);
 			reportData.put("currentPage", i + 1);
-			reportData.put("totalPages", pageItems.size());
+			reportData.put("items", pageItems.get(i));
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
 			printPages.add(generateReportAsString("reports/salesInvoice.vm", reportData));
 		}
 		return printPages;
+	}
+
+	private int getTotalRewardQuantity(List<PromoRedemption> promoRedemptions) {
+		int total = 0;
+		for (PromoRedemption promoRedemption : promoRedemptions) {
+			total += promoRedemption.getTotalRewardQuantity();
+		}
+		return total;
+	}
+
+	private static int getTotalRewards(List<PromoRedemption> promoRedemptions) {
+		int total = 0;
+		for (PromoRedemption promoRedemption : promoRedemptions) {
+			total += promoRedemption.getTotalRewards();
+		}
+		return total;
 	}
 
 	@Override
