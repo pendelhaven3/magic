@@ -223,6 +223,7 @@ create table SUPPLIER (
   VAT_INCLUSIVE char(1) not null,
   constraint SUPPLIER$PK primary key (ID),
   constraint SUPPLIER$UK unique (NAME),
+  constraint SUPPLIER$UK2 unique (CODE),
   constraint SUPPLIER$FK foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID)
 );
 
@@ -538,6 +539,7 @@ create table PAYMENT (
   CANCEL_DT date null,
   CANCEL_BY integer null,
   constraint PAYMENT$PK primary key (ID),
+  constraint PAYMENT$UK unique (PAYMENT_NO),
   constraint PAYMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
   constraint PAYMENT$FK2 foreign key (POST_BY) references USER (ID),
   constraint PAYMENT$FK3 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID),
@@ -711,6 +713,7 @@ create table PURCHASE_PAYMENT (
   CANCEL_DT date null,
   CANCEL_BY integer null,
   constraint PURCHASE_PAYMENT$PK primary key (ID),
+  constraint PURCHASE_PAYMENT$UK unique (PURCHASE_PAYMENT_NO),
   constraint PURCHASE_PAYMENT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),
   constraint PURCHASE_PAYMENT$FK2 foreign key (POST_BY) references USER (ID),
   constraint PURCHASE_PAYMENT$FK3 foreign key (ENCODER) references USER (ID),
