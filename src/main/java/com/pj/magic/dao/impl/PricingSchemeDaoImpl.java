@@ -46,7 +46,7 @@ public class PricingSchemeDaoImpl extends MagicDao implements PricingSchemeDao {
 				ps.setString(1, pricingScheme.getName());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		pricingScheme.setId(holder.getKey().longValue());
 	}

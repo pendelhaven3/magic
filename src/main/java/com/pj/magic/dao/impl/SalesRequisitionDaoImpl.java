@@ -150,7 +150,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	public List<SalesRequisition> search(SalesRequisition criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
 		sql.append(" where POST_IND = ?");
-		sql.append(" order by a.ID desc"); // TODO: change to be more flexible when the need arises
+		sql.append(" order by a.ID desc");
 		
 		return getJdbcTemplate().query(sql.toString(), salesRequisitionRowMapper,
 				criteria.isPosted() ? "Y" : "N");

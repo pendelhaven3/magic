@@ -46,7 +46,7 @@ public class ManufacturerDaoImpl extends MagicDao implements ManufacturerDao {
 				ps.setString(1, manufacturer.getName());
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		manufacturer.setId(holder.getKey().longValue());
 	}

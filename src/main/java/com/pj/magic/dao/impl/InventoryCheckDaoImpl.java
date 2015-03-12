@@ -49,7 +49,7 @@ public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao
 				ps.setDate(1, new Date(inventoryCheck.getInventoryDate().getTime()));
 				return ps;
 			}
-		}, holder); // TODO: check if keyholder works with oracle db
+		}, holder);
 		
 		inventoryCheck.setId(holder.getKey().longValue());
 	}
