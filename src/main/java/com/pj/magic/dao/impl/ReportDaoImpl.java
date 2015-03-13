@@ -45,7 +45,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		}
 		
 		if (criteria.getToDate() != null) {
-			sql.append(" and POST_DT < date_add(?, interval 1 day)");
+			sql.append(" and POST_DT < date_add(:toDate, interval 1 day)");
 			params.put("toDate", DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
