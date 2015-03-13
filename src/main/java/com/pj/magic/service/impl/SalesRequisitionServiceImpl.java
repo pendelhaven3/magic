@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pj.magic.Constants;
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PromoRedemptionDao;
@@ -30,7 +29,6 @@ import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PromoRedemptionReward;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
-import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.service.LoginService;
@@ -183,16 +181,6 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 					
 					product.addUnitQuantity(reward.getUnit(), -1 * reward.getQuantity());
 					productDao.updateAvailableQuantities(product);
-					
-					SalesInvoiceItem item = new SalesInvoiceItem();
-					item.setParent(salesInvoice);
-					item.setProduct(reward.getProduct());
-					item.setUnit(reward.getUnit());
-					item.setQuantity(reward.getQuantity());
-					item.setUnitPrice(Constants.ZERO);
-					item.setCost(Constants.ZERO);
-					
-					salesInvoiceItemDao.save(item);
 					
 					reward.setParent(promoRedemption);
 					promoRedemptionRewardDao.save(reward);
