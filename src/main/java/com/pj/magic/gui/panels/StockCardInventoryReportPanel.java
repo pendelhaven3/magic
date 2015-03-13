@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumnModel;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -31,7 +34,7 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.SelectProductDialog;
-import com.pj.magic.gui.tables.StockCardInventoryReportTable;
+import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.Unit;
@@ -45,10 +48,20 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class StockCardInventoryReportPanel extends StandardMagicPanel {
 
+	private static final int POST_DATE_COLUMN_INDEX = 0;
+	private static final int TRANSACTION_NUMBER_COLUMN_INDEX = 1;
+	private static final int SUPPLIER_OR_CUSTOMER_NAME_COLUMN_INDEX = 2;
+	private static final int TRANSACTION_TYPE_COLUMN_INDEX = 3;
+	private static final int UNIT_COLUMN_INDEX = 4;
+	private static final int ADD_QUANTITY_COLUMN_INDEX = 5;
+	private static final int LESS_QUANTITY_COLUMN_INDEX = 6;
+	private static final int CURRENT_COST_COLUMN_INDEX = 7;
+	private static final int AMOUNT_COLUMN_INDEX = 8;
+	private static final int REFERENCE_NUMBER_COLUMN_INDEX = 9;
+	
 	@Autowired private ProductService productService;
 	@Autowired private ReportService reportService;
 	@Autowired private SelectProductDialog selectProductDialog;
-	@Autowired private StockCardInventoryReportTable table;
 	
 	private MagicTextField productCodeField;
 	private JLabel productDescriptionLabel;
@@ -65,9 +78,10 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	private JCheckBox receivingReceiptTransactionTypeCheckBox;
 	private JCheckBox inventoryCheckTransactionTypeCheckBox;
 	private JCheckBox promoRedemptionTransactionTypeCheckBox;
-	
 	private JLabel totalLessQuantityLabel;
 	private JLabel totalAddQuantityLabel;
+	private MagicListTable table;
+	private StockCardInventoryReportTableModel tableModel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -114,9 +128,21 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		totalAddQuantityLabel = new JLabel();
 		
 		focusOnComponentWhenThisPanelIsDisplayed(productCodeField);
+		
+		initializeTable();
 	}
 
-	protected void openSelectProductDialog() {
+	private void initializeTable() {
+		tableModel = new StockCardInventoryReportTableModel();
+		table = new MagicListTable(tableModel);
+		
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(SUPPLIER_OR_CUSTOMER_NAME_COLUMN_INDEX).setPreferredWidth(200);
+		columnModel.getColumn(ADD_QUANTITY_COLUMN_INDEX).setPreferredWidth(50);
+		columnModel.getColumn(LESS_QUANTITY_COLUMN_INDEX).setPreferredWidth(50);
+	}
+
+	private void openSelectProductDialog() {
 		ProductSearchCriteria criteria = new ProductSearchCriteria();
 		criteria.setCodeOrDescriptionLike(productCodeField.getText());
 		
@@ -160,10 +186,13 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		setTransactionTypeCriteria(criteria);
 		
 		List<StockCardInventoryReportItem> items = reportService.getStockCardInventoryReport(criteria);
-		table.setItems(items);
+		tableModel.setItems(items);
 		if (items.isEmpty()) {
 			showErrorMessage("No records found");
+		} else {
+			table.selectFirstRow();
 		}
+		
 		totalLessQuantityLabel.setText(FormatterUtil.formatInteger(getTotalLessQuantity(items)));
 		totalAddQuantityLabel.setText(FormatterUtil.formatInteger(getTotalAddQuantity(items)));
 	}
@@ -454,7 +483,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		unitComboBox.setSelectedItem(null);
 		totalLessQuantityLabel.setText(null);
 		totalAddQuantityLabel.setText(null);
-		table.setItems(new ArrayList<StockCardInventoryReportItem>());
+		tableModel.clear();
 		
 		salesInvoiceTransactionTypeCheckBox.setSelected(false);
 		receivingReceiptTransactionTypeCheckBox.setSelected(false);
@@ -517,6 +546,83 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		panel.add(totalAddQuantityLabel, c);
 		
 		return panel;
+	}
+	
+	private class StockCardInventoryReportTableModel extends AbstractTableModel {
+
+		private final String[] columnNames = 
+			{"Post Date", "Trans. No.", "Supplier/Customer", "Trans. Type", "Unit", "Add Qty", "Less Qty", 
+				"Cost / Price", "Amount", "Ref. No."};
+		
+		private List<StockCardInventoryReportItem> items = new ArrayList<>();
+		
+		@Override
+		public int getRowCount() {
+			return items.size();
+		}
+
+		public void clear() {
+			items.clear();
+			fireTableDataChanged();
+		}
+
+		@Override
+		public int getColumnCount() {
+			return columnNames.length;
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			StockCardInventoryReportItem item = items.get(rowIndex);
+			switch (columnIndex) {
+			case POST_DATE_COLUMN_INDEX:
+				return FormatterUtil.formatDate(item.getTransactionDate());
+			case TRANSACTION_NUMBER_COLUMN_INDEX:
+				return item.getTransactionNumber();
+			case SUPPLIER_OR_CUSTOMER_NAME_COLUMN_INDEX:
+				return item.getSupplierOrCustomerName();
+			case TRANSACTION_TYPE_COLUMN_INDEX:
+				return item.getTransactionType();
+			case UNIT_COLUMN_INDEX:
+				return item.getUnit();
+			case ADD_QUANTITY_COLUMN_INDEX:
+				return item.getAddQuantity();
+			case LESS_QUANTITY_COLUMN_INDEX:
+				return item.getLessQuantity();
+			case CURRENT_COST_COLUMN_INDEX:
+				BigDecimal costOrPrice = item.getCurrentCostOrSellingPrice();
+				return (costOrPrice != null) ? FormatterUtil.formatAmount(costOrPrice) : null;
+			case AMOUNT_COLUMN_INDEX:
+				BigDecimal amount = item.getAmount();
+				return (amount != null) ? FormatterUtil.formatAmount(amount) : null;
+			case REFERENCE_NUMBER_COLUMN_INDEX:
+				return item.getReferenceNumber();
+			default:
+				throw new RuntimeException("Fetch invalid column index: " + columnIndex);
+			}
+		}
+
+		public void setItems(List<StockCardInventoryReportItem> items) {
+			this.items = items;
+			fireTableDataChanged();
+		}
+
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			switch (columnIndex) {
+			case CURRENT_COST_COLUMN_INDEX:
+			case AMOUNT_COLUMN_INDEX:
+				return Number.class;
+			default:
+				return Object.class;
+			}
+		}
+		
+		@Override
+		public String getColumnName(int column) {
+			return columnNames[column];
+		}
+		
 	}
 	
 }
