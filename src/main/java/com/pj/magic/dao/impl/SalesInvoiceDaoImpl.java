@@ -203,14 +203,15 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			+ " )";
 	
 	private static final String UNREDEEMED_PROMO_WHERE_CLAUSE_SQL =
-			" and not exists("
+			"   and not exists("
 			+ "   select 1"
 			+ "   from PROMO_REDEMPTION_SALES_INVOICE prsi"
 			+ "   join PROMO_REDEMPTION pr"
 			+ "     on pr.ID = prsi.PROMO_REDEMPTION_ID"
 			+ "   where prsi.SALES_INVOICE_ID = a.ID"
 			+ "   and pr.PROMO_ID = ?"
-			+ " )";
+			+ " )"
+			+ " and a.CANCEL_IND = 'N'";
 	
 	@Override
 	public List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria) {
