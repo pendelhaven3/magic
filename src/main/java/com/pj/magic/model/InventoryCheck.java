@@ -19,6 +19,8 @@ public class InventoryCheck {
 	private Date inventoryDate;
 	private List<AreaInventoryReport> areaReports = new ArrayList<>();
 	private boolean posted;
+	private Date postDate;
+	private User postedBy;
 	private List<InventoryCheckSummaryItem> summaryItems = new ArrayList<>();
 
 	public InventoryCheck() {
@@ -166,6 +168,22 @@ public class InventoryCheck {
 				return input.getBeginningInventory() > 0 || input.getQuantity() > 0;
 			}
 		}));
+	}
+
+	public Date getPostDate() {
+		return postDate;
+	}
+
+	public void setPostDate(Date postDate) {
+		this.postDate = postDate;
+	}
+
+	public User getPostedBy() {
+		return postedBy;
+	}
+
+	public void setPostedBy(User postedBy) {
+		this.postedBy = postedBy;
 	}
 	
 }

@@ -18,8 +18,6 @@ public interface InventoryCheckService {
 
 	void post(InventoryCheck inventoryCheck);
 
-	void delete(InventoryCheck inventoryCheck);
-
 	List<AreaInventoryReportItem> getItemActualCountDetails(InventoryCheckSummaryItem item);
 
 }

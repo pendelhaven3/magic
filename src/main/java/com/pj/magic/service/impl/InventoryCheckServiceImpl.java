@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import com.pj.magic.model.InventoryCheckSummaryItem;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.search.AreaInventoryReportItemSearchCriteria;
 import com.pj.magic.service.InventoryCheckService;
+import com.pj.magic.service.LoginService;
 
 @Service
 public class InventoryCheckServiceImpl implements InventoryCheckService {
@@ -24,6 +26,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 	@Autowired private InventoryCheckSummaryItemDao inventoryCheckSummaryItemDao;
 	@Autowired private ProductDao productDao;
 	@Autowired private AreaInventoryReportItemDao areaInventoryReportItemDao;
+	@Autowired private LoginService loginService;
 	
 	@Override
 	public List<InventoryCheck> getAllInventoryChecks() {
@@ -77,14 +80,11 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 			item.setParent(inventoryCheck);
 			inventoryCheckSummaryItemDao.save(item);
 		}
-		updated.setPosted(true);
-		inventoryCheckDao.save(updated);
-	}
-
-	@Override
-	public void delete(InventoryCheck inventoryCheck) {
-		// TODO Auto-generated method stub
 		
+		updated.setPosted(true);
+		updated.setPostDate(new Date());
+		updated.setPostedBy(loginService.getLoggedInUser());
+		inventoryCheckDao.save(updated);
 	}
 
 	@Override

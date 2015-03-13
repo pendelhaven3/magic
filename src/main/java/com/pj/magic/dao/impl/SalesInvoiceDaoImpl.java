@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +94,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				ps.setString(8, salesInvoice.getMode());
 				ps.setString(9, salesInvoice.getRemarks());
 				ps.setLong(10, salesInvoice.getPaymentTerm().getId());
-				ps.setDate(11, new Date(salesInvoice.getPostDate().getTime()));
+				ps.setTimestamp(11, new Timestamp(salesInvoice.getPostDate().getTime()));
 				ps.setLong(12, salesInvoice.getPostedBy().getId());
 				ps.setBigDecimal(13, salesInvoice.getVatAmount());
 				return ps;
@@ -175,7 +176,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				salesInvoice.isMarked() ? new Date(salesInvoice.getMarkDate().getTime()) : null,
 				salesInvoice.isMarked() ? salesInvoice.getMarkedBy().getId() : null,
 				salesInvoice.isCancelled() ? "Y" : "N",
-				salesInvoice.isCancelled() ? new Date(salesInvoice.getCancelDate().getTime()) : null,
+				salesInvoice.isCancelled() ? salesInvoice.getCancelDate() : null,
 				salesInvoice.isCancelled() ? salesInvoice.getCancelledBy().getId() : null,
 				salesInvoice.getId());
 	}

@@ -13,7 +13,7 @@ alter table SALES_RETURN change POST_DT POST_DT datetime null;
 alter table INVENTORY_CHECK add POST_DT datetime null;
 alter table INVENTORY_CHECK add POST_BY integer default 1 not null;
 alter table INVENTORY_CHECK add constraint INVENTORY_CHECK$FK foreign key (POST_BY) references USER (ID);
-alter table INVENTORY_CHECK change POST_BY POST_BY integer not null;
+alter table INVENTORY_CHECK change POST_BY POST_BY integer null;
 update INVENTORY_CHECK set POST_DT = INVENTORY_DT;
 
 commit;
