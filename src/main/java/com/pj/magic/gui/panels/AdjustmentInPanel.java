@@ -76,6 +76,8 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void initializeComponents() {
+		postDateField = new JLabel();
+		
 		remarksField = new MagicTextField();
 		remarksField.setMaximumLength(100);
 		remarksField.addFocusListener(new FocusAdapter() {
@@ -151,7 +153,7 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		adjustmentInNumberField.setText(adjustmentIn.getAdjustmentInNumber().toString());
 		statusField.setText(adjustmentIn.getStatus());
 		if (adjustmentIn.getPostDate() != null) {
-			postDateField.setText(FormatterUtil.formatDate(adjustmentIn.getPostDate()));
+			postDateField.setText(FormatterUtil.formatDateTime(adjustmentIn.getPostDate()));
 		} else {
 			postDateField.setText(null);
 		}
@@ -266,7 +268,6 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postDateField = ComponentUtil.createLabel(100, "");
 		mainPanel.add(postDateField, c);
 		
 		currentRow++;
