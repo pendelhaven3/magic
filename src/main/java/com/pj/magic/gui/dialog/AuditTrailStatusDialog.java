@@ -110,7 +110,8 @@ public class AuditTrailStatusDialog extends MagicDialog {
 	
 	public void updateDisplay(ReceivingReceipt receivingReceipt) {
 		setTitle("Receiving Receipt Status");
-		postDateLabel.setText(receivingReceipt.isPosted() ? FormatterUtil.formatDate(receivingReceipt.getPostDate()) : "-");
+		postDateLabel.setText(receivingReceipt.isPosted() ? 
+				FormatterUtil.formatDateTime(receivingReceipt.getPostDate()) : "-");
 		postedByLabel.setText(receivingReceipt.isPosted() ? receivingReceipt.getPostedBy().getUsername() : "-");
 		cancelDateLabel.setText(receivingReceipt.isCancelled() ? FormatterUtil.formatDate(receivingReceipt.getCancelDate()) : "-");
 		cancelledByLabel.setText(receivingReceipt.isCancelled() ? receivingReceipt.getCancelledBy().getUsername() : "-");
