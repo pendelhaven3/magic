@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -87,6 +88,8 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 			}
 		});
 		
+		postDateField = new JLabel();
+		
 		focusOnComponentWhenThisPanelIsDisplayed(remarksField);
 		updateTotalAmountFieldWhenItemsTableChanges();
 		initializeUnitPricesAndQuantitiesTable();
@@ -154,7 +157,7 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		remarksField.setEnabled(!adjustmentOut.isPosted());
 		remarksField.setText(adjustmentOut.getRemarks());
 		if (adjustmentOut.getPostDate() != null) {
-			postDateField.setText(FormatterUtil.formatDate(adjustmentOut.getPostDate()));
+			postDateField.setText(FormatterUtil.formatDateTime(adjustmentOut.getPostDate()));
 		} else {
 			postDateField.setText(null);
 		}
@@ -200,7 +203,7 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(50, 30), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
 
 		c.weightx = c.weighty = 0.0;
 		c.fill = GridBagConstraints.NONE;
@@ -264,7 +267,6 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postDateField = ComponentUtil.createLabel(100, "");
 		mainPanel.add(postDateField, c);
 		
 		currentRow++;
@@ -359,7 +361,7 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
-		panel.add(ComponentUtil.createHorizontalFiller(10), c);
+		panel.add(Box.createHorizontalStrut(10), c);
 		
 		currentRow++;
 		

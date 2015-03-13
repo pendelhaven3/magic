@@ -39,7 +39,7 @@ public class AdjustmentOutsTableModel extends AbstractTableModel {
 		case AdjustmentOutsTable.POSTED_COLUMN_INDEX:
 			return adjustmentOut.isPosted() ? "Yes" : "No";
 		case AdjustmentOutsTable.POST_DATE_COLUMN_INDEX:
-			return adjustmentOut.isPosted() ? FormatterUtil.formatDate(adjustmentOut.getPostDate()) : null;
+			return adjustmentOut.isPosted() ? FormatterUtil.formatDateTime(adjustmentOut.getPostDate()) : null;
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
