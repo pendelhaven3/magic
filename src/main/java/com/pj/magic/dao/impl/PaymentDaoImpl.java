@@ -189,7 +189,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 		}
 		
 		if (criteria.getPostDate() != null) {
-			sql.append(" and a.POST_DT >= ? and a.POST_DT <= DATE_ADD(?, INTERVAL 1 DAY)");
+			sql.append(" and a.POST_DT >= ? and a.POST_DT < DATE_ADD(?, INTERVAL 1 DAY)");
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 		}

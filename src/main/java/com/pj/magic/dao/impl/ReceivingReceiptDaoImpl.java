@@ -149,7 +149,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			
 			receivingReceipt.setPosted("Y".equals(rs.getString("POST_IND")));
 			if (receivingReceipt.isPosted()) {
-				receivingReceipt.setPostDate(rs.getDate("POST_DT"));
+				receivingReceipt.setPostDate(rs.getTimestamp("POST_DT"));
 				receivingReceipt.setPostedBy(
 						new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			}
@@ -266,7 +266,6 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 
 		if (criteria.getReceivedDate() != null) {
 			sql.append(" and a.RECEIVED_DT = ?");
-//			params.add(criteria.getReceivedDate()); // TODO: investigate this further!
 			params.add(DbUtil.toMySqlDateString(criteria.getReceivedDate()));
 		}
 		

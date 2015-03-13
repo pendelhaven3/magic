@@ -187,9 +187,11 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 		}
 		
 		if (criteria.getPostDate() != null) {
-			sql.append(" and a.POST_DT >= ? and a.POST_DT <= DATE_ADD(?, INTERVAL 1 DAY)");
-			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
-			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
+			sql.append(" and a.POST_DT >= ? and a.POST_DT < date_add(?, interval 1 day)");
+			
+			String postDateString = DbUtil.toMySqlDateString(criteria.getPostDate());
+			params.add(postDateString);
+			params.add(postDateString);
 		}
 		
 		if (criteria.getPostDateFrom() != null) {

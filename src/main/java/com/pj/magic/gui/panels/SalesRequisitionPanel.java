@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughPromoStocksException;
 import com.pj.magic.exception.SalesRequisitionPostException;
 import com.pj.magic.gui.component.DatePickerFormatter;
@@ -689,6 +690,8 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 				}
 			} catch (NotEnoughPromoStocksException e) {
 				showErrorMessage("Not enough promo stocks");
+			} catch (AlreadyPostedException e) {
+				showErrorMessage("Sales Requisition is already posted");
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");

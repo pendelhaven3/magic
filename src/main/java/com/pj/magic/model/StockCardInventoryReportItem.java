@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class StockCardInventoryReportItem {
 
-	private Date transactionDate;
+	private Date postDate;
 	private Long transactionNumber;
 	private String supplierOrCustomerName;
 	private String transactionType;
@@ -16,12 +16,12 @@ public class StockCardInventoryReportItem {
 	private String referenceNumber;
 	private String unit;
 
-	public Date getTransactionDate() {
-		return transactionDate;
+	public Date getPostDate() {
+		return postDate;
 	}
 
-	public void setTransactionDate(Date transactionDate) {
-		this.transactionDate = transactionDate;
+	public void setPostDate(Date postDate) {
+		this.postDate = postDate;
 	}
 
 	public Long getTransactionNumber() {

@@ -19,6 +19,7 @@ import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.UserDao;
+import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughPromoStocksException;
 import com.pj.magic.exception.SalesRequisitionItemNotEnoughStocksException;
 import com.pj.magic.exception.SalesRequisitionItemPostException;
@@ -108,9 +109,14 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Override
 	public SalesInvoice post(SalesRequisition salesRequisition)
 			throws SalesRequisitionPostException {
+		SalesRequisition updated = getSalesRequisition(salesRequisition.getId());
+		
+		if (updated.isPosted()) {
+			throw new AlreadyPostedException();
+		}
+		
 		SalesRequisitionPostException exception = new SalesRequisitionPostException();
 		
-		SalesRequisition updated = getSalesRequisition(salesRequisition.getId());
 		for (SalesRequisitionItem item : updated.getItems()) {
 			if (item.getProduct().hasNoSellingPrice(item.getUnit())) {
 				exception.add(new SalesRequisitionItemPostException(item, "No selling price"));

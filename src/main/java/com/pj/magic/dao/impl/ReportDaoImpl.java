@@ -40,12 +40,12 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		params.put("product", criteria.getProduct().getId());
 		
 		if (criteria.getFromDate() != null) {
-			sql.append(" and TRANSACTION_DT >= :fromDate");
+			sql.append(" and POST_DT >= :fromDate");
 			params.put("fromDate", DbUtil.toMySqlDateString(criteria.getFromDate()));
 		}
 		
 		if (criteria.getToDate() != null) {
-			sql.append(" and TRANSACTION_DT <= :toDate");
+			sql.append(" and POST_DT < date_add(?, interval 1 day)");
 			params.put("toDate", DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
@@ -59,7 +59,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 				.append(DbUtil.toSqlInValues(criteria.getTransactionTypes())).append(")");
 		}
 		
-		sql.append(" order by TRANSACTION_DT desc, TRANSACTION_TYPE, TRANSACTION_NO, TRANSACTION_TYPE_KEY");
+		sql.append(" order by POST_DT desc, TRANSACTION_TYPE, TRANSACTION_NO, TRANSACTION_TYPE_KEY");
 		
 		return getNamedParameterJdbcTemplate().query(sql.toString(), params, rowMapper);
 	}
@@ -69,7 +69,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		@Override
 		public StockCardInventoryReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {
 			StockCardInventoryReportItem item = new StockCardInventoryReportItem();
-			item.setTransactionDate(rs.getDate("TRANSACTION_DT"));
+			item.setPostDate(rs.getTimestamp("POST_DT"));
 			if (rs.getLong("TRANSACTION_NO") != 0) {
 				item.setTransactionNumber(rs.getLong("TRANSACTION_NO"));
 			}

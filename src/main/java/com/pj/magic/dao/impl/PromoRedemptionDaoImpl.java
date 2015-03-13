@@ -132,7 +132,7 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			
 			promoRedemption.setPosted("Y".equals(rs.getString("POST_IND")));
 			if (promoRedemption.isPosted()) {
-				promoRedemption.setPostDate(rs.getDate("POST_DT"));
+				promoRedemption.setPostDate(rs.getTimestamp("POST_DT"));
 				promoRedemption.setPostedBy(
 						new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			}

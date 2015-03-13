@@ -137,7 +137,9 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		table = new MagicListTable(tableModel);
 		
 		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(POST_DATE_COLUMN_INDEX).setPreferredWidth(150);
 		columnModel.getColumn(SUPPLIER_OR_CUSTOMER_NAME_COLUMN_INDEX).setPreferredWidth(200);
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(50);
 		columnModel.getColumn(ADD_QUANTITY_COLUMN_INDEX).setPreferredWidth(50);
 		columnModel.getColumn(LESS_QUANTITY_COLUMN_INDEX).setPreferredWidth(50);
 	}
@@ -576,7 +578,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 			StockCardInventoryReportItem item = items.get(rowIndex);
 			switch (columnIndex) {
 			case POST_DATE_COLUMN_INDEX:
-				return FormatterUtil.formatDate(item.getTransactionDate());
+				return FormatterUtil.formatDateTime(item.getPostDate());
 			case TRANSACTION_NUMBER_COLUMN_INDEX:
 				return item.getTransactionNumber();
 			case SUPPLIER_OR_CUSTOMER_NAME_COLUMN_INDEX:

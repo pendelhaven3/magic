@@ -105,7 +105,7 @@ public class AdjustmentOutDaoImpl extends MagicDao implements AdjustmentOutDao {
 			adjustmentOut.setAdjustmentOutNumber(rs.getLong("ADJUSTMENT_OUT_NO"));
 			adjustmentOut.setRemarks(rs.getString("REMARKS"));
 			adjustmentOut.setPosted("Y".equals(rs.getString("POST_IND")));
-			adjustmentOut.setPostDate(rs.getDate("POST_DT"));
+			adjustmentOut.setPostDate(rs.getTimestamp("POST_DT"));
 			if (rs.getLong("POSTED_BY") != 0) {
 				User user = new User();
 				user.setId(rs.getLong("POSTED_BY"));
@@ -141,8 +141,11 @@ public class AdjustmentOutDaoImpl extends MagicDao implements AdjustmentOutDao {
 		}
 		
 		if (criteria.getPostDate() != null) {
-			sb.append(" and POST_DT = ?");
-			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
+			sb.append(" and POST_DT >= ? and POST_DT < date_add(?, interval 1 day)");
+			
+			String postDateString = DbUtil.toMySqlDateString(criteria.getPostDate());
+			params.add(postDateString);
+			params.add(postDateString);
 		}
 		
 		sb.append(" order by ADJUSTMENT_OUT_NO desc");

@@ -169,13 +169,13 @@ create table SALES_INVOICE (
   MODE varchar(10) not null,
   REMARKS varchar(100) null,
   PAYMENT_TERM_ID integer not null,
-  POST_DT date null,
+  POST_DT datetime not null,
   POST_BY integer not null,
   MARK_IND char(1) default 'N' not null,
   MARK_DT date null,
   MARK_BY integer null,
   CANCEL_IND char(1) default 'N' not null,
-  CANCEL_DT date null,
+  CANCEL_DT datetime null,
   CANCEL_BY integer null,
   VAT_AMOUNT numeric(8, 2) not null,
   constraint SALES_INVOICE$PK primary key (ID),
@@ -328,7 +328,7 @@ create table RECEIVING_RECEIPT (
   RECEIVING_RECEIPT_NO integer not null,
   SUPPLIER_ID integer not null,
   POST_IND char(1) default 'N' not null,
-  POST_DT date null,
+  POST_DT datetime null,
   POST_BY integer null,
   PAYMENT_TERM_ID integer not null,
   REMARKS varchar(100) null,
@@ -420,8 +420,11 @@ create table INVENTORY_CHECK (
   ID integer auto_increment,
   INVENTORY_DT date not null,
   POST_IND char(1) default 'N' not null,
+  POST_DT datetime null,
+  POST_BY integer not null,
   constraint INVENTORY_CHECK$PK primary key (ID),
-  constraint INVENTORY_CHECK$UK unique (INVENTORY_DT)
+  constraint INVENTORY_CHECK$UK unique (INVENTORY_DT),
+  constraint INVENTORY_CHECK$FK foreign key (POST_BY) references USER (ID)
 );
 
 create table AREA (
@@ -873,7 +876,7 @@ create table PROMO_REDEMPTION (
   CUSTOMER_ID integer not null,
   PRIZE_QUANTITY integer(3) default 0 not null,
   POST_IND char(1) default 'N' not null,
-  POST_DT date null,
+  POST_DT datetime null,
   POST_BY integer null,
   primary key (ID),
   unique key PROMO_REDEMPTION$UK (PROMO_ID, PROMO_REDEMPTION_NO),

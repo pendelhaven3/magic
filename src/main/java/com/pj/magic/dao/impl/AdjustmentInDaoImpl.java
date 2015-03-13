@@ -105,7 +105,7 @@ public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 			adjustmentIn.setAdjustmentInNumber(rs.getLong("ADJUSTMENT_IN_NO"));
 			adjustmentIn.setRemarks(rs.getString("REMARKS"));
 			adjustmentIn.setPosted("Y".equals(rs.getString("POST_IND")));
-			adjustmentIn.setPostDate(rs.getDate("POST_DT"));
+			adjustmentIn.setPostDate(rs.getTimestamp("POST_DT"));
 			
 			if (rs.getLong("POSTED_BY") != 0) {
 				User user = new User();
@@ -143,8 +143,11 @@ public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 		}
 
 		if (criteria.getPostDate() != null) {
-			sb.append(" and POST_DT = ?");
-			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
+			sb.append(" and POST_DT >= ? and POST_DT < date_add(?, interval 1 day)");
+			
+			String postDateString = DbUtil.toMySqlDateString(criteria.getPostDate());
+			params.add(postDateString);
+			params.add(postDateString);
 		}
 		
 		sb.append(" order by ADJUSTMENT_IN_NO desc");

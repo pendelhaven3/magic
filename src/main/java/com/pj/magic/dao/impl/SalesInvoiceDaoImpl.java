@@ -143,7 +143,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			paymentTerm.setNumberOfDays(rs.getInt("PAYMENT_TERM_NUMBER_OF_DAYS"));
 			salesInvoice.setPaymentTerm(paymentTerm);
 			
-			salesInvoice.setPostDate(rs.getDate("POST_DT"));
+			salesInvoice.setPostDate(rs.getTimestamp("POST_DT"));
 			salesInvoice.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			salesInvoice.setMarked("Y".equals(rs.getString("MARK_IND")));
 			salesInvoice.setMarkDate(rs.getDate("MARK_DT"));
@@ -152,7 +152,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 						new User(rs.getLong("MARK_BY"), rs.getString("MARK_BY_USERNAME")));
 			}
 			salesInvoice.setCancelled("Y".equals(rs.getString("CANCEL_IND")));
-			salesInvoice.setCancelDate(rs.getDate("CANCEL_DT"));
+			salesInvoice.setCancelDate(rs.getTimestamp("CANCEL_DT"));
 			if (rs.getLong("CANCEL_BY") != 0) {
 				salesInvoice.setCancelledBy(
 						new User(rs.getLong("CANCEL_BY"), rs.getString("CANCEL_BY_USERNAME")));
@@ -238,7 +238,6 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 		
 		if (criteria.getTransactionDate() != null) {
 			sql.append(" and a.TRANSACTION_DT = ?");
-//			params.add(criteria.getTransactionDate()); // TODO: investigate this further!
 			params.add(DbUtil.toMySqlDateString(criteria.getTransactionDate()));
 		}
 		

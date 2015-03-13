@@ -110,7 +110,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 			stockQuantityConversion.setRemarks(rs.getString("REMARKS"));
 			stockQuantityConversion.setPosted("Y".equals(rs.getString("POST_IND")));
 			if (stockQuantityConversion.isPosted()) {
-				stockQuantityConversion.setPostDate(rs.getDate("POST_DT"));
+				stockQuantityConversion.setPostDate(rs.getTimestamp("POST_DT"));
 				stockQuantityConversion.setPostedBy(
 						new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			}
@@ -144,8 +144,11 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		}
 		
 		if (criteria.getPostDate() != null) {
-			sb.append(" and POST_DT = ?");
-			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
+			sb.append(" and POST_DT >= ? and POST_DT < date_add(?, interval 1 day)");
+			
+			String postDateString = DbUtil.toMySqlDateString(criteria.getPostDate());
+			params.add(postDateString);
+			params.add(postDateString);
 		}
 		
 		sb.append(" order by STOCK_QTY_CONV_NO desc");
