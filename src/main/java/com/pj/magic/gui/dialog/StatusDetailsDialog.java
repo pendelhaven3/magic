@@ -11,13 +11,14 @@ import javax.swing.JLabel;
 
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class AuditTrailStatusDialog extends MagicDialog {
+public class StatusDetailsDialog extends MagicDialog {
 
 	private JLabel postDateLabel = new JLabel();
 	private JLabel postedByLabel = new JLabel();
@@ -28,7 +29,7 @@ public class AuditTrailStatusDialog extends MagicDialog {
 	private boolean showPaidFields;
 	private boolean showCancelFields;
 	
-	public AuditTrailStatusDialog() {
+	public StatusDetailsDialog() {
 		setSize(320, 180);
 		setLocationRelativeTo(null);
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
@@ -181,6 +182,22 @@ public class AuditTrailStatusDialog extends MagicDialog {
 				FormatterUtil.formatDateTime(salesReturn.getPaidDate()) : "-");
 		paidByLabel.setText(salesReturn.isPaid() ? 
 				salesReturn.getPaidBy().getUsername() : "-");
+	}
+
+	public void updateDisplay(BadStockReturn badStockReturn) {
+		setTitle("Bad Stock Return Status");
+		showPaidFields = true;
+		showCancelFields = false;
+		layoutMainPanel();
+		
+		postDateLabel.setText(badStockReturn.isPosted() ? 
+				FormatterUtil.formatDateTime(badStockReturn.getPostDate()) : "-");
+		postedByLabel.setText(badStockReturn.isPosted() ? 
+				badStockReturn.getPostedBy().getUsername() : "-");
+		paidDateLabel.setText(badStockReturn.isPaid() ? 
+				FormatterUtil.formatDateTime(badStockReturn.getPaidDate()) : "-");
+		paidByLabel.setText(badStockReturn.isPaid() ? 
+				badStockReturn.getPaidBy().getUsername() : "-");
 	}
 
 }

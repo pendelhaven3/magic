@@ -31,7 +31,7 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.AuditTrailStatusDialog;
+import com.pj.magic.gui.dialog.StatusDetailsDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.SalesReturnItemsTable;
 import com.pj.magic.model.Customer;
@@ -62,7 +62,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalService paymentTerminalService;	
-	@Autowired private AuditTrailStatusDialog statusDialog;
+	@Autowired private StatusDetailsDialog statusDialog;
 	
 	private SalesReturn salesReturn;
 	private JLabel salesReturnNumberField;

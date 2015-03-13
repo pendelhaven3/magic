@@ -37,7 +37,7 @@ import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.AuditTrailStatusDialog;
+import com.pj.magic.gui.dialog.StatusDetailsDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.ReceivingReceiptItemsTable;
 import com.pj.magic.model.ReceivingReceipt;
@@ -62,7 +62,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
-	@Autowired private AuditTrailStatusDialog statusDialog;
+	@Autowired private StatusDetailsDialog statusDialog;
 	
 	private ReceivingReceipt receivingReceipt;
 	private JLabel receivingReceiptNumberField;
