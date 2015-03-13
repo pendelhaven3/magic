@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.model.StockQuantityConversion;
@@ -37,16 +36,16 @@ public class StockQuantityConversionsTableModel extends AbstractTableModel {
 		StockQuantityConversion stockQuantityConversion = stockQuantityConversions.get(rowIndex);
 		switch (columnIndex) {
 		case STOCK_QUANTITY_CONVERSION_NUMBER_COLUMN_INDEX:
-			return stockQuantityConversion.getStockQuantityConversionNumber().toString();
+			return stockQuantityConversion.getStockQuantityConversionNumber();
 		case REMARKS_COLUMN_INDEX:
-			return StringUtils.defaultString(stockQuantityConversion.getRemarks());
+			return stockQuantityConversion.getRemarks();
 		case POSTED_COLUMN_INDEX:
 			return stockQuantityConversion.isPosted() ? "Yes" : "No";
 		case POST_DATE_COLUMN_INDEX:
 			if (stockQuantityConversion.isPosted()) {
-				return FormatterUtil.formatDate(stockQuantityConversion.getPostDate());
+				return FormatterUtil.formatDateTime(stockQuantityConversion.getPostDate());
 			} else {
-				return "";
+				return null;
 			}
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
@@ -56,11 +55,6 @@ public class StockQuantityConversionsTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int column) {
 		return COLUMN_NAMES[column];
-	}
-	
-	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return false;
 	}
 	
 	public void setStockQuantityConversions(List<StockQuantityConversion> stockQuantityConversions) {

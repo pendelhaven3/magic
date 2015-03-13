@@ -129,7 +129,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		stockQuantityConversionNumberField.setText(stockQuantityConversion.getStockQuantityConversionNumber().toString());
 		postedField.setText(stockQuantityConversion.getStatus());
 		postDateField.setText(stockQuantityConversion.isPosted() ?
-				FormatterUtil.formatDate(stockQuantityConversion.getPostDate()) : null);
+				FormatterUtil.formatDateTime(stockQuantityConversion.getPostDate()) : null);
 		postedByField.setText(stockQuantityConversion.isPosted() ?
 				stockQuantityConversion.getPostedBy().getUsername() : null);
 		remarksField.setText(stockQuantityConversion.getRemarks());
@@ -215,7 +215,6 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postDateField.setPreferredSize(new Dimension(100, 20));
 		mainPanel.add(postDateField, c);
 		
 		currentRow++;
