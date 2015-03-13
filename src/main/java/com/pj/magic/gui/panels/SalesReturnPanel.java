@@ -1,6 +1,7 @@
 package com.pj.magic.gui.panels;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -8,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -28,6 +31,7 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.AuditTrailStatusDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.SalesReturnItemsTable;
 import com.pj.magic.model.Customer;
@@ -43,6 +47,7 @@ import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.HtmlUtil;
 
 @Component
 public class SalesReturnPanel extends StandardMagicPanel {
@@ -57,14 +62,13 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalService paymentTerminalService;	
+	@Autowired private AuditTrailStatusDialog statusDialog;
 	
 	private SalesReturn salesReturn;
 	private JLabel salesReturnNumberField;
 	private MagicTextField salesInvoiceNumberField;
 	private JLabel customerField;
 	private JLabel statusField;
-	private JLabel postDateField;
-	private JLabel postedByField;
 	private MagicTextField remarksField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
@@ -83,9 +87,18 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		salesInvoiceNumberField.setNumbersOnly(true);
 		
 		customerField = new JLabel();
+		
 		statusField = new JLabel();
-		postDateField = new JLabel();
-		postedByField = new JLabel();
+		statusField.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				statusDialog.updateDisplay(salesReturn);
+				statusDialog.setVisible(true);
+			}
+			
+		});
+		statusField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		
 		remarksField = new MagicTextField();
 		remarksField.setMaximumLength(100);
@@ -201,13 +214,11 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		salesReturnNumberField.setText(salesReturn.getSalesReturnNumber().toString());
 		salesInvoiceNumberField.setEnabled(!salesReturn.isPosted());
 		salesInvoiceNumberField.setText(salesReturn.getSalesInvoice().getSalesInvoiceNumber().toString());
-		statusField.setText(salesReturn.getStatus());
+		statusField.setText(HtmlUtil.blueUnderline(salesReturn.getStatus()));
 		
 		Customer customer = salesReturn.getSalesInvoice().getCustomer();
 		customerField.setText(customer.getCode() + " - " + customer.getName());
 		
-		postDateField.setText(salesReturn.isPosted() ? FormatterUtil.formatDate(salesReturn.getPostDate()) : null);
-		postedByField.setText(salesReturn.isPosted() ? salesReturn.getPostedBy().getUsername() : null);
 		remarksField.setText(salesReturn.getRemarks());
 		remarksField.setEnabled(!salesReturn.isPosted());
 		
@@ -227,8 +238,6 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		salesInvoiceNumberField.setText(null);
 		statusField.setText(null);
 		customerField.setText(null);
-		postDateField.setText(null);
-		postedByField.setText(null);
 		remarksField.setText(null);
 		remarksField.setEnabled(false);
 		itemsTable.setSalesReturn(salesReturn);
@@ -280,7 +289,6 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		statusField = ComponentUtil.createLabel(150);
 		mainPanel.add(statusField, c);
 		
 		currentRow++;
@@ -298,19 +306,6 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		salesInvoiceNumberField.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(salesInvoiceNumberField, c);
 		
-		c = new GridBagConstraints();
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Post Date:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 5;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		postDateField = ComponentUtil.createLabel(100);
-		mainPanel.add(postDateField, c);
-		
 		currentRow++;
 		
 		c = new GridBagConstraints();
@@ -325,19 +320,6 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		customerField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(customerField, c);
-
-		c = new GridBagConstraints();
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Posted By:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 5;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		postedByField = ComponentUtil.createLabel(100);
-		mainPanel.add(postedByField, c);
 		
 		currentRow++;
 		
