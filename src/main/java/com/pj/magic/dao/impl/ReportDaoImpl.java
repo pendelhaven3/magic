@@ -82,9 +82,15 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			switch (rs.getString("TRANSACTION_TYPE_KEY")) {
 			case "SALES INVOICE - CANCEL":
 				item.setTransactionType("CANCELLED SALES INVOICE");
-				// no break here; use same logic as SALES INVOICE transaction type key
-			case "SALES INVOICE":
+				
 				SalesInvoiceItem salesInvoiceItem = new SalesInvoiceItem();
+				salesInvoiceItem.setQuantity(rs.getInt("QUANTITY"));
+				salesInvoiceItem.setUnitPrice(rs.getBigDecimal("UNIT_COST_OR_PRICE"));
+				item.setAmount(salesInvoiceItem.getAmount());
+				item.setAddQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "SALES INVOICE":
+				salesInvoiceItem = new SalesInvoiceItem();
 				salesInvoiceItem.setQuantity(rs.getInt("QUANTITY"));
 				salesInvoiceItem.setUnitPrice(rs.getBigDecimal("UNIT_COST_OR_PRICE"));
 				item.setAmount(salesInvoiceItem.getAmount());
