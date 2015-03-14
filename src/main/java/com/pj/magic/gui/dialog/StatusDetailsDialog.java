@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.model.BadStockReturn;
+import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.util.ComponentUtil;
@@ -198,6 +199,22 @@ public class StatusDetailsDialog extends MagicDialog {
 				FormatterUtil.formatDateTime(badStockReturn.getPaidDate()) : "-");
 		paidByLabel.setText(badStockReturn.isPaid() ? 
 				badStockReturn.getPaidBy().getUsername() : "-");
+	}
+
+	public void updateDisplay(NoMoreStockAdjustment noMoreStockAdjustment) {
+		setTitle("No More Stock Adjustment Status");
+		showPaidFields = true;
+		showCancelFields = false;
+		layoutMainPanel();
+		
+		postDateLabel.setText(noMoreStockAdjustment.isPosted() ? 
+				FormatterUtil.formatDateTime(noMoreStockAdjustment.getPostDate()) : "-");
+		postedByLabel.setText(noMoreStockAdjustment.isPosted() ? 
+				noMoreStockAdjustment.getPostedBy().getUsername() : "-");
+		paidDateLabel.setText(noMoreStockAdjustment.isPaid() ? 
+				FormatterUtil.formatDateTime(noMoreStockAdjustment.getPaidDate()) : "-");
+		paidByLabel.setText(noMoreStockAdjustment.isPaid() ? 
+				noMoreStockAdjustment.getPaidBy().getUsername() : "-");
 	}
 
 }
