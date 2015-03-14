@@ -115,7 +115,7 @@ public class ReceivingReceiptItemDaoImpl extends MagicDao implements ReceivingRe
 			+ " where a.PRODUCT_ID = ?"
 			+ " and a.UNIT = ?"
 			+ " and b.SUPPLIER_ID = ?"
-			+ " order by b.RECEIVED_DT desc"
+			+ " order by b.POST_DT desc, b.RECEIVING_RECEIPT_NO desc"
 			+ " limit 1";
 	
 	@Override
