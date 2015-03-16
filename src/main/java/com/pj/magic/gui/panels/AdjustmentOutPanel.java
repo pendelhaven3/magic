@@ -9,24 +9,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +34,9 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.AdjustmentOutItemsTable;
+import com.pj.magic.gui.tables.ProductInfoTable;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.Unit;
 import com.pj.magic.service.AdjustmentOutService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
@@ -69,12 +64,12 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 	private JLabel postedByField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
-	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	private JButton postButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
 	private JButton printPreviewButton;
 	private JButton printButton;
+	private ProductInfoTable productInfoTable;
 	
 	@Override
 	protected void initializeComponents() {
@@ -325,7 +320,7 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 6;
 		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
+		JScrollPane infoTableScrollPane = new JScrollPane(productInfoTable);
 		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
 		mainPanel.add(infoTableScrollPane, c);
 		
@@ -409,6 +404,8 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 	}
 
 	private void initializeUnitPricesAndQuantitiesTable() {
+		productInfoTable = new ProductInfoTable();
+		
 		itemsTable.getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
@@ -432,158 +429,18 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 	
 	private void updateUnitPricesAndQuantitiesTable() {
 		if (itemsTable.getSelectedRow() == -1) {
-			unitPricesAndQuantitiesTableModel.setProduct(null);
+			productInfoTable.setProduct(null);
 			return;
 		}
 		
 		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
 		if (product != null) {
-			unitPricesAndQuantitiesTableModel.setProduct(productService.getProduct(product.getId()));
+			productInfoTable.setProduct(productService.getProduct(product.getId()));
 		} else {
-			unitPricesAndQuantitiesTableModel.setProduct(null);
+			productInfoTable.setProduct(null);
 		}
 	}
 	
-	private class UnitPricesAndQuantitiesTable extends JTable {
-		
-		public UnitPricesAndQuantitiesTable() {
-			super(unitPricesAndQuantitiesTableModel);
-			setTableHeader(null);
-			setRowHeight(20);
-			setShowGrid(false);
-			setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-				
-				@Override
-				public java.awt.Component getTableCellRendererComponent(
-						JTable table, Object value, boolean isSelected,
-						boolean hasFocus, int row, int column) {
-					super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-							row, column);
-					setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-					return this;
-				}
-				
-			});
-		}
-		
-	}
-	
-	private class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
-
-		private Product product;
-		
-		public void setProduct(Product product) {
-			this.product = product;
-			fireTableDataChanged();
-		}
-		
-		@Override
-		public int getRowCount() {
-			return 3;
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 6;
-		}
-
-		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			switch (rowIndex) {
-			case 0:
-				if (columnIndex == 0) {
-					return Unit.CASE;
-				} else if (columnIndex == 3) {
-					return Unit.TIE;
-				}
-				break;
-			case 1:
-				if (columnIndex == 0) {
-					return Unit.CARTON;
-				} else if (columnIndex == 3) {
-					return Unit.DOZEN;
-				}
-				break;
-			case 2:
-				switch (columnIndex) {
-				case 0:
-					return Unit.PIECES;
-				case 3:
-				case 4:
-				case 5:
-					return "";
-				}
-				break;
-			}
-			
-			if (product == null) {
-				switch (columnIndex) {
-				case 1:
-				case 4:
-					return "0";
-				case 2:
-				case 5:
-					return FormatterUtil.formatAmount(BigDecimal.ZERO);
-				}
-			}
-			
-			product = productService.findProductByCode(product.getCode());
-			
-			if (rowIndex == 0) {
-				switch (columnIndex) {
-				case 1:
-					return String.valueOf(product.getUnitQuantity(Unit.CASE));
-				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CASE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				case 4:
-					return String.valueOf(product.getUnitQuantity(Unit.TIE));
-				case 5:
-					unitPrice = product.getUnitPrice(Unit.TIE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				}
-			} else if (rowIndex == 1) {
-				switch (columnIndex) {
-				case 1:
-					return String.valueOf(product.getUnitQuantity(Unit.CARTON));
-				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CARTON);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				case 4:
-					return String.valueOf(product.getUnitQuantity(Unit.DOZEN));
-				case 5:
-					unitPrice = product.getUnitPrice(Unit.DOZEN);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				}
-			} else if (rowIndex == 2) {
-				switch (columnIndex) {
-				case 1:
-					return String.valueOf(product.getUnitQuantity(Unit.PIECES));
-				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.PIECES);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				}
-			}
-			return "";
-		}
-		
-	}
-
 	private void postAdjustmentOut() {
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();

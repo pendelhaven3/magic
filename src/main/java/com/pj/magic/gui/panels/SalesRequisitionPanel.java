@@ -11,12 +11,10 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -24,15 +22,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -58,6 +53,7 @@ import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
 import com.pj.magic.gui.dialog.SalesByManufacturerDialog;
 import com.pj.magic.gui.dialog.SalesRequisitionPostExceptionsDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
+import com.pj.magic.gui.tables.ProductInfoTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerm;
@@ -65,7 +61,6 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
-import com.pj.magic.model.Unit;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.service.PricingSchemeService;
@@ -108,13 +103,13 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private MagicTextField remarksField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
-	private UnitPricesAndQuantitiesTableModel unitPricesAndQuantitiesTableModel = new UnitPricesAndQuantitiesTableModel();
 	private JButton selectCustomerButton;
 	private MagicToolBarButton addItemButton;
 	private MagicToolBarButton deleteItemButton;
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton showSalesByManufacturerButton;
 	private MagicToolBarButton showAvailedPromoRewardsButton;
+	private ProductInfoTable productInfoTable;
 	
 	@Override
 	protected void initializeComponents() {
@@ -489,6 +484,8 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	}
 
 	private void initializeUnitPricesAndQuantitiesTable() {
+		productInfoTable = new ProductInfoTable();
+		
 		itemsTable.getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
@@ -512,159 +509,20 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	
 	private void updateUnitPricesAndQuantitiesTable() {
 		if (itemsTable.getSelectedRow() == -1) {
-			unitPricesAndQuantitiesTableModel.setProduct(null);
+			productInfoTable.setProduct(null);
 			return;
 		}
 		
 		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
 		if (product != null) {
-			unitPricesAndQuantitiesTableModel.setProduct(product);
-		} else {
-			unitPricesAndQuantitiesTableModel.setProduct(null);
-		}
-	}
-	
-	private class UnitPricesAndQuantitiesTable extends JTable {
-		
-		public UnitPricesAndQuantitiesTable() {
-			super(unitPricesAndQuantitiesTableModel);
-			setTableHeader(null);
-			setRowHeight(20);
-			setShowGrid(false);
-			setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-				
-				@Override
-				public java.awt.Component getTableCellRendererComponent(
-						JTable table, Object value, boolean isSelected,
-						boolean hasFocus, int row, int column) {
-					super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
-							row, column);
-					setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-					return this;
-				}
-				
-			});
-		}
-		
-	}
-	
-	private class UnitPricesAndQuantitiesTableModel extends AbstractTableModel {
-
-		private Product product;
-		
-		public void setProduct(Product product) {
-			this.product = product;
-			fireTableDataChanged();
-		}
-		
-		@Override
-		public int getRowCount() {
-			return 3;
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 6;
-		}
-
-		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			switch (rowIndex) {
-			case 0:
-				if (columnIndex == 0) {
-					return Unit.CASE;
-				} else if (columnIndex == 3) {
-					return Unit.TIE;
-				}
-				break;
-			case 1:
-				if (columnIndex == 0) {
-					return Unit.CARTON;
-				} else if (columnIndex == 3) {
-					return Unit.DOZEN;
-				}
-				break;
-			case 2:
-				switch (columnIndex) {
-				case 0:
-					return Unit.PIECES;
-				case 3:
-				case 4:
-				case 5:
-					return "";
-				}
-				break;
-			}
-			
-			if (product == null) {
-				switch (columnIndex) {
-				case 1:
-				case 4:
-					return "0";
-				case 2:
-				case 5:
-					return FormatterUtil.formatAmount(BigDecimal.ZERO);
-				}
-			}
-			
 			product = productService.findProductByCodeAndPricingScheme(
 					product.getCode(), salesRequisition.getPricingScheme());
-			
-			if (rowIndex == 0) {
-				switch (columnIndex) {
-				case 1:
-					return String.valueOf(product.getUnitQuantity(Unit.CASE));
-				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CASE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				case 4:
-					return String.valueOf(product.getUnitQuantity(Unit.TIE));
-				case 5:
-					unitPrice = product.getUnitPrice(Unit.TIE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				}
-			} else if (rowIndex == 1) {
-				switch (columnIndex) {
-				case 1:
-					return String.valueOf(product.getUnitQuantity(Unit.CARTON));
-				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CARTON);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				case 4:
-					return String.valueOf(product.getUnitQuantity(Unit.DOZEN));
-				case 5:
-					unitPrice = product.getUnitPrice(Unit.DOZEN);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				}
-			} else if (rowIndex == 2) {
-				switch (columnIndex) {
-				case 1:
-					return String.valueOf(product.getUnitQuantity(Unit.PIECES));
-				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.PIECES);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
-					}
-					return FormatterUtil.formatAmount(unitPrice);
-				}
-			}
-			return "";
+			productInfoTable.setProduct(product);
+		} else {
+			productInfoTable.setProduct(null);
 		}
-		
 	}
-
+	
 	private void postSalesRequisition() {
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();
@@ -889,7 +747,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 5;
 		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane infoTableScrollPane = new JScrollPane(new UnitPricesAndQuantitiesTable());
+		JScrollPane infoTableScrollPane = new JScrollPane(productInfoTable);
 		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
 		mainPanel.add(infoTableScrollPane, c);
 		
