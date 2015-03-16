@@ -14,6 +14,7 @@ import com.pj.magic.util.FormatterUtil;
 public class ProductInfoTable extends JTable {
 
 	private ProductInfoTableModel tableModel;
+	private boolean showCost;
 	
 	public ProductInfoTable() {
 		tableModel = new ProductInfoTableModel();
@@ -39,6 +40,10 @@ public class ProductInfoTable extends JTable {
 	
 	public void setProduct(Product product) {
 		tableModel.setProduct(product);
+	}
+	
+	public void setShowCost(boolean showCost) {
+		this.showCost = showCost;
 	}
 	
 	private class ProductInfoTableModel extends AbstractTableModel {
@@ -105,52 +110,60 @@ public class ProductInfoTable extends JTable {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.CASE));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CASE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					BigDecimal displayValue = getDisplayValue(Unit.CASE);
+					if (displayValue == null) {
+						displayValue = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(displayValue);
 				case 4:
 					return String.valueOf(product.getUnitQuantity(Unit.TIE));
 				case 5:
-					unitPrice = product.getUnitPrice(Unit.TIE);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					displayValue = getDisplayValue(Unit.TIE);
+					if (displayValue == null) {
+						displayValue = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(displayValue);
 				}
 			} else if (rowIndex == 1) {
 				switch (columnIndex) {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.CARTON));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.CARTON);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					BigDecimal displayValue = getDisplayValue(Unit.CARTON);
+					if (displayValue == null) {
+						displayValue = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(displayValue);
 				case 4:
 					return String.valueOf(product.getUnitQuantity(Unit.DOZEN));
 				case 5:
-					unitPrice = product.getUnitPrice(Unit.DOZEN);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					displayValue = getDisplayValue(Unit.DOZEN);
+					if (displayValue == null) {
+						displayValue = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(displayValue);
 				}
 			} else if (rowIndex == 2) {
 				switch (columnIndex) {
 				case 1:
 					return String.valueOf(product.getUnitQuantity(Unit.PIECES));
 				case 2:
-					BigDecimal unitPrice = product.getUnitPrice(Unit.PIECES);
-					if (unitPrice == null) {
-						unitPrice = BigDecimal.ZERO;
+					BigDecimal displayValue = getDisplayValue(Unit.PIECES);
+					if (displayValue == null) {
+						displayValue = BigDecimal.ZERO;
 					}
-					return FormatterUtil.formatAmount(unitPrice);
+					return FormatterUtil.formatAmount(displayValue);
 				}
 			}
 			return "";
+		}
+		
+		private BigDecimal getDisplayValue(String unit) {
+			if (showCost) {
+				return product.getGrossCost(unit);
+			} else {
+				return product.getUnitPrice(unit);
+			}
 		}
 		
 	}
