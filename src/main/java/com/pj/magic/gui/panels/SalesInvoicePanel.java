@@ -20,15 +20,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.filechooser.FileFilter;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.ExcelFileFilter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
@@ -45,6 +44,7 @@ import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.HtmlUtil;
 
 @Component
 public class SalesInvoicePanel extends StandardMagicPanel {
@@ -96,18 +96,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		
 		excelFileChooser = new JFileChooser();
 		excelFileChooser.setCurrentDirectory(new File(FileUtil.getDesktopFolderPath()));
-		excelFileChooser.setFileFilter(new FileFilter() {
-			
-			@Override
-			public String getDescription() {
-				return "Excel workbook (*.xlsx)";
-			}
-			
-			@Override
-			public boolean accept(File f) {
-				return FilenameUtils.getExtension(f.getName()).equals("xlsx");
-			}
-		});
+		excelFileChooser.setFileFilter(ExcelFileFilter.getInstance());
 		
 		focusOnComponentWhenThisPanelIsDisplayed(itemsTable);
 		updateTotalsPanelWhenItemsTableChanges();
@@ -129,7 +118,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		modeField.setText(salesInvoice.getMode());
 		remarksField.setText(salesInvoice.getRemarks());
 		paymentTermNameField.setText(salesInvoice.getPaymentTerm().getName());
-		statusField.setText("<html><u><font color=\"blue\">" + salesInvoice.getStatus() + "</font></u></html>");
+		statusField.setText(HtmlUtil.blueUnderline(salesInvoice.getStatus()));
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
 		totalAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalAmount()));
 		totalDiscountedAmountField.setText(FormatterUtil.formatAmount(salesInvoice.getTotalDiscounts()));
