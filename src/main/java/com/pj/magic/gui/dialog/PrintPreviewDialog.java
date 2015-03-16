@@ -67,6 +67,9 @@ public class PrintPreviewDialog extends MagicDialog {
 
 	private void jumpToPage() {
 		Integer targetPage = pageField.getTextAsInteger();
+		if (targetPage == null) {
+			return;
+		}
 		if (targetPage != null && !(targetPage >= 1 && targetPage <= totalPages)) {
 			showErrorMessage("Invalid page");
 			return;
