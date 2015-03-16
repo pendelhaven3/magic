@@ -38,7 +38,7 @@ public class AdjustmentOut {
 		return !items.isEmpty();
 	}
 	
-	public int getTotalNumberOfItems() {
+	public int getTotalItems() {
 		return items.size();
 	}
 	
