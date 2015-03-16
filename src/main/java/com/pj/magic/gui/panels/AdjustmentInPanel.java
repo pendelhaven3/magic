@@ -129,7 +129,7 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalItemsField.setText(String.valueOf(adjustmentIn.getTotalNumberOfItems()));
+				totalItemsField.setText(String.valueOf(adjustmentIn.getTotalItems()));
 				totalAmountField.setText(FormatterUtil.formatAmount(adjustmentIn.getTotalAmount()));
 			}
 		});
@@ -159,7 +159,7 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		}
 		remarksField.setEnabled(!adjustmentIn.isPosted());
 		remarksField.setText(adjustmentIn.getRemarks());
-		totalItemsField.setText(String.valueOf(adjustmentIn.getTotalNumberOfItems()));
+		totalItemsField.setText(String.valueOf(adjustmentIn.getTotalItems()));
 		totalAmountField.setText(adjustmentIn.getTotalAmount().toString());
 		postButton.setEnabled(!adjustmentIn.isPosted());
 		addItemButton.setEnabled(!adjustmentIn.isPosted());
