@@ -142,15 +142,15 @@ public class InventoryCheck {
 				boolean include = true;
 				
 				if (!StringUtils.isEmpty(codeOrDescription)) {
-					include = include && product.getCode().startsWith(codeOrDescription) ||
+					include = product.getCode().startsWith(codeOrDescription) ||
 							product.getDescription().toUpperCase().contains(codeOrDescription);
 				}
 				
 				if (include && withDiscrepancy != null) {
 					if (withDiscrepancy) {
-						include = include && (input.getBeginningInventory() != input.getQuantity());
+						include = (input.getBeginningInventory() != input.getQuantity());
 					} else {
-						include = include && (input.getBeginningInventory() == input.getQuantity());
+						include = (input.getBeginningInventory() == input.getQuantity());
 					}
 				}
 				
