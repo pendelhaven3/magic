@@ -5,8 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,6 +20,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.SalesReturnItem;
+import com.pj.magic.model.search.SalesReturnItemSearchCriteria;
 
 @Repository
 public class SalesReturnItemDaoImpl extends MagicDao implements SalesReturnItemDao {
@@ -30,7 +33,9 @@ public class SalesReturnItemDaoImpl extends MagicDao implements SalesReturnItemD
 			+ " join SALES_INVOICE_ITEM b"
 			+ "   on b.ID = a.SALES_INVOICE_ITEM_ID"
 			+ " join PRODUCT c"
-			+ "   on c.ID = b.PRODUCT_ID";
+			+ "   on c.ID = b.PRODUCT_ID"
+			+ " join SALES_RETURN d"
+			+ "   on d.ID = a.SALES_RETURN_ID";
 	
 	private SalesReturnItemRowMapper salesReturnItemRowMapper = new SalesReturnItemRowMapper();
 	
@@ -39,8 +44,13 @@ public class SalesReturnItemDaoImpl extends MagicDao implements SalesReturnItemD
 	
 	@Override
 	public List<SalesReturnItem> findAllBySalesReturn(SalesReturn salesReturn) {
-		return getJdbcTemplate().query(FIND_ALL_BY_SALES_RETURN_SQL, salesReturnItemRowMapper,
-				salesReturn.getId());
+		List<SalesReturnItem> items = 
+				getJdbcTemplate().query(FIND_ALL_BY_SALES_RETURN_SQL, salesReturnItemRowMapper,
+						salesReturn.getId());
+		for (SalesReturnItem item : items) {
+			item.setParent(salesReturn);
+		}
+		return items;
 	}
 
 	private class SalesReturnItemRowMapper implements RowMapper<SalesReturnItem> {
@@ -128,6 +138,31 @@ public class SalesReturnItemDaoImpl extends MagicDao implements SalesReturnItemD
 	@Override
 	public void deleteAllBySalesReturn(SalesReturn salesReturn) {
 		getJdbcTemplate().update(DELETE_ALL_BY_SALES_RETURN_SQL, salesReturn.getId());
+	}
+
+	@Override
+	public List<SalesReturnItem> search(SalesReturnItemSearchCriteria criteria) {
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		List<Object> params = new ArrayList<>();
+		
+		if (criteria.getProduct() != null) {
+			sql.append(" and b.PRODUCT_ID = ?");
+			params.add(criteria.getProduct().getId());
+		}
+		
+		if (!StringUtils.isEmpty(criteria.getUnit())) {
+			sql.append(" and b.UNIT = ?");
+			params.add(criteria.getUnit());
+		}
+		
+		if (criteria.getSalesInvoice() != null) {
+			sql.append(" and d.SALES_INVOICE_ID = ?");
+			params.add(criteria.getSalesInvoice().getId());
+		}
+		
+		return getJdbcTemplate().query(sql.toString(), salesReturnItemRowMapper, params.toArray());
 	}
 	
 }

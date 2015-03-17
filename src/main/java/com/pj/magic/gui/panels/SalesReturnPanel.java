@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.exception.SalesReturnItemQuantityExceededException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -501,12 +502,17 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		if (confirm("Do you want to post this Sales Return?")) {
 			try {
 				salesReturnService.post(salesReturn);
-				JOptionPane.showMessageDialog(this, "Sales Return posted");
-				updateDisplay(salesReturn);
+			} catch (SalesReturnItemQuantityExceededException e) {
+				showErrorMessage(e.getMessage());
+				return;
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");
+				return;
 			}
+			
+			JOptionPane.showMessageDialog(this, "Sales Return posted");
+			updateDisplay(salesReturn);
 		}
 	}
 

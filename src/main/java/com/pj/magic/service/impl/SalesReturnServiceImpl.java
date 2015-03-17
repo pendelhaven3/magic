@@ -12,6 +12,7 @@ import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.dao.SalesReturnItemDao;
+import com.pj.magic.exception.SalesReturnItemQuantityExceededException;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.Product;
@@ -19,6 +20,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.SalesReturnItem;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.SalesReturnItemSearchCriteria;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.SalesInvoiceService;
@@ -83,8 +85,14 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 	public void post(SalesReturn salesReturn) {
 		SalesReturn updated = salesReturnDao.get(salesReturn.getId());
 		updated.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
+		updated.setSalesInvoice(salesInvoiceService.get(updated.getSalesInvoice().getId()));
 		
 		for (SalesReturnItem item : updated.getItems()) {
+			int totalQuantity = findTotalQuantityFromAllSalesReturnsOfSalesInvoice(item);
+			if (totalQuantity > item.getSalesInvoiceItem().getQuantity()) {
+				throw new SalesReturnItemQuantityExceededException(item);
+			}
+			
 			Product product = productDao.get(item.getSalesInvoiceItem().getProduct().getId());
 			product.addUnitQuantity(item.getSalesInvoiceItem().getUnit(), item.getQuantity());
 			productDao.updateAvailableQuantities(product);
@@ -93,6 +101,19 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		updated.setPostDate(new Date());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		salesReturnDao.save(updated);
+	}
+
+	private int findTotalQuantityFromAllSalesReturnsOfSalesInvoice(SalesReturnItem item) {
+		SalesReturnItemSearchCriteria criteria = new SalesReturnItemSearchCriteria();
+		criteria.setProduct(item.getSalesInvoiceItem().getProduct());
+		criteria.setUnit(item.getSalesInvoiceItem().getUnit());
+		criteria.setSalesInvoice(item.getParent().getSalesInvoice());
+		
+		int total = 0;
+		for (SalesReturnItem salesReturnItem : salesReturnItemDao.search(criteria)) {
+			total += salesReturnItem.getQuantity();
+		}
+		return total;
 	}
 
 	@Override

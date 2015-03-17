@@ -517,7 +517,7 @@ public class SalesReturnItemsTable extends MagicTable {
 				SalesReturnItemRowItem rowItem = getCurrentlySelectedRowItem();
 				SalesInvoiceItem item = salesReturn.getSalesInvoice()
 						.findItemByProductAndUnit(rowItem.getProduct(), rowItem.getUnit());
-				if (Integer.parseInt(quantity) > item.getQuantity()) { // TODO: Consider other Sales Return?
+				if (Integer.parseInt(quantity) > item.getQuantity()) {
 					showErrorMessage("Quantity cannot be more than Sales Invoice item quantity");
 				} else {
 					valid = true;
