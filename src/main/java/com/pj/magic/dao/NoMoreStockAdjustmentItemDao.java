@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.NoMoreStockAdjustmentItem;
+import com.pj.magic.model.search.NoMoreStockAdjustmentItemSearchCriteria;
 
 public interface NoMoreStockAdjustmentItemDao {
 
@@ -14,5 +15,7 @@ public interface NoMoreStockAdjustmentItemDao {
 	void delete(NoMoreStockAdjustmentItem item);
 
 	void deleteAllByNoMoreStockAdjustment(NoMoreStockAdjustment noMoreStockAdjustment);
+
+	List<NoMoreStockAdjustmentItem> search(NoMoreStockAdjustmentItemSearchCriteria criteria);
 	
 }

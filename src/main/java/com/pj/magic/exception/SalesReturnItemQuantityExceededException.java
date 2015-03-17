@@ -11,7 +11,7 @@ public class SalesReturnItemQuantityExceededException extends RuntimeException {
 	}
 	
 	public String getMessage() {
-		StringBuilder sb = new StringBuilder("Quantity to return has exceeded Sales Invoice quantity:\n")
+		StringBuilder sb = new StringBuilder("Total quantity from all Sales Returns has exceeded Sales Invoice quantity:\n")
 			.append(item.getQuantity()).append(" ")
 			.append(item.getSalesInvoiceItem().getUnit()).append(" ")
 			.append(item.getSalesInvoiceItem().getProduct().getDescription());

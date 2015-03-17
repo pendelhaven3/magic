@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.exception.NoMoreStockAdjustmentItemQuantityExceededException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -471,12 +472,17 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		if (confirm("Do you want to post this No More Stock Adjustment?")) {
 			try {
 				noMoreStockAdjustmentService.post(noMoreStockAdjustment);
-				JOptionPane.showMessageDialog(this, "No More Stock Adjustment posted");
-				updateDisplay(noMoreStockAdjustment);
+			} catch (NoMoreStockAdjustmentItemQuantityExceededException e) {
+				showErrorMessage(e.getMessage());
+				return;
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");
+				return;
 			}
+			
+			JOptionPane.showMessageDialog(this, "No More Stock Adjustment posted");
+			updateDisplay(noMoreStockAdjustment);
 		}
 	}
 

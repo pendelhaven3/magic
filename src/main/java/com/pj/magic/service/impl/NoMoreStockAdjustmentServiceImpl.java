@@ -14,12 +14,14 @@ import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.exception.AlreadyPostedException;
+import com.pj.magic.exception.NoMoreStockAdjustmentItemQuantityExceededException;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.NoMoreStockAdjustmentItem;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.NoMoreStockAdjustmentItemSearchCriteria;
 import com.pj.magic.model.search.NoMoreStockAdjustmentSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.NoMoreStockAdjustmentService;
@@ -89,10 +91,34 @@ public class NoMoreStockAdjustmentServiceImpl implements NoMoreStockAdjustmentSe
 					noMoreStockAdjustment.getNoMoreStockAdjustmentNumber());
 		}
 		
+		updated.setItems(noMoreStockAdjustmentItemDao.findAllByNoMoreStockAdjustment(updated));
+		updated.setSalesInvoice(salesInvoiceService.get(updated.getSalesInvoice().getId()));
+		
+		for (NoMoreStockAdjustmentItem item : updated.getItems()) {
+			int totalQuantity = findTotalQuantityFromAllNoMoreStockAdjustmentsOfSalesInvoice(item);
+			if (totalQuantity > item.getSalesInvoiceItem().getQuantity()) {
+				throw new NoMoreStockAdjustmentItemQuantityExceededException(item);
+			}
+		}
+		
 		updated.setPosted(true);
 		updated.setPostDate(new Date());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		noMoreStockAdjustmentDao.save(updated);
+	}
+
+	private int findTotalQuantityFromAllNoMoreStockAdjustmentsOfSalesInvoice(NoMoreStockAdjustmentItem item) {
+		NoMoreStockAdjustmentItemSearchCriteria criteria = new NoMoreStockAdjustmentItemSearchCriteria();
+		criteria.setProduct(item.getSalesInvoiceItem().getProduct());
+		criteria.setUnit(item.getSalesInvoiceItem().getUnit());
+		criteria.setSalesInvoice(item.getParent().getSalesInvoice());
+		
+		int total = 0;
+		for (NoMoreStockAdjustmentItem noMoreStockAdjustmentItem : 
+				noMoreStockAdjustmentItemDao.search(criteria)) {
+			total += noMoreStockAdjustmentItem.getQuantity();
+		}
+		return total;
 	}
 
 	@Override
