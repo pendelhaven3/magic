@@ -37,6 +37,7 @@ from (
 		join SALES_INVOICE d
 		  on d.ID = a.SALES_INVOICE_ID
 		where a.POST_IND = 'Y'
+		and a.CANCEL_IND = 'N'
         and a.POST_DT >= :fromDate
         and a.POST_DT < date_add(:toDate, interval 1 day)
 	) agg
@@ -120,6 +121,7 @@ from (
 		join PRODUCT e
 		  on e.ID = c.PRODUCT_ID
 		where a.POST_IND = 'Y'
+		and a.CANCEL_IND = 'N'
 		and (d.CUSTOMER_ID = :customer or '' = :customer)
         and a.POST_DT >= :fromDate
         and a.POST_DT < date_add(:toDate, interval 1 day)
