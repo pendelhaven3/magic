@@ -149,9 +149,7 @@ public class Payment {
 	public BigDecimal getTotalAdjustedAmount() {
 		BigDecimal total = Constants.ZERO;
 		for (PaymentSalesInvoice paymentSalesInvoice : salesInvoices) {
-			if (paymentSalesInvoice.getAdjustedAmount() != null) {
-				total = total.add(paymentSalesInvoice.getAdjustedAmount());
-			}
+			total = total.add(paymentSalesInvoice.getAdjustedAmount());
 		}
 		return total;
 	}

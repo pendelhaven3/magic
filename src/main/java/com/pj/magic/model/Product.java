@@ -268,9 +268,9 @@ public class Product implements Comparable<Product> {
 			}
 		}
 		if (hasUnit(unit)) {
-			unitCosts.add(new UnitCost(unit));
+			unitCosts.add(new UnitCost(unit, Constants.ZERO, Constants.ZERO));
 		}
-		return BigDecimal.ZERO;
+		return Constants.ZERO;
 	}
 
 	public void setFinalCost(String unit, BigDecimal finalCost) {
@@ -280,7 +280,7 @@ public class Product implements Comparable<Product> {
 				return;
 			}
 		}
-		unitCosts.add(new UnitCost(unit, BigDecimal.ZERO, finalCost));
+		unitCosts.add(new UnitCost(unit, Constants.ZERO, finalCost));
 	}
 
 	public BigDecimal getFinalCost(String unit) {
@@ -290,9 +290,9 @@ public class Product implements Comparable<Product> {
 			}
 		}
 		if (hasUnit(unit)) {
-			unitCosts.add(new UnitCost(unit));
+			unitCosts.add(new UnitCost(unit, Constants.ZERO, Constants.ZERO));
 		}
-		return BigDecimal.ZERO;
+		return Constants.ZERO;
 	}
 	
 	public boolean isMaxUnit(String unit) {
@@ -317,12 +317,12 @@ public class Product implements Comparable<Product> {
 
 	public BigDecimal getPercentProfit(String unit) {
 		BigDecimal sellingPrice = getUnitPrice(unit);
-		if (sellingPrice.equals(BigDecimal.ZERO.setScale(2))) {
-			return BigDecimal.ZERO.setScale(2);
+		if (sellingPrice.equals(Constants.ZERO)) {
+			return Constants.ZERO;
 		}
 		
 		BigDecimal finalCost = getFinalCost(unit);
-		if (finalCost.equals(BigDecimal.ZERO.setScale(2))) {
+		if (finalCost.equals(Constants.ZERO)) {
 			return Constants.ONE_HUNDRED;
 		}
 		
