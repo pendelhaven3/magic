@@ -31,7 +31,6 @@ public class StatusDetailsDialog extends MagicDialog {
 	private boolean showCancelFields;
 	
 	public StatusDetailsDialog() {
-		setSize(320, 180);
 		setLocationRelativeTo(null);
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 		initializeComponents();
@@ -154,6 +153,7 @@ public class StatusDetailsDialog extends MagicDialog {
 	}
 	
 	public void updateDisplay(ReceivingReceipt receivingReceipt) {
+		setSize(320, 180);
 		setTitle("Receiving Receipt Status");
 		showPaidFields = false;
 		showCancelFields = true;
@@ -170,9 +170,10 @@ public class StatusDetailsDialog extends MagicDialog {
 	}
 
 	public void updateDisplay(SalesReturn salesReturn) {
+		setSize(320, 240);
 		setTitle("Sales Return Status");
 		showPaidFields = true;
-		showCancelFields = false;
+		showCancelFields = true;
 		layoutMainPanel();
 		
 		postDateLabel.setText(salesReturn.isPosted() ? 
@@ -183,9 +184,14 @@ public class StatusDetailsDialog extends MagicDialog {
 				FormatterUtil.formatDateTime(salesReturn.getPaidDate()) : "-");
 		paidByLabel.setText(salesReturn.isPaid() ? 
 				salesReturn.getPaidBy().getUsername() : "-");
+		cancelDateLabel.setText(salesReturn.isCancelled() ? 
+				FormatterUtil.formatDateTime(salesReturn.getCancelDate()) : "-");
+		cancelledByLabel.setText(salesReturn.isPaid() ? 
+				salesReturn.getCancelledBy().getUsername() : "-");
 	}
 
 	public void updateDisplay(BadStockReturn badStockReturn) {
+		setSize(320, 180);
 		setTitle("Bad Stock Return Status");
 		showPaidFields = true;
 		showCancelFields = false;
@@ -202,6 +208,7 @@ public class StatusDetailsDialog extends MagicDialog {
 	}
 
 	public void updateDisplay(NoMoreStockAdjustment noMoreStockAdjustment) {
+		setSize(320, 180);
 		setTitle("No More Stock Adjustment Status");
 		showPaidFields = true;
 		showCancelFields = false;
