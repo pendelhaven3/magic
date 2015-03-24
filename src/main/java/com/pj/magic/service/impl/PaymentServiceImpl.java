@@ -108,6 +108,7 @@ public class PaymentServiceImpl implements PaymentService {
 		criteria.setSalesInvoice(salesInvoice);
 		criteria.setPosted(true);
 		criteria.setPaid(false);
+		criteria.setCancelled(false);
 		
 		return salesReturnService.search(criteria);
 	}
@@ -332,6 +333,7 @@ public class PaymentServiceImpl implements PaymentService {
 		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
 		criteria.setSalesInvoice(salesInvoice);
 		criteria.setPosted(true);
+		criteria.setCancelled(false);
 		return salesReturnService.search(criteria);
 	}
 	

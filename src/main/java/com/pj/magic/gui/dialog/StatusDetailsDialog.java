@@ -186,7 +186,7 @@ public class StatusDetailsDialog extends MagicDialog {
 				salesReturn.getPaidBy().getUsername() : "-");
 		cancelDateLabel.setText(salesReturn.isCancelled() ? 
 				FormatterUtil.formatDateTime(salesReturn.getCancelDate()) : "-");
-		cancelledByLabel.setText(salesReturn.isPaid() ? 
+		cancelledByLabel.setText(salesReturn.isCancelled() ? 
 				salesReturn.getCancelledBy().getUsername() : "-");
 	}
 

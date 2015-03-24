@@ -36,18 +36,6 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	
-	@Override
-	public List<SalesReturn> getNewSalesReturns() {
-		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
-		criteria.setPosted(false);
-		
-		List<SalesReturn> salesReturns = salesReturnDao.search(criteria);
-		for (SalesReturn salesReturn : salesReturns) {
-			salesReturn.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
-		}
-		return salesReturns;
-	}
-
 	@Transactional
 	@Override
 	public void save(SalesReturn salesReturn) {
@@ -130,6 +118,7 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
 		criteria.setSalesInvoice(salesInvoice);
 		criteria.setPosted(true);
+		criteria.setCancelled(false);
 		
 		return search(criteria);
 	}
@@ -174,6 +163,7 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 	public List<SalesReturn> getUnpaidSalesReturns() {
 		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
 		criteria.setPaid(false);
+		criteria.setCancelled(false);
 		
 		List<SalesReturn> salesReturns = salesReturnDao.search(criteria);
 		for (SalesReturn salesReturn : salesReturns) {

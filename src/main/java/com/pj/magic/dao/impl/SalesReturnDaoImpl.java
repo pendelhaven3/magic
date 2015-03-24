@@ -251,6 +251,11 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			params.add(criteria.getPaymentTerminal().getId());
 		}
 		
+		if (criteria.getCancelled() != null) {
+			sql.append(" and a.CANCEL_IND = ?");
+			params.add(criteria.getCancelled() ? "Y" : "N");
+		}
+		
 		sql.append(" order by SALES_RETURN_NO desc");
 		
 		return getJdbcTemplate().query(sql.toString(), salesReturnRowMapper, params.toArray());

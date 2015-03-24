@@ -22,6 +22,7 @@ public class SalesReturnSearchCriteria {
 	private SalesInvoice salesInvoice;
 	private Payment payment;
 	private PaymentTerminal paymentTerminal;
+	private Boolean cancelled;
 
 	public Long getSalesReturnNumber() {
 		return salesReturnNumber;
@@ -117,6 +118,14 @@ public class SalesReturnSearchCriteria {
 
 	public void setPaymentTerminal(PaymentTerminal paymentTerminal) {
 		this.paymentTerminal = paymentTerminal;
+	}
+
+	public Boolean getCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(Boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 }
