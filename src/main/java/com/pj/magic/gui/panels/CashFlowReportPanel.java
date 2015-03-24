@@ -248,6 +248,7 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 		SalesReturnSearchCriteria criteria = new SalesReturnSearchCriteria();
 		criteria.setPaid(true);
 		criteria.setPaidDate(paymentDateModel.getValue().getTime());
+		criteria.setCancelled(false);
 		criteria.setPaymentTerminal((PaymentTerminal)paymentTerminalComboBox.getSelectedItem());
 		
 		switch (timePeriodComboBox.getSelectedIndex()) {
