@@ -213,7 +213,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		this.salesReturn = salesReturn = salesReturnService.getSalesReturn(salesReturn.getId());
 		
 		salesReturnNumberField.setText(salesReturn.getSalesReturnNumber().toString());
-		salesInvoiceNumberField.setEnabled(!salesReturn.isPosted());
+		salesInvoiceNumberField.setEnabled(salesReturn.isNew());
 		salesInvoiceNumberField.setText(salesReturn.getSalesInvoice().getSalesInvoiceNumber().toString());
 		statusField.setText(HtmlUtil.blueUnderline(salesReturn.getStatus()));
 		
@@ -221,14 +221,15 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		customerField.setText(customer.getCode() + " - " + customer.getName());
 		
 		remarksField.setText(salesReturn.getRemarks());
-		remarksField.setEnabled(!salesReturn.isPosted());
+		remarksField.setEnabled(salesReturn.isNew());
 		
 		itemsTable.setSalesReturn(salesReturn);
 		
-		postButton.setEnabled(!salesReturn.isPosted());
-		markAsPaidButton.setEnabled(salesReturn.isPosted() && !salesReturn.isPaid());
-		addItemButton.setEnabled(!salesReturn.isPosted());
-		deleteItemButton.setEnabled(!salesReturn.isPosted());
+		postButton.setEnabled(salesReturn.isNew());
+		markAsPaidButton.setEnabled(salesReturn.isPosted() && !salesReturn.isPaid() 
+				&& !salesReturn.isCancelled());
+		addItemButton.setEnabled(salesReturn.isNew());
+		deleteItemButton.setEnabled(salesReturn.isNew());
 		printButton.setEnabled(true);
 		printPreviewButton.setEnabled(true);
 	}

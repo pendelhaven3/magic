@@ -131,7 +131,7 @@ public class SalesReturnItemsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if (salesReturn.isPosted()) {
+		if (!salesReturn.isNew()) {
 			return false;
 		}
 		

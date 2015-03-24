@@ -33,10 +33,11 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 	
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, SALES_RETURN_NO, SALES_INVOICE_ID, b.SALES_INVOICE_NO, a.POST_IND, a.POST_DT, a.POST_BY,"
-			+ " PAID_IND, PAID_BY, PAID_DT, a.REMARKS,"
+			+ " PAID_IND, PAID_BY, PAID_DT, a.REMARKS, a.CANCEL_IND, a.CANCEL_BY, a.CANCEL_DT,"
 			+ " b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME,"
 			+ " d.USERNAME as POST_BY_USERNAME,"
 			+ " e.USERNAME as PAID_BY_USERNAME,"
+			+ " g.USERNAME as CANCEL_BY_USERNAME,"
 			+ " a.PAYMENT_TERMINAL_ID, f.NAME as PAYMENT_TERMINAL_NAME"
 			+ " from SALES_RETURN a"
 			+ " join SALES_INVOICE b"
@@ -48,7 +49,9 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			+ " left join USER e"
 			+ "   on e.ID = a.PAID_BY"
 			+ " left join PAYMENT_TERMINAL f"
-			+ "   on f.ID = a.PAYMENT_TERMINAL_ID";
+			+ "   on f.ID = a.PAYMENT_TERMINAL_ID"
+			+ " left join USER g"
+			+ "   on g.ID = a.CANCEL_BY";
 	
 	private SalesReturnRowMapper salesReturnRowMapper = new SalesReturnRowMapper();
 	
@@ -70,6 +73,12 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			if (salesReturn.isPosted()) {
 				salesReturn.setPostDate(rs.getTimestamp("POST_DT"));
 				salesReturn.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			}
+			
+			salesReturn.setCancelled("Y".equals(rs.getString("CANCEL_IND")));
+			if (salesReturn.isCancelled()) {
+				salesReturn.setCancelDate(rs.getTimestamp("CANCEL_DT"));
+				salesReturn.setCancelledBy(new User(rs.getLong("CANCEL_BY"), rs.getString("CANCEL_BY_USERNAME")));
 			}
 			
 			salesReturn.setPaid("Y".equals(rs.getString("PAID_IND")));
@@ -98,7 +107,8 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 
 	private static final String UPDATE_SQL =
 			"update SALES_RETURN set SALES_INVOICE_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
-			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ?, REMARKS = ? where ID = ?";
+			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ?,"
+			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?, REMARKS = ? where ID = ?";
 	
 	private void update(SalesReturn salesReturn) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -110,6 +120,9 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 				salesReturn.isPaid() ? salesReturn.getPaidDate() : null,
 				salesReturn.isPaid() ? salesReturn.getPaidBy().getId() : null,
 				salesReturn.isPaid() ? salesReturn.getPaymentTerminal().getId() : null,
+				salesReturn.isCancelled() ? "Y" : "N",
+				salesReturn.isCancelled() ? salesReturn.getCancelDate() : null,
+				salesReturn.isCancelled() ? salesReturn.getCancelledBy().getId() : null,
 				salesReturn.getRemarks(),
 				salesReturn.getId());
 	}
@@ -262,6 +275,15 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
+	}
+
+	private static final String FIND_ALL_BY_SALES_INVOICE_SQL = BASE_SELECT_SQL 
+			+ " where a.SALES_INVOICE_ID = ?";
+	
+	@Override
+	public List<SalesReturn> findAllBySalesInvoice(SalesInvoice salesInvoice) {
+		return getJdbcTemplate().query(FIND_ALL_BY_SALES_INVOICE_SQL, salesReturnRowMapper, 
+				salesInvoice.getId());
 	}
 	
 }

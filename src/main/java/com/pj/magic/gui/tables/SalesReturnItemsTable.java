@@ -252,7 +252,7 @@ public class SalesReturnItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (salesReturn.isPosted()) {
+				if (!salesReturn.isNew()) {
 					return;
 				}
 				switchToAddMode();
@@ -262,7 +262,7 @@ public class SalesReturnItemsTable extends MagicTable {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (salesReturn.isPosted()) {
+				if (!salesReturn.isNew()) {
 					return;
 				}
 				if (isProductCodeFieldSelected()) {
@@ -280,7 +280,7 @@ public class SalesReturnItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (salesReturn.isPosted()) {
+				if (!salesReturn.isNew()) {
 					return;
 				}
 				if (isEditing()) {
@@ -297,7 +297,7 @@ public class SalesReturnItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (salesReturn.isPosted()) {
+				if (!salesReturn.isNew()) {
 					return;
 				}
 				removeCurrentlySelectedItem();
@@ -308,7 +308,7 @@ public class SalesReturnItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (salesReturn.isPosted()) {
+				if (!salesReturn.isNew()) {
 					return;
 				}
 				if (isProductCodeFieldSelected()) {
