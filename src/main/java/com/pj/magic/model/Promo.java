@@ -2,6 +2,7 @@ package com.pj.magic.model;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.util.FormatterUtil;
@@ -13,15 +14,16 @@ public class Promo {
 	private String name;
 	private PromoType promoType;
 	private boolean active;
-	
+	private Date startDate;
+
 	private PromoType1Rule promoType1Rule;
 	private List<PromoType2Rule> promoType2Rules;
 	private PromoType3Rule promoType3Rule;
-	
+
 	public Promo() {
 		// default constructor
 	}
-	
+
 	public Promo(long id) {
 		this.id = id;
 	}
@@ -52,16 +54,16 @@ public class Promo {
 
 	public String getMechanicsDescription() {
 		String mechanics = null;
-		
+
 		switch (promoType) {
 		case PROMO_TYPE_1:
 			mechanics = "For every P{0} worth of {1} products, get {2} {3} {4}";
-			return MessageFormat.format(mechanics,
-					FormatterUtil.formatAmount(promoType1Rule.getTargetAmount()),
-					promoType1Rule.getManufacturer().getName(),
-					promoType1Rule.getQuantity().toString(),
-					promoType1Rule.getUnit(),
-					promoType1Rule.getProduct().getDescription());
+			return MessageFormat.format(mechanics, FormatterUtil
+					.formatAmount(promoType1Rule.getTargetAmount()),
+					promoType1Rule.getManufacturer().getName(), promoType1Rule
+							.getQuantity().toString(),
+					promoType1Rule.getUnit(), promoType1Rule.getProduct()
+							.getDescription());
 		case PROMO_TYPE_2:
 			StringBuilder sb = new StringBuilder();
 			for (PromoType2Rule rule : promoType2Rules) {
@@ -69,22 +71,20 @@ public class Promo {
 				if (sb.length() > 0) {
 					sb.append("\n");
 				}
-				sb.append(MessageFormat.format(mechanics, 
-						rule.getPromoQuantity(),
-						rule.getPromoUnit(),
-						rule.getPromoProduct().getDescription(),
-						rule.getFreeQuantity(),
-						rule.getFreeUnit(),
-						rule.getFreeProduct().getDescription()));
+				sb.append(MessageFormat.format(mechanics, rule
+						.getPromoQuantity(), rule.getPromoUnit(), rule
+						.getPromoProduct().getDescription(), rule
+						.getFreeQuantity(), rule.getFreeUnit(), rule
+						.getFreeProduct().getDescription()));
 			}
 			return sb.toString();
 		case PROMO_TYPE_3:
 			mechanics = "Buy {0} worth of participating products, get {1} {2} {3} free";
-			return MessageFormat.format(mechanics,
-					FormatterUtil.formatAmount(promoType3Rule.getTargetAmount()),
-					promoType3Rule.getFreeQuantity().toString(),
-					promoType3Rule.getFreeUnit(),
-					promoType3Rule.getFreeProduct().getDescription());
+			return MessageFormat.format(mechanics, FormatterUtil
+					.formatAmount(promoType3Rule.getTargetAmount()),
+					promoType3Rule.getFreeQuantity().toString(), promoType3Rule
+							.getFreeUnit(), promoType3Rule.getFreeProduct()
+							.getDescription());
 		default:
 			return null;
 		}
@@ -114,11 +114,13 @@ public class Promo {
 		this.active = active;
 	}
 
-	public List<PromoRedemptionReward> evaluate(SalesRequisition salesRequisition) {
+	public List<PromoRedemptionReward> evaluate(
+			SalesRequisition salesRequisition) {
 		List<PromoRedemptionReward> rewards = new ArrayList<>();
 		for (PromoType2Rule rule : promoType2Rules) {
-			SalesRequisitionItem item = salesRequisition.findItemByProductAndUnit(
-					rule.getPromoProduct(), rule.getPromoUnit());
+			SalesRequisitionItem item = salesRequisition
+					.findItemByProductAndUnit(rule.getPromoProduct(),
+							rule.getPromoUnit());
 			if (item != null) {
 				PromoRedemptionReward reward = rule.evaluate(item);
 				if (reward != null) {
@@ -158,6 +160,14 @@ public class Promo {
 
 	public void setPromoType3Rule(PromoType3Rule promoType3Rule) {
 		this.promoType3Rule = promoType3Rule;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 
 }

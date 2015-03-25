@@ -22,7 +22,7 @@ import com.pj.magic.model.PromoType;
 public class PromoDaoImpl extends MagicDao implements PromoDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PROMO_NO, a.NAME, PROMO_TYPE_ID, a.ACTIVE_IND"
+			"select a.ID, PROMO_NO, a.NAME, PROMO_TYPE_ID, a.ACTIVE_IND, START_DT"
 			+ " from PROMO a";
 	
 	private static final String PROMO_NUMBER_SEQUENCE = "PROMO_NO_SEQ";
@@ -44,6 +44,7 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 			promo.setName(rs.getString("NAME"));
 			promo.setPromoType(PromoType.getPromoType(rs.getLong("PROMO_TYPE_ID")));
 			promo.setActive("Y".equals(rs.getString("ACTIVE_IND")));
+			promo.setStartDate(rs.getDate("START_DT"));
 			return promo;
 		}
 		
@@ -71,8 +72,8 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 
 	private static final String INSERT_SQL =
 			"insert into PROMO"
-			+ " (PROMO_NO, NAME, PROMO_TYPE_ID, ACTIVE_IND)"
-			+ " values (?, ?, ?, ?)";
+			+ " (PROMO_NO, NAME, PROMO_TYPE_ID, ACTIVE_IND, START_DT)"
+			+ " values (?, ?, ?, ?, ?)";
 	
 	private void insert(final Promo promo) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -86,6 +87,7 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 				ps.setString(2, promo.getName());
 				ps.setLong(3, promo.getPromoType().getId());
 				ps.setString(4, promo.isActive() ? "Y" : "N");
+				ps.setDate(5, new java.sql.Date(promo.getStartDate().getTime()));
 				return ps;
 			}
 
@@ -101,12 +103,13 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 	}
 
 	private static final String UPDATE_SQL = 
-			"update PROMO set NAME = ?, ACTIVE_IND = ? where ID = ?";
+			"update PROMO set NAME = ?, ACTIVE_IND = ?, START_DT = ? where ID = ?";
 	
 	private void update(Promo promo) {
 		getJdbcTemplate().update(UPDATE_SQL,
 				promo.getName(),
 				promo.isActive() ? "Y" : "N",
+				promo.getStartDate(),
 				promo.getId());
 	}
 

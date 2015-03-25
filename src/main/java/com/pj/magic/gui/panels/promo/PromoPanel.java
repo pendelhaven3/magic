@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -21,6 +22,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +34,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
 import com.pj.magic.exception.ValidationException;
+import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicButton;
 import com.pj.magic.gui.component.MagicTextField;
@@ -69,6 +76,7 @@ public class PromoPanel extends StandardMagicPanel {
 	private JLabel promoNumberLabel;
 	private MagicTextField nameField;
 	private JComboBox<PromoType> promoTypeComboBox;
+	private UtilCalendarModel startDateModel;
 	private JCheckBox activeCheckBox;
 	private JPanel promoDetailsPanel;
 	private JComboBox<Manufacturer> manufacturerComboBox;
@@ -93,6 +101,8 @@ public class PromoPanel extends StandardMagicPanel {
 		
 		promoTypeComboBox = new JComboBox<>();
 		promoTypeComboBox.setModel(ListUtil.toDefaultComboBoxModel(PromoType.getPromoTypes(), true));
+		
+		startDateModel = new UtilCalendarModel();
 		
 		activeCheckBox = new JCheckBox();
 		
@@ -253,6 +263,7 @@ public class PromoPanel extends StandardMagicPanel {
 
 	private void setCommonFieldsForSaving() {
 		promo.setName(nameField.getText());
+		promo.setStartDate(startDateModel.getValue().getTime());
 		promo.setActive(activeCheckBox.isSelected());
 	}
 
@@ -415,7 +426,24 @@ public class PromoPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(new JLabel("Active?"), c);
+		mainPanel.add(new JLabel("Start Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePanelImpl datePanel = new JDatePanelImpl(startDateModel);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		mainPanel.add(datePicker, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Active?"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
@@ -811,6 +839,7 @@ public class PromoPanel extends StandardMagicPanel {
 		nameField.setText(promo.getName());
 		promoTypeComboBox.setEnabled(false);
 		promoTypeComboBox.setSelectedItem(promo.getPromoType());
+		startDateModel.setValue(DateUtils.toCalendar(promo.getStartDate()));
 		activeCheckBox.setSelected(promo.isActive());
 		
 		updatePromoDetailsPanel();
@@ -894,6 +923,7 @@ public class PromoPanel extends StandardMagicPanel {
 		nameField.setText(null);
 		promoTypeComboBox.setEnabled(true);
 		promoTypeComboBox.setSelectedIndex(0);
+		startDateModel.setValue(Calendar.getInstance());
 		activeCheckBox.setSelected(true);
 		
 		promoDetailsPanel.setVisible(false);

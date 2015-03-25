@@ -869,6 +869,8 @@ create table PROMO (
   NAME varchar(100) not null,
   PROMO_TYPE_ID integer not null,
   ACTIVE_IND char(1) default 'Y' not null,
+  START_DT date not null,
+  END_DT date null,
   primary key (ID),
   unique key PROMO$UK (PROMO_NO)
 );
