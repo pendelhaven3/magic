@@ -34,7 +34,7 @@ public class PromoRedemptionPromoListPanel extends StandardMagicPanel {
 	private PromosTableModel tableModel;
 	
 	public void updateDisplay() {
-		List<Promo> promos = promoService.getAllPromos();
+		List<Promo> promos = promoService.getAllActivePromos();
 		tableModel.setPromos(promos);
 		if (!promos.isEmpty()) {
 			table.changeSelection(0, 0);
