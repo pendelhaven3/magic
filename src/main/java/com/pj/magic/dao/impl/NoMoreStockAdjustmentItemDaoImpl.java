@@ -43,9 +43,15 @@ public class NoMoreStockAdjustmentItemDaoImpl extends MagicDao implements NoMore
 			+ " where a.NO_MORE_STOCK_ADJUSTMENT_ID = ?";
 	
 	@Override
-	public List<NoMoreStockAdjustmentItem> findAllByNoMoreStockAdjustment(NoMoreStockAdjustment noMoreStockAdjustment) {
-		return getJdbcTemplate().query(FIND_ALL_BY_NO_MORE_STOCK_ADJUSTMENT_SQL, noMoreStockAdjustmentItemRowMapper,
-				noMoreStockAdjustment.getId());
+	public List<NoMoreStockAdjustmentItem> findAllByNoMoreStockAdjustment(
+			final NoMoreStockAdjustment noMoreStockAdjustment) {
+		List<NoMoreStockAdjustmentItem> items = 
+				getJdbcTemplate().query(FIND_ALL_BY_NO_MORE_STOCK_ADJUSTMENT_SQL, 
+						noMoreStockAdjustmentItemRowMapper, noMoreStockAdjustment.getId());
+		for (NoMoreStockAdjustmentItem item : items) {
+			item.setParent(noMoreStockAdjustment);
+		}
+		return items;
 	}
 
 	private class NoMoreStockAdjustmentItemRowMapper implements RowMapper<NoMoreStockAdjustmentItem> {
