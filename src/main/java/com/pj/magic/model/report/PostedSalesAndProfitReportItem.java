@@ -80,8 +80,8 @@ public class PostedSalesAndProfitReportItem {
 		transactionType = paymentAdjustment.getAdjustmentType().getCode();
 		transactionNumber = paymentAdjustment.getPaymentAdjustmentNumber();
 		customer = paymentAdjustment.getCustomer();
-		netAmount = paymentAdjustment.getAmount();
-		netProfit = paymentAdjustment.getAmount();
+		netAmount = paymentAdjustment.getAmount().negate();
+		netProfit = paymentAdjustment.getAmount().negate();
 	}
 
 	public Date getTransactionDate() {
