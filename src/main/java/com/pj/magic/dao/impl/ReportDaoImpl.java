@@ -122,7 +122,10 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 				item.setTransactionType("CANCELLED SALES RETURN");
 				item.setLessQuantity(rs.getInt("QUANTITY"));
 				break;
-			case "INVENTORY CHECK":
+			case "INVENTORY CHECK BEFORE":
+				item.setLessQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "INVENTORY CHECK AFTER":
 				item.setAddQuantity(rs.getInt("QUANTITY"));
 				break;
 			case "PROMO REDEMPTION":
