@@ -22,6 +22,7 @@ import com.pj.magic.service.InventoryCheckService;
 public class InventoryChecksTable extends MagicListTable {
 
 	public static final int INVENTORY_DATE_COLUMN_INDEX = 0;
+	public static final int STATUS_COLUMN_INDEX = 1;
 	private static final String GO_TO_ADJUSTMENT_IN_ACTION_NAME = "goToInventoryCheck";
 
 	@Autowired private InventoryCheckService inventoryCheckService;

@@ -14,7 +14,7 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class InventoryChecksTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"Inventory Date"};
+	private static final String[] COLUMN_NAMES = {"Inventory Date", "Status"};
 	
 	private List<InventoryCheck> inventoryChecks = new ArrayList<>();
 	
@@ -34,6 +34,8 @@ public class InventoryChecksTableModel extends AbstractTableModel {
 		switch (columnIndex) {
 		case InventoryChecksTable.INVENTORY_DATE_COLUMN_INDEX:
 			return FormatterUtil.formatDate(inventoryCheck.getInventoryDate());
+		case InventoryChecksTable.STATUS_COLUMN_INDEX:
+			return inventoryCheck.isPosted() ? "Posted" : "New";
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
@@ -42,11 +44,6 @@ public class InventoryChecksTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName(int column) {
 		return COLUMN_NAMES[column];
-	}
-	
-	@Override
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return false;
 	}
 	
 	public void setInventoryChecks(List<InventoryCheck> inventoryChecks) {
