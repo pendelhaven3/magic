@@ -285,6 +285,22 @@ from (
 	where b.POST_IND = 'Y'
 	and a.PRODUCT_ID = :product
 	and c.PROMO_TYPE_ID in (1, 3)
+	union all
+	select a.POST_DT, a.PURCHASE_RETURN_NO as TRANSACTION_NO,
+		e.NAME as CUSTOMER_SUPPLIER_NAME,
+		'PURCHASE RETURN' as TRANSACTION_TYPE, 'PURCHASE RETURN' as TRANSACTION_TYPE_KEY, c.UNIT, b.QUANTITY,
+		null as UNIT_COST_OR_PRICE, null as REFERENCE_NO
+	from PURCHASE_RETURN a
+	join PURCHASE_RETURN_ITEM b
+		on b.PURCHASE_RETURN_ID = a.ID
+	join RECEIVING_RECEIPT_ITEM c
+		on c.ID = b.RECEIVING_RECEIPT_ITEM_ID
+	join RECEIVING_RECEIPT d
+		on d.ID = a.RECEIVING_RECEIPT_ID
+	join SUPPLIER e
+		on e.ID = d.SUPPLIER_ID
+	where c.PRODUCT_ID = :product
+	and a.POST_IND = 'Y'
 ) m
 	]]>
 	</entry>

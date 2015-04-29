@@ -131,6 +131,9 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			case "PROMO REDEMPTION":
 				item.setLessQuantity(rs.getInt("QUANTITY"));
 				break;
+			case "PURCHASE RETURN":
+				item.setLessQuantity(rs.getInt("QUANTITY"));
+				break;
 			}
 			
 			return item;
