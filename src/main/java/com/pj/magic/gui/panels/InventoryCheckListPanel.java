@@ -17,6 +17,7 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.InventoryChecksTable;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.service.InventoryCheckService;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
@@ -24,6 +25,9 @@ public class InventoryCheckListPanel extends StandardMagicPanel {
 	
 	@Autowired private InventoryChecksTable table;
 	@Autowired private InventoryCheckService InventoryCheckService;
+	@Autowired private LoginService loginService;
+	
+	private JButton addButton;
 	
 	@Override
 	public void initializeComponents() {
@@ -32,6 +36,7 @@ public class InventoryCheckListPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		table.update();
+		addButton.setEnabled(loginService.getLoggedInUser().isSupervisor());
 	}
 
 	public void displayInventoryCheckDetails(InventoryCheck inventoryCheck) {
@@ -77,7 +82,7 @@ public class InventoryCheckListPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		JButton addButton = new MagicToolBarButton("plus", "New");
+		addButton = new MagicToolBarButton("plus", "New");
 		addButton.addActionListener(new ActionListener() {
 			
 			@Override

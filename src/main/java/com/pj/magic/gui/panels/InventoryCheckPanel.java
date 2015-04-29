@@ -42,6 +42,7 @@ import com.pj.magic.model.search.InventoryCheckSearchCriteria;
 import com.pj.magic.model.util.InventoryCheckReportType;
 import com.pj.magic.service.AreaInventoryReportService;
 import com.pj.magic.service.InventoryCheckService;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.util.ComponentUtil;
@@ -59,6 +60,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 	@Autowired private ActualCountDetailsDialog actualCountDetailsDialog;
 	@Autowired private SearchInventoryChecksDialog searchInventoryChecksDialog;
 	@Autowired private AreaInventoryReportService areaInventoryReportService;
+	@Autowired private LoginService loginService;
 	
 	private InventoryCheck inventoryCheck;
 	private UtilCalendarModel inventoryDateModel;
@@ -146,7 +148,7 @@ public class InventoryCheckPanel extends StandardMagicPanel {
 		totalBeginningValueField.setText(FormatterUtil.formatAmount(inventoryCheck.getTotalBeginningValue()));
 		totalActualValueField.setText(FormatterUtil.formatAmount(inventoryCheck.getTotalActualValue()));
 		
-		postButton.setEnabled(!inventoryCheck.isPosted());
+		postButton.setEnabled(!inventoryCheck.isPosted() && loginService.getLoggedInUser().isSupervisor());
 		printButton.setEnabled(true);
 		printPreviewButton.setEnabled(true);
 		saveButton.setVisible(false);
