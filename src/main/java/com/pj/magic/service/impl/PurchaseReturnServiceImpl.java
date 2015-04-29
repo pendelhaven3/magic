@@ -28,18 +28,6 @@ public class PurchaseReturnServiceImpl implements PurchaseReturnService {
 	@Autowired private ProductDao productDao;
 	@Autowired private LoginService loginService;
 	
-	@Override
-	public List<PurchaseReturn> getNewPurchaseReturns() {
-		PurchaseReturnSearchCriteria criteria = new PurchaseReturnSearchCriteria();
-		criteria.setPosted(false);
-		
-		List<PurchaseReturn> purchaseReturns = purchaseReturnDao.search(criteria);
-		for (PurchaseReturn purchaseReturn : purchaseReturns) {
-			purchaseReturn.setItems(purchaseReturnItemDao.findAllByPurchaseReturn(purchaseReturn));
-		}
-		return purchaseReturns;
-	}
-
 	@Transactional
 	@Override
 	public void save(PurchaseReturn purchaseReturn) {
@@ -135,6 +123,18 @@ public class PurchaseReturnServiceImpl implements PurchaseReturnService {
 		updated.setPaidDate(new Date());
 		updated.setPaidBy(loginService.getLoggedInUser());
 		purchaseReturnDao.save(updated);
+	}
+
+	@Override
+	public List<PurchaseReturn> getUnpaidPurchaseReturns() {
+		PurchaseReturnSearchCriteria criteria = new PurchaseReturnSearchCriteria();
+		criteria.setPaid(false);
+		
+		List<PurchaseReturn> purchaseReturns = purchaseReturnDao.search(criteria);
+		for (PurchaseReturn purchaseReturn : purchaseReturns) {
+			purchaseReturn.setItems(purchaseReturnItemDao.findAllByPurchaseReturn(purchaseReturn));
+		}
+		return purchaseReturns;
 	}
 
 }

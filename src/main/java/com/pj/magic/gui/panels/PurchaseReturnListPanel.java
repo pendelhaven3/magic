@@ -44,7 +44,7 @@ public class PurchaseReturnListPanel extends StandardMagicPanel {
 	private PurchaseReturnsTableModel tableModel;
 	
 	public void updateDisplay() {
-		List<PurchaseReturn> purchaseReturns = purchaseReturnService.getNewPurchaseReturns();
+		List<PurchaseReturn> purchaseReturns = purchaseReturnService.getUnpaidPurchaseReturns();
 		tableModel.setPurchaseReturns(purchaseReturns);
 		if (!purchaseReturns.isEmpty()) {
 			table.changeSelection(0, 0, false, false);

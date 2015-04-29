@@ -8,8 +8,6 @@ import com.pj.magic.model.search.PurchaseReturnSearchCriteria;
 
 public interface PurchaseReturnService {
 
-	List<PurchaseReturn> getNewPurchaseReturns();
-
 	void save(PurchaseReturn purchaseReturn);
 
 	PurchaseReturn getPurchaseReturn(long id);
@@ -25,5 +23,7 @@ public interface PurchaseReturnService {
 	PurchaseReturn findPurchaseReturnByPurchaseReturnNumber(long purchaseReturnNumber);
 
 	void markAsPaid(PurchaseReturn purchaseReturn);
+
+	List<PurchaseReturn> getUnpaidPurchaseReturns();
 	
 }
