@@ -12,5 +12,7 @@ public interface PromoType3RulePromoProductDao {
 	List<PromoType3RulePromoProduct> findAllByRule(PromoType3Rule rule);
 
 	void delete(PromoType3RulePromoProduct promoProduct);
+
+	void deleteAllByRule(PromoType3Rule rule);
 	
 }

@@ -91,6 +91,8 @@ public class PromoPanel extends StandardMagicPanel {
 	private JButton removeRuleButton;
 	private JButton addPromoProductButton;
 	private JButton removePromoProductButton;
+	private JButton addAllPromoProductButton;
+	private JButton removeAllPromoProductButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -642,7 +644,39 @@ public class PromoPanel extends StandardMagicPanel {
 		});
 		panel.add(removePromoProductButton, BorderLayout.WEST);
 		
+		addAllPromoProductButton = new MagicToolBarButton("add_all_small", "Add All Promo Product", true);
+		addAllPromoProductButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addAllPromoProduct();
+			}
+		});
+		panel.add(addAllPromoProductButton, BorderLayout.WEST);
+		
+		removeAllPromoProductButton = new MagicToolBarButton("delete_all_small", "Remove All Promo Products", true);
+		removeAllPromoProductButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeAllPromoProduct();
+			}
+		});
+		panel.add(removeAllPromoProductButton, BorderLayout.WEST);
+		
 		return panel;
+	}
+
+	private void removeAllPromoProduct() {
+		if (confirm("Remove all promo products?")) {
+			try {
+				promoService.removeAllPromoProducts(promo.getPromoType3Rule());
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+			}
+			updateDisplay(promo);
+		}
 	}
 
 	private void removePromoProduct() {
@@ -651,6 +685,19 @@ public class PromoPanel extends StandardMagicPanel {
 
 	private void addPromoProduct() {
 		promoType3RulePromoProductsTable.addNewRow();
+	}
+
+	private void addAllPromoProduct() {
+		if (confirm("Add all products to promo?")) {
+			try {
+				promoService.addAllPromoProducts(promo.getPromoType3Rule());
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+				return;
+			}
+			updateDisplay(promo);
+		}
 	}
 
 	private JPanel createPromoType2RulesTableToolBar() {
@@ -881,6 +928,8 @@ public class PromoPanel extends StandardMagicPanel {
 			promoType3RulePromoProductsTable.setRule(rule);
 			addPromoProductButton.setEnabled(true);
 			removePromoProductButton.setEnabled(true);
+			addAllPromoProductButton.setEnabled(true);
+			removePromoProductButton.setEnabled(true);
 		} else {
 			targetAmountField.setText(null);
 			freeProductCodeField.setText(null);
@@ -890,6 +939,8 @@ public class PromoPanel extends StandardMagicPanel {
 			promoType3RulePromoProductsTable.clear();
 			addPromoProductButton.setEnabled(false);
 			removePromoProductButton.setEnabled(false);
+			addAllPromoProductButton.setEnabled(false);
+			removeAllPromoProductButton.setEnabled(false);
 		}
 		
 	}

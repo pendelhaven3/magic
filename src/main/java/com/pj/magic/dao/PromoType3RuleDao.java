@@ -8,5 +8,7 @@ public interface PromoType3RuleDao {
 	void save(PromoType3Rule rule);
 
 	PromoType3Rule findByPromo(Promo promo);
+
+	void addAllPromoProducts(PromoType3Rule rule);
 	
 }

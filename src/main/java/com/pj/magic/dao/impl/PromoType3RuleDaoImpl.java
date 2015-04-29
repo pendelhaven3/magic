@@ -121,5 +121,15 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 			return null;
 		}
 	}
+
+	private static final String ADD_ALL_PRODUCTS_TO_PROMO_TYPE_3 = 
+			"insert into PROMO_TYPE_3_RULE_PROMO_PRODUCT"
+			+ " (PROMO_TYPE_3_RULE_ID, PRODUCT_ID)"
+			+ " select ?, ID from PRODUCT where ACTIVE_IND = 'Y'";
+	
+	@Override
+	public void addAllPromoProducts(PromoType3Rule rule) {
+		getJdbcTemplate().update(ADD_ALL_PRODUCTS_TO_PROMO_TYPE_3, rule.getId());
+	}
 	
 }

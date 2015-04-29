@@ -5,6 +5,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
@@ -210,6 +211,13 @@ public class PromoType3RulePromoProductsTable extends MagicTable {
 		}
 	}
 
+	// TODO: See if this can be promoted to MagicTable class
+	@Override
+	protected boolean confirm(String message) {
+		int confirm = JOptionPane.showConfirmDialog(getRootPane(), message, "Confirmation", JOptionPane.YES_NO_OPTION);
+		return confirm == JOptionPane.YES_OPTION;
+	}
+	
 	private void doDeleteCurrentlySelectedRule() {
 		int selectedRowIndex = getSelectedRow();
 		PromoType3RulePromoProduct promoProduct = getCurrentlySelectedPromoProduct();

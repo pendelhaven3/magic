@@ -97,4 +97,12 @@ public class PromoType3RulePromoProductDaoImpl extends MagicDao implements Promo
 		getJdbcTemplate().update(DELETE_SQL, promoProduct.getId());
 	}
 
+	private static final String DELETE_ALL_BY_PROMO_SQL = 
+			"delete from PROMO_TYPE_3_RULE_PROMO_PRODUCT where PROMO_TYPE_3_RULE_ID = ?";
+	
+	@Override
+	public void deleteAllByRule(PromoType3Rule rule) {
+		getJdbcTemplate().update(DELETE_ALL_BY_PROMO_SQL, rule.getId());
+	}
+
 }

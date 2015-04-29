@@ -114,4 +114,17 @@ public class PromoServiceImpl implements PromoService {
 		promoType3RulePromoProductDao.delete(promoProduct);		
 	}
 
+	@Transactional
+	@Override
+	public void addAllPromoProducts(PromoType3Rule rule) {
+		removeAllPromoProducts(rule);
+		promoType3RuleDao.addAllPromoProducts(rule);
+	}
+
+	@Transactional
+	@Override
+	public void removeAllPromoProducts(PromoType3Rule rule) {
+		promoType3RulePromoProductDao.deleteAllByRule(rule);
+	}
+
 }
