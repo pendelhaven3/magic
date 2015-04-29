@@ -48,6 +48,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.search.ProductSearchCriteria;
 import com.pj.magic.service.ExcelService;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
@@ -71,6 +72,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private ExcelService excelService;
+	@Autowired private LoginService loginService;
 	
 	private PricingScheme pricingScheme;
 	private MagicTextField nameField;
@@ -200,7 +202,11 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		
 	}
 
-	protected void selectProductPrice() {
+	private void selectProductPrice() {
+		if (!loginService.getLoggedInUser().isSupervisor()) {
+			return;
+		}
+		
 		int selectedRow = pricesTable.getSelectedRow();
 		Product product = pricesTableModel.getProduct(selectedRow);
 		editProductPriceDialog.updateDisplay(product, pricingScheme);

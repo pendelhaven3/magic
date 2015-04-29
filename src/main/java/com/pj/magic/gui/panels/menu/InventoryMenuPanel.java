@@ -133,7 +133,6 @@ public class InventoryMenuPanel extends MenuPanel {
 			menuItems.clear();
 			menuItems.addAll(allMenuItems);
 			if (!user.isSupervisor()) {
-				menuItems.remove(PRICING_SCHEME);
 				menuItems.remove(INVENTORY_REPORT);
 			}
 			fireTableDataChanged();

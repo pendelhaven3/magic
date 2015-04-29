@@ -22,6 +22,7 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.PricingSchemesTableModel;
 import com.pj.magic.model.PricingScheme;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -31,9 +32,11 @@ public class PricingSchemeListPanel extends StandardMagicPanel {
 	private static final String EDIT_PRICING_SCHEME_ACTION_NAME = "editPricingScheme";
 	
 	@Autowired private PricingSchemeService pricingSchemeService;
+	@Autowired private LoginService loginService;
 	@Autowired private PricingSchemesTableModel tableModel;
 	
 	private JTable table;
+	private MagicToolBarButton addButton;
 	
 	public void updateDisplay() {
 		List<PricingScheme> pricingSchemes = pricingSchemeService.getAllPricingSchemes();
@@ -41,6 +44,7 @@ public class PricingSchemeListPanel extends StandardMagicPanel {
 		if (!pricingSchemes.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
+		addButton.setEnabled(loginService.getLoggedInUser().isSupervisor());
 	}
 
 	@Override
@@ -86,7 +90,7 @@ public class PricingSchemeListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		MagicToolBarButton addButton = new MagicToolBarButton("plus", "New");
+		addButton = new MagicToolBarButton("plus", "New");
 		addButton.addActionListener(new ActionListener() {
 			
 			@Override
