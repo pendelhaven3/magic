@@ -19,6 +19,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -33,11 +35,15 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.AreaInventoryReportItemsTable;
+import com.pj.magic.gui.tables.ProductInfoTable;
+import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
+import com.pj.magic.model.Product;
 import com.pj.magic.service.AreaInventoryReportService;
 import com.pj.magic.service.AreaService;
 import com.pj.magic.service.PrintService;
+import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -51,6 +57,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	@Autowired private AreaService areaService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
+	@Autowired private ProductService productService;
 	
 	private AreaInventoryReport areaInventoryReport;
 	private JLabel inventoryDateField;
@@ -65,6 +72,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 	private JButton addItemButton;
 	private JButton deleteItemButton;
 	private JButton markAsReviewedButton;
+	private ProductInfoTable productInfoTable;
 	
 	@Override
 	protected void initializeComponents() {
@@ -119,6 +127,7 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		});
 		
 		updateTotalAmountFieldWhenItemsTableChanges();
+		initializeUnitPricesAndQuantitiesTable();
 		focusOnComponentWhenThisPanelIsDisplayed(reportNumberField);
 	}
 
@@ -443,6 +452,18 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 
 		currentRow++;
 		
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 0.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 6;
+		c.anchor = GridBagConstraints.CENTER;
+		JScrollPane infoTableScrollPane = new JScrollPane(productInfoTable);
+		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
+		mainPanel.add(infoTableScrollPane, c);
+		
+		currentRow++;
+		
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
@@ -548,4 +569,43 @@ public class AreaInventoryReportPanel extends StandardMagicPanel {
 		}
 	}
 
+	private void initializeUnitPricesAndQuantitiesTable() {
+		productInfoTable = new ProductInfoTable();
+		
+		itemsTable.getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				if (e.getColumn() == SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX ||
+						e.getColumn() == TableModelEvent.ALL_COLUMNS) {
+					updateUnitPricesAndQuantitiesTable();
+				}
+			}
+
+		});
+		
+		itemsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				updateUnitPricesAndQuantitiesTable();
+			}
+		});
+	}
+
+	private void updateUnitPricesAndQuantitiesTable() {
+		if (itemsTable.getSelectedRow() == -1) {
+			productInfoTable.setProduct(null);
+			return;
+		}
+		
+		Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
+		if (product != null) {
+			product = productService.findProductByCode(product.getCode());
+			productInfoTable.setProduct(product);
+		} else {
+			productInfoTable.setProduct(null);
+		}
+	}
+	
 }
