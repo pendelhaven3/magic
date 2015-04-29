@@ -6,19 +6,26 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -26,7 +33,9 @@ import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.tables.ProductCanvassTable;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCanvassItem;
+import com.pj.magic.model.search.ProductCanvassSearchCriteria;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
@@ -35,8 +44,11 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 	@Autowired private ProductService productService;
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private ProductCanvassTable table;
+	@Autowired private ReceivingReceiptService receivingReceiptService;
 	
 	private MagicTextField productCodeField;
+	private UtilCalendarModel dateFromModel;
+	private UtilCalendarModel dateToModel;
 	private JLabel productDescriptionLabel;
 	private JButton generateButton;
 	private EllipsisButton selectProductButton;
@@ -45,6 +57,9 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 	protected void initializeComponents() {
 		productCodeField = new MagicTextField();
 		productCodeField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
+		
+		dateFromModel = new UtilCalendarModel();
+		dateToModel = new UtilCalendarModel();
 		
 		selectProductButton = new EllipsisButton();
 		selectProductButton.setToolTipText("Select Product");
@@ -94,7 +109,20 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		List<ProductCanvassItem> items = productService.getProductCanvass(product);
+		ProductCanvassSearchCriteria criteria = new ProductCanvassSearchCriteria();
+		criteria.setProduct(product);
+
+		Calendar dateFrom = dateFromModel.getValue();
+		if (dateFrom != null) {
+			criteria.setDateFrom(dateFrom.getTime());
+		}
+		
+		Calendar dateTo = dateToModel.getValue();
+		if (dateTo != null) {
+			criteria.setDateTo(dateTo.getTime());
+		}
+		
+		List<ProductCanvassItem> items = receivingReceiptService.getProductCanvass(criteria);
 		table.setItems(items);
 		if (items.isEmpty()) {
 			showErrorMessage("No records found");
@@ -110,7 +138,7 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(50, 1), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
@@ -128,14 +156,46 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 		c.weightx = 1.0; // right space filler
 		c.gridx = 3;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(), c);
+		mainPanel.add(Box.createGlue(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Date From: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePickerImpl dateFromPicker = new JDatePickerImpl(new JDatePanelImpl(dateFromModel), new DatePickerFormatter());
+		mainPanel.add(dateFromPicker, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Date To: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePickerImpl dateToPicker = new JDatePickerImpl(new JDatePanelImpl(dateToModel), new DatePickerFormatter());
+		mainPanel.add(dateToPicker, c);
 		
 		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
+		mainPanel.add(Box.createVerticalStrut(20), c);
 		
 		currentRow++;
 		
@@ -192,6 +252,8 @@ public class ProductCanvassPanel extends StandardMagicPanel {
 	public void updateDisplay() {
 		productCodeField.setText(null);
 		productDescriptionLabel.setText(null);
+		dateFromModel.setValue(null);
+		dateToModel.setValue(null);
 		table.setItems(new ArrayList<ProductCanvassItem>());
 	}
 

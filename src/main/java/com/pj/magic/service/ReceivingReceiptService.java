@@ -3,11 +3,18 @@ package com.pj.magic.service;
 import java.util.List;
 
 import com.pj.magic.model.Product;
+import com.pj.magic.model.ProductCanvassItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.model.search.ProductCanvassSearchCriteria;
 import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 
+/**
+ * 
+ * @author PJ Miranda
+ *
+ */
 public interface ReceivingReceiptService {
 
 	void save(ReceivingReceipt receivingReceipt);
@@ -30,4 +37,6 @@ public interface ReceivingReceiptService {
 	
 	ReceivingReceiptItem findMostRecentReceivingReceiptItem(Supplier supplier, Product product);
 
+	List<ProductCanvassItem> getProductCanvass(ProductCanvassSearchCriteria criteria);
+	
 }

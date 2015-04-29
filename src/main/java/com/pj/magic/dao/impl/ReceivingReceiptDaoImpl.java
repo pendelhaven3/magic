@@ -21,15 +21,20 @@ import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.ReceivingReceiptDao;
 import com.pj.magic.model.PaymentTerm;
-import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCanvassItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.ProductCanvassSearchCriteria;
 import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 import com.pj.magic.util.DbUtil;
 
+/**
+ * 
+ * @author PJ Miranda
+ *
+ */
 @Repository
 public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceiptDao {
 
@@ -189,12 +194,28 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 			+ " join SUPPLIER c"
 			+ "   on c.ID = b.SUPPLIER_ID"
 			+ " where a.PRODUCT_ID = ?"
-			+ " and b.POST_IND = 'Y'"
-			+ " order by RECEIVED_DT desc, RECEIVING_RECEIPT_NO desc";
+			+ " and b.POST_IND = 'Y'";
 	
 	@Override
-	public List<ProductCanvassItem> getProductCanvassItems(Product product) {
-		return getJdbcTemplate().query(GET_PRODUCT_CANVASS_ITEMS_SQL, new RowMapper<ProductCanvassItem>() {
+	public List<ProductCanvassItem> getProductCanvassItems(ProductCanvassSearchCriteria criteria) {
+		StringBuilder sql = new StringBuilder(GET_PRODUCT_CANVASS_ITEMS_SQL);
+		List<Object> params = new ArrayList<>();
+	
+		params.add(criteria.getProduct().getId());
+		
+		if (criteria.getDateFrom() != null) {
+			sql.append(" and b.RECEIVED_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getDateFrom()));
+		}
+		
+		if (criteria.getDateTo() != null) {
+			sql.append(" and b.RECEIVED_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getDateTo()));
+		}
+		
+		sql.append(" order by RECEIVED_DT desc, RECEIVING_RECEIPT_NO desc");
+		
+		return getJdbcTemplate().query(sql.toString(), new RowMapper<ProductCanvassItem>() {
 
 			@Override
 			public ProductCanvassItem mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -224,7 +245,7 @@ public class ReceivingReceiptDaoImpl extends MagicDao implements ReceivingReceip
 				return canvassItem;
 			}
 			
-		}, product.getId());
+		}, params.toArray());
 	}
 
 	private static final String UNPAID_WHERE_CLAUSE_SQL = 

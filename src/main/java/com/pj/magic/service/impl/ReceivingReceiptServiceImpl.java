@@ -16,13 +16,20 @@ import com.pj.magic.dao.ReceivingReceiptItemDao;
 import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.ProductCanvassItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.model.search.ProductCanvassSearchCriteria;
 import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.ReceivingReceiptService;
 
+/**
+ * 
+ * @author PJ Miranda
+ *
+ */
 @Service
 public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 
@@ -188,4 +195,9 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 		return item;
 	}
 
+	@Override
+	public List<ProductCanvassItem> getProductCanvass(ProductCanvassSearchCriteria criteria) {
+		return receivingReceiptDao.getProductCanvassItems(criteria);
+	}
+	
 }

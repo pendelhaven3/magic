@@ -15,13 +15,11 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ProductPriceDao;
 import com.pj.magic.dao.ProductPriceHistoryDao;
 import com.pj.magic.dao.PurchaseOrderItemDao;
-import com.pj.magic.dao.ReceivingReceiptDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.StockQuantityConversionItemDao;
 import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.ProductCanvassItem;
 import com.pj.magic.model.ProductPriceHistory;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.ProductSearchCriteria;
@@ -35,7 +33,6 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired private ProductPriceDao productPriceDao;
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private PricingSchemeDao pricingSchemeDao;
-	@Autowired private ReceivingReceiptDao receivingReceiptDao;
 	@Autowired private SalesRequisitionItemDao salesRequisitionItemDao;
 	@Autowired private PurchaseOrderItemDao purchaseOrderItemDao;
 	@Autowired private StockQuantityConversionItemDao stockQuantityConversionItemDao;
@@ -163,11 +160,6 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public List<Product> searchProducts(ProductSearchCriteria criteria) {
 		return productDao.search(criteria);
-	}
-
-	@Override
-	public List<ProductCanvassItem> getProductCanvass(Product product) {
-		return receivingReceiptDao.getProductCanvassItems(product);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
-import com.pj.magic.model.ProductCanvassItem;
 import com.pj.magic.model.ProductPriceHistory;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.ProductSearchCriteria;
@@ -41,8 +40,6 @@ public interface ProductService {
 	List<Product> getAllActiveProductsBySupplier(Supplier supplier);
 	
 	List<Product> searchProducts(ProductSearchCriteria criteria);
-
-	List<ProductCanvassItem> getProductCanvass(Product product);
 
 	boolean canDeleteProduct(Product product);
 

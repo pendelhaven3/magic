@@ -2,12 +2,17 @@ package com.pj.magic.dao;
 
 import java.util.List;
 
-import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCanvassItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.model.search.ProductCanvassSearchCriteria;
 import com.pj.magic.model.search.ReceivingReceiptSearchCriteria;
 
+/**
+ * 
+ * @author PJ Miranda
+ *
+ */
 public interface ReceivingReceiptDao {
 
 	ReceivingReceipt get(long id);
@@ -16,7 +21,7 @@ public interface ReceivingReceiptDao {
 
 	List<ReceivingReceipt> getAll();
 
-	List<ProductCanvassItem> getProductCanvassItems(Product product);
+	List<ProductCanvassItem> getProductCanvassItems(ProductCanvassSearchCriteria criteria);
 
 	List<ReceivingReceipt> search(ReceivingReceiptSearchCriteria criteria);
 
