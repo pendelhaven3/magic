@@ -1,0 +1,22 @@
+                             JC HARMONY SELLING INC.
+                       251 GEN.P.ALVAREZ ST.CALOOCAN CITY
+                             TEL.NO.3621785 3195946
+	
+                                  DELIVERY RECEIPT
+	
+Customer : XX                                               Page   :    1 x 1
+Address  : CALOOCAN CITY                                    D.R. # :    45514
+Mode     :                                                  Date   : 05/22/2015
+Remarks  :                                                  PS     :        1
+	
+         Product Description                   Unit Qty    Price     Amount
+---------------------------------------------- ---- ---- --------- ----------
+PRODUCT DESCRIPTION HERE                   [ ] CSE    10  4,566.45  45,664.50
+                                                                 ------------
+Total Items => 1   Total Qty =>   10                 Sub Total :    45,664.50
+                                                     Discount  :(        0.00)
+Prepared by : ____________________  Encoded by:                  ------------
+                                                     Net Amount:    45,664.50
+Checked by  : ____________________                               ============
+	
+Received by : ____________________         Approved by : ____________________

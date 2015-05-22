@@ -13,6 +13,9 @@ import javax.print.PrintServiceLookup;
 import javax.print.SimpleDoc;
 import javax.print.attribute.standard.PrinterIsAcceptingJobs;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class PrinterUtil {
 
 	private static final DocFlavor DOC_FLAVOR = DocFlavor.INPUT_STREAM.AUTOSENSE;
@@ -23,11 +26,11 @@ public class PrinterUtil {
 	// TODO: Put this in database
 	private static final List<String> SUPPORTED_PRINTERS = Arrays.asList("EPSON LX-310 ESC/P", "EPSON LX-300+ /II");
 
-	public static void print(String data) throws PrintException {
+	public void print(String data) throws PrintException {
 		print((data + FORM_FEED).getBytes());
 	}
 
-	public static void printWithCondensedFont(String data) throws PrintException {
+	public void printWithCondensedFont(String data) throws PrintException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(CONDENSED_FONT_ON);
 		sb.append(data);
@@ -38,7 +41,7 @@ public class PrinterUtil {
 		print(sb.toString().getBytes());
 	}
 
-	public static void print(byte[] data) throws PrintException {
+	private static void print(byte[] data) throws PrintException {
 		PrintService[] printServices = PrintServiceLookup.lookupPrintServices(DOC_FLAVOR, null);
 		PrintService epsonPrintService = null;
 		for (PrintService printService : printServices) {

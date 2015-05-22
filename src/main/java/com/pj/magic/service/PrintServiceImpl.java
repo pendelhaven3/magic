@@ -114,6 +114,7 @@ public class PrintServiceImpl implements PrintService {
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private UserDao userDao;
 	@Autowired private PromoRedemptionService promoRedemptionService;
+	@Autowired private PrinterUtil printerUtil;
 	
 	public PrintServiceImpl() {
 		Velocity.setProperty("file.resource.loader.class", 
@@ -125,7 +126,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(SalesInvoice salesInvoice) {
 		try {
 			for (String printPage : generateReportAsString(salesInvoice)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -136,7 +137,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PurchaseOrder purchaseOrder, boolean includeCost) {
 		try {
 			for (String printPage : generateReportAsString(purchaseOrder, includeCost)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -147,7 +148,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(ReceivingReceipt receivingReceipt, boolean includeDiscountDetails) {
 		try {
 			for (String printPage : generateReportAsString(receivingReceipt, includeDiscountDetails)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -245,9 +246,9 @@ public class PrintServiceImpl implements PrintService {
 		try {
 			for (String printPage : generateReportAsString(pricingScheme, products, includeCosts)) {
 				if (includeCosts) {
-					PrinterUtil.print(printPage);
+					printerUtil.print(printPage);
 				} else {
-					PrinterUtil.printWithCondensedFont(printPage);
+					printerUtil.printWithCondensedFont(printPage);
 				}
 			}
 		} catch (PrintException e) {
@@ -259,7 +260,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(List<String> printPages) {
 		try {
 			for (String printPage : printPages) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -270,7 +271,7 @@ public class PrintServiceImpl implements PrintService {
 	public void printWithCondensedFont(List<String> printPages) {
 		try {
 			for (String printPage : printPages) {
-				PrinterUtil.printWithCondensedFont(printPage);
+				printerUtil.printWithCondensedFont(printPage);
 //				PrinterUtil.print(addLeftPaddingForCondensedFont(printPage));
 			}
 		} catch (PrintException e) {
@@ -356,7 +357,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(StockQuantityConversion stockQuantityConversion) {
 		try {
 			for (String printPage : generateReportAsString(stockQuantityConversion)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -444,7 +445,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(InventoryCheck inventoryCheck, InventoryCheckReportType reportType) {
 		try {
 			for (String printPage : generateReportAsString(inventoryCheck, reportType)) {
-				PrinterUtil.print(addLeftPaddingForCondensedFont(printPage));
+				printerUtil.print(addLeftPaddingForCondensedFont(printPage));
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -479,7 +480,7 @@ public class PrintServiceImpl implements PrintService {
 		
 		try {
 			for (String printPage : printPages) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -524,7 +525,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(AreaInventoryReport areaInventoryReport) {
 		try {
 			for (String printPage : generateReportAsString(areaInventoryReport)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -557,7 +558,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(AdjustmentOut adjustmentOut) {
 		try {
 			for (String printPage : generateReportAsString(adjustmentOut)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -590,7 +591,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(AdjustmentIn adjustmentIn) {
 		try {
 			for (String printPage : generateReportAsString(adjustmentIn)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -611,7 +612,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(Payment payment) {
 		try {
 			for (String printPage : generateReportAsString(payment)) {
-				PrinterUtil.printWithCondensedFont(printPage);
+				printerUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -643,7 +644,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(UnpaidSalesInvoicesReport report) {
 		try {
 			for (String printPage : generateReportAsString(report)) {
-				PrinterUtil.printWithCondensedFont(printPage);
+				printerUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -675,7 +676,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PostedSalesAndProfitReport report) {
 		try {
 			for (String printPage : generateReportAsString(report)) {
-				PrinterUtil.printWithCondensedFont(printPage);
+				printerUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -705,7 +706,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(SalesReturn salesReturn) {
 		try {
 			for (String printPage : generateReportAsString(salesReturn)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -735,7 +736,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(BadStockReturn badStockReturn) {
 		try {
 			for (String printPage : generateReportAsString(badStockReturn)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -746,7 +747,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(CashFlowReport report) {
 		try {
 			for (String printPage : generateReportAsString(report)) {
-				PrinterUtil.printWithCondensedFont(printPage);
+				printerUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -813,7 +814,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(RemittanceReport report) {
 		try {
 			for (String printPage : generateReportAsString(report)) {
-				PrinterUtil.printWithCondensedFont(printPage);
+				printerUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -867,7 +868,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PriceChangesReport report) {
 		try {
 			for (String printPage : generateReportAsString(report)) {
-				PrinterUtil.printWithCondensedFont(printPage);
+				printerUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -887,7 +888,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PurchasePayment purchasePayment) {
 		try {
 			for (String printPage : generateReportAsString(purchasePayment)) {
-				PrinterUtil.printWithCondensedFont(printPage);
+				printerUtil.printWithCondensedFont(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -917,7 +918,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PurchaseReturnBadStock purchaseReturnBadStock) {
 		try {
 			for (String printPage : generateReportAsString(purchaseReturnBadStock)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
@@ -964,7 +965,7 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PromoRedemption promoRedemption) {
 		try {
 			for (String printPage : generateReportAsString(promoRedemption)) {
-				PrinterUtil.print(printPage);
+				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
