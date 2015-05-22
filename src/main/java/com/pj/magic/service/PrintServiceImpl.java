@@ -41,6 +41,8 @@ import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PromoRedemption;
+import com.pj.magic.model.PromoRedemptionReward;
+import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.PurchasePayment;
@@ -461,16 +463,40 @@ public class PrintServiceImpl implements PrintService {
 	public void printBirForm(SalesInvoice salesInvoice) {
 		Collections.sort(salesInvoice.getItems());
 		
-		String transactionDate = FormatterUtil.formatDate(salesInvoice.getTransactionDate());
+		List<PromoRedemption> promoRedemptions = promoRedemptionService.findAllAvailedPromoRedemptions(salesInvoice);
 		
-		List<List<SalesInvoiceItem>> pageItems = Lists.partition(salesInvoice.getItems(), 
-				SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE);
+		List<String> itemLines = new ArrayList<>();
+		for (SalesInvoiceItem item : salesInvoice.getItems()) {
+			itemLines.add(
+					generateReportAsString("reports/salesInvoiceBirForm-item.vm", 
+							createSingletonMap("item", item)));
+
+			for (PromoRedemption promoRedemption : promoRedemptions) {
+				for (PromoType2Rule rule : promoRedemption.getPromo().getPromoType2Rules()) {
+					if (rule.getPromoProduct().equals(item.getProduct())) {
+						for (PromoRedemptionReward reward : promoRedemption.getRewards()) {
+							if (reward.getProduct().equals(rule.getFreeProduct())) {
+								SalesInvoiceItem rewardItem = new SalesInvoiceItem();
+								rewardItem.setProduct(reward.getProduct());
+								rewardItem.setUnit(reward.getUnit());
+								rewardItem.setQuantity(reward.getQuantity());
+								rewardItem.setUnitPrice(BigDecimal.ZERO);
+								itemLines.add(
+										generateReportAsString("reports/salesInvoiceBirForm-freeItem.vm", 
+												createSingletonMap("item", (Object)rewardItem)));
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		List<List<String>> pageItems = Lists.partition(itemLines, SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("salesInvoice", salesInvoice);
-			reportData.put("items", pageItems.get(i));
-			reportData.put("transactionDate", transactionDate);
+			reportData.put("items", StringUtils.join(pageItems.get(i), "\r\n"));
 			reportData.put("fillerLines", createFillerLines(pageItems.get(i).size()));
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
@@ -496,6 +522,12 @@ public class PrintServiceImpl implements PrintService {
 		return fillerLines;
 	}
 
+	private static Map<String, Object> createSingletonMap(String key, Object value) {
+		Map<String, Object> map = new HashMap<>();
+		map.put(key, value);
+		return map;
+	}
+	
 	@Override
 	public List<String> generateReportAsString(AreaInventoryReport areaInventoryReport) {
 		String inventoryDate = FormatterUtil.formatDate(areaInventoryReport.getParent().getInventoryDate());

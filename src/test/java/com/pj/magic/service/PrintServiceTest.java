@@ -1,9 +1,11 @@
 package com.pj.magic.service;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 import javax.print.PrintException;
 
@@ -18,6 +20,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.Promo;
+import com.pj.magic.model.PromoRedemption;
+import com.pj.magic.model.PromoRedemptionReward;
+import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.Unit;
@@ -89,6 +95,7 @@ public class PrintServiceTest {
 		salesInvoice.setCustomer(customer);
 		
 		Product product = new Product();
+		product.setCode("TEST");
 		product.setDescription("PRODUCT DESCRIPTION HERE");
 		
 		SalesInvoiceItem item = new SalesInvoiceItem();
@@ -103,19 +110,150 @@ public class PrintServiceTest {
 		assertEquals(getExpectedPrinterOutput("salesInvoiceBirForm.txt"), printerUtil.getPrinterOutput());
 	}
 	
+	@Test
+	public void printBirForm_multiplePages() throws IOException {
+		SalesInvoice salesInvoice = new SalesInvoice();
+		salesInvoice.setSalesInvoiceNumber(45514L);
+		salesInvoice.setPostedBy(new User(1L, "PJ"));
+		salesInvoice.setTransactionDate(DateUtil.toDate("05/22/2015"));
+		salesInvoice.setPricingScheme(new PricingScheme(1L));
+		salesInvoice.setVatAmount(new BigDecimal("123.45"));
+		
+		Customer customer = new Customer();
+		customer.setName("XX");
+		customer.setBusinessAddress("CALOOCAN CITY");
+		salesInvoice.setCustomer(customer);
+		
+		Product product = new Product();
+		product.setCode("PRODUCT");
+		product.setDescription("PRODUCT DESCRIPTION HERE");
+		
+		SalesInvoiceItem item = new SalesInvoiceItem();
+		item.setProduct(product);
+		item.setUnit(Unit.PIECES);
+		item.setQuantity(5);
+		item.setUnitPrice(new BigDecimal("26.85"));
+		salesInvoice.getItems().add(item);
+		
+		Product product2 = new Product();
+		product2.setCode("TEST");
+		product2.setDescription("TEST PRODUCT DESCRIPTION HERE");
+		
+		SalesInvoiceItem item2 = new SalesInvoiceItem();
+		item2.setProduct(product2);
+		item2.setUnit(Unit.CASE);
+		item2.setQuantity(10);
+		item2.setUnitPrice(new BigDecimal("4566.45"));
+		
+		for (int i = 0; i < 11; i++) {
+			salesInvoice.getItems().add(item2);
+		}
+
+		SalesInvoiceItem item3 = new SalesInvoiceItem();
+		item3.setProduct(createProduct("Y-ITEM 3", "ITEM 3 DESCRIPTION"));
+		item3.setUnit(Unit.CASE);
+		item3.setQuantity(18);
+		item3.setUnitPrice(new BigDecimal("1759.90"));
+		salesInvoice.getItems().add(item3);
+		
+		SalesInvoiceItem item4 = new SalesInvoiceItem();
+		item4.setProduct(createProduct("Z-ITEM 4", "ITEM 4 DESCRIPTION"));
+		item4.setUnit(Unit.CASE);
+		item4.setQuantity(3);
+		item4.setUnitPrice(new BigDecimal("4240.55"));
+		salesInvoice.getItems().add(item4);
+		
+		printService.printBirForm(salesInvoice);
+		
+		assertEquals(getExpectedPrinterOutput("salesInvoiceBirForm-multiplepages.txt"), printerUtil.getPrinterOutput());
+	}
+	
+	@Test
+	public void printBirForm_withPromoType2Reward() throws IOException {
+		SalesInvoice salesInvoice = new SalesInvoice();
+		salesInvoice.setSalesInvoiceNumber(45514L);
+		salesInvoice.setPostedBy(new User(1L, "PJ"));
+		salesInvoice.setTransactionDate(DateUtil.toDate("05/22/2015"));
+		salesInvoice.setPricingScheme(new PricingScheme(1L));
+		salesInvoice.setVatAmount(new BigDecimal("123.45"));
+		
+		Customer customer = new Customer();
+		customer.setName("XX");
+		customer.setBusinessAddress("CALOOCAN CITY");
+		salesInvoice.setCustomer(customer);
+		
+		Product product = new Product();
+		product.setCode("PRODUCT");
+		product.setDescription("PRODUCT DESCRIPTION HERE");
+		
+		SalesInvoiceItem item = new SalesInvoiceItem();
+		item.setProduct(product);
+		item.setUnit(Unit.PIECES);
+		item.setQuantity(5);
+		item.setUnitPrice(new BigDecimal("26.85"));
+		salesInvoice.getItems().add(item);
+		
+		Product product2 = new Product();
+		product2.setCode("TEST");
+		product2.setDescription("TEST PRODUCT DESCRIPTION HERE");
+		
+		SalesInvoiceItem item2 = new SalesInvoiceItem();
+		item2.setProduct(product2);
+		item2.setUnit(Unit.CASE);
+		item2.setQuantity(10);
+		item2.setUnitPrice(new BigDecimal("4566.45"));
+		
+		for (int i = 0; i < 12; i++) {
+			salesInvoice.getItems().add(item2);
+		}
+		
+		PromoType2Rule rule = new PromoType2Rule();
+		rule.setPromoProduct(product);
+		rule.setFreeProduct(createProduct("FREE", "FREE PRODUCT DESCRIPTION"));
+		
+		Promo promo = new Promo();
+		promo.setPromoType2Rules(Arrays.asList(rule));
+		
+		PromoRedemption promoRedemption = new PromoRedemption();
+		promoRedemption.setPromo(promo);
+		promoRedemption.getRewards().add(createReward(rule.getFreeProduct(), Unit.PIECES, 1));
+		
+		when(promoRedemptionService.findAllAvailedPromoRedemptions(salesInvoice))
+			.thenReturn(Arrays.asList(promoRedemption));
+		
+		printService.printBirForm(salesInvoice);
+		
+		assertEquals(getExpectedPrinterOutput("salesInvoiceBirForm-withPromoType2Reward.txt"), printerUtil.getPrinterOutput());
+	}
+	
+	private PromoRedemptionReward createReward(Product freeProduct, String unit, int quantity) {
+		PromoRedemptionReward reward = new PromoRedemptionReward();
+		reward.setProduct(freeProduct);
+		reward.setUnit(unit);
+		reward.setQuantity(quantity);
+		return reward;
+	}
+
+	private Product createProduct(String code, String description) {
+		Product product = new Product();
+		product.setCode(code);
+		product.setDescription(description);
+		return product;
+	}
+	
 }
 
 class PrinterUtilMock extends PrinterUtil {
 
-	private String printerOutput;
+	private StringBuilder printerOutput = new StringBuilder();
 	
 	@Override
 	public void print(String data) throws PrintException {
-		printerOutput = data;
+		printerOutput.append(data);
 	}
 	
 	public String getPrinterOutput() {
-		return printerOutput;
+		return printerOutput.toString();
 	}
 	
 }
