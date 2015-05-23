@@ -81,7 +81,7 @@ public class PrintServiceTest {
 	}
 	
 	@Test
-	public void printBirForm() throws IOException {
+	public void printBirCashForm() throws IOException {
 		SalesInvoice salesInvoice = new SalesInvoice();
 		salesInvoice.setSalesInvoiceNumber(45514L);
 		salesInvoice.setPostedBy(new User(1L, "PJ"));
@@ -105,13 +105,13 @@ public class PrintServiceTest {
 		item.setUnitPrice(new BigDecimal("4566.45"));
 		salesInvoice.getItems().add(item);
 		
-		printService.printBirForm(salesInvoice);
+		printService.printBirCashForm(salesInvoice);
 		
-		assertEquals(getExpectedPrinterOutput("salesInvoiceBirForm.txt"), printerUtil.getPrinterOutput());
+		assertEquals(getExpectedPrinterOutput("salesInvoiceBirCashForm.txt"), printerUtil.getPrinterOutput());
 	}
 	
 	@Test
-	public void printBirForm_multiplePages() throws IOException {
+	public void printBirCashForm_multiplePages() throws IOException {
 		SalesInvoice salesInvoice = new SalesInvoice();
 		salesInvoice.setSalesInvoiceNumber(45514L);
 		salesInvoice.setPostedBy(new User(1L, "PJ"));
@@ -163,13 +163,13 @@ public class PrintServiceTest {
 		item4.setUnitPrice(new BigDecimal("4240.55"));
 		salesInvoice.getItems().add(item4);
 		
-		printService.printBirForm(salesInvoice);
+		printService.printBirCashForm(salesInvoice);
 		
-		assertEquals(getExpectedPrinterOutput("salesInvoiceBirForm-multiplepages.txt"), printerUtil.getPrinterOutput());
+		assertEquals(getExpectedPrinterOutput("salesInvoiceBirCashForm-multiplepages.txt"), printerUtil.getPrinterOutput());
 	}
 	
 	@Test
-	public void printBirForm_withPromoType2Reward() throws IOException {
+	public void printBirCashForm_withPromoType2Reward() throws IOException {
 		SalesInvoice salesInvoice = new SalesInvoice();
 		salesInvoice.setSalesInvoiceNumber(45514L);
 		salesInvoice.setPostedBy(new User(1L, "PJ"));
@@ -221,9 +221,9 @@ public class PrintServiceTest {
 		when(promoRedemptionService.findAllAvailedPromoRedemptions(salesInvoice))
 			.thenReturn(Arrays.asList(promoRedemption));
 		
-		printService.printBirForm(salesInvoice);
+		printService.printBirCashForm(salesInvoice);
 		
-		assertEquals(getExpectedPrinterOutput("salesInvoiceBirForm-withPromoType2Reward.txt"), printerUtil.getPrinterOutput());
+		assertEquals(getExpectedPrinterOutput("salesInvoiceBirCashForm-withPromoType2Reward.txt"), printerUtil.getPrinterOutput());
 	}
 	
 	private PromoRedemptionReward createReward(Product freeProduct, String unit, int quantity) {

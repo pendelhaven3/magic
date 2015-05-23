@@ -55,8 +55,10 @@ public interface PrintService {
 
 	void print(InventoryCheck inventoryCheck, InventoryCheckReportType reportType);
 	
-	void printBirForm(SalesInvoice salesInvoice);
-
+	void printBirCashForm(SalesInvoice salesInvoice);
+	
+	void printBirChargeForm(SalesInvoice salesInvoice);
+	
 	List<String> generateReportAsString(AreaInventoryReport areaInventoryReport);
 
 	void print(AreaInventoryReport areaInventoryReport);

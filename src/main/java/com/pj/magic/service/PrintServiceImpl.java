@@ -460,7 +460,16 @@ public class PrintServiceImpl implements PrintService {
 	}
 
 	@Override
-	public void printBirForm(SalesInvoice salesInvoice) {
+	public void printBirCashForm(SalesInvoice salesInvoice) {
+		printBirForm(salesInvoice, true);
+	}
+	
+	@Override
+	public void printBirChargeForm(SalesInvoice salesInvoice) {
+		printBirForm(salesInvoice, false);
+	}
+	
+	private void printBirForm(SalesInvoice salesInvoice, boolean cashForm) {
 		Collections.sort(salesInvoice.getItems());
 		
 		List<PromoRedemption> promoRedemptions = promoRedemptionService.findAllAvailedPromoRedemptions(salesInvoice);
@@ -501,7 +510,11 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
-			printPages.add(generateReportAsString("reports/salesInvoiceBirForm.vm", reportData));
+			if (cashForm) {
+				printPages.add(generateReportAsString("reports/salesInvoiceBirForm-cash.vm", reportData));
+			} else {
+				printPages.add(generateReportAsString("reports/salesInvoiceBirForm-charge.vm", reportData));
+			}
 		}
 		
 		try {

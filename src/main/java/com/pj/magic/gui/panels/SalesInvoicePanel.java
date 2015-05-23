@@ -367,16 +367,27 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		});
 		toolBar.add(printButton);
 		
-		JButton printBirFormButton = 
-				new MagicToolBarButton("print_bir_form", "Print BIR form");
-		printBirFormButton.addActionListener(new ActionListener() {
+		JButton printBirFormCashButton = 
+				new MagicToolBarButton("print_bir_form_cash", "Print BIR form (Cash)");
+		printBirFormCashButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				printService.printBirForm(salesInvoice);
+				printService.printBirCashForm(salesInvoice);
 			}
 		});
-		toolBar.add(printBirFormButton);
+		toolBar.add(printBirFormCashButton);
+		
+		JButton printBirFormChargeButton = 
+				new MagicToolBarButton("print_bir_form_charge", "Print BIR form (Charge)");
+		printBirFormChargeButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.printBirChargeForm(salesInvoice);
+			}
+		});
+		toolBar.add(printBirFormChargeButton);
 		
 		JButton copyButton = new MagicToolBarButton("copy", "Create New Sales Requisition Based On Sales Invoice");
 		copyButton.addActionListener(new ActionListener() {
