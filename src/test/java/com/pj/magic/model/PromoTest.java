@@ -1,7 +1,6 @@
 package com.pj.magic.model;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 
