@@ -25,6 +25,7 @@ import javax.swing.event.TableModelListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -334,6 +335,8 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 				stockQuantityConversionService.post(stockQuantityConversion);
 				showMessage("Post successful!");
 				getMagicFrame().switchToStockQuantityConversionListPanel();
+			} catch (AlreadyPostedException e) {
+				showErrorMessage("Stock Quantity Conversion is already posted");
 			} catch (NotEnoughStocksException e) {	
 				showErrorMessage("Not enough available stocks!");
 				updateDisplay(stockQuantityConversion);

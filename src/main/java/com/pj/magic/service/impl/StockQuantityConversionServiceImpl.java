@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.dao.StockQuantityConversionItemDao;
+import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.StockQuantityConversion;
@@ -64,6 +65,11 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 	@Override
 	public void post(StockQuantityConversion stockQuantityConversion) {
 		StockQuantityConversion updated = getStockQuantityConversion(stockQuantityConversion.getId());
+		
+		if (updated.isPosted()) {
+			throw new AlreadyPostedException();
+		}
+		
 		for (StockQuantityConversionItem item : updated.getItems()) {
 			// [PJ 08/26/2014] Do not update product quantity inside stock quantity conversion object
 			// because it has to be "rolled back" manually when an exception happens during posting
