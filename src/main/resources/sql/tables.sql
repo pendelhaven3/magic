@@ -953,9 +953,11 @@ create table PROMO_TYPE_3_RULE (
   FREE_PRODUCT_ID integer not null,
   FREE_UNIT char(3) not null,
   FREE_QUANTITY integer not null,
+  PRICING_SCHEME_ID integer null,
   primary key (ID),
   constraint PROMO_TYPE_3_RULE$FK foreign key (PROMO_ID) references PROMO (ID),
-  constraint PROMO_TYPE_3_RULE$FK2 foreign key (FREE_PRODUCT_ID) references PRODUCT (ID)
+  constraint PROMO_TYPE_3_RULE$FK2 foreign key (FREE_PRODUCT_ID) references PRODUCT (ID),
+  constraint PROMO_TYPE_3_RULE$FK3 foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID)
 );
 
 create table PROMO_TYPE_3_RULE_PROMO_PRODUCT (

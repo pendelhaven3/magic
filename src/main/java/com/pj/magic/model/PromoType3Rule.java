@@ -15,6 +15,7 @@ public class PromoType3Rule {
 	private String freeUnit;
 	private Integer freeQuantity;
 	private List<PromoType3RulePromoProduct> promoProducts = new ArrayList<>();
+	private PricingScheme pricingScheme;
 
 	public PromoType3Rule() {
 		// default constructor
@@ -122,4 +123,12 @@ public class PromoType3Rule {
 		return total;
 	}
 
+	public PricingScheme getPricingScheme() {
+		return pricingScheme;
+	}
+
+	public void setPricingScheme(PricingScheme pricingScheme) {
+		this.pricingScheme = pricingScheme;
+	}
+	
 }

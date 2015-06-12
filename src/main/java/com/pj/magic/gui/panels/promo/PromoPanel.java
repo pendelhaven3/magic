@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -45,6 +46,7 @@ import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.PromoType2RulesTable;
 import com.pj.magic.gui.tables.PromoType3RulePromoProductsTable;
 import com.pj.magic.model.Manufacturer;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType;
@@ -52,6 +54,7 @@ import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ManufacturerService;
+import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.impl.PromoService;
 import com.pj.magic.util.ComponentUtil;
@@ -68,6 +71,7 @@ public class PromoPanel extends StandardMagicPanel {
 	@Autowired private PromoService promoService;
 	@Autowired private ProductService productService;
 	@Autowired private ManufacturerService manufacturerService;
+	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private PromoType2RulesTable promoType2RulesTable;
 	@Autowired private PromoType3RulePromoProductsTable promoType3RulePromoProductsTable;
@@ -86,6 +90,7 @@ public class PromoPanel extends StandardMagicPanel {
 	private EllipsisButton selectProductButton;
 	private JComboBox<String> freeUnitComboBox;
 	private MagicTextField freeQuantityField;
+	private JComboBox<PricingScheme> pricingSchemeComboBox;
 	private MagicButton saveButton;
 	private JButton addRuleButton;
 	private JButton removeRuleButton;
@@ -132,6 +137,8 @@ public class PromoPanel extends StandardMagicPanel {
 		
 		freeQuantityField = new MagicTextField();
 		freeQuantityField.setNumbersOnly(true);
+		
+		pricingSchemeComboBox = new JComboBox<>();
 		
 		saveButton = new MagicButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -203,6 +210,11 @@ public class PromoPanel extends StandardMagicPanel {
 			rule.setFreeProduct(productService.findProductByCode(freeProductCodeField.getText()));
 			rule.setFreeUnit((String)freeUnitComboBox.getSelectedItem());
 			rule.setFreeQuantity(Integer.valueOf(freeQuantityField.getText()));
+			if (pricingSchemeComboBox.getSelectedIndex() == 0) {
+				rule.setPricingScheme(null);
+			} else {
+				rule.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
+			}
 			
 			try {
 				promoService.save(promo);
@@ -597,6 +609,22 @@ public class PromoPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(120, "Pricing Scheme:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+//		pricingSchemeComboBox.setPreferredSize(new Dimension(100, 25));
+		pricingSchemeComboBox.getPreferredSize().height = 25;
+		panel.add(pricingSchemeComboBox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
 		panel.add(Box.createVerticalStrut(20), c);
 		
 		currentRow++;
@@ -617,7 +645,7 @@ public class PromoPanel extends StandardMagicPanel {
 		c.gridwidth = 2;
 		
 		JScrollPane scrollPane = new JScrollPane(promoType3RulePromoProductsTable);
-		scrollPane.setPreferredSize(new Dimension(600, 120));
+		scrollPane.setPreferredSize(new Dimension(600, 100));
 		panel.add(scrollPane, c);
 	}
 
@@ -916,6 +944,7 @@ public class PromoPanel extends StandardMagicPanel {
 	}
 
 	private void updateDisplayForPromoType3() {
+		updatePricingSchemeComboBox();
 		updateToPromoType3Panel(promoDetailsPanel);
 		
 		PromoType3Rule rule = promo.getPromoType3Rule();
@@ -925,6 +954,11 @@ public class PromoPanel extends StandardMagicPanel {
 			freeProductDescriptionLabel.setText(rule.getFreeProduct().getDescription());
 			freeUnitComboBox.setSelectedItem(rule.getFreeUnit());
 			freeQuantityField.setText(rule.getFreeQuantity().toString());
+			if (rule.getPricingScheme() != null) {
+				pricingSchemeComboBox.setSelectedItem(rule.getPricingScheme());
+			} else {
+				pricingSchemeComboBox.setSelectedIndex(0);
+			}
 			promoType3RulePromoProductsTable.setRule(rule);
 			addPromoProductButton.setEnabled(true);
 			removePromoProductButton.setEnabled(true);
@@ -936,13 +970,26 @@ public class PromoPanel extends StandardMagicPanel {
 			freeProductDescriptionLabel.setText(null);
 			freeUnitComboBox.setSelectedItem(null);
 			freeQuantityField.setText(null);
+			pricingSchemeComboBox.setSelectedIndex(0);
 			promoType3RulePromoProductsTable.clear();
 			addPromoProductButton.setEnabled(false);
 			removePromoProductButton.setEnabled(false);
 			addAllPromoProductButton.setEnabled(false);
 			removeAllPromoProductButton.setEnabled(false);
 		}
-		
+	}
+
+	private void updatePricingSchemeComboBox() {
+		DefaultComboBoxModel<PricingScheme> model = ListUtil.toDefaultComboBoxModel(pricingSchemeService.getAllPricingSchemes());
+		model.insertElementAt(new PricingScheme() {
+			
+			@Override
+			public String toString() {
+				return "ANY";
+			}
+			
+		}, 0);
+		pricingSchemeComboBox.setModel(model);
 	}
 
 	private void updateDisplayForPromoType1() {

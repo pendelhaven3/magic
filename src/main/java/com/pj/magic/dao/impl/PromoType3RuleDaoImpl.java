@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PromoType3RuleDao;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType3Rule;
@@ -22,7 +24,7 @@ import com.pj.magic.model.PromoType3Rule;
 public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PROMO_ID, TARGET_AMOUNT, FREE_PRODUCT_ID, FREE_UNIT, FREE_QUANTITY,"
+			"select a.ID, PROMO_ID, TARGET_AMOUNT, FREE_PRODUCT_ID, FREE_UNIT, FREE_QUANTITY, PRICING_SCHEME_ID,"
 			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
 			+ " from PROMO_TYPE_3_RULE a"
 			+ " join PRODUCT b"
@@ -41,7 +43,7 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 
 	private static final String INSERT_SQL =
 			"insert into PROMO_TYPE_3_RULE (PROMO_ID, TARGET_AMOUNT, FREE_PRODUCT_ID, FREE_UNIT,"
-			+ " FREE_QUANTITY) values (?, ?, ?, ?, ?)";
+			+ " FREE_QUANTITY, PRICING_SCHEME_ID) values (?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final PromoType3Rule rule) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -56,6 +58,11 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 				ps.setLong(3, rule.getFreeProduct().getId());
 				ps.setString(4, rule.getFreeUnit());
 				ps.setInt(5, rule.getFreeQuantity());
+				if (rule.getPricingScheme() != null) {
+					ps.setLong(6, rule.getPricingScheme().getId());
+				} else {
+					ps.setNull(6, Types.BIGINT);
+				}
 				return ps;
 			}
 
@@ -77,7 +84,7 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 
 	private static final String UPDATE_SQL =
 			"update PROMO_TYPE_3_RULE set TARGET_AMOUNT = ?, FREE_PRODUCT_ID = ?, FREE_UNIT = ?,"
-			+ " FREE_QUANTITY = ? where ID = ?";
+			+ " FREE_QUANTITY = ?, PRICING_SCHEME_ID = ? where ID = ?";
 	
 	private void update(PromoType3Rule rule) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -85,6 +92,7 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 				rule.getFreeProduct().getId(),
 				rule.getFreeUnit(),
 				rule.getFreeQuantity(),
+				rule.getPricingScheme() != null ? rule.getPricingScheme().getId() : null,
 				rule.getId());
 	}
 
@@ -105,6 +113,12 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 			
 			rule.setFreeUnit(rs.getString("FREE_UNIT"));
 			rule.setFreeQuantity(rs.getInt("FREE_QUANTITY"));
+			
+			long pricingSchemeId = rs.getLong("PRICING_SCHEME_ID");
+			if (pricingSchemeId != 0) {
+				rule.setPricingScheme(new PricingScheme(pricingSchemeId));
+			}
+			
 			return rule;
 		}
 		
