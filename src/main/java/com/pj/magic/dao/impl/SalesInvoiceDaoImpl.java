@@ -253,6 +253,11 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			params.add(DbUtil.toMySqlDateString(criteria.getTransactionDateTo()));
 		}
 		
+		if (criteria.getPricingScheme() != null) {
+			sql.append(" and a.PRICING_SCHEME_ID = ?");
+			params.add(criteria.getPricingScheme().getId());
+		}
+		
 		if (criteria.getPaid() != null) {
 			if (criteria.getPaid()) {
 				sql.append(PAID_WHERE_CLAUSE_SQL);

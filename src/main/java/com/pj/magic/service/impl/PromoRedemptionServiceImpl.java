@@ -67,6 +67,10 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		criteria.setCustomer(customer);
 		criteria.setTransactionDateFrom(promo.getStartDate());
 		
+		if (promo.getPromoType().isType3()) {
+			criteria.setPricingScheme(promo.getPromoType3Rule().getPricingScheme());
+		}
+		
 		return salesInvoiceService.search(criteria);
 	}
 
