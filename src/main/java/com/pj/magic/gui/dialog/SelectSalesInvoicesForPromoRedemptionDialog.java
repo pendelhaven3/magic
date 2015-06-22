@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -188,12 +189,17 @@ public class SelectSalesInvoicesForPromoRedemptionDialog extends MagicDialog {
 			case TRANSACTION_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(salesInvoice.getTransactionDate());
 			case AMOUNT_COLUMN_INDEX:
-				if (promoRedemption.getPromo().getPromoType().isType1()) {
+				switch (promoRedemption.getPromo().getPromoType()) {
+				case PROMO_TYPE_1:
 					PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
 					return FormatterUtil.formatAmount(salesInvoice.getSalesByManufacturer(
 							rule.getManufacturer()));
+				case PROMO_TYPE_3:
+					BigDecimal amount = promoRedemption.getPromo().getPromoType3Rule().getQualifyingAmount(salesInvoice);
+					return FormatterUtil.formatAmount(amount);
+				default:
+					return "-";
 				}
-				return "-";
 			default:
 				throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 			}
