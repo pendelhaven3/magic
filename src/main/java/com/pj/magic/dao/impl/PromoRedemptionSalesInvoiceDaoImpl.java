@@ -1,10 +1,16 @@
 package com.pj.magic.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
@@ -29,9 +35,21 @@ public class PromoRedemptionSalesInvoiceDaoImpl extends MagicDao implements Prom
 	private PromoRedemptionSalesInvoiceRowMapper rowMapper = new PromoRedemptionSalesInvoiceRowMapper();
 	
 	@Override
-	public void save(PromoRedemptionSalesInvoice salesInvoice) {
-		getJdbcTemplate().update(SAVE_SQL, 
-				salesInvoice.getParent().getId(), salesInvoice.getSalesInvoice().getId());
+	public void save(final PromoRedemptionSalesInvoice salesInvoice) {
+		KeyHolder holder = new GeneratedKeyHolder();
+		getJdbcTemplate().update(new PreparedStatementCreator() {
+			
+			@Override
+			public PreparedStatement createPreparedStatement(Connection con)
+					throws SQLException {
+				PreparedStatement ps = con.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
+				ps.setLong(1, salesInvoice.getParent().getId());
+				ps.setLong(2, salesInvoice.getSalesInvoice().getId());
+				return ps;
+			}
+		}, holder);
+		
+		salesInvoice.setId(holder.getKey().longValue());
 	}
 
 	private static final String FIND_ALL_BY_PROMO_REDEMPTION_SQL = BASE_SELECT_SQL
