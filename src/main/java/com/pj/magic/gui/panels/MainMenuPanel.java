@@ -55,12 +55,15 @@ public class MainMenuPanel extends StandardMagicPanel {
 		MENU_ITEM_IMAGE_MAP.put(ADMIN, "admin");
 		MENU_ITEM_IMAGE_MAP.put(SALES_PAYMENT, "money_large");
 		MENU_ITEM_IMAGE_MAP.put(PURCHASE_PAYMENT, "money_large");
+		MENU_ITEM_IMAGE_MAP.put(PRODUCT_MAINTENANCE_AND_PRICING_SCHEMES, "products");
 		MENU_ITEM_IMAGE_MAP.put(STOCK_MOVEMENT, "stock_movement");
 		MENU_ITEM_IMAGE_MAP.put(REPORTS, "reports");
 		MENU_ITEM_IMAGE_MAP.put(INVENTORY_CHECK, "inventory_check");
 		MENU_ITEM_IMAGE_MAP.put(RECORDS_MAINTENANCE, "records");
 		MENU_ITEM_IMAGE_MAP.put(BACKUP_RESTORE_DATA, "database_backup");
 		MENU_ITEM_IMAGE_MAP.put(CHANGE_PASSWORD, "change_password");
+		MENU_ITEM_IMAGE_MAP.put(PROMO, "promo");
+		MENU_ITEM_IMAGE_MAP.put(PROMO_REDEMPTION, "promo");
 	}
 	
 	@Autowired private LoginService loginService;
