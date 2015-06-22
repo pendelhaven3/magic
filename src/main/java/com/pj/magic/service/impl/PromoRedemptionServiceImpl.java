@@ -20,6 +20,7 @@ import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.NothingToRedeemException;
+import com.pj.magic.exception.SalesInvoiceIneligibleForPromoRedemptionException;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
@@ -66,6 +67,10 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		criteria.setUnredeemedPromo(promo);
 		criteria.setCustomer(customer);
 		criteria.setTransactionDateFrom(promo.getStartDate());
+		
+		if (promo.getPromoType().isType3()) {
+			criteria.setPricingScheme(promo.getPromoType3Rule().getPricingScheme());
+		}
 		
 		return salesInvoiceService.search(criteria);
 	}
@@ -139,6 +144,14 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 						return input.getSalesInvoice();
 					}
 				}));
+		
+		if (rule.getPricingScheme() != null) {
+			for (SalesInvoice salesInvoice : salesInvoices) {
+				if (!salesInvoice.getPricingScheme().equals(rule.getPricingScheme())) {
+					throw new SalesInvoiceIneligibleForPromoRedemptionException(salesInvoice);
+				}
+			}
+		}
 		
 		PromoRedemptionReward reward = rule.evaluate(salesInvoices);
 		if (reward != null) {

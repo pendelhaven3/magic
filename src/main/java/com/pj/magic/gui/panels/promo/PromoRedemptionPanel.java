@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import com.pj.magic.Constants;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.NothingToRedeemException;
+import com.pj.magic.exception.SalesInvoiceIneligibleForPromoRedemptionException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -478,11 +480,6 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	}
 
 	private void postPromoRedemption() {
-//		if (promoRedemption.getPrizeQuantity() == 0) {
-//			showErrorMessage("Not enough Sales Invoice amount to be able redeem anything");
-//			return;
-//		}
-		
 		if (confirm("Do you want to post this Promo Redemption?")) {
 			try {
 				promoRedemptionService.post(promoRedemption);
@@ -496,6 +493,9 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 				updateDisplay(promoRedemption);
 			} catch (NotEnoughStocksException e) {
 				showErrorMessage("Not enough stocks of promo prize");
+			} catch (SalesInvoiceIneligibleForPromoRedemptionException e) {
+				showErrorMessage(MessageFormat.format("Sales Invoice No. {0} is ineligible for promo redemption", 
+						e.getSalesInvoice().getSalesInvoiceNumber().toString()));
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");

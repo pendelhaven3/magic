@@ -3,6 +3,7 @@ package com.pj.magic.model.search;
 import java.util.Date;
 
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Promo;
 
 public class SalesInvoiceSearchCriteria {
@@ -17,6 +18,7 @@ public class SalesInvoiceSearchCriteria {
 	private Boolean paid;
 	private String orderBy;
 	private Promo unredeemedPromo;
+	private PricingScheme pricingScheme;
 
 	public Boolean isMarked() {
 		return marked;
@@ -104,6 +106,14 @@ public class SalesInvoiceSearchCriteria {
 
 	public void setUnredeemedPromo(Promo unredeemedPromo) {
 		this.unredeemedPromo = unredeemedPromo;
+	}
+
+	public PricingScheme getPricingScheme() {
+		return pricingScheme;
+	}
+
+	public void setPricingScheme(PricingScheme pricingScheme) {
+		this.pricingScheme = pricingScheme;
 	}
 
 }
