@@ -512,6 +512,16 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 				openSelectCustomerDialog();
 			}
 		});
+		
+		salesInvoicesTable.onDeleteKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (!promoRedemption.isPosted()) {
+					removeCurrentlySelectedSalesInvoice();
+				}
+			}
+		});
 	}
 
 	@Override

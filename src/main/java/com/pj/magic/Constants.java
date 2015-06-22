@@ -19,6 +19,7 @@ public class Constants {
 	public static final Color PASTEL_BLUE = new Color(204, 229, 255);
 	public static final String ENTER_KEY_ACTION_NAME = "onEnterKey";
 	public static final String ESCAPE_KEY_ACTION_NAME = "onEscapeKey";
+	public static final String DELETE_KEY_ACTION_NAME = "onDeleteKey";
 	public static final String F5_KEY_ACTION_NAME = "onF5Key";
 	public static final String F9_KEY_ACTION_NAME = "onF9Key";
 	public static final BigDecimal ZERO = BigDecimal.ZERO.setScale(2); // TODO: migrate references to this
