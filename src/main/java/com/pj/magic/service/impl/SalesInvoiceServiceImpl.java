@@ -191,4 +191,13 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		return salesInvoices;
 	}
 
+	@Override
+	public SalesInvoice getMostRecentSalesInvoice(Customer customer, Product product) {
+		SalesInvoice salesInvoice = salesInvoiceDao.findMostRecentByCustomerAndProduct(customer, product);
+		if (salesInvoice != null) {
+			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
+		}
+		return salesInvoice;
+	}
+
 }

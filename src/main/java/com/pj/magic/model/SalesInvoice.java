@@ -348,5 +348,14 @@ public class SalesInvoice {
 		}
 		return ListUtil.asSortedList(new ArrayList<>(manufacturers));
 	}
+
+	public SalesInvoiceItem findItemByProduct(Product product) {
+		for (SalesInvoiceItem item : items) {
+			if (product.equals(item.getProduct())) {
+				return item;
+			}
+		}
+		return null;
+	}
 	
 }
