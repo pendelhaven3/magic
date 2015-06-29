@@ -20,6 +20,7 @@ import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
+import com.pj.magic.model.Unit;
 import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
@@ -160,10 +161,16 @@ public class BadStockReturnItemsTableModel extends AbstractTableModel {
 				return item.getDiscountedUnitPrice();
 			} else {
 				item = salesInvoice.findItemByProduct(product);
-				BigDecimal unitPrice = item.getDiscountedUnitPrice();
-				return unitPrice.divide(
-						new BigDecimal(product.getUnitConversion(item.getUnit()) / product.getUnitConversion(unit)),
-						2, RoundingMode.HALF_UP);
+				BigDecimal unitPrice = item.getDiscountedUnitPrice().setScale(2, RoundingMode.HALF_UP);
+				if (Unit.compare(unit, item.getUnit()) == -1) {
+					return unitPrice.divide(
+							new BigDecimal(product.getUnitConversion(item.getUnit()) / product.getUnitConversion(unit)),
+							2, RoundingMode.HALF_UP);
+				} else {
+					return unitPrice.multiply(
+							new BigDecimal(product.getUnitConversion(unit) / product.getUnitConversion(item.getUnit())))
+							.setScale(2, RoundingMode.HALF_UP);
+				}
 			}
 		} else {
 			return null;
