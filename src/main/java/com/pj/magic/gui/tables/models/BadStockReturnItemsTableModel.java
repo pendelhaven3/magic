@@ -1,6 +1,7 @@
 package com.pj.magic.gui.tables.models;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -155,12 +156,18 @@ public class BadStockReturnItemsTableModel extends AbstractTableModel {
 		SalesInvoice salesInvoice = salesInvoiceService.getMostRecentSalesInvoice(badStockReturn.getCustomer(), product);
 		if (salesInvoice != null) {
 			SalesInvoiceItem item = salesInvoice.findItemByProductAndUnit(product, unit);
-			return item.getDiscountedUnitPrice();
+			if (item != null) {
+				return item.getDiscountedUnitPrice();
+			} else {
+				item = salesInvoice.findItemByProduct(product);
+				BigDecimal unitPrice = item.getDiscountedUnitPrice();
+				return unitPrice.divide(
+						new BigDecimal(product.getUnitConversion(item.getUnit()) / product.getUnitConversion(unit)),
+						2, RoundingMode.HALF_UP);
+			}
 		} else {
 			return null;
 		}
-		
-		// TODO: Handle case where previous unit is CSE but returned unit is smaller
 	}
 
 	@Override
