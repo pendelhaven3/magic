@@ -27,6 +27,13 @@ public class Unit {
 		// Can never be instantiated. This class is only for the constants.
 	}
 	
+    /** 
+     * Compare two units.
+     * 
+     * @return <code>-1</code> if unit1 is less than unit2<br/>
+     *          <code>1</code> if unit1 is greater than unit2<br/>
+     *          <code>0</code> if unit1 is the same as unit2
+    */
 	public static int compare(String unit1, String unit2) {
 		int value1 = compareMap.get(unit1);
 		int value2 = compareMap.get(unit2);
