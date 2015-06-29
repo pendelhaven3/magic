@@ -10,13 +10,18 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
 import com.pj.magic.gui.tables.BadStockReturnItemsTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.gui.tables.rowitems.BadStockReturnItemRowItem;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
+import com.pj.magic.model.Product;
+import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.NumberUtil;
 
@@ -27,6 +32,7 @@ public class BadStockReturnItemsTableModel extends AbstractTableModel {
 	
 	@Autowired private ProductService productService;
 	@Autowired private BadStockReturnService badStockReturnService;
+	@Autowired private SalesInvoiceService salesInvoiceService;
 	
 	private List<BadStockReturnItemRowItem> rowItems = new ArrayList<>();
 	private BadStockReturn badStockReturn;
@@ -128,9 +134,12 @@ public class BadStockReturnItemsTableModel extends AbstractTableModel {
 			if (item.getUnitPrice() != null) {
 				item.setUnitPrice(rowItem.getUnitPrice());
 			} else {
-				BigDecimal originalUnitPrice = rowItem.getProduct().getUnitPrice(rowItem.getUnit());
-				item.setUnitPrice(originalUnitPrice);
-				rowItem.setUnitPrice(originalUnitPrice);
+				BigDecimal previousUnitPrice = getPreviousUnitPrice(rowItem.getProduct(), rowItem.getUnit());
+				if (previousUnitPrice == null) {
+					previousUnitPrice = Constants.ZERO;
+				}
+				item.setUnitPrice(previousUnitPrice);
+				rowItem.setUnitPrice(previousUnitPrice);
 			}
 			
 			boolean newItem = (item.getId() == null);
@@ -142,6 +151,18 @@ public class BadStockReturnItemsTableModel extends AbstractTableModel {
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
+	private BigDecimal getPreviousUnitPrice(Product product, String unit) {
+		SalesInvoice salesInvoice = salesInvoiceService.getMostRecentSalesInvoice(badStockReturn.getCustomer(), product);
+		if (salesInvoice != null) {
+			SalesInvoiceItem item = salesInvoice.findItemByProductAndUnit(product, unit);
+			return item.getDiscountedUnitPrice();
+		} else {
+			return null;
+		}
+		
+		// TODO: Handle case where previous unit is CSE but returned unit is smaller
+	}
+
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		if (badStockReturn.isPosted()) {

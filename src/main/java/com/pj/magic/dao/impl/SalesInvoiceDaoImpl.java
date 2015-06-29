@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,6 +23,7 @@ import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.model.PricingScheme;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
@@ -309,6 +311,30 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	public List<SalesInvoice> findAllForPaymentByCustomer(Customer customer) {
 		return getJdbcTemplate().query(FIND_ALL_FOR_PAYMENT_BY_CUSTOMER_SQL, salesInvoiceRowMapper, 
 				customer.getId());
+	}
+
+	private static final String FIND_MOST_RECENT_BY_CUSTOMER_AND_PRODUCT_SQL =
+			"select a.ID"
+			+ " from SALES_INVOICE a"
+			+ " join SALES_INVOICE_ITEM b"
+			+ "   on b.SALES_INVOICE_ID = a.ID"
+			+ " where a.CUSTOMER_ID = ?"
+			+ " and b.PRODUCT_ID = ?"
+			+ " and a.MARK_IND = 'Y'"
+			+ " and a.CANCEL_IND = 'N'"
+			+ " order by a.POST_DT desc"
+			+ " limit 1";
+	
+	@Override
+	public SalesInvoice findMostRecentByCustomerAndProduct(Customer customer, Product product) {
+		Long id = null;
+		try {
+			id = getJdbcTemplate().queryForObject(FIND_MOST_RECENT_BY_CUSTOMER_AND_PRODUCT_SQL, Long.class,
+					customer.getId(), product.getId());
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+		return get(id);
 	}
 
 }
