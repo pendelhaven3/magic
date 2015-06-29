@@ -7,6 +7,7 @@ import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
@@ -115,5 +116,9 @@ public interface PrintService {
 	List<String> generateReportAsString(PromoRedemption promoRedemption);
 
 	void print(PromoRedemption promoRedemption);
+
+	List<String> generateReportAsString(NoMoreStockAdjustment noMoreStockAdjustment);
+
+	void print(NoMoreStockAdjustment noMoreStockAdjustment);
 	
 }

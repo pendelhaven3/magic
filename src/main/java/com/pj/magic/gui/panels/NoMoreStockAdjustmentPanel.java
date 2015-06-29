@@ -32,6 +32,7 @@ import com.pj.magic.exception.NoMoreStockAdjustmentItemQuantityExceededException
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.StatusDetailsDialog;
 import com.pj.magic.gui.tables.NoMoreStockAdjustmentItemsTable;
 import com.pj.magic.model.Customer;
@@ -42,6 +43,7 @@ import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.NoMoreStockAdjustmentService;
 import com.pj.magic.service.PaymentTerminalService;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.ComponentUtil;
@@ -60,6 +62,8 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalService paymentTerminalService;
 	@Autowired private StatusDetailsDialog statusDetailsDialog;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private PrintService printService;
 	
 	private NoMoreStockAdjustment noMoreStockAdjustment;
 	private JLabel noMoreStockAdjustmentNumberField;
@@ -73,6 +77,8 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 	private JButton markAsPaidButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
+	private JButton printPreviewButton;
+	private JButton printButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -223,6 +229,8 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		markAsPaidButton.setEnabled(noMoreStockAdjustment.isPosted() && !noMoreStockAdjustment.isPaid());
 		addItemButton.setEnabled(!noMoreStockAdjustment.isPosted());
 		deleteItemButton.setEnabled(!noMoreStockAdjustment.isPosted());
+		printButton.setEnabled(true);
+		printPreviewButton.setEnabled(true);
 	}
 
 	private void clearDisplay() {
@@ -238,6 +246,8 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		markAsPaidButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
+		printButton.setEnabled(false);
+		printPreviewButton.setEnabled(false);
 	}
 
 	@Override
@@ -432,6 +442,27 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(markAsPaidButton);
+		
+		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreviewDialog.updateDisplay(printService.generateReportAsString(noMoreStockAdjustment));
+				printPreviewDialog.setVisible(true);
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
+		printButton = new MagicToolBarButton("print", "Print");
+		printButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.print(noMoreStockAdjustment);
+			}
+		});
+		toolBar.add(printButton);
 	}
 
 	private void markNoMoreStockAdjustmentAsPaid() {

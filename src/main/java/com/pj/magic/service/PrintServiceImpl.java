@@ -35,6 +35,8 @@ import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
+import com.pj.magic.model.NoMoreStockAdjustment;
+import com.pj.magic.model.NoMoreStockAdjustmentItem;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentSalesInvoice;
@@ -95,6 +97,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int POSTED_SALES_AND_PROFIT_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int SALES_RETURN_ITEMS_PER_PAGE = 44;
 	private static final int BAD_STOCK_RETURN_ITEMS_PER_PAGE = 44;
+	private static final int NO_MORE_STOCK_ADJUSTMENT_ITEMS_PER_PAGE = 44;
 	private static final int CASH_FLOW_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int REMITTANCE_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int PRICE_CHANGES_REPORT_ITEMS_PER_PAGE = 52;
@@ -1010,6 +1013,36 @@ public class PrintServiceImpl implements PrintService {
 	public void print(PromoRedemption promoRedemption) {
 		try {
 			for (String printPage : generateReportAsString(promoRedemption)) {
+				printerUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateReportAsString(NoMoreStockAdjustment noMoreStockAdjustment) {
+		List<List<NoMoreStockAdjustmentItem>> pageItems = Lists.partition(noMoreStockAdjustment.getItems(), 
+				NO_MORE_STOCK_ADJUSTMENT_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("currentDate", new Date());
+			reportData.put("noMoreStockAdjustment", noMoreStockAdjustment);
+			reportData.put("remarks", StringUtils.defaultString(noMoreStockAdjustment.getRemarks()));
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/noMoreStockAdjustment.vm", reportData));
+		}
+		return printPages;
+	}
+
+	@Override
+	public void print(NoMoreStockAdjustment noMoreStockAdjustment) {
+		try {
+			for (String printPage : generateReportAsString(noMoreStockAdjustment)) {
 				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
