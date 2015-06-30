@@ -20,6 +20,7 @@ public class BadStockReturnItemRowItem {
 	private String unit;
 	private Integer quantity;
 	private BigDecimal unitPrice;
+	private Long salesInvoiceNumber;
 
 	public BadStockReturnItemRowItem(BadStockReturnItem item) {
 		this.item = item;
@@ -111,7 +112,16 @@ public class BadStockReturnItemRowItem {
 			unit = item.getUnit();
 			quantity = item.getQuantity();
 			unitPrice = item.getUnitPrice();
+			salesInvoiceNumber = item.getSalesInvoiceNumber();
 		}
+	}
+
+	public Long getSalesInvoiceNumber() {
+		return salesInvoiceNumber;
+	}
+
+	public void setSalesInvoiceNumber(Long salesInvoiceNumber) {
+		this.salesInvoiceNumber = salesInvoiceNumber;
 	}
 	
 }

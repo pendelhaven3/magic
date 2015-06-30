@@ -14,6 +14,7 @@ public class BadStockReturnItem {
 	private Integer quantity;
 	private BigDecimal unitPrice;
 	private BigDecimal cost;
+	private Long salesInvoiceNumber;
 
 	public Long getId() {
 		return id;
@@ -107,6 +108,14 @@ public class BadStockReturnItem {
 	
 	public BigDecimal getTotalCost() {
 		return cost.multiply(new BigDecimal(quantity));
+	}
+
+	public Long getSalesInvoiceNumber() {
+		return salesInvoiceNumber;
+	}
+
+	public void setSalesInvoiceNumber(Long salesInvoiceNumber) {
+		this.salesInvoiceNumber = salesInvoiceNumber;
 	}
 	
 }

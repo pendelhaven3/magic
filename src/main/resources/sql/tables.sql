@@ -633,9 +633,11 @@ create table BAD_STOCK_RETURN_ITEM (
   QUANTITY integer not null,
   UNIT_PRICE numeric(10, 2) not null,
   COST numeric(10, 2) null,
+  SALES_INVOICE_NO integer null,
   constraint BAD_STOCK_RETURN_ITEM$PK primary key (ID),
   constraint BAD_STOCK_RETURN_ITEM$FK foreign key (BAD_STOCK_RETURN_ID) references BAD_STOCK_RETURN (ID),
-  constraint BAD_STOCK_RETURN_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+  constraint BAD_STOCK_RETURN_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID),
+  constraint BAD_STOCK_RETURN_ITEM$FK3 foreign key (SALES_INVOICE_NO) references SALES_INVOICE (SALES_INVOICE_NO)
 );
 
 create table NO_MORE_STOCK_ADJUSTMENT (

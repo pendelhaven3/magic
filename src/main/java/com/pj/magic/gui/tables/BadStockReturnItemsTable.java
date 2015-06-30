@@ -42,8 +42,9 @@ public class BadStockReturnItemsTable extends MagicTable {
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
 	public static final int UNIT_COLUMN_INDEX = 2;
 	public static final int QUANTITY_COLUMN_INDEX = 3;
-	public static final int UNIT_PRICE_COLUMN_INDEX = 4;
-	public static final int AMOUNT_COLUMN_INDEX = 5;
+	public static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 4;
+	public static final int UNIT_PRICE_COLUMN_INDEX = 5;
+	public static final int AMOUNT_COLUMN_INDEX = 6;
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";
@@ -72,6 +73,7 @@ public class BadStockReturnItemsTable extends MagicTable {
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(70);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
+		columnModel.getColumn(SALES_INVOICE_NUMBER_COLUMN_INDEX).setPreferredWidth(50);
 		columnModel.getColumn(UNIT_PRICE_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
 		
