@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.BadStockReturnDao;
-import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.NoMoreStockAdjustmentDao;
 import com.pj.magic.dao.PaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentCashPaymentDao;
@@ -52,7 +51,6 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private SalesInvoiceItemDao salesInvoiceItemDao;
 	@Autowired private PaymentDao paymentDao;
 	@Autowired private PaymentSalesInvoiceDao paymentSalesInvoiceDao;
-	@Autowired private CustomerDao customerDao;
 	@Autowired private PaymentCheckPaymentDao paymentCheckPaymentDao;
 	@Autowired private PaymentCashPaymentDao paymentCashPaymentDao;
 	@Autowired private PaymentPaymentAdjustmentDao paymentPaymentAdjustmentDao;

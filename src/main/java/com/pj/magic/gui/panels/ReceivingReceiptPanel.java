@@ -22,10 +22,6 @@ import javax.swing.JScrollPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
-
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,18 +33,19 @@ import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.StatusDetailsDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
+import com.pj.magic.gui.dialog.StatusDetailsDialog;
 import com.pj.magic.gui.tables.ReceivingReceiptItemsTable;
 import com.pj.magic.model.ReceivingReceipt;
-import com.pj.magic.service.PaymentTermService;
-import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.PrintService;
-import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.HtmlUtil;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 public class ReceivingReceiptPanel extends StandardMagicPanel {
@@ -56,10 +53,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(ReceivingReceiptPanel.class);
 	
 	@Autowired private ReceivingReceiptItemsTable itemsTable;
-	@Autowired private ProductService productService;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
-	@Autowired private PricingSchemeService pricingSchemeService;
-	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private StatusDetailsDialog statusDialog;

@@ -44,7 +44,6 @@ import com.pj.magic.service.LoginService;
 import com.pj.magic.service.NoMoreStockAdjustmentService;
 import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
-import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -56,7 +55,6 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(NoMoreStockAdjustmentPanel.class);
 	
 	@Autowired private NoMoreStockAdjustmentItemsTable itemsTable;
-	@Autowired private ProductService productService;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
 	@Autowired private LoginService loginService;

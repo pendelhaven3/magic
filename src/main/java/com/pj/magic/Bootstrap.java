@@ -18,10 +18,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.pj.magic.dao.CustomerDao;
-import com.pj.magic.dao.ProductCategoryDao;
 import com.pj.magic.dao.ProductPriceDao;
-import com.pj.magic.dao.ProductSubcategoryDao;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
@@ -31,11 +28,8 @@ public class Bootstrap {
 
 	@Autowired private DataSource dataSource;
 	@Autowired private ProductService productService;
-	@Autowired private CustomerDao customerDao;
 	@Autowired private TransactionTemplate transactionTemplate;
 	@Autowired private ProductPriceDao productPriceDao;
-	@Autowired private ProductCategoryDao productCategoryDao;
-	@Autowired private ProductSubcategoryDao productSubcategoryDao;
 	
 	@PostConstruct
 	public void initialize() throws Exception {

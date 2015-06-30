@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.models.ReceivingReceiptItemsTableModel;
 import com.pj.magic.gui.tables.rowitems.ReceivingReceiptItemRowItem;
 import com.pj.magic.model.ReceivingReceipt;
-import com.pj.magic.service.ProductService;
 import com.pj.magic.util.NumberUtil;
 
 @Component
@@ -33,7 +32,6 @@ public class ReceivingReceiptItemsTable extends MagicTable {
 	public static final int DISCOUNTED_AMOUNT_COLUMN_INDEX = 10;
 	public static final int NET_AMOUNT_COLUMN_INDEX = 11;
 	
-	@Autowired private ProductService productService;
 	@Autowired private ReceivingReceiptItemsTableModel tableModel;
 	
 	private ReceivingReceipt receivingReceipt;

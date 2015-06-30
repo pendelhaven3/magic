@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.NoMoreStockAdjustmentDao;
 import com.pj.magic.dao.NoMoreStockAdjustmentItemDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
-import com.pj.magic.dao.ProductDao;
 import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NoMoreStockAdjustmentItemQuantityExceededException;
@@ -33,7 +32,6 @@ public class NoMoreStockAdjustmentServiceImpl implements NoMoreStockAdjustmentSe
 	@Autowired private NoMoreStockAdjustmentDao noMoreStockAdjustmentDao;
 	@Autowired private NoMoreStockAdjustmentItemDao noMoreStockAdjustmentItemDao;
 	@Autowired private SalesInvoiceService salesInvoiceService;
-	@Autowired private ProductDao productDao;
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	

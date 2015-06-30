@@ -28,14 +28,10 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.PurchaseReturnItemsTable;
 import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.service.LoginService;
-import com.pj.magic.service.PrintService;
-import com.pj.magic.service.ProductService;
 import com.pj.magic.service.PurchaseReturnService;
 import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.ComponentUtil;
@@ -47,12 +43,8 @@ public class PurchaseReturnPanel extends StandardMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(PurchaseReturnPanel.class);
 	
 	@Autowired private PurchaseReturnItemsTable itemsTable;
-	@Autowired private ProductService productService;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
 	@Autowired private PurchaseReturnService purchaseReturnService;
-	@Autowired private PrintPreviewDialog printPreviewDialog;
-	@Autowired private PrintService printService;
-	@Autowired private LoginService loginService;
 	
 	private PurchaseReturn purchaseReturn;
 	private JLabel purchaseReturnNumberField;

@@ -59,7 +59,6 @@ import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.service.ExcelService;
 import com.pj.magic.service.PaymentTermService;
-import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.PurchaseOrderService;
@@ -79,7 +78,6 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	@Autowired private PurchaseOrderItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseOrderService purchaseOrderService;
-	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private SupplierService supplierService;
 	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private PrintService printService;

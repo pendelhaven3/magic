@@ -2,8 +2,6 @@ package com.pj.magic.service;
 
 import java.util.Date;
 
-import javax.sql.DataSource;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,8 +31,6 @@ public class SalesRequisitionServiceTest extends AbstractJUnit4SpringContextTest
 	@Autowired private ProductService productService;
 	@Autowired private SalesRequisitionItemDao salesRequisitionItemDao;
 	@Autowired private UserDao userDao;
-	
-	@Autowired private DataSource dataSource;
 	
 	@Test
 	public void postWithNotEnoughStocksException() {

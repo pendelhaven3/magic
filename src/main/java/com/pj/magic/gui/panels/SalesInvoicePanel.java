@@ -39,7 +39,6 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.ExcelService;
 import com.pj.magic.service.PrintService;
-import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FileUtil;
@@ -52,7 +51,6 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(SalesInvoicePanel.class);
 	
 	@Autowired private SalesInvoiceItemsTable itemsTable;
-	@Autowired private ProductService productService;
 	@Autowired private PrintService printService;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;

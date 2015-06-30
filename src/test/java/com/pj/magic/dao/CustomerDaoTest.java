@@ -1,10 +1,10 @@
 package com.pj.magic.dao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -77,8 +77,6 @@ public class CustomerDaoTest extends IntegrationTest {
 		assertEquals(customer.getPaymentTerm(), fromDb.getPaymentTerm());
 	}
 
-	@Autowired private DataSource dataSource;
-	
 	@Test
 	public void save_update_minimumFields() {
 		insertTestCustomer();

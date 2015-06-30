@@ -15,12 +15,10 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SearchSalesInvoicesDialog;
 import com.pj.magic.gui.tables.SalesInvoicesTable;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
-import com.pj.magic.service.PrintService;
 import com.pj.magic.service.SalesInvoiceService;
 
 @Component
@@ -29,8 +27,6 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	@Autowired private SalesInvoicesTable table;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private SearchSalesInvoicesDialog searchSalesInvoicesDialog;
-	@Autowired private PrintPreviewDialog printPreviewDialog;
-	@Autowired private PrintService printService;
 	
 	@Override
 	protected void initializeComponents() {

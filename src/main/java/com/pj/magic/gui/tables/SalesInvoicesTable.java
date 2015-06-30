@@ -16,7 +16,6 @@ import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.tables.models.SalesInvoicesTableModel;
 import com.pj.magic.model.SalesInvoice;
-import com.pj.magic.service.SalesInvoiceService;
 
 @Component
 public class SalesInvoicesTable extends MagicListTable {
@@ -29,7 +28,6 @@ public class SalesInvoicesTable extends MagicListTable {
 	public static final int STATUS_COLUMN_INDEX = 5;
 	private static final String GO_TO_SALES_INVOICE_ACTION_NAME = "goToSalesInvoice";
 
-	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private SalesInvoicesTableModel tableModel;
 	
 	@Autowired

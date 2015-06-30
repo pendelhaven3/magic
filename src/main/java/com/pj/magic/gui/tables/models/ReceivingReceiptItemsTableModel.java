@@ -13,7 +13,6 @@ import com.pj.magic.gui.tables.ReceivingReceiptItemsTable;
 import com.pj.magic.gui.tables.rowitems.ReceivingReceiptItemRowItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
-import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.NumberUtil;
@@ -25,7 +24,6 @@ public class ReceivingReceiptItemsTableModel extends AbstractTableModel {
 		{"Code", "Description", "Unit", "Quantity", "Cost", "Amount", "Disc. 1", "Disc. 2", "Disc. 3",
 				"Flat Rate", "Disc. Amount", "Net Amount"};
 	
-	@Autowired private ProductService productService;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
 	
 	private List<ReceivingReceiptItemRowItem> rowItems = new ArrayList<>();

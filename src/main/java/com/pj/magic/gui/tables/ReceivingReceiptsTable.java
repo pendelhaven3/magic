@@ -16,14 +16,12 @@ import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.panels.ReceivingReceiptListPanel;
 import com.pj.magic.gui.tables.models.ReceivingReceiptsTableModel;
 import com.pj.magic.model.ReceivingReceipt;
-import com.pj.magic.service.ReceivingReceiptService;
 
 @Component
 public class ReceivingReceiptsTable extends MagicListTable {
 
 	private static final String SELECT_RECEIVING_RECEIPT_ACTION_NAME = "selectReceivingReceipt";
 	
-	@Autowired private ReceivingReceiptService receivingReceiptService;
 	@Autowired private ReceivingReceiptsTableModel tableModel;
 	
 	@Autowired

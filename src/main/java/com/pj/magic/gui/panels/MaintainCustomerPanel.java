@@ -33,7 +33,6 @@ import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerm;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.PaymentTermService;
-import com.pj.magic.service.SalesRequisitionService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.KeyUtil;
@@ -48,7 +47,6 @@ public class MaintainCustomerPanel extends StandardMagicPanel {
 	
 	@Autowired private CustomerService customerService;
 	@Autowired private PaymentTermService paymentTermService;
-	@Autowired private SalesRequisitionService salesRequisitionService;
 	
 	private Customer customer;
 	private MagicTextField codeField;

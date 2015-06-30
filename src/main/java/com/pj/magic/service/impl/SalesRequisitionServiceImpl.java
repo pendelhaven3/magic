@@ -14,7 +14,6 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.dao.PromoRedemptionRewardDao;
 import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
-import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.UserDao;
@@ -48,7 +47,6 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private LoginService loginService;
 	@Autowired private SystemService systemService;
 	@Autowired private PromoService promoService;
-	@Autowired private SalesInvoiceItemDao salesInvoiceItemDao;
 	@Autowired private PromoRedemptionDao promoRedemptionDao;
 	@Autowired private PromoRedemptionSalesInvoiceDao promoRedemptionSalesInvoiceDao;
 	@Autowired private PromoRedemptionRewardDao promoRedemptionRewardDao;

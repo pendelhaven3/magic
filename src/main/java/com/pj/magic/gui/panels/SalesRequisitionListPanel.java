@@ -16,14 +16,12 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.SalesRequisitionsTable;
 import com.pj.magic.model.SalesRequisition;
-import com.pj.magic.service.SalesRequisitionService;
 import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class SalesRequisitionListPanel extends StandardMagicPanel {
 	
 	@Autowired private SalesRequisitionsTable table;
-	@Autowired private SalesRequisitionService salesRequisitionService;
 	
 	@Override
 	public void initializeComponents() {

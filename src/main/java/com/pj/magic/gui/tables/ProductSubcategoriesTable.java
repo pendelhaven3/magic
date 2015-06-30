@@ -17,14 +17,12 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.models.ProductSubcategoriesTableModel;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.ProductSubcategory;
-import com.pj.magic.service.ProductCategoryService;
 
 @Component
 public class ProductSubcategoriesTable extends MagicListTable {
 
 	public static final int BUTTON_COLUMN_INDEX = 1;
 	
-	@Autowired private ProductCategoryService productCategoryService;
 	@Autowired private ProductSubcategoriesTableModel tableModel;
 	
 	private DeleteSubcategoryButton tableButton = new DeleteSubcategoryButton();

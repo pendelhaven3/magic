@@ -32,8 +32,8 @@ import com.pj.magic.exception.SalesReturnItemQuantityExceededException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.StatusDetailsDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
+import com.pj.magic.gui.dialog.StatusDetailsDialog;
 import com.pj.magic.gui.tables.SalesReturnItemsTable;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerminalAssignment;
@@ -43,7 +43,6 @@ import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentTerminalService;
 import com.pj.magic.service.PrintService;
-import com.pj.magic.service.ProductService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
@@ -56,7 +55,6 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	private static final Logger logger = LoggerFactory.getLogger(SalesReturnPanel.class);
 	
 	@Autowired private SalesReturnItemsTable itemsTable;
-	@Autowired private ProductService productService;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;

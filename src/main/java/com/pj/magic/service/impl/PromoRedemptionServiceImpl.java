@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.pj.magic.dao.ProductDao;
-import com.pj.magic.dao.PromoDao;
 import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.dao.PromoRedemptionRewardDao;
 import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
@@ -48,7 +47,6 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Autowired private LoginService loginService;
 	@Autowired private PromoService promoService;
 	@Autowired private ProductDao productDao;
-	@Autowired private PromoDao promoDao;
 	@Autowired private PromoRedemptionRewardDao promoRedemptionRewardDao;
 	
 	@Transactional

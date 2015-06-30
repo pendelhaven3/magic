@@ -36,9 +36,8 @@ import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.PurchaseReturnBadStockItemsTable;
 import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.Supplier;
-import com.pj.magic.service.PurchaseReturnBadStockService;
-import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PrintService;
+import com.pj.magic.service.PurchaseReturnBadStockService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -58,7 +57,6 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
-	@Autowired private LoginService loginService;
 	
 	private PurchaseReturnBadStock purchaseReturnBadStock;
 	private JLabel purchaseReturnBadStockNumberField;

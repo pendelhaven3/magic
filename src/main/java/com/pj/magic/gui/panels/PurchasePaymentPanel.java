@@ -41,14 +41,11 @@ import com.pj.magic.gui.tables.PurchasePaymentCheckPaymentsTable;
 import com.pj.magic.gui.tables.PurchasePaymentCreditCardPaymentsTable;
 import com.pj.magic.gui.tables.PurchasePaymentPaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.PurchasePaymentReceivingReceiptsTable;
-import com.pj.magic.model.ReceivingReceipt;
-import com.pj.magic.model.Supplier;
 import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentReceivingReceipt;
-import com.pj.magic.service.LoginService;
-import com.pj.magic.service.PaymentTerminalService;
+import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.service.PrintService;
-import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
@@ -74,9 +71,6 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	@Autowired private PurchasePaymentPaymentAdjustmentsTable paymentAdjustmentsTable;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
-	@Autowired private LoginService loginService;
-	@Autowired private PaymentTerminalService paymentTerminalService;
-	@Autowired private SalesReturnService salesReturnService;
 	
 	private PurchasePayment purchasePayment;
 	private JLabel purchasePaymentNumberField;

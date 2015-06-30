@@ -18,10 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -32,18 +28,20 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.report.PurchasePaymentCreditCardPaymentsReport;
 import com.pj.magic.model.search.PurchasePaymentCreditCardPaymentSearchCriteria;
-import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 public class PurchasePaymentCreditCardPaymentsReportPanel extends StandardMagicPanel {
@@ -58,8 +56,6 @@ public class PurchasePaymentCreditCardPaymentsReportPanel extends StandardMagicP
 	@Autowired private PurchasePaymentService purchasePaymentService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	@Autowired private SupplierService supplierService;
-	@Autowired private PrintPreviewDialog printPreviewDialog;
-	@Autowired private PrintService printService;
 	
 	private MagicListTable table;
 	private CreditCardPaymentsTableModel tableModel;

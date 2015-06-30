@@ -16,7 +16,6 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.InventoryChecksTable;
 import com.pj.magic.model.InventoryCheck;
-import com.pj.magic.service.InventoryCheckService;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -24,7 +23,6 @@ import com.pj.magic.util.ComponentUtil;
 public class InventoryCheckListPanel extends StandardMagicPanel {
 	
 	@Autowired private InventoryChecksTable table;
-	@Autowired private InventoryCheckService InventoryCheckService;
 	@Autowired private LoginService loginService;
 	
 	private JButton addButton;

@@ -17,10 +17,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +26,6 @@ import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Customer;
@@ -38,10 +33,13 @@ import com.pj.magic.model.report.SalesByManufacturerReport;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
 import com.pj.magic.service.CustomerService;
-import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 public class SalesByManufacturerReportPanel extends StandardMagicPanel {
@@ -52,8 +50,6 @@ public class SalesByManufacturerReportPanel extends StandardMagicPanel {
 	@Autowired private CustomerService customerService;
 	@Autowired private ReportService reportService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
-	@Autowired private PrintPreviewDialog printPreviewDialog;
-	@Autowired private PrintService printService;
 	
 	private MagicTextField customerCodeField;
 	private JLabel customerNameLabel;
