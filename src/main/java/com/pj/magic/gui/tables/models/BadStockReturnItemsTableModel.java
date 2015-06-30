@@ -117,9 +117,15 @@ public class BadStockReturnItemsTableModel extends AbstractTableModel {
 			}
 			rowItem.setProduct(productService.findProductByCode(val));
 			rowItem.setUnit(null);
+			rowItem.setUnitPrice(null);
+			rowItem.setSalesInvoiceNumber(null);
 			break;
 		case BadStockReturnItemsTable.UNIT_COLUMN_INDEX:
-			rowItem.setUnit(val);
+			if (!val.equals(rowItem.getUnit())) {
+				rowItem.setUnit(val);
+				rowItem.setUnitPrice(null);
+				rowItem.setSalesInvoiceNumber(null);
+			}
 			break;
 		case BadStockReturnItemsTable.QUANTITY_COLUMN_INDEX:
 			rowItem.setQuantity(Integer.valueOf(val));

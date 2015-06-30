@@ -18,12 +18,16 @@ import com.pj.magic.dao.BadStockReturnItemDao;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.Unit;
+import com.pj.magic.model.UnitConversion;
 
 @Repository
 public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockReturnItemDao {
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, BAD_STOCK_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE, COST, SALES_INVOICE_NO,"
+			+ " b.UNIT_IND_CSE, b.UNIT_IND_TIE, b.UNIT_IND_CTN, b.UNIT_IND_DOZ, b.UNIT_IND_PCS,"
+			+ " b.UNIT_CONV_CSE, b.UNIT_CONV_TIE, b.UNIT_CONV_CTN, b.UNIT_CONV_DOZ, b.UNIT_CONV_PCS,"
 			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
 			+ " from BAD_STOCK_RETURN_ITEM a"
 			+ " join PRODUCT b"
@@ -108,11 +112,7 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 			BadStockReturnItem item = new BadStockReturnItem();
 			item.setId(rs.getLong("ID"));
 			
-			Product product = new Product();
-			product.setId(rs.getLong("PRODUCT_ID"));
-			product.setCode(rs.getString("PRODUCT_CODE"));
-			product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
-			item.setProduct(product);
+			item.setProduct(mapProduct(rs));
 			
 			item.setUnit(rs.getString("UNIT"));
 			item.setQuantity(rs.getInt("QUANTITY"));
@@ -125,6 +125,36 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 			}
 			
 			return item;
+		}
+
+		private Product mapProduct(ResultSet rs) throws SQLException {
+			Product product = new Product();
+			product.setId(rs.getLong("PRODUCT_ID"));
+			product.setCode(rs.getString("PRODUCT_CODE"));
+			product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
+			
+			if ("Y".equals(rs.getString("UNIT_IND_CSE"))) {
+				product.addUnit(Unit.CASE);
+				product.getUnitConversions().add(new UnitConversion(Unit.CASE, rs.getInt("UNIT_CONV_CSE")));
+			}
+			if ("Y".equals(rs.getString("UNIT_IND_TIE"))) {
+				product.addUnit(Unit.TIE);
+				product.getUnitConversions().add(new UnitConversion(Unit.TIE, rs.getInt("UNIT_CONV_TIE")));
+			}
+			if ("Y".equals(rs.getString("UNIT_IND_CTN"))) {
+				product.addUnit(Unit.CARTON);
+				product.getUnitConversions().add(new UnitConversion(Unit.CARTON, rs.getInt("UNIT_CONV_CTN")));
+			}
+			if ("Y".equals(rs.getString("UNIT_IND_DOZ"))) {
+				product.addUnit(Unit.DOZEN);
+				product.getUnitConversions().add(new UnitConversion(Unit.DOZEN, rs.getInt("UNIT_CONV_DOZ")));
+			}
+			if ("Y".equals(rs.getString("UNIT_IND_PCS"))) {
+				product.addUnit(Unit.PIECES);
+				product.getUnitConversions().add(new UnitConversion(Unit.PIECES, rs.getInt("UNIT_CONV_PCS")));
+			}
+			
+			return product;
 		}
 		
 	}
