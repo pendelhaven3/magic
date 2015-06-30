@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
 import com.pj.magic.gui.tables.BadStockReturnItemsTable;
-import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.gui.tables.rowitems.BadStockReturnItemRowItem;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
@@ -30,7 +29,7 @@ import com.pj.magic.util.NumberUtil;
 @Component
 public class BadStockReturnItemsTableModel extends AbstractTableModel {
 	
-	private static final String[] columnNames = {"Code", "Description", "Unit", "Qty", "Unit Price", "Amount"};
+	private static final String[] columnNames = {"Code", "Description", "Unit", "Qty", "SI No.", "Unit Price", "Amount"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private BadStockReturnService badStockReturnService;
@@ -61,6 +60,8 @@ public class BadStockReturnItemsTableModel extends AbstractTableModel {
 			return rowItem.getUnit();
 		case BadStockReturnItemsTable.QUANTITY_COLUMN_INDEX:
 			return rowItem.getQuantity();
+		case BadStockReturnItemsTable.SALES_INVOICE_NUMBER_COLUMN_INDEX:
+			return rowItem.getSalesInvoiceNumber() != null ? rowItem.getSalesInvoiceNumber().toString() : null;
 		case BadStockReturnItemsTable.UNIT_PRICE_COLUMN_INDEX:
 			BigDecimal cost = rowItem.getUnitPrice();
 			return (cost != null) ? FormatterUtil.formatAmount(cost) : "";
@@ -136,12 +137,7 @@ public class BadStockReturnItemsTableModel extends AbstractTableModel {
 			if (item.getUnitPrice() != null) {
 				item.setUnitPrice(rowItem.getUnitPrice());
 			} else {
-				BigDecimal previousUnitPrice = getPreviousUnitPrice(rowItem.getProduct(), rowItem.getUnit());
-				if (previousUnitPrice == null) {
-					previousUnitPrice = Constants.ZERO;
-				}
-				item.setUnitPrice(previousUnitPrice);
-				rowItem.setUnitPrice(previousUnitPrice);
+				assignPreviousUnitPriceAndReferenceSalesInvoiceNumber(item, rowItem);
 			}
 			
 			boolean newItem = (item.getId() == null);
@@ -153,27 +149,38 @@ public class BadStockReturnItemsTableModel extends AbstractTableModel {
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
-	private BigDecimal getPreviousUnitPrice(Product product, String unit) {
+	private void assignPreviousUnitPriceAndReferenceSalesInvoiceNumber(BadStockReturnItem item,
+			BadStockReturnItemRowItem rowItem) {
+		Product product = rowItem.getProduct();
+		String unit = rowItem.getUnit();
 		SalesInvoice salesInvoice = salesInvoiceService.getMostRecentSalesInvoice(badStockReturn.getCustomer(), product);
 		if (salesInvoice != null) {
-			SalesInvoiceItem item = salesInvoice.findItemByProductAndUnit(product, unit);
-			if (item != null) {
-				return item.getDiscountedUnitPrice();
+			BigDecimal unitPrice = null;
+			SalesInvoiceItem salesInvoiceItem = salesInvoice.findItemByProductAndUnit(product, unit);
+			if (salesInvoiceItem != null) {
+				unitPrice = salesInvoiceItem.getDiscountedUnitPrice();
 			} else {
-				item = salesInvoice.findItemByProduct(product);
-				BigDecimal unitPrice = item.getDiscountedUnitPrice().setScale(2, RoundingMode.HALF_UP);
-				if (Unit.compare(unit, item.getUnit()) == -1) {
-					return unitPrice.divide(
-							new BigDecimal(product.getUnitConversion(item.getUnit()) / product.getUnitConversion(unit)),
+				salesInvoiceItem = salesInvoice.findItemByProduct(product);
+				unitPrice = salesInvoiceItem.getDiscountedUnitPrice().setScale(2, RoundingMode.HALF_UP);
+				if (Unit.compare(unit, salesInvoiceItem.getUnit()) == -1) {
+					unitPrice = unitPrice.divide(
+							new BigDecimal(product.getUnitConversion(salesInvoiceItem.getUnit()) / product.getUnitConversion(unit)),
 							2, RoundingMode.HALF_UP);
 				} else {
-					return unitPrice.multiply(
-							new BigDecimal(product.getUnitConversion(unit) / product.getUnitConversion(item.getUnit())))
+					unitPrice = unitPrice.multiply(
+							new BigDecimal(product.getUnitConversion(unit) / product.getUnitConversion(salesInvoiceItem.getUnit())))
 							.setScale(2, RoundingMode.HALF_UP);
 				}
 			}
+			item.setUnitPrice(unitPrice);
+			rowItem.setUnitPrice(unitPrice);
+			item.setSalesInvoiceNumber(salesInvoice.getSalesInvoiceNumber());
+			rowItem.setSalesInvoiceNumber(salesInvoice.getSalesInvoiceNumber());
 		} else {
-			return null;
+			item.setUnitPrice(Constants.ZERO);
+			rowItem.setUnitPrice(Constants.ZERO);
+			item.setSalesInvoiceNumber(null);
+			rowItem.setSalesInvoiceNumber(null);
 		}
 	}
 
@@ -184,13 +191,15 @@ public class BadStockReturnItemsTableModel extends AbstractTableModel {
 		} else {
 			BadStockReturnItemRowItem rowItem = rowItems.get(rowIndex);
 			switch (columnIndex) {
-			case SalesRequisitionItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+			case BadStockReturnItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 				return true;
-			case SalesRequisitionItemsTable.UNIT_COLUMN_INDEX:
+			case BadStockReturnItemsTable.UNIT_COLUMN_INDEX:
 				return rowItem.getProduct() != null;
-			case SalesRequisitionItemsTable.QUANTITY_COLUMN_INDEX:
+			case BadStockReturnItemsTable.QUANTITY_COLUMN_INDEX:
 				return rowItem.getProduct() != null && !StringUtils.isEmpty(rowItem.getUnit());
-			case SalesRequisitionItemsTable.UNIT_PRICE_COLUMN_INDEX:
+			case BadStockReturnItemsTable.SALES_INVOICE_NUMBER_COLUMN_INDEX:
+				return false;
+			case BadStockReturnItemsTable.UNIT_PRICE_COLUMN_INDEX:
 				return rowItem.getProduct() != null && !StringUtils.isEmpty(rowItem.getUnit())
 					&& rowItem.getQuantity() != null;
 			default:

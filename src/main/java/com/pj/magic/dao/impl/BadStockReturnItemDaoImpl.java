@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -22,7 +23,7 @@ import com.pj.magic.model.Product;
 public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockReturnItemDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, BAD_STOCK_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE, COST,"
+			"select a.ID, BAD_STOCK_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE, COST, SALES_INVOICE_NO,"
 			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
 			+ " from BAD_STOCK_RETURN_ITEM a"
 			+ " join PRODUCT b"
@@ -41,8 +42,8 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 
 	private static final String INSERT_SQL =
 			"insert into BAD_STOCK_RETURN_ITEM"
-			+ " (BAD_STOCK_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE)"
-			+ " values (?, ?, ?, ?, ?)";
+			+ " (BAD_STOCK_RETURN_ID, PRODUCT_ID, UNIT, QUANTITY, UNIT_PRICE, SALES_INVOICE_NO)"
+			+ " values (?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final BadStockReturnItem item) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -57,6 +58,11 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 				ps.setString(3, item.getUnit());
 				ps.setInt(4, item.getQuantity());
 				ps.setBigDecimal(5, item.getUnitPrice());
+				if (item.getSalesInvoiceNumber() != null) {
+					ps.setLong(6, item.getSalesInvoiceNumber());
+				} else {
+					ps.setNull(6, Types.BIGINT);
+				}
 				return ps;
 			}
 		}, holder);
@@ -66,8 +72,7 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 
 	private static final String UPDATE_SQL =
 			"update BAD_STOCK_RETURN_ITEM set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, UNIT_PRICE = ?,"
-			+ " COST = ?"
-			+ " where ID = ?";
+			+ " COST = ?, SALES_INVOICE_NO = ? where ID = ?";
 	
 	private void update(BadStockReturnItem item) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -76,6 +81,7 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 				item.getQuantity(),
 				item.getUnitPrice(),
 				item.getCost(),
+				item.getSalesInvoiceNumber() != null ? item.getSalesInvoiceNumber() : null,
 				item.getId());
 	}
 
@@ -112,6 +118,11 @@ public class BadStockReturnItemDaoImpl extends MagicDao implements BadStockRetur
 			item.setQuantity(rs.getInt("QUANTITY"));
 			item.setUnitPrice(rs.getBigDecimal("UNIT_PRICE"));
 			item.setCost(rs.getBigDecimal("COST"));
+			
+			long salesInvoiceNumber = rs.getLong("SALES_INVOICE_NO");
+			if (salesInvoiceNumber != 0) {
+				item.setSalesInvoiceNumber(salesInvoiceNumber);
+			}
 			
 			return item;
 		}
