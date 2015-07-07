@@ -1,29 +1,30 @@
 package com.pj.magic.model;
 
 import static org.junit.Assert.*;
+
+import java.math.BigDecimal;
+
 import org.junit.Test;
 
 public class PurchaseOrderItemTest {
 
 	@Test
-	public void equals() {
-		Product product = new Product();
-		product.setCode("TEST");
+	public void getAmount_withActualQuantity() {
+		PurchaseOrderItem item = new PurchaseOrderItem();
+		item.setQuantity(10);
+		item.setActualQuantity(5);
+		item.setCost(new BigDecimal("10"));
 		
-		PurchaseOrderItem item1 = new PurchaseOrderItem();
-		item1.setProduct(product);
-		item1.setUnit(Unit.CASE);
+		assertEquals(new BigDecimal("50"), item.getAmount());
+	}
+
+	@Test
+	public void getAmount_withoutActualQuantity() {
+		PurchaseOrderItem item = new PurchaseOrderItem();
+		item.setQuantity(10);
+		item.setCost(new BigDecimal("10"));
 		
-		PurchaseOrderItem item2 = new PurchaseOrderItem();
-		item2.setProduct(product);
-		item2.setUnit(Unit.CASE);
-		
-		PurchaseOrderItem item3 = new PurchaseOrderItem();
-		item3.setProduct(product);
-		item3.setUnit(Unit.CARTON);
-		
-		assertTrue(item1.equals(item2));
-		assertFalse(item1.equals(item3));
+		assertEquals(new BigDecimal("100"), item.getAmount());
 	}
 	
 }

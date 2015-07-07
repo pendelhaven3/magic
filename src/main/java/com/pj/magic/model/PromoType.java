@@ -51,4 +51,8 @@ public enum PromoType {
 		return description;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+	
 }
