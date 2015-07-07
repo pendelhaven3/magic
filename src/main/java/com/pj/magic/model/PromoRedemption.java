@@ -8,6 +8,7 @@ import java.util.List;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.pj.magic.Constants;
+import com.pj.magic.exception.SalesInvoiceIneligibleForPromoRedemptionException;
 
 public class PromoRedemption {
 
@@ -189,6 +190,17 @@ public class PromoRedemption {
 			total += reward.getQuantity();
 		}
 		return total;
+	}
+	
+	public void validateSalesInvoicesPricingScheme() throws SalesInvoiceIneligibleForPromoRedemptionException {
+		PricingScheme promoPricingScheme = getPromo().getPricingScheme();
+		if (promoPricingScheme != null) {
+			for (PromoRedemptionSalesInvoice redemptionSalesInvoice : redemptionSalesInvoices) {
+				if (!redemptionSalesInvoice.getSalesInvoice().getPricingScheme().equals(promoPricingScheme)) {
+					throw new SalesInvoiceIneligibleForPromoRedemptionException(redemptionSalesInvoice.getSalesInvoice());
+				}
+			}
+		}
 	}
 	
 }

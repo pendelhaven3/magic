@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,8 +8,6 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.dao.PromoRedemptionRewardDao;
@@ -19,7 +16,6 @@ import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.NothingToRedeemException;
-import com.pj.magic.exception.SalesInvoiceIneligibleForPromoRedemptionException;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
@@ -129,27 +125,10 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	}
 
 	private void postForPromoType3(PromoRedemption promoRedemption) {
+		promoRedemption.validateSalesInvoicesPricingScheme();
+		
 		PromoType3Rule rule = promoRedemption.getPromo().getPromoType3Rule();
-		List<SalesInvoice> salesInvoices = new ArrayList<>(Collections2.transform(
-				promoRedemption.getRedemptionSalesInvoices(), 
-				new Function<PromoRedemptionSalesInvoice, SalesInvoice>() {
-
-					@Override
-					public SalesInvoice apply(PromoRedemptionSalesInvoice input) {
-						return input.getSalesInvoice();
-					}
-				}));
-		
-		// TODO: Apply checking to other promo types
-		if (promoRedemption.getPromo().getPricingScheme() != null) {
-			for (SalesInvoice salesInvoice : salesInvoices) {
-				if (!salesInvoice.getPricingScheme().equals(promoRedemption.getPromo().getPricingScheme())) {
-					throw new SalesInvoiceIneligibleForPromoRedemptionException(salesInvoice);
-				}
-			}
-		}
-		
-		PromoRedemptionReward reward = rule.evaluate(salesInvoices);
+		PromoRedemptionReward reward = rule.evaluate(promoRedemption.getSalesInvoices());
 		if (reward != null) {
 			int freeQuantity = reward.getQuantity().intValue();
 			Product product = productDao.get(rule.getFreeProduct().getId());
@@ -193,6 +172,8 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	}
 
 	private void postForPromoType1(PromoRedemption promoRedemption) {
+		promoRedemption.validateSalesInvoicesPricingScheme();
+		
 		PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
 		PromoRedemptionReward reward = rule.evaluate(promoRedemption.getSalesInvoices());
 		if (reward == null) {
