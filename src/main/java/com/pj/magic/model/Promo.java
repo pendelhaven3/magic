@@ -178,5 +178,19 @@ public class Promo {
 	public void setPricingScheme(PricingScheme pricingScheme) {
 		this.pricingScheme = pricingScheme;
 	}
+
+	public boolean checkIfEligible(SalesRequisition salesRequisition) {
+		if (pricingScheme != null) {
+			return pricingScheme.equals(salesRequisition.getPricingScheme());
+		}
+		return true;
+	}
+
+	public boolean checkIfEligible(SalesInvoice salesInvoice) {
+		if (pricingScheme != null) {
+			return pricingScheme.equals(salesInvoice.getPricingScheme());
+		}
+		return true;
+	}
 	
 }
