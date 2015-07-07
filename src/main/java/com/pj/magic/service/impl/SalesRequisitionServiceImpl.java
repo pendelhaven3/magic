@@ -149,7 +149,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 
 	private void postAvailedPromoRewards(SalesInvoice salesInvoice) {
 		for (Promo promo : promoService.getAllActivePromos()) {
-			if (!promo.getPromoType().isType2()) {
+			if (!(promo.getPromoType().isType2() && promo.checkIfEligible(salesInvoice))) {
 				continue;
 			}
 			

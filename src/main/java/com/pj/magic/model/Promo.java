@@ -15,6 +15,7 @@ public class Promo {
 	private PromoType promoType;
 	private boolean active;
 	private Date startDate;
+	private PricingScheme pricingScheme;
 
 	private PromoType1Rule promoType1Rule;
 	private List<PromoType2Rule> promoType2Rules;
@@ -170,4 +171,26 @@ public class Promo {
 		this.startDate = startDate;
 	}
 
+	public PricingScheme getPricingScheme() {
+		return pricingScheme;
+	}
+
+	public void setPricingScheme(PricingScheme pricingScheme) {
+		this.pricingScheme = pricingScheme;
+	}
+
+	public boolean checkIfEligible(SalesRequisition salesRequisition) {
+		if (pricingScheme != null) {
+			return pricingScheme.equals(salesRequisition.getPricingScheme());
+		}
+		return true;
+	}
+
+	public boolean checkIfEligible(SalesInvoice salesInvoice) {
+		if (pricingScheme != null) {
+			return pricingScheme.equals(salesInvoice.getPricingScheme());
+		}
+		return true;
+	}
+	
 }
