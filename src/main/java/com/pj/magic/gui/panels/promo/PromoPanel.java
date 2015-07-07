@@ -81,6 +81,7 @@ public class PromoPanel extends StandardMagicPanel {
 	private MagicTextField nameField;
 	private JComboBox<PromoType> promoTypeComboBox;
 	private UtilCalendarModel startDateModel;
+	private JComboBox<PricingScheme> pricingSchemeComboBox;
 	private JCheckBox activeCheckBox;
 	private JPanel promoDetailsPanel;
 	private JComboBox<Manufacturer> manufacturerComboBox;
@@ -90,7 +91,6 @@ public class PromoPanel extends StandardMagicPanel {
 	private EllipsisButton selectProductButton;
 	private JComboBox<String> freeUnitComboBox;
 	private MagicTextField freeQuantityField;
-	private JComboBox<PricingScheme> pricingSchemeComboBox;
 	private MagicButton saveButton;
 	private JButton addRuleButton;
 	private JButton removeRuleButton;
@@ -210,11 +210,6 @@ public class PromoPanel extends StandardMagicPanel {
 			rule.setFreeProduct(productService.findProductByCode(freeProductCodeField.getText()));
 			rule.setFreeUnit((String)freeUnitComboBox.getSelectedItem());
 			rule.setFreeQuantity(Integer.valueOf(freeQuantityField.getText()));
-			if (pricingSchemeComboBox.getSelectedIndex() == 0) {
-				rule.setPricingScheme(null);
-			} else {
-				rule.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
-			}
 			
 			try {
 				promoService.save(promo);
@@ -279,6 +274,11 @@ public class PromoPanel extends StandardMagicPanel {
 		promo.setName(nameField.getText());
 		promo.setStartDate(startDateModel.getValue().getTime());
 		promo.setActive(activeCheckBox.isSelected());
+		if (pricingSchemeComboBox.getSelectedIndex() > 0) {
+			promo.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
+		} else {
+			promo.setPricingScheme(null);
+		}
 	}
 
 	private boolean validatePromoType2() {
@@ -457,6 +457,21 @@ public class PromoPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Pricing Scheme:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		pricingSchemeComboBox.getPreferredSize().height = 25;
+		mainPanel.add(pricingSchemeComboBox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Active?"), c);
 		
 		c = new GridBagConstraints();
@@ -603,22 +618,6 @@ public class PromoPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		freeQuantityField.setPreferredSize(new Dimension(100, 25));
 		panel.add(freeQuantityField, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(120, "Pricing Scheme:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-//		pricingSchemeComboBox.setPreferredSize(new Dimension(100, 25));
-		pricingSchemeComboBox.getPreferredSize().height = 25;
-		panel.add(pricingSchemeComboBox, c);
 		
 		currentRow++;
 		
@@ -901,6 +900,8 @@ public class PromoPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay(Promo promo) {
+		updatePricingSchemeComboBox();
+		
 		this.promo = promo;
 		
 		if (promo.getId() == null) {
@@ -915,6 +916,11 @@ public class PromoPanel extends StandardMagicPanel {
 		promoTypeComboBox.setEnabled(false);
 		promoTypeComboBox.setSelectedItem(promo.getPromoType());
 		startDateModel.setValue(DateUtils.toCalendar(promo.getStartDate()));
+		if (promo.getPricingScheme() != null) {
+			pricingSchemeComboBox.setSelectedItem(promo.getPricingScheme());
+		} else {
+			pricingSchemeComboBox.setSelectedIndex(0);
+		}
 		activeCheckBox.setSelected(promo.isActive());
 		
 		updatePromoDetailsPanel();
@@ -944,7 +950,6 @@ public class PromoPanel extends StandardMagicPanel {
 	}
 
 	private void updateDisplayForPromoType3() {
-		updatePricingSchemeComboBox();
 		updateToPromoType3Panel(promoDetailsPanel);
 		
 		PromoType3Rule rule = promo.getPromoType3Rule();
@@ -954,11 +959,6 @@ public class PromoPanel extends StandardMagicPanel {
 			freeProductDescriptionLabel.setText(rule.getFreeProduct().getDescription());
 			freeUnitComboBox.setSelectedItem(rule.getFreeUnit());
 			freeQuantityField.setText(rule.getFreeQuantity().toString());
-			if (rule.getPricingScheme() != null) {
-				pricingSchemeComboBox.setSelectedItem(rule.getPricingScheme());
-			} else {
-				pricingSchemeComboBox.setSelectedIndex(0);
-			}
 			promoType3RulePromoProductsTable.setRule(rule);
 			addPromoProductButton.setEnabled(true);
 			removePromoProductButton.setEnabled(true);
@@ -970,7 +970,6 @@ public class PromoPanel extends StandardMagicPanel {
 			freeProductDescriptionLabel.setText(null);
 			freeUnitComboBox.setSelectedItem(null);
 			freeQuantityField.setText(null);
-			pricingSchemeComboBox.setSelectedIndex(0);
 			promoType3RulePromoProductsTable.clear();
 			addPromoProductButton.setEnabled(false);
 			removePromoProductButton.setEnabled(false);
@@ -1022,6 +1021,7 @@ public class PromoPanel extends StandardMagicPanel {
 		promoTypeComboBox.setEnabled(true);
 		promoTypeComboBox.setSelectedIndex(0);
 		startDateModel.setValue(Calendar.getInstance());
+		pricingSchemeComboBox.setSelectedIndex(0);
 		activeCheckBox.setSelected(true);
 		
 		promoDetailsPanel.setVisible(false);

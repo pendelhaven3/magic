@@ -65,10 +65,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		criteria.setUnredeemedPromo(promo);
 		criteria.setCustomer(customer);
 		criteria.setTransactionDateFrom(promo.getStartDate());
-		
-		if (promo.getPromoType().isType3()) {
-			criteria.setPricingScheme(promo.getPromoType3Rule().getPricingScheme());
-		}
+		criteria.setPricingScheme(promo.getPricingScheme());
 		
 		return salesInvoiceService.search(criteria);
 	}
@@ -143,9 +140,10 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 					}
 				}));
 		
-		if (rule.getPricingScheme() != null) {
+		// TODO: Apply checking to other promo types
+		if (promoRedemption.getPromo().getPricingScheme() != null) {
 			for (SalesInvoice salesInvoice : salesInvoices) {
-				if (!salesInvoice.getPricingScheme().equals(rule.getPricingScheme())) {
+				if (!salesInvoice.getPricingScheme().equals(promoRedemption.getPromo().getPricingScheme())) {
 					throw new SalesInvoiceIneligibleForPromoRedemptionException(salesInvoice);
 				}
 			}
