@@ -20,6 +20,8 @@ import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.Unit;
+import com.pj.magic.model.report.CustomerSalesSummaryReport;
+import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.util.CellStyleBuilder;
 import com.pj.magic.service.ExcelService;
 import com.pj.magic.util.FormatterUtil;
@@ -446,4 +448,39 @@ public class ExcelServiceImpl implements ExcelService {
 		return workbook;
 	}
 
+	@Override
+	public XSSFWorkbook generateSpreadsheet(CustomerSalesSummaryReport report) throws IOException {
+		XSSFWorkbook workbook = new XSSFWorkbook(
+				getClass().getResourceAsStream("/excel/customerSalesSummaryReport.xlsx"));
+		Sheet sheet = workbook.getSheetAt(0);
+
+		CellStyle amountFormat = CellStyleBuilder.createStyle(workbook).setAmountFormat(true).build();
+		
+		int currentRow = 1;
+		for (CustomerSalesSummaryReportItem item : report.getItems()) {
+			Row row = sheet.createRow(currentRow);
+			row.createCell(0).setCellValue(item.getCustomer().getCode());
+			row.createCell(1).setCellValue(item.getCustomer().getName());
+			
+			Cell cell = row.createCell(2);
+			cell.setCellValue(item.getTotalAmount().doubleValue());
+			cell.setCellStyle(amountFormat);
+			
+			cell = row.createCell(3);
+			cell.setCellValue(item.getTotalCost().doubleValue());
+			cell.setCellStyle(amountFormat);
+			
+			cell = row.createCell(4);
+			cell.setCellValue(item.getTotalProfit().doubleValue());
+			cell.setCellStyle(amountFormat);
+			
+			currentRow++;
+		}
+
+		sheet.autoSizeColumn(0);
+		sheet.autoSizeColumn(1);
+		
+		return workbook;
+	}
+		
 }

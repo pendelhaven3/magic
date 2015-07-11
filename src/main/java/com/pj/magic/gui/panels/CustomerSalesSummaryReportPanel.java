@@ -5,6 +5,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,6 +15,7 @@ import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -22,16 +26,22 @@ import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.Icons;
 import com.pj.magic.gui.component.DatePickerFormatter;
+import com.pj.magic.gui.component.ExcelFileFilter;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
+import com.pj.magic.service.ExcelService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
@@ -44,6 +54,7 @@ public class CustomerSalesSummaryReportPanel extends StandardMagicPanel {
 	private static final int TOTAL_PROFIT_COLUMN_INDEX = 4;
 	
 	@Autowired private ReportService reportService;
+	@Autowired private ExcelService excelService;
 	
 	private UtilCalendarModel fromDateModel;
 	private UtilCalendarModel toDateModel;
@@ -53,6 +64,7 @@ public class CustomerSalesSummaryReportPanel extends StandardMagicPanel {
 	private JLabel totalNetAmountLabel;
 	private JLabel totalCostLabel;
 	private JLabel totalProfitLabel;
+	private JFileChooser excelFileChooser;
 	
 	@Override
 	protected void initializeComponents() {
@@ -69,6 +81,10 @@ public class CustomerSalesSummaryReportPanel extends StandardMagicPanel {
 		});
 		
 		initializeTable();
+		
+		excelFileChooser = new JFileChooser();
+		excelFileChooser.setCurrentDirectory(new File(FileUtil.getDesktopFolderPath()));
+		excelFileChooser.setFileFilter(ExcelFileFilter.getInstance());
 	}
 
 	private void initializeTable() {
@@ -275,9 +291,45 @@ public class CustomerSalesSummaryReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
+		JButton toExcelButton = new MagicToolBarButton(Icons.EXCEL, "Generate Excel spreadsheet");
+		toExcelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				generateExcelSpreadsheet();
+			}
+		});
+		toolBar.add(toExcelButton);
 	}
 
+	private void generateExcelSpreadsheet() {
+		excelFileChooser.setSelectedFile(new File(generateDefaultSpreadsheetName() + ".xlsx"));
+		
+		int returnVal = excelFileChooser.showSaveDialog(this);
+		if (returnVal != JFileChooser.APPROVE_OPTION) {
+			return;
+		}
+		
+		CustomerSalesSummaryReport report = new CustomerSalesSummaryReport();
+		report.setItems(tableModel.getItems());
+		
+		try (
+			XSSFWorkbook workbook = excelService.generateSpreadsheet(report);
+			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
+		) {
+			workbook.write(out);
+			showMessage("Excel spreadsheet generated successfully");
+		} catch (IOException e) {
+			showErrorMessage("Unexpected error during excel generation");
+		}
+	}
+
+	private String generateDefaultSpreadsheetName() {
+		return new StringBuilder()
+			.append("customerSalesSummaryReport")
+			.toString();
+	}
+	
 	private class CustomerSalesSummaryReportItemsTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = {"Code", "Name", "Total Amount", "Total Cost", "Total Profit"};
@@ -287,6 +339,10 @@ public class CustomerSalesSummaryReportPanel extends StandardMagicPanel {
 		public void setItems(List<CustomerSalesSummaryReportItem> items) {
 			this.items = items;
 			fireTableDataChanged();
+		}
+		
+		public List<CustomerSalesSummaryReportItem> getItems() {
+			return items;
 		}
 		
 		public void clear() {

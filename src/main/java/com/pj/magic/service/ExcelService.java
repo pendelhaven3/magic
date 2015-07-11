@@ -7,6 +7,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.report.CustomerSalesSummaryReport;
 
 public interface ExcelService {
 
@@ -15,5 +16,7 @@ public interface ExcelService {
 	XSSFWorkbook generateSpreadsheet(PurchaseOrder purchaseOrder);
 
 	XSSFWorkbook generateSpreadsheet(PricingScheme pricingScheme) throws IOException;
+
+	XSSFWorkbook generateSpreadsheet(CustomerSalesSummaryReport report) throws IOException;
 	
 }
