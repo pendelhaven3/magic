@@ -145,7 +145,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 						FormatterUtil.formatAmount(receivingReceipt.getTotalDiscountedAmount()));
 				totalNetAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalNetAmount()));
 				vatAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getVatAmount()));
-				totalAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalAmount()));
+				totalAmountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalNetAmountWithVat()));
 			}
 		});
 	}

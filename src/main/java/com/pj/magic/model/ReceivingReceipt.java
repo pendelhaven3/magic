@@ -187,6 +187,7 @@ public class ReceivingReceipt {
 		this.vatRate = vatRate;
 	}
 	
+	// TODO: CHeck if used (reports?)
 	public BigDecimal getTotalAmount() {
 		return getTotalNetAmount().add(getVatAmount());
 	}

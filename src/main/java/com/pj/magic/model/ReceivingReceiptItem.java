@@ -3,6 +3,7 @@ package com.pj.magic.model;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import com.pj.magic.Constants;
 import com.pj.magic.model.util.Percentage;
 
 public class ReceivingReceiptItem implements Comparable<ReceivingReceiptItem> {
@@ -109,16 +110,16 @@ public class ReceivingReceiptItem implements Comparable<ReceivingReceiptItem> {
 	
 	public BigDecimal getNetAmount() {
 		BigDecimal netAmount = getAmount();
-		if (discount1 != null && !BigDecimal.ZERO.equals(discount1)) {
+		if (discount1.compareTo(Constants.ZERO) != 0) {
 			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount1).toDecimal()));
 		}
-		if (discount2 != null && !BigDecimal.ZERO.equals(discount2)) {
+		if (discount2.compareTo(Constants.ZERO) != 0) {
 			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount2).toDecimal()));
 		}
-		if (discount3 != null && !BigDecimal.ZERO.equals(discount3)) {
+		if (discount3.compareTo(Constants.ZERO) != 0) {
 			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount3).toDecimal()));
 		}
-		if (flatRateDiscount != null) {
+		if (flatRateDiscount.compareTo(Constants.ZERO) != 0) {
 			netAmount = netAmount.subtract(flatRateDiscount);
 		}
 		return netAmount;

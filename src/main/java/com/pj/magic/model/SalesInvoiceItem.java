@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.pj.magic.Constants;
 import com.pj.magic.model.util.Percentage;
 
 public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
@@ -135,22 +136,23 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 		this.flatRateDiscount = flatRateDiscount;
 	}
 
+	// TODO: Rename to discountAmount
 	public BigDecimal getDiscountedAmount() {
 		return getAmount().subtract(getNetAmount());
 	}
 
 	public BigDecimal getNetAmount() {
 		BigDecimal netAmount = getAmount();
-		if (discount1 != null && !BigDecimal.ZERO.equals(discount1)) {
+		if (discount1.compareTo(Constants.ZERO) != 0) {
 			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount1).toDecimal()));
 		}
-		if (discount2 != null && !BigDecimal.ZERO.equals(discount2)) {
+		if (discount2.compareTo(Constants.ZERO) != 0) {
 			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount2).toDecimal()));
 		}
-		if (discount3 != null && !BigDecimal.ZERO.equals(discount3)) {
+		if (discount3.compareTo(Constants.ZERO) != 0) {
 			netAmount = netAmount.subtract(netAmount.multiply(new Percentage(discount3).toDecimal()));
 		}
-		if (flatRateDiscount != null) {
+		if (flatRateDiscount.compareTo(Constants.ZERO) != 0) {
 			netAmount = netAmount.subtract(flatRateDiscount);
 		}
 		return netAmount;
@@ -191,16 +193,16 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 	
 	public BigDecimal getDiscountedUnitPrice() {
 		BigDecimal price = unitPrice;
-		if (discount1 != null && !BigDecimal.ZERO.equals(discount1)) {
+		if (discount1.compareTo(Constants.ZERO) != 0) {
 			price = price.subtract(price.multiply(new Percentage(discount1).toDecimal()));
 		}
-		if (discount2 != null && !BigDecimal.ZERO.equals(discount2)) {
+		if (discount2.compareTo(Constants.ZERO) != 0) {
 			price = price.subtract(price.multiply(new Percentage(discount2).toDecimal()));
 		}
-		if (discount3 != null && !BigDecimal.ZERO.equals(discount3)) {
+		if (discount3.compareTo(Constants.ZERO) != 0) {
 			price = price.subtract(price.multiply(new Percentage(discount3).toDecimal()));
 		}
-		if (flatRateDiscount != null) {
+		if (flatRateDiscount.compareTo(Constants.ZERO) != 0) {
 			price = price.subtract(flatRateDiscount.divide(new BigDecimal(quantity), 2, RoundingMode.HALF_UP));
 		}
 		return price;
