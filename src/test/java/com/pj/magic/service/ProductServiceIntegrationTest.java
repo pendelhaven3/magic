@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
@@ -16,6 +17,7 @@ import com.pj.magic.dao.IntegrationTest;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 
+@Ignore
 public class ProductServiceIntegrationTest extends IntegrationTest {
 
 	private static final int NON_CANVASSER_1_PRICING_SCHEME_ID = 2;

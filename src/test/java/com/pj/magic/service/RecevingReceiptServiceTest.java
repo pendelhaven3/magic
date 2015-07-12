@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -20,6 +21,7 @@ import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.impl.ReceivingReceiptServiceImpl;
 
+@Ignore
 public class RecevingReceiptServiceTest {
 
 	private ReceivingReceiptServiceImpl service;

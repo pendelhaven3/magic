@@ -1,6 +1,8 @@
 package com.pj.magic.dao;
 
 import static org.junit.Assert.*;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -8,6 +10,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 
 import com.pj.magic.model.StockQuantityConversion;
 
+@Ignore
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
 public class StockQuantityConversionDaoTest extends AbstractTransactionalJUnit4SpringContextTests {
 	

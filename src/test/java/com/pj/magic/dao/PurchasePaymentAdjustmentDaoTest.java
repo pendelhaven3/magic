@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +14,7 @@ import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.PurchasePaymentAdjustmentSearchCriteria;
 
+@Ignore
 public class PurchasePaymentAdjustmentDaoTest extends IntegrationTest {
 	
 	@Autowired private PurchasePaymentAdjustmentDao paymentAdjustmentDao;

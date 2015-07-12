@@ -7,12 +7,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.ProductSubcategory;
 
+@Ignore
 public class ProductSubcategoryDaoTest extends IntegrationTest {
 
 	@Autowired private ProductSubcategoryDao productSubcategoryDao;

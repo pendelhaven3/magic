@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +13,7 @@ import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
 
+@Ignore
 public class PurchasePaymentDaoTest extends IntegrationTest {
 	
 	@Autowired private PurchasePaymentDao purchasePaymentDao;

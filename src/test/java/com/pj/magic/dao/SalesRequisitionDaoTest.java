@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Date;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,6 +15,7 @@ import com.pj.magic.model.Customer;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.User;
 
+@Ignore
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
 public class SalesRequisitionDaoTest extends AbstractTransactionalJUnit4SpringContextTests {
 	

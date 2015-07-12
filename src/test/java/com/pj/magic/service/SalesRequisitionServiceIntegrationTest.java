@@ -8,6 +8,7 @@ import java.util.Date;
 import javax.sql.DataSource;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -27,6 +28,7 @@ import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.User;
 
+@Ignore
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
 public class SalesRequisitionServiceIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 

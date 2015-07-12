@@ -1,11 +1,14 @@
 package com.pj.magic.dao;
 
 import static org.junit.Assert.*;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pj.magic.model.ProductCategory;
 
+@Ignore
 public class ProductCategoryDaoTest extends IntegrationTest {
 
 	@Autowired private ProductCategoryDao productCategoryDao;

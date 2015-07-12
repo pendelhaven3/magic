@@ -3,6 +3,7 @@ package com.pj.magic.dao;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +13,7 @@ import com.pj.magic.model.PurchasePaymentCreditCardPayment;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.PurchasePaymentCreditCardPaymentSearchCriteria;
 
+@Ignore
 public class PurchasePaymentCreditCardPaymentDaoTest extends IntegrationTest {
 	
 	@Autowired private PurchasePaymentCreditCardPaymentDao creditCardPaymentDao;

@@ -2,6 +2,7 @@ package com.pj.magic.dao;
 
 import java.math.BigDecimal;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -9,6 +10,7 @@ import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.PurchasePaymentPaymentAdjustment;
 
+@Ignore
 public class PurchasePaymentPaymentAdjustmentDaoTest extends IntegrationTest {
 	
 	@Autowired private PurchasePaymentPaymentAdjustmentDao paymentAdjustmentDao;

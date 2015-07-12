@@ -2,6 +2,7 @@ package com.pj.magic.service;
 
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,6 +21,7 @@ import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.User;
 
+@Ignore
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
 public class SalesRequisitionServiceTest extends AbstractJUnit4SpringContextTests {
 

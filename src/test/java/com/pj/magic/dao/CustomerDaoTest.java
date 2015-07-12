@@ -1,25 +1,19 @@
 package com.pj.magic.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerm;
+import com.pj.magic.model.search.CustomerSearchCriteria;
 
 public class CustomerDaoTest extends IntegrationTest {
 	
 	@Autowired private CustomerDao customerDao;
-	
-	@Before
-	public void setUp() {
-	}
 	
 	private void insertTestPaymentTerm() {
 		jdbcTemplate.update("insert into PAYMENT_TERM (ID, NAME, NUMBER_OF_DAYS) values (1, 'TESTPAYTERM', 0)");
@@ -189,6 +183,66 @@ public class CustomerDaoTest extends IntegrationTest {
 		
 		Customer fromDb = customerDao.findByCode("HARK");
 		assertNull(fromDb);
+	}
+
+	@Test
+	public void findAllWithNameLike() {
+		jdbcTemplate.update("insert into CUSTOMER (ID, CODE, NAME) values (1, 'TESTCUST', 'SEARCH ME')");
+		jdbcTemplate.update("insert into CUSTOMER (ID, CODE, NAME) values (2, 'TESTCUST2', 'DONT SEARCH ME')");
+		
+		List<Customer> results = customerDao.findAllWithNameLike("SEA");
+		assertEquals(1, results.size());
+		assertEquals(1, results.get(0).getId().longValue());
+	}
+	
+	@Test
+	public void search_active() {
+		jdbcTemplate.update("insert into CUSTOMER (ID, CODE, NAME, ACTIVE_IND) values (1, 'TESTCUST', 'CUSTOMER1', 'N')");
+		jdbcTemplate.update("insert into CUSTOMER (ID, CODE, NAME, ACTIVE_IND) values (2, 'TESTCUST2', 'NOT CUSTOMER2', 'Y')");
+		jdbcTemplate.update("insert into CUSTOMER (ID, CODE, NAME, ACTIVE_IND) values (3, 'TESTCUST3', 'CUSTOMER3', 'Y')");
+		
+		CustomerSearchCriteria criteria = new CustomerSearchCriteria();
+		criteria.setNameLike("CUST");
+		criteria.setActive(true);
+		
+		List<Customer> results = customerDao.search(criteria);
+		assertEquals(1, results.size());
+		assertEquals(3, results.get(0).getId().longValue());
+	}
+
+	@Test
+	public void search_inactive() {
+		jdbcTemplate.update("insert into CUSTOMER (ID, CODE, NAME, ACTIVE_IND) values (1, 'TESTCUST', 'CUSTOMER1', 'N')");
+		jdbcTemplate.update("insert into CUSTOMER (ID, CODE, NAME, ACTIVE_IND) values (2, 'TESTCUST2', 'NOT CUSTOMER2', 'Y')");
+		jdbcTemplate.update("insert into CUSTOMER (ID, CODE, NAME, ACTIVE_IND) values (3, 'TESTCUST3', 'CUSTOMER3', 'Y')");
+		
+		CustomerSearchCriteria criteria = new CustomerSearchCriteria();
+		criteria.setNameLike("CUST");
+		criteria.setActive(false);
+		
+		List<Customer> results = customerDao.search(criteria);
+		assertEquals(1, results.size());
+		assertEquals(1, results.get(0).getId().longValue());
+	}
+	
+	@Test
+	public void search_noCriteria() {
+		jdbcTemplate.update("insert into CUSTOMER (ID, CODE, NAME, ACTIVE_IND) values (1, 'TESTCUST', 'B-CUSTOMER', 'N')");
+		jdbcTemplate.update("insert into CUSTOMER (ID, CODE, NAME, ACTIVE_IND) values (2, 'TESTCUST2', 'A-CUSTOMER', 'Y')");
+		
+		List<Customer> results = customerDao.search(new CustomerSearchCriteria());
+		assertEquals(2, results.size());
+		assertEquals(2, results.get(0).getId().longValue());
+		assertEquals(1, results.get(1).getId().longValue());
+	}
+	
+	@Test
+	public void delete() {
+		insertTestCustomer();
+		
+		customerDao.delete(new Customer(1L));
+		
+		assertEquals(0, countRowsInTable("CUSTOMER"));
 	}
 	
 }

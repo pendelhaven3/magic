@@ -1,12 +1,15 @@
 package com.pj.magic.dao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pj.magic.model.AdjustmentType;
 
+@Ignore
 public class AdjustmentTypeDaoTest extends IntegrationTest {
 
 	@Autowired private AdjustmentTypeDao adjustmentTypeDao;

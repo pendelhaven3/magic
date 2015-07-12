@@ -1,6 +1,7 @@
 package com.pj.magic.dao;
 
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -8,6 +9,7 @@ import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentReceivingReceipt;
 import com.pj.magic.model.ReceivingReceipt;
 
+@Ignore
 public class PurchasePaymentReceivingReceiptDaoTest extends IntegrationTest {
 	
 	@Autowired private PurchasePaymentReceivingReceiptDao paymentReceivingReceiptDao;

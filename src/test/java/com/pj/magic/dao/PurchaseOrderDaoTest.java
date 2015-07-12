@@ -3,6 +3,7 @@ package com.pj.magic.dao;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,6 +12,7 @@ import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
 
+@Ignore
 public class PurchaseOrderDaoTest extends IntegrationTest {
 
 	@Autowired private PurchaseOrderDao purchaseOrderDao;

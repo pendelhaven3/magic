@@ -8,18 +8,18 @@
            http://www.springframework.org/schema/jdbc
            http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
-	<!-- 
 	<jdbc:embedded-database id="dataSource" type="H2">
 		<jdbc:script location="classpath:sql/tables.sql"/>
 		<jdbc:script location="classpath:sql/initial_test_data.sql"/>
 	</jdbc:embedded-database>
-	-->
 	
+	<!--
 	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://magic-db:3306/magic_test" />
 		<property name="username" value="root" />
 		<property name="password" value="root" />
 	</bean>
+	-->
 	
 </beans>

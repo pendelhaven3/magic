@@ -3,12 +3,14 @@ package com.pj.magic.dao;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pj.magic.model.Product;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
 
+@Ignore
 public class ReportDaoTest extends IntegrationTest {
 
 	@Autowired private ReportDao reportDao;

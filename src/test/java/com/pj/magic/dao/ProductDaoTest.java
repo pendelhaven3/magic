@@ -1,8 +1,10 @@
 package com.pj.magic.dao;
 
+import org.junit.Ignore;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
+@Ignore
 @ContextConfiguration(locations={"classpath:applicationContext.xml"})
 public abstract class ProductDaoTest extends AbstractTransactionalJUnit4SpringContextTests {
 	
