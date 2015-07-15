@@ -616,13 +616,18 @@ create table BAD_STOCK_RETURN (
   PAID_IND char(1) default 'N' not null,
   PAID_DT datetime null,
   PAID_BY integer null,
+  CANCEL_IND char(1) default 'N' not null,
+  CANCEL_DT datetime null,
+  CANCEL_BY integer null,
   PAYMENT_TERMINAL_ID integer null,
   REMARKS varchar(100) null,
   constraint BAD_STOCK_RETURN$PK primary key (ID),
   constraint BAD_STOCK_RETURN$UK unique (BAD_STOCK_RETURN_NO),
   constraint BAD_STOCK_RETURN$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
   constraint BAD_STOCK_RETURN$FK2 foreign key (POST_BY) references USER (ID),
-  constraint BAD_STOCK_RETURN$FK3 foreign key (PAID_BY) references USER (ID)
+  constraint BAD_STOCK_RETURN$FK3 foreign key (PAID_BY) references USER (ID),
+  constraint BAD_STOCK_RETURN$FK4 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID),
+  constraint BAD_STOCK_RETURN$FK5 foreign key (CANCEL_BY) references USER (ID)
 );
 
 create table BAD_STOCK_RETURN_ITEM (

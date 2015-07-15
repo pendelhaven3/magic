@@ -27,5 +27,7 @@ public interface BadStockReturnService {
 	List<BadStockReturn> getUnpaidBadStockReturns();
 
 	List<BadStockReturn> search(BadStockReturnSearchCriteria criteria);
+
+	void cancel(BadStockReturn badStockReturn);
 	
 }
