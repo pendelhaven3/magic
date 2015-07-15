@@ -226,6 +226,11 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 			params.add(criteria.getPaymentTerminal().getId());
 		}
 		
+		if (criteria.getCancelled() != null) {
+			sql.append(" and a.CANCEL_IND = ?");
+			params.add(criteria.getCancelled() ? "Y" : "N");
+		}
+		
 		sql.append(" order by BAD_STOCK_RETURN_NO desc");
 		
 		return getJdbcTemplate().query(sql.toString(), badStockReturnRowMapper, params.toArray());

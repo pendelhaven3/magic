@@ -18,6 +18,7 @@ public class BadStockReturnSearchCriteria {
 	private Date paidDate;
 	private TimePeriod timePeriod;
 	private PaymentTerminal paymentTerminal;
+	private Boolean cancelled;
 
 	public Boolean getPosted() {
 		return posted;
@@ -97,6 +98,14 @@ public class BadStockReturnSearchCriteria {
 
 	public void setPostDateTo(Date postDateTo) {
 		this.postDateTo = postDateTo;
+	}
+
+	public Boolean getCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(Boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 	
 }
