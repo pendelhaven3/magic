@@ -38,10 +38,6 @@ public class AreaInventoryReportServiceImpl implements AreaInventoryReportServic
 	}
 
 	@Override
-	public void delete(AreaInventoryReport inventoryCheck) {
-	}
-
-	@Override
 	public AreaInventoryReport getAreaInventoryReport(long id) {
 		AreaInventoryReport areaInventoryReport = areaInventoryReportDao.get(id);
 		loadChildrenDetails(areaInventoryReport);

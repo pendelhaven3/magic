@@ -72,4 +72,23 @@ public class AdjustmentTypeServiceTest {
 		verify(adjustmentTypeDao).findByCode(code);
 	}
 	
+	@Test
+	public void getRegularAdjustmentTypes() {
+		AdjustmentType type = new AdjustmentType(1L, AdjustmentType.SALES_RETURN_CODE);
+		AdjustmentType type2 = new AdjustmentType(2L, AdjustmentType.BAD_STOCK_RETURN_CODE);
+		AdjustmentType type3 = new AdjustmentType(3L, AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE);
+		AdjustmentType type4 = new AdjustmentType(4L, "REGULAR");
+		
+		when(adjustmentTypeDao.getAll()).thenReturn(Arrays.asList(type, type2, type3, type4));
+		
+		List<AdjustmentType> result = service.getRegularAdjustmentTypes();
+		assertEquals(1, result.size());
+		assertEquals(4, result.get(0).getId().longValue());
+	}
+	
+	@Test
+	public void delete_areaInventoryReportItem() {
+		
+	}
+	
 }

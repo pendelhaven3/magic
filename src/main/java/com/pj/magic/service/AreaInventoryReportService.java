@@ -13,8 +13,6 @@ public interface AreaInventoryReportService {
 
 	void save(AreaInventoryReport areaInventoryReport);
 
-	void delete(AreaInventoryReport inventoryCheck);
-
 	AreaInventoryReport getAreaInventoryReport(long id);
 
 	void delete(AreaInventoryReportItem item);
