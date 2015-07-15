@@ -228,6 +228,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		
 		BadStockReturnSearchCriteria badStockReturnCriteria = new BadStockReturnSearchCriteria();
 		badStockReturnCriteria.setPosted(true);
+		badStockReturnCriteria.setCancelled(false);
 		badStockReturnCriteria.setCustomer(customer);
 		badStockReturnCriteria.setPostDateFrom(fromDateModel.getValue().getTime());
 		badStockReturnCriteria.setPostDateTo(toDateModel.getValue().getTime());

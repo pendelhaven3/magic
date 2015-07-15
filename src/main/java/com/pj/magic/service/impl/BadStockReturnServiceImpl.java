@@ -12,6 +12,8 @@ import com.pj.magic.dao.BadStockReturnDao;
 import com.pj.magic.dao.BadStockReturnItemDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.exception.AlreadyCancelledException;
+import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.PaymentTerminalAssignment;
@@ -120,7 +122,26 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 	public List<BadStockReturn> getUnpaidBadStockReturns() {
 		BadStockReturnSearchCriteria criteria = new BadStockReturnSearchCriteria();
 		criteria.setPaid(false);
+		criteria.setCancelled(false);
 		return search(criteria);
+	}
+
+	@Override
+	public void cancel(BadStockReturn badStockReturn) {
+		BadStockReturn updated = getBadStockReturn(badStockReturn.getId());
+
+		if (updated.isCancelled()) {
+			throw new AlreadyCancelledException();
+		}
+		
+		if (updated.isPaid()) {
+			throw new AlreadyPaidException("Bad Stock Return already paid. BSR No.: " + updated.getBadStockReturnNumber());
+		}
+		
+		updated.setCancelled(true);
+		updated.setCancelDate(new Date());
+		updated.setCancelledBy(loginService.getLoggedInUser());
+		badStockReturnDao.save(updated);
 	}
 
 }

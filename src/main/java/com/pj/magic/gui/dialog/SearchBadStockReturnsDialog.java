@@ -40,6 +40,7 @@ public class SearchBadStockReturnsDialog extends MagicDialog {
 	private static final int STATUS_NEW = 1;
 	private static final int STATUS_POSTED = 2;
 	private static final int STATUS_PAID = 3;
+	private static final int STATUS_CANCELLED = 4;
 	
 	@Autowired private CustomerService customerService;
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
@@ -83,7 +84,7 @@ public class SearchBadStockReturnsDialog extends MagicDialog {
 		});
 		
 		statusComboBox = new MagicComboBox<>();
-		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted/Unpaid", "Paid"}));
+		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "New", "Posted/Unpaid", "Paid", "Cancelled"}));
 		
 		postDateModel = new UtilCalendarModel();
 		
@@ -134,9 +135,13 @@ public class SearchBadStockReturnsDialog extends MagicDialog {
 			case STATUS_POSTED:
 				searchCriteria.setPosted(true);
 				searchCriteria.setPaid(false);
+				searchCriteria.setCancelled(false);
 				break;
 			case STATUS_PAID:
 				searchCriteria.setPaid(true);
+				break;
+			case STATUS_CANCELLED:
+				searchCriteria.setCancelled(true);
 				break;
 			}
 		}

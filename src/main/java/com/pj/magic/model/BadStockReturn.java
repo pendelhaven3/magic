@@ -18,6 +18,9 @@ public class BadStockReturn {
 	private boolean paid;
 	private Date paidDate;
 	private User paidBy;
+	private boolean cancelled;
+	private Date cancelDate;
+	private User cancelledBy;
 	private PaymentTerminal paymentTerminal;
 	private String remarks;
 	
@@ -72,7 +75,9 @@ public class BadStockReturn {
 	}
 
 	public String getStatus() {
-		if (paid) {
+		if (cancelled) {
+			return "Cancelled";
+		} else if (paid) {
 			return "Paid";
 		} else if (posted) {
 			return "Posted/Unpaid";
@@ -167,6 +172,30 @@ public class BadStockReturn {
 			total = total.add(item.getTotalLoss());
 		}
 		return total;
+	}
+
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
+
+	public Date getCancelDate() {
+		return cancelDate;
+	}
+
+	public void setCancelDate(Date cancelDate) {
+		this.cancelDate = cancelDate;
+	}
+
+	public User getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(User cancelledBy) {
+		this.cancelledBy = cancelledBy;
 	}
 	
 }

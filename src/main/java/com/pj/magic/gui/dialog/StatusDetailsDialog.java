@@ -191,10 +191,11 @@ public class StatusDetailsDialog extends MagicDialog {
 	}
 
 	public void updateDisplay(BadStockReturn badStockReturn) {
-		setSize(320, 180);
+		setSize(320, 240);
+		setLocationRelativeTo(null);
 		setTitle("Bad Stock Return Status");
 		showPaidFields = true;
-		showCancelFields = false;
+		showCancelFields = true;
 		layoutMainPanel();
 		
 		postDateLabel.setText(badStockReturn.isPosted() ? 
@@ -205,6 +206,10 @@ public class StatusDetailsDialog extends MagicDialog {
 				FormatterUtil.formatDateTime(badStockReturn.getPaidDate()) : "-");
 		paidByLabel.setText(badStockReturn.isPaid() ? 
 				badStockReturn.getPaidBy().getUsername() : "-");
+		cancelDateLabel.setText(badStockReturn.isCancelled() ? 
+				FormatterUtil.formatDateTime(badStockReturn.getCancelDate()) : "-");
+		cancelledByLabel.setText(badStockReturn.isCancelled() ? 
+				badStockReturn.getCancelledBy().getUsername() : "-");
 	}
 
 	public void updateDisplay(NoMoreStockAdjustment noMoreStockAdjustment) {

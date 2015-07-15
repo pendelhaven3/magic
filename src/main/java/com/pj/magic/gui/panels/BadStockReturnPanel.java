@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.exception.AlreadyCancelledException;
+import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -82,6 +84,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	private JLabel totalAmountField;
 	private JButton postButton;
 	private JButton markAsPaidButton;
+	private JButton cancelButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
 	private JButton printPreviewButton;
@@ -258,7 +261,8 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		totalItemsField.setText(String.valueOf(badStockReturn.getTotalItems()));
 		totalAmountField.setText(badStockReturn.getTotalAmount().toString());
 		postButton.setEnabled(!badStockReturn.isPosted());
-		markAsPaidButton.setEnabled(badStockReturn.isPosted() && !badStockReturn.isPaid());
+		markAsPaidButton.setEnabled(badStockReturn.isPosted() && !badStockReturn.isPaid() && !badStockReturn.isCancelled());
+		cancelButton.setEnabled(badStockReturn.isPosted() && !badStockReturn.isPaid() && !badStockReturn.isCancelled());
 		addItemButton.setEnabled(!badStockReturn.isPosted());
 		deleteItemButton.setEnabled(!badStockReturn.isPosted());
 		printPreviewButton.setEnabled(true);
@@ -281,6 +285,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		itemsTable.setBadStockReturn(badStockReturn);
 		postButton.setEnabled(false);
 		markAsPaidButton.setEnabled(false);
+		cancelButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
@@ -546,6 +551,16 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		});
 		toolBar.add(markAsPaidButton);
 		
+		cancelButton = new MagicToolBarButton("cancel", "Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cancelBadStockReturn();
+			}
+		});
+		toolBar.add(cancelButton);
+		
 		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {
 			
@@ -566,6 +581,25 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+	}
+
+	private void cancelBadStockReturn() {
+		if (confirm("Do you want to cancel this Bad Stock Return?")) { 
+			try {
+				badStockReturnService.cancel(badStockReturn);
+				showMessage("Bad Stock Return cancelled");
+				updateDisplay(badStockReturn);
+			} catch (AlreadyCancelledException e) {
+				showErrorMessage("Bad Stock Return is already cancelled");
+				updateDisplay(badStockReturn);
+			} catch (AlreadyPaidException e) {
+				showErrorMessage(e.getMessage());
+				updateDisplay(badStockReturn);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred during posting!");
+			}
+		}
 	}
 
 	private void markBadStockReturnAsPaid() {
