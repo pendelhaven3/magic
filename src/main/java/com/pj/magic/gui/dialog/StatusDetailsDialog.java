@@ -192,6 +192,7 @@ public class StatusDetailsDialog extends MagicDialog {
 
 	public void updateDisplay(BadStockReturn badStockReturn) {
 		setSize(320, 240);
+		setLocationRelativeTo(null);
 		setTitle("Bad Stock Return Status");
 		showPaidFields = true;
 		showCancelFields = true;
