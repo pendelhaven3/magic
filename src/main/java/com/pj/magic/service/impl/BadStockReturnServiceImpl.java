@@ -122,6 +122,7 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 	public List<BadStockReturn> getUnpaidBadStockReturns() {
 		BadStockReturnSearchCriteria criteria = new BadStockReturnSearchCriteria();
 		criteria.setPaid(false);
+		criteria.setCancelled(false);
 		return search(criteria);
 	}
 
