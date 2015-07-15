@@ -55,6 +55,7 @@ from (
 		join BAD_STOCK_RETURN_ITEM b
 		  on b.BAD_STOCK_RETURN_ID = a.ID
 		where a.POST_IND = 'Y'
+		and a.CANCEL_IND = 'N'
         and a.POST_DT >= :fromDate
         and a.POST_DT <= :toDate
 	) agg
