@@ -34,9 +34,11 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 	
 	private PromoRowMapper promoRowMapper = new PromoRowMapper();
 	
+	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by a.PROMO_NO desc";
+	
 	@Override
 	public List<Promo> getAll() {
-		return getJdbcTemplate().query(BASE_SELECT_SQL, promoRowMapper);
+		return getJdbcTemplate().query(GET_ALL_SQL, promoRowMapper);
 	}
 
 	private class PromoRowMapper implements RowMapper<Promo> {
