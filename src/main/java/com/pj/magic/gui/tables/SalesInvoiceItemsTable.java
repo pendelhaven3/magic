@@ -145,7 +145,7 @@ public class SalesInvoiceItemsTable extends MagicTable {
 			item.setFlatRateDiscount(value);
 			break;
 		}
-		return item.getNetAmount().compareTo(product.getFinalCost(item.getUnit())) >= 0;
+		return item.getDiscountedUnitPrice().compareTo(product.getFinalCost(item.getUnit())) >= 0;
 	}
 	
 	private class DiscountCellEditor extends MagicCellEditor {
@@ -166,7 +166,7 @@ public class SalesInvoiceItemsTable extends MagicTable {
 			} else if (!NumberUtil.isAmount(discount)){
 				showErrorMessage(fieldName + " must be a valid amount");
 			} else if (!validateItemProfitNotLessThanZero(NumberUtil.toBigDecimal(discount), fieldName)) {
-				showErrorMessage("Resulting net amount less than cost");
+				showErrorMessage("Resulting net price less than cost");
 			} else {
 				valid = true;
 			}
