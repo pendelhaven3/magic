@@ -36,6 +36,7 @@ Checked by  : ____________________                               ============
 Received by : ____________________         Approved by : ____________________
 
 #foreach($availedPromoPointsItem in $availedPromoPointsItems)
-$availedPromoPointsItem.promo.name - $availedPromoPointsItem.points pts
+$availedPromoPointsItem.promo.name - $availedPromoPointsItem.points #if ($availedPromoPointsItem.points > 1)pts.#{else}pt.
+#end
 #end
 #end

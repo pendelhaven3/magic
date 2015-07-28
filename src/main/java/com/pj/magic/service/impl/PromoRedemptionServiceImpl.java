@@ -244,7 +244,10 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		criteria.setAcceptedPricingScheme(salesInvoice.getPricingScheme());
 		
 		for (Promo promo : promoService.search(criteria)) {
-			items.add(promo.evaluateForPoints(salesInvoice));
+			AvailedPromoPointsItem item = promo.evaluateForPoints(salesInvoice);
+			if (item.hasPoints()) {
+				items.add(item);
+			}
 		}
 		return items;
 	}

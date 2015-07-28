@@ -56,4 +56,8 @@ public class AvailedPromoPointsItem {
 		this.points = points;
 	}
 
+	public boolean hasPoints() {
+		return points > 0;
+	}
+
 }
