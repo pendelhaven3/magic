@@ -14,10 +14,15 @@ import com.pj.magic.dao.PromoType1RuleDao;
 import com.pj.magic.dao.PromoType2RuleDao;
 import com.pj.magic.dao.PromoType3RuleDao;
 import com.pj.magic.dao.PromoType3RulePromoProductDao;
+import com.pj.magic.dao.PromoType4RuleDao;
+import com.pj.magic.dao.PromoType4RulePromoProductDao;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.PromoType3RulePromoProduct;
+import com.pj.magic.model.PromoType4Rule;
+import com.pj.magic.model.PromoType4RulePromoProduct;
+import com.pj.magic.model.search.PromoSearchCriteria;
 
 @Service
 public class PromoServiceImpl implements PromoService {
@@ -26,9 +31,11 @@ public class PromoServiceImpl implements PromoService {
 	@Autowired private PromoType1RuleDao promoType1RuleDao;
 	@Autowired private PromoType2RuleDao promoType2RuleDao;
 	@Autowired private PromoType3RuleDao promoType3RuleDao;
+	@Autowired private PromoType4RuleDao promoType4RuleDao;
 	@Autowired private ProductDao productDao;
 	@Autowired private PromoRedemptionDao promoRedemptionDao;
 	@Autowired private PromoType3RulePromoProductDao promoType3RulePromoProductDao;
+	@Autowired private PromoType4RulePromoProductDao promoType4RulePromoProductDao;
 	
 	@Override
 	public List<Promo> getAllPromos() {
@@ -43,10 +50,18 @@ public class PromoServiceImpl implements PromoService {
 		if (isNew) {
 			promoRedemptionDao.insertNewPromoRedemptionSequence(promo);
 		} else {
-			if (promo.getPromoType().isType1()) {
+			switch (promo.getPromoType()) {
+			case PROMO_TYPE_1:
 				promoType1RuleDao.save(promo.getPromoType1Rule());
-			} else if (promo.getPromoType().isType3()) {
+				break;
+			case PROMO_TYPE_3:
 				promoType3RuleDao.save(promo.getPromoType3Rule());
+				break;
+			case PROMO_TYPE_4:
+				promoType4RuleDao.save(promo.getPromoType4Rule());
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -59,11 +74,11 @@ public class PromoServiceImpl implements PromoService {
 	}
 
 	private void loadPromoDetails(Promo promo) {
-		switch (promo.getPromoType().getId().intValue()) {
-		case 1:
+		switch (promo.getPromoType()) {
+		case PROMO_TYPE_1:
 			promo.setPromoType1Rule(promoType1RuleDao.findByPromo(promo));
 			break;
-		case 2:
+		case PROMO_TYPE_2:
 			promo.setPromoType2Rules(promoType2RuleDao.findAllByPromo(promo));
 			for (PromoType2Rule rule : promo.getPromoType2Rules()) {
 				rule.setParent(promo);
@@ -71,12 +86,19 @@ public class PromoServiceImpl implements PromoService {
 				rule.setFreeProduct(productDao.get(rule.getFreeProduct().getId()));
 			}
 			break;
-		case 3:
-			PromoType3Rule rule = promoType3RuleDao.findByPromo(promo);
-			if (rule != null) {
-				rule.setPromoProducts(promoType3RulePromoProductDao.findAllByRule(rule));
+		case PROMO_TYPE_3:
+			PromoType3Rule type3Rule = promoType3RuleDao.findByPromo(promo);
+			if (type3Rule != null) {
+				type3Rule.setPromoProducts(promoType3RulePromoProductDao.findAllByRule(type3Rule));
 			}
-			promo.setPromoType3Rule(rule);
+			promo.setPromoType3Rule(type3Rule);
+			break;
+		case PROMO_TYPE_4:
+			PromoType4Rule type4Rule = promoType4RuleDao.findByPromo(promo);
+			if (type4Rule != null) {
+				type4Rule.setPromoProducts(promoType4RulePromoProductDao.findAllByRule(type4Rule));
+			}
+			promo.setPromoType4Rule(type4Rule);
 			break;
 		}
 	}
@@ -127,4 +149,38 @@ public class PromoServiceImpl implements PromoService {
 		promoType3RulePromoProductDao.deleteAllByRule(rule);
 	}
 
+	@Transactional
+	@Override
+	public void save(PromoType4RulePromoProduct promoProduct) {
+		promoType4RulePromoProductDao.save(promoProduct);
+	}
+
+	@Transactional
+	@Override
+	public void delete(PromoType4RulePromoProduct promoProduct) {
+		promoType4RulePromoProductDao.delete(promoProduct);		
+	}
+
+	@Transactional
+	@Override
+	public void addAllPromoProducts(PromoType4Rule rule) {
+		removeAllPromoProducts(rule);
+		promoType4RuleDao.addAllPromoProducts(rule);
+	}
+
+	@Transactional
+	@Override
+	public void removeAllPromoProducts(PromoType4Rule rule) {
+		promoType4RulePromoProductDao.deleteAllByRule(rule);
+	}
+
+	@Override
+	public List<Promo> search(PromoSearchCriteria criteria) {
+		List<Promo> promos = promoDao.search(criteria);
+		for (Promo promo : promos) {
+			loadPromoDetails(promo);
+		}
+		return promos;
+	}
+	
 }

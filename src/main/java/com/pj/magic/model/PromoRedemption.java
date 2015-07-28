@@ -128,6 +128,8 @@ public class PromoRedemption {
 				total = total.add(type3Rule.getQualifyingAmount(salesInvoice.getSalesInvoice()));
 			}
 			break;
+		case PROMO_TYPE_4:
+			break;
 		}
 		
 		return total;

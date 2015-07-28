@@ -2,6 +2,7 @@ package com.pj.magic.service;
 
 import java.util.List;
 
+import com.pj.magic.model.AvailedPromoPointsItem;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
@@ -27,5 +28,7 @@ public interface PromoRedemptionService {
 	List<PromoRedemption> findAllBySalesInvoice(SalesInvoice salesInvoice);
 	
 	List<PromoRedemption> findAllAvailedPromoRedemptions(SalesInvoice salesInvoice);
+
+	List<AvailedPromoPointsItem> findAllAvailedPromoPoints(SalesInvoice salesInvoice);
 	
 }

@@ -23,10 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
-
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +41,7 @@ import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.PromoType2RulesTable;
 import com.pj.magic.gui.tables.PromoType3RulePromoProductsTable;
+import com.pj.magic.gui.tables.PromoType4RulePromoProductsTable;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
@@ -52,6 +49,7 @@ import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType;
 import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.PromoType3Rule;
+import com.pj.magic.model.PromoType4Rule;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.PricingSchemeService;
@@ -61,6 +59,10 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.ListUtil;
 import com.pj.magic.util.NumberUtil;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 public class PromoPanel extends StandardMagicPanel {
@@ -75,12 +77,14 @@ public class PromoPanel extends StandardMagicPanel {
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private PromoType2RulesTable promoType2RulesTable;
 	@Autowired private PromoType3RulePromoProductsTable promoType3RulePromoProductsTable;
+	@Autowired private PromoType4RulePromoProductsTable promoType4RulePromoProductsTable;
 	
 	private Promo promo;
 	private JLabel promoNumberLabel;
 	private MagicTextField nameField;
 	private JComboBox<PromoType> promoTypeComboBox;
 	private UtilCalendarModel startDateModel;
+	private UtilCalendarModel endDateModel;
 	private JComboBox<PricingScheme> pricingSchemeComboBox;
 	private JCheckBox activeCheckBox;
 	private JPanel promoDetailsPanel;
@@ -94,10 +98,14 @@ public class PromoPanel extends StandardMagicPanel {
 	private MagicButton saveButton;
 	private JButton addRuleButton;
 	private JButton removeRuleButton;
-	private JButton addPromoProductButton;
-	private JButton removePromoProductButton;
-	private JButton addAllPromoProductButton;
-	private JButton removeAllPromoProductButton;
+	private JButton addType3PromoProductButton;
+	private JButton removeType3PromoProductButton;
+	private JButton addAllType3PromoProductButton;
+	private JButton removeAllType3PromoProductButton;
+	private JButton addType4PromoProductButton;
+	private JButton removeType4PromoProductButton;
+	private JButton addAllType4PromoProductButton;
+	private JButton removeAllType4PromoProductButton;
 	
 	@Override
 	protected void initializeComponents() {
@@ -110,6 +118,7 @@ public class PromoPanel extends StandardMagicPanel {
 		promoTypeComboBox.setModel(ListUtil.toDefaultComboBoxModel(PromoType.getPromoTypes(), true));
 		
 		startDateModel = new UtilCalendarModel();
+		endDateModel = new UtilCalendarModel();
 		
 		activeCheckBox = new JCheckBox();
 		
@@ -180,18 +189,65 @@ public class PromoPanel extends StandardMagicPanel {
 		if (promo.getId() == null) {
 			saveNewPromo();
 		} else {
-			switch (promo.getPromoType().getId().intValue()) {
-			case 1:
+			switch (promo.getPromoType()) {
+			case PROMO_TYPE_1:
 				savePromoType1();
 				break;
-			case 2:
+			case PROMO_TYPE_2:
 				savePromoType2();
 				break;
-			case 3:
+			case PROMO_TYPE_3:
 				savePromoType3();
+				break;
+			case PROMO_TYPE_4:
+				savePromoType4();
 				break;
 			}
 		}
+	}
+
+	private void savePromoType4() {
+		if (!validatePromoType4()) {
+			return;
+		}
+		
+		if (confirm("Save Promo?")) {
+			setCommonFieldsForSaving();
+			if (promo.getPromoType4Rule() == null) {
+				promo.setPromoType4Rule(new PromoType4Rule());
+			}
+			PromoType4Rule rule = promo.getPromoType4Rule();
+			rule.setParent(promo);
+			rule.setTargetAmount(NumberUtil.toBigDecimal(targetAmountField.getText()));
+			
+			try {
+				promoService.save(promo);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Error occurred during saving!");
+				return;
+			}
+			
+			showMessage("Saved!");
+			updateDisplay(promo);
+		}
+	}
+
+	private boolean validatePromoType4() {
+		try {
+			validateCommonFields();
+			validateMandatoryField(targetAmountField, "Target Amount");
+		} catch (ValidationException e) {
+			return false;
+		}
+		
+		if (!NumberUtil.isAmount(targetAmountField.getText())) {
+			showErrorMessage("Target Amount must be a valid amount");
+			targetAmountField.requestFocusInWindow();
+			return false;
+		}
+		
+		return true;
 	}
 
 	private void savePromoType3() {
@@ -226,7 +282,7 @@ public class PromoPanel extends StandardMagicPanel {
 
 	private boolean validatePromoType3() {
 		try {
-			validateMandatoryField(nameField, "Name");
+			validateCommonFields();
 			validateMandatoryField(targetAmountField, "Target Amount");
 			validateMandatoryField(freeProductCodeField, "Product Code");
 			validateMandatoryField(freeUnitComboBox, "Unit");
@@ -272,7 +328,16 @@ public class PromoPanel extends StandardMagicPanel {
 
 	private void setCommonFieldsForSaving() {
 		promo.setName(nameField.getText());
-		promo.setStartDate(startDateModel.getValue().getTime());
+		if (isStartDateSpecified()) {
+			promo.setStartDate(startDateModel.getValue().getTime());
+		} else {
+			promo.setStartDate(null);
+		}
+		if (isEndDateSpecified()) {
+			promo.setEndDate(endDateModel.getValue().getTime());
+		} else {
+			promo.setEndDate(null);
+		}
 		promo.setActive(activeCheckBox.isSelected());
 		if (pricingSchemeComboBox.getSelectedIndex() > 0) {
 			promo.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
@@ -281,15 +346,29 @@ public class PromoPanel extends StandardMagicPanel {
 		}
 	}
 
+	private boolean isStartDateSpecified() {
+		return startDateModel.getValue() != null;
+	}
+
+	private boolean isEndDateSpecified() {
+		return endDateModel.getValue() != null;
+	}
+
 	private boolean validatePromoType2() {
 		try {
-			validateMandatoryField(nameField, "Name");
+			validateCommonFields();
 		} catch (ValidationException e) {
 			return false;
 		}
 		return true;
 	}
 
+	private void validateCommonFields() throws ValidationException {
+		validateMandatoryField(nameField, "Name");
+		validateMandatoryField(startDateModel, "Start Date");
+		validateStartAndEndDates();
+	}
+	
 	private void saveNewPromo() {
 		if (!validateNewPromo()) {
 			return;
@@ -346,15 +425,33 @@ public class PromoPanel extends StandardMagicPanel {
 		try {
 			validateMandatoryField(nameField, "Name");
 			validateMandatoryField(promoTypeComboBox, "Promo Type");
+			validateStartAndEndDates();
 		} catch (ValidationException e) {
 			return false;
 		}
 		return true;
 	}
 
+	private void validateStartAndEndDates() throws ValidationException {
+		if (isStartDateAndEndDateSpecified()) {
+			if (!isStartDateLessThanEndDate()) {
+				showErrorMessage("Start Date must be less than End Date");
+				throw new ValidationException();
+			}
+		}
+	}
+
+	private boolean isStartDateAndEndDateSpecified() {
+		return startDateModel.getValue() != null && endDateModel.getValue() != null;	
+	}
+		
+	private boolean isStartDateLessThanEndDate() {
+		return DateUtils.truncatedCompareTo(startDateModel.getValue(), endDateModel.getValue(), Calendar.DATE) < 0;
+	}
+
 	private boolean validatePromoType1() {
 		try {
-			validateMandatoryField(nameField, "Name");
+			validateCommonFields();
 			validateMandatoryField(manufacturerComboBox, "Manufacturer");
 			validateMandatoryField(targetAmountField, "Target Amount");
 			validateMandatoryField(freeProductCodeField, "Product Code");
@@ -446,10 +543,7 @@ public class PromoPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		
-		JDatePanelImpl datePanel = new JDatePanelImpl(startDateModel);
-		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
-		mainPanel.add(datePicker, c);
+		mainPanel.add(createStartAndEndDatePanel(), c);
 		
 		currentRow++;
 		
@@ -521,6 +615,22 @@ public class PromoPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(Box.createGlue(), c);
+	}
+
+	private JPanel createStartAndEndDatePanel() {
+		JDatePanelImpl startDatePanel = new JDatePanelImpl(startDateModel);
+		JDatePickerImpl startDatePicker = new JDatePickerImpl(startDatePanel, new DatePickerFormatter());
+		
+		JDatePanelImpl endDatePanel = new JDatePanelImpl(endDateModel);
+		JDatePickerImpl endDatePicker = new JDatePickerImpl(endDatePanel, new DatePickerFormatter());
+		
+		return ComponentUtil.createGenericPanel(
+				startDatePicker,
+				Box.createHorizontalStrut(50),
+				new JLabel("End Date:"),
+				Box.createHorizontalStrut(30),
+				endDatePicker
+		);
 	}
 
 	private void updateToPromoType2Panel(JPanel panel) {
@@ -651,50 +761,50 @@ public class PromoPanel extends StandardMagicPanel {
 	private JPanel createPromoType3RulesTableToolBar() {
 		JPanel panel = new JPanel();
 		
-		addPromoProductButton = new MagicToolBarButton("plus_small", "Add Promo Product", true);
-		addPromoProductButton.addActionListener(new ActionListener() {
+		addType3PromoProductButton = new MagicToolBarButton("plus_small", "Add Promo Product", true);
+		addType3PromoProductButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				addPromoProduct();
+				addType3PromoProduct();
 			}
 		});
-		panel.add(addPromoProductButton, BorderLayout.WEST);
+		panel.add(addType3PromoProductButton, BorderLayout.WEST);
 		
-		removePromoProductButton = new MagicToolBarButton("minus_small", "Remove Promo Product", true);
-		removePromoProductButton.addActionListener(new ActionListener() {
+		removeType3PromoProductButton = new MagicToolBarButton("minus_small", "Remove Promo Product", true);
+		removeType3PromoProductButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				removePromoProduct();
+				removeType3PromoProduct();
 			}
 		});
-		panel.add(removePromoProductButton, BorderLayout.WEST);
+		panel.add(removeType3PromoProductButton, BorderLayout.WEST);
 		
-		addAllPromoProductButton = new MagicToolBarButton("add_all_small", "Add All Promo Product", true);
-		addAllPromoProductButton.addActionListener(new ActionListener() {
+		addAllType3PromoProductButton = new MagicToolBarButton("add_all_small", "Add All Promo Product", true);
+		addAllType3PromoProductButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				addAllPromoProduct();
+				addAllType3PromoProduct();
 			}
 		});
-		panel.add(addAllPromoProductButton, BorderLayout.WEST);
+		panel.add(addAllType3PromoProductButton, BorderLayout.WEST);
 		
-		removeAllPromoProductButton = new MagicToolBarButton("delete_all_small", "Remove All Promo Products", true);
-		removeAllPromoProductButton.addActionListener(new ActionListener() {
+		removeAllType3PromoProductButton = new MagicToolBarButton("delete_all_small", "Remove All Promo Products", true);
+		removeAllType3PromoProductButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				removeAllPromoProduct();
+				removeAllType3PromoProduct();
 			}
 		});
-		panel.add(removeAllPromoProductButton, BorderLayout.WEST);
+		panel.add(removeAllType3PromoProductButton, BorderLayout.WEST);
 		
 		return panel;
 	}
 
-	private void removeAllPromoProduct() {
+	private void removeAllType3PromoProduct() {
 		if (confirm("Remove all promo products?")) {
 			try {
 				promoService.removeAllPromoProducts(promo.getPromoType3Rule());
@@ -706,15 +816,15 @@ public class PromoPanel extends StandardMagicPanel {
 		}
 	}
 
-	private void removePromoProduct() {
+	private void removeType3PromoProduct() {
 		promoType3RulePromoProductsTable.removeCurrentlySelectedPromoProduct();
 	}
 
-	private void addPromoProduct() {
+	private void addType3PromoProduct() {
 		promoType3RulePromoProductsTable.addNewRow();
 	}
 
-	private void addAllPromoProduct() {
+	private void addAllType3PromoProduct() {
 		if (confirm("Add all products to promo?")) {
 			try {
 				promoService.addAllPromoProducts(promo.getPromoType3Rule());
@@ -915,7 +1025,16 @@ public class PromoPanel extends StandardMagicPanel {
 		nameField.setText(promo.getName());
 		promoTypeComboBox.setEnabled(false);
 		promoTypeComboBox.setSelectedItem(promo.getPromoType());
-		startDateModel.setValue(DateUtils.toCalendar(promo.getStartDate()));
+		if (promo.hasStartDate()) {
+			startDateModel.setValue(DateUtils.toCalendar(promo.getStartDate()));
+		} else {
+			startDateModel.setValue(null);
+		}
+		if (promo.hasEndDate()) {
+			endDateModel.setValue(DateUtils.toCalendar(promo.getEndDate()));
+		} else {
+			endDateModel.setValue(null);
+		}
 		if (promo.getPricingScheme() != null) {
 			pricingSchemeComboBox.setSelectedItem(promo.getPricingScheme());
 		} else {
@@ -928,20 +1047,175 @@ public class PromoPanel extends StandardMagicPanel {
 
 	private void updatePromoDetailsPanel() {
 		promoDetailsPanel.removeAll();
-		switch (promo.getPromoType().getId().intValue()) {
-		case 1:
+		switch (promo.getPromoType()) {
+		case PROMO_TYPE_1:
 			updateDisplayForPromoType1();
 			break;
-		case 2:
+		case PROMO_TYPE_2:
 			updateDisplayForPromoType2();
 			break;
-		case 3:
+		case PROMO_TYPE_3:
 			updateDisplayForPromoType3();
+			break;
+		case PROMO_TYPE_4:
+			updateDisplayForPromoType4();
 			break;
 		}
 		promoDetailsPanel.revalidate();
 		promoDetailsPanel.repaint();
 		promoDetailsPanel.setVisible(true);
+	}
+
+	private void updateDisplayForPromoType4() {
+		updateToPromoType4Panel(promoDetailsPanel);
+		
+		PromoType4Rule rule = promo.getPromoType4Rule();
+		if (rule != null) {
+			targetAmountField.setText(FormatterUtil.formatAmount(rule.getTargetAmount()));
+			promoType4RulePromoProductsTable.setRule(rule);
+			addType4PromoProductButton.setEnabled(true);
+			removeType4PromoProductButton.setEnabled(true);
+			addAllType4PromoProductButton.setEnabled(true);
+			removeType4PromoProductButton.setEnabled(true);
+		} else {
+			targetAmountField.setText(null);
+			promoType4RulePromoProductsTable.clear();
+			addType4PromoProductButton.setEnabled(false);
+			removeType4PromoProductButton.setEnabled(false);
+			addAllType4PromoProductButton.setEnabled(false);
+			removeAllType4PromoProductButton.setEnabled(false);
+		}
+	}
+
+	private void updateToPromoType4Panel(JPanel panel) {
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		panel.add(Box.createVerticalStrut(20), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Target Amount: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		targetAmountField.setPreferredSize(new Dimension(100, 25));
+		panel.add(targetAmountField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		panel.add(Box.createVerticalStrut(20), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridwidth = 2;
+		panel.add(createPromoType4RulesTableToolBar(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridwidth = 2;
+		
+		JScrollPane scrollPane = new JScrollPane(promoType4RulePromoProductsTable);
+		scrollPane.setPreferredSize(new Dimension(600, 100));
+		panel.add(scrollPane, c);
+	}
+
+	private JPanel createPromoType4RulesTableToolBar() {
+		JPanel panel = new JPanel();
+		
+		addType4PromoProductButton = new MagicToolBarButton("plus_small", "Add Promo Product", true);
+		addType4PromoProductButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addType4PromoProduct();
+			}
+		});
+		panel.add(addType4PromoProductButton, BorderLayout.WEST);
+		
+		removeType4PromoProductButton = new MagicToolBarButton("minus_small", "Remove Promo Product", true);
+		removeType4PromoProductButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeType4PromoProduct();
+			}
+		});
+		panel.add(removeType4PromoProductButton, BorderLayout.WEST);
+		
+		addAllType4PromoProductButton = new MagicToolBarButton("add_all_small", "Add All Promo Product", true);
+		addAllType4PromoProductButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addAllType4PromoProduct();
+			}
+		});
+		panel.add(addAllType4PromoProductButton, BorderLayout.WEST);
+		
+		removeAllType4PromoProductButton = new MagicToolBarButton("delete_all_small", "Remove All Promo Products", true);
+		removeAllType4PromoProductButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeAllType4PromoProduct();
+			}
+		});
+		panel.add(removeAllType4PromoProductButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+
+	private void removeAllType4PromoProduct() {
+		if (confirm("Remove all promo products?")) {
+			try {
+				promoService.removeAllPromoProducts(promo.getPromoType4Rule());
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+			}
+			updateDisplay(promo);
+		}
+	}
+
+	private void addAllType4PromoProduct() {
+		if (confirm("Add all products to promo?")) {
+			try {
+				promoService.addAllPromoProducts(promo.getPromoType4Rule());
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+				return;
+			}
+			updateDisplay(promo);
+		}
+	}
+
+	private void removeType4PromoProduct() {
+		promoType4RulePromoProductsTable.removeCurrentlySelectedPromoProduct();
+	}
+
+	private void addType4PromoProduct() {
+		promoType4RulePromoProductsTable.addNewRow();
 	}
 
 	private void updateDisplayForPromoType2() {
@@ -960,10 +1234,10 @@ public class PromoPanel extends StandardMagicPanel {
 			freeUnitComboBox.setSelectedItem(rule.getFreeUnit());
 			freeQuantityField.setText(rule.getFreeQuantity().toString());
 			promoType3RulePromoProductsTable.setRule(rule);
-			addPromoProductButton.setEnabled(true);
-			removePromoProductButton.setEnabled(true);
-			addAllPromoProductButton.setEnabled(true);
-			removePromoProductButton.setEnabled(true);
+			addType3PromoProductButton.setEnabled(true);
+			removeType3PromoProductButton.setEnabled(true);
+			addAllType3PromoProductButton.setEnabled(true);
+			removeType3PromoProductButton.setEnabled(true);
 		} else {
 			targetAmountField.setText(null);
 			freeProductCodeField.setText(null);
@@ -971,10 +1245,10 @@ public class PromoPanel extends StandardMagicPanel {
 			freeUnitComboBox.setSelectedItem(null);
 			freeQuantityField.setText(null);
 			promoType3RulePromoProductsTable.clear();
-			addPromoProductButton.setEnabled(false);
-			removePromoProductButton.setEnabled(false);
-			addAllPromoProductButton.setEnabled(false);
-			removeAllPromoProductButton.setEnabled(false);
+			addType3PromoProductButton.setEnabled(false);
+			removeType3PromoProductButton.setEnabled(false);
+			addAllType3PromoProductButton.setEnabled(false);
+			removeAllType3PromoProductButton.setEnabled(false);
 		}
 	}
 

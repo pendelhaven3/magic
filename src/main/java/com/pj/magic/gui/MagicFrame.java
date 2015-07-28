@@ -67,6 +67,7 @@ import com.pj.magic.gui.panels.PricingSchemeListPanel;
 import com.pj.magic.gui.panels.ProductCanvassPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
+import com.pj.magic.gui.panels.PromoPointsPanel;
 import com.pj.magic.gui.panels.PurchaseOrderListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderPanel;
 import com.pj.magic.gui.panels.PurchasePaymentAdjustmentListPanel;
@@ -266,6 +267,7 @@ public class MagicFrame extends JFrame {
 	private static final String PROMO_REDEMPTION_PROMO_LIST_PANEL = "PROMO_REDEMPTION_PROMO_LIST_PANEL";
 	private static final String PROMO_LIST_PANEL = "PROMO_LIST_PANEL";
 	private static final String PROMO_PANEL = "PROMO_PANEL";
+	private static final String PROMO_POINTS_PANEL = "PROMO_POINTS_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -366,6 +368,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PromoRedemptionPromoListPanel promoRedemptionPromoListPanel;
 	@Autowired private PromoListPanel promoListPanel;
 	@Autowired private PromoPanel promoPanel;
+	@Autowired private PromoPointsPanel promoPointsPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -515,6 +518,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(promoRedemptionPromoListPanel, PROMO_REDEMPTION_PROMO_LIST_PANEL);
 		panelHolder.add(promoListPanel, PROMO_LIST_PANEL);
 		panelHolder.add(promoPanel, PROMO_PANEL);
+		panelHolder.add(promoPointsPanel, PROMO_POINTS_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1262,6 +1266,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Promo");
 		promoPanel.updateDisplay(promo);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_PANEL);
+	}
+	
+	public void switchToPromoPointsPanel(Promo promo) {
+		addPanelNameToTitle("Promo Points");
+		promoPointsPanel.updateDisplay(promo);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_POINTS_PANEL);
 	}
 	
 }

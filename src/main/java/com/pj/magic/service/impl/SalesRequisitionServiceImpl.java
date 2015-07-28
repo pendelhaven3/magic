@@ -153,7 +153,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 				continue;
 			}
 			
-			List<PromoRedemptionReward> rewards = promo.evaluate(salesInvoice);
+			List<PromoRedemptionReward> rewards = promo.evaluateForRewards(salesInvoice);
 			if (!rewards.isEmpty()) {
 				PromoRedemption promoRedemption = new PromoRedemption();
 				promoRedemption.setPromo(promo);

@@ -36,6 +36,8 @@ import com.pj.magic.service.LoginService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
 
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+
 public abstract class AbstractMagicPanel extends JPanel {
 
 	private static final String FOCUS_NEXT_FIELD_ACTION_NAME = "focusNextField";
@@ -154,6 +156,13 @@ public abstract class AbstractMagicPanel extends JPanel {
 		if (comboBox.getSelectedItem() == null) {
 			showErrorMessage(description + " must be specified");
 			comboBox.requestFocusInWindow();
+			throw new ValidationException();
+		}
+	}
+	
+	protected void validateMandatoryField(UtilCalendarModel dateModel, String description) throws ValidationException {
+		if (dateModel.getValue() == null) {
+			showErrorMessage(description + " must be specified");
 			throw new ValidationException();
 		}
 	}

@@ -1,10 +1,16 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.pj.magic.Constants;
 import com.pj.magic.util.FormatterUtil;
 
 public class Promo {
@@ -15,11 +21,14 @@ public class Promo {
 	private PromoType promoType;
 	private boolean active;
 	private Date startDate;
+	private Date endDate;
+	
 	private PricingScheme pricingScheme;
 
 	private PromoType1Rule promoType1Rule;
 	private List<PromoType2Rule> promoType2Rules;
 	private PromoType3Rule promoType3Rule;
+	private PromoType4Rule promoType4Rule;
 
 	public Promo() {
 		// default constructor
@@ -115,13 +124,10 @@ public class Promo {
 		this.active = active;
 	}
 
-	public List<PromoRedemptionReward> evaluate(
-			SalesRequisition salesRequisition) {
+	public List<PromoRedemptionReward> evaluateForRewards(SalesRequisition salesRequisition) {
 		List<PromoRedemptionReward> rewards = new ArrayList<>();
 		for (PromoType2Rule rule : promoType2Rules) {
-			SalesRequisitionItem item = salesRequisition
-					.findItemByProductAndUnit(rule.getPromoProduct(),
-							rule.getPromoUnit());
+			SalesRequisitionItem item = salesRequisition.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit());
 			if (item != null) {
 				PromoRedemptionReward reward = rule.evaluate(item);
 				if (reward != null) {
@@ -132,11 +138,10 @@ public class Promo {
 		return rewards;
 	}
 
-	public List<PromoRedemptionReward> evaluate(SalesInvoice salesInvoice) {
+	public List<PromoRedemptionReward> evaluateForRewards(SalesInvoice salesInvoice) {
 		List<PromoRedemptionReward> rewards = new ArrayList<>();
 		for (PromoType2Rule rule : promoType2Rules) {
-			SalesInvoiceItem item = salesInvoice.findItemByProductAndUnit(
-					rule.getPromoProduct(), rule.getPromoUnit());
+			SalesInvoiceItem item = salesInvoice.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit());
 			if (item != null) {
 				PromoRedemptionReward reward = rule.evaluate(item);
 				if (reward != null) {
@@ -170,6 +175,14 @@ public class Promo {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
+	
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 
 	public PricingScheme getPricingScheme() {
 		return pricingScheme;
@@ -191,6 +204,64 @@ public class Promo {
 			return pricingScheme.equals(salesInvoice.getPricingScheme());
 		}
 		return true;
+	}
+
+	public PromoType4Rule getPromoType4Rule() {
+		return promoType4Rule;
+	}
+
+	public void setPromoType4Rule(PromoType4Rule promoType4Rule) {
+		this.promoType4Rule = promoType4Rule;
+	}
+
+	public boolean hasStartDate() {
+		return startDate != null;
+	}
+
+	public boolean hasEndDate() {
+		return endDate != null;
+	}
+	
+	public boolean isPromoType4() {
+		return promoType.isType4();
+	}
+
+	public List<AvailedPromoPointsItem> evaluateForPoints(List<SalesInvoice> salesInvoices) {
+		List<AvailedPromoPointsItem> items = new ArrayList<>();
+		Collection<Product> promoProducts = Collections2.transform(promoType4Rule.getPromoProducts(),
+				new Function<PromoType4RulePromoProduct, Product>() {
+
+					@Override
+					public Product apply(PromoType4RulePromoProduct input) {
+						return input.getProduct();
+					}
+				}
+		);
+		
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			BigDecimal qualifyingAmount = Constants.ZERO;
+			for (SalesInvoiceItem item : salesInvoice.getItems()) {
+				if (promoProducts.contains(item.getProduct())) {
+					qualifyingAmount = qualifyingAmount.add(item.getNetAmount());
+				}
+			}
+			
+			int points = qualifyingAmount.divideToIntegralValue(promoType4Rule.getTargetAmount()).intValue();
+			
+			AvailedPromoPointsItem item = new AvailedPromoPointsItem();
+			item.setPromo(this);
+			item.setSalesInvoiceNumber(salesInvoice.getSalesInvoiceNumber());
+			item.setTransactionDate(salesInvoice.getTransactionDate());
+			item.setNetAmount(qualifyingAmount);
+			item.setPoints(points);
+			items.add(item);
+		}
+		
+		return items;
+	}
+
+	public AvailedPromoPointsItem evaluateForPoints(SalesInvoice salesInvoice) {
+		return evaluateForPoints(Arrays.asList(salesInvoice)).get(0);
 	}
 	
 }

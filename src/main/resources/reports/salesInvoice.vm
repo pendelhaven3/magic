@@ -34,4 +34,8 @@ Prepared by : ____________________  Encoded by:                  ------------
 Checked by  : ____________________                               ============
 	
 Received by : ____________________         Approved by : ____________________
+
+#foreach($availedPromoPointsItem in $availedPromoPointsItems)
+$availedPromoPointsItem.promo.name - $availedPromoPointsItem.points pts
+#end
 #end

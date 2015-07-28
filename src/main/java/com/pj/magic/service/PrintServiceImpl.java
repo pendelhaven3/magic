@@ -31,6 +31,7 @@ import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.AreaInventoryReportItem;
+import com.pj.magic.model.AvailedPromoPointsItem;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.InventoryCheck;
@@ -288,6 +289,8 @@ public class PrintServiceImpl implements PrintService {
 	public List<String> generateReportAsString(SalesInvoice salesInvoice) {
 		List<PromoRedemption> promoRedemptions = 
 				promoRedemptionService.findAllAvailedPromoRedemptions(salesInvoice);
+		List<AvailedPromoPointsItem> availedPromoPointsItems =
+				promoRedemptionService.findAllAvailedPromoPoints(salesInvoice);
 		
 		Collections.sort(salesInvoice.getItems());
 		
@@ -301,6 +304,7 @@ public class PrintServiceImpl implements PrintService {
 		reportData.put("totalItems", salesInvoice.getItems().size() + getTotalRewards(promoRedemptions));
 		reportData.put("totalQuantity", salesInvoice.getTotalQuantity() + 
 				getTotalRewardQuantity(promoRedemptions));
+		reportData.put("availedPromoPointsItems", availedPromoPointsItems);
 		
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {

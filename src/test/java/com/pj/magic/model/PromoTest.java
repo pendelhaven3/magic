@@ -97,7 +97,7 @@ public class PromoTest {
 		when(salesRequisition.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit())).thenReturn(item);
 		when(rule.evaluate(item)).thenReturn(reward);
 		
-		List<PromoRedemptionReward> rewards = promo.evaluate(salesRequisition);
+		List<PromoRedemptionReward> rewards = promo.evaluateForRewards(salesRequisition);
 		assertEquals(1, rewards.size());
 		assertSame(reward, rewards.get(0));
 	}
@@ -114,7 +114,7 @@ public class PromoTest {
 		SalesRequisition salesRequisition = mock(SalesRequisition.class);
 		when(salesRequisition.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit())).thenReturn(null);
 		
-		assertTrue(promo.evaluate(salesRequisition).isEmpty());
+		assertTrue(promo.evaluateForRewards(salesRequisition).isEmpty());
 	}
 
 	@Test
@@ -132,7 +132,7 @@ public class PromoTest {
 		when(salesRequisition.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit())).thenReturn(item);
 		when(rule.evaluate(item)).thenReturn(null);
 		
-		assertTrue(promo.evaluate(salesRequisition).isEmpty());
+		assertTrue(promo.evaluateForRewards(salesRequisition).isEmpty());
 	}
 	
 	@Test
@@ -151,7 +151,7 @@ public class PromoTest {
 		when(salesInvoice.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit())).thenReturn(item);
 		when(rule.evaluate(item)).thenReturn(reward);
 		
-		List<PromoRedemptionReward> rewards = promo.evaluate(salesInvoice);
+		List<PromoRedemptionReward> rewards = promo.evaluateForRewards(salesInvoice);
 		assertEquals(1, rewards.size());
 		assertSame(reward, rewards.get(0));
 	}
@@ -168,7 +168,7 @@ public class PromoTest {
 		SalesInvoice salesInvoice = mock(SalesInvoice.class);
 		when(salesInvoice.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit())).thenReturn(null);
 		
-		assertTrue(promo.evaluate(salesInvoice).isEmpty());
+		assertTrue(promo.evaluateForRewards(salesInvoice).isEmpty());
 	}
 
 	@Test
@@ -186,7 +186,7 @@ public class PromoTest {
 		when(salesInvoice.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit())).thenReturn(item);
 		when(rule.evaluate(item)).thenReturn(null);
 		
-		assertTrue(promo.evaluate(salesInvoice).isEmpty());
+		assertTrue(promo.evaluateForRewards(salesInvoice).isEmpty());
 	}
 	
 }

@@ -93,7 +93,12 @@ public class PromoRedemptionPromoListPanel extends StandardMagicPanel {
 	}
 
 	private void selectPromo() {
-		getMagicFrame().switchToPromoRedemptionListPanel(tableModel.getPromo(table.getSelectedRow()));
+		Promo promo = tableModel.getPromo(table.getSelectedRow());
+		if (promo.isPromoType4()) {
+			getMagicFrame().switchToPromoPointsPanel(promo); 
+		} else {
+			getMagicFrame().switchToPromoRedemptionListPanel(promo); 
+		}
 	}
 
 	@Override
