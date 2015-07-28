@@ -101,7 +101,7 @@ public class AvailedPromoRewardsDialog extends MagicDialog {
 		List<PromoRedemptionReward> rewards = new ArrayList<>();
 		for (Promo promo : promoService.getAllActivePromos()) {
 			if (promo.getPromoType().isType2() && promo.checkIfEligible(salesRequisition)) {
-				rewards.addAll(promo.evaluate(salesRequisition));
+				rewards.addAll(promo.evaluateForRewards(salesRequisition));
 			}
 		}
 		return rewards;

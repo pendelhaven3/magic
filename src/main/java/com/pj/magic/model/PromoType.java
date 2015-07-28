@@ -55,5 +55,9 @@ public enum PromoType {
 	public String getDescription() {
 		return description;
 	}
+
+	public boolean isType4() {
+		return this == PROMO_TYPE_4;
+	}
 	
 }

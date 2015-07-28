@@ -69,7 +69,7 @@ public class PromoType4RulePromoProductsTableModel extends AbstractTableModel {
 			promoProduct.setProduct(productService.findProductByCode(code));
 			
 			boolean isNew = promoProduct.isNew();
-//			promoService.save(promoProduct);
+			promoService.save(promoProduct);
 			if (isNew) {
 				promoProduct.getParent().getPromoProducts().add(promoProduct);
 			}
@@ -111,7 +111,7 @@ public class PromoType4RulePromoProductsTableModel extends AbstractTableModel {
 
 	public void removePromoProduct(int row) {
 		PromoType4RulePromoProduct promoProduct = products.remove(row);
-//		promoService.delete(promoProduct);
+		promoService.delete(promoProduct);
 		fireTableDataChanged();
 	}
 
