@@ -116,6 +116,8 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		case PROMO_TYPE_3:
 			postForPromoType3(updated);
 			break;
+		case PROMO_TYPE_4:
+			break;
 		}
 		
 		updated.setPosted(true);

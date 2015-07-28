@@ -7,7 +7,8 @@ public enum PromoType {
 
 	PROMO_TYPE_1(1L, "Buy X amount of Manufacturer products, get Y product free"),
 	PROMO_TYPE_2(2L, "Buy X quantity of product, get Y product free"),
-	PROMO_TYPE_3(3L, "Buy X amount of selected products, get Y product free");
+	PROMO_TYPE_3(3L, "Buy X amount of selected products, get Y product free"),
+	PROMO_TYPE_4(4L, "Earn points by buying selected products");
 	
 	private Long id;
 	private String description;

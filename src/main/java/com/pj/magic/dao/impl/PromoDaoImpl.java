@@ -24,7 +24,7 @@ import com.pj.magic.model.PromoType;
 public class PromoDaoImpl extends MagicDao implements PromoDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PROMO_NO, a.NAME, PROMO_TYPE_ID, a.ACTIVE_IND, a.START_DT, a.PRICING_SCHEME_ID,"
+			"select a.ID, PROMO_NO, a.NAME, PROMO_TYPE_ID, a.ACTIVE_IND, a.START_DT, a.END_DT, a.PRICING_SCHEME_ID,"
 			+ " b.NAME as PRICING_SCHEME_NAME"
 			+ " from PROMO a"
 			+ " left join PRICING_SCHEME b"
@@ -52,6 +52,7 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 			promo.setPromoType(PromoType.getPromoType(rs.getLong("PROMO_TYPE_ID")));
 			promo.setActive("Y".equals(rs.getString("ACTIVE_IND")));
 			promo.setStartDate(rs.getDate("START_DT"));
+			promo.setEndDate(rs.getDate("END_DT"));
 			
 			long pricingSchemeId = rs.getLong("PRICING_SCHEME_ID");
 			if (pricingSchemeId != 0) {
@@ -85,8 +86,8 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 
 	private static final String INSERT_SQL =
 			"insert into PROMO"
-			+ " (PROMO_NO, NAME, PROMO_TYPE_ID, ACTIVE_IND, START_DT, PRICING_SCHEME_ID)"
-			+ " values (?, ?, ?, ?, ?, ?)";
+			+ " (PROMO_NO, NAME, PROMO_TYPE_ID, ACTIVE_IND, START_DT, END_DT, PRICING_SCHEME_ID)"
+			+ " values (?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final Promo promo) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -101,10 +102,15 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 				ps.setLong(3, promo.getPromoType().getId());
 				ps.setString(4, promo.isActive() ? "Y" : "N");
 				ps.setDate(5, new java.sql.Date(promo.getStartDate().getTime()));
-				if (promo.getPricingScheme() != null) {
-					ps.setLong(6, promo.getPricingScheme().getId());
+				if (promo.getEndDate() != null) {
+					ps.setDate(6, new java.sql.Date(promo.getEndDate().getTime()));
 				} else {
-					ps.setNull(6, Types.BIGINT);
+					ps.setNull(6, Types.DATE);
+				}
+				if (promo.getPricingScheme() != null) {
+					ps.setLong(7, promo.getPricingScheme().getId());
+				} else {
+					ps.setNull(7, Types.BIGINT);
 				}
 				return ps;
 			}
@@ -121,13 +127,14 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 	}
 
 	private static final String UPDATE_SQL = 
-			"update PROMO set NAME = ?, ACTIVE_IND = ?, START_DT = ?, PRICING_SCHEME_ID = ? where ID = ?";
+			"update PROMO set NAME = ?, ACTIVE_IND = ?, START_DT = ?, END_DT = ?, PRICING_SCHEME_ID = ? where ID = ?";
 	
 	private void update(Promo promo) {
 		getJdbcTemplate().update(UPDATE_SQL,
 				promo.getName(),
 				promo.isActive() ? "Y" : "N",
 				promo.getStartDate(),
+				promo.getEndDate(),
 				promo.getPricingScheme() != null ? promo.getPricingScheme().getId() : null,
 				promo.getId());
 	}

@@ -15,11 +15,14 @@ public class Promo {
 	private PromoType promoType;
 	private boolean active;
 	private Date startDate;
+	private Date endDate;
+	
 	private PricingScheme pricingScheme;
 
 	private PromoType1Rule promoType1Rule;
 	private List<PromoType2Rule> promoType2Rules;
 	private PromoType3Rule promoType3Rule;
+	private PromoType4Rule promoType4Rule;
 
 	public Promo() {
 		// default constructor
@@ -170,6 +173,14 @@ public class Promo {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
+	
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 
 	public PricingScheme getPricingScheme() {
 		return pricingScheme;
@@ -192,5 +203,22 @@ public class Promo {
 		}
 		return true;
 	}
+
+	public PromoType4Rule getPromoType4Rule() {
+		return promoType4Rule;
+	}
+
+	public void setPromoType4Rule(PromoType4Rule promoType4Rule) {
+		this.promoType4Rule = promoType4Rule;
+	}
+
+	public boolean hasStartDate() {
+		return startDate != null;
+	}
+
+	public boolean hasEndDate() {
+		return endDate != null;
+	}
+	
 	
 }
