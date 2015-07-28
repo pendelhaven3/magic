@@ -176,8 +176,6 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 			params.add(criteria.getAcceptedPricingScheme().getId());
 		}
 		
-		System.out.println(sql.toString());
-		
 		return getJdbcTemplate().query(sql.toString(), promoRowMapper, params.toArray());
 	}
 
