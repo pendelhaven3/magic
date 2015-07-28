@@ -3,6 +3,7 @@ package com.pj.magic.model;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -248,6 +249,7 @@ public class Promo {
 			int points = qualifyingAmount.divideToIntegralValue(promoType4Rule.getTargetAmount()).intValue();
 			
 			AvailedPromoPointsItem item = new AvailedPromoPointsItem();
+			item.setPromo(this);
 			item.setSalesInvoiceNumber(salesInvoice.getSalesInvoiceNumber());
 			item.setTransactionDate(salesInvoice.getTransactionDate());
 			item.setNetAmount(qualifyingAmount);
@@ -256,6 +258,10 @@ public class Promo {
 		}
 		
 		return items;
+	}
+
+	public AvailedPromoPointsItem evaluateForPoints(SalesInvoice salesInvoice) {
+		return evaluateForPoints(Arrays.asList(salesInvoice)).get(0);
 	}
 	
 }

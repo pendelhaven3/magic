@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.NothingToRedeemException;
+import com.pj.magic.model.AvailedPromoPointsItem;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
@@ -28,6 +30,7 @@ import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.PromoRedemptionSearchCriteria;
+import com.pj.magic.model.search.PromoSearchCriteria;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PromoRedemptionService;
@@ -229,6 +232,21 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		}
 		
 		return promoRedemptions;
+	}
+
+	@Override
+	public List<AvailedPromoPointsItem> findAllAvailedPromoPoints(SalesInvoice salesInvoice) {
+		List<AvailedPromoPointsItem> items = new ArrayList<>();
+		
+		PromoSearchCriteria criteria = new PromoSearchCriteria();
+		criteria.setPromoType(PromoType.PROMO_TYPE_4);
+		criteria.setPromoDate(salesInvoice.getTransactionDate());
+		criteria.setAcceptedPricingScheme(salesInvoice.getPricingScheme());
+		
+		for (Promo promo : promoService.search(criteria)) {
+			items.add(promo.evaluateForPoints(salesInvoice));
+		}
+		return items;
 	}
 
 }

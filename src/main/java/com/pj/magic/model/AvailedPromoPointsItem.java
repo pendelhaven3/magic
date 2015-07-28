@@ -10,11 +10,20 @@ import java.util.Date;
  */
 public class AvailedPromoPointsItem {
 
+	private Promo promo;
 	private Long salesInvoiceNumber;
 	private Date transactionDate;
 	private BigDecimal netAmount;
 	private int points;
 	
+	public Promo getPromo() {
+		return promo;
+	}
+
+	public void setPromo(Promo promo) {
+		this.promo = promo;
+	}
+
 	public Long getSalesInvoiceNumber() {
 		return salesInvoiceNumber;
 	}

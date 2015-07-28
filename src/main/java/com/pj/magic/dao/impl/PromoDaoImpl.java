@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -19,6 +20,8 @@ import com.pj.magic.dao.PromoDao;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType;
+import com.pj.magic.model.search.PromoSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PromoDaoImpl extends MagicDao implements PromoDao {
@@ -146,6 +149,36 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 	public List<Promo> findAllByActive(boolean active) {
 		return getJdbcTemplate().query(FIND_ALL_BY_ACTIVE_SQL, promoRowMapper, 
 				active ? "Y" : "N");
+	}
+
+	@Override
+	public List<Promo> search(PromoSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		sql.append(" where 1 = 1");
+		
+		if (criteria.getPromoType() != null) {
+			sql.append(" and PROMO_TYPE_ID = ?");
+			params.add(criteria.getPromoType().getId());
+		}
+		
+		if (criteria.getPromoDate() != null) {
+			sql.append(" and a.START_DT <= ? and ? <= a.END_DT");
+			
+			String promoDateString = DbUtil.toMySqlDateString(criteria.getPromoDate());
+			params.add(promoDateString);
+			params.add(promoDateString);
+		}
+		
+		if (criteria.getAcceptedPricingScheme() != null) {
+			sql.append(" and (a.PRICING_SCHEME_ID = ? or a.PRICING_SCHEME_ID is null)");
+			params.add(criteria.getAcceptedPricingScheme().getId());
+		}
+		
+		System.out.println(sql.toString());
+		
+		return getJdbcTemplate().query(sql.toString(), promoRowMapper, params.toArray());
 	}
 
 }

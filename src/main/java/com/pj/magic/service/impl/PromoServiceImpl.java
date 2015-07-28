@@ -22,6 +22,7 @@ import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.PromoType3RulePromoProduct;
 import com.pj.magic.model.PromoType4Rule;
 import com.pj.magic.model.PromoType4RulePromoProduct;
+import com.pj.magic.model.search.PromoSearchCriteria;
 
 @Service
 public class PromoServiceImpl implements PromoService {
@@ -171,6 +172,15 @@ public class PromoServiceImpl implements PromoService {
 	@Override
 	public void removeAllPromoProducts(PromoType4Rule rule) {
 		promoType4RulePromoProductDao.deleteAllByRule(rule);
+	}
+
+	@Override
+	public List<Promo> search(PromoSearchCriteria criteria) {
+		List<Promo> promos = promoDao.search(criteria);
+		for (Promo promo : promos) {
+			loadPromoDetails(promo);
+		}
+		return promos;
 	}
 	
 }
