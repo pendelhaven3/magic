@@ -315,6 +315,7 @@ public class SearchSalesInvoicesDialog extends MagicDialog {
 		customerNameField.setText(null);
 		statusComboBox.setSelectedIndex(0);
 		transactionDateFromModel.setValue(null);
+		transactionDateToModel.setValue(null);
 	}
 	
 	private JPanel createCustomerPanel() {
