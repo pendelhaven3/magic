@@ -15,6 +15,7 @@ public class PromoTypeTest {
 		promoTypes.add(PromoType.PROMO_TYPE_1);
 		promoTypes.add(PromoType.PROMO_TYPE_2);
 		promoTypes.add(PromoType.PROMO_TYPE_3);
+		promoTypes.add(PromoType.PROMO_TYPE_4);
 		
 		assertEquals(promoTypes, PromoType.getPromoTypes());
 	}
@@ -40,6 +41,12 @@ public class PromoTypeTest {
 	public void isType3() {
 		assertTrue(PromoType.PROMO_TYPE_3.isType3());
 		assertFalse(PromoType.PROMO_TYPE_1.isType3());
+	}
+	
+	@Test
+	public void isType4() {
+		assertTrue(PromoType.PROMO_TYPE_4.isType4());
+		assertFalse(PromoType.PROMO_TYPE_1.isType4());
 	}
 	
 	@Test
