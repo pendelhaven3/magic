@@ -80,6 +80,14 @@ public class PromoListPanel extends StandardMagicPanel {
 			}
 			
 		});
+		
+		onEscapeKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doOnBack();
+			}
+		});
 	}
 
 	protected void selectPromo() {

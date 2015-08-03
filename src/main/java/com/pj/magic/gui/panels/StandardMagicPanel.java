@@ -2,11 +2,16 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.KeyEvent;
 
 import javax.annotation.PostConstruct;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
+import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.util.ComponentUtil;
 
@@ -72,6 +77,12 @@ public abstract class StandardMagicPanel extends AbstractMagicPanel {
 	@Override
 	protected final void layoutComponents() {
 		// use layoutMainPanel instead
+	}
+	
+	protected void onEscapeKey(Action action) {
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Constants.ESCAPE_KEY_ACTION_NAME);
+		getActionMap().put(Constants.ESCAPE_KEY_ACTION_NAME, action);
 	}
 	
 }

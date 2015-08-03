@@ -144,6 +144,14 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 			}
 			
 		});
+		
+		onEscapeKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doOnBack();
+			}
+		});
 	}
 
 	protected void selectPromoRedemption() {
