@@ -226,7 +226,13 @@ public class Promo {
 		return promoType.isType4();
 	}
 
-	public List<AvailedPromoPointsItem> evaluateForPoints(List<SalesInvoice> salesInvoices) {
+	/**
+	 * 
+	 * @param salesInvoices
+	 * @param salesReturns sales returns associated to salesInvoices
+	 * @return
+	 */
+	public List<AvailedPromoPointsItem> evaluateForPoints(List<SalesInvoice> salesInvoices, List<SalesReturn> salesReturns) {
 		List<AvailedPromoPointsItem> items = new ArrayList<>();
 		Collection<Product> promoProducts = Collections2.transform(promoType4Rule.getPromoProducts(),
 				new Function<PromoType4RulePromoProduct, Product>() {
@@ -246,13 +252,25 @@ public class Promo {
 				}
 			}
 			
-			int points = qualifyingAmount.divideToIntegralValue(promoType4Rule.getTargetAmount()).intValue();
+			BigDecimal adjustedAmount = qualifyingAmount.add(Constants.ZERO);
+			for (SalesReturn salesReturn : salesReturns) {
+				if (salesInvoice.getSalesInvoiceNumber().equals(salesReturn.getSalesInvoice().getSalesInvoiceNumber())) {
+					for (SalesReturnItem item : salesReturn.getItems()) {
+						if (promoProducts.contains(item.getSalesInvoiceItem().getProduct())) {
+							adjustedAmount = adjustedAmount.subtract(item.getAmount());
+						}
+					}
+				}
+			}
+			
+			int points = adjustedAmount.divideToIntegralValue(promoType4Rule.getTargetAmount()).intValue();
 			
 			AvailedPromoPointsItem item = new AvailedPromoPointsItem();
 			item.setPromo(this);
 			item.setSalesInvoiceNumber(salesInvoice.getSalesInvoiceNumber());
 			item.setTransactionDate(salesInvoice.getTransactionDate());
-			item.setNetAmount(qualifyingAmount);
+			item.setQualifyingAmount(qualifyingAmount);
+			item.setAdjustedAmount(adjustedAmount);
 			item.setPoints(points);
 			items.add(item);
 		}
@@ -260,8 +278,8 @@ public class Promo {
 		return items;
 	}
 
-	public AvailedPromoPointsItem evaluateForPoints(SalesInvoice salesInvoice) {
-		return evaluateForPoints(Arrays.asList(salesInvoice)).get(0);
+	public AvailedPromoPointsItem evaluateForPoints(SalesInvoice salesInvoice, List<SalesReturn> salesReturns) {
+		return evaluateForPoints(Arrays.asList(salesInvoice), salesReturns).get(0);
 	}
 	
 }

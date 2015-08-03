@@ -29,12 +29,14 @@ import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.search.PromoRedemptionSearchCriteria;
 import com.pj.magic.model.search.PromoSearchCriteria;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.service.SalesInvoiceService;
+import com.pj.magic.service.SalesReturnService;
 
 @Service
 public class PromoRedemptionServiceImpl implements PromoRedemptionService {
@@ -47,6 +49,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Autowired private PromoService promoService;
 	@Autowired private ProductDao productDao;
 	@Autowired private PromoRedemptionRewardDao promoRedemptionRewardDao;
+	@Autowired private SalesReturnService salesReturnService;
 	
 	@Transactional
 	@Override
@@ -242,13 +245,18 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		criteria.setPromoType(PromoType.PROMO_TYPE_4);
 		criteria.setPromoDate(salesInvoice.getTransactionDate());
 		criteria.setAcceptedPricingScheme(salesInvoice.getPricingScheme());
-		
-		for (Promo promo : promoService.search(criteria)) {
-			AvailedPromoPointsItem item = promo.evaluateForPoints(salesInvoice);
-			if (item.hasPoints()) {
-				items.add(item);
+
+		List<Promo> promos = promoService.search(criteria);
+		if (!promos.isEmpty()) {
+			List<SalesReturn> salesReturns = salesReturnService.findPostedSalesReturnsBySalesInvoice(salesInvoice);
+			for (Promo promo : promos) {
+				AvailedPromoPointsItem item = promo.evaluateForPoints(salesInvoice, salesReturns);
+				if (item.hasPoints()) {
+					items.add(item);
+				}
 			}
 		}
+		
 		return items;
 	}
 

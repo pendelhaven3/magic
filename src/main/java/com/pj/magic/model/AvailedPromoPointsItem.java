@@ -13,7 +13,8 @@ public class AvailedPromoPointsItem {
 	private Promo promo;
 	private Long salesInvoiceNumber;
 	private Date transactionDate;
-	private BigDecimal netAmount;
+	private BigDecimal qualifyingAmount;
+	private BigDecimal adjustedAmount;
 	private int points;
 	
 	public Promo getPromo() {
@@ -40,12 +41,12 @@ public class AvailedPromoPointsItem {
 		this.transactionDate = transactionDate;
 	}
 
-	public BigDecimal getNetAmount() {
-		return netAmount;
+	public BigDecimal getQualifyingAmount() {
+		return qualifyingAmount;
 	}
 
-	public void setNetAmount(BigDecimal netAmount) {
-		this.netAmount = netAmount;
+	public void setQualifyingAmount(BigDecimal qualifyingAmount) {
+		this.qualifyingAmount = qualifyingAmount;
 	}
 
 	public int getPoints() {
@@ -58,6 +59,14 @@ public class AvailedPromoPointsItem {
 
 	public boolean hasPoints() {
 		return points > 0;
+	}
+
+	public BigDecimal getAdjustedAmount() {
+		return adjustedAmount;
+	}
+
+	public void setAdjustedAmount(BigDecimal adjustedAmount) {
+		this.adjustedAmount = adjustedAmount;
 	}
 
 }

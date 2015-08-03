@@ -27,8 +27,10 @@ import com.pj.magic.model.AvailedPromoPointsItem;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.SalesInvoiceService;
+import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -44,10 +46,12 @@ public class PromoPointsPanel extends StandardMagicPanel {
 	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 0;
 	private static final int TRANSACTION_DATE_COLUMN_INDEX = 1;
 	private static final int QUALIFYING_AMOUNT_COLUMN_INDEX = 2;
-	private static final int POINTS_COLUMN_INDEX = 3;
+	private static final int ADJUSTED_AMOUNT_COLUMN_INDEX = 3;
+	private static final int POINTS_COLUMN_INDEX = 4;
 	
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	@Autowired private SalesInvoiceService salesInvoiceService;
+	@Autowired private SalesReturnService salesReturnService;
 	
 	private Promo promo;
 	private JLabel promoNameLabel;
@@ -95,13 +99,27 @@ public class PromoPointsPanel extends StandardMagicPanel {
 			customerCodeField.setText(customer.getCode());
 			customerNameLabel.setText(customer.getName());
 			
-			List<AvailedPromoPointsItem> items = promo.evaluateForPoints(searchSalesInvoicesQualifiedForPromo(customer));
-			tableModel.setItems(items);
-			if (items.isEmpty()) {
-				showMessage("No qualified sales invoices");
-			}
-			totalPointsLabel.setText(String.valueOf(computeTotalPoints(items)));
+			updatePromoPointsTable(customer);
 		}
+	}
+
+	private void updatePromoPointsTable(Customer customer) {
+		List<SalesInvoice> salesInvoices = searchSalesInvoicesQualifiedForPromo(customer);
+		List<SalesReturn> salesReturns = getRelatedSalesReturns(salesInvoices);
+		List<AvailedPromoPointsItem> items = promo.evaluateForPoints(salesInvoices, salesReturns);
+		tableModel.setItems(items);
+		if (items.isEmpty()) {
+			showMessage("No qualified sales invoices");
+		}
+		totalPointsLabel.setText(String.valueOf(computeTotalPoints(items)));
+	}
+
+	private List<SalesReturn> getRelatedSalesReturns(List<SalesInvoice> salesInvoices) {
+		List<SalesReturn> salesReturns = new ArrayList<>();
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			salesReturns.addAll(salesReturnService.findPostedSalesReturnsBySalesInvoice(salesInvoice));
+		}
+		return salesReturns;
 	}
 
 	private int computeTotalPoints(List<AvailedPromoPointsItem> items) {
@@ -118,6 +136,7 @@ public class PromoPointsPanel extends StandardMagicPanel {
 		criteria.setTransactionDateFrom(promo.getStartDate());
 		criteria.setTransactionDateTo(promo.getEndDate());
 		criteria.setPricingScheme(promo.getPricingScheme());
+		criteria.setCancelled(false);
 		
 		return salesInvoiceService.search(criteria);
 	}
@@ -271,7 +290,7 @@ public class PromoPointsPanel extends StandardMagicPanel {
 	
 	private class AvailedPromoPointsTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"SI No.", "Transaction Date", "Qualifying Amount", "Points"};
+		private final String[] columnNames = {"SI No.", "Transaction Date", "Qualifying Amount", "Adjusted Amount", "Points"};
 		
 		private List<AvailedPromoPointsItem> items = new ArrayList<>();
 		
@@ -309,7 +328,9 @@ public class PromoPointsPanel extends StandardMagicPanel {
 			case TRANSACTION_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(item.getTransactionDate());
 			case QUALIFYING_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(item.getNetAmount());
+				return FormatterUtil.formatAmount(item.getQualifyingAmount());
+			case ADJUSTED_AMOUNT_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(item.getAdjustedAmount());
 			case POINTS_COLUMN_INDEX:
 				return item.getPoints();
 			default:
@@ -321,6 +342,7 @@ public class PromoPointsPanel extends StandardMagicPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			switch (columnIndex) {
 			case QUALIFYING_AMOUNT_COLUMN_INDEX:
+			case ADJUSTED_AMOUNT_COLUMN_INDEX:
 			case POINTS_COLUMN_INDEX:
 				return Number.class;
 			default:
