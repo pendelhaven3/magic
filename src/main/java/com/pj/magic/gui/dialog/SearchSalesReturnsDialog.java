@@ -46,6 +46,7 @@ public class SearchSalesReturnsDialog extends MagicDialog {
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	
 	private MagicTextField salesReturnNumberField;
+	private MagicTextField salesInvoiceNumberField;
 	private MagicTextField customerCodeField;
 	private JLabel customerNameField;
 	private MagicComboBox<String> statusComboBox;
@@ -55,7 +56,7 @@ public class SearchSalesReturnsDialog extends MagicDialog {
 	private JButton selectCustomerButton;
 	
 	public SearchSalesReturnsDialog() {
-		setSize(600, 250);
+		setSize(600, 260);
 		setLocationRelativeTo(null);
 		setTitle("Search Sales Returns");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
@@ -70,6 +71,7 @@ public class SearchSalesReturnsDialog extends MagicDialog {
 
 	private void initializeComponents() {
 		salesReturnNumberField = new MagicTextField();
+		salesInvoiceNumberField = new MagicTextField();
 		
 		customerCodeField = new MagicTextField();
 		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
@@ -119,6 +121,10 @@ public class SearchSalesReturnsDialog extends MagicDialog {
 			searchCriteria.setSalesReturnNumber(Long.valueOf(salesReturnNumberField.getText()));
 		}
 		
+		if (!StringUtils.isEmpty(salesInvoiceNumberField.getText())) {
+			searchCriteria.setSalesInvoiceNumber(Long.valueOf(salesInvoiceNumberField.getText()));
+		}
+		
 		Customer customer = customerService.findCustomerByCode(customerCodeField.getText());
 		searchCriteria.setCustomer(customer);
 		if (customer != null) {
@@ -158,6 +164,14 @@ public class SearchSalesReturnsDialog extends MagicDialog {
 
 	private void registerKeyBindings() {
 		salesReturnNumberField.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				salesInvoiceNumberField.requestFocusInWindow();
+			}
+		});
+		
+		salesInvoiceNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -215,6 +229,22 @@ public class SearchSalesReturnsDialog extends MagicDialog {
 		c.anchor = GridBagConstraints.WEST;
 		salesReturnNumberField.setPreferredSize(new Dimension(100, 25));
 		add(salesReturnNumberField, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(150, "Sales Invoice No.:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		salesInvoiceNumberField.setPreferredSize(new Dimension(100, 25));
+		add(salesInvoiceNumberField, c);
 
 		currentRow++;
 		
@@ -301,6 +331,7 @@ public class SearchSalesReturnsDialog extends MagicDialog {
 	public void updateDisplay() {
 		searchCriteria = null;
 		salesReturnNumberField.setText(null);
+		salesInvoiceNumberField.setText(null);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
 		statusComboBox.setSelectedIndex(STATUS_ALL);

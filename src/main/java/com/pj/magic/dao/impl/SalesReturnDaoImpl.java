@@ -184,6 +184,11 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			params.add(criteria.getSalesReturnNumber());
 		}
 		
+		if (criteria.getSalesInvoiceNumber() != null) {
+			sql.append(" and b.SALES_INVOICE_NO = ?");
+			params.add(criteria.getSalesInvoiceNumber());
+		}
+		
 		if (criteria.getPosted() != null) {
 			sql.append(" and a.POST_IND = ?");
 			params.add(criteria.getPosted() ? "Y" : "N");

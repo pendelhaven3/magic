@@ -11,6 +11,7 @@ import com.pj.magic.model.util.TimePeriod;
 public class SalesReturnSearchCriteria {
 
 	private Long salesReturnNumber;
+	private Long salesInvoiceNumber;
 	private Boolean posted;
 	private Customer customer;
 	private Date postDate;
@@ -30,6 +31,14 @@ public class SalesReturnSearchCriteria {
 
 	public void setSalesReturnNumber(Long salesReturnNumber) {
 		this.salesReturnNumber = salesReturnNumber;
+	}
+
+	public Long getSalesInvoiceNumber() {
+		return salesInvoiceNumber;
+	}
+
+	public void setSalesInvoiceNumber(Long salesInvoiceNumber) {
+		this.salesInvoiceNumber = salesInvoiceNumber;
 	}
 
 	public Boolean getPosted() {
