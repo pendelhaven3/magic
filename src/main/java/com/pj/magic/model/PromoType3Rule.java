@@ -122,4 +122,16 @@ public class PromoType3Rule {
 		return total;
 	}
 
+	public BigDecimal getQualifyingAmount(SalesRequisition salesRequisition) {
+		BigDecimal total = Constants.ZERO;
+		for (PromoType3RulePromoProduct promoProduct : promoProducts) {
+			for (SalesRequisitionItem item : salesRequisition.getItems()) {
+				if (item.getProduct().getId().equals(promoProduct.getProduct().getId())) {
+					total = total.add(item.getAmount());
+				}
+			}
+		}
+		return total;
+	}
+	
 }
