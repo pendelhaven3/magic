@@ -281,5 +281,13 @@ public class Promo {
 	public AvailedPromoPointsItem evaluateForPoints(SalesInvoice salesInvoice, List<SalesReturn> salesReturns) {
 		return evaluateForPoints(Arrays.asList(salesInvoice), salesReturns).get(0);
 	}
+
+	public boolean isPromoType1() {
+		return promoType.isType1();
+	}
+
+	public boolean isPromoType3() {
+		return promoType.isType3();
+	}
 	
 }

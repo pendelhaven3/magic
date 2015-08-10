@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -80,17 +81,17 @@ public class PromoQualifyingAmountsDialog extends MagicDialog {
 	public void updateDisplay(SalesRequisition salesRequisition) {
 		this.salesRequisition = salesRequisition;
 		
-		List<Promo> promos = getAllActiveType3Promos();
+		List<Promo> promos = getAllActivePromosUsingQualifyingAmounts();
 		tableModel.setPromos(promos);
 		if (!promos.isEmpty()) {
 			table.selectFirstRow();
 		}
 	}
 
-	private List<Promo> getAllActiveType3Promos() {
+	private List<Promo> getAllActivePromosUsingQualifyingAmounts() {
 		PromoSearchCriteria criteria = new PromoSearchCriteria();
 		criteria.setActive(true);
-		criteria.setPromoType(PromoType.PROMO_TYPE_3);
+		criteria.setPromoTypes(Arrays.asList(PromoType.PROMO_TYPE_1, PromoType.PROMO_TYPE_3));
 		
 		return promoService.search(criteria);
 	}
@@ -137,7 +138,13 @@ public class PromoQualifyingAmountsDialog extends MagicDialog {
 			case NAME_COLUMN_INDEX:
 				return promo.getName();
 			case QUALIFYING_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(promo.getPromoType3Rule().getQualifyingAmount(salesRequisition));
+				if (promo.isPromoType1()) {
+					return FormatterUtil.formatAmount(promo.getPromoType1Rule().getQualifyingAmount(salesRequisition));
+				} else if (promo.isPromoType3()) {
+					return FormatterUtil.formatAmount(promo.getPromoType3Rule().getQualifyingAmount(salesRequisition));
+				} else {
+					return null;
+				}
 			default:
 				throw new RuntimeException("Error fetching invalid column index: " + columnIndex);
 			}

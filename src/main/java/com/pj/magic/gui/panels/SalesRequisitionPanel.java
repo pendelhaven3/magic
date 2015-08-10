@@ -47,7 +47,6 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
 import com.pj.magic.gui.dialog.PromoQualifyingAmountsDialog;
-import com.pj.magic.gui.dialog.SalesByManufacturerDialog;
 import com.pj.magic.gui.dialog.SalesRequisitionPostExceptionsDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.ProductInfoTable;
@@ -87,7 +86,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private PaymentTermService paymentTermService;
 	@Autowired private SalesRequisitionPostExceptionsDialog postExceptionsDialog;
-	@Autowired private SalesByManufacturerDialog salesByManufacturerDialog;
 	@Autowired private AvailedPromoRewardsDialog availedPromoRewardsDialog;
 	@Autowired private PromoQualifyingAmountsDialog promoQualifyingAmountsDialog;
 	
@@ -109,7 +107,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private MagicToolBarButton addItemButton;
 	private MagicToolBarButton deleteItemButton;
 	private MagicToolBarButton postButton;
-	private MagicToolBarButton showSalesByManufacturerButton;
 	private MagicToolBarButton showAvailedPromoRewardsButton;
 	private MagicToolBarButton showPromoQualifyingAmountsButton;
 	private ProductInfoTable productInfoTable;
@@ -417,7 +414,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		postButton.setEnabled(!salesRequisition.isPosted());
 		addItemButton.setEnabled(!salesRequisition.isPosted());
 		deleteItemButton.setEnabled(!salesRequisition.isPosted());
-		showSalesByManufacturerButton.setEnabled(true);
+		showPromoQualifyingAmountsButton.setEnabled(true);
 		showAvailedPromoRewardsButton.setEnabled(true);
 	}
 
@@ -450,7 +447,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		postButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
-		showSalesByManufacturerButton.setEnabled(false);
+		showPromoQualifyingAmountsButton.setEnabled(false);
 		showAvailedPromoRewardsButton.setEnabled(false);
 	}
 
@@ -778,17 +775,16 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		});
 		
 		toolBar.add(postButton);
-		
-		showSalesByManufacturerButton = 
-				new MagicToolBarButton("factory", "Show Sales Items Total By Manufacturer");
-		showSalesByManufacturerButton.addActionListener(new ActionListener() {
+
+		showPromoQualifyingAmountsButton = new MagicToolBarButton("qualify", "Show Qualifying Amounts for Promos");
+		showPromoQualifyingAmountsButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				showSalesByManufacturerDialog(salesRequisition);
+				showPromoQualifyingAmountsDialog();
 			}
 		});
-		toolBar.add(showSalesByManufacturerButton);
+		toolBar.add(showPromoQualifyingAmountsButton);
 		
 		showAvailedPromoRewardsButton = new MagicToolBarButton("present", "Show Availed Promos");
 		showAvailedPromoRewardsButton.addActionListener(new ActionListener() {
@@ -799,16 +795,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(showAvailedPromoRewardsButton);
-		
-		showPromoQualifyingAmountsButton = new MagicToolBarButton("qualify", "Show Qualifying Amounts for Promos");
-		showPromoQualifyingAmountsButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				showPromoQualifyingAmountsDialog();
-			}
-		});
-		toolBar.add(showPromoQualifyingAmountsButton);
 	}
 
 	private void showPromoQualifyingAmountsDialog() {
@@ -819,11 +805,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private void showAvailedPromoRewardsDialog() {
 		availedPromoRewardsDialog.updateDisplay(salesRequisition);
 		availedPromoRewardsDialog.setVisible(true);
-	}
-
-	private void showSalesByManufacturerDialog(SalesRequisition salesRequisition) {
-		salesByManufacturerDialog.updateDisplay(salesRequisition);
-		salesByManufacturerDialog.setVisible(true);
 	}
 
 	private JPanel createItemsTableToolBar() {

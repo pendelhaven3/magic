@@ -1,6 +1,7 @@
 package com.pj.magic.model.search;
 
 import java.util.Date;
+import java.util.List;
 
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.PromoType;
@@ -11,6 +12,7 @@ public class PromoSearchCriteria {
 	private Date promoDate;
 	private Boolean active;
 	private PricingScheme acceptedPricingScheme;
+	private List<PromoType> promoTypes;
 	
 	public PromoType getPromoType() {
 		return promoType;
@@ -45,6 +47,14 @@ public class PromoSearchCriteria {
 
 	public void setActive(Boolean active) {
 		this.active = active;
+	}
+
+	public List<PromoType> getPromoTypes() {
+		return promoTypes;
+	}
+
+	public void setPromoTypes(List<PromoType> promoTypes) {
+		this.promoTypes = promoTypes;
 	}
 	
 }
