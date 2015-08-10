@@ -415,6 +415,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		addItemButton.setEnabled(!salesRequisition.isPosted());
 		deleteItemButton.setEnabled(!salesRequisition.isPosted());
 		showSalesByManufacturerButton.setEnabled(true);
+		showAvailedPromoRewardsButton.setEnabled(true);
 	}
 
 	private void updateTransactionDateField() {
@@ -447,6 +448,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
 		showSalesByManufacturerButton.setEnabled(false);
+		showAvailedPromoRewardsButton.setEnabled(false);
 	}
 
 	private java.awt.Component createCustomerNamePanel() {
