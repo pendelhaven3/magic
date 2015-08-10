@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.search.PromoSearchCriteria;
 import com.pj.magic.service.impl.PromoService;
@@ -33,6 +35,7 @@ public class PromoQualifyingAmountsDialog extends MagicDialog {
 	private MagicListTable table;
 	private PromosTableModel tableModel;
 	private SalesRequisition salesRequisition;
+	private SalesInvoice salesInvoice;
 	
 	public PromoQualifyingAmountsDialog() {
 		setSize(600, 300);
@@ -79,18 +82,30 @@ public class PromoQualifyingAmountsDialog extends MagicDialog {
 	
 	public void updateDisplay(SalesRequisition salesRequisition) {
 		this.salesRequisition = salesRequisition;
+		salesInvoice = null;
 		
-		List<Promo> promos = getAllActiveType3Promos();
+		List<Promo> promos = getAllActivePromosUsingQualifyingAmounts();
 		tableModel.setPromos(promos);
 		if (!promos.isEmpty()) {
 			table.selectFirstRow();
 		}
 	}
 
-	private List<Promo> getAllActiveType3Promos() {
+	public void updateDisplay(SalesInvoice salesInvoice) {
+		this.salesInvoice = salesInvoice;
+		salesRequisition = null;
+		
+		List<Promo> promos = getAllActivePromosUsingQualifyingAmounts();
+		tableModel.setPromos(promos);
+		if (!promos.isEmpty()) {
+			table.selectFirstRow();
+		}
+	}
+
+	private List<Promo> getAllActivePromosUsingQualifyingAmounts() {
 		PromoSearchCriteria criteria = new PromoSearchCriteria();
 		criteria.setActive(true);
-		criteria.setPromoType(PromoType.PROMO_TYPE_3);
+		criteria.setPromoTypes(Arrays.asList(PromoType.PROMO_TYPE_1, PromoType.PROMO_TYPE_3));
 		
 		return promoService.search(criteria);
 	}
@@ -137,7 +152,21 @@ public class PromoQualifyingAmountsDialog extends MagicDialog {
 			case NAME_COLUMN_INDEX:
 				return promo.getName();
 			case QUALIFYING_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(promo.getPromoType3Rule().getQualifyingAmount(salesRequisition));
+				if (promo.isPromoType1()) {
+					if (salesRequisition != null) {
+						return FormatterUtil.formatAmount(promo.getPromoType1Rule().getQualifyingAmount(salesRequisition));
+					} else if (salesInvoice != null) {
+						return FormatterUtil.formatAmount(promo.getPromoType1Rule().getQualifyingAmount(salesInvoice));
+					}
+				} else if (promo.isPromoType3()) {
+					if (salesRequisition != null) {
+						return FormatterUtil.formatAmount(promo.getPromoType3Rule().getQualifyingAmount(salesRequisition));
+					} else {
+						return FormatterUtil.formatAmount(promo.getPromoType3Rule().getQualifyingAmount(salesInvoice));
+					}
+				} else {
+					return null;
+				}
 			default:
 				throw new RuntimeException("Error fetching invalid column index: " + columnIndex);
 			}

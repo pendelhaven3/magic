@@ -333,7 +333,7 @@ public class SalesInvoice {
 		BigDecimal total = Constants.ZERO;
 		for (SalesInvoiceItem item : items) {
 			if (manufacturer.equals(item.getProduct().getManufacturer())) {
-				total = total.add(item.getAmount());
+				total = total.add(item.getNetAmount());
 			}
 		}
 		return total;

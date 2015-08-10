@@ -32,7 +32,7 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
-import com.pj.magic.gui.dialog.SalesByManufacturerDialog;
+import com.pj.magic.gui.dialog.PromoQualifyingAmountsDialog;
 import com.pj.magic.gui.dialog.SalesInvoiceStatusDialog;
 import com.pj.magic.gui.tables.SalesInvoiceItemsTable;
 import com.pj.magic.model.SalesInvoice;
@@ -56,7 +56,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private SalesInvoiceStatusDialog salesInvoiceStatusDialog;
 	@Autowired private ExcelService excelService;
-	@Autowired private SalesByManufacturerDialog salesByManufacturerDialog;
+	@Autowired private PromoQualifyingAmountsDialog promoQualifyingAmountsDialog;
 	@Autowired private AvailedPromoRewardsDialog availedPromoRewardsDialog;
 	
 	private SalesInvoice salesInvoice;
@@ -407,16 +407,16 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		});
 		toolBar.add(toExcelButton);
 		
-		MagicToolBarButton showByManufacturerTotalButton = 
-				new MagicToolBarButton("factory", "Show Sales Items Total By Manufacturer");
-		showByManufacturerTotalButton.addActionListener(new ActionListener() {
+		MagicToolBarButton showPromoQualifyingAmountsButton = 
+				new MagicToolBarButton("qualify", "Show Qualifying Amounts for Promos");
+		showPromoQualifyingAmountsButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				showSalesByManufacturerDialog(salesInvoice);
+				showPromoQualifyingAmountsDialog(salesInvoice);
 			}
 		});
-		toolBar.add(showByManufacturerTotalButton);
+		toolBar.add(showPromoQualifyingAmountsButton);
 		
 		JButton showAvailedPromoRewardsButton = 
 				new MagicToolBarButton("present", "Show Availed Promo Rewards");
@@ -435,9 +435,9 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		availedPromoRewardsDialog.setVisible(true);
 	}
 
-	private void showSalesByManufacturerDialog(SalesInvoice salesInvoice) {
-		salesByManufacturerDialog.updateDisplay(salesInvoice);
-		salesByManufacturerDialog.setVisible(true);
+	private void showPromoQualifyingAmountsDialog(SalesInvoice salesInvoice) {
+		promoQualifyingAmountsDialog.updateDisplay(salesInvoice);
+		promoQualifyingAmountsDialog.setVisible(true);
 	}
 
 	private void generateExcelSpreadsheetFromSalesInvoice() {
