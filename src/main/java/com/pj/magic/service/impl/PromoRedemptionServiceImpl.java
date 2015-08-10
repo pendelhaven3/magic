@@ -249,6 +249,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		criteria.setPromoType(PromoType.PROMO_TYPE_4);
 		criteria.setPromoDate(salesInvoice.getTransactionDate());
 		criteria.setAcceptedPricingScheme(salesInvoice.getPricingScheme());
+		criteria.setActive(true);
 
 		List<Promo> promos = promoService.search(criteria);
 		if (!promos.isEmpty()) {
