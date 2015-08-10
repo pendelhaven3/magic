@@ -13,8 +13,10 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.dao.PromoRedemptionRewardDao;
 import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
+import com.pj.magic.dao.PromoPointsClaimDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.exception.AlreadyPostedException;
+import com.pj.magic.exception.NotEnoughPromoPointsException;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.exception.NothingToRedeemException;
 import com.pj.magic.model.AvailedPromoPointsItem;
@@ -28,6 +30,7 @@ import com.pj.magic.model.PromoType;
 import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PromoType3Rule;
+import com.pj.magic.model.PromoPointsClaim;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.search.PromoRedemptionSearchCriteria;
@@ -50,6 +53,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Autowired private ProductDao productDao;
 	@Autowired private PromoRedemptionRewardDao promoRedemptionRewardDao;
 	@Autowired private SalesReturnService salesReturnService;
+	@Autowired private PromoPointsClaimDao promoPointsClaimDao;
 	
 	@Transactional
 	@Override
@@ -258,6 +262,88 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		}
 		
 		return items;
+	}
+
+	@Override
+	public List<PromoPointsClaim> findAllPromoPointsClaimByPromoAndCustomer(Promo promo, Customer customer) {
+		return promoPointsClaimDao.findAllByPromoAndCustomer(promo, customer);
+	}
+
+	@Override
+	public PromoPointsClaim getPromoPointsClaim(long id) {
+		return promoPointsClaimDao.get(id);
+	}
+
+	@Transactional
+	@Override
+	public void save(PromoPointsClaim claim) throws NotEnoughPromoPointsException {
+		if (claim.isNew()) {
+			int availablePoints = getAvailablePromoPoints(claim.getPromo(), claim.getCustomer());
+			if (availablePoints < claim.getPoints()) {
+				throw new NotEnoughPromoPointsException(claim.getPoints(), availablePoints);
+			}
+			claim.setClaimDate(new Date());
+			claim.setClaimBy(loginService.getLoggedInUser());
+		} else {
+			int availablePoints = getAvailablePromoPoints(claim.getPromo(), claim.getCustomer());
+			int previousClaimPoints = getPromoPointsClaim(claim.getId()).getPoints();
+			int adjustedAvailablePoints = availablePoints + previousClaimPoints;
+			if (adjustedAvailablePoints < claim.getPoints()) {
+				throw new NotEnoughPromoPointsException(claim.getPoints(), adjustedAvailablePoints);
+			}
+		}
+		
+		promoPointsClaimDao.save(claim);
+	}
+
+	private int getAvailablePromoPoints(Promo promo, Customer customer) {
+		return getTotalPromoPoints(promo, customer) - getClaimedPromoPoints(promo, customer);
+	}
+
+	private int getClaimedPromoPoints(Promo promo, Customer customer) {
+		int claimedPoints = 0;
+		for (PromoPointsClaim claim : findAllPromoPointsClaimByPromoAndCustomer(promo, customer)) {
+			claimedPoints += claim.getPoints();
+		}
+		return claimedPoints;
+	}
+
+	private int getTotalPromoPoints(Promo promo, Customer customer) {
+		List<SalesInvoice> salesInvoices = searchSalesInvoicesQualifiedForPromo(promo, customer);
+		if (salesInvoices.isEmpty()) {
+			return 0;
+		}
+		
+		int totalPoints = 0;
+		for (AvailedPromoPointsItem item : promo.evaluateForPoints(salesInvoices, getRelatedSalesReturns(salesInvoices))) {
+			totalPoints += item.getPoints();
+		}
+		return totalPoints;
+	}
+
+	private List<SalesReturn> getRelatedSalesReturns(List<SalesInvoice> salesInvoices) {
+		List<SalesReturn> salesReturns = new ArrayList<>();
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			salesReturns.addAll(salesReturnService.findPostedSalesReturnsBySalesInvoice(salesInvoice));
+		}
+		return salesReturns;
+	}
+	
+	private List<SalesInvoice> searchSalesInvoicesQualifiedForPromo(Promo promo, Customer customer) {
+		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
+		criteria.setCustomer(customer);
+		criteria.setTransactionDateFrom(promo.getStartDate());
+		criteria.setTransactionDateTo(promo.getEndDate());
+		criteria.setPricingScheme(promo.getPricingScheme());
+		criteria.setCancelled(false);
+		
+		return salesInvoiceService.search(criteria);
+	}
+
+	@Transactional
+	@Override
+	public void delete(PromoPointsClaim claim) {
+		promoPointsClaimDao.delete(claim);
 	}
 
 }
