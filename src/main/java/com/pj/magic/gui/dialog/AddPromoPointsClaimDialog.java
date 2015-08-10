@@ -179,7 +179,10 @@ public class AddPromoPointsClaimDialog extends MagicDialog {
 			return;
 		}
 		
-		this.claim = claim = promoRedemptionService.getPromoPointsClaim(claim.getId());
+		this.claim = promoRedemptionService.getPromoPointsClaim(claim.getId());
+		this.claim.setPromo(claim.getPromo());
+		claim = this.claim;
+		
 		pointsField.setText(String.valueOf(claim.getPoints()));
 		remarksField.setText(String.valueOf(claim.getRemarks()));
 	}

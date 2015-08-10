@@ -53,6 +53,7 @@ public class PromoPointsClaimDaoImpl extends MagicDao implements PromoPointsClai
 			claim.setId(rs.getLong("ID"));
 			claim.setPromo(new Promo(rs.getLong("PROMO_ID")));
 			claim.setClaimNumber(rs.getLong("CLAIM_NO"));
+			claim.setCustomer(new Customer(rs.getLong("CUSTOMER_ID")));
 			claim.setPoints(rs.getInt("POINTS"));
 			claim.setRemarks(rs.getString("REMARKS"));
 			claim.setClaimDate(rs.getTimestamp("CLAIM_DT"));

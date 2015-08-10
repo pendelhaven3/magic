@@ -23,6 +23,7 @@ import javax.swing.table.TableColumnModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -329,6 +330,26 @@ public class PromoPointsPanel extends StandardMagicPanel {
 				deletePromoPointsClaim();
 			}
 		});
+		
+		claimsTable.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				editPromoPointsClaim();
+			}
+			
+		});
+		
+	}
+
+	private void editPromoPointsClaim() {
+		PromoPointsClaim claim = claimsTableModel.getClaim(claimsTable.getSelectedRow());
+		claim.setPromo(promo);
+		
+		addPromoPointsClaimDialog.updateDisplay(claim);
+		addPromoPointsClaimDialog.setVisible(true);
+		
+		updateDisplay(customer);
 	}
 
 	public void updateDisplay(Promo promo) {

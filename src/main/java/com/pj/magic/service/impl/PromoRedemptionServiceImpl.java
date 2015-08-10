@@ -284,6 +284,13 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 			}
 			claim.setClaimDate(new Date());
 			claim.setClaimBy(loginService.getLoggedInUser());
+		} else {
+			int availablePoints = getAvailablePromoPoints(claim.getPromo(), claim.getCustomer());
+			int previousClaimPoints = getPromoPointsClaim(claim.getId()).getPoints();
+			int adjustedAvailablePoints = availablePoints + previousClaimPoints;
+			if (adjustedAvailablePoints < claim.getPoints()) {
+				throw new NotEnoughPromoPointsException(claim.getPoints(), adjustedAvailablePoints);
+			}
 		}
 		
 		promoPointsClaimDao.save(claim);
