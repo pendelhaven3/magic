@@ -107,6 +107,11 @@ public class AddPromoPointsClaimDialog extends MagicDialog {
 			return false;
 		}
 		
+		if (pointsField.getTextAsInteger() == 0) {
+			showErrorMessage("Points must be greater than 0");
+			return false;
+		}
+		
 		if (remarksField.getText().isEmpty()) {
 			showErrorMessage("Remarks must be specified");
 			return false;
