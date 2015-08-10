@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.search.PromoSearchCriteria;
 import com.pj.magic.service.impl.PromoService;
@@ -34,6 +35,7 @@ public class PromoQualifyingAmountsDialog extends MagicDialog {
 	private MagicListTable table;
 	private PromosTableModel tableModel;
 	private SalesRequisition salesRequisition;
+	private SalesInvoice salesInvoice;
 	
 	public PromoQualifyingAmountsDialog() {
 		setSize(600, 300);
@@ -80,6 +82,18 @@ public class PromoQualifyingAmountsDialog extends MagicDialog {
 	
 	public void updateDisplay(SalesRequisition salesRequisition) {
 		this.salesRequisition = salesRequisition;
+		salesInvoice = null;
+		
+		List<Promo> promos = getAllActivePromosUsingQualifyingAmounts();
+		tableModel.setPromos(promos);
+		if (!promos.isEmpty()) {
+			table.selectFirstRow();
+		}
+	}
+
+	public void updateDisplay(SalesInvoice salesInvoice) {
+		this.salesInvoice = salesInvoice;
+		salesRequisition = null;
 		
 		List<Promo> promos = getAllActivePromosUsingQualifyingAmounts();
 		tableModel.setPromos(promos);
@@ -139,9 +153,17 @@ public class PromoQualifyingAmountsDialog extends MagicDialog {
 				return promo.getName();
 			case QUALIFYING_AMOUNT_COLUMN_INDEX:
 				if (promo.isPromoType1()) {
-					return FormatterUtil.formatAmount(promo.getPromoType1Rule().getQualifyingAmount(salesRequisition));
+					if (salesRequisition != null) {
+						return FormatterUtil.formatAmount(promo.getPromoType1Rule().getQualifyingAmount(salesRequisition));
+					} else if (salesInvoice != null) {
+						return FormatterUtil.formatAmount(promo.getPromoType1Rule().getQualifyingAmount(salesInvoice));
+					}
 				} else if (promo.isPromoType3()) {
-					return FormatterUtil.formatAmount(promo.getPromoType3Rule().getQualifyingAmount(salesRequisition));
+					if (salesRequisition != null) {
+						return FormatterUtil.formatAmount(promo.getPromoType3Rule().getQualifyingAmount(salesRequisition));
+					} else {
+						return FormatterUtil.formatAmount(promo.getPromoType3Rule().getQualifyingAmount(salesInvoice));
+					}
 				} else {
 					return null;
 				}

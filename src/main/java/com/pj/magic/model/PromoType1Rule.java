@@ -96,4 +96,8 @@ public class PromoType1Rule {
 		return salesRequisition.getSalesByManufacturer(manufacturer);
 	}
 
+	public BigDecimal getQualifyingAmount(SalesInvoice salesInvoice) {
+		return salesInvoice.getSalesByManufacturer(manufacturer);
+	}
+
 }
