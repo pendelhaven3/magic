@@ -9,7 +9,7 @@ public class PromoSearchCriteria {
 
 	private PromoType promoType;
 	private Date promoDate;
-	
+	private Boolean active;
 	private PricingScheme acceptedPricingScheme;
 	
 	public PromoType getPromoType() {
@@ -39,4 +39,12 @@ public class PromoSearchCriteria {
 		this.acceptedPricingScheme = pricingScheme;
 	}
 
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	
 }

@@ -29,10 +29,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -50,6 +46,7 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
+import com.pj.magic.gui.dialog.PromoQualifyingAmountsDialog;
 import com.pj.magic.gui.dialog.SalesByManufacturerDialog;
 import com.pj.magic.gui.dialog.SalesRequisitionPostExceptionsDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
@@ -70,6 +67,10 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.KeyUtil;
 
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+
 @Component
 public class SalesRequisitionPanel extends StandardMagicPanel {
 
@@ -88,6 +89,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	@Autowired private SalesRequisitionPostExceptionsDialog postExceptionsDialog;
 	@Autowired private SalesByManufacturerDialog salesByManufacturerDialog;
 	@Autowired private AvailedPromoRewardsDialog availedPromoRewardsDialog;
+	@Autowired private PromoQualifyingAmountsDialog promoQualifyingAmountsDialog;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -109,6 +111,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton showSalesByManufacturerButton;
 	private MagicToolBarButton showAvailedPromoRewardsButton;
+	private MagicToolBarButton showPromoQualifyingAmountsButton;
 	private ProductInfoTable productInfoTable;
 	
 	@Override
@@ -790,13 +793,28 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				showAvailedPromoRewardsButton();
+				showAvailedPromoRewardsDialog();
 			}
 		});
 		toolBar.add(showAvailedPromoRewardsButton);
+		
+		showPromoQualifyingAmountsButton = new MagicToolBarButton("qualify", "Show Qualifying Amounts for Promos");
+		showPromoQualifyingAmountsButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showPromoQualifyingAmountsDialog();
+			}
+		});
+		toolBar.add(showPromoQualifyingAmountsButton);
 	}
 
-	private void showAvailedPromoRewardsButton() {
+	private void showPromoQualifyingAmountsDialog() {
+		promoQualifyingAmountsDialog.updateDisplay(salesRequisition);
+		promoQualifyingAmountsDialog.setVisible(true);
+	}
+
+	private void showAvailedPromoRewardsDialog() {
 		availedPromoRewardsDialog.updateDisplay(salesRequisition);
 		availedPromoRewardsDialog.setVisible(true);
 	}
