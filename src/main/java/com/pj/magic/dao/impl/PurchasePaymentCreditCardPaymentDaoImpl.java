@@ -149,6 +149,11 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			params.add(criteria.getSupplier().getId());
 		}
 		
+		if (criteria.getCreditCard() != null) {
+			sql.append(" and c.ID = ?");
+			params.add(criteria.getCreditCard().getId());
+		}
+		
 		if (criteria.getPosted() != null) {
 			sql.append(" and b.POST_IND = ?");
 			params.add(criteria.getPosted() ? "Y" : "N");

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.Constants;
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
 import com.pj.magic.model.Supplier;
 
@@ -14,6 +15,7 @@ public class PurchasePaymentCreditCardPaymentsReport {
 	private Date fromDate;
 	private Date toDate;
 	private Supplier supplier;
+	private CreditCard creditCard;
 	private List<PurchasePaymentCreditCardPayment> creditCardPayments = new ArrayList<>();
 
 	public Date getFromDate() {
@@ -54,6 +56,14 @@ public class PurchasePaymentCreditCardPaymentsReport {
 
 	public void setSupplier(Supplier supplier) {
 		this.supplier = supplier;
+	}
+
+	public CreditCard getCreditCard() {
+		return creditCard;
+	}
+
+	public void setCreditCard(CreditCard creditCard) {
+		this.creditCard = creditCard;
 	}
 	
 }

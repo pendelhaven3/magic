@@ -2,6 +2,7 @@ package com.pj.magic.model.search;
 
 import java.util.Date;
 
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.Supplier;
 
 public class PurchasePaymentCreditCardPaymentSearchCriteria {
@@ -10,6 +11,7 @@ public class PurchasePaymentCreditCardPaymentSearchCriteria {
 	private Date fromDate;
 	private Date toDate;
 	private Supplier supplier;
+	private CreditCard creditCard;
 
 	public Boolean getPosted() {
 		return posted;
@@ -41,6 +43,14 @@ public class PurchasePaymentCreditCardPaymentSearchCriteria {
 
 	public void setSupplier(Supplier supplier) {
 		this.supplier = supplier;
+	}
+
+	public CreditCard getCreditCard() {
+		return creditCard;
+	}
+
+	public void setCreditCard(CreditCard creditCard) {
+		this.creditCard = creditCard;
 	}
 
 }

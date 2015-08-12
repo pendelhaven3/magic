@@ -25,19 +25,23 @@ import org.springframework.util.StringUtils;
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.report.PurchasePaymentCreditCardPaymentsReport;
 import com.pj.magic.model.search.PurchasePaymentCreditCardPaymentSearchCriteria;
+import com.pj.magic.service.CreditCardService;
 import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.ListUtil;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -56,6 +60,7 @@ public class PurchasePaymentCreditCardPaymentsReportPanel extends StandardMagicP
 	@Autowired private PurchasePaymentService purchasePaymentService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	@Autowired private SupplierService supplierService;
+	@Autowired private CreditCardService creditCardService;
 	
 	private MagicListTable table;
 	private CreditCardPaymentsTableModel tableModel;
@@ -66,6 +71,7 @@ public class PurchasePaymentCreditCardPaymentsReportPanel extends StandardMagicP
 	private MagicTextField supplierCodeField;
 	private JLabel supplierNameLabel;
 	private EllipsisButton selectSupplierButton;
+	private MagicComboBox<CreditCard> creditCardComboBox;
 	
 	@Override
 	protected void initializeComponents() {
@@ -85,6 +91,8 @@ public class PurchasePaymentCreditCardPaymentsReportPanel extends StandardMagicP
 				openSelectSupplierDialog();
 			}
 		});
+		
+		creditCardComboBox = new MagicComboBox<>();
 		
 		generateButton = new JButton("Generate");
 		generateButton.addActionListener(new ActionListener() {
@@ -148,11 +156,16 @@ public class PurchasePaymentCreditCardPaymentsReportPanel extends StandardMagicP
 			report.setSupplier(supplierService.findSupplierByCode(supplierCode));
 		}
 		
+		if (creditCardComboBox.getSelectedIndex() > 0) {
+			report.setCreditCard((CreditCard)creditCardComboBox.getSelectedItem());
+		}
+		
 		PurchasePaymentCreditCardPaymentSearchCriteria criteria = new PurchasePaymentCreditCardPaymentSearchCriteria();
 		criteria.setPosted(true);
 		criteria.setFromDate(report.getFromDate());
 		criteria.setToDate(report.getToDate());
 		criteria.setSupplier(report.getSupplier());
+		criteria.setCreditCard(report.getCreditCard());
 		report.setCreditCardPayments(purchasePaymentService.searchCreditCardPayments(criteria));
 		
 		return report;
@@ -174,6 +187,9 @@ public class PurchasePaymentCreditCardPaymentsReportPanel extends StandardMagicP
 		supplierCodeField.setText(null);
 		supplierNameLabel.setText(null);
 		totalCreditCardPaymentsField.setText("-");
+		
+		creditCardComboBox.setModel(ListUtil.toDefaultComboBoxModel(creditCardService.getAllCreditCards(), true));
+		creditCardComboBox.setSelectedIndex(0);
 		
 		List<PurchasePaymentCreditCardPayment> bankTransfers = Collections.emptyList();
 		tableModel.setCreditCardPayments(bankTransfers);
@@ -259,6 +275,22 @@ public class PurchasePaymentCreditCardPaymentsReportPanel extends StandardMagicP
 		c.anchor = GridBagConstraints.WEST;
 		c.gridwidth = 4;
 		mainPanel.add(createSupplierPanel(), c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Credit Card:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridwidth = 4;
+		creditCardComboBox.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(creditCardComboBox, c);
 
 		currentRow++;
 		
