@@ -145,7 +145,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 		sql.append(" where 1 = 1");
 		
 		if (criteria.getSupplier() != null) {
-			sql.append(" and c.ID = ?");
+			sql.append(" and d.ID = ?");
 			params.add(criteria.getSupplier().getId());
 		}
 		
