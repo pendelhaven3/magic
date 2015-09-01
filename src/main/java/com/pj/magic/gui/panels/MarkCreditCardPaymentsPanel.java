@@ -72,7 +72,8 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private CreditCardPaymentsTableModel tableModel;
 	private SelectStatementDateDialog selectStatementDateDialog;
-	private JButton markButton;
+	private JButton markSelectedButton;
+	private JButton markAllButton;
 	private UtilCalendarModel fromDateModel;
 	private UtilCalendarModel toDateModel;
 	private JButton searchButton;
@@ -89,12 +90,21 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 	protected void initializeComponents() {
 		initializeTable();
 		
-		markButton = new JButton("Mark Credit Card Payments");
-		markButton.addActionListener(new ActionListener() {
+		markSelectedButton = new JButton("Mark Selected");
+		markSelectedButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				markCreditCardPayments();
+				markSelectedCreditCardPayments();
+			}
+		});
+		
+		markAllButton = new JButton("Mark All");
+		markAllButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				markAllCreditCardPayments();
 			}
 		});
 		
@@ -125,6 +135,16 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		});
 		
 		creditCardComboBox = new MagicComboBox<>();
+	}
+
+	private void markAllCreditCardPayments() {
+		for (PurchasePaymentCreditCardPayment creditCardPayment : tableModel.getCreditCardPayments()) {
+			creditCardPayment.setMarked(true);
+		}
+		tableModel.fireTableRowsUpdated(0, tableModel.getCreditCardPayments().size() - 1);
+		updateMarkedTotalsFields();
+		
+		markSelectedCreditCardPayments();
 	}
 
 	private void openSelectSupplierDialog() {
@@ -346,8 +366,10 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 5;
-		markButton.setPreferredSize(new Dimension(230, 30));
-		mainPanel.add(markButton, c);
+		markSelectedButton.setPreferredSize(new Dimension(150, 30));
+		markAllButton.setPreferredSize(new Dimension(150, 30));
+		mainPanel.add(ComponentUtil.createGenericPanel(
+				markSelectedButton, Box.createHorizontalStrut(5), markAllButton), c);
 	}
 
 	private JPanel createTotalsPanel() {
@@ -456,7 +478,12 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 	protected void addToolBarButtons(MagicToolBar toolBar) {
 	}
 
-	private void markCreditCardPayments() {
+	private void markSelectedCreditCardPayments() {
+		if (!tableModel.hasMarked()) {
+			showErrorMessage("At least one row must be selected");
+			return;
+		}
+		
 		selectStatementDateDialog.updateDisplay();
 		selectStatementDateDialog.setVisible(true);
 
@@ -512,6 +539,15 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 			fireTableDataChanged();
 		}
 		
+		public boolean hasMarked() {
+			for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
+				if (creditCardPayment.isMarked()) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public List<PurchasePaymentCreditCardPayment> getCreditCardPayments() {
 			return creditCardPayments;
 		}
