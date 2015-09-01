@@ -23,7 +23,6 @@ import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.PurchasePaymentPaymentAdjustment;
 import com.pj.magic.model.PurchasePaymentReceivingReceipt;
-import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.PurchasePaymentBankTransfer;
 import com.pj.magic.model.PurchasePaymentCashPayment;
 import com.pj.magic.model.PurchasePaymentCheckPayment;

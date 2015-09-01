@@ -10,11 +10,9 @@ import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DatePickerFormatter;
-import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.util.ComponentUtil;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
@@ -24,8 +22,6 @@ import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 @Component
 public class MarkCreditCardPaymentsDialog extends MagicDialog {
 
-	@Autowired private PurchasePaymentService purchasePaymentService;
-	
 	private UtilCalendarModel statementDateModel;
 	private JButton saveButton;
 	
