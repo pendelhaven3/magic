@@ -1,5 +1,6 @@
 package com.pj.magic.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.model.PurchasePayment;
@@ -62,5 +63,10 @@ public interface PurchasePaymentService {
 			PurchasePaymentCreditCardPaymentSearchCriteria criteria);
 
 	List<PurchasePaymentCashPayment> searchCashPayments(PurchasePaymentCashPaymentSearchCriteria criteria);
+
+	List<PurchasePaymentCreditCardPayment> getAllUnmarkedCreditCardPayments();
+
+	void markCreditCardPayments(List<PurchasePaymentCreditCardPayment> creditCardPayments,
+			Date statementDate);
 	
 }

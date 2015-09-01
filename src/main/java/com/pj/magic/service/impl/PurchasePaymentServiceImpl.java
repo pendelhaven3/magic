@@ -239,5 +239,31 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 			PurchasePaymentCashPaymentSearchCriteria criteria) {
 		return purchasePaymentCashPaymentDao.search(criteria);
 	}
+
+	@Override
+	public List<PurchasePaymentCreditCardPayment> getAllUnmarkedCreditCardPayments() {
+		PurchasePaymentCreditCardPaymentSearchCriteria criteria = 
+				new PurchasePaymentCreditCardPaymentSearchCriteria();
+		criteria.setMarked(false);
+		
+		return searchCreditCardPayments(criteria);
+	}
+
+	@Transactional
+	@Override
+	public void markCreditCardPayments(List<PurchasePaymentCreditCardPayment> creditCardPayments,
+			Date statementDate) {
+		for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
+			creditCardPayment.setStatementDate(statementDate);
+			if (creditCardPayment.isMarked()) {
+				mark(creditCardPayment);
+			}
+		}
+	}
+	
+	private void mark(PurchasePaymentCreditCardPayment creditCardPayment) {
+		creditCardPayment.setMarked(true);
+		purchasePaymentCreditCardPaymentDao.save(creditCardPayment);
+	}
 	
 }
