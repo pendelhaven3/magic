@@ -7,13 +7,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
@@ -22,16 +25,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import com.pj.magic.Constants;
 import com.pj.magic.gui.component.DatePickerFormatter;
+import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.MagicComboBox;
+import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.MagicDialog;
+import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MarkSalesInvoicesTable;
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
+import com.pj.magic.model.Supplier;
+import com.pj.magic.model.search.PurchasePaymentCreditCardPaymentSearchCriteria;
+import com.pj.magic.service.CreditCardService;
 import com.pj.magic.service.PurchasePaymentService;
+import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.ListUtil;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -50,11 +65,25 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 	private static final int MARK_COLUMN_INDEX = 5;
 	
 	@Autowired private PurchasePaymentService purchasePaymentService;
+	@Autowired private CreditCardService creditCardService;
+	@Autowired private SupplierService supplierService;
+	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	
 	private MagicListTable table;
 	private CreditCardPaymentsTableModel tableModel;
 	private SelectStatementDateDialog selectStatementDateDialog;
 	private JButton markButton;
+	private UtilCalendarModel fromDateModel;
+	private UtilCalendarModel toDateModel;
+	private JButton searchButton;
+	private MagicTextField supplierCodeField;
+	private JLabel supplierNameLabel;
+	private EllipsisButton selectSupplierButton;
+	private MagicComboBox<CreditCard> creditCardComboBox;
+	private JLabel totalRowsLabel = new JLabel();
+	private JLabel totalAmountLabel= new JLabel();
+	private JLabel totalMarkedRowsLabel = new JLabel();
+	private JLabel totalMarkedAmountLabel= new JLabel();
 	
 	@Override
 	protected void initializeComponents() {
@@ -71,7 +100,70 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		
 		selectStatementDateDialog = new SelectStatementDateDialog();
 		
-		focusOnComponentWhenThisPanelIsDisplayed(table);
+		fromDateModel = new UtilCalendarModel();
+		toDateModel = new UtilCalendarModel();
+		
+		searchButton = new JButton("Search");
+		searchButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				searchCreditCardPayments();
+			}
+		});
+		
+		supplierCodeField = new MagicTextField();
+		supplierNameLabel = new JLabel();
+		
+		selectSupplierButton = new EllipsisButton("Select Supplier");
+		selectSupplierButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectSupplierDialog();
+			}
+		});
+		
+		creditCardComboBox = new MagicComboBox<>();
+	}
+
+	private void openSelectSupplierDialog() {
+		selectSupplierDialog.searchSuppliers(supplierCodeField.getText());
+		selectSupplierDialog.setVisible(true);
+		
+		Supplier supplier = selectSupplierDialog.getSelectedSupplier();
+		if (supplier != null) {
+			supplierCodeField.setText(supplier.getCode());
+			supplierNameLabel.setText(supplier.getName());
+		} else {
+			supplierNameLabel.setText(null);
+		}
+	}
+
+	private void searchCreditCardPayments() {
+		PurchasePaymentCreditCardPaymentSearchCriteria criteria = 
+				new PurchasePaymentCreditCardPaymentSearchCriteria();
+		criteria.setMarked(false);
+		
+		if (fromDateModel.getValue() != null) {
+			criteria.setFromDate(fromDateModel.getValue().getTime());
+		}
+		
+		if (toDateModel.getValue() != null) {
+			criteria.setToDate(toDateModel.getValue().getTime());
+		}
+		
+		String supplierCode = supplierCodeField.getText();
+		if (!StringUtils.isEmpty(supplierCode)) {
+			criteria.setSupplier(supplierService.findSupplierByCode(supplierCode));
+		}
+		
+		criteria.setCreditCard((CreditCard)creditCardComboBox.getSelectedItem());
+		
+		List<PurchasePaymentCreditCardPayment> creditCardPayments = 
+				purchasePaymentService.searchCreditCardPayments(criteria);
+		tableModel.setCreditCardPayments(creditCardPayments);
+		updateTotalFields(creditCardPayments);
 	}
 
 	private void initializeTable() {
@@ -85,12 +177,39 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 	}
 	
 	public void updateDisplay() {
-		tableModel.setCreditCardPayments(purchasePaymentService.getAllUnmarkedCreditCardPayments());
+		List<PurchasePaymentCreditCardPayment> creditCardPayments = 
+				purchasePaymentService.getAllUnmarkedCreditCardPayments();
+		tableModel.setCreditCardPayments(creditCardPayments);
+		updateTotalFields(creditCardPayments);
+		
+		creditCardComboBox.setModel(ListUtil.toDefaultComboBoxModel(creditCardService.getAllCreditCards(), true));
+		creditCardComboBox.setSelectedIndex(0);
+	}
+
+	private void updateTotalFields(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
+		totalRowsLabel.setText(String.valueOf(creditCardPayments.size()));
+		totalAmountLabel.setText(FormatterUtil.formatAmount(getTotalAmount(creditCardPayments)));
+		totalMarkedRowsLabel.setText("0");
+		totalMarkedAmountLabel.setText("0");
+	}
+
+	private static BigDecimal getTotalAmount(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
+		BigDecimal total = Constants.ZERO;
+		for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
+			total = total.add(creditCardPayment.getAmount());
+		}
+		return total;
 	}
 
 	@Override
 	protected void registerKeyBindings() {
-		// none
+		supplierCodeField.onF5Key(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSelectSupplierDialog();
+			}
+		});
 	}
 
 	@Override
@@ -100,11 +219,119 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		int currentRow = 0;
 		
 		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(new JScrollPane(table), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
+
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "From Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePanelImpl fromDatePanel = new JDatePanelImpl(fromDateModel);
+		JDatePickerImpl fromDatePicker = new JDatePickerImpl(fromDatePanel, new DatePickerFormatter());
+		mainPanel.add(fromDatePicker, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createHorizontalStrut(30), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(searchButton, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "To Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		
+		JDatePanelImpl toDatePanel = new JDatePanelImpl(toDateModel);
+		JDatePickerImpl toDatePicker = new JDatePickerImpl(toDatePanel, new DatePickerFormatter());
+		mainPanel.add(toDatePicker, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Supplier:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridwidth = 3;
+		mainPanel.add(createSupplierPanel(), c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Credit Card:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridwidth = 3;
+		creditCardComboBox.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(creditCardComboBox, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createVerticalStrut(10), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		mainPanel.add(createTotalsPanel(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createVerticalStrut(10), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.gridwidth = 5;
+		
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setPreferredSize(new Dimension(400, 200));
+		mainPanel.add(scrollPane, c);
 
 		currentRow++;
 		
@@ -116,11 +343,113 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.gridwidth = 5;
 		markButton.setPreferredSize(new Dimension(230, 30));
 		mainPanel.add(markButton, c);
+	}
+
+	private JPanel createTotalsPanel() {
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Total Rows:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalRowsLabel = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalRowsLabel, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createHorizontalStrut(100), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Total Marked Rows:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalMarkedRowsLabel = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalMarkedRowsLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAmountLabel = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalAmountLabel, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(160, "Total Marked Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalMarkedAmountLabel = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalMarkedAmountLabel, c);
+		
+		return mainPanel;
+	}
+
+	private JPanel createSupplierPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		supplierCodeField.setPreferredSize(new Dimension(100, 25));
+		panel.add(supplierCodeField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		selectSupplierButton.setPreferredSize(new Dimension(30, 25));
+		panel.add(selectSupplierButton, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(Box.createHorizontalStrut(10), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.WEST;
+		supplierNameLabel.setPreferredSize(new Dimension(300, 25));
+		panel.add(supplierNameLabel, c);
+		
+		return panel;
 	}
 
 	@Override
@@ -141,8 +470,34 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 				return;
 			}
 			showMessage("Credit card payments marked!");
-			updateDisplay();
+			searchCreditCardPayments();
 		}		
+	}
+
+	public void updateMarkedTotalsFields() {
+		totalMarkedRowsLabel.setText(String.valueOf(getTotalMarked(tableModel.getCreditCardPayments())));
+		totalMarkedAmountLabel.setText(
+				FormatterUtil.formatAmount(getTotalMarkedAmount(tableModel.getCreditCardPayments())));
+	}
+	
+	private static int getTotalMarked(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
+		int total = 0;
+		for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
+			if (creditCardPayment.isMarked()) {
+				total++;
+			}
+		}
+		return total;
+	}
+
+	private static BigDecimal getTotalMarkedAmount(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
+		BigDecimal total = Constants.ZERO;
+		for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
+			if (creditCardPayment.isMarked()) {
+				total = total.add(creditCardPayment.getAmount());
+			}
+		}
+		return total;
 	}
 
 	private class CreditCardPaymentsTableModel extends AbstractTableModel {
@@ -226,6 +581,7 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 				throw new RuntimeException("Setting invalid column index: " + columnIndex);
 			}
 			fireTableCellUpdated(rowIndex, MARK_COLUMN_INDEX);
+			updateMarkedTotalsFields();
 		}
 		
 	}
@@ -334,5 +690,5 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		}
 		
 	}
-	
+
 }
