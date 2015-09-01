@@ -53,6 +53,7 @@ import com.pj.magic.gui.panels.MaintainPurchasePaymentAdjustmentTypePanel;
 import com.pj.magic.gui.panels.MaintainSupplierPanel;
 import com.pj.magic.gui.panels.MaintainUserPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
+import com.pj.magic.gui.panels.MarkCreditCardPaymentsPanel;
 import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
 import com.pj.magic.gui.panels.NoMoreStockAdjustmentListPanel;
 import com.pj.magic.gui.panels.NoMoreStockAdjustmentPanel;
@@ -268,6 +269,7 @@ public class MagicFrame extends JFrame {
 	private static final String PROMO_LIST_PANEL = "PROMO_LIST_PANEL";
 	private static final String PROMO_PANEL = "PROMO_PANEL";
 	private static final String PROMO_POINTS_PANEL = "PROMO_POINTS_PANEL";
+	private static final String MARK_CREDIT_CARD_PAYMENTS_PANEL = "MARK_CREDIT_CARD_PAYMENTS_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -369,6 +371,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PromoListPanel promoListPanel;
 	@Autowired private PromoPanel promoPanel;
 	@Autowired private PromoPointsPanel promoPointsPanel;
+	@Autowired private MarkCreditCardPaymentsPanel markCreditCardPaymentsPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -519,6 +522,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(promoListPanel, PROMO_LIST_PANEL);
 		panelHolder.add(promoPanel, PROMO_PANEL);
 		panelHolder.add(promoPointsPanel, PROMO_POINTS_PANEL);
+		panelHolder.add(markCreditCardPaymentsPanel, MARK_CREDIT_CARD_PAYMENTS_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1272,6 +1276,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Promo Points");
 		promoPointsPanel.updateDisplay(promo);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_POINTS_PANEL);
+	}
+
+	public void switchToMarkCreditCardPaymentsPanel() {
+		addPanelNameToTitle("Mark Credit Card Payments");
+		markCreditCardPaymentsPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MARK_CREDIT_CARD_PAYMENTS_PANEL);
 	}
 	
 }

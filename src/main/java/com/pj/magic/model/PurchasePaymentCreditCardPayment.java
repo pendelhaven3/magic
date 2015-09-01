@@ -14,6 +14,8 @@ public class PurchasePaymentCreditCardPayment {
 	private CreditCard creditCard;
 	private Date transactionDate;
 	private String approvalCode;
+	private boolean marked;
+	private Date statementDate;
 
 	public PurchasePaymentCreditCardPayment() {
 		// default constructor
@@ -90,6 +92,22 @@ public class PurchasePaymentCreditCardPayment {
 		return new EqualsBuilder()
 			.append(id, other.getId())
 			.isEquals();
+	}
+
+	public boolean isMarked() {
+		return marked;
+	}
+
+	public void setMarked(boolean marked) {
+		this.marked = marked;
+	}
+
+	public Date getStatementDate() {
+		return statementDate;
+	}
+
+	public void setStatementDate(Date statementDate) {
+		this.statementDate = statementDate;
 	}
 
 }

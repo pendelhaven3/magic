@@ -62,5 +62,7 @@ public interface PurchasePaymentService {
 			PurchasePaymentCreditCardPaymentSearchCriteria criteria);
 
 	List<PurchasePaymentCashPayment> searchCashPayments(PurchasePaymentCashPaymentSearchCriteria criteria);
+
+	List<PurchasePaymentCreditCardPayment> getAllUnmarkedCreditCardPayments();
 	
 }

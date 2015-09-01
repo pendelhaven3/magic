@@ -28,6 +28,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, PURCHASE_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE,"
+			+ " a.MARK_IND, STATEMENT_DT,"
 			+ " b.PURCHASE_PAYMENT_NO,"
 			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK,"
 			+ " d.NAME as SUPPLIER_NAME"
@@ -77,16 +78,19 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 
 	private static final String UPDATE_SQL = 
 			"update PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT"
-			+ " set AMOUNT = ?, CREDIT_CARD_ID = ?, TRANSACTION_DT = ?, APPROVAL_CODE = ?"
+			+ " set AMOUNT = ?, CREDIT_CARD_ID = ?, TRANSACTION_DT = ?, APPROVAL_CODE = ?,"
+			+ " MARK_IND = ?, STATEMENT_DT = ?"
 			+ " where ID = ?";
 	
-	private void update(PurchasePaymentCreditCardPayment cashPayment) {
+	private void update(PurchasePaymentCreditCardPayment creditCardPayment) {
 		getJdbcTemplate().update(UPDATE_SQL, 
-				cashPayment.getAmount(),
-				cashPayment.getCreditCard().getId(),
-				cashPayment.getTransactionDate(),
-				cashPayment.getApprovalCode(),
-				cashPayment.getId());
+				creditCardPayment.getAmount(),
+				creditCardPayment.getCreditCard().getId(),
+				creditCardPayment.getTransactionDate(),
+				creditCardPayment.getApprovalCode(),
+				creditCardPayment.isMarked() ? "Y" : "N",
+				creditCardPayment.getStatementDate(),
+				creditCardPayment.getId());
 	}
 
 	private static final String FIND_ALL_BY_PURCHASE_PAYMENT_SQL = BASE_SELECT_SQL
@@ -124,6 +128,8 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			
 			creditCardPayment.setTransactionDate(rs.getDate("TRANSACTION_DT"));
 			creditCardPayment.setApprovalCode(rs.getString("APPROVAL_CODE"));
+			creditCardPayment.setMarked("Y".equals(rs.getString("MARK_IND")));
+			creditCardPayment.setStatementDate(rs.getDate("STATEMENT_DT"));
 			return creditCardPayment;
 		}
 		
@@ -167,6 +173,11 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 		if (criteria.getToDate() != null) {
 			sql.append(" and a.TRANSACTION_DT <= ?");
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
+		}
+		
+		if (criteria.getMarked() != null) {
+			sql.append(" and a.MARK_IND = ?");
+			params.add(criteria.getMarked() ? "Y" : "N");
 		}
 		
 		sql.append(" order by a.TRANSACTION_DT, d.NAME, b.PURCHASE_PAYMENT_NO");

@@ -12,6 +12,7 @@ public class PurchasePaymentCreditCardPaymentSearchCriteria {
 	private Date toDate;
 	private Supplier supplier;
 	private CreditCard creditCard;
+	private Boolean marked;
 
 	public Boolean getPosted() {
 		return posted;
@@ -51,6 +52,14 @@ public class PurchasePaymentCreditCardPaymentSearchCriteria {
 
 	public void setCreditCard(CreditCard creditCard) {
 		this.creditCard = creditCard;
+	}
+
+	public Boolean getMarked() {
+		return marked;
+	}
+
+	public void setMarked(Boolean marked) {
+		this.marked = marked;
 	}
 
 }

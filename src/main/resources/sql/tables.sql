@@ -772,6 +772,8 @@ create table PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT (
   CREDIT_CARD_ID integer not null,
   TRANSACTION_DT date not null,
   APPROVAL_CODE varchar(20) not null,
+  MARK_IND varchar(1) default 'N' not null,
+  STATEMENT_DT date null,
   constraint PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT$PK primary key (ID),
   constraint PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT$FK foreign key (PURCHASE_PAYMENT_ID) references PURCHASE_PAYMENT (ID),
   constraint PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT$FK2 foreign key (CREDIT_CARD_ID) references CREDIT_CARD (ID)
