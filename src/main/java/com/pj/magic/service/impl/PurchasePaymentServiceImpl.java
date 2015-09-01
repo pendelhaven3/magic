@@ -23,6 +23,7 @@ import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.PurchasePaymentPaymentAdjustment;
 import com.pj.magic.model.PurchasePaymentReceivingReceipt;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.PurchasePaymentBankTransfer;
 import com.pj.magic.model.PurchasePaymentCashPayment;
 import com.pj.magic.model.PurchasePaymentCheckPayment;
@@ -247,6 +248,23 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 		criteria.setMarked(false);
 		
 		return searchCreditCardPayments(criteria);
+	}
+
+	@Transactional
+	@Override
+	public void markCreditCardPayments(List<PurchasePaymentCreditCardPayment> creditCardPayments,
+			Date statementDate) {
+		for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
+			creditCardPayment.setStatementDate(statementDate);
+			if (creditCardPayment.isMarked()) {
+				mark(creditCardPayment);
+			}
+		}
+	}
+	
+	private void mark(PurchasePaymentCreditCardPayment creditCardPayment) {
+		creditCardPayment.setMarked(true);
+		purchasePaymentCreditCardPaymentDao.save(creditCardPayment);
 	}
 	
 }
