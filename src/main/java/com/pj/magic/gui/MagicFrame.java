@@ -28,6 +28,7 @@ import com.pj.magic.gui.panels.BadStockReturnPanel;
 import com.pj.magic.gui.panels.CashFlowReportPanel;
 import com.pj.magic.gui.panels.ChangePasswordPanel;
 import com.pj.magic.gui.panels.CreditCardListPanel;
+import com.pj.magic.gui.panels.CreditCardStatementListPanel;
 import com.pj.magic.gui.panels.CustomerCheckPaymentsReportPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.CustomerSalesSummaryReportPanel;
@@ -270,6 +271,7 @@ public class MagicFrame extends JFrame {
 	private static final String PROMO_PANEL = "PROMO_PANEL";
 	private static final String PROMO_POINTS_PANEL = "PROMO_POINTS_PANEL";
 	private static final String MARK_CREDIT_CARD_PAYMENTS_PANEL = "MARK_CREDIT_CARD_PAYMENTS_PANEL";
+	private static final String CREDIT_CARD_STATEMENT_LIST_PANEL = "CREDIT_CARD_STATEMENT_LIST_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -372,6 +374,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PromoPanel promoPanel;
 	@Autowired private PromoPointsPanel promoPointsPanel;
 	@Autowired private MarkCreditCardPaymentsPanel markCreditCardPaymentsPanel;
+	@Autowired private CreditCardStatementListPanel creditCardStatementsListPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -523,6 +526,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(promoPanel, PROMO_PANEL);
 		panelHolder.add(promoPointsPanel, PROMO_POINTS_PANEL);
 		panelHolder.add(markCreditCardPaymentsPanel, MARK_CREDIT_CARD_PAYMENTS_PANEL);
+		panelHolder.add(creditCardStatementsListPanel, CREDIT_CARD_STATEMENT_LIST_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1282,6 +1286,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Mark Credit Card Payments");
 		markCreditCardPaymentsPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MARK_CREDIT_CARD_PAYMENTS_PANEL);
+	}
+
+	public void switchToCreditCardStatementListPanel() {
+		addPanelNameToTitle("Credit Card Statement List");
+		creditCardStatementsListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, CREDIT_CARD_STATEMENT_LIST_PANEL);
 	}
 	
 }

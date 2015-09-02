@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.CreditCardDao;
 import com.pj.magic.model.CreditCard;
+import com.pj.magic.model.CreditCardStatement;
 import com.pj.magic.service.CreditCardService;
 
 @Service
@@ -30,6 +31,11 @@ public class CreditCardServiceImpl implements CreditCardService {
 	@Override
 	public List<CreditCard> getAllCreditCards() {
 		return creditCardDao.getAll();
+	}
+
+	@Override
+	public List<CreditCardStatement> getAllCreditCardStatements() {
+		return null;
 	}
 
 }
