@@ -12,6 +12,14 @@ public class CreditCardStatement {
 	private Date statementDate;
 	private List<CreditCardStatementItem> items = new ArrayList<>();
 
+	public CreditCardStatement() {
+		// default constructor
+	}
+	
+	public CreditCardStatement(long id) {
+		this.id = id;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -50,6 +58,10 @@ public class CreditCardStatement {
 
 	public void setItems(List<CreditCardStatementItem> items) {
 		this.items = items;
+	}
+
+	public boolean isNew() {
+		return id == null;
 	}
 
 }

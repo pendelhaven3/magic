@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.CreditCardDao;
+import com.pj.magic.dao.CreditCardStatementDao;
+import com.pj.magic.dao.CreditCardStatementItemDao;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardStatement;
 import com.pj.magic.service.CreditCardService;
@@ -16,6 +18,8 @@ import com.pj.magic.service.CreditCardService;
 public class CreditCardServiceImpl implements CreditCardService {
 
 	@Autowired private CreditCardDao creditCardDao;
+	@Autowired private CreditCardStatementDao creditCardStatementDao;
+	@Autowired private CreditCardStatementItemDao creditCardStatementItemDao;
 	
 	@Transactional
 	@Override
@@ -35,7 +39,14 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 	@Override
 	public List<CreditCardStatement> getAllCreditCardStatements() {
-		return null;
+		return creditCardStatementDao.getAll();
+	}
+
+	@Override
+	public CreditCardStatement getCreditCardStatement(long id) {
+		CreditCardStatement statement = creditCardStatementDao.get(id);
+		statement.setItems(creditCardStatementItemDao.findAllByCreditCardStatement(statement));
+		return statement;
 	}
 
 }

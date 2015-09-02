@@ -14,5 +14,7 @@ public interface CreditCardService {
 	List<CreditCard> getAllCreditCards();
 	
 	List<CreditCardStatement> getAllCreditCardStatements();
+
+	CreditCardStatement getCreditCardStatement(long id);
 	
 }

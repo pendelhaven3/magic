@@ -29,6 +29,7 @@ import com.pj.magic.gui.panels.CashFlowReportPanel;
 import com.pj.magic.gui.panels.ChangePasswordPanel;
 import com.pj.magic.gui.panels.CreditCardListPanel;
 import com.pj.magic.gui.panels.CreditCardStatementListPanel;
+import com.pj.magic.gui.panels.CreditCardStatementPanel;
 import com.pj.magic.gui.panels.CustomerCheckPaymentsReportPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.CustomerSalesSummaryReportPanel;
@@ -123,6 +124,7 @@ import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.CreditCard;
+import com.pj.magic.model.CreditCardStatement;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Manufacturer;
@@ -272,6 +274,7 @@ public class MagicFrame extends JFrame {
 	private static final String PROMO_POINTS_PANEL = "PROMO_POINTS_PANEL";
 	private static final String MARK_CREDIT_CARD_PAYMENTS_PANEL = "MARK_CREDIT_CARD_PAYMENTS_PANEL";
 	private static final String CREDIT_CARD_STATEMENT_LIST_PANEL = "CREDIT_CARD_STATEMENT_LIST_PANEL";
+	private static final String CREDIT_CARD_STATEMENT_PANEL = "CREDIT_CARD_STATEMENT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -375,6 +378,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PromoPointsPanel promoPointsPanel;
 	@Autowired private MarkCreditCardPaymentsPanel markCreditCardPaymentsPanel;
 	@Autowired private CreditCardStatementListPanel creditCardStatementsListPanel;
+	@Autowired private CreditCardStatementPanel creditCardStatementPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -527,6 +531,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(promoPointsPanel, PROMO_POINTS_PANEL);
 		panelHolder.add(markCreditCardPaymentsPanel, MARK_CREDIT_CARD_PAYMENTS_PANEL);
 		panelHolder.add(creditCardStatementsListPanel, CREDIT_CARD_STATEMENT_LIST_PANEL);
+		panelHolder.add(creditCardStatementPanel, CREDIT_CARD_STATEMENT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1292,6 +1297,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Credit Card Statement List");
 		creditCardStatementsListPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, CREDIT_CARD_STATEMENT_LIST_PANEL);
+	}
+
+	public void switchToCreditCardStatementListPanel(CreditCardStatement statement) {
+		addPanelNameToTitle("Credit Card Statement");
+		creditCardStatementPanel.updateDisplay(statement);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, CREDIT_CARD_STATEMENT_PANEL);
 	}
 	
 }

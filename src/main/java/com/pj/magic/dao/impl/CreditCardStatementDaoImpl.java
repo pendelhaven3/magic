@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +25,7 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 	private CreditCardStatementRowMapper statementRowMapper = new CreditCardStatementRowMapper();
 	
 	@Override
-	public List<CreditCardStatement> getAll(CreditCardStatement statement) {
+	public List<CreditCardStatement> getAll() {
 		return getJdbcTemplate().query(BASE_SELECT_SQL, statementRowMapper);
 	}
 	
@@ -46,6 +47,17 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 			creditCard.setBank(rs.getString("BANK"));
 			creditCard.setUser(rs.getString("USER"));
 			return creditCard;
+		}
+	}
+	
+	private static final String GET_SQL = BASE_SELECT_SQL + " where a.ID = ?";
+
+	@Override
+	public CreditCardStatement get(long id) {
+		try {
+			return getJdbcTemplate().queryForObject(GET_SQL, statementRowMapper, id);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
 		}
 	}
 
