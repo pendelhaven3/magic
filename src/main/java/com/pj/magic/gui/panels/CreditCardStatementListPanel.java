@@ -13,6 +13,7 @@ import javax.swing.table.AbstractTableModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.CreditCardStatement;
@@ -65,6 +66,14 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
+		table.addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				CreditCardStatement statement = tableModel.getStatement(table.getSelectedRow());
+				getMagicFrame().switchToCreditCardStatementPanel(statement);
+			}
+		});
 	}
 
 	@Override
@@ -73,7 +82,11 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		tableModel.setStatements(creditCardService.getAllCreditCardStatements());
+		List<CreditCardStatement> statements = creditCardService.getAllCreditCardStatements();
+		tableModel.setStatements(statements);
+		if (!statements.isEmpty()) {
+			table.selectFirstRow();
+		}
 	}
 	
 	private class CreditCardStatementTableModel extends AbstractTableModel {
@@ -84,8 +97,13 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 		
 		public void setStatements(List<CreditCardStatement> statements) {
 			this.statements = statements;
+			fireTableDataChanged();
 		}
 		
+		public CreditCardStatement getStatement(int rowIndex) {
+			return statements.get(rowIndex);
+		}
+
 		@Override
 		public int getRowCount() {
 			return statements.size();

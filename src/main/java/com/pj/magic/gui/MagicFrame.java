@@ -55,7 +55,7 @@ import com.pj.magic.gui.panels.MaintainPurchasePaymentAdjustmentTypePanel;
 import com.pj.magic.gui.panels.MaintainSupplierPanel;
 import com.pj.magic.gui.panels.MaintainUserPanel;
 import com.pj.magic.gui.panels.ManufacturerListPanel;
-import com.pj.magic.gui.panels.MarkCreditCardPaymentsPanel;
+import com.pj.magic.gui.panels.UnpaidCreditCardPaymentsListPanel;
 import com.pj.magic.gui.panels.MarkSalesInvoicePanel;
 import com.pj.magic.gui.panels.NoMoreStockAdjustmentListPanel;
 import com.pj.magic.gui.panels.NoMoreStockAdjustmentPanel;
@@ -272,7 +272,7 @@ public class MagicFrame extends JFrame {
 	private static final String PROMO_LIST_PANEL = "PROMO_LIST_PANEL";
 	private static final String PROMO_PANEL = "PROMO_PANEL";
 	private static final String PROMO_POINTS_PANEL = "PROMO_POINTS_PANEL";
-	private static final String MARK_CREDIT_CARD_PAYMENTS_PANEL = "MARK_CREDIT_CARD_PAYMENTS_PANEL";
+	private static final String UNPAID_CREDIT_CARD_PAYMENTS_LIST_PANEL = "UNPAID_CREDIT_CARD_PAYMENTS_LIST_PANEL";
 	private static final String CREDIT_CARD_STATEMENT_LIST_PANEL = "CREDIT_CARD_STATEMENT_LIST_PANEL";
 	private static final String CREDIT_CARD_STATEMENT_PANEL = "CREDIT_CARD_STATEMENT_PANEL";
 	
@@ -376,7 +376,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PromoListPanel promoListPanel;
 	@Autowired private PromoPanel promoPanel;
 	@Autowired private PromoPointsPanel promoPointsPanel;
-	@Autowired private MarkCreditCardPaymentsPanel markCreditCardPaymentsPanel;
+	@Autowired private UnpaidCreditCardPaymentsListPanel unpaidCreditCardPaymentsListPanel;
 	@Autowired private CreditCardStatementListPanel creditCardStatementsListPanel;
 	@Autowired private CreditCardStatementPanel creditCardStatementPanel;
 	
@@ -529,7 +529,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(promoListPanel, PROMO_LIST_PANEL);
 		panelHolder.add(promoPanel, PROMO_PANEL);
 		panelHolder.add(promoPointsPanel, PROMO_POINTS_PANEL);
-		panelHolder.add(markCreditCardPaymentsPanel, MARK_CREDIT_CARD_PAYMENTS_PANEL);
+		panelHolder.add(unpaidCreditCardPaymentsListPanel, UNPAID_CREDIT_CARD_PAYMENTS_LIST_PANEL);
 		panelHolder.add(creditCardStatementsListPanel, CREDIT_CARD_STATEMENT_LIST_PANEL);
 		panelHolder.add(creditCardStatementPanel, CREDIT_CARD_STATEMENT_PANEL);
         getContentPane().add(panelHolder);
@@ -1287,10 +1287,10 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_POINTS_PANEL);
 	}
 
-	public void switchToMarkCreditCardPaymentsPanel() {
-		addPanelNameToTitle("Mark Credit Card Payments");
-		markCreditCardPaymentsPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, MARK_CREDIT_CARD_PAYMENTS_PANEL);
+	public void switchToUnpaidCreditCardPaymentsListPanel() {
+		addPanelNameToTitle("Unpaid Credit Card Payments List");
+		unpaidCreditCardPaymentsListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, UNPAID_CREDIT_CARD_PAYMENTS_LIST_PANEL);
 	}
 
 	public void switchToCreditCardStatementListPanel() {
@@ -1299,7 +1299,7 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, CREDIT_CARD_STATEMENT_LIST_PANEL);
 	}
 
-	public void switchToCreditCardStatementListPanel(CreditCardStatement statement) {
+	public void switchToCreditCardStatementPanel(CreditCardStatement statement) {
 		addPanelNameToTitle("Credit Card Statement");
 		creditCardStatementPanel.updateDisplay(statement);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, CREDIT_CARD_STATEMENT_PANEL);

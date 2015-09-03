@@ -9,5 +9,7 @@ public interface CreditCardStatementDao {
 	List<CreditCardStatement> getAll();
 
 	CreditCardStatement get(long id);
+
+	void save(CreditCardStatement statement);
 	
 }

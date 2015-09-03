@@ -16,5 +16,7 @@ public interface CreditCardService {
 	List<CreditCardStatement> getAllCreditCardStatements();
 
 	CreditCardStatement getCreditCardStatement(long id);
+
+	void save(CreditCardStatement statement);
 	
 }

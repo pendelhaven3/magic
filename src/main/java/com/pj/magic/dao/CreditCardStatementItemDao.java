@@ -8,5 +8,7 @@ import com.pj.magic.model.CreditCardStatementItem;
 public interface CreditCardStatementItemDao {
 
 	List<CreditCardStatementItem> findAllByCreditCardStatement(CreditCardStatement statement);
+
+	void save(CreditCardStatementItem item);
 	
 }

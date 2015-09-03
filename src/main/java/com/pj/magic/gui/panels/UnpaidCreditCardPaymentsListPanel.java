@@ -36,8 +36,9 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.MagicDialog;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.MagicListTable;
-import com.pj.magic.gui.tables.MarkSalesInvoicesTable;
 import com.pj.magic.model.CreditCard;
+import com.pj.magic.model.CreditCardStatement;
+import com.pj.magic.model.CreditCardStatementItem;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.PurchasePaymentCreditCardPaymentSearchCriteria;
@@ -53,16 +54,16 @@ import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
-public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
+public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 
-	private static final Logger logger = LoggerFactory.getLogger(MarkCreditCardPaymentsPanel.class);
+	private static final Logger logger = LoggerFactory.getLogger(UnpaidCreditCardPaymentsListPanel.class);
 
 	private static final int PURCHASE_PAYMENT_NUMBER_COLUMN_INDEX = 0;
 	private static final int SUPPLIER_COLUMN_INDEX = 1;
 	private static final int AMOUNT_COLUMN_INDEX = 2;
 	private static final int CREDIT_CARD_COLUMN_INDEX = 3;
 	private static final int TRANSACTION_DATE_COLUMN_INDEX = 4;
-	private static final int MARK_COLUMN_INDEX = 5;
+	private static final int SELECT_COLUMN_INDEX = 5;
 	
 	@Autowired private PurchasePaymentService purchasePaymentService;
 	@Autowired private CreditCardService creditCardService;
@@ -72,8 +73,8 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private CreditCardPaymentsTableModel tableModel;
 	private SelectStatementDateDialog selectStatementDateDialog;
-	private JButton markSelectedButton;
-	private JButton markAllButton;
+	private JButton createStatementButton;
+	private JButton selectAllButton;
 	private UtilCalendarModel fromDateModel;
 	private UtilCalendarModel toDateModel;
 	private JButton searchButton;
@@ -83,28 +84,26 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 	private MagicComboBox<CreditCard> creditCardComboBox;
 	private JLabel totalRowsLabel = new JLabel();
 	private JLabel totalAmountLabel= new JLabel();
-	private JLabel totalMarkedRowsLabel = new JLabel();
-	private JLabel totalMarkedAmountLabel= new JLabel();
 	
 	@Override
 	protected void initializeComponents() {
 		initializeTable();
 		
-		markSelectedButton = new JButton("Mark Selected");
-		markSelectedButton.addActionListener(new ActionListener() {
+		createStatementButton = new JButton("Create Statement");
+		createStatementButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				markSelectedCreditCardPayments();
+				createCreditCardStatement();
 			}
 		});
 		
-		markAllButton = new JButton("Mark All");
-		markAllButton.addActionListener(new ActionListener() {
+		selectAllButton = new JButton("Select All");
+		selectAllButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				markAllCreditCardPayments();
+				selectAllCreditCardPayments();
 			}
 		});
 		
@@ -137,14 +136,8 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		creditCardComboBox = new MagicComboBox<>();
 	}
 
-	private void markAllCreditCardPayments() {
-		for (PurchasePaymentCreditCardPayment creditCardPayment : tableModel.getCreditCardPayments()) {
-			creditCardPayment.setMarked(true);
-		}
-		tableModel.fireTableRowsUpdated(0, tableModel.getCreditCardPayments().size() - 1);
-		updateMarkedTotalsFields();
-		
-		markSelectedCreditCardPayments();
+	private void selectAllCreditCardPayments() {
+		tableModel.selectAll();
 	}
 
 	private void openSelectSupplierDialog() {
@@ -209,8 +202,6 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 	private void updateTotalFields(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
 		totalRowsLabel.setText(String.valueOf(creditCardPayments.size()));
 		totalAmountLabel.setText(FormatterUtil.formatAmount(getTotalAmount(creditCardPayments)));
-		totalMarkedRowsLabel.setText("0");
-		totalMarkedAmountLabel.setText("0");
 	}
 
 	private static BigDecimal getTotalAmount(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
@@ -366,10 +357,12 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 5;
-		markSelectedButton.setPreferredSize(new Dimension(150, 30));
-		markAllButton.setPreferredSize(new Dimension(150, 30));
+		selectAllButton.setPreferredSize(new Dimension(150, 30));
+		createStatementButton.setPreferredSize(new Dimension(180, 30));
 		mainPanel.add(ComponentUtil.createGenericPanel(
-				markSelectedButton, Box.createHorizontalStrut(5), markAllButton), c);
+				selectAllButton,
+				Box.createHorizontalStrut(5),
+				createStatementButton), c);
 	}
 
 	private JPanel createTotalsPanel() {
@@ -391,24 +384,6 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		totalRowsLabel = ComponentUtil.createRightLabel(120, "");
 		mainPanel.add(totalRowsLabel, c);
 		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		mainPanel.add(Box.createHorizontalStrut(100), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Total Marked Rows:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		totalMarkedRowsLabel = ComponentUtil.createRightLabel(120, "");
-		mainPanel.add(totalMarkedRowsLabel, c);
-		
 		currentRow++;
 		
 		c = new GridBagConstraints();
@@ -423,19 +398,6 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		totalAmountLabel = ComponentUtil.createRightLabel(120, "");
 		mainPanel.add(totalAmountLabel, c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(160, "Total Marked Amount:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		totalMarkedAmountLabel = ComponentUtil.createRightLabel(120, "");
-		mainPanel.add(totalMarkedAmountLabel, c);
 		
 		return mainPanel;
 	}
@@ -478,9 +440,15 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 	protected void addToolBarButtons(MagicToolBar toolBar) {
 	}
 
-	private void markSelectedCreditCardPayments() {
-		if (!tableModel.hasMarked()) {
+	private void createCreditCardStatement() {
+		if (!tableModel.hasSelected()) {
 			showErrorMessage("At least one row must be selected");
+			return;
+		}
+		
+		List<PurchasePaymentCreditCardPayment> creditCardPayments = tableModel.getSelectedCreditCardPayments();
+		if (!hasSameCreditCard(creditCardPayments)) {
+			showErrorMessage("Statement items must all be from the same credit card");
 			return;
 		}
 		
@@ -489,63 +457,63 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 
 		Date statementDate = selectStatementDateDialog.getStatementDate();
 		if (statementDate != null) {
+			
+			CreditCardStatement statement = new CreditCardStatement();
+			statement.setCreditCard(creditCardPayments.get(0).getCreditCard());
+			statement.setStatementDate(statementDate);
+			
+			for (PurchasePaymentCreditCardPayment creditCardPayment : tableModel.getSelectedCreditCardPayments()) {
+				CreditCardStatementItem item = new CreditCardStatementItem();
+				item.setParent(statement);
+				item.setCreditCardPayment(creditCardPayment);
+				statement.getItems().add(item);
+			}
+			
 			try {
-				purchasePaymentService.markCreditCardPayments(tableModel.getCreditCardPayments(), statementDate);
+				creditCardService.save(statement);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showMessageForUnexpectedError();
 				return;
 			}
-			showMessage("Credit card payments marked!");
-			searchCreditCardPayments();
+			showMessage("Credit card statement created!");
+			getMagicFrame().switchToCreditCardStatementPanel(statement);
 		}		
 	}
 
-	public void updateMarkedTotalsFields() {
-		totalMarkedRowsLabel.setText(String.valueOf(getTotalMarked(tableModel.getCreditCardPayments())));
-		totalMarkedAmountLabel.setText(
-				FormatterUtil.formatAmount(getTotalMarkedAmount(tableModel.getCreditCardPayments())));
-	}
-	
-	private static int getTotalMarked(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
-		int total = 0;
+	private static boolean hasSameCreditCard(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
+		CreditCard creditCard = creditCardPayments.get(0).getCreditCard();
 		for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
-			if (creditCardPayment.isMarked()) {
-				total++;
+			if (!creditCard.equals(creditCardPayment.getCreditCard())) {
+				return false;
 			}
 		}
-		return total;
-	}
-
-	private static BigDecimal getTotalMarkedAmount(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
-		BigDecimal total = Constants.ZERO;
-		for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
-			if (creditCardPayment.isMarked()) {
-				total = total.add(creditCardPayment.getAmount());
-			}
-		}
-		return total;
+		return true;
 	}
 
 	private class CreditCardPaymentsTableModel extends AbstractTableModel {
 
 		private final String[] COLUMN_NAMES =
-				{"PP No.", "Supplier", "Amount", "Credit Card", "Transaction Date", "Mark"};
+				{"PP No.", "Supplier", "Amount", "Credit Card", "Transaction Date", "Select"};
 		
 		private List<PurchasePaymentCreditCardPayment> creditCardPayments = new ArrayList<>();
+		private List<Integer> selected = new ArrayList<>();
 		
 		public void setCreditCardPayments(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
 			this.creditCardPayments = creditCardPayments;
+			selected.clear();
 			fireTableDataChanged();
 		}
 		
-		public boolean hasMarked() {
-			for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
-				if (creditCardPayment.isMarked()) {
-					return true;
-				}
+		public void selectAll() {
+			selected.clear();
+			for (int i = 0; i < creditCardPayments.size(); i++) {
+				selected.add(i);
 			}
-			return false;
+		}
+
+		public boolean hasSelected() {
+			return !selected.isEmpty();
 		}
 
 		public List<PurchasePaymentCreditCardPayment> getCreditCardPayments() {
@@ -582,8 +550,8 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 				return creditCardPayment.getCreditCard();
 			case TRANSACTION_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(creditCardPayment.getTransactionDate());
-			case MARK_COLUMN_INDEX:
-				return creditCardPayment.isMarked();
+			case SELECT_COLUMN_INDEX:
+				return selected.contains(rowIndex);
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
@@ -594,7 +562,7 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 			switch (columnIndex) {
 			case AMOUNT_COLUMN_INDEX:
 				return Number.class;
-			case MARK_COLUMN_INDEX:
+			case SELECT_COLUMN_INDEX:
 				return Boolean.class;
 			default:
 				return Object.class;
@@ -603,21 +571,27 @@ public class MarkCreditCardPaymentsPanel extends StandardMagicPanel {
 		
 		@Override
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			return columnIndex == MarkSalesInvoicesTable.MARK_COLUMN_INDEX;
+			return columnIndex == SELECT_COLUMN_INDEX;
 		}
 		
 		@Override
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-			PurchasePaymentCreditCardPayment creditCardPayment = creditCardPayments.get(rowIndex);
 			switch (columnIndex) {
-			case MARK_COLUMN_INDEX:
-				creditCardPayment.setMarked(!creditCardPayment.isMarked());
-				break;
-			default:
-				throw new RuntimeException("Setting invalid column index: " + columnIndex);
+			case SELECT_COLUMN_INDEX:
+				if (selected.contains(rowIndex)) {
+					selected.remove(selected.indexOf(rowIndex));
+				} else {
+					selected.add(rowIndex);
+				}
 			}
-			fireTableCellUpdated(rowIndex, MARK_COLUMN_INDEX);
-			updateMarkedTotalsFields();
+		}
+		
+		public List<PurchasePaymentCreditCardPayment> getSelectedCreditCardPayments() {
+			List<PurchasePaymentCreditCardPayment> selectedCreditCardPayments = new ArrayList<>();
+			for (Integer i : selected) {
+				selectedCreditCardPayments.add(creditCardPayments.get(i));
+			}
+			return selectedCreditCardPayments;
 		}
 		
 	}

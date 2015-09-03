@@ -12,6 +12,7 @@ import com.pj.magic.dao.CreditCardStatementDao;
 import com.pj.magic.dao.CreditCardStatementItemDao;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardStatement;
+import com.pj.magic.model.CreditCardStatementItem;
 import com.pj.magic.service.CreditCardService;
 
 @Service
@@ -47,6 +48,15 @@ public class CreditCardServiceImpl implements CreditCardService {
 		CreditCardStatement statement = creditCardStatementDao.get(id);
 		statement.setItems(creditCardStatementItemDao.findAllByCreditCardStatement(statement));
 		return statement;
+	}
+
+	@Transactional
+	@Override
+	public void save(CreditCardStatement statement) {
+		creditCardStatementDao.save(statement);
+		for (CreditCardStatementItem item : statement.getItems()) {
+			creditCardStatementItemDao.save(item);
+		}
 	}
 
 }

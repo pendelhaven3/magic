@@ -83,7 +83,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Statement No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Statement No.:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
@@ -108,6 +108,21 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		creditCardLabel = ComponentUtil.createLabel(200);
 		mainPanel.add(creditCardLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Statement Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(statementDateLabel, c);
 		
 		currentRow++;
 		
