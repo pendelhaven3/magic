@@ -441,6 +441,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 	}
 
 	private void createCreditCardStatement() {
+		/*
 		if (!tableModel.hasSelected()) {
 			showErrorMessage("At least one row must be selected");
 			return;
@@ -477,8 +478,9 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 				return;
 			}
 			showMessage("Credit card statement created!");
-			getMagicFrame().switchToCreditCardStatementPanel(statement);
-		}		
+			getMagicFrame().switchToCreditCardPaymentPanel(statement);
+		}
+		*/		
 	}
 
 	private static boolean hasSameCreditCard(List<PurchasePaymentCreditCardPayment> creditCardPayments) {

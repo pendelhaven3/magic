@@ -16,25 +16,22 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
-import com.pj.magic.model.CreditCardStatement;
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.service.CreditCardService;
-import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class CreditCardStatementListPanel extends StandardMagicPanel {
+public class CreditCardPaymentListPanel extends StandardMagicPanel {
 
-	private static final int STATEMENT_NUMBER_COLUMN_INDEX = 0;
-	private static final int CREDIT_CARD_COLUMN_INDEX = 1;
-	private static final int STATEMENT_DATE_COLUMN_INDEX = 2;
+	private static final int CREDIT_CARD_COLUMN_INDEX = 0;
 	
 	@Autowired private CreditCardService creditCardService;
 	
 	private MagicListTable table;
-	private CreditCardStatementTableModel tableModel;
+	private CreditCardTableModel tableModel;
 	
 	@Override
 	protected void initializeComponents() {
-		tableModel = new CreditCardStatementTableModel();
+		tableModel = new CreditCardTableModel();
 		table = new MagicListTable(tableModel);
 	}
 	
@@ -70,8 +67,8 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 			
 			@Override
 			protected void onDoubleClick() {
-				CreditCardStatement statement = tableModel.getStatement(table.getSelectedRow());
-				getMagicFrame().switchToCreditCardStatementPanel(statement);
+				CreditCard creditCard = tableModel.getCreditCard(table.getSelectedRow());
+				getMagicFrame().switchToCreditCardPaymentPanel(creditCard);
 			}
 		});
 	}
@@ -82,31 +79,27 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		List<CreditCardStatement> statements = creditCardService.getAllCreditCardStatements();
-		tableModel.setStatements(statements);
-		if (!statements.isEmpty()) {
-			table.selectFirstRow();
-		}
+		tableModel.setCreditCards(creditCardService.getAllCreditCards());
 	}
 	
-	private class CreditCardStatementTableModel extends AbstractTableModel {
+	private class CreditCardTableModel extends AbstractTableModel {
 
-		private final String[] COLUMN_NAMES = {"Statement No.", "Credit Card", "Statement Date"};
+		private final String[] COLUMN_NAMES = {"Credit Card"};
 		
-		private List<CreditCardStatement> statements = new ArrayList<>();
+		private List<CreditCard> creditCards = new ArrayList<>();
 		
-		public void setStatements(List<CreditCardStatement> statements) {
-			this.statements = statements;
+		public void setCreditCards(List<CreditCard> creditCards) {
+			this.creditCards = creditCards;
 			fireTableDataChanged();
 		}
 		
-		public CreditCardStatement getStatement(int rowIndex) {
-			return statements.get(rowIndex);
+		public CreditCard getCreditCard(int rowIndex) {
+			return creditCards.get(rowIndex);
 		}
 
 		@Override
 		public int getRowCount() {
-			return statements.size();
+			return creditCards.size();
 		}
 
 		@Override
@@ -121,14 +114,10 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			CreditCardStatement statement = statements.get(rowIndex);
+			CreditCard creditCard = creditCards.get(rowIndex);
 			switch (columnIndex) {
-			case STATEMENT_NUMBER_COLUMN_INDEX:
-				return statement.getStatementNumber();
 			case CREDIT_CARD_COLUMN_INDEX:
-				return statement.getCreditCard();
-			case STATEMENT_DATE_COLUMN_INDEX:
-				return FormatterUtil.formatDate(statement.getStatementDate());
+				return creditCard;
 			default:
 				throw new RuntimeException("Fetching invalid column index:" + columnIndex);
 			}

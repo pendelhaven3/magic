@@ -1032,3 +1032,13 @@ create table CREDIT_CARD_STATEMENT_ITEM (
   constraint CREDIT_CARD_STATEMENT_ITEM$FK foreign key (CREDIT_CARD_STATEMENT_ID) references CREDIT_CARD_STATEMENT (ID),
   constraint CREDIT_CARD_STATEMENT_ITEM$FK2 foreign key (PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT_ID) references PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT (ID)
 );
+
+create table CREDIT_CARD_PAYMENT (
+  ID integer auto_increment,
+  CREDIT_CARD_ID integer not null,
+  AMOUNT numeric(10, 2) not null,
+  PAYMENT_DT date not null,
+  REMARKS varchar(100) not null,
+  primary key (ID),
+  constraint CREDIT_CARD_PAYMENT$FK foreign key (CREDIT_CARD_ID) references CREDIT_CARD (ID)
+);
