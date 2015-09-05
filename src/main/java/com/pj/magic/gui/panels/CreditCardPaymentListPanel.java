@@ -2,9 +2,11 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -33,6 +35,8 @@ public class CreditCardPaymentListPanel extends StandardMagicPanel {
 	protected void initializeComponents() {
 		tableModel = new CreditCardTableModel();
 		table = new MagicListTable(tableModel);
+		
+		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 	
 	@Override
@@ -67,10 +71,22 @@ public class CreditCardPaymentListPanel extends StandardMagicPanel {
 			
 			@Override
 			protected void onDoubleClick() {
-				CreditCard creditCard = tableModel.getCreditCard(table.getSelectedRow());
-				getMagicFrame().switchToCreditCardPaymentPanel(creditCard);
+				selectCreditCard();
 			}
 		});
+		
+		table.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				selectCreditCard();
+			}
+		});
+	}
+
+	private void selectCreditCard() {
+		CreditCard creditCard = tableModel.getCreditCard(table.getSelectedRow());
+		getMagicFrame().switchToCreditCardPaymentPanel(creditCard);
 	}
 
 	@Override
@@ -80,6 +96,7 @@ public class CreditCardPaymentListPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		tableModel.setCreditCards(creditCardService.getAllCreditCards());
+		table.selectFirstRow();
 	}
 	
 	private class CreditCardTableModel extends AbstractTableModel {
