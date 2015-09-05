@@ -35,7 +35,6 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 
 	@Autowired private CreditCardService creditCardService;
 	
-	private CreditCardStatement statement;
 	private JLabel statementNumberLabel;
 	private JLabel creditCardLabel;
 	private JLabel statementDateLabel;
@@ -58,7 +57,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	}
 	
 	public void updateDisplay(CreditCardStatement statement) {
-		this.statement = statement = creditCardService.getCreditCardStatement(statement.getId());
+		statement = creditCardService.getCreditCardStatement(statement.getId());
 		
 		statementNumberLabel.setText(statement.getStatementNumber().toString());
 		creditCardLabel.setText(statement.getCreditCard().toString());

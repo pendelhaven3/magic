@@ -18,3 +18,6 @@ create table CREDIT_CARD_STATEMENT_ITEM (
 );
 
 insert into SEQUENCE (NAME) values ('CREDIT_CARD_STATEMENT_NO_SEQ');
+
+alter table CREDIT_CARD add CUTOFF_DT integer null;
+

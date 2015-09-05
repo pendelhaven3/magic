@@ -703,6 +703,7 @@ create table CREDIT_CARD (
   USER varchar(20) not null,
   BANK varchar(20) not null,
   CARD_NUMBER varchar(20) not null,
+  CUTOFF_DT integer null,
   constraint CREDIT_CARD$PK primary key (ID)
 );
 

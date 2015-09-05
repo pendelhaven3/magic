@@ -23,6 +23,9 @@ public class CreditCard {
 	@Column(name = "CARD_NUMBER")
 	private String cardNumber;
 
+	@Column(name = "CUTOFF_DT")
+	private Integer cutoffDate;
+	
 	public CreditCard() {
 		// default constructor
 	}
@@ -88,5 +91,13 @@ public class CreditCard {
 	public String toString() {
 		return user + " - " + bank;
 	}
-	
+
+	public Integer getCutoffDate() {
+		return cutoffDate;
+	}
+
+	public void setCutoffDate(Integer cutoffDate) {
+		this.cutoffDate = cutoffDate;
+	}
+
 }

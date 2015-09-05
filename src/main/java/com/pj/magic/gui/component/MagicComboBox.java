@@ -37,4 +37,10 @@ public class MagicComboBox<E> extends JComboBox<E> {
 		});
 	}
 	
+	// TODO: Not working!
+	public void resetScrollPosition() {
+		setSelectedIndex(1);
+		setSelectedIndex(-1);
+	}
+	
 }

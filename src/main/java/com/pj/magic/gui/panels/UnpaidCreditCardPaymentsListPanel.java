@@ -516,10 +516,6 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 			return !selected.isEmpty();
 		}
 
-		public List<PurchasePaymentCreditCardPayment> getCreditCardPayments() {
-			return creditCardPayments;
-		}
-		
 		@Override
 		public int getRowCount() {
 			return creditCardPayments.size();
