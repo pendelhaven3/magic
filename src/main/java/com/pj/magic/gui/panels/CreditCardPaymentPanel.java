@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.CustomAction;
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AddCreditCardPaymentDialog;
@@ -28,6 +30,7 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardPayment;
 import com.pj.magic.model.CreditCardStatementItem;
+import com.pj.magic.model.PromoPointsClaim;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
 import com.pj.magic.service.CreditCardService;
 import com.pj.magic.util.ComponentUtil;
@@ -204,6 +207,22 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
+		paymentsTable.onDoubleClick(new CustomAction() {
+			
+			@Override
+			public void doAction() {
+				editPayment();
+			}
+		});
+		
+	}
+
+	private void editPayment() {
+		CreditCardPayment payment = paymentsTableModel.getPayment(paymentsTable.getSelectedRow());
+		
+		addCreditCardPaymentDialog.updateDisplay(payment);
+		addCreditCardPaymentDialog.setVisible(true);
+		updateDisplay(creditCard);
 	}
 
 	@Override
@@ -362,6 +381,10 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 			fireTableDataChanged();
 		}
 		
+		public CreditCardPayment getPayment(int row) {
+			return payments.get(row);
+		}
+
 		@Override
 		public int getRowCount() {
 			return payments.size();

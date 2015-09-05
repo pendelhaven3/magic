@@ -18,6 +18,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.TableModel;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.component.CustomAction;
+import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.util.KeyUtil;
 
 // TODO: This is not really ItemsTable
@@ -167,6 +169,16 @@ public class MagicTable extends JTable {
 		InputMap inputMap = getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		inputMap.put(KeyUtil.getEscapeKey(), Constants.ESCAPE_KEY_ACTION_NAME);
 		getActionMap().put(Constants.ESCAPE_KEY_ACTION_NAME, action);
+	}
+
+	public void onDoubleClick(final CustomAction action) {
+		addMouseListener(new DoubleClickMouseAdapter() {
+			
+			@Override
+			protected void onDoubleClick() {
+				action.doAction();
+			}
+		});
 	}
 	
 }
