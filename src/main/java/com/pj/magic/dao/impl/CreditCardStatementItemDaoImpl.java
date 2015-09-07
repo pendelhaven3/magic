@@ -127,4 +127,11 @@ public class CreditCardStatementItemDaoImpl extends MagicDao implements CreditCa
 				item.getId());
 	}
 
+	private static final String DELETE_SQL = "delete from CREDIT_CARD_STATEMENT_ITEM where ID = ?";
+	
+	@Override
+	public void delete(CreditCardStatementItem item) {
+		getJdbcTemplate().update(DELETE_SQL, item.getId());
+	}
+
 }

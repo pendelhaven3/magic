@@ -193,4 +193,8 @@ public class MagicTable extends JTable {
 		onDoubleClick(action);
 	}
 	
+	public boolean hasNoSelectedRow() {
+		return getSelectedRow() == -1;
+	}
+	
 }

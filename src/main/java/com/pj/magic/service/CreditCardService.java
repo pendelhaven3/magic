@@ -31,5 +31,7 @@ public interface CreditCardService {
 	void markAsPaid(List<CreditCardStatementItem> items, Date paidDate);
 
 	void markAsUnpaid(List<CreditCardStatementItem> items);
+
+	void delete(CreditCardStatementItem item);
 	
 }

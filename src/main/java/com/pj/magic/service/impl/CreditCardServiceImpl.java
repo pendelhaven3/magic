@@ -61,8 +61,9 @@ public class CreditCardServiceImpl implements CreditCardService {
 	@Transactional
 	@Override
 	public void save(CreditCardStatement statement) {
+		boolean isNew = statement.isNew();
 		creditCardStatementDao.save(statement);
-		if (statement.isNew()) {
+		if (isNew) {
 			for (CreditCardStatementItem item : statement.getItems()) {
 				creditCardStatementItemDao.save(item);
 			}
@@ -103,6 +104,12 @@ public class CreditCardServiceImpl implements CreditCardService {
 			item.setPaidDate(null);
 			creditCardStatementItemDao.save(item);
 		}
+	}
+
+	@Transactional
+	@Override
+	public void delete(CreditCardStatementItem item) {
+		creditCardStatementItemDao.delete(item);
 	}
 
 }

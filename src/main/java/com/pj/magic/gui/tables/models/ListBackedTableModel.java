@@ -41,4 +41,9 @@ public abstract class ListBackedTableModel<T> extends AbstractTableModel {
 	public int getColumnCount() {
 		return getColumnNames().length;
 	}
+	
+	public boolean hasItems() {
+		return !items.isEmpty();
+	}
+	
 }

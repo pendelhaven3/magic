@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -67,9 +69,9 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	private JButton postButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
-	private JButton markSelectedAsPaidButton;
-	private JButton markSelectedAsUnpaidButton;
-	private JButton selectAllButton;
+	private JButton markCheckedAsPaidButton;
+	private JButton markCheckedAsUnpaidButton;
+	private JButton checkAllButton;
 	private SelectPaidDateDialog selectPaidDateDialog;
 	
 	@Override
@@ -77,26 +79,26 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		initializeTable();
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 		
-		markSelectedAsPaidButton = new JButton("Mark Selected As Paid");
-		markSelectedAsPaidButton.addActionListener(new ActionListener() {
+		markCheckedAsPaidButton = new JButton("Mark Checked As Paid");
+		markCheckedAsPaidButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				markSelectedAsPaid();
+				markCheckedAsPaid();
 			}
 		});
 		
-		markSelectedAsUnpaidButton = new JButton("Mark Selected As Unpaid");
-		markSelectedAsUnpaidButton.addActionListener(new ActionListener() {
+		markCheckedAsUnpaidButton = new JButton("Mark Checked As Unpaid");
+		markCheckedAsUnpaidButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				markSelectedAsUnpaid();
+				markCheckedAsUnpaid();
 			}
 		});
 		
-		selectAllButton = new JButton("Select All");
-		selectAllButton.addActionListener(new ActionListener() {
+		checkAllButton = new JButton("Check All");
+		checkAllButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -107,7 +109,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		selectPaidDateDialog = new SelectPaidDateDialog();
 	}
 
-	private void markSelectedAsPaid() {
+	private void markCheckedAsPaid() {
 		if (!confirm("Mark items as paid?")) {
 			return;
 		}
@@ -130,7 +132,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		}
 	}
 
-	private void markSelectedAsUnpaid() {
+	private void markCheckedAsUnpaid() {
 		if (!confirm("Mark items as unpaid?")) {
 			return;
 		}
@@ -175,12 +177,12 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		this.statement = statement = creditCardService.getCreditCardStatement(statement.getId());
 		
 		tableModel.setItems(statement.getItems());
-		totalItemsField.setText(String.valueOf(statement.getItems().size()));
-		totalAmountField.setText(FormatterUtil.formatAmount(statement.getTotalAmount()));
+		updateTotalFields(statement.getItems());
+		
 		statusField.setText(statement.getStatus());
 		postButton.setEnabled(!statement.isPosted());
-//		addItemButton.setEnabled(!statement.isPosted());
-//		deleteItemButton.setEnabled(!statement.isPosted());
+		addItemButton.setEnabled(!statement.isPosted());
+		deleteItemButton.setEnabled(!statement.isPosted());
 	}
 
 	private void clearDisplay() {
@@ -289,13 +291,13 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 5;
-		selectAllButton.setPreferredSize(new Dimension(130, 30));
-		markSelectedAsPaidButton.setPreferredSize(new Dimension(200, 30));
-		markSelectedAsUnpaidButton.setPreferredSize(new Dimension(220, 30));
+		checkAllButton.setPreferredSize(new Dimension(130, 30));
+		markCheckedAsPaidButton.setPreferredSize(new Dimension(200, 30));
+		markCheckedAsUnpaidButton.setPreferredSize(new Dimension(220, 30));
 		mainPanel.add(ComponentUtil.createGenericPanel(
-				selectAllButton,
-				markSelectedAsPaidButton,
-				markSelectedAsUnpaidButton), c);
+				checkAllButton,
+				markCheckedAsPaidButton,
+				markCheckedAsUnpaidButton), c);
 		
 		currentRow++;
 		
@@ -362,12 +364,63 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				table.removeCurrentlySelectedItem();
+				deleteCurrentlySelectedItem();
 			}
 		});
 		panel.add(deleteItemButton, BorderLayout.WEST);
 		
 		return panel;
+	}
+
+	private void deleteCurrentlySelectedItem() {
+		if (statement.isPosted()) {
+			return;
+		}
+		
+		if (table.hasNoSelectedRow()) {
+			return;
+		}
+		
+		if (confirm("Remove currently selected item?")) {
+			try {
+				doDeleteCurrentlySelectedItem();
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+				return;
+			}
+			
+			showMessage("Item deleted");
+			updateTotalFields(tableModel.getItems());
+		}
+	}
+
+	private void doDeleteCurrentlySelectedItem() {
+		int selectedRowIndex = table.getSelectedRow();
+		CreditCardStatementItem item = tableModel.getItem(selectedRowIndex);
+		table.clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
+		tableModel.removeItem(selectedRowIndex);
+		
+		if (tableModel.hasItems()) {
+			if (selectedRowIndex == tableModel.getRowCount()) {
+				table.changeSelection(selectedRowIndex - 1, 0, false, false);
+			} else {
+				table.changeSelection(selectedRowIndex, 0, false, false);
+			}
+		}
+	}
+
+	private void updateTotalFields(List<CreditCardStatementItem> items) {
+		totalItemsField.setText(String.valueOf(items.size()));
+		totalAmountField.setText(FormatterUtil.formatAmount(getTotalAmount(items)));
+	}
+
+	private static BigDecimal getTotalAmount(List<CreditCardStatementItem> items) {
+		BigDecimal total = Constants.ZERO;
+		for (CreditCardStatementItem item : items) {
+			total = total.add(item.getCreditCardPayment().getAmount());
+		}
+		return total;
 	}
 
 	@Override
@@ -404,7 +457,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	private class CreditCardStatementItemsTableModel extends ListBackedTableModel<CreditCardStatementItem> {
 
 		private final String[] columnNames = 
-			{"PP No.", "Supplier", "Amount", "Transaction Date", "Paid", "Paid Date", "Select"};
+			{"PP No.", "Supplier", "Amount", "Transaction Date", "Paid", "Paid Date", ""};
 		
 		private List<Integer> selected = new ArrayList<>();
 		
@@ -413,6 +466,28 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 			return columnNames;
 		}
 		
+		public void removeItem(int rowIndex) {
+			CreditCardStatementItem item = getItems().remove(rowIndex);
+			creditCardService.delete(item);
+			
+			updateSelectedAfterRowDelete(rowIndex);
+			
+			fireTableDataChanged();
+		}
+
+		private void updateSelectedAfterRowDelete(int deletedRow) {
+			List<Integer> tempSelected = new ArrayList<>(selected);
+			selected.clear();
+			
+			for (Integer row : tempSelected) {
+				if (row.intValue() > deletedRow) {
+					selected.add(row - 1);
+				} else if (row.intValue() < deletedRow) {
+					selected.add(row);
+				}
+			}
+		}
+
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			CreditCardStatementItem item = getItem(rowIndex);
