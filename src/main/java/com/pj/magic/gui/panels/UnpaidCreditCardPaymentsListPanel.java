@@ -156,7 +156,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 	private void searchCreditCardPayments() {
 		PurchasePaymentCreditCardPaymentSearchCriteria criteria = 
 				new PurchasePaymentCreditCardPaymentSearchCriteria();
-		criteria.setMarked(false);
+		criteria.setNotIncludedInStatement(true);
 		
 		if (fromDateModel.getValue() != null) {
 			criteria.setFromDate(fromDateModel.getValue().getTime());
@@ -191,12 +191,20 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 	
 	public void updateDisplay() {
 		List<PurchasePaymentCreditCardPayment> creditCardPayments = 
-				purchasePaymentService.getAllUnmarkedCreditCardPayments();
+				getAllUnpaidCreditCardPaymentsNotIncludedInStatement();
 		tableModel.setCreditCardPayments(creditCardPayments);
 		updateTotalFields(creditCardPayments);
 		
 		creditCardComboBox.setModel(ListUtil.toDefaultComboBoxModel(creditCardService.getAllCreditCards(), true));
 		creditCardComboBox.setSelectedIndex(0);
+	}
+
+	private List<PurchasePaymentCreditCardPayment> getAllUnpaidCreditCardPaymentsNotIncludedInStatement() {
+		PurchasePaymentCreditCardPaymentSearchCriteria criteria =
+				new PurchasePaymentCreditCardPaymentSearchCriteria();
+		criteria.setNotIncludedInStatement(true);
+		
+		return purchasePaymentService.searchCreditCardPayments(criteria);
 	}
 
 	private void updateTotalFields(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
@@ -375,13 +383,13 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Total Rows:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Total Rows:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalRowsLabel = ComponentUtil.createRightLabel(120, "");
+		totalRowsLabel = ComponentUtil.createLabel(100, "");
 		mainPanel.add(totalRowsLabel, c);
 		
 		currentRow++;
@@ -390,13 +398,13 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Total Amount:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountLabel = ComponentUtil.createRightLabel(120, "");
+		totalAmountLabel = ComponentUtil.createLabel(120, "");
 		mainPanel.add(totalAmountLabel, c);
 		
 		return mainPanel;

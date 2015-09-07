@@ -22,10 +22,8 @@ import com.pj.magic.util.DbUtil;
 @Repository
 public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardStatementDao {
 
-	private static final String CREDIT_CARD_STATEMENT_NUMBER_SEQUENCE = "CREDIT_CARD_STATEMENT_NO_SEQ";
-	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, STATEMENT_NO, CREDIT_CARD_ID, STATEMENT_DT,"
+			"select a.ID, CREDIT_CARD_ID, STATEMENT_DT, POST_IND,"
 			+ " b.USER, b.BANK"
 			+ " from CREDIT_CARD_STATEMENT a"
 			+ " left join CREDIT_CARD b"
@@ -44,9 +42,9 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 		public CreditCardStatement mapRow(ResultSet rs, int rowNum) throws SQLException {
 			CreditCardStatement statement = new CreditCardStatement();
 			statement.setId(rs.getLong("ID"));
-			statement.setStatementNumber(rs.getLong("STATEMENT_NO"));
 			statement.setCreditCard(mapCreditCard(rs));
 			statement.setStatementDate(rs.getDate("STATEMENT_DT"));
+			statement.setPosted("Y".equals(rs.getString("POST_IND")));
 			return statement;
 		}
 
@@ -70,11 +68,19 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 		}
 	}
 
-	private static final String INSERT_SQL =
-			"insert into CREDIT_CARD_STATEMENT (STATEMENT_NO, CREDIT_CARD_ID, STATEMENT_DT) values (?, ?, ?)";
-	
 	@Override
-	public void save(final CreditCardStatement statement) {
+	public void save(CreditCardStatement statement) {
+		if (statement.isNew()) {
+			insert(statement);
+		} else {
+			update(statement);
+		}
+	}
+
+	private static final String INSERT_SQL =
+			"insert into CREDIT_CARD_STATEMENT (CREDIT_CARD_ID, STATEMENT_DT) values (?, ?)";
+	
+	private void insert(final CreditCardStatement statement) {
 		KeyHolder holder = new GeneratedKeyHolder();
 		getJdbcTemplate().update(new PreparedStatementCreator() {
 			
@@ -82,20 +88,22 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setLong(1, getNextStatementNumber());
-				ps.setLong(2, statement.getCreditCard().getId());
-				ps.setDate(3, DbUtil.toSqlDate(statement.getStatementDate()));
+				ps.setLong(1, statement.getCreditCard().getId());
+				ps.setDate(2, DbUtil.toSqlDate(statement.getStatementDate()));
 				return ps;
 			}
 		}, holder);
 		
-		CreditCardStatement updated = get(holder.getKey().longValue());
-		statement.setId(updated.getId());
-		statement.setStatementNumber(updated.getStatementNumber());
+		statement.setId(holder.getKey().longValue());
 	}
 
-	protected long getNextStatementNumber() {
-		return getNextSequenceValue(CREDIT_CARD_STATEMENT_NUMBER_SEQUENCE);
+	private static final String UPDATE_SQL = "update CREDIT_CARD_STATEMENT"
+			+ " set POST_IND = ? where ID = ?";
+	
+	private void update(CreditCardStatement statement) {
+		getJdbcTemplate().update(UPDATE_SQL,
+				statement.isPosted() ? "Y" : "N",
+				statement.getId());
 	}
 
 }

@@ -181,7 +181,7 @@ public class MagicTable extends JTable {
 		});
 	}
 	
-	public void onEnterAndDoubleClick(final CustomAction action) {
+	public void onEnterKeyAndDoubleClick(final CustomAction action) {
 		onEnterKey(new AbstractAction() {
 			
 			@Override

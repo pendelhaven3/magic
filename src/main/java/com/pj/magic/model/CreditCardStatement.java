@@ -10,10 +10,10 @@ import com.pj.magic.Constants;
 public class CreditCardStatement {
 
 	private Long id;
-	private Long statementNumber;
 	private CreditCard creditCard;
 	private Date statementDate;
 	private List<CreditCardStatementItem> items = new ArrayList<>();
+	private boolean posted;
 
 	public CreditCardStatement() {
 		// default constructor
@@ -29,14 +29,6 @@ public class CreditCardStatement {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getStatementNumber() {
-		return statementNumber;
-	}
-
-	public void setStatementNumber(Long statementNumber) {
-		this.statementNumber = statementNumber;
 	}
 
 	public CreditCard getCreditCard() {
@@ -68,7 +60,51 @@ public class CreditCardStatement {
 	}
 
 	public BigDecimal getTotalAmount() {
-		return Constants.ZERO;
+		BigDecimal total = Constants.ZERO;
+		for (CreditCardStatementItem item : items) {
+			total = total.add(item.getCreditCardPayment().getAmount());
+		}
+		return total;
+	}
+
+	public boolean isPosted() {
+		return posted;
+	}
+
+	public void setPosted(boolean posted) {
+		this.posted = posted;
+	}
+
+	public String getStatus() {
+		if (posted) {
+			if (isFullyPaid()) {
+				return "Fully Paid";
+			} else if (isUnpaid()) {
+				return "Posted/Unpaid";
+			} else {
+				return "Partially Paid";
+			}
+		} else {
+			return "New";
+		}
+	}
+
+	private boolean isUnpaid() {
+		for (CreditCardStatementItem item : items) {
+			if (item.isPaid()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean isFullyPaid() {
+		for (CreditCardStatementItem item : items) {
+			if (!item.isPaid()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

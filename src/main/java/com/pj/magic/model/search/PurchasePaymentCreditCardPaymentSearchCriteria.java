@@ -12,7 +12,7 @@ public class PurchasePaymentCreditCardPaymentSearchCriteria {
 	private Date toDate;
 	private Supplier supplier;
 	private CreditCard creditCard;
-	private Boolean marked;
+	private Boolean notIncludedInStatement;
 
 	public Boolean getPosted() {
 		return posted;
@@ -54,12 +54,12 @@ public class PurchasePaymentCreditCardPaymentSearchCriteria {
 		this.creditCard = creditCard;
 	}
 
-	public Boolean getMarked() {
-		return marked;
+	public Boolean getNotIncludedInStatement() {
+		return notIncludedInStatement;
 	}
 
-	public void setMarked(Boolean marked) {
-		this.marked = marked;
+	public void setNotIncludedInStatement(Boolean notIncludedInStatement) {
+		this.notIncludedInStatement = notIncludedInStatement;
 	}
-
+	
 }

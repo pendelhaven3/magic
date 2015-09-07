@@ -15,7 +15,7 @@ import javax.swing.table.AbstractTableModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.component.DoubleClickMouseAdapter;
+import com.pj.magic.gui.component.CustomAction;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.CreditCard;
@@ -67,18 +67,18 @@ public class CreditCardPaymentListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
-		table.addMouseListener(new DoubleClickMouseAdapter() {
-			
-			@Override
-			protected void onDoubleClick() {
-				selectCreditCard();
-			}
-		});
-		
-		table.onEnterKey(new AbstractAction() {
+		onEscapeKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				doOnBack();
+			}
+		});
+		
+		table.onEnterKeyAndDoubleClick(new CustomAction() {
+			
+			@Override
+			public void doAction() {
 				selectCreditCard();
 			}
 		});

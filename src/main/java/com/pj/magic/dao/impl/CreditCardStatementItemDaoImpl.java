@@ -25,6 +25,7 @@ public class CreditCardStatementItemDaoImpl extends MagicDao implements CreditCa
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, CREDIT_CARD_STATEMENT_ID, PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT_ID,"
+			+ " a.PAID_IND, a.PAID_DT,"
 			+ " b.AMOUNT, b.TRANSACTION_DT,"
 			+ " c.PURCHASE_PAYMENT_NO,"
 			+ " d.NAME as SUPPLIER_NAME"
@@ -60,6 +61,8 @@ public class CreditCardStatementItemDaoImpl extends MagicDao implements CreditCa
 			item.setId(rs.getLong("ID"));
 			item.setParent(new CreditCardStatement(rs.getLong("CREDIT_CARD_STATEMENT_ID")));
 			item.setCreditCardPayment(mapCreditCardPayments(rs));
+			item.setPaid("Y".equals(rs.getString("PAID_IND")));
+			item.setPaidDate(rs.getDate("PAID_DT"));
 			return item;
 		}
 
@@ -83,13 +86,21 @@ public class CreditCardStatementItemDaoImpl extends MagicDao implements CreditCa
 		
 	}
 
+	@Override
+	public void save(CreditCardStatementItem item) {
+		if (item.isNew()) {
+			insert(item);
+		} else {
+			update(item);
+		}
+	}
+
 	private static final String INSERT_SQL =
 			"insert into CREDIT_CARD_STATEMENT_ITEM"
 			+ " (CREDIT_CARD_STATEMENT_ID, PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT_ID)"
 			+ " values (?, ?)";
 	
-	@Override
-	public void save(final CreditCardStatementItem item) {
+	private void insert(final CreditCardStatementItem item) {
 		KeyHolder holder = new GeneratedKeyHolder();
 		getJdbcTemplate().update(new PreparedStatementCreator() {
 			
@@ -104,6 +115,16 @@ public class CreditCardStatementItemDaoImpl extends MagicDao implements CreditCa
 		}, holder);
 		
 		item.setId(holder.getKey().longValue());
+	}
+
+	private static final String UPDATE_SQL = 
+			"update CREDIT_CARD_STATEMENT_ITEM set PAID_IND = ?, PAID_DT = ? where ID = ?";
+	
+	private void update(CreditCardStatementItem item) {
+		getJdbcTemplate().update(UPDATE_SQL,
+				item.isPaid() ? "Y" : "N",
+				item.getPaidDate(),
+				item.getId());
 	}
 
 }

@@ -1,10 +1,14 @@
 package com.pj.magic.model;
 
+import java.util.Date;
+
 public class CreditCardStatementItem {
 
 	private Long id;
 	private CreditCardStatement parent;
 	private PurchasePaymentCreditCardPayment creditCardPayment;
+	private boolean paid;
+	private Date paidDate;
 
 	public Long getId() {
 		return id;
@@ -28,6 +32,26 @@ public class CreditCardStatementItem {
 
 	public void setCreditCardPayment(PurchasePaymentCreditCardPayment creditCardPayment) {
 		this.creditCardPayment = creditCardPayment;
+	}
+
+	public boolean isPaid() {
+		return paid;
+	}
+
+	public void setPaid(boolean paid) {
+		this.paid = paid;
+	}
+
+	public Date getPaidDate() {
+		return paidDate;
+	}
+
+	public void setPaidDate(Date paidDate) {
+		this.paidDate = paidDate;
+	}
+
+	public boolean isNew() {
+		return id == null;
 	}
 
 }
