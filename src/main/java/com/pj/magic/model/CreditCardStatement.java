@@ -1,8 +1,11 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.pj.magic.Constants;
 
 public class CreditCardStatement {
 
@@ -62,6 +65,10 @@ public class CreditCardStatement {
 
 	public boolean isNew() {
 		return id == null;
+	}
+
+	public BigDecimal getTotalAmount() {
+		return Constants.ZERO;
 	}
 
 }

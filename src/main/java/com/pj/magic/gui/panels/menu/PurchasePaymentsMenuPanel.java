@@ -26,6 +26,7 @@ public class PurchasePaymentsMenuPanel extends MenuPanel {
 	private static final String PURCHASE_PAYMENT = "Purchase Payment";
 	private static final String PURCHASE_PAYMENT_ADJUSTMENT = "Purchase Payment Adjustment";
 	private static final String UNPAID_CREDIT_CARD_PAYMENTS_LIST = "Unpaid Credit Card Payments List";
+	private static final String CREDIT_CARD_STATEMENT = "Credit Card Statements";
 	private static final String CREDIT_CARD_PAYMENT = "Credit Card Payments";
 	
 	private MagicListTable table;
@@ -95,6 +96,9 @@ public class PurchasePaymentsMenuPanel extends MenuPanel {
 		case UNPAID_CREDIT_CARD_PAYMENTS_LIST:
 			getMagicFrame().switchToUnpaidCreditCardPaymentsListPanel();
 			break;
+		case CREDIT_CARD_STATEMENT:
+			getMagicFrame().switchToCreditCardStatementListPanel();
+			break;
 		case CREDIT_CARD_PAYMENT:
 			getMagicFrame().switchToCreditCardPaymentListPanel();
 			break;
@@ -112,6 +116,7 @@ public class PurchasePaymentsMenuPanel extends MenuPanel {
 				PURCHASE_PAYMENT,
 				PURCHASE_PAYMENT_ADJUSTMENT,
 				UNPAID_CREDIT_CARD_PAYMENTS_LIST,
+				CREDIT_CARD_STATEMENT,
 				CREDIT_CARD_PAYMENT
 		);
 		
