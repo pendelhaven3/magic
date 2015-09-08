@@ -1,5 +1,6 @@
 package com.pj.magic.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.pj.magic.model.CreditCard;
@@ -12,5 +13,7 @@ public interface CreditCardPaymentDao {
 	void save(CreditCardPayment payment);
 
 	CreditCardPayment get(long id);
+
+	BigDecimal getSurplusPayment(CreditCard creditCard);
 	
 }

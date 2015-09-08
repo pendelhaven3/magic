@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -8,10 +9,12 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.Constants;
 import com.pj.magic.dao.CreditCardDao;
 import com.pj.magic.dao.CreditCardPaymentDao;
 import com.pj.magic.dao.CreditCardStatementDao;
 import com.pj.magic.dao.CreditCardStatementItemDao;
+import com.pj.magic.exception.NotEnoughSurplusPaymentException;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardPayment;
 import com.pj.magic.model.CreditCardStatement;
@@ -88,12 +91,32 @@ public class CreditCardServiceImpl implements CreditCardService {
 
 	@Transactional
 	@Override
-	public void markAsPaid(List<CreditCardStatementItem> items, Date paidDate) {
+	public void markAsPaid(List<CreditCardStatementItem> items, Date paidDate) 
+			throws NotEnoughSurplusPaymentException {
+		if (items.isEmpty()) {
+			return;
+		}
+		
+		BigDecimal totalPaidAmount = getTotalAmount(items);
+		BigDecimal totalSurplusPayments = getSurplusPayment(items.get(0).getParent().getCreditCard());
+		
+		if (totalPaidAmount.compareTo(totalSurplusPayments) > 0) {
+			throw new NotEnoughSurplusPaymentException();
+		}
+		
 		for (CreditCardStatementItem item : items) {
 			item.setPaid(true);
 			item.setPaidDate(paidDate);
 			creditCardStatementItemDao.save(item);
 		}
+	}
+
+	private static BigDecimal getTotalAmount(List<CreditCardStatementItem> items) {
+		BigDecimal total = Constants.ZERO;
+		for (CreditCardStatementItem item : items) {
+			total = total.add(item.getCreditCardPayment().getAmount());
+		}
+		return total;
 	}
 
 	@Transactional
@@ -110,6 +133,11 @@ public class CreditCardServiceImpl implements CreditCardService {
 	@Override
 	public void delete(CreditCardStatementItem item) {
 		creditCardStatementItemDao.delete(item);
+	}
+
+	@Override
+	public BigDecimal getSurplusPayment(CreditCard creditCard) {
+		return creditCardPaymentDao.getSurplusPayment(creditCard);
 	}
 
 }

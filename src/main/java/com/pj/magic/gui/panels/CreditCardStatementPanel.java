@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.exception.NotEnoughSurplusPaymentException;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -73,6 +74,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	private JButton markCheckedAsUnpaidButton;
 	private JButton checkAllButton;
 	private SelectPaidDateDialog selectPaidDateDialog;
+	private JLabel surplusPaymentLabel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -110,6 +112,14 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	}
 
 	private void markCheckedAsPaid() {
+		BigDecimal totalPaidAmount = getTotalAmount(tableModel.getSelectedItems());
+		BigDecimal totalSurplusPayments = creditCardService.getSurplusPayment(statement.getCreditCard());
+		
+		if (totalPaidAmount.compareTo(totalSurplusPayments) > 0) {
+			showErrorMessage("Total amount of items greater than surplus payments");
+			return;
+		}
+		
 		if (!confirm("Mark items as paid?")) {
 			return;
 		}
@@ -121,6 +131,9 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		if (paidDate != null) {
 			try {
 				creditCardService.markAsPaid(tableModel.getSelectedItems(), paidDate);
+			} catch (NotEnoughSurplusPaymentException e) {
+				showErrorMessage("Total amount of items greater than surplus payments");
+				return;
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showMessageForUnexpectedError();
@@ -168,12 +181,6 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		statementDateField.setText(FormatterUtil.formatDate(statement.getStatementDate()));
 		statusField.setText(statement.getStatus());
 		
-		if (statement.getId() == null) {
-			this.statement = statement;
-			clearDisplay();
-			return;
-		}
-		
 		this.statement = statement = creditCardService.getCreditCardStatement(statement.getId());
 		
 		tableModel.setItems(statement.getItems());
@@ -183,14 +190,11 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		postButton.setEnabled(!statement.isPosted());
 		addItemButton.setEnabled(!statement.isPosted());
 		deleteItemButton.setEnabled(!statement.isPosted());
-	}
-
-	private void clearDisplay() {
-		totalItemsField.setText(null);
-		totalAmountField.setText(null);
-		postButton.setEnabled(false);
-		addItemButton.setEnabled(false);
-		deleteItemButton.setEnabled(false);
+		checkAllButton.setEnabled(statement.isPosted());
+		markCheckedAsPaidButton.setEnabled(statement.isPosted());
+		markCheckedAsUnpaidButton.setEnabled(statement.isPosted());
+		surplusPaymentLabel.setText(
+				FormatterUtil.formatAmount(creditCardService.getSurplusPayment(statement.getCreditCard())));
 	}
 
 	@Override
@@ -211,12 +215,30 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		mainPanel.add(ComponentUtil.createLabel(100, "Credit Card:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		creditCardField = ComponentUtil.createLabel(200, "");
 		mainPanel.add(creditCardField, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createHorizontalStrut(50), c);
+
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(140, "Surplus Payment:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		surplusPaymentLabel = ComponentUtil.createLabel(200, "");
+		mainPanel.add(surplusPaymentLabel, c);
 		
 		currentRow++;
 		
@@ -227,7 +249,6 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		mainPanel.add(ComponentUtil.createLabel(140, "Statement Date:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -243,7 +264,6 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		mainPanel.add(ComponentUtil.createLabel(120, "Status:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -273,7 +293,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 3;
+		c.gridwidth = 6;
 		JScrollPane itemsTableScrollPane = new JScrollPane(table);
 		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
 		mainPanel.add(itemsTableScrollPane, c);
@@ -290,7 +310,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 5;
+		c.gridwidth = 6;
 		checkAllButton.setPreferredSize(new Dimension(130, 30));
 		markCheckedAsPaidButton.setPreferredSize(new Dimension(200, 30));
 		markCheckedAsUnpaidButton.setPreferredSize(new Dimension(220, 30));
@@ -304,7 +324,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 3;
+		c.gridwidth = 6;
 		mainPanel.add(createTotalsPanel(), c);
 	}
 	
@@ -397,7 +417,6 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 
 	private void doDeleteCurrentlySelectedItem() {
 		int selectedRowIndex = table.getSelectedRow();
-		CreditCardStatementItem item = tableModel.getItem(selectedRowIndex);
 		table.clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
 		tableModel.removeItem(selectedRowIndex);
 		
