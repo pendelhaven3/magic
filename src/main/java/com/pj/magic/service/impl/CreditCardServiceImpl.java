@@ -146,4 +146,19 @@ public class CreditCardServiceImpl implements CreditCardService {
 		creditCardStatementItemDao.save(item);
 	}
 
+	@Override
+	public List<CreditCardStatement> findAllStatementsByCreditCard(CreditCard creditCard) {
+		List<CreditCardStatement> statements = creditCardStatementDao.findAllByCreditCard(creditCard);
+		for (CreditCardStatement statement : statements) {
+			statement.setItems(creditCardStatementItemDao.findAllByCreditCardStatement(statement));
+		}
+		return statements;
+	}
+
+	@Transactional
+	@Override
+	public void delete(CreditCardPayment payment) {
+		creditCardPaymentDao.delete(payment);
+	}
+
 }

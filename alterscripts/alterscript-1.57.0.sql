@@ -2,6 +2,7 @@ create table CREDIT_CARD_STATEMENT (
   ID integer auto_increment,
   CREDIT_CARD_ID integer not null,
   STATEMENT_DT date not null,
+  POST_IND varchar(1) default 'N' not null,
   primary key (ID),
   unique key (CREDIT_CARD_ID, STATEMENT_DT),
   constraint CREDIT_CARD_STATEMENT$FK foreign key (CREDIT_CARD_ID) references CREDIT_CARD (ID)

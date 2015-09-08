@@ -75,4 +75,11 @@ public class CreditCardPaymentDaoImpl extends MagicDao implements CreditCardPaym
 				.queryForObject(GET_SURPLUS_PAYMENT_SQL, paramMap, BigDecimal.class);
 	}
 
+	private static final String DELETE_SQL = "delete from CREDIT_CARD_PAYMENT where ID = ?";
+	
+	@Override
+	public void delete(CreditCardPayment payment) {
+		getJdbcTemplate().update(DELETE_SQL, payment.getId());
+	}
+
 }

@@ -7,7 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -15,23 +14,22 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.table.AbstractTableModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.CustomAction;
-import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AddCreditCardPaymentDialog;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardPayment;
-import com.pj.magic.model.CreditCardStatementItem;
-import com.pj.magic.model.PromoPointsClaim;
-import com.pj.magic.model.PurchasePaymentCreditCardPayment;
+import com.pj.magic.model.CreditCardStatement;
 import com.pj.magic.service.CreditCardService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -39,10 +37,10 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class CreditCardPaymentPanel extends StandardMagicPanel {
 
-	private static final int PURCHASE_PAYMENT_NUMBER_COLUMN_INDEX = 0;
-	private static final int SUPPLIER_COLUMN_INDEX = 1;
-	private static final int TOTAL_AMOUNT_COLUMN_INDEX = 2;
-	private static final int TRANSACTION_DATE_COLUMN_INDEX = 3;
+	private static final Logger logger = LoggerFactory.getLogger(CreditCardPaymentPanel.class);
+	
+	private static final int STATEMENT_DATE_COLUMN_INDEX = 0;
+	private static final int TOTAL_UNPAID_AMOUNT_COLUMN_INDEX = 1;
 
 	private static final int PAYMENT_DATE_COLUMN_INDEX = 0;
 	private static final int AMOUNT_COLUMN_INDEX = 1;
@@ -52,14 +50,13 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 	@Autowired private AddCreditCardPaymentDialog addCreditCardPaymentDialog;
 	
 	private JLabel creditCardLabel;
-	private MagicListTable itemsTable;
-	private CreditCardStatementItemsTableModel itemsTableModel;
+	private MagicListTable statementsTable;
+	private CreditCardStatementsTableModel statementsTableModel;
 	private MagicListTable paymentsTable;
 	private CreditCardPaymentsTableModel paymentsTableModel;
 	private JTabbedPane tabbedPane;
-	private JLabel totalPurchasesLabel;
-	private JLabel totalPaymentsLabel;
-	private JLabel outstandingBalanceLabel;
+	private JLabel totalUnpaidAmountLabel;
+	private JLabel totalSurplusPaymentsLabel;
 	private CreditCard creditCard;
 	
 	@Override
@@ -70,8 +67,8 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 	}
 	
 	private void initializeTables() {
-		itemsTableModel = new CreditCardStatementItemsTableModel();
-		itemsTable = new MagicListTable(itemsTableModel);
+		statementsTableModel = new CreditCardStatementsTableModel();
+		statementsTable = new MagicListTable(statementsTableModel);
 		
 		paymentsTableModel = new CreditCardPaymentsTableModel();
 		paymentsTable = new MagicListTable(paymentsTableModel);
@@ -81,18 +78,21 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 		this.creditCard = creditCard = creditCardService.getCreditCard(creditCard.getId());
 		creditCardLabel.setText(creditCard.toString());
 		
-		List<CreditCardPayment> payments = creditCardService.getCreditCardPayments(creditCard);
-		paymentsTableModel.setPayments(payments);
+		List<CreditCardStatement> statements = creditCardService.findAllStatementsByCreditCard(creditCard);
+		statementsTableModel.setItems(statements);
 		
-		totalPurchasesLabel.setText(FormatterUtil.formatAmount(Constants.ZERO));
-		totalPaymentsLabel.setText(FormatterUtil.formatAmount(getTotalAmount(payments)));
-		outstandingBalanceLabel.setText(FormatterUtil.formatAmount(Constants.ZERO));
+		List<CreditCardPayment> payments = creditCardService.getCreditCardPayments(creditCard);
+		paymentsTableModel.setItems(payments);
+		
+		totalUnpaidAmountLabel.setText(FormatterUtil.formatAmount(getTotalUnpaidAmount(statements)));
+		totalSurplusPaymentsLabel.setText(FormatterUtil.formatAmount(
+				creditCardService.getSurplusPayment(creditCard)));
 	}
 
-	private static BigDecimal getTotalAmount(List<CreditCardPayment> payments) {
+	private static BigDecimal getTotalUnpaidAmount(List<CreditCardStatement> statements) {
 		BigDecimal total = Constants.ZERO;
-		for (CreditCardPayment payment : payments) {
-			total = total.add(payment.getAmount());
+		for (CreditCardStatement statement : statements) {
+			total = total.add(statement.getTotalUnpaidAmount());
 		}
 		return total;
 	}
@@ -159,14 +159,14 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Total Purchases:"), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Total Unpaid Amount:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalPurchasesLabel = ComponentUtil.createRightLabel(120);
-		mainPanel.add(totalPurchasesLabel, c);
+		totalUnpaidAmountLabel = ComponentUtil.createRightLabel(120);
+		mainPanel.add(totalUnpaidAmountLabel, c);
 		
 		currentRow++;
 		
@@ -174,29 +174,14 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Total Payments:"), c);
+		mainPanel.add(ComponentUtil.createLabel(180, "Total Surplus Payments:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalPaymentsLabel = ComponentUtil.createRightLabel(120, "");
-		mainPanel.add(totalPaymentsLabel, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Outstanding Balance:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		outstandingBalanceLabel = ComponentUtil.createRightLabel(120, "");
-		mainPanel.add(outstandingBalanceLabel, c);
+		totalSurplusPaymentsLabel = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalSurplusPaymentsLabel, c);
 		
 		return mainPanel;
 	}
@@ -218,7 +203,7 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 	}
 
 	private void editPayment() {
-		CreditCardPayment payment = paymentsTableModel.getPayment(paymentsTable.getSelectedRow());
+		CreditCardPayment payment = paymentsTableModel.getItem(paymentsTable.getSelectedRow());
 		
 		addCreditCardPaymentDialog.updateDisplay(payment);
 		addCreditCardPaymentDialog.setVisible(true);
@@ -270,7 +255,7 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
-		JScrollPane scrollPane = new JScrollPane(itemsTable);
+		JScrollPane scrollPane = new JScrollPane(statementsTable);
 		scrollPane.setPreferredSize(new Dimension(600, 150));
 		panel.add(scrollPane, c);
 		
@@ -304,8 +289,47 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 	}
 	
 	private void deletePayment() {
+		if (paymentsTable.hasNoSelectedRow()) {
+			return;
+		}
+		
+		CreditCardPayment payment = paymentsTableModel.getItem(paymentsTable.getSelectedRow());
+		if (willDeletingPaymentResultInNegativeSurplus(payment)) {
+			showErrorMessage("Deleting payment cannot result in negative surplus payment");
+			return;
+		}
+		
+		if (confirm("Remove currently selected item?")) {
+			try {
+				doDeletePayment();
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+				return;
+			}
+			showMessage("Item deleted");
+		}
 	}
 
+	private boolean willDeletingPaymentResultInNegativeSurplus(CreditCardPayment payment) {
+		BigDecimal surplusPayment = creditCardService.getSurplusPayment(payment.getCreditCard());
+		return surplusPayment.subtract(payment.getAmount()).compareTo(Constants.ZERO) == -1;
+	}
+
+	private void doDeletePayment() {
+		int selectedRowIndex = paymentsTable.getSelectedRow();
+		paymentsTable.clearSelection();
+		paymentsTableModel.removeItem(selectedRowIndex);
+		
+		if (paymentsTableModel.hasItems()) {
+			if (selectedRowIndex == paymentsTableModel.getRowCount()) {
+				paymentsTable.changeSelection(selectedRowIndex - 1, 0, false, false);
+			} else {
+				paymentsTable.changeSelection(selectedRowIndex, 0, false, false);
+			}
+		}
+	}
+	
 	private void addPayment() {
 		CreditCardPayment payment = new CreditCardPayment();
 		payment.setCreditCard(creditCard);
@@ -315,44 +339,18 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 		updateDisplay(creditCard);
 	}
 
-	private class CreditCardStatementItemsTableModel extends AbstractTableModel {
+	private class CreditCardStatementsTableModel extends ListBackedTableModel<CreditCardStatement> {
 
-		private final String[] columnNames = {"PP No.", "Supplier", "Amount", "Transaction Date"};
-		
-		private List<CreditCardStatementItem> items = new ArrayList<>();
-		
-		public void setItems(List<CreditCardStatementItem> items) {
-			this.items = items;
-			fireTableDataChanged();
-		}
-		
-		@Override
-		public int getRowCount() {
-			return items.size();
-		}
-
-		@Override
-		public int getColumnCount() {
-			return columnNames.length;
-		}
-
-		@Override
-		public String getColumnName(int column) {
-			return columnNames[column];
-		}
+		private final String[] columnNames = {"Statement Date", "Unpaid Amount"};
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			PurchasePaymentCreditCardPayment creditCardPayment = items.get(rowIndex).getCreditCardPayment();
+			CreditCardStatement statement = getItem(rowIndex);
 			switch (columnIndex) {
-			case PURCHASE_PAYMENT_NUMBER_COLUMN_INDEX:
-				return creditCardPayment.getParent().getPurchasePaymentNumber();
-			case SUPPLIER_COLUMN_INDEX:
-				return creditCardPayment.getParent().getSupplier().getName();
-			case TOTAL_AMOUNT_COLUMN_INDEX:
-				return FormatterUtil.formatAmount(creditCardPayment.getAmount());
-			case TRANSACTION_DATE_COLUMN_INDEX:
-				return FormatterUtil.formatDate(creditCardPayment.getTransactionDate());
+			case STATEMENT_DATE_COLUMN_INDEX:
+				return FormatterUtil.formatDate(statement.getStatementDate());
+			case TOTAL_UNPAID_AMOUNT_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(statement.getTotalUnpaidAmount());
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
@@ -361,48 +359,27 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			switch (columnIndex) {
-			case TOTAL_AMOUNT_COLUMN_INDEX:
+			case TOTAL_UNPAID_AMOUNT_COLUMN_INDEX:
 				return Number.class;
 			default:
 				return Object.class;
 			}
 		}
+
+		@Override
+		protected String[] getColumnNames() {
+			return columnNames;
+		}
 		
 	}
 
-	private class CreditCardPaymentsTableModel extends AbstractTableModel {
+	private class CreditCardPaymentsTableModel extends ListBackedTableModel<CreditCardPayment> {
 
 		private final String[] columnNames = {"Payment Date", "Amount", "Remarks"};
 		
-		private List<CreditCardPayment> payments = new ArrayList<>();
-		
-		public void setPayments(List<CreditCardPayment> payments) {
-			this.payments = payments;
-			fireTableDataChanged();
-		}
-		
-		public CreditCardPayment getPayment(int row) {
-			return payments.get(row);
-		}
-
-		@Override
-		public int getRowCount() {
-			return payments.size();
-		}
-
-		@Override
-		public int getColumnCount() {
-			return columnNames.length;
-		}
-
-		@Override
-		public String getColumnName(int column) {
-			return columnNames[column];
-		}
-		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			CreditCardPayment payment = payments.get(rowIndex);
+			CreditCardPayment payment = getItem(rowIndex);
 			switch (columnIndex) {
 			case PAYMENT_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(payment.getPaymentDate());
@@ -415,6 +392,12 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 			}
 		}
 		
+		public void removeItem(int rowIndex) {
+			CreditCardPayment item = getItems().remove(rowIndex);
+			creditCardService.delete(item);
+			fireTableDataChanged();
+		}
+
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			switch (columnIndex) {
@@ -423,6 +406,11 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 			default:
 				return Object.class;
 			}
+		}
+
+		@Override
+		protected String[] getColumnNames() {
+			return columnNames;
 		}
 		
 	}

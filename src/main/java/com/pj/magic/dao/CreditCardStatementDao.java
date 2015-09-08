@@ -2,6 +2,7 @@ package com.pj.magic.dao;
 
 import java.util.List;
 
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardStatement;
 
 public interface CreditCardStatementDao {
@@ -11,5 +12,7 @@ public interface CreditCardStatementDao {
 	CreditCardStatement get(long id);
 
 	void save(CreditCardStatement statement);
+
+	List<CreditCardStatement> findAllByCreditCard(CreditCard creditCard);
 	
 }

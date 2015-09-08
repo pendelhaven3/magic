@@ -31,9 +31,11 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 	
 	private CreditCardStatementRowMapper statementRowMapper = new CreditCardStatementRowMapper();
 	
+	private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by a.STATEMENT_DT desc";
+	
 	@Override
 	public List<CreditCardStatement> getAll() {
-		return getJdbcTemplate().query(BASE_SELECT_SQL, statementRowMapper);
+		return getJdbcTemplate().query(GET_ALL_SQL, statementRowMapper);
 	}
 	
 	private class CreditCardStatementRowMapper implements RowMapper<CreditCardStatement> {
@@ -104,6 +106,14 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 		getJdbcTemplate().update(UPDATE_SQL,
 				statement.isPosted() ? "Y" : "N",
 				statement.getId());
+	}
+
+	private static final String FIND_ALL_BY_CREDIT_CARD_SQL = 
+			BASE_SELECT_SQL + " where a.CREDIT_CARD_ID = ? order by a.STATEMENT_DT desc";
+	
+	@Override
+	public List<CreditCardStatement> findAllByCreditCard(CreditCard creditCard) {
+		return getJdbcTemplate().query(FIND_ALL_BY_CREDIT_CARD_SQL, statementRowMapper, creditCard.getId());
 	}
 
 }

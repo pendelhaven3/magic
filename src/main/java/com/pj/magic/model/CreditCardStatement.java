@@ -107,4 +107,14 @@ public class CreditCardStatement {
 		return true;
 	}
 
+	public BigDecimal getTotalUnpaidAmount() {
+		BigDecimal total = Constants.ZERO;
+		for (CreditCardStatementItem item : items) {
+			if (!item.isPaid()) {
+				total = total.add(item.getCreditCardPayment().getAmount());
+			}
+		}
+		return total;
+	}
+
 }
