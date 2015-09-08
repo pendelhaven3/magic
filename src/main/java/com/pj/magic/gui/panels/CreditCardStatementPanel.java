@@ -19,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.table.TableColumnModel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,10 +34,13 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.MagicDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardStatement;
 import com.pj.magic.model.CreditCardStatementItem;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
+import com.pj.magic.model.search.PurchasePaymentCreditCardPaymentSearchCriteria;
 import com.pj.magic.service.CreditCardService;
+import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -58,6 +62,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	private static final int SELECT_COLUMN_INDEX = 6;
 	
 	@Autowired private CreditCardService creditCardService;
+	@Autowired private PurchasePaymentService purchasePaymentService;
 	
 	private CreditCardStatement statement;
 	private JLabel creditCardField;
@@ -75,6 +80,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	private JButton checkAllButton;
 	private SelectPaidDateDialog selectPaidDateDialog;
 	private JLabel surplusPaymentLabel;
+	private AddCreditCardPaymentsToStatementDialog addCreditCardPaymentsToStatementDialog;
 	
 	@Override
 	protected void initializeComponents() {
@@ -109,6 +115,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		});
 
 		selectPaidDateDialog = new SelectPaidDateDialog();
+		addCreditCardPaymentsToStatementDialog = new AddCreditCardPaymentsToStatementDialog();
 	}
 
 	private void markCheckedAsPaid() {
@@ -374,7 +381,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				table.switchToAddMode();
+				addItem();
 			}
 		});
 		panel.add(addItemButton, BorderLayout.WEST);
@@ -390,6 +397,24 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		panel.add(deleteItemButton, BorderLayout.WEST);
 		
 		return panel;
+	}
+
+	private void addItem() {
+		addCreditCardPaymentsToStatementDialog.updateDisplay(statement.getCreditCard());
+		addCreditCardPaymentsToStatementDialog.setVisible(true);
+		
+		List<PurchasePaymentCreditCardPayment> selectedCreditCardPayments = 
+				addCreditCardPaymentsToStatementDialog.getSelectedItems();
+		if (!selectedCreditCardPayments.isEmpty()) {
+			for (PurchasePaymentCreditCardPayment creditCardPayment : selectedCreditCardPayments) {
+				CreditCardStatementItem item = new CreditCardStatementItem();
+				item.setParent(statement);
+				item.setCreditCardPayment(creditCardPayment);
+				creditCardService.save(item);
+				statement.getItems().add(item);
+			}
+			tableModel.setItems(statement.getItems());
+		}
 	}
 
 	private void deleteCurrentlySelectedItem() {
@@ -693,6 +718,199 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 			} else {
 				return null;
 			}
+		}
+		
+	}
+	
+	private class AddCreditCardPaymentsToStatementDialog extends MagicDialog {
+
+		private final int DIALOG_SELECT_COLUMN_INDEX = 0;
+		private final int DIALOG_PURCHASE_PAYMENT_NUMBER_COLUMN_INDEX = 1;
+		private final int DIALOG_SUPPLIER_COLUMN_INDEX = 2;
+		private final int DIALOG_AMOUNT_COLUMN_INDEX = 3;
+		private final int DIALOG_TRANSACTION_DATE_COLUMN_INDEX = 4;
+
+		private MagicListTable table;
+		private PurchasePaymentCreditCardPaymentsTableModel tableModel;
+		private JButton addButton;
+		private JButton addAllButton;
+		private List<PurchasePaymentCreditCardPayment> selectedPayments = new ArrayList<>();
+		
+		public AddCreditCardPaymentsToStatementDialog() {
+			setSize(600, 250);
+			setLocationRelativeTo(null);
+			setTitle("Add Credit Card Payments to Statement");
+			initializeComponents();
+			layoutComponents();
+		}
+
+		private void initializeComponents() {
+			addButton = new JButton("Add Selected");
+			addButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					selectedPayments.addAll(tableModel.getSelectedItems());
+					setVisible(false);
+				}
+			});
+			
+			addAllButton = new JButton("Add All");
+			addAllButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					selectedPayments.addAll(tableModel.getItems());
+					setVisible(false);
+				}
+			});
+			
+			initializeTable();
+		}
+
+		private void initializeTable() {
+			tableModel = new PurchasePaymentCreditCardPaymentsTableModel();
+			table = new MagicListTable(tableModel);
+			
+			TableColumnModel columnModel = table.getColumnModel();
+			columnModel.getColumn(DIALOG_SELECT_COLUMN_INDEX).setPreferredWidth(20);
+		}
+
+		@Override
+		protected void doWhenEscapeKeyPressed() {
+		}
+		
+		private void layoutComponents() {
+			setLayout(new GridBagLayout());
+			int currentRow = 0;
+
+			GridBagConstraints c = new GridBagConstraints();
+			c.weightx = c.weighty = 1.0;
+			c.fill = GridBagConstraints.BOTH;
+			c.gridx = 0;
+			c.gridy = currentRow;
+			
+			JScrollPane scrollPane = new JScrollPane(table);
+			scrollPane.setPreferredSize(new Dimension(400, 200));
+			add(scrollPane, c);
+
+			currentRow++;
+			
+			c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = currentRow;
+			add(Box.createVerticalStrut(20), c);
+			
+			currentRow++;
+			
+			c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = currentRow;
+			c.anchor = GridBagConstraints.CENTER;
+			add(ComponentUtil.createGenericPanel(
+					addButton, addAllButton), c);
+			
+			currentRow++;
+			
+			c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = currentRow;
+			add(Box.createVerticalStrut(20), c);
+		}
+		
+		public void updateDisplay(CreditCard creditCard) {
+			selectedPayments.clear();
+			List<PurchasePaymentCreditCardPayment> creditCardPayments =
+					getAllUnpaidCreditCardPaymentsNotIncludedInStatement();
+			tableModel.setItems(creditCardPayments);
+		}
+
+		private List<PurchasePaymentCreditCardPayment> getAllUnpaidCreditCardPaymentsNotIncludedInStatement() {
+			PurchasePaymentCreditCardPaymentSearchCriteria criteria =
+					new PurchasePaymentCreditCardPaymentSearchCriteria();
+			criteria.setNotIncludedInStatement(true);
+			
+			return purchasePaymentService.searchCreditCardPayments(criteria);
+		}
+		
+		private List<PurchasePaymentCreditCardPayment> getSelectedItems() {
+			return tableModel.getSelectedItems();
+		}
+		
+		private class PurchasePaymentCreditCardPaymentsTableModel 
+				extends ListBackedTableModel<PurchasePaymentCreditCardPayment> {
+
+			private final String[] columnNames = {"", "PP No.", "Supplier", "Amount", "Transaction Date"};
+			
+			private List<Integer> selected = new ArrayList<>();
+			
+			@Override
+			public void setItems(List<PurchasePaymentCreditCardPayment> items) {
+				super.setItems(items);
+				selected.clear();
+			}
+			
+			@Override
+			public Object getValueAt(int rowIndex, int columnIndex) {
+				PurchasePaymentCreditCardPayment creditCardPayment = getItem(rowIndex);
+				switch (columnIndex) {
+				case DIALOG_SELECT_COLUMN_INDEX:
+					return selected.contains(rowIndex);
+				case DIALOG_PURCHASE_PAYMENT_NUMBER_COLUMN_INDEX:
+					return creditCardPayment.getParent().getPurchasePaymentNumber();
+				case DIALOG_SUPPLIER_COLUMN_INDEX:
+					return creditCardPayment.getParent().getSupplier().getName();
+				case DIALOG_AMOUNT_COLUMN_INDEX:
+					return FormatterUtil.formatAmount(creditCardPayment.getAmount());
+				case DIALOG_TRANSACTION_DATE_COLUMN_INDEX:
+					return FormatterUtil.formatDate(creditCardPayment.getTransactionDate());
+				default:
+					throw new RuntimeException("Fetch invalid column index: " + columnIndex);
+				}
+			}
+			
+			@Override
+			public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+				switch (columnIndex) {
+				case DIALOG_SELECT_COLUMN_INDEX:
+					if (selected.contains(rowIndex)) {
+						selected.remove(selected.indexOf(rowIndex));
+					} else {
+						selected.add(rowIndex);
+					}
+				}
+			}
+			
+			@Override
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
+				return columnIndex == DIALOG_SELECT_COLUMN_INDEX;
+			}
+			
+			@Override
+			public Class<?> getColumnClass(int columnIndex) {
+				switch (columnIndex) {
+				case DIALOG_SELECT_COLUMN_INDEX:
+					return Boolean.class;
+				case DIALOG_AMOUNT_COLUMN_INDEX:
+					return Number.class;
+				default:
+					return Object.class;
+				}
+			}
+
+			@Override
+			protected String[] getColumnNames() {
+				return columnNames;
+			}
+			
+			public List<PurchasePaymentCreditCardPayment> getSelectedItems() {
+				List<PurchasePaymentCreditCardPayment> selectedItems = new ArrayList<>();
+				for (Integer i : selected) {
+					selectedItems.add(getItem(i));
+				}
+				return selectedItems;
+			}
+			
 		}
 		
 	}

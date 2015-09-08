@@ -37,5 +37,7 @@ public interface CreditCardService {
 	void delete(CreditCardStatementItem item);
 
 	BigDecimal getSurplusPayment(CreditCard creditCard);
+
+	void save(CreditCardStatementItem item);
 	
 }

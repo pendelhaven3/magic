@@ -140,4 +140,10 @@ public class CreditCardServiceImpl implements CreditCardService {
 		return creditCardPaymentDao.getSurplusPayment(creditCard);
 	}
 
+	@Transactional
+	@Override
+	public void save(CreditCardStatementItem item) {
+		creditCardStatementItemDao.save(item);
+	}
+
 }
