@@ -28,9 +28,8 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, PURCHASE_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE,"
-			+ " a.MARK_IND, STATEMENT_DT,"
 			+ " b.PURCHASE_PAYMENT_NO,"
-			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK,"
+			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK, c.CUTOFF_DT as CREDIT_CARD_CUTOFF_DT,"
 			+ " d.NAME as SUPPLIER_NAME"
 			+ " from PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT a"
 			+ " join PURCHASE_PAYMENT b"
@@ -78,8 +77,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 
 	private static final String UPDATE_SQL = 
 			"update PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT"
-			+ " set AMOUNT = ?, CREDIT_CARD_ID = ?, TRANSACTION_DT = ?, APPROVAL_CODE = ?,"
-			+ " MARK_IND = ?, STATEMENT_DT = ?"
+			+ " set AMOUNT = ?, CREDIT_CARD_ID = ?, TRANSACTION_DT = ?, APPROVAL_CODE = ?"
 			+ " where ID = ?";
 	
 	private void update(PurchasePaymentCreditCardPayment creditCardPayment) {
@@ -88,8 +86,6 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 				creditCardPayment.getCreditCard().getId(),
 				creditCardPayment.getTransactionDate(),
 				creditCardPayment.getApprovalCode(),
-				creditCardPayment.isMarked() ? "Y" : "N",
-				creditCardPayment.getStatementDate(),
 				creditCardPayment.getId());
 	}
 
@@ -124,12 +120,13 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			creditCard.setId(rs.getLong("CREDIT_CARD_ID"));
 			creditCard.setUser(rs.getString("CREDIT_CARD_USER"));
 			creditCard.setBank(rs.getString("CREDIT_CARD_BANK"));
+			if (rs.getInt("CREDIT_CARD_CUTOFF_DT") != 0) {
+				creditCard.setCutoffDate(rs.getInt("CREDIT_CARD_CUTOFF_DT"));
+			}
 			creditCardPayment.setCreditCard(creditCard);
 			
 			creditCardPayment.setTransactionDate(rs.getDate("TRANSACTION_DT"));
 			creditCardPayment.setApprovalCode(rs.getString("APPROVAL_CODE"));
-			creditCardPayment.setMarked("Y".equals(rs.getString("MARK_IND")));
-			creditCardPayment.setStatementDate(rs.getDate("STATEMENT_DT"));
 			return creditCardPayment;
 		}
 		
@@ -142,6 +139,13 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 		getJdbcTemplate().update(DELETE_SQL, cashPayment.getId());
 	}
 
+	private static final String NOT_INCLUDED_IN_STATEMENT_WHERE_CLAUSE =
+			" and not exists ("
+			+ "   select *"
+			+ "   from CREDIT_CARD_STATEMENT_ITEM ccsi"
+			+ "   where ccsi.PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT_ID = a.ID"
+			+ " )";
+	
 	@Override
 	public List<PurchasePaymentCreditCardPayment> search(
 			PurchasePaymentCreditCardPaymentSearchCriteria criteria) {
@@ -175,9 +179,10 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
-		if (criteria.getMarked() != null) {
-			sql.append(" and a.MARK_IND = ?");
-			params.add(criteria.getMarked() ? "Y" : "N");
+		if (criteria.getNotIncludedInStatement() != null) {
+			if (criteria.getNotIncludedInStatement()) {
+				sql.append(NOT_INCLUDED_IN_STATEMENT_WHERE_CLAUSE);
+			}
 		}
 		
 		sql.append(" order by a.TRANSACTION_DT, d.NAME, b.PURCHASE_PAYMENT_NO");

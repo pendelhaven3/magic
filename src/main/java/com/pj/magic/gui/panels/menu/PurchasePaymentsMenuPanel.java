@@ -25,7 +25,9 @@ public class PurchasePaymentsMenuPanel extends MenuPanel {
 
 	private static final String PURCHASE_PAYMENT = "Purchase Payment";
 	private static final String PURCHASE_PAYMENT_ADJUSTMENT = "Purchase Payment Adjustment";
-	private static final String MARK_CREDIT_CARD_PAYMENT = "Mark Credit Card Payments";
+	private static final String UNPAID_CREDIT_CARD_PAYMENTS_LIST = "Unpaid Credit Card Payments List";
+	private static final String CREDIT_CARD_STATEMENT = "Credit Card Statements";
+	private static final String CREDIT_CARD_PAYMENT = "Credit Card Payments";
 	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
@@ -91,8 +93,14 @@ public class PurchasePaymentsMenuPanel extends MenuPanel {
 		case PURCHASE_PAYMENT:
 			getMagicFrame().switchToPurchasePaymentListPanel();
 			break;
-		case MARK_CREDIT_CARD_PAYMENT:
-			getMagicFrame().switchToMarkCreditCardPaymentsPanel();
+		case UNPAID_CREDIT_CARD_PAYMENTS_LIST:
+			getMagicFrame().switchToUnpaidCreditCardPaymentsListPanel();
+			break;
+		case CREDIT_CARD_STATEMENT:
+			getMagicFrame().switchToCreditCardStatementListPanel();
+			break;
+		case CREDIT_CARD_PAYMENT:
+			getMagicFrame().switchToCreditCardPaymentListPanel();
 			break;
 		}
 	}
@@ -107,7 +115,9 @@ public class PurchasePaymentsMenuPanel extends MenuPanel {
 		private final List<String> menuItems = Arrays.asList(
 				PURCHASE_PAYMENT,
 				PURCHASE_PAYMENT_ADJUSTMENT,
-				MARK_CREDIT_CARD_PAYMENT
+				UNPAID_CREDIT_CARD_PAYMENTS_LIST,
+				CREDIT_CARD_STATEMENT,
+				CREDIT_CARD_PAYMENT
 		);
 		
 		@Override

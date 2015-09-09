@@ -14,19 +14,19 @@ import com.pj.magic.dao.PurchasePaymentCashPaymentDao;
 import com.pj.magic.dao.PurchasePaymentCheckPaymentDao;
 import com.pj.magic.dao.PurchasePaymentCreditCardPaymentDao;
 import com.pj.magic.dao.PurchasePaymentDao;
+import com.pj.magic.dao.PurchasePaymentPaymentAdjustmentDao;
 import com.pj.magic.dao.PurchasePaymentReceivingReceiptDao;
 import com.pj.magic.dao.PurchaseReturnBadStockDao;
 import com.pj.magic.dao.PurchaseReturnDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
-import com.pj.magic.dao.PurchasePaymentPaymentAdjustmentDao;
 import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
-import com.pj.magic.model.PurchasePaymentPaymentAdjustment;
-import com.pj.magic.model.PurchasePaymentReceivingReceipt;
 import com.pj.magic.model.PurchasePaymentBankTransfer;
 import com.pj.magic.model.PurchasePaymentCashPayment;
 import com.pj.magic.model.PurchasePaymentCheckPayment;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
+import com.pj.magic.model.PurchasePaymentPaymentAdjustment;
+import com.pj.magic.model.PurchasePaymentReceivingReceipt;
 import com.pj.magic.model.search.PurchasePaymentBankTransferSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentCashPaymentSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentCheckPaymentSearchCriteria;
@@ -240,30 +240,4 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 		return purchasePaymentCashPaymentDao.search(criteria);
 	}
 
-	@Override
-	public List<PurchasePaymentCreditCardPayment> getAllUnmarkedCreditCardPayments() {
-		PurchasePaymentCreditCardPaymentSearchCriteria criteria = 
-				new PurchasePaymentCreditCardPaymentSearchCriteria();
-		criteria.setMarked(false);
-		
-		return searchCreditCardPayments(criteria);
-	}
-
-	@Transactional
-	@Override
-	public void markCreditCardPayments(List<PurchasePaymentCreditCardPayment> creditCardPayments,
-			Date statementDate) {
-		for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
-			creditCardPayment.setStatementDate(statementDate);
-			if (creditCardPayment.isMarked()) {
-				mark(creditCardPayment);
-			}
-		}
-	}
-	
-	private void mark(PurchasePaymentCreditCardPayment creditCardPayment) {
-		creditCardPayment.setMarked(true);
-		purchasePaymentCreditCardPaymentDao.save(creditCardPayment);
-	}
-	
 }

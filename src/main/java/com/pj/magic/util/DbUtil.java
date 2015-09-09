@@ -31,4 +31,8 @@ public class DbUtil {
 		return StringUtils.join(escapedValues, ",");
 	}
 	
+	public static java.sql.Date toSqlDate(Date date) {
+		return new java.sql.Date(date.getTime());
+	}
+	
 }

@@ -703,6 +703,7 @@ create table CREDIT_CARD (
   USER varchar(20) not null,
   BANK varchar(20) not null,
   CARD_NUMBER varchar(20) not null,
+  CUTOFF_DT integer null,
   constraint CREDIT_CARD$PK primary key (ID)
 );
 
@@ -772,8 +773,6 @@ create table PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT (
   CREDIT_CARD_ID integer not null,
   TRANSACTION_DT date not null,
   APPROVAL_CODE varchar(20) not null,
-  MARK_IND varchar(1) default 'N' not null,
-  STATEMENT_DT date null,
   constraint PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT$PK primary key (ID),
   constraint PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT$FK foreign key (PURCHASE_PAYMENT_ID) references PURCHASE_PAYMENT (ID),
   constraint PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT$FK2 foreign key (CREDIT_CARD_ID) references CREDIT_CARD (ID)
@@ -1011,4 +1010,35 @@ create table PROMO_POINTS_CLAIM (
   constraint PROMO_POINTS_CLAIM$FK foreign key (PROMO_ID) references PROMO (ID),
   constraint PROMO_POINTS_CLAIM$FK2 foreign key (CUSTOMER_ID) references CUSTOMER (ID),
   constraint PROMO_POINTS_CLAIM$FK3 foreign key (CLAIM_BY) references USER (ID)
+);
+
+create table CREDIT_CARD_STATEMENT (
+  ID integer auto_increment,
+  CREDIT_CARD_ID integer not null,
+  STATEMENT_DT date not null,
+  POST_IND varchar(1) default 'N' not null,
+  primary key (ID),
+  unique key (CREDIT_CARD_ID, STATEMENT_DT),
+  constraint CREDIT_CARD_STATEMENT$FK foreign key (CREDIT_CARD_ID) references CREDIT_CARD (ID)
+);
+
+create table CREDIT_CARD_STATEMENT_ITEM (
+  ID integer auto_increment,
+  CREDIT_CARD_STATEMENT_ID integer not null,
+  PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT_ID integer not null,
+  PAID_IND varchar(1) default 'N' not null,
+  PAID_DT date null,
+  primary key (ID),
+  constraint CREDIT_CARD_STATEMENT_ITEM$FK foreign key (CREDIT_CARD_STATEMENT_ID) references CREDIT_CARD_STATEMENT (ID),
+  constraint CREDIT_CARD_STATEMENT_ITEM$FK2 foreign key (PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT_ID) references PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT (ID)
+);
+
+create table CREDIT_CARD_PAYMENT (
+  ID integer auto_increment,
+  CREDIT_CARD_ID integer not null,
+  AMOUNT numeric(10, 2) not null,
+  PAYMENT_DT date not null,
+  REMARKS varchar(100) not null,
+  primary key (ID),
+  constraint CREDIT_CARD_PAYMENT$FK foreign key (CREDIT_CARD_ID) references CREDIT_CARD (ID)
 );
