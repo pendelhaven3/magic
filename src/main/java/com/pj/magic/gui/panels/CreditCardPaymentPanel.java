@@ -87,6 +87,8 @@ public class CreditCardPaymentPanel extends StandardMagicPanel {
 		totalUnpaidAmountLabel.setText(FormatterUtil.formatAmount(getTotalUnpaidAmount(statements)));
 		totalSurplusPaymentsLabel.setText(FormatterUtil.formatAmount(
 				creditCardService.getSurplusPayment(creditCard)));
+		
+		tabbedPane.setSelectedIndex(1);
 	}
 
 	private static BigDecimal getTotalUnpaidAmount(List<CreditCardStatement> statements) {
