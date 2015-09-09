@@ -3,14 +3,11 @@ package com.pj.magic.gui.panels;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.table.AbstractTableModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,13 +15,16 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.CustomAction;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.service.CreditCardService;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class CreditCardPaymentListPanel extends StandardMagicPanel {
 
 	private static final int CREDIT_CARD_COLUMN_INDEX = 0;
+	private static final int SURPLUS_PAYMENT_COLUMN_INDEX = 1;
 	
 	@Autowired private CreditCardService creditCardService;
 	
@@ -85,7 +85,7 @@ public class CreditCardPaymentListPanel extends StandardMagicPanel {
 	}
 
 	private void selectCreditCard() {
-		CreditCard creditCard = tableModel.getCreditCard(table.getSelectedRow());
+		CreditCard creditCard = tableModel.getItem(table.getSelectedRow());
 		getMagicFrame().switchToCreditCardPaymentPanel(creditCard);
 	}
 
@@ -95,48 +95,38 @@ public class CreditCardPaymentListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		tableModel.setCreditCards(creditCardService.getAllCreditCards());
+		tableModel.setItems(creditCardService.getAllCreditCards());
 		table.selectFirstRow();
 	}
 	
-	private class CreditCardTableModel extends AbstractTableModel {
+	private class CreditCardTableModel extends ListBackedTableModel<CreditCard> {
 
-		private final String[] COLUMN_NAMES = {"Credit Card"};
-		
-		private List<CreditCard> creditCards = new ArrayList<>();
-		
-		public void setCreditCards(List<CreditCard> creditCards) {
-			this.creditCards = creditCards;
-			fireTableDataChanged();
-		}
-		
-		public CreditCard getCreditCard(int rowIndex) {
-			return creditCards.get(rowIndex);
-		}
-
-		@Override
-		public int getRowCount() {
-			return creditCards.size();
-		}
-
-		@Override
-		public int getColumnCount() {
-			return COLUMN_NAMES.length;
-		}
-
-		@Override
-		public String getColumnName(int column) {
-			return COLUMN_NAMES[column];
-		}
+		private final String[] COLUMN_NAMES = {"Credit Card", "Surplus Payment"};
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			CreditCard creditCard = creditCards.get(rowIndex);
+			CreditCard creditCard = getItem(rowIndex);
 			switch (columnIndex) {
 			case CREDIT_CARD_COLUMN_INDEX:
 				return creditCard;
+			case SURPLUS_PAYMENT_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(creditCardService.getSurplusPayment(creditCard));
 			default:
 				throw new RuntimeException("Fetching invalid column index:" + columnIndex);
+			}
+		}
+
+		@Override
+		protected String[] getColumnNames() {
+			return COLUMN_NAMES;
+		}
+		
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			if (columnIndex == SURPLUS_PAYMENT_COLUMN_INDEX) {
+				return Number.class;
+			} else {
+				return Object.class;
 			}
 		}
 		

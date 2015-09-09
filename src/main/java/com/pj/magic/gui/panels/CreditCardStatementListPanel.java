@@ -27,7 +27,8 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 	private static final int CREDIT_CARD_COLUMN_INDEX = 0;
 	private static final int STATEMENT_DATE_COLUMN_INDEX = 1;
 	private static final int AMOUNT_COLUMN_INDEX = 2;
-	private static final int STATUS_COLUMN_INDEX = 3;
+	private static final int UNPAID_AMOUNT_COLUMN_INDEX = 3;
+	private static final int STATUS_COLUMN_INDEX = 4;
 	
 	@Autowired private CreditCardService creditCardService;
 	
@@ -107,7 +108,8 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 
 	private class CreditCardStatementsTableModel extends ListBackedTableModel<CreditCardStatement> {
 
-		private final String[] columnNames = {"Credit Card", "Statement Date", "Amount", "Status"};
+		private final String[] columnNames = 
+			{"Credit Card", "Statement Date", "Amount", "Unpaid Amount", "Status"};
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
@@ -119,6 +121,8 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 				return FormatterUtil.formatDate(statement.getStatementDate());
 			case AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(statement.getTotalAmount());
+			case UNPAID_AMOUNT_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(statement.getTotalUnpaidAmount());
 			case STATUS_COLUMN_INDEX:
 				return statement.getStatus();
 			default:
@@ -133,9 +137,11 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			if (columnIndex == AMOUNT_COLUMN_INDEX) {
+			switch (columnIndex) {
+			case AMOUNT_COLUMN_INDEX:
+			case UNPAID_AMOUNT_COLUMN_INDEX:
 				return Number.class;
-			} else {
+			default:
 				return Object.class;
 			}
 		}
