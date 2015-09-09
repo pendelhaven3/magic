@@ -333,14 +333,14 @@ public class SalesInvoiceTest {
 		product.setManufacturer(manufacturer);
 		
 		SalesInvoiceItem item = mock(SalesInvoiceItem.class);
-		when(item.getAmount()).thenReturn(new BigDecimal("10"));
+		when(item.getNetAmount()).thenReturn(new BigDecimal("10"));
 		when(item.getProduct()).thenReturn(product);
 		
 		Product product2 = new Product();
 		product2.setManufacturer(new Manufacturer(2L));
 		
 		SalesInvoiceItem item2 = mock(SalesInvoiceItem.class);
-		when(item2.getAmount()).thenReturn(new BigDecimal("20"));
+		when(item2.getNetAmount()).thenReturn(new BigDecimal("20"));
 		when(item2.getProduct()).thenReturn(product2);
 		
 		salesInvoice.setItems(Arrays.asList(item, item2));
