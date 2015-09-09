@@ -29,7 +29,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, PURCHASE_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE,"
 			+ " b.PURCHASE_PAYMENT_NO,"
-			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK,"
+			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK, c.CUTOFF_DT as CREDIT_CARD_CUTOFF_DT,"
 			+ " d.NAME as SUPPLIER_NAME"
 			+ " from PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT a"
 			+ " join PURCHASE_PAYMENT b"
@@ -120,6 +120,9 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			creditCard.setId(rs.getLong("CREDIT_CARD_ID"));
 			creditCard.setUser(rs.getString("CREDIT_CARD_USER"));
 			creditCard.setBank(rs.getString("CREDIT_CARD_BANK"));
+			if (rs.getInt("CREDIT_CARD_CUTOFF_DT") != 0) {
+				creditCard.setCutoffDate(rs.getInt("CREDIT_CARD_CUTOFF_DT"));
+			}
 			creditCardPayment.setCreditCard(creditCard);
 			
 			creditCardPayment.setTransactionDate(rs.getDate("TRANSACTION_DT"));

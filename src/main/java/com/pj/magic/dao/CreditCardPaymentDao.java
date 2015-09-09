@@ -17,5 +17,5 @@ public interface CreditCardPaymentDao {
 	BigDecimal getSurplusPayment(CreditCard creditCard);
 
 	void delete(CreditCardPayment payment);
-	
+
 }

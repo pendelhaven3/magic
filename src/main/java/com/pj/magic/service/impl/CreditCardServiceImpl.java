@@ -161,4 +161,10 @@ public class CreditCardServiceImpl implements CreditCardService {
 		creditCardPaymentDao.delete(payment);
 	}
 
+	@Override
+	public CreditCardStatement findStatementByCreditCardAndStatementDate(
+			CreditCard creditCard, Date statementDate) {
+		return creditCardStatementDao.findByCreditCardAndStatementDate(creditCard, statementDate);
+	}
+
 }

@@ -1,5 +1,6 @@
 package com.pj.magic.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.model.CreditCard;
@@ -14,5 +15,7 @@ public interface CreditCardStatementDao {
 	void save(CreditCardStatement statement);
 
 	List<CreditCardStatement> findAllByCreditCard(CreditCard creditCard);
+
+	CreditCardStatement findByCreditCardAndStatementDate(CreditCard creditCard, Date statementDate);
 	
 }

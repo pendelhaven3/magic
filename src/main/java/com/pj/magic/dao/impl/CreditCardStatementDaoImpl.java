@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -114,6 +115,19 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 	@Override
 	public List<CreditCardStatement> findAllByCreditCard(CreditCard creditCard) {
 		return getJdbcTemplate().query(FIND_ALL_BY_CREDIT_CARD_SQL, statementRowMapper, creditCard.getId());
+	}
+
+	private static final String FIND_BY_CREDIT_CARD_AND_STATEMENT_DATE_SQL = 
+			BASE_SELECT_SQL + " where a.CREDIT_CARD_ID = ? and a.STATEMENT_DT = ?";
+	
+	@Override
+	public CreditCardStatement findByCreditCardAndStatementDate(CreditCard creditCard, Date statementDate) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_CREDIT_CARD_AND_STATEMENT_DATE_SQL, 
+					statementRowMapper, creditCard.getId(), DbUtil.toMySqlDateString(statementDate));
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
 	}
 
 }

@@ -43,5 +43,7 @@ public interface CreditCardService {
 	List<CreditCardStatement> findAllStatementsByCreditCard(CreditCard creditCard);
 
 	void delete(CreditCardPayment item);
+
+	CreditCardStatement findStatementByCreditCardAndStatementDate(CreditCard creditCard, Date statementDate);
 	
 }
