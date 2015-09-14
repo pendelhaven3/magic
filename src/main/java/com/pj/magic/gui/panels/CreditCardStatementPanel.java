@@ -224,7 +224,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	private JTabbedPane createTabbedPane() {
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addTab("Sales Invoices", createItemsPanel());
-		tabbedPane.addTab("Cash Payments", createPaymentsPanel());
+		tabbedPane.addTab("Payments", createPaymentsPanel());
 		return tabbedPane;
 	}
 
@@ -660,14 +660,16 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		public void updateDisplay(CreditCard creditCard) {
 			selectedPayments.clear();
 			List<PurchasePaymentCreditCardPayment> creditCardPayments =
-					getAllUnpaidCreditCardPaymentsNotIncludedInStatement();
+					getAllUnpaidCreditCardPaymentsNotIncludedInStatement(creditCard);
 			tableModel.setItems(creditCardPayments);
 		}
 
-		private List<PurchasePaymentCreditCardPayment> getAllUnpaidCreditCardPaymentsNotIncludedInStatement() {
+		private List<PurchasePaymentCreditCardPayment> 
+				getAllUnpaidCreditCardPaymentsNotIncludedInStatement(CreditCard creditCard) {
 			PurchasePaymentCreditCardPaymentSearchCriteria criteria =
 					new PurchasePaymentCreditCardPaymentSearchCriteria();
 			criteria.setNotIncludedInStatement(true);
+			criteria.setCreditCard(creditCard);
 			
 			return purchasePaymentService.searchCreditCardPayments(criteria);
 		}

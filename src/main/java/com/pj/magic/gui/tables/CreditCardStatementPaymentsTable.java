@@ -60,7 +60,7 @@ public class CreditCardStatementPaymentsTable extends MagicTable {
 		
 		paymentTypeComboBox = new JComboBox<>();
 		paymentTypeComboBox.setModel(ListUtil.toDefaultComboBoxModel(
-				Arrays.asList("CASH", "CHECK", "BANK TRANSFER", "REBATE"), true));
+				Arrays.asList("CASH", "CHECK", "ONLINE", "REBATE"), true));
 		columnModel.getColumn(PAYMENT_TYPE_COLUMN_INDEX).setCellEditor(
 				new DefaultCellEditor(paymentTypeComboBox));
 		
@@ -103,6 +103,10 @@ public class CreditCardStatementPaymentsTable extends MagicTable {
 	}
 	
 	public void setStatement(CreditCardStatement statement) {
+		if (isEditing()) {
+			cancelEditing();
+		}
+		
 		clearSelection();
 		this.statement = statement;
 		tableModel.setStatement(statement);
