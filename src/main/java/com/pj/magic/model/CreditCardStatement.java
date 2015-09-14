@@ -14,6 +14,7 @@ public class CreditCardStatement {
 	private Date statementDate;
 	private List<CreditCardStatementItem> items = new ArrayList<>();
 	private boolean posted;
+	private List<CreditCardStatementPayment> payments = new ArrayList<>();
 
 	public CreditCardStatement() {
 		// default constructor
@@ -76,45 +77,43 @@ public class CreditCardStatement {
 	}
 
 	public String getStatus() {
-		if (posted) {
-			if (isFullyPaid()) {
-				return "Fully Paid";
-			} else if (isUnpaid()) {
-				return "Posted/Unpaid";
-			} else {
-				return "Partially Paid";
-			}
-		} else {
-			return "New";
-		}
+		return posted ? "Posted" : "New";
 	}
 
-	private boolean isUnpaid() {
-		for (CreditCardStatementItem item : items) {
-			if (item.isPaid()) {
-				return false;
-			}
-		}
-		return true;
+	public List<CreditCardStatementPayment> getPayments() {
+		return payments;
 	}
 
-	private boolean isFullyPaid() {
-		for (CreditCardStatementItem item : items) {
-			if (!item.isPaid()) {
-				return false;
-			}
-		}
-		return true;
+	public void setPayments(List<CreditCardStatementPayment> payments) {
+		this.payments = payments;
 	}
 
-	public BigDecimal getTotalUnpaidAmount() {
+	public int getTotalPurchases() {
+		return items.size();
+	}
+
+	public BigDecimal getTotalPurchaseAmount() {
 		BigDecimal total = Constants.ZERO;
 		for (CreditCardStatementItem item : items) {
-			if (!item.isPaid()) {
-				total = total.add(item.getCreditCardPayment().getAmount());
-			}
+			total = total.add(item.getCreditCardPayment().getAmount());
 		}
 		return total;
 	}
 
+	public int getTotalPayments() {
+		return payments.size();
+	}
+
+	public BigDecimal getTotalPaymentAmount() {
+		BigDecimal total = Constants.ZERO;
+		for (CreditCardStatementPayment payment : payments) {
+			total = total.add(payment.getAmount());
+		}
+		return total;
+	}
+
+	public BigDecimal getOverOrShort() {
+		return getTotalPaymentAmount().subtract(getTotalPurchaseAmount());
+	}
+	
 }

@@ -1,14 +1,12 @@
 package com.pj.magic.service;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import com.pj.magic.exception.NotEnoughSurplusPaymentException;
 import com.pj.magic.model.CreditCard;
-import com.pj.magic.model.CreditCardPayment;
 import com.pj.magic.model.CreditCardStatement;
 import com.pj.magic.model.CreditCardStatementItem;
+import com.pj.magic.model.CreditCardStatementPayment;
 
 public interface CreditCardService {
 
@@ -24,26 +22,18 @@ public interface CreditCardService {
 
 	void save(CreditCardStatement statement);
 
-	List<CreditCardPayment> getCreditCardPayments(CreditCard creditCard);
-
-	void save(CreditCardPayment payment);
-
-	CreditCardPayment getCreditCardPayment(long id);
-
-	void markAsPaid(List<CreditCardStatementItem> items, Date paidDate) throws NotEnoughSurplusPaymentException;
-
-	void markAsUnpaid(List<CreditCardStatementItem> items);
-
 	void delete(CreditCardStatementItem item);
-
-	BigDecimal getSurplusPayment(CreditCard creditCard);
 
 	void save(CreditCardStatementItem item);
 
 	List<CreditCardStatement> findAllStatementsByCreditCard(CreditCard creditCard);
 
-	void delete(CreditCardPayment item);
-
 	CreditCardStatement findStatementByCreditCardAndStatementDate(CreditCard creditCard, Date statementDate);
+	
+	void save(CreditCardStatementPayment payment);
+	
+	List<CreditCardStatementPayment> findAllPaymentsByCreditCardStatement(CreditCardStatement statement);
+	
+	void delete(CreditCardStatementPayment payment);
 	
 }
