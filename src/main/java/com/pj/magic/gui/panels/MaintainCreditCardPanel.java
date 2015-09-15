@@ -167,7 +167,7 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		bankField.setPreferredSize(new Dimension(100, 25));
+		bankField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(bankField, c);
 		
 		currentRow++;
