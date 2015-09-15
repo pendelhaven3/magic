@@ -144,7 +144,8 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			+ "   select *"
 			+ "   from CREDIT_CARD_STATEMENT_ITEM ccsi"
 			+ "   where ccsi.PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT_ID = a.ID"
-			+ " )";
+			+ " )"
+			+ " and a.TRANSACTION_DT >= ?";
 	
 	@Override
 	public List<PurchasePaymentCreditCardPayment> search(
@@ -182,6 +183,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 		if (criteria.getNotIncludedInStatement() != null) {
 			if (criteria.getNotIncludedInStatement()) {
 				sql.append(NOT_INCLUDED_IN_STATEMENT_WHERE_CLAUSE);
+				params.add("2015-03-01");
 			}
 		}
 		
