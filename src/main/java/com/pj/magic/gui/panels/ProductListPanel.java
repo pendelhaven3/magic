@@ -1,5 +1,6 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -13,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.table.TableCellRenderer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,7 +52,22 @@ public class ProductListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void initializeComponents() {
-		table = new MagicListTable(tableModel);
+		table = new MagicListTable(tableModel) {
+			
+			@Override
+			public java.awt.Component prepareRenderer(TableCellRenderer renderer,
+					int row, int column) {
+				java.awt.Component r = super.prepareRenderer(renderer, row, column);
+				Product item = tableModel.getProduct(row);
+				if (item.isActive()) {
+					r.setForeground(Color.black);
+				} else {
+					r.setForeground(Color.red);
+				}
+				return r;
+			}
+			
+		};
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 
