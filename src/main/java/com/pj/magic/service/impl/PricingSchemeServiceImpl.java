@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.PricingSchemeDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.model.PricingScheme;
+import com.pj.magic.model.Product;
+import com.pj.magic.model.search.ProductSearchCriteria;
 import com.pj.magic.service.PricingSchemeService;
 
 @Service
@@ -35,8 +37,15 @@ public class PricingSchemeServiceImpl implements PricingSchemeService {
 	@Override
 	public PricingScheme get(long id) {
 		PricingScheme pricingScheme = pricingSchemeDao.get(id);
-		pricingScheme.setProducts(productDao.findAllByPricingScheme(pricingScheme));
+		pricingScheme.setProducts(findActiveProductsByPricingScheme(pricingScheme));
 		return pricingScheme;
+	}
+
+	private List<Product> findActiveProductsByPricingScheme(PricingScheme pricingScheme) {
+		ProductSearchCriteria criteria = new ProductSearchCriteria();
+		criteria.setPricingScheme(pricingScheme);
+		criteria.setActive(true);
+		return productDao.search(criteria);
 	}
 
 }
