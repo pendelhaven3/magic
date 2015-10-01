@@ -524,7 +524,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		
 		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
+		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 8;
@@ -538,7 +538,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createVerticalFiller(10), c);
+		mainPanel.add(Box.createVerticalStrut(5), c);
 		
 		currentRow++;
 		
@@ -547,14 +547,6 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 8;
 		mainPanel.add(createTotalsPanel(), c);
-				
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.weighty = 1.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(), c);
 	}
 
 	private JPanel createCheckPaymentsTableToolBar() {
