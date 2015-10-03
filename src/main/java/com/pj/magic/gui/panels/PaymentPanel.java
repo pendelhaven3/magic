@@ -1,12 +1,15 @@
 package com.pj.magic.gui.panels;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.List;
@@ -37,9 +40,10 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AddSalesInvoicesToPaymentDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
-import com.pj.magic.gui.tables.PaymentPaymentAdjustmentsTable;
+import com.pj.magic.gui.dialog.StatusDetailsDialog;
 import com.pj.magic.gui.tables.PaymentCashPaymentsTable;
 import com.pj.magic.gui.tables.PaymentCheckPaymentsTable;
+import com.pj.magic.gui.tables.PaymentPaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.PaymentSalesInvoicesTable;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
@@ -55,6 +59,7 @@ import com.pj.magic.service.PrintService;
 import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.HtmlUtil;
 
 @Component
 public class PaymentPanel extends StandardMagicPanel {
@@ -77,19 +82,13 @@ public class PaymentPanel extends StandardMagicPanel {
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalService paymentTerminalService;
 	@Autowired private SalesReturnService salesReturnService;
+	@Autowired private StatusDetailsDialog statusDetailsDialog;
 	
 	private Payment payment;
 	private JLabel paymentNumberField;
-	private JLabel createDateField;
-	private JLabel createdByField;
+	private JLabel statusField;
 	private MagicTextField customerCodeField;
 	private JLabel customerNameField;
-	private JLabel postedField;
-	private JLabel postDateField;
-	private JLabel postedByField;
-	private JLabel cancelledField;
-	private JLabel cancelDateField;
-	private JLabel cancelledByField;
 	private JLabel paymentTerminalField;
 	private JLabel totalAmountDueField;
 	private JLabel totalCashPaymentsField;
@@ -115,7 +114,17 @@ public class PaymentPanel extends StandardMagicPanel {
 	@Override
 	protected void initializeComponents() {
 		paymentNumberField = new JLabel();
-		createDateField = new JLabel();
+		
+		statusField = new JLabel();
+		statusField.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				statusDetailsDialog.updateDisplay(payment);				
+				statusDetailsDialog.setVisible(true);				
+			}
+		});
+		statusField.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		
 		customerCodeField = new MagicTextField();
 		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
@@ -224,17 +233,10 @@ public class PaymentPanel extends StandardMagicPanel {
 		this.payment = payment = paymentService.getPayment(payment.getId());
 		
 		paymentNumberField.setText(payment.getPaymentNumber().toString());
-		createDateField.setText(FormatterUtil.formatDate(payment.getCreateDate()));
-		createdByField.setText(payment.getEncoder().getUsername());
+		statusField.setText(HtmlUtil.blueUnderline(payment.getStatus()));
 		customerCodeField.setText(payment.getCustomer().getCode());
 		customerCodeField.setEnabled(payment.isNew());
 		customerNameField.setText(payment.getCustomer().getName());
-		postedField.setText(payment.isPosted() ? "Yes" : "No");
-		postDateField.setText(payment.isPosted() ? FormatterUtil.formatDateTime(payment.getPostDate()) : null);
-		postedByField.setText(payment.isPosted() ? payment.getPostedBy().getUsername() : null);
-		cancelledField.setText(payment.isCancelled() ? "Yes" : "No");
-		cancelDateField.setText(payment.isCancelled() ? FormatterUtil.formatDate(payment.getCancelDate()) : null);
-		cancelledByField.setText(payment.isCancelled() ? payment.getCancelledBy().getUsername() : null);
 		paymentTerminalField.setText(payment.isPosted() ? payment.getPaymentTerminal().getName() : null);
 		totalAmountDueField.setText(FormatterUtil.formatAmount(payment.getTotalAmountDue()));
 		totalCashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCashPayments()));
@@ -267,18 +269,11 @@ public class PaymentPanel extends StandardMagicPanel {
 
 	private void clearDisplay() {
 		paymentNumberField.setText(null);
-		createDateField.setText(null);
-		createdByField.setText(null);
+		statusField.setText(null);
 		customerCodeField.setEnabled(true);
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
 		selectCustomerButton.setEnabled(true);
-		postedField.setText(null);
-		postDateField.setText(null);
-		postedByField.setText(null);
-		cancelledField.setText(null);
-		cancelDateField.setText(null);
-		cancelledByField.setText(null);
 		paymentTerminalField.setText(null);
 		
 		salesInvoicesTable.clearDisplay();
@@ -365,38 +360,25 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		paymentNumberField = ComponentUtil.createLabel(150, "");
 		mainPanel.add(paymentNumberField, c);
-
+		
 		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Create Date:"), c);
+		mainPanel.add(Box.createHorizontalStrut(100), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		createDateField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(createDateField, c);
-
+		mainPanel.add(ComponentUtil.createLabel(80, "Status:"), c);
+		
 		c = new GridBagConstraints();
+		c.weightx = 1.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Created By:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 6;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		createdByField = ComponentUtil.createLabel(100, "");
-		mainPanel.add(createdByField, c);
-
-		c = new GridBagConstraints();
-		c.weightx = 1.0;
-		c.gridx = 7;
-		c.gridy = currentRow;
-		mainPanel.add(Box.createGlue(), c);
+		statusField.setPreferredSize(new Dimension(150, 25));
+		mainPanel.add(statusField, c);
 
 		currentRow++;
 		
@@ -410,115 +392,34 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		c.gridwidth = 3;
+		c.gridwidth = 4;
 		
 		customerCodeField.setPreferredSize(new Dimension(140, 25));
 		customerNameField = ComponentUtil.createLabel(190, "");
 		
 		mainPanel.add(createCustomerPanel(), c);
 		
+		currentRow++;
+		
 		c = new GridBagConstraints();
-		c.gridx = 5;
+		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Terminal:"), c);
 		
 		c = new GridBagConstraints();
-		c.gridx = 6;
+		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		paymentTerminalField = ComponentUtil.createLabel(100, "");
 		mainPanel.add(paymentTerminalField, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Posted:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		postedField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(postedField, c);
 
-		c = new GridBagConstraints();
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Post Date:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		postDateField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(postDateField, c);
-
-		c = new GridBagConstraints();
-		c.gridx = 5;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Posted By:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 6;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		postedByField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(postedByField, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Cancelled:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		cancelledField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(cancelledField, c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 3;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Cancel Date:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		cancelDateField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(cancelDateField, c);
-
-		c = new GridBagConstraints();
-		c.gridx = 5;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Cancelled By:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 6;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		cancelledByField = ComponentUtil.createLabel(150, "");
-		mainPanel.add(cancelledByField, c);
-		
 		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(50, 10), c);
+		mainPanel.add(Box.createVerticalStrut(10), c);
 		
 		currentRow++;
 		
@@ -527,7 +428,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 8;
+		c.gridwidth = 6;
 		
 		tabbedPane = createTabbedPane();
 		tabbedPane.setPreferredSize(new Dimension(600, 250));
@@ -545,7 +446,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 8;
+		c.gridwidth = 6;
 		mainPanel.add(createTotalsPanel(), c);
 	}
 

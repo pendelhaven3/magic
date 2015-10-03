@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.NoMoreStockAdjustment;
+import com.pj.magic.model.Payment;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.util.ComponentUtil;
@@ -21,12 +22,15 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class StatusDetailsDialog extends MagicDialog {
 
+	private JLabel createDateLabel = new JLabel();
+	private JLabel createdByLabel = new JLabel();
 	private JLabel postDateLabel = new JLabel();
 	private JLabel postedByLabel = new JLabel();
 	private JLabel cancelDateLabel = new JLabel();
 	private JLabel cancelledByLabel = new JLabel();
 	private JLabel paidDateLabel = new JLabel();
 	private JLabel paidByLabel = new JLabel();
+	private boolean showCreateFields;
 	private boolean showPaidFields;
 	private boolean showCancelFields;
 	
@@ -51,6 +55,36 @@ public class StatusDetailsDialog extends MagicDialog {
 		
 		setLayout(new GridBagLayout());
 		int currentRow = 0;
+		
+		if (showCreateFields) {
+			GridBagConstraints c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = currentRow;
+			c.anchor = GridBagConstraints.WEST;
+			add(ComponentUtil.createLabel(120, "Create Date:"), c);
+
+			c = new GridBagConstraints();
+			c.gridx = 1;
+			c.gridy = currentRow;
+			c.anchor = GridBagConstraints.WEST;
+			add(createDateLabel, c);
+			
+			currentRow++;
+			
+			c = new GridBagConstraints();
+			c.gridx = 0;
+			c.gridy = currentRow;
+			c.anchor = GridBagConstraints.WEST;
+			add(ComponentUtil.createLabel(120, "Created By:"), c);
+
+			c = new GridBagConstraints();
+			c.gridx = 1;
+			c.gridy = currentRow;
+			c.anchor = GridBagConstraints.WEST;
+			add(createdByLabel, c);
+			
+			currentRow++;
+		}
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -150,6 +184,10 @@ public class StatusDetailsDialog extends MagicDialog {
 		
 		mainPanel.repaint();
 		mainPanel.revalidate();
+		
+		showCreateFields = false;
+		showPaidFields = false;
+		showCancelFields = false;
 	}
 	
 	public void updateDisplay(ReceivingReceipt receivingReceipt) {
@@ -227,6 +265,26 @@ public class StatusDetailsDialog extends MagicDialog {
 				FormatterUtil.formatDateTime(noMoreStockAdjustment.getPaidDate()) : "-");
 		paidByLabel.setText(noMoreStockAdjustment.isPaid() ? 
 				noMoreStockAdjustment.getPaidBy().getUsername() : "-");
+	}
+
+	public void updateDisplay(Payment payment) {
+		setSize(320, 240);
+		setLocationRelativeTo(null);
+		setTitle("Payment Status");
+		showCreateFields = true;
+		showCancelFields = true;
+		layoutMainPanel();
+		
+		createDateLabel.setText(FormatterUtil.formatDate(payment.getCreateDate()));
+		createdByLabel.setText(payment.getEncoder().getUsername());
+		postDateLabel.setText(payment.isPosted() ? 
+				FormatterUtil.formatDateTime(payment.getPostDate()) : "-");
+		postedByLabel.setText(payment.isPosted() ? 
+				payment.getPostedBy().getUsername() : "-");
+		cancelDateLabel.setText(payment.isCancelled() ? 
+				FormatterUtil.formatDate(payment.getCancelDate()) : "-");
+		cancelledByLabel.setText(payment.isCancelled() ? 
+				payment.getCancelledBy().getUsername() : "-");
 	}
 
 }
