@@ -78,7 +78,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	}
 
 	private static final String INSERT_SQL = 
-			"insert into PAYMENT (PAYMENT_NO, CUSTOMER_ID, CREATE_DT, ENCODER) values (?, ?, curdate(), ?)";
+			"insert into PAYMENT (PAYMENT_NO, CUSTOMER_ID, CREATE_DT, ENCODER) values (?, ?, now(), ?)";
 	
 	private void insert(final Payment payment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -140,7 +140,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			}
 			
 			payment.setPostDate(rs.getTimestamp("POST_DT"));
-			payment.setCreateDate(rs.getDate("CREATE_DT"));
+			payment.setCreateDate(rs.getTimestamp("CREATE_DT"));
 			
 			if (rs.getLong("PAYMENT_TERMINAL_ID") != 0) {
 				PaymentTerminal terminal = new PaymentTerminal();

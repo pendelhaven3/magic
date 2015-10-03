@@ -275,14 +275,14 @@ public class StatusDetailsDialog extends MagicDialog {
 		showCancelFields = true;
 		layoutMainPanel();
 		
-		createDateLabel.setText(FormatterUtil.formatDate(payment.getCreateDate()));
+		createDateLabel.setText(FormatterUtil.formatDateTime(payment.getCreateDate()));
 		createdByLabel.setText(payment.getEncoder().getUsername());
 		postDateLabel.setText(payment.isPosted() ? 
 				FormatterUtil.formatDateTime(payment.getPostDate()) : "-");
 		postedByLabel.setText(payment.isPosted() ? 
 				payment.getPostedBy().getUsername() : "-");
 		cancelDateLabel.setText(payment.isCancelled() ? 
-				FormatterUtil.formatDate(payment.getCancelDate()) : "-");
+				FormatterUtil.formatDateTime(payment.getCancelDate()) : "-");
 		cancelledByLabel.setText(payment.isCancelled() ? 
 				payment.getCancelledBy().getUsername() : "-");
 	}
