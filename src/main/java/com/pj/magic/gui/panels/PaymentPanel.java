@@ -33,10 +33,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.exception.UserNotAssignedToPaymentTerminalException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.AddCashPaymentAndPostDialog;
 import com.pj.magic.gui.dialog.AddSalesInvoicesToPaymentDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
@@ -83,6 +85,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	@Autowired private PaymentTerminalService paymentTerminalService;
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private StatusDetailsDialog statusDetailsDialog;
+	@Autowired private AddCashPaymentAndPostDialog addCashPaymentAndPostDialog;
 	
 	private Payment payment;
 	private JLabel paymentNumberField;
@@ -90,6 +93,8 @@ public class PaymentPanel extends StandardMagicPanel {
 	private MagicTextField customerCodeField;
 	private JLabel customerNameField;
 	private JLabel paymentTerminalField;
+	private JLabel cashAmountGivenField;
+	private JLabel cashChangeField;
 	private JLabel totalAmountDueField;
 	private JLabel totalCashPaymentsField;
 	private JLabel totalCheckPaymentsField;
@@ -107,6 +112,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton deleteAdjustmentButton;
 	private MagicToolBarButton cancelButton;
 	private MagicToolBarButton postButton;
+	private MagicToolBarButton createCashPaymentAndPostButton;
 	private JButton printPreviewButton;
 	private JButton printButton;
 	private JTabbedPane tabbedPane;
@@ -238,6 +244,13 @@ public class PaymentPanel extends StandardMagicPanel {
 		customerCodeField.setEnabled(payment.isNew());
 		customerNameField.setText(payment.getCustomer().getName());
 		paymentTerminalField.setText(payment.isPosted() ? payment.getPaymentTerminal().getName() : null);
+		if (payment.getCashAmountGiven() != null) {
+			cashAmountGivenField.setText(FormatterUtil.formatAmount(payment.getCashAmountGiven()));
+			cashChangeField.setText(FormatterUtil.formatAmount(payment.getCashChange()));
+		} else {
+			cashAmountGivenField.setText(null);
+			cashChangeField.setText(null);
+		}
 		totalAmountDueField.setText(FormatterUtil.formatAmount(payment.getTotalAmountDue()));
 		totalCashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCashPayments()));
 		totalCheckPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCheckPayments()));
@@ -254,6 +267,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		selectCustomerButton.setEnabled(newPayment);
 		cancelButton.setEnabled(newPayment);
 		postButton.setEnabled(newPayment);
+		createCashPaymentAndPostButton.setEnabled(newPayment);
 		addSalesInvoiceButton.setEnabled(newPayment);
 		deleteSalesInvoiceButton.setEnabled(newPayment);
 		addCashPaymentButton.setEnabled(newPayment);
@@ -275,6 +289,8 @@ public class PaymentPanel extends StandardMagicPanel {
 		customerNameField.setText(null);
 		selectCustomerButton.setEnabled(true);
 		paymentTerminalField.setText(null);
+		cashAmountGivenField.setText(null);
+		cashChangeField.setText(null);
 		
 		salesInvoicesTable.clearDisplay();
 		checksTable.clearDisplay();
@@ -299,6 +315,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		
 		cancelButton.setEnabled(false);
 		postButton.setEnabled(false);
+		createCashPaymentAndPostButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
 		printButton.setEnabled(false);
 	}
@@ -417,6 +434,34 @@ public class PaymentPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Amount Given:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		cashAmountGivenField = ComponentUtil.createLabel(100, "");
+		mainPanel.add(cashAmountGivenField, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Change:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		cashChangeField = ComponentUtil.createLabel(100, "");
+		mainPanel.add(cashChangeField, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(Box.createVerticalStrut(10), c);
@@ -500,9 +545,19 @@ public class PaymentPanel extends StandardMagicPanel {
 				postPayment();
 			}
 		});
-		
 		toolBar.add(postButton);
 		
+		createCashPaymentAndPostButton = new MagicToolBarButton("cash_pay_and_post", 
+				"Create Cash Payment and Post");
+		createCashPaymentAndPostButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openAddCashPaymentAndPostDialog();
+			}
+		});
+		toolBar.add(createCashPaymentAndPostButton);
+
 		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {
 			
@@ -522,6 +577,13 @@ public class PaymentPanel extends StandardMagicPanel {
 			}
 		});	
 		toolBar.add(printButton);
+	}
+
+	private void openAddCashPaymentAndPostDialog() {
+		addCashPaymentAndPostDialog.updateDisplay(payment);
+		addCashPaymentAndPostDialog.setVisible(true);
+		
+		updateDisplay(payment);
 	}
 
 	private void printPaymentSummary() {
@@ -568,6 +630,10 @@ public class PaymentPanel extends StandardMagicPanel {
 				paymentService.post(payment);
 				showMessage("Payment posted");
 				updateDisplay(payment);
+			} catch (UserNotAssignedToPaymentTerminalException e) {
+				showErrorMessage("User " + loginService.getLoggedInUser().getUsername()
+						+ " is not assigned to payment terminal");
+				return;
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");

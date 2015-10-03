@@ -12,6 +12,8 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
+import com.pj.magic.Constants;
+
 public abstract class MagicDialog extends JDialog {
 
 	private static final String CLOSE_ACTION_NAME = "close";
@@ -65,6 +67,10 @@ public abstract class MagicDialog extends JDialog {
 	
 	protected void showMessage(String message) {
 		JOptionPane.showMessageDialog(this, message);
+	}
+	
+	protected void showUnexpectedErrorMessage() {
+		showErrorMessage(Constants.UNEXPECTED_ERROR_MESSAGE);
 	}
 	
 }

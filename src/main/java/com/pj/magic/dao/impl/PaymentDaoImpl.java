@@ -30,7 +30,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PAYMENT_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY, CREATE_DT, ENCODER,"
-			+ " CANCEL_IND, CANCEL_DT, CANCEL_BY,"
+			+ " CANCEL_IND, CANCEL_DT, CANCEL_BY, CASH_AMOUNT_GIVEN,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
 			+ " a.PAYMENT_TERMINAL_ID, d.NAME as PAYMENT_TERMINAL_NAME,"
@@ -62,7 +62,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 	private static final String UPDATE_SQL =
 			"update PAYMENT set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
 			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?,"
-			+ " PAYMENT_TERMINAL_ID = ? where ID = ?";
+			+ " PAYMENT_TERMINAL_ID = ?, CASH_AMOUNT_GIVEN = ? where ID = ?";
 	
 	private void update(Payment payment) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -74,11 +74,13 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 				payment.getCancelDate(),
 				payment.isCancelled() ? payment.getCancelledBy().getId() : null,
 				payment.getPaymentTerminal() != null ? payment.getPaymentTerminal().getId() : null,
+				payment.getCashAmountGiven(),
 				payment.getId());
 	}
 
 	private static final String INSERT_SQL = 
-			"insert into PAYMENT (PAYMENT_NO, CUSTOMER_ID, CREATE_DT, ENCODER) values (?, ?, now(), ?)";
+			"insert into PAYMENT (PAYMENT_NO, CUSTOMER_ID, CREATE_DT, ENCODER, CASH_AMOUNT_GIVEN)"
+			+ " values (?, ?, now(), ?, ?)";
 	
 	private void insert(final Payment payment) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -91,6 +93,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 				ps.setLong(1, getNextPaymentNumber());
 				ps.setLong(2, payment.getCustomer().getId());
 				ps.setLong(3, payment.getEncoder().getId());
+				ps.setBigDecimal(4, payment.getCashAmountGiven());
 				return ps;
 			}
 		}, holder);
@@ -156,6 +159,7 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			}
 			
 			payment.setCancelDate(rs.getTimestamp("CANCEL_DT"));
+			payment.setCashAmountGiven(rs.getBigDecimal("CASH_AMOUNT_GIVEN"));
 			
 			return payment;
 		}

@@ -21,6 +21,10 @@ import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesReturnDao;
+import com.pj.magic.exception.AlreadyCancelledException;
+import com.pj.magic.exception.AlreadyPostedException;
+import com.pj.magic.exception.AmountGivenLessThanRemainingAmountDueException;
+import com.pj.magic.exception.UserNotAssignedToPaymentTerminalException;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
@@ -183,7 +187,7 @@ public class PaymentServiceImpl implements PaymentService {
 		User user = loginService.getLoggedInUser();
 		PaymentTerminalAssignment paymentTerminalAssignment = paymentTerminalAssignmentDao.findByUser(user);
 		if (paymentTerminalAssignment == null) {
-			throw new RuntimeException("User " + user.getUsername() + " is not assigned to payment terminal");
+			throw new UserNotAssignedToPaymentTerminalException();
 		}
 		
 		Payment updated = getPayment(payment.getId());
@@ -333,6 +337,35 @@ public class PaymentServiceImpl implements PaymentService {
 		criteria.setPosted(true);
 		criteria.setCancelled(false);
 		return salesReturnService.search(criteria);
+	}
+
+	@Transactional
+	@Override
+	public void addCashPaymentAndPost(Payment payment) {
+		Payment updated = getPayment(payment.getId());
+		
+		if (updated.isPosted()) {
+			throw new AlreadyPostedException();
+		} else if (updated.isCancelled()) {
+			throw new AlreadyCancelledException();
+		}
+		
+		if (payment.getCashAmountGiven() != null && payment.getCashAmountGiven()
+				.compareTo(updated.getTotalAmountDueMinusNonCashPaymentsAndAdjustments()) < 0) {
+			throw new AmountGivenLessThanRemainingAmountDueException();
+		}
+		
+		PaymentCashPayment cashPayment = new PaymentCashPayment();
+		cashPayment.setParent(payment);
+		cashPayment.setAmount(payment.getTotalAmountDueMinusNonCashPaymentsAndAdjustments());
+		cashPayment.setReceivedDate(new Date());
+		cashPayment.setReceivedBy(loginService.getLoggedInUser());
+		save(cashPayment);
+		
+		updated.setCashAmountGiven(payment.getCashAmountGiven());
+		paymentDao.save(updated);
+		
+		post(updated);
 	}
 	
 }

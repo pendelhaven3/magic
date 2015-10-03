@@ -52,5 +52,7 @@ public interface PaymentService {
 	List<PaymentCheckPayment> searchPaymentCheckPayments(PaymentCheckPaymentSearchCriteria criteria);
 
 	List<PaymentSalesInvoice> findAllUnpaidSalesInvoices(Customer customer);
+
+	void addCashPaymentAndPost(Payment payment);
 	
 }

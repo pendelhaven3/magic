@@ -21,6 +21,7 @@ public class Payment {
 	private boolean cancelled;
 	private Date cancelDate;
 	private User cancelledBy;
+	private BigDecimal cashAmountGiven;
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 	private List<PaymentCheckPayment> checkPayments = new ArrayList<>();
 	private List<PaymentCashPayment> cashPayments = new ArrayList<>();
@@ -230,6 +231,26 @@ public class Payment {
 		} else {
 			return "New";
 		}
+	}
+
+	public BigDecimal getCashAmountGiven() {
+		return cashAmountGiven;
+	}
+
+	public void setCashAmountGiven(BigDecimal cashAmountGiven) {
+		this.cashAmountGiven = cashAmountGiven;
+	}
+
+	public BigDecimal getCashChange() {
+		if (cashAmountGiven != null) {
+			return cashAmountGiven.subtract(getTotalAmountDueMinusNonCashPaymentsAndAdjustments());
+		} else {
+			return null;
+		}
+	}
+	
+	public BigDecimal getTotalAmountDueMinusNonCashPaymentsAndAdjustments() {
+		return getTotalAmountDue().subtract(getTotalCheckPayments().add(getTotalAdjustments()));
 	}
 	
 }

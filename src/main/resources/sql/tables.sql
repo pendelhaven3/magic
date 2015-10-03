@@ -545,6 +545,7 @@ create table PAYMENT (
   CANCEL_IND char(1) default 'N' not null,
   CANCEL_DT date null,
   CANCEL_BY integer null,
+  CASH_AMOUNT_GIVEN numeric(10, 2) null,
   constraint PAYMENT$PK primary key (ID),
   constraint PAYMENT$UK unique (PAYMENT_NO),
   constraint PAYMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
