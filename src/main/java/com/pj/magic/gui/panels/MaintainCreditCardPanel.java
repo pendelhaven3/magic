@@ -46,6 +46,7 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 	private MagicTextField bankField;
 	private MagicTextField cardNumberField;
 	private MagicComboBox<Integer> cutoffDateComboBox;
+	private MagicTextField customerNumberField;
 	private JButton saveButton;
 	
 	@Override
@@ -61,6 +62,9 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 		
 		cutoffDateComboBox = new MagicComboBox<>();
 		cutoffDateComboBox.setModel(createCutoffDateComboBoxModel());
+		
+		customerNumberField = new MagicTextField();
+		customerNumberField.setMaximumLength(30);
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -88,6 +92,7 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 		focusOrder.add(userField);
 		focusOrder.add(bankField);
 		focusOrder.add(cardNumberField);
+		focusOrder.add(customerNumberField);
 		focusOrder.add(saveButton);
 	}
 	
@@ -102,6 +107,7 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 			creditCard.setBank(bankField.getText());
 			creditCard.setCardNumber(cardNumberField.getText());
 			creditCard.setCutoffDate((Integer)cutoffDateComboBox.getSelectedItem());
+			creditCard.setCustomerNumber(customerNumberField.getText());
 			
 			try {
 				creditCardService.save(creditCard);
@@ -119,6 +125,7 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 			validateMandatoryField(userField, "User");
 			validateMandatoryField(bankField, "Bank");
 			validateMandatoryField(cardNumberField, "Card Number");
+			validateMandatoryField(customerNumberField, "Customer Number");
 		} catch (ValidationException e) {
 			return false;
 		}
@@ -202,6 +209,21 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Customer Number:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		customerNumberField.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(customerNumberField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(Box.createVerticalStrut(20), c);
@@ -261,12 +283,14 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 		} else {
 			cutoffDateComboBox.resetScrollPosition();
 		}
+		customerNumberField.setText(creditCard.getCustomerNumber());
 	}
 
 	private void clearDisplay() {
 		userField.setText(null);
 		bankField.setText(null);
 		cardNumberField.setText(null);
+		customerNumberField.setText(null);
 	}
 
 	@Override
