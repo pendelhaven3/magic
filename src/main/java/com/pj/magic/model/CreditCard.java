@@ -23,9 +23,6 @@ public class CreditCard {
 	@Column(name = "CARD_NUMBER")
 	private String cardNumber;
 
-	@Column(name = "CUTOFF_DT")
-	private Integer cutoffDate;
-	
 	@Column(name = "CUSTOMER_NUMBER")
 	private String customerNumber;
 	
@@ -93,14 +90,6 @@ public class CreditCard {
 	@Override
 	public String toString() {
 		return user + " - " + bank;
-	}
-
-	public Integer getCutoffDate() {
-		return cutoffDate;
-	}
-
-	public void setCutoffDate(Integer cutoffDate) {
-		this.cutoffDate = cutoffDate;
 	}
 
 	public String getCustomerNumber() {

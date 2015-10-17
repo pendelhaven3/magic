@@ -120,9 +120,6 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			creditCard.setId(rs.getLong("CREDIT_CARD_ID"));
 			creditCard.setUser(rs.getString("CREDIT_CARD_USER"));
 			creditCard.setBank(rs.getString("CREDIT_CARD_BANK"));
-			if (rs.getInt("CREDIT_CARD_CUTOFF_DT") != 0) {
-				creditCard.setCutoffDate(rs.getInt("CREDIT_CARD_CUTOFF_DT"));
-			}
 			creditCardPayment.setCreditCard(creditCard);
 			
 			creditCardPayment.setTransactionDate(rs.getDate("TRANSACTION_DT"));
