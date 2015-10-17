@@ -455,8 +455,8 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		}
 		
 		List<PurchasePaymentCreditCardPayment> creditCardPayments = tableModel.getSelectedCreditCardPayments();
-		if (!hasSameCreditCard(creditCardPayments)) {
-			showErrorMessage("Statement items must all be from the same credit card");
+		if (!hasSameCustomerNumber(creditCardPayments)) {
+			showErrorMessage("Statement items must all be from the same customer number");
 			return;
 		}
 		
@@ -494,10 +494,10 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		}
 	}
 
-	private static boolean hasSameCreditCard(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
-		CreditCard creditCard = creditCardPayments.get(0).getCreditCard();
+	private static boolean hasSameCustomerNumber(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
+		String customerNumber = creditCardPayments.get(0).getCreditCard().getCustomerNumber();
 		for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
-			if (!creditCard.equals(creditCardPayment.getCreditCard())) {
+			if (!customerNumber.equals(creditCardPayment.getCreditCard().getCustomerNumber())) {
 				return false;
 			}
 		}
