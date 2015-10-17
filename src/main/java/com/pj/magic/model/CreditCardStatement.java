@@ -10,6 +10,7 @@ import com.pj.magic.Constants;
 public class CreditCardStatement {
 
 	private Long id;
+	private String customerNumber;
 	private CreditCard creditCard;
 	private Date statementDate;
 	private List<CreditCardStatementItem> items = new ArrayList<>();
@@ -30,6 +31,14 @@ public class CreditCardStatement {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getCustomerNumber() {
+		return customerNumber;
+	}
+
+	public void setCustomerNumber(String customerNumber) {
+		this.customerNumber = customerNumber;
 	}
 
 	public CreditCard getCreditCard() {

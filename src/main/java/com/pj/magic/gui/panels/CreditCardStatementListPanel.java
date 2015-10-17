@@ -24,7 +24,7 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class CreditCardStatementListPanel extends StandardMagicPanel {
 	
-	private static final int CREDIT_CARD_COLUMN_INDEX = 0;
+	private static final int CUSTOMER_NUMBER_COLUMN_INDEX = 0;
 	private static final int STATEMENT_DATE_COLUMN_INDEX = 1;
 	private static final int AMOUNT_COLUMN_INDEX = 2;
 	private static final int STATUS_COLUMN_INDEX = 3;
@@ -107,14 +107,14 @@ public class CreditCardStatementListPanel extends StandardMagicPanel {
 
 	private class CreditCardStatementsTableModel extends ListBackedTableModel<CreditCardStatement> {
 
-		private final String[] columnNames = {"Credit Card", "Statement Date", "Amount", "Status"};
+		private final String[] columnNames = {"Customer Number", "Statement Date", "Amount", "Status"};
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			CreditCardStatement statement = getItem(rowIndex);
 			switch (columnIndex) {
-			case CREDIT_CARD_COLUMN_INDEX:
-				return statement.getCreditCard();
+			case CUSTOMER_NUMBER_COLUMN_INDEX:
+				return statement.getCustomerNumber();
 			case STATEMENT_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(statement.getStatementDate());
 			case AMOUNT_COLUMN_INDEX:

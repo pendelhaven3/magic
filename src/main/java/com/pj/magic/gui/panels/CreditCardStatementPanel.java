@@ -48,14 +48,15 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	private static final int PURCHASE_PAYMENT_COLUMN_INDEX = 0;
 	private static final int SUPPLIER_COLUMN_INDEX = 1;
 	private static final int AMOUNT_COLUMN_INDEX = 2;
-	private static final int TRANSACTION_DATE_COLUMN_INDEX = 3;
+	private static final int CREDIT_CARD_COLUMN_INDEX = 3;
+	private static final int TRANSACTION_DATE_COLUMN_INDEX = 4;
 	
 	@Autowired private CreditCardService creditCardService;
 	@Autowired private PurchasePaymentService purchasePaymentService;
 	@Autowired private CreditCardStatementPaymentsTable paymentsTable;
 	
 	private CreditCardStatement statement;
-	private JLabel creditCardField;
+	private JLabel customerNumberField;
 	private JLabel statementDateField;
 	private JLabel statusField;
 	private MagicListTable itemsTable;
@@ -114,7 +115,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	}
 	
 	public void updateDisplay(CreditCardStatement statement) {
-		creditCardField.setText(statement.getCreditCard().toString());
+		customerNumberField.setText(statement.getCustomerNumber());
 		statementDateField.setText(FormatterUtil.formatDate(statement.getStatementDate()));
 		statusField.setText(statement.getStatus());
 		
@@ -148,15 +149,15 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Credit Card:"), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Customer Number:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		creditCardField = ComponentUtil.createLabel(200, "");
-		mainPanel.add(creditCardField, c);
+		customerNumberField = ComponentUtil.createLabel(200);
+		mainPanel.add(customerNumberField, c);
 		
 		currentRow++;
 		
@@ -518,7 +519,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 
 	private class CreditCardStatementItemsTableModel extends ListBackedTableModel<CreditCardStatementItem> {
 
-		private final String[] columnNames = {"PP No.", "Supplier", "Amount", "Transaction Date"};
+		private final String[] columnNames = {"PP No.", "Supplier", "Amount", "Credit Card", "Transaction Date"};
 		
 		@Override
 		protected String[] getColumnNames() {
@@ -542,6 +543,8 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 				return payment.getParent().getSupplier().getName();
 			case AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(payment.getAmount());
+			case CREDIT_CARD_COLUMN_INDEX:
+				return payment.getCreditCard();
 			case TRANSACTION_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(payment.getTransactionDate());
 			default:

@@ -472,7 +472,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 			}
 			
 			CreditCardStatement statement = new CreditCardStatement();
-			statement.setCreditCard(creditCardPayments.get(0).getCreditCard());
+			statement.setCustomerNumber(creditCardPayments.get(0).getCreditCard().getCustomerNumber());
 			statement.setStatementDate(statementDate);
 			
 			for (PurchasePaymentCreditCardPayment creditCardPayment : tableModel.getSelectedCreditCardPayments()) {

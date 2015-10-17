@@ -24,7 +24,7 @@ import com.pj.magic.util.DbUtil;
 public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardStatementDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, CREDIT_CARD_ID, STATEMENT_DT, POST_IND,"
+			"select a.ID, a.CUSTOMER_NUMBER, CREDIT_CARD_ID, STATEMENT_DT, POST_IND,"
 			+ " b.USER, b.BANK"
 			+ " from CREDIT_CARD_STATEMENT a"
 			+ " left join CREDIT_CARD b"
@@ -45,7 +45,10 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 		public CreditCardStatement mapRow(ResultSet rs, int rowNum) throws SQLException {
 			CreditCardStatement statement = new CreditCardStatement();
 			statement.setId(rs.getLong("ID"));
-			statement.setCreditCard(mapCreditCard(rs));
+			statement.setCustomerNumber(rs.getString("CUSTOMER_NUMBER"));
+			if (rs.getLong("CREDIT_CARD_ID") != 0) {
+				statement.setCreditCard(mapCreditCard(rs));
+			}
 			statement.setStatementDate(rs.getDate("STATEMENT_DT"));
 			statement.setPosted("Y".equals(rs.getString("POST_IND")));
 			return statement;
@@ -81,7 +84,7 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 	}
 
 	private static final String INSERT_SQL =
-			"insert into CREDIT_CARD_STATEMENT (CREDIT_CARD_ID, STATEMENT_DT) values (?, ?)";
+			"insert into CREDIT_CARD_STATEMENT (CUSTOMER_NUMBER, STATEMENT_DT) values (?, ?)";
 	
 	private void insert(final CreditCardStatement statement) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -91,7 +94,7 @@ public class CreditCardStatementDaoImpl extends MagicDao implements CreditCardSt
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setLong(1, statement.getCreditCard().getId());
+				ps.setString(1, statement.getCustomerNumber());
 				ps.setDate(2, DbUtil.toSqlDate(statement.getStatementDate()));
 				return ps;
 			}
