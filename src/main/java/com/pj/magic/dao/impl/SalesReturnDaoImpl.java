@@ -33,7 +33,7 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 	
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, SALES_RETURN_NO, SALES_INVOICE_ID, b.SALES_INVOICE_NO, a.POST_IND, a.POST_DT, a.POST_BY,"
-			+ " PAID_IND, PAID_BY, PAID_DT, a.REMARKS, a.CANCEL_IND, a.CANCEL_BY, a.CANCEL_DT,"
+			+ " PAID_IND, PAID_BY, PAID_DT, a.REMARKS, a.CANCEL_IND, a.CANCEL_BY, a.CANCEL_DT, a.PAYMENT_NO,"
 			+ " b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME,"
 			+ " d.USERNAME as POST_BY_USERNAME,"
 			+ " e.USERNAME as PAID_BY_USERNAME,"
@@ -91,6 +91,10 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 			
 			salesReturn.setRemarks(rs.getString("REMARKS"));
 			
+			if (rs.getLong("PAYMENT_NO") != 0) {
+				salesReturn.setPaymentNumber(rs.getLong("PAYMENT_NO"));
+			}
+			
 			return salesReturn;
 		}
 		
@@ -108,7 +112,8 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 	private static final String UPDATE_SQL =
 			"update SALES_RETURN set SALES_INVOICE_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
 			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ?,"
-			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?, REMARKS = ? where ID = ?";
+			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?, REMARKS = ?,"
+			+ " PAYMENT_NO = ? where ID = ?";
 	
 	private void update(SalesReturn salesReturn) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -124,6 +129,7 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 				salesReturn.isCancelled() ? salesReturn.getCancelDate() : null,
 				salesReturn.isCancelled() ? salesReturn.getCancelledBy().getId() : null,
 				salesReturn.getRemarks(),
+				salesReturn.getPaymentNumber(),
 				salesReturn.getId());
 	}
 	

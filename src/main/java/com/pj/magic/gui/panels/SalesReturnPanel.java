@@ -66,6 +66,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 	private SalesReturn salesReturn;
 	private JLabel salesReturnNumberField;
 	private MagicTextField salesInvoiceNumberField;
+	private JLabel paymentNumberField;
 	private JLabel customerField;
 	private JLabel statusField;
 	private MagicTextField remarksField;
@@ -213,6 +214,11 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		salesReturnNumberField.setText(salesReturn.getSalesReturnNumber().toString());
 		salesInvoiceNumberField.setEnabled(salesReturn.isNew());
 		salesInvoiceNumberField.setText(salesReturn.getSalesInvoice().getSalesInvoiceNumber().toString());
+		if (salesReturn.getPaymentNumber() != null) {
+			paymentNumberField.setText(salesReturn.getPaymentNumber().toString());
+		} else {
+			paymentNumberField.setText(null);
+		}
 		statusField.setText(HtmlUtil.blueUnderline(salesReturn.getStatus()));
 		
 		Customer customer = salesReturn.getSalesInvoice().getCustomer();
@@ -305,6 +311,19 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		salesInvoiceNumberField.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(salesInvoiceNumberField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Payment No.:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentNumberField = ComponentUtil.createLabel(100);
+		mainPanel.add(paymentNumberField, c);
 		
 		currentRow++;
 		

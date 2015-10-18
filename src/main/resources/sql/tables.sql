@@ -505,13 +505,15 @@ create table SALES_RETURN (
   CANCEL_IND char(1) default 'N' not null,
   CANCEL_DT datetime null,
   CANCEL_BY integer null,
+  PAYMENT_NO integer null,
   constraint SALES_RETURN$PK primary key (ID),
   constraint SALES_RETURN$UK unique (SALES_RETURN_NO),
   constraint SALES_RETURN$FK foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID),
   constraint SALES_RETURN$FK2 foreign key (POST_BY) references USER (ID),
   constraint SALES_RETURN$FK3 foreign key (PAID_BY) references USER (ID),
   constraint SALES_RETURN$FK4 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID),
-  constraint SALES_RETURN$FK5 foreign key (CANCEL_BY) references USER (ID)
+  constraint SALES_RETURN$FK5 foreign key (CANCEL_BY) references USER (ID),
+  constraint SALES_RETURN$FK6 foreign key (PAYMENT_NO) references PAYMENT (PAYMENT_NO)
 );
 
 create table SALES_RETURN_ITEM (

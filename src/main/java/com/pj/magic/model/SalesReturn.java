@@ -24,6 +24,7 @@ public class SalesReturn {
 	private PaymentTerminal paymentTerminal;
 	private String remarks;
 	private List<SalesReturnItem> items = new ArrayList<>();
+	private Long paymentNumber;
 
 	public SalesReturn() {
 		// default constructor
@@ -195,6 +196,14 @@ public class SalesReturn {
 
 	public boolean isNew() {
 		return !posted && !cancelled;
+	}
+
+	public Long getPaymentNumber() {
+		return paymentNumber;
+	}
+
+	public void setPaymentNumber(Long paymentNumber) {
+		this.paymentNumber = paymentNumber;
 	}
 
 }

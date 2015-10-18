@@ -205,6 +205,7 @@ public class PaymentServiceImpl implements PaymentService {
 				salesReturn.setPaidDate(new Date());
 				salesReturn.setPaidBy(loginService.getLoggedInUser());
 				salesReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+				salesReturn.setPaymentNumber(updated.getPaymentNumber());
 				salesReturnDao.save(salesReturn);
 			}
 		}
@@ -226,6 +227,7 @@ public class PaymentServiceImpl implements PaymentService {
 				salesReturn.setPaidDate(new Date());
 				salesReturn.setPaidBy(loginService.getLoggedInUser());
 				salesReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+				salesReturn.setPaymentNumber(updated.getPaymentNumber());
 				salesReturnDao.save(salesReturn);
 				break;
 			case AdjustmentType.BAD_STOCK_RETURN_CODE:
