@@ -13,6 +13,7 @@ public class PurchasePaymentCreditCardPaymentSearchCriteria {
 	private Supplier supplier;
 	private CreditCard creditCard;
 	private Boolean notIncludedInStatement;
+	private String customerNumber;
 
 	public Boolean getPosted() {
 		return posted;
@@ -60,6 +61,14 @@ public class PurchasePaymentCreditCardPaymentSearchCriteria {
 
 	public void setNotIncludedInStatement(Boolean notIncludedInStatement) {
 		this.notIncludedInStatement = notIncludedInStatement;
+	}
+
+	public String getCustomerNumber() {
+		return customerNumber;
+	}
+
+	public void setCustomerNumber(String customerNumber) {
+		this.customerNumber = customerNumber;
 	}
 	
 }

@@ -6,12 +6,10 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -24,13 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.ValidationException;
-import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.service.CreditCardService;
 import com.pj.magic.util.ComponentUtil;
-import com.pj.magic.util.ListUtil;
 
 @Component
 public class MaintainCreditCardPanel extends StandardMagicPanel {
@@ -45,7 +41,7 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 	private MagicTextField userField;
 	private MagicTextField bankField;
 	private MagicTextField cardNumberField;
-	private MagicComboBox<Integer> cutoffDateComboBox;
+	private MagicTextField customerNumberField;
 	private JButton saveButton;
 	
 	@Override
@@ -59,8 +55,8 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 		cardNumberField = new MagicTextField();
 		cardNumberField.setMaximumLength(20);
 		
-		cutoffDateComboBox = new MagicComboBox<>();
-		cutoffDateComboBox.setModel(createCutoffDateComboBoxModel());
+		customerNumberField = new MagicTextField();
+		customerNumberField.setMaximumLength(30);
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -74,20 +70,12 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 		focusOnComponentWhenThisPanelIsDisplayed(userField);
 	}
 
-	private ComboBoxModel<Integer> createCutoffDateComboBoxModel() {
-		List<Integer> dates = new ArrayList<>();
-		dates.add((Integer)null);
-		for (int i = 1; i <= 31; i++) {
-			dates.add(i);
-		}
-		return ListUtil.toDefaultComboBoxModel(dates);
-	}
-
 	@Override
 	protected void initializeFocusOrder(List<JComponent> focusOrder) {
 		focusOrder.add(userField);
 		focusOrder.add(bankField);
 		focusOrder.add(cardNumberField);
+		focusOrder.add(customerNumberField);
 		focusOrder.add(saveButton);
 	}
 	
@@ -101,7 +89,7 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 			creditCard.setUser(userField.getText());
 			creditCard.setBank(bankField.getText());
 			creditCard.setCardNumber(cardNumberField.getText());
-			creditCard.setCutoffDate((Integer)cutoffDateComboBox.getSelectedItem());
+			creditCard.setCustomerNumber(customerNumberField.getText());
 			
 			try {
 				creditCardService.save(creditCard);
@@ -119,6 +107,7 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 			validateMandatoryField(userField, "User");
 			validateMandatoryField(bankField, "Bank");
 			validateMandatoryField(cardNumberField, "Card Number");
+			validateMandatoryField(customerNumberField, "Customer Number");
 		} catch (ValidationException e) {
 			return false;
 		}
@@ -191,13 +180,14 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(130, "Cut-off Date: "), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Customer Number:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(cutoffDateComboBox, c);
+		customerNumberField.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(customerNumberField, c);
 		
 		currentRow++;
 		
@@ -256,17 +246,14 @@ public class MaintainCreditCardPanel extends StandardMagicPanel {
 		userField.setText(creditCard.getUser());
 		bankField.setText(creditCard.getBank());
 		cardNumberField.setText(creditCard.getCardNumber());
-		if (creditCard.getCutoffDate() != null) {
-			cutoffDateComboBox.setSelectedItem(creditCard.getCutoffDate());
-		} else {
-			cutoffDateComboBox.resetScrollPosition();
-		}
+		customerNumberField.setText(creditCard.getCustomerNumber());
 	}
 
 	private void clearDisplay() {
 		userField.setText(null);
 		bankField.setText(null);
 		cardNumberField.setText(null);
+		customerNumberField.setText(null);
 	}
 
 	@Override

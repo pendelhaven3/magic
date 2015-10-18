@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.CreditCardStatementItemDao;
+import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardStatement;
 import com.pj.magic.model.CreditCardStatementItem;
 import com.pj.magic.model.PurchasePayment;
@@ -27,20 +28,24 @@ public class CreditCardStatementItemDaoImpl extends MagicDao implements CreditCa
 			"select a.ID, CREDIT_CARD_STATEMENT_ID, PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT_ID,"
 			+ " b.AMOUNT, b.TRANSACTION_DT,"
 			+ " c.PURCHASE_PAYMENT_NO,"
-			+ " d.NAME as SUPPLIER_NAME"
+			+ " d.NAME as SUPPLIER_NAME,"
+			+ " e.USER, e.BANK"
 			+ " from CREDIT_CARD_STATEMENT_ITEM a"
 			+ " join PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT b"
 			+ "   on b.ID = a.PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT_ID"
 			+ " join PURCHASE_PAYMENT c"
 			+ "   on c.ID = b.PURCHASE_PAYMENT_ID"
 			+ " join SUPPLIER d"
-			+ "   on d.ID = c.SUPPLIER_ID";
+			+ "   on d.ID = c.SUPPLIER_ID"
+			+ " join CREDIT_CARD e"
+			+ "   on e.ID = b.CREDIT_CARD_ID";
 	
 	private CreditCardStatementItemRowMapper statementItemRowMapper =
 			new CreditCardStatementItemRowMapper();
 	
 	private static final String FIND_ALL_BY_CREDIT_CARD_STATEMENT_SQL = BASE_SELECT_SQL 
-			+ " where CREDIT_CARD_STATEMENT_ID = ?";
+			+ " where CREDIT_CARD_STATEMENT_ID = ?"
+			+ " order by concat(e.USER, e.BANK), b.TRANSACTION_DT, c.PURCHASE_PAYMENT_NO";
 	
 	@Override
 	public List<CreditCardStatementItem> findAllByCreditCardStatement(CreditCardStatement statement) {
@@ -70,7 +75,15 @@ public class CreditCardStatementItemDaoImpl extends MagicDao implements CreditCa
 			creditCardPayment.setParent(mapPurchasePayment(rs));
 			creditCardPayment.setAmount(rs.getBigDecimal("AMOUNT"));
 			creditCardPayment.setTransactionDate(rs.getDate("TRANSACTION_DT"));
+			creditCardPayment.setCreditCard(mapCreditCard(rs));
 			return creditCardPayment;
+		}
+
+		private CreditCard mapCreditCard(ResultSet rs) throws SQLException {
+			CreditCard creditCard = new CreditCard();
+			creditCard.setUser(rs.getString("USER"));
+			creditCard.setBank(rs.getString("BANK"));
+			return creditCard;
 		}
 
 		private PurchasePayment mapPurchasePayment(ResultSet rs) throws SQLException {

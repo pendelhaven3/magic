@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.pj.magic.dao.PurchasePaymentCreditCardPaymentDao;
 import com.pj.magic.model.CreditCard;
@@ -29,7 +30,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, PURCHASE_PAYMENT_ID, AMOUNT, CREDIT_CARD_ID, TRANSACTION_DT, APPROVAL_CODE,"
 			+ " b.PURCHASE_PAYMENT_NO,"
-			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK, c.CUTOFF_DT as CREDIT_CARD_CUTOFF_DT,"
+			+ " c.USER as CREDIT_CARD_USER, c.BANK as CREDIT_CARD_BANK, c.CUSTOMER_NUMBER,"
 			+ " d.NAME as SUPPLIER_NAME"
 			+ " from PURCHASE_PAYMENT_CREDIT_CARD_PAYMENT a"
 			+ " join PURCHASE_PAYMENT b"
@@ -120,9 +121,7 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			creditCard.setId(rs.getLong("CREDIT_CARD_ID"));
 			creditCard.setUser(rs.getString("CREDIT_CARD_USER"));
 			creditCard.setBank(rs.getString("CREDIT_CARD_BANK"));
-			if (rs.getInt("CREDIT_CARD_CUTOFF_DT") != 0) {
-				creditCard.setCutoffDate(rs.getInt("CREDIT_CARD_CUTOFF_DT"));
-			}
+			creditCard.setCustomerNumber(rs.getString("CUSTOMER_NUMBER"));
 			creditCardPayment.setCreditCard(creditCard);
 			
 			creditCardPayment.setTransactionDate(rs.getDate("TRANSACTION_DT"));
@@ -185,6 +184,11 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 				sql.append(NOT_INCLUDED_IN_STATEMENT_WHERE_CLAUSE);
 				params.add("2015-03-01");
 			}
+		}
+		
+		if (!StringUtils.isEmpty(criteria.getCustomerNumber())) {
+			sql.append(" and c.CUSTOMER_NUMBER = ?");
+			params.add(criteria.getCustomerNumber());
 		}
 		
 		sql.append(" order by a.TRANSACTION_DT, d.NAME, b.PURCHASE_PAYMENT_NO");

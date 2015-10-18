@@ -16,7 +16,6 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -31,10 +30,8 @@ import org.springframework.util.StringUtils;
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
-import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
-import com.pj.magic.gui.component.StatementDateComboBoxModel;
 import com.pj.magic.gui.dialog.MagicDialog;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.MagicListTable;
@@ -49,7 +46,6 @@ import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
-import com.pj.magic.util.ListUtil;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -83,7 +79,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 	private MagicTextField supplierCodeField;
 	private JLabel supplierNameLabel;
 	private EllipsisButton selectSupplierButton;
-	private MagicComboBox<CreditCard> creditCardComboBox;
+	private MagicTextField customerNumberField;
 	private JLabel totalRowsLabel = new JLabel();
 	private JLabel totalAmountLabel= new JLabel();
 	
@@ -135,7 +131,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 			}
 		});
 		
-		creditCardComboBox = new MagicComboBox<>();
+		customerNumberField = new MagicTextField();
 	}
 
 	private void selectAllCreditCardPayments() {
@@ -173,7 +169,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 			criteria.setSupplier(supplierService.findSupplierByCode(supplierCode));
 		}
 		
-		criteria.setCreditCard((CreditCard)creditCardComboBox.getSelectedItem());
+		criteria.setCustomerNumber(customerNumberField.getText());
 		
 		List<PurchasePaymentCreditCardPayment> creditCardPayments = 
 				purchasePaymentService.searchCreditCardPayments(criteria);
@@ -196,9 +192,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 				getAllUnpaidCreditCardPaymentsNotIncludedInStatement();
 		tableModel.setCreditCardPayments(creditCardPayments);
 		updateTotalFields(creditCardPayments);
-		
-		creditCardComboBox.setModel(ListUtil.toDefaultComboBoxModel(creditCardService.getAllCreditCards(), true));
-		creditCardComboBox.setSelectedIndex(0);
+		customerNumberField.setText(null);
 	}
 
 	private List<PurchasePaymentCreditCardPayment> getAllUnpaidCreditCardPaymentsNotIncludedInStatement() {
@@ -309,15 +303,15 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Credit Card:"), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Customer Number:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		c.gridwidth = 3;
-		creditCardComboBox.setPreferredSize(new Dimension(200, 25));
-		mainPanel.add(creditCardComboBox, c);
+		customerNumberField.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(customerNumberField, c);
 
 		currentRow++;
 		
@@ -457,8 +451,8 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		}
 		
 		List<PurchasePaymentCreditCardPayment> creditCardPayments = tableModel.getSelectedCreditCardPayments();
-		if (!hasSameCreditCard(creditCardPayments)) {
-			showErrorMessage("Statement items must all be from the same credit card");
+		if (!hasSameCustomerNumber(creditCardPayments)) {
+			showErrorMessage("Statement items must all be from the same customer number");
 			return;
 		}
 		
@@ -474,7 +468,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 			}
 			
 			CreditCardStatement statement = new CreditCardStatement();
-			statement.setCreditCard(creditCardPayments.get(0).getCreditCard());
+			statement.setCustomerNumber(creditCardPayments.get(0).getCreditCard().getCustomerNumber());
 			statement.setStatementDate(statementDate);
 			
 			for (PurchasePaymentCreditCardPayment creditCardPayment : tableModel.getSelectedCreditCardPayments()) {
@@ -496,10 +490,10 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		}
 	}
 
-	private static boolean hasSameCreditCard(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
-		CreditCard creditCard = creditCardPayments.get(0).getCreditCard();
+	private static boolean hasSameCustomerNumber(List<PurchasePaymentCreditCardPayment> creditCardPayments) {
+		String customerNumber = creditCardPayments.get(0).getCreditCard().getCustomerNumber();
 		for (PurchasePaymentCreditCardPayment creditCardPayment : creditCardPayments) {
-			if (!creditCard.equals(creditCardPayment.getCreditCard())) {
+			if (!customerNumber.equals(creditCardPayment.getCreditCard().getCustomerNumber())) {
 				return false;
 			}
 		}
@@ -609,7 +603,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 	
 	private class SelectStatementDateDialog extends MagicDialog {
 
-		private JComboBox<Date> statementDateComboBox;
+		private UtilCalendarModel statementDateModel;
 		private JButton saveButton;
 		
 		public SelectStatementDateDialog() {
@@ -625,24 +619,24 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 				
 				@Override
 				public void windowClosing(WindowEvent e) {
-					statementDateComboBox.setSelectedIndex(0);
+					statementDateModel.setValue(null);
 				}
 			});
 		}
 
 		public void updateDisplay(CreditCard creditCard) {
-			statementDateComboBox.setModel(new StatementDateComboBoxModel(creditCard));
+			// do nothing
 		}
 
 		private void initializeComponents() {
-			statementDateComboBox = new MagicComboBox<>();
+			statementDateModel = new UtilCalendarModel();
 			
 			saveButton = new JButton("Save");
 			saveButton.addActionListener(new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					if (statementDateComboBox.getSelectedIndex() <= 0) {
+					if (statementDateModel.getValue() == null) {
 						showErrorMessage("Statement Date must be specified");
 					} else {
 						setVisible(false);
@@ -653,7 +647,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 
 		@Override
 		protected void doWhenEscapeKeyPressed() {
-			statementDateComboBox.setSelectedIndex(0);
+			statementDateModel.setValue(null);
 		}
 		
 		private void layoutComponents() {
@@ -670,8 +664,10 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 			c.gridx = 1;
 			c.gridy = currentRow;
 			c.anchor = GridBagConstraints.WEST;
-			statementDateComboBox.setPreferredSize(new Dimension(120, 25));
-			add(statementDateComboBox, c);
+			
+			JDatePanelImpl datePanel = new JDatePanelImpl(statementDateModel);
+			JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+			add(datePicker, c);
 			
 			currentRow++;
 			
@@ -700,7 +696,11 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		}
 		
 		public Date getStatementDate() {
-			return (Date)statementDateComboBox.getSelectedItem();
+			if (statementDateModel.getValue() != null) {
+				return statementDateModel.getValue().getTime();
+			} else {
+				return null;
+			}
 		}
 		
 	}
