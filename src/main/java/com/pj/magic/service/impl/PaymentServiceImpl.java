@@ -240,6 +240,7 @@ public class PaymentServiceImpl implements PaymentService {
 				badStockReturn.setPaidDate(new Date());
 				badStockReturn.setPaidBy(loginService.getLoggedInUser());
 				badStockReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+				badStockReturn.setPaymentNumber(updated.getPaymentNumber());
 				badStockReturnDao.save(badStockReturn);
 				break;
 			case AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE:

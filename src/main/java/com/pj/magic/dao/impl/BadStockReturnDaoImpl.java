@@ -32,6 +32,7 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, BAD_STOCK_RETURN_NO, CUSTOMER_ID, POST_IND, POST_DT, POST_BY,"
 			+ " PAID_IND, PAID_DT, PAID_BY, PAYMENT_TERMINAL_ID, a.REMARKS, CANCEL_IND, CANCEL_DT, CANCEL_BY,"
+			+ " a.PAYMENT_NO,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
 			+ " d.USERNAME as PAID_BY_USERNAME,"
@@ -74,7 +75,7 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 	private static final String UPDATE_SQL = 
 			"update BAD_STOCK_RETURN set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
 			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ?,"
-			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?, REMARKS = ? where ID = ?";
+			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?, REMARKS = ?, PAYMENT_NO = ? where ID = ?";
 	
 	private void update(BadStockReturn badStockReturn) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -90,6 +91,7 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 				badStockReturn.isCancelled() ? badStockReturn.getCancelDate() : null,
 				badStockReturn.isCancelled() ? badStockReturn.getCancelledBy().getId() : null,
 				badStockReturn.getRemarks(),
+				badStockReturn.getPaymentNumber(),
 				badStockReturn.getId());
 	}
 
@@ -154,6 +156,9 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 			}
 			
 			badStockReturn.setRemarks(rs.getString("REMARKS"));
+			if (rs.getLong("PAYMENT_NO") != 0) {
+				badStockReturn.setPaymentNumber(rs.getLong("PAYMENT_NO"));
+			}
 			
 			return badStockReturn;
 		}

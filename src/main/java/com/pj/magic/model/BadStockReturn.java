@@ -23,6 +23,7 @@ public class BadStockReturn {
 	private User cancelledBy;
 	private PaymentTerminal paymentTerminal;
 	private String remarks;
+	private Long paymentNumber;
 	
 	private List<BadStockReturnItem> items = new ArrayList<>();
 
@@ -196,6 +197,14 @@ public class BadStockReturn {
 
 	public void setCancelledBy(User cancelledBy) {
 		this.cancelledBy = cancelledBy;
+	}
+
+	public Long getPaymentNumber() {
+		return paymentNumber;
+	}
+
+	public void setPaymentNumber(Long paymentNumber) {
+		this.paymentNumber = paymentNumber;
 	}
 	
 }

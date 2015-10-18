@@ -78,6 +78,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	private JTextField customerCodeField;
 	private JLabel customerNameField;
 	private JButton selectCustomerButton;
+	private JLabel paymentNumberField;
 	private JLabel statusField;
 	private MagicTextField remarksField;
 	private JLabel totalItemsField;
@@ -255,6 +256,11 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		customerCodeField.setEnabled(!badStockReturn.isPosted());
 		customerNameField.setText(badStockReturn.getCustomer().getName());
 		selectCustomerButton.setEnabled(!badStockReturn.isPosted());
+		if (badStockReturn.getPaymentNumber() != null) {
+			paymentNumberField.setText(badStockReturn.getPaymentNumber().toString());
+		} else {
+			paymentNumberField.setText(null);
+		}
 		statusField.setText(HtmlUtil.blueUnderline(badStockReturn.getStatus()));
 		remarksField.setText(badStockReturn.getRemarks());
 		remarksField.setEnabled(!badStockReturn.isPosted());
@@ -348,6 +354,20 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(createCustomerPanel(), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Payment No.:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentNumberField = ComponentUtil.createLabel(100);
+		mainPanel.add(paymentNumberField, c);
 		
 		currentRow++;
 		
