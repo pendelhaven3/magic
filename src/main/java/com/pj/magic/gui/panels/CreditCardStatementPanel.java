@@ -65,7 +65,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	private JLabel totalPurchaseAmountField;
 	private JLabel totalPaymentsField;
 	private JLabel totalPaymentAmountField;
-	private JLabel overOrShortField;
+	private JLabel balanceField;
 	private JButton postButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
@@ -224,7 +224,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	
 	private JTabbedPane createTabbedPane() {
 		tabbedPane = new JTabbedPane();
-		tabbedPane.addTab("Sales Invoices", createItemsPanel());
+		tabbedPane.addTab("Purchases", createItemsPanel());
 		tabbedPane.addTab("Payments", createPaymentsPanel());
 		return tabbedPane;
 	}
@@ -389,10 +389,10 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		c.gridwidth = 5;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		overOrShortField = new JLabel();
+		balanceField = new JLabel();
 		panel.add(ComponentUtil.createGenericPanel(
-				ComponentUtil.createLabel(100, "Over/Short:"),
-				overOrShortField), c);
+				ComponentUtil.createLabel(100, "Balance:"),
+				balanceField), c);
 		
 		return panel;
 	}
@@ -483,7 +483,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		totalPurchaseAmountField.setText(FormatterUtil.formatAmount(statement.getTotalPurchaseAmount()));
 		totalPaymentsField.setText(String.valueOf(statement.getTotalPayments()));
 		totalPaymentAmountField.setText(FormatterUtil.formatAmount(statement.getTotalPaymentAmount()));
-		overOrShortField.setText(FormatterUtil.formatAmount(statement.getOverOrShort()));
+		balanceField.setText(FormatterUtil.formatAmount(statement.getBalance()));
 	}
 
 	@Override

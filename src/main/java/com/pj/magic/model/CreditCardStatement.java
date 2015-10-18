@@ -121,7 +121,7 @@ public class CreditCardStatement {
 		return total;
 	}
 
-	public BigDecimal getOverOrShort() {
+	public BigDecimal getBalance() {
 		return getTotalPaymentAmount().subtract(getTotalPurchaseAmount());
 	}
 	
