@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
@@ -162,6 +164,8 @@ import com.pj.magic.service.SystemService;
  */
 
 public class MagicFrame extends JFrame {
+	
+	private static final Logger logger = LoggerFactory.getLogger(MagicFrame.class);
 	
 	private static final String LOGIN_PANEL = "LOGIN_PANEL";
 	private static final String MAIN_MENU_PANEL = "MAIN_MENU_PANEL";
@@ -399,6 +403,7 @@ public class MagicFrame extends JFrame {
 					"Error Message", JOptionPane.ERROR_MESSAGE);
 			closeProgram();
 		} else if (!isProgramVersionValid()) {
+			logger.error("Program not up-to-date. Expected: " + getApplicationVersion());
 			JOptionPane.showMessageDialog(this, "Program not up-to-date", 
 					"Error Message", JOptionPane.ERROR_MESSAGE);
 			closeProgram();
@@ -407,6 +412,10 @@ public class MagicFrame extends JFrame {
 		}
 	}
 	
+	private String getApplicationVersion() {
+		return resourceBundle.getString("application.version");
+	}
+
 	private boolean isDatabaseUp() {
 		try {
 			DataSourceUtils.releaseConnection(dataSource.getConnection(), dataSource);
