@@ -254,6 +254,7 @@ public class PaymentServiceImpl implements PaymentService {
 				noMoreStockAdjustment.setPaidDate(new Date());
 				noMoreStockAdjustment.setPaidBy(loginService.getLoggedInUser());
 				noMoreStockAdjustment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+				noMoreStockAdjustment.setPaymentNumber(updated.getPaymentNumber());
 				noMoreStockAdjustmentDao.save(noMoreStockAdjustment);
 				break;
 			default:

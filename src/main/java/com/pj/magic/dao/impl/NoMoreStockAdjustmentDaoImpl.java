@@ -32,7 +32,7 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 			"NO_MORE_STOCK_ADJUSTMENT_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, NO_MORE_STOCK_ADJUSTMENT_NO, SALES_INVOICE_ID, b.SALES_INVOICE_NO,"
+			"select a.ID, NO_MORE_STOCK_ADJUSTMENT_NO, SALES_INVOICE_ID, b.SALES_INVOICE_NO, a.PAYMENT_NO,"
 			+ " a.POST_IND, a.POST_DT, a.POST_BY,"
 			+ " PAID_IND, PAID_BY, PAID_DT, a.REMARKS,"
 			+ " b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME,"
@@ -82,6 +82,9 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 			}
 			
 			salesReturn.setRemarks(rs.getString("REMARKS"));
+			if (rs.getLong("PAYMENT_NO") != 0) {
+				salesReturn.setPaymentNumber(rs.getLong("PAYMENT_NO"));
+			}
 			
 			return salesReturn;
 		}
@@ -99,7 +102,8 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 
 	private static final String UPDATE_SQL =
 			"update NO_MORE_STOCK_ADJUSTMENT set SALES_INVOICE_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
-			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ?, REMARKS = ? where ID = ?";
+			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ?, REMARKS = ?,"
+			+ " PAYMENT_NO = ? where ID = ?";
 	
 	private void update(NoMoreStockAdjustment noMoreStockAdjustment) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -112,6 +116,7 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 				noMoreStockAdjustment.isPaid() ? noMoreStockAdjustment.getPaidBy().getId() : null,
 				noMoreStockAdjustment.isPaid() ? noMoreStockAdjustment.getPaymentTerminal().getId() : null,
 				noMoreStockAdjustment.getRemarks(),
+				noMoreStockAdjustment.getPaymentNumber(),
 				noMoreStockAdjustment.getId());
 	}
 	

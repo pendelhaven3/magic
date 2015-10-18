@@ -21,6 +21,7 @@ public class NoMoreStockAdjustment {
 	private PaymentTerminal paymentTerminal;
 	private String remarks;
 	private List<NoMoreStockAdjustmentItem> items = new ArrayList<>();
+	private Long paymentNumber;
 
 	public NoMoreStockAdjustment() {
 		// default constructor
@@ -158,6 +159,14 @@ public class NoMoreStockAdjustment {
 			total = total.add(item.getTotalCost());
 		}
 		return total;
+	}
+
+	public Long getPaymentNumber() {
+		return paymentNumber;
+	}
+
+	public void setPaymentNumber(Long paymentNumber) {
+		this.paymentNumber = paymentNumber;
 	}
 	
 }

@@ -11,3 +11,6 @@ alter table SALES_RETURN add constraint SALES_RETURN$FK6 foreign key (PAYMENT_NO
 
 alter table BAD_STOCK_RETURN add PAYMENT_NO integer null;
 alter table BAD_STOCK_RETURN add constraint BAD_STOCK_RETURN$FK6 foreign key (PAYMENT_NO) references PAYMENT (PAYMENT_NO);
+
+alter table NO_MORE_STOCK_ADJUSTMENT add PAYMENT_NO integer null;
+alter table NO_MORE_STOCK_ADJUSTMENT add constraint NO_MORE_STOCK_ADJUSTMENT$FK5 foreign key (PAYMENT_NO) references PAYMENT (PAYMENT_NO);

@@ -66,6 +66,7 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 	private NoMoreStockAdjustment noMoreStockAdjustment;
 	private JLabel noMoreStockAdjustmentNumberField;
 	private MagicTextField salesInvoiceNumberField;
+	private JLabel paymentNumberField;
 	private JLabel customerField;
 	private JLabel statusField;
 	private MagicTextField remarksField;
@@ -213,6 +214,11 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		noMoreStockAdjustmentNumberField.setText(noMoreStockAdjustment.getNoMoreStockAdjustmentNumber().toString());
 		salesInvoiceNumberField.setEnabled(!noMoreStockAdjustment.isPosted());
 		salesInvoiceNumberField.setText(noMoreStockAdjustment.getSalesInvoice().getSalesInvoiceNumber().toString());
+		if (noMoreStockAdjustment.getPaymentNumber() != null) {
+			paymentNumberField.setText(noMoreStockAdjustment.getPaymentNumber().toString());
+		} else {
+			paymentNumberField.setText(null);
+		}
 		statusField.setText(HtmlUtil.blueUnderline(noMoreStockAdjustment.getStatus()));
 		
 		Customer customer = noMoreStockAdjustment.getSalesInvoice().getCustomer();
@@ -304,6 +310,19 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		salesInvoiceNumberField.setPreferredSize(new Dimension(100, 25));
 		mainPanel.add(salesInvoiceNumberField, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Payment No.:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentNumberField = ComponentUtil.createLabel(100);
+		mainPanel.add(paymentNumberField, c);
 		
 		currentRow++;
 		

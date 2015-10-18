@@ -662,12 +662,14 @@ create table NO_MORE_STOCK_ADJUSTMENT (
   PAID_BY integer null,
   PAYMENT_TERMINAL_ID integer null,
   REMARKS varchar(100) null,
+  PAYMENT_NO integer null,
   constraint NO_MORE_STOCK_ADJUSTMENT$PK primary key (ID),
   constraint NO_MORE_STOCK_ADJUSTMENT$UK unique (NO_MORE_STOCK_ADJUSTMENT_NO),
   constraint NO_MORE_STOCK_ADJUSTMENT$FK foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID),
   constraint NO_MORE_STOCK_ADJUSTMENT$FK2 foreign key (POST_BY) references USER (ID),
   constraint NO_MORE_STOCK_ADJUSTMENT$FK3 foreign key (PAID_BY) references USER (ID),
-  constraint NO_MORE_STOCK_ADJUSTMENT$FK4 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID)
+  constraint NO_MORE_STOCK_ADJUSTMENT$FK4 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID),
+  constraint NO_MORE_STOCK_ADJUSTMENT$FK5 foreign key (PAYMENT_NO) references PAYMENT (PAYMENT_NO)
 );
 
 create table NO_MORE_STOCK_ADJUSTMENT_ITEM (
