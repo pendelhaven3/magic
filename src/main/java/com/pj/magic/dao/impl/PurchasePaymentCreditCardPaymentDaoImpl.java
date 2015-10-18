@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.pj.magic.dao.PurchasePaymentCreditCardPaymentDao;
 import com.pj.magic.model.CreditCard;
@@ -183,6 +184,11 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 				sql.append(NOT_INCLUDED_IN_STATEMENT_WHERE_CLAUSE);
 				params.add("2015-03-01");
 			}
+		}
+		
+		if (!StringUtils.isEmpty(criteria.getCustomerNumber())) {
+			sql.append(" and c.CUSTOMER_NUMBER = ?");
+			params.add(criteria.getCustomerNumber());
 		}
 		
 		sql.append(" order by a.TRANSACTION_DT, d.NAME, b.PURCHASE_PAYMENT_NO");
