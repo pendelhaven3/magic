@@ -18,6 +18,7 @@ public class PaymentAdjustment {
 	private User paidBy;
 	private PaymentTerminal paymentTerminal;
 	private String remarks;
+	private Long paymentNumber;
 
 	public Long getId() {
 		return id;
@@ -131,6 +132,14 @@ public class PaymentAdjustment {
 		} else {
 			return "New";
 		}
+	}
+
+	public Long getPaymentNumber() {
+		return paymentNumber;
+	}
+
+	public void setPaymentNumber(Long paymentNumber) {
+		this.paymentNumber = paymentNumber;
 	}
 
 }

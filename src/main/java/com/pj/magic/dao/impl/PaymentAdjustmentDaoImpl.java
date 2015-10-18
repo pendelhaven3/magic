@@ -31,7 +31,7 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 	private static final String PAYMENT_ADJUSTMENT_NUMBER_SEQUENCE = "PAYMENT_ADJUSTMENT_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PAYMENT_ADJUSTMENT_NO, CUSTOMER_ID, ADJUSTMENT_TYPE_ID, AMOUNT,"
+			"select a.ID, PAYMENT_ADJUSTMENT_NO, CUSTOMER_ID, ADJUSTMENT_TYPE_ID, AMOUNT, a.PAYMENT_NO,"
 			+ " POST_IND, POST_DT, POST_BY,"
 			+ " PAID_IND, PAID_DT, PAID_BY, PAYMENT_TERMINAL_ID, a.REMARKS,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
@@ -76,7 +76,8 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 	private static final String UPDATE_SQL = 
 			"update PAYMENT_ADJUSTMENT set CUSTOMER_ID = ?, ADJUSTMENT_TYPE_ID = ?, AMOUNT = ?,"
 			+ " POST_IND = ?, POST_DT = ?, POST_BY = ?,"
-			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ?, REMARKS = ? where ID = ?";
+			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ?, REMARKS = ?,"
+			+ " PAYMENT_NO = ? where ID = ?";
 	
 	private void update(PaymentAdjustment paymentAdjustment) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -91,6 +92,7 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 				paymentAdjustment.isPaid() ? paymentAdjustment.getPaidBy().getId() : null,
 				paymentAdjustment.isPaid() ? paymentAdjustment.getPaymentTerminal().getId() : null,
 				paymentAdjustment.getRemarks(),
+				paymentAdjustment.getPaymentNumber(),
 				paymentAdjustment.getId());
 	}
 
@@ -161,6 +163,10 @@ public class PaymentAdjustmentDaoImpl extends MagicDao implements PaymentAdjustm
 			}
 			
 			paymentAdjustment.setRemarks(rs.getString("REMARKS"));
+			
+			if (rs.getLong("PAYMENT_NO") != 0) {
+				paymentAdjustment.setPaymentNumber(rs.getLong("PAYMENT_NO"));
+			}
 			
 			return paymentAdjustment;
 		}

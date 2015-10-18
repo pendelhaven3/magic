@@ -269,6 +269,7 @@ public class PaymentServiceImpl implements PaymentService {
 				paymentAdjustment.setPaidDate(new Date());
 				paymentAdjustment.setPaidBy(loginService.getLoggedInUser());
 				paymentAdjustment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
+				paymentAdjustment.setPaymentNumber(updated.getPaymentNumber());
 				paymentAdjustmentDao.save(paymentAdjustment);
 				break;
 			}

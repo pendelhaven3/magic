@@ -65,6 +65,7 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 	private JComboBox<AdjustmentType> adjustmentTypeComboBox;
 	private MagicTextField amountField;
 	private MagicTextField remarksField;
+	private JLabel paymentNumberLabel;
 	private JButton saveButton;
 	private JButton postButton;
 	private JButton markAsPaidButton;
@@ -282,6 +283,21 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Payment No.:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		paymentNumberLabel = ComponentUtil.createLabel(100);
+		mainPanel.add(paymentNumberLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(Box.createVerticalStrut(20), c);
@@ -397,6 +413,11 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		amountField.setText(FormatterUtil.formatAmount(paymentAdjustment.getAmount()));
 		remarksField.setEnabled(!posted);
 		remarksField.setText(paymentAdjustment.getRemarks());
+		if (paymentAdjustment.getPaymentNumber() != null) {
+			paymentNumberLabel.setText(paymentAdjustment.getPaymentNumber().toString());
+		} else {
+			paymentNumberLabel.setText(null);
+		}
 		saveButton.setEnabled(!posted);
 		postButton.setEnabled(!posted);
 		selectCustomerButton.setEnabled(!posted);
