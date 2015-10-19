@@ -490,6 +490,29 @@ create table PAYMENT_TERMINAL_USER (
   constraint PAYMENT_TERMINAL_USER$FK2 foreign key (USER_ID) references USER (ID)
 );
 
+create table PAYMENT (
+  ID integer auto_increment,
+  PAYMENT_NO integer not null,
+  CUSTOMER_ID integer not null,
+  POST_IND char(1) default 'N' not null,
+  POST_DT datetime null,
+  POST_BY integer null,
+  CREATE_DT date not null,
+  PAYMENT_TERMINAL_ID integer null,
+  ENCODER integer not null,
+  CANCEL_IND char(1) default 'N' not null,
+  CANCEL_DT date null,
+  CANCEL_BY integer null,
+  CASH_AMOUNT_GIVEN numeric(10, 2) null,
+  constraint PAYMENT$PK primary key (ID),
+  constraint PAYMENT$UK unique (PAYMENT_NO),
+  constraint PAYMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
+  constraint PAYMENT$FK2 foreign key (POST_BY) references USER (ID),
+  constraint PAYMENT$FK3 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID),
+  constraint PAYMENT$FK4 foreign key (ENCODER) references USER (ID),
+  constraint PAYMENT$FK5 foreign key (CANCEL_BY) references USER (ID)
+);
+
 create table SALES_RETURN (
   ID integer auto_increment,
   SALES_RETURN_NO integer not null,
@@ -532,29 +555,6 @@ create table ADJUSTMENT_TYPE (
   DESCRIPTION varchar(100) not null,
   constraint ADJUSTMENT_TYPE$PK primary key (ID),
   constraint ADJUSTMENT_TYPE$UK unique (CODE)
-);
-
-create table PAYMENT (
-  ID integer auto_increment,
-  PAYMENT_NO integer not null,
-  CUSTOMER_ID integer not null,
-  POST_IND char(1) default 'N' not null,
-  POST_DT datetime null,
-  POST_BY integer null,
-  CREATE_DT date not null,
-  PAYMENT_TERMINAL_ID integer null,
-  ENCODER integer not null,
-  CANCEL_IND char(1) default 'N' not null,
-  CANCEL_DT date null,
-  CANCEL_BY integer null,
-  CASH_AMOUNT_GIVEN numeric(10, 2) null,
-  constraint PAYMENT$PK primary key (ID),
-  constraint PAYMENT$UK unique (PAYMENT_NO),
-  constraint PAYMENT$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
-  constraint PAYMENT$FK2 foreign key (POST_BY) references USER (ID),
-  constraint PAYMENT$FK3 foreign key (PAYMENT_TERMINAL_ID) references PAYMENT_TERMINAL (ID),
-  constraint PAYMENT$FK4 foreign key (ENCODER) references USER (ID),
-  constraint PAYMENT$FK5 foreign key (CANCEL_BY) references USER (ID)
 );
 
 create table PAYMENT_SALES_INVOICE (
