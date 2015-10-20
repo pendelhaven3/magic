@@ -4,12 +4,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -18,12 +16,12 @@ import javax.swing.table.AbstractTableModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.CustomAction;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.service.CreditCardService;
-import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class CreditCardListPanel extends StandardMagicPanel {
@@ -39,10 +37,9 @@ public class CreditCardListPanel extends StandardMagicPanel {
 	private CreditCardsTableModel tableModel = new CreditCardsTableModel();
 	
 	public void updateDisplay() {
-		List<CreditCard> creditCards = creditCardService.getAllCreditCards();
-		tableModel.setCreditCards(creditCards);
-		if (!creditCards.isEmpty()) {
-			table.changeSelection(0, 0, false, false);
+		tableModel.setCreditCards(creditCardService.getAllCreditCards());
+		if (!tableModel.isEmpty()) {
+			table.selectFirstRow();
 		}
 	}
 
@@ -56,17 +53,16 @@ public class CreditCardListPanel extends StandardMagicPanel {
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
 		
-		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = c.weighty = 0.0;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(Box.createVerticalStrut(5), c);
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
@@ -76,21 +72,11 @@ public class CreditCardListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
-		table.onEnterKey(new AbstractAction() {
+		table.onEnterKeyAndDoubleClick(new CustomAction() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void doAction() {
 				selectCreditCard();
-			}
-		});
-		
-		table.addMouseListener(new MouseAdapter() {
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					selectCreditCard();
-				}
 			}
 		});
 	}
@@ -131,6 +117,10 @@ public class CreditCardListPanel extends StandardMagicPanel {
 		public void setCreditCards(List<CreditCard> creditCards) {
 			this.creditCards = creditCards;
 			fireTableDataChanged();
+		}
+		
+		public boolean isEmpty() {
+			return creditCards.isEmpty();
 		}
 		
 		@Override
