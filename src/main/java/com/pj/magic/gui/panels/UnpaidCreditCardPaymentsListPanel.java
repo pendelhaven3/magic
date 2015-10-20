@@ -338,7 +338,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		creditCardComboBox.setPreferredSize(new Dimension(200, 25));
+		creditCardComboBox.setPreferredSize(new Dimension(250, 25));
 		mainPanel.add(creditCardComboBox, c);
 		
 		currentRow++;
