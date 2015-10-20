@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.MagicDialog;
@@ -46,6 +47,7 @@ import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.ListUtil;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -80,6 +82,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 	private JLabel supplierNameLabel;
 	private EllipsisButton selectSupplierButton;
 	private MagicTextField customerNumberField;
+	private MagicComboBox<CreditCard> creditCardComboBox;
 	private JLabel totalRowsLabel = new JLabel();
 	private JLabel totalAmountLabel= new JLabel();
 	
@@ -132,6 +135,8 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		});
 		
 		customerNumberField = new MagicTextField();
+
+		creditCardComboBox = new MagicComboBox<>();		
 	}
 
 	private void selectAllCreditCardPayments() {
@@ -170,6 +175,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		}
 		
 		criteria.setCustomerNumber(customerNumberField.getText());
+		criteria.setCreditCard((CreditCard)creditCardComboBox.getSelectedItem());
 		
 		List<PurchasePaymentCreditCardPayment> creditCardPayments = 
 				purchasePaymentService.searchCreditCardPayments(criteria);
@@ -193,6 +199,8 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		tableModel.setCreditCardPayments(creditCardPayments);
 		updateTotalFields(creditCardPayments);
 		customerNumberField.setText(null);
+		creditCardComboBox.setModel(ListUtil.toDefaultComboBoxModel(creditCardService.getAllCreditCards(), true));
+		creditCardComboBox.setSelectedIndex(0);	
 	}
 
 	private List<PurchasePaymentCreditCardPayment> getAllUnpaidCreditCardPaymentsNotIncludedInStatement() {
@@ -313,6 +321,21 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		customerNumberField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(customerNumberField, c);
 
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Credit Card:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		creditCardComboBox.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(creditCardComboBox, c);
+		
 		currentRow++;
 		
 		c = new GridBagConstraints();
