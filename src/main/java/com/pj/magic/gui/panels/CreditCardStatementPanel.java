@@ -30,7 +30,6 @@ import com.pj.magic.gui.dialog.MagicDialog;
 import com.pj.magic.gui.tables.CreditCardStatementPaymentsTable;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
-import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardStatement;
 import com.pj.magic.model.CreditCardStatementItem;
 import com.pj.magic.model.PurchasePaymentCreditCardPayment;
@@ -425,7 +424,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	}
 
 	private void addItem() {
-		addCreditCardPaymentsToStatementDialog.updateDisplay(statement.getCreditCard());
+		addCreditCardPaymentsToStatementDialog.updateDisplay();
 		addCreditCardPaymentsToStatementDialog.setVisible(true);
 		
 		List<PurchasePaymentCreditCardPayment> selectedCreditCardPayments = 
@@ -598,7 +597,8 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		private final int DIALOG_PURCHASE_PAYMENT_NUMBER_COLUMN_INDEX = 1;
 		private final int DIALOG_SUPPLIER_COLUMN_INDEX = 2;
 		private final int DIALOG_AMOUNT_COLUMN_INDEX = 3;
-		private final int DIALOG_TRANSACTION_DATE_COLUMN_INDEX = 4;
+		private final int DIALOG_CREDIT_CARD_COLUMN_INDEX = 4;
+		private final int DIALOG_TRANSACTION_DATE_COLUMN_INDEX = 5;
 
 		private MagicListTable table;
 		private PurchasePaymentCreditCardPaymentsTableModel tableModel;
@@ -607,7 +607,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		private List<PurchasePaymentCreditCardPayment> selectedPayments = new ArrayList<>();
 		
 		public AddCreditCardPaymentsToStatementDialog() {
-			setSize(600, 250);
+			setSize(800, 250);
 			setLocationRelativeTo(null);
 			setTitle("Add Credit Card Payments to Statement");
 			initializeComponents();
@@ -688,19 +688,19 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 			add(Box.createVerticalStrut(20), c);
 		}
 		
-		public void updateDisplay(CreditCard creditCard) {
+		public void updateDisplay() {
 			selectedPayments.clear();
 			List<PurchasePaymentCreditCardPayment> creditCardPayments =
-					getAllUnpaidCreditCardPaymentsNotIncludedInStatement(creditCard);
+					getUnpaidCreditCardPaymentsNotIncludedInStatement();
 			tableModel.setItems(creditCardPayments);
 		}
 
 		private List<PurchasePaymentCreditCardPayment> 
-				getAllUnpaidCreditCardPaymentsNotIncludedInStatement(CreditCard creditCard) {
+				getUnpaidCreditCardPaymentsNotIncludedInStatement() {
 			PurchasePaymentCreditCardPaymentSearchCriteria criteria =
 					new PurchasePaymentCreditCardPaymentSearchCriteria();
 			criteria.setNotIncludedInStatement(true);
-			criteria.setCreditCard(creditCard);
+			criteria.setCustomerNumber(statement.getCustomerNumber());
 			
 			return purchasePaymentService.searchCreditCardPayments(criteria);
 		}
@@ -712,7 +712,8 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 		private class PurchasePaymentCreditCardPaymentsTableModel 
 				extends ListBackedTableModel<PurchasePaymentCreditCardPayment> {
 
-			private final String[] columnNames = {"", "PP No.", "Supplier", "Amount", "Transaction Date"};
+			private final String[] columnNames = 
+				{"", "PP No.", "Supplier", "Amount", "Credit Card", "Transaction Date"};
 			
 			private List<Integer> selected = new ArrayList<>();
 			
@@ -734,6 +735,8 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 					return creditCardPayment.getParent().getSupplier().getName();
 				case DIALOG_AMOUNT_COLUMN_INDEX:
 					return FormatterUtil.formatAmount(creditCardPayment.getAmount());
+				case DIALOG_CREDIT_CARD_COLUMN_INDEX:
+					return creditCardPayment.getCreditCard();
 				case DIALOG_TRANSACTION_DATE_COLUMN_INDEX:
 					return FormatterUtil.formatDate(creditCardPayment.getTransactionDate());
 				default:
