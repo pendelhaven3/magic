@@ -31,6 +31,7 @@ public class CreditCardListPanel extends StandardMagicPanel {
 	private static final int USER_COLUMN_INDEX = 0;
 	private static final int BANK_COLUMN_INDEX = 1;
 	private static final int CARD_NUMBER_COLUMN_INDEX = 2;
+	private static final int CUSTOMER_NUMBER_COLUMN_INDEX = 3;
 	
 	@Autowired private CreditCardService creditCardService;
 	
@@ -123,7 +124,7 @@ public class CreditCardListPanel extends StandardMagicPanel {
 
 	private class CreditCardsTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"User", "Bank", "Card Number"};
+		private final String[] columnNames = {"User", "Bank", "Card Number", "Customer Number"};
 		
 		private List<CreditCard> creditCards = new ArrayList<>();
 		
@@ -161,6 +162,8 @@ public class CreditCardListPanel extends StandardMagicPanel {
 				return creditCard.getBank();
 			case CARD_NUMBER_COLUMN_INDEX:
 				return creditCard.getCardNumber();
+			case CUSTOMER_NUMBER_COLUMN_INDEX:
+				return creditCard.getCustomerNumber();
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
