@@ -111,4 +111,12 @@ public class CreditCardStatementPaymentDaoImpl extends MagicDao implements Credi
 		getJdbcTemplate().update(DELETE_SQL, item.getId());
 	}
 
+	private static final String DELETE_ALL_BY_STATEMENT_SQL = 
+			"delete from CREDIT_CARD_STATEMENT_PAYMENT where CREDIT_CARD_STATEMENT_ID = ?";
+	
+	@Override
+	public void deleteAllByCreditCardStatement(CreditCardStatement statement) {
+		getJdbcTemplate().update(DELETE_ALL_BY_STATEMENT_SQL, statement.getId());
+	}
+
 }

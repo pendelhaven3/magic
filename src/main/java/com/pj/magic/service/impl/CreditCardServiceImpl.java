@@ -134,4 +134,12 @@ public class CreditCardServiceImpl implements CreditCardService {
 		return new ArrayList<String>(new HashSet<>(customerNumbers));
 	}
 
+	@Transactional
+	@Override
+	public void delete(CreditCardStatement statement) {
+		creditCardStatementPaymentDao.deleteAllByCreditCardStatement(statement);
+		creditCardStatementItemDao.deleteAllByCreditCardStatement(statement);
+		creditCardStatementDao.delete(statement);
+	}
+
 }

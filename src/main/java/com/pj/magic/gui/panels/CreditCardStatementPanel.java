@@ -67,6 +67,7 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 	private JLabel totalPaymentAmountField;
 	private JLabel balanceField;
 	private JButton postButton;
+	private JButton deleteButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
 	private JButton addPaymentButton;
@@ -497,6 +498,33 @@ public class CreditCardStatementPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(postButton);
+		
+		deleteButton = new MagicToolBarButton("trash", "Delete");
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deleteCreditCardStatement();
+			}
+		});
+		toolBar.add(deleteButton);
+	}
+
+	protected void deleteCreditCardStatement() {
+		if (!confirm("Do you want to delete this credit card statement?")) {
+			return;
+		}
+		
+		try {
+			creditCardService.delete(statement);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			showMessageForUnexpectedError();
+			return;
+		}
+		
+		showMessage("Credit card statement deleted!");
+		getMagicFrame().switchToCreditCardStatementListPanel();
 	}
 
 	private void postCreditCardStatement() {

@@ -12,5 +12,7 @@ public interface CreditCardStatementPaymentDao {
 	List<CreditCardStatementPayment> findAllByCreditCardStatement(CreditCardStatement statement);
 
 	void delete(CreditCardStatementPayment payment);
+
+	void deleteAllByCreditCardStatement(CreditCardStatement statement);
 	
 }

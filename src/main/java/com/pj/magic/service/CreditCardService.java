@@ -37,5 +37,7 @@ public interface CreditCardService {
 	void delete(CreditCardStatementPayment payment);
 	
 	List<String> getAllCustomerNumbers();
+
+	void delete(CreditCardStatement statement);
 	
 }

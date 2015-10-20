@@ -12,5 +12,7 @@ public interface CreditCardStatementItemDao {
 	void save(CreditCardStatementItem item);
 
 	void delete(CreditCardStatementItem item);
+
+	void deleteAllByCreditCardStatement(CreditCardStatement statement);
 	
 }

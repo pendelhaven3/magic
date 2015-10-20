@@ -17,5 +17,7 @@ public interface CreditCardStatementDao {
 	List<CreditCardStatement> findAllByCreditCard(CreditCard creditCard);
 
 	CreditCardStatement findByCreditCardAndStatementDate(CreditCard creditCard, Date statementDate);
+
+	void delete(CreditCardStatement statement);
 	
 }
