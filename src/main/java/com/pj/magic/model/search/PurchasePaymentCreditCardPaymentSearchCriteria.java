@@ -14,6 +14,7 @@ public class PurchasePaymentCreditCardPaymentSearchCriteria {
 	private CreditCard creditCard;
 	private Boolean notIncludedInStatement;
 	private String customerNumber;
+	private String orderBy;
 
 	public Boolean getPosted() {
 		return posted;
@@ -69,6 +70,14 @@ public class PurchasePaymentCreditCardPaymentSearchCriteria {
 
 	public void setCustomerNumber(String customerNumber) {
 		this.customerNumber = customerNumber;
+	}
+
+	public String getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
 	}
 	
 }

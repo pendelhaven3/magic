@@ -191,7 +191,11 @@ public class PurchasePaymentCreditCardPaymentDaoImpl extends MagicDao implements
 			params.add(criteria.getCustomerNumber());
 		}
 		
-		sql.append(" order by a.TRANSACTION_DT, d.NAME, b.PURCHASE_PAYMENT_NO");
+		if (!StringUtils.isEmpty(criteria.getOrderBy())) {
+			sql.append(" order by ").append(criteria.getOrderBy());
+		} else {
+			sql.append(" order by a.TRANSACTION_DT, d.NAME, b.PURCHASE_PAYMENT_NO");
+		}
 		
 		return getJdbcTemplate().query(sql.toString(), creditCardPaymentRowMapper, params.toArray());
 	}

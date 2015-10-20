@@ -56,6 +56,8 @@ import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 @Component
 public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 
+	private static final String PAYMENTS_SORT_ORDER = "c.USER, c.BANK, a.TRANSACTION_DT";
+
 	private static final Logger logger = LoggerFactory.getLogger(UnpaidCreditCardPaymentsListPanel.class);
 
 	private static final int PURCHASE_PAYMENT_NUMBER_COLUMN_INDEX = 0;
@@ -175,6 +177,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		
 		criteria.setCustomerNumber((String)customerNumberComboBox.getSelectedItem());
 		criteria.setCreditCard((CreditCard)creditCardComboBox.getSelectedItem());
+		criteria.setOrderBy(PAYMENTS_SORT_ORDER);
 		
 		List<PurchasePaymentCreditCardPayment> creditCardPayments = 
 				purchasePaymentService.searchCreditCardPayments(criteria);
@@ -208,6 +211,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		PurchasePaymentCreditCardPaymentSearchCriteria criteria =
 				new PurchasePaymentCreditCardPaymentSearchCriteria();
 		criteria.setNotIncludedInStatement(true);
+		criteria.setOrderBy(PAYMENTS_SORT_ORDER);
 		
 		return purchasePaymentService.searchCreditCardPayments(criteria);
 	}
