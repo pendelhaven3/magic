@@ -1,6 +1,9 @@
 package com.pj.magic.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -8,6 +11,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.pj.magic.dao.CreditCardDao;
 import com.pj.magic.dao.CreditCardStatementDao;
 import com.pj.magic.dao.CreditCardStatementItemDao;
@@ -113,6 +118,20 @@ public class CreditCardServiceImpl implements CreditCardService {
 	@Override
 	public void delete(CreditCardStatementPayment payment) {
 		creditCardStatementPaymentDao.delete(payment);
+	}
+
+	@Override
+	public List<String> getAllCustomerNumbers() {
+		Collection<String> customerNumbers = 
+				Collections2.transform(creditCardDao.getAll(), new Function<CreditCard, String>() {
+
+			@Override
+			public String apply(CreditCard input) {
+				return input.getCustomerNumber();
+			}
+		});
+		
+		return new ArrayList<String>(new HashSet<>(customerNumbers));
 	}
 
 }

@@ -81,7 +81,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 	private MagicTextField supplierCodeField;
 	private JLabel supplierNameLabel;
 	private EllipsisButton selectSupplierButton;
-	private MagicTextField customerNumberField;
+	private MagicComboBox<String> customerNumberComboBox;
 	private MagicComboBox<CreditCard> creditCardComboBox;
 	private JLabel totalRowsLabel = new JLabel();
 	private JLabel totalAmountLabel= new JLabel();
@@ -134,8 +134,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 			}
 		});
 		
-		customerNumberField = new MagicTextField();
-
+		customerNumberComboBox = new MagicComboBox<>();
 		creditCardComboBox = new MagicComboBox<>();		
 	}
 
@@ -174,7 +173,7 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 			criteria.setSupplier(supplierService.findSupplierByCode(supplierCode));
 		}
 		
-		criteria.setCustomerNumber(customerNumberField.getText());
+		criteria.setCustomerNumber((String)customerNumberComboBox.getSelectedItem());
 		criteria.setCreditCard((CreditCard)creditCardComboBox.getSelectedItem());
 		
 		List<PurchasePaymentCreditCardPayment> creditCardPayments = 
@@ -198,7 +197,9 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 				getAllUnpaidCreditCardPaymentsNotIncludedInStatement();
 		tableModel.setCreditCardPayments(creditCardPayments);
 		updateTotalFields(creditCardPayments);
-		customerNumberField.setText(null);
+		customerNumberComboBox.setModel(
+				ListUtil.toDefaultComboBoxModel(creditCardService.getAllCustomerNumbers(), true));
+		customerNumberComboBox.setSelectedIndex(0);
 		creditCardComboBox.setModel(ListUtil.toDefaultComboBoxModel(creditCardService.getAllCreditCards(), true));
 		creditCardComboBox.setSelectedIndex(0);	
 	}
@@ -318,8 +319,8 @@ public class UnpaidCreditCardPaymentsListPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		c.gridwidth = 3;
-		customerNumberField.setPreferredSize(new Dimension(200, 25));
-		mainPanel.add(customerNumberField, c);
+		customerNumberComboBox.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(customerNumberComboBox, c);
 
 		currentRow++;
 		
