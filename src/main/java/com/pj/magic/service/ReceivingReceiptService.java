@@ -1,5 +1,6 @@
 package com.pj.magic.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.pj.magic.model.Product;
@@ -38,5 +39,8 @@ public interface ReceivingReceiptService {
 	ReceivingReceiptItem findMostRecentReceivingReceiptItem(Supplier supplier, Product product);
 
 	List<ProductCanvassItem> getProductCanvass(ProductCanvassSearchCriteria criteria);
+
+	void setAllItemDiscounts(ReceivingReceipt receivingReceipt, BigDecimal discount1, BigDecimal discount2,
+			BigDecimal discount3);
 	
 }

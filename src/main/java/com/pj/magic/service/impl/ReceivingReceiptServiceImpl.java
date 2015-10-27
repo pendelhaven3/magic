@@ -199,5 +199,17 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	public List<ProductCanvassItem> getProductCanvass(ProductCanvassSearchCriteria criteria) {
 		return receivingReceiptDao.getProductCanvassItems(criteria);
 	}
+
+	@Transactional
+	@Override
+	public void setAllItemDiscounts(ReceivingReceipt receivingReceipt, 
+			BigDecimal discount1, BigDecimal discount2, BigDecimal discount3) {
+		for (ReceivingReceiptItem item : receivingReceipt.getItems()) {
+			item.setDiscount1(discount1);
+			item.setDiscount2(discount2);
+			item.setDiscount3(discount3);
+			receivingReceiptItemDao.save(item);
+		}
+	}
 	
 }

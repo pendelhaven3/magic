@@ -1,6 +1,7 @@
 package com.pj.magic.gui.component;
 
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
 
 import javax.swing.Action;
 import javax.swing.JTextField;
@@ -73,6 +74,10 @@ public class MagicTextField extends JTextField {
 		} else {
 			return null;
 		}
+	}
+
+	public BigDecimal getTextAsBigDecimal() {
+		return null;
 	}
 	
 }

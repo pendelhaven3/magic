@@ -34,6 +34,7 @@ import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
+import com.pj.magic.gui.dialog.SetDiscountsForAllItemsDialog;
 import com.pj.magic.gui.dialog.StatusDetailsDialog;
 import com.pj.magic.gui.tables.ReceivingReceiptItemsTable;
 import com.pj.magic.model.ReceivingReceipt;
@@ -57,6 +58,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private StatusDetailsDialog statusDialog;
+	@Autowired private SetDiscountsForAllItemsDialog setDiscountsForAllItemsDialog;
 	
 	private ReceivingReceipt receivingReceipt;
 	private JLabel receivingReceiptNumberField;
@@ -74,6 +76,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	private JLabel totalAmountField;
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton cancelButton;
+	private MagicToolBarButton setDiscountsForAllButton;
 	private JDatePickerImpl datePicker;
 	
 	@Override
@@ -462,6 +465,16 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		setDiscountsForAllButton = new MagicToolBarButton("discount", "Set Discounts For All Items");
+		setDiscountsForAllButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSetDiscountsForAllItemsDialog();
+			}
+		});
+		toolBar.add(setDiscountsForAllButton);
+		
 		cancelButton = new MagicToolBarButton("cancel", "Cancel");
 		cancelButton.addActionListener(new ActionListener() {
 			
@@ -501,6 +514,13 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+	}
+
+	protected void openSetDiscountsForAllItemsDialog() {
+		setDiscountsForAllItemsDialog.updateDisplay(receivingReceipt);
+		setDiscountsForAllItemsDialog.setVisible(true);
+		
+		updateDisplay(receivingReceipt);
 	}
 
 	private void cancelReceivingReceipt() {
