@@ -173,6 +173,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		
 		postButton.setEnabled(receivingReceipt.isNew());
 		cancelButton.setEnabled(receivingReceipt.isNew());
+		setDiscountsForAllButton.setEnabled(receivingReceipt.isNew());
 		datePicker.getComponents()[1].setVisible(receivingReceipt.isNew());
 	}
 
