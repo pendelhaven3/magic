@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +38,30 @@ public class HttpServerHandler extends AbstractHandler {
 		switch (target) {
 		case "/salesInvoice/search":
 			searchSalesInvoices(request, response);
-			return;
+			break;
 		case "/salesInvoice/markAsPaid":
 			markSalesInvoicesAsPaid(request, response);
-			return;
+			break;
+		default:
+			returnStatusNotFound(response);
 		}
 	}
 
-	private void markSalesInvoicesAsPaid(HttpServletRequest request, HttpServletResponse response) {
+	private void returnStatusNotFound(HttpServletResponse response) throws IOException {
+		response.setStatus(HttpStatus.NOT_FOUND_404);
+		response.flushBuffer();
+	}
+
+	private void markSalesInvoicesAsPaid(HttpServletRequest request, HttpServletResponse response) 
+			throws IOException {
 		List<Long> salesInvoiceNumbers = new ArrayList<>();
 		for (String requestSalesInvoiceNumber : request.getParameterValues("salesInvoiceNumber")) {
 			salesInvoiceNumbers.add(Long.valueOf(requestSalesInvoiceNumber));
 		}
 		paymentService.markAsPaidByPayroll(salesInvoiceNumbers);
+		
+		response.setStatus(HttpStatus.OK_200);
+		response.flushBuffer();
 	}
 
 	private void searchSalesInvoices(HttpServletRequest request, HttpServletResponse response) throws IOException {
