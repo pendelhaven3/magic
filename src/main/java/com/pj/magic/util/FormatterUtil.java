@@ -34,5 +34,5 @@ public class FormatterUtil {
 	public static final String formatDateInFilename(Date date) {
 		return new SimpleDateFormat(DATE_IN_FILENAME_FORMAT).format(date);
 	}
-	
+
 }

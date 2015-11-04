@@ -21,7 +21,9 @@ import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesReturnDao;
+import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.AlreadyCancelledException;
+import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.AmountGivenLessThanRemainingAmountDueException;
 import com.pj.magic.exception.UserNotAssignedToPaymentTerminalException;
@@ -35,6 +37,7 @@ import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
 import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.PaymentSalesInvoice;
+import com.pj.magic.model.PaymentTerminal;
 import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
@@ -66,6 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private NoMoreStockAdjustmentDao noMoreStockAdjustmentDao;
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
 	@Autowired private SalesInvoiceDao salesInvoiceDao;
+	@Autowired private UserDao userDao;
 	
 	@Transactional
 	@Override
@@ -372,5 +376,58 @@ public class PaymentServiceImpl implements PaymentService {
 		
 		post(updated);
 	}
-	
+
+	@Transactional
+	@Override
+	public void markAsPaidByPayroll(List<Long> salesInvoiceNumbers) {
+		List<SalesInvoice> salesInvoices = new ArrayList<>();
+		for (Long salesInvoiceNumber : salesInvoiceNumbers) {
+			SalesInvoice salesInvoice = salesInvoiceDao.findBySalesInvoiceNumber(salesInvoiceNumber);
+			if (salesInvoice.isCancelled()) {
+				throw new AlreadyCancelledException("Sales Invoice " + salesInvoiceNumber + " is already cancelled");
+			}
+			if (isSalesInvoiceInExistingPayment(salesInvoice)) {
+				throw new AlreadyPaidException("Sales Invoice " + salesInvoiceNumber + " is already paid");
+			}
+			salesInvoices.add(salesInvoice);
+		}
+		
+		Date now = new Date();
+		User payrollUser = userDao.findByUsername("PAYROLL");
+		PaymentTerminal office = paymentTerminalAssignmentDao.findByUser(payrollUser).getPaymentTerminal();
+		
+		Payment payment = new Payment();
+		payment.setCustomer(salesInvoices.get(0).getCustomer());
+		payment.setCreateDate(now);
+		payment.setEncoder(payrollUser);
+		paymentDao.save(payment);
+		
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			PaymentSalesInvoice paymentSalesInvoice = new PaymentSalesInvoice();
+			paymentSalesInvoice.setParent(payment);
+			paymentSalesInvoice.setSalesInvoice(salesInvoice);
+			paymentSalesInvoiceDao.save(paymentSalesInvoice);
+		}
+		
+		payment = getPayment(payment.getId());
+		
+		PaymentCashPayment cashPayment = new PaymentCashPayment();
+		cashPayment.setParent(payment);
+		cashPayment.setAmount(payment.getTotalAmountDue());
+		cashPayment.setReceivedDate(now);
+		cashPayment.setReceivedBy(payrollUser);
+		paymentCashPaymentDao.save(cashPayment);
+		
+		payment.setPosted(true);
+		payment.setPostDate(now);
+		payment.setPostedBy(payrollUser);
+		payment.setPaymentTerminal(office);
+		paymentDao.save(payment);
+	}
+
+	private boolean isSalesInvoiceInExistingPayment(SalesInvoice salesInvoice) {
+		// TODO: implementation
+		return false;
+	}
+
 }

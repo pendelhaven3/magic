@@ -32,4 +32,15 @@ public class DateUtil {
 		}
 	}
 	
+	public static Date toDateFromUrlValue(String value) {
+		if (StringUtils.isEmpty(value)) {
+			return null;
+		}
+		try {
+			return new SimpleDateFormat(Constants.DATE_FORMAT_FOR_URL_VALUE).parse(value);
+		} catch (ParseException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+	
 }

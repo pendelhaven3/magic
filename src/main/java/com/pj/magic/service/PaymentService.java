@@ -55,4 +55,6 @@ public interface PaymentService {
 
 	void addCashPaymentAndPost(Payment payment);
 	
+	void markAsPaidByPayroll(List<Long> salesInvoiceNumbers);
+	
 }
