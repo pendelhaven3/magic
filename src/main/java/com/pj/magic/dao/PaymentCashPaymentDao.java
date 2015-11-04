@@ -8,7 +8,7 @@ import com.pj.magic.model.search.PaymentCashPaymentSearchCriteria;
 
 public interface PaymentCashPaymentDao {
 
-	void save(PaymentCashPayment cash);
+	void save(PaymentCashPayment cashPayment);
 
 	List<PaymentCashPayment> findAllByPayment(Payment payment);
 
