@@ -466,7 +466,7 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		setDiscountsForAllButton = new MagicToolBarButton("discount", "Set Discounts For All Items");
+		setDiscountsForAllButton = new MagicToolBarButton("discount_all", "Set Discounts For All Items");
 		setDiscountsForAllButton.addActionListener(new ActionListener() {
 			
 			@Override
