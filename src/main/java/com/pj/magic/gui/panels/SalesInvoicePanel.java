@@ -34,6 +34,7 @@ import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.PromoQualifyingAmountsDialog;
 import com.pj.magic.gui.dialog.SalesInvoiceStatusDialog;
+import com.pj.magic.gui.dialog.SetDiscountsForAllItemsDialog;
 import com.pj.magic.gui.tables.SalesInvoiceItemsTable;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
@@ -58,6 +59,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	@Autowired private ExcelService excelService;
 	@Autowired private PromoQualifyingAmountsDialog promoQualifyingAmountsDialog;
 	@Autowired private AvailedPromoRewardsDialog availedPromoRewardsDialog;
+	@Autowired private SetDiscountsForAllItemsDialog setDiscountsForAllItemsDialog;
 	
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
@@ -75,6 +77,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	private JLabel totalNetAmountField;
 	private JButton cancelButton;
 	private JButton showDiscountsButton;
+	private JButton setDiscountsForAllButton;
 	private boolean showDiscounts;
 	private JFileChooser excelFileChooser;
 	
@@ -131,6 +134,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		}
 		
 		cancelButton.setEnabled(salesInvoice.isNew());
+		setDiscountsForAllButton.setEnabled(salesInvoice.isNew());
 	}
 
 	@Override
@@ -333,6 +337,16 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(showDiscountsButton);
+
+		setDiscountsForAllButton = new MagicToolBarButton("discount_all", "Set Discounts For All Items");
+		setDiscountsForAllButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				openSetDiscountsForAllItemsDialog();
+			}
+		});
+		toolBar.add(setDiscountsForAllButton);
 		
 		cancelButton = new MagicToolBarButton("cancel", "Cancel");
 		cancelButton.addActionListener(new ActionListener() {
@@ -428,6 +442,13 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(showAvailedPromoRewardsButton);
+	}
+
+	protected void openSetDiscountsForAllItemsDialog() {
+		setDiscountsForAllItemsDialog.updateDisplay(salesInvoice);
+		setDiscountsForAllItemsDialog.setVisible(true);
+		
+		updateDisplay(salesInvoice);
 	}
 
 	private void showAvailedPromoRewards() {

@@ -1,5 +1,6 @@
 package com.pj.magic.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.pj.magic.model.Customer;
@@ -36,5 +37,8 @@ public interface SalesInvoiceService {
 	List<SalesInvoice> findAllSalesInvoicesForPaymentByCustomer(Customer customer);
 
 	SalesInvoice getMostRecentSalesInvoice(Customer customer, Product product);
+
+	void setAllItemDiscounts(SalesInvoice salesInvoice, BigDecimal discount1, BigDecimal discount2,
+			BigDecimal discount3);
 
 }

@@ -1,16 +1,16 @@
 package com.pj.magic.exception;
 
-import com.pj.magic.model.SalesRequisitionItem;
+import com.pj.magic.model.SalesInvoiceItem;
 
 public class SellingPriceLessThanCostException extends RuntimeException {
 
-	private SalesRequisitionItem item;
+	private SalesInvoiceItem item;
 
-	public SellingPriceLessThanCostException(SalesRequisitionItem item) {
+	public SellingPriceLessThanCostException(SalesInvoiceItem item) {
 		this.item = item;
 	}
-
-	public SalesRequisitionItem getItem() {
+	
+	public SalesInvoiceItem getItem() {
 		return item;
 	}
 	

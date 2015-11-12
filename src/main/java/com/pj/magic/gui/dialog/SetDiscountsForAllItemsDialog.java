@@ -17,9 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.pj.magic.exception.SellingPriceLessThanCostException;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.ReceivingReceiptService;
+import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.NumberUtil;
 
@@ -29,6 +32,7 @@ public class SetDiscountsForAllItemsDialog extends MagicDialog {
 	private static final Logger logger = LoggerFactory.getLogger(SetDiscountsForAllItemsDialog.class);
 	
 	@Autowired private ReceivingReceiptService receivingReceiptService;
+	@Autowired private SalesInvoiceService salesInvoiceService;
 	
 	private MagicTextField discount1Field;
 	private MagicTextField discount2Field;
@@ -36,6 +40,7 @@ public class SetDiscountsForAllItemsDialog extends MagicDialog {
 	private JButton saveButton;
 	
 	private ReceivingReceipt receivingReceipt;
+	private SalesInvoice salesInvoice;
 	
 	public SetDiscountsForAllItemsDialog() {
 		setSize(400, 220);
@@ -69,8 +74,16 @@ public class SetDiscountsForAllItemsDialog extends MagicDialog {
 		
 		if (confirm("Set discounts for all items?")) {
 			try {
-				receivingReceiptService.setAllItemDiscounts(receivingReceipt, 
-						getDiscount1(), getDiscount2(), getDiscount3());
+				if (receivingReceipt != null) {
+					receivingReceiptService.setAllItemDiscounts(receivingReceipt, 
+							getDiscount1(), getDiscount2(), getDiscount3());
+				} else if (salesInvoice != null) {
+					salesInvoiceService.setAllItemDiscounts(salesInvoice,
+							getDiscount1(), getDiscount2(), getDiscount3());
+				}
+			} catch (SellingPriceLessThanCostException e) {
+				showErrorMessage("Selling price less than cost for: " + e.getItem().getProduct().getDescription());
+				return;
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showUnexpectedErrorMessage();
@@ -233,9 +246,21 @@ public class SetDiscountsForAllItemsDialog extends MagicDialog {
 
 	public void updateDisplay(ReceivingReceipt receivingReceipt) {
 		this.receivingReceipt = receivingReceipt;
+		salesInvoice = null;
+		updateDisplay();
+	}
+
+	public void updateDisplay(SalesInvoice salesInvoice) {
+		this.salesInvoice = salesInvoice;
+		receivingReceipt = null;
+		updateDisplay();
+	}
+	
+	private void updateDisplay() {
 		discount1Field.setText(null);
 		discount2Field.setText(null);
 		discount3Field.setText(null);
+		discount1Field.requestFocus();
 	}
-	
+
 }

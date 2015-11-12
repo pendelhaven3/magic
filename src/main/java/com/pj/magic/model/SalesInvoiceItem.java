@@ -207,5 +207,13 @@ public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
 		}
 		return price;
 	}
+
+	public BigDecimal getNetPrice() {
+		return getDiscountedUnitPrice();
+	}
+	
+	public boolean hasNetPriceLessThanCost() {
+		return getNetPrice().compareTo(cost) < 0;
+	}
 	
 }

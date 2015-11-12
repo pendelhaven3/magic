@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.dao.SalesReturnItemDao;
+import com.pj.magic.exception.SellingPriceLessThanCostException;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
@@ -198,6 +200,21 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
 		}
 		return salesInvoice;
+	}
+
+	@Transactional
+	@Override
+	public void setAllItemDiscounts(SalesInvoice salesInvoice, BigDecimal discount1, BigDecimal discount2,
+			BigDecimal discount3) {
+		for (SalesInvoiceItem item : salesInvoice.getItems()) {
+			item.setDiscount1(discount1);
+			item.setDiscount2(discount2);
+			item.setDiscount3(discount3);
+			if (item.hasNetPriceLessThanCost()) {
+				throw new SellingPriceLessThanCostException(item);
+			}
+			salesInvoiceItemDao.save(item);
+		}
 	}
 
 }
