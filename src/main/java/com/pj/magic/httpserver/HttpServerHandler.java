@@ -70,7 +70,7 @@ public class HttpServerHandler extends AbstractHandler {
 			Map<String, String> salesInvoiceJson = new HashMap<>();
 			salesInvoiceJson.put("salesInvoiceNumber", salesInvoice.getSalesInvoiceNumber().toString());
 			salesInvoiceJson.put("transactionDate", FormatterUtil.formatDate(salesInvoice.getTransactionDate()));
-			salesInvoiceJson.put("amount", salesInvoice.getTotalAmount().toPlainString());
+			salesInvoiceJson.put("amount", salesInvoice.getTotalNetAmount().toPlainString());
 			salesInvoiceJsons.add(salesInvoiceJson);
 		}
 		response.setContentType("application/json");
