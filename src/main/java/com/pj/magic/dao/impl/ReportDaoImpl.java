@@ -20,8 +20,10 @@ import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.report.InventoryReportItem;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
+import com.pj.magic.model.report.StockTakeoffReportItem;
 import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
+import com.pj.magic.model.search.StockTakeoffReportCriteria;
 import com.pj.magic.util.DbUtil;
 import com.pj.magic.util.QueriesUtil;
 
@@ -256,6 +258,37 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 						return item;
 					}
 			
+		});
+	}
+
+	@Override
+	public List<StockTakeoffReportItem> searchStockTakeoffReportItems(StockTakeoffReportCriteria criteria) {
+		String sql = QueriesUtil.getSql("stockTakeoffReport");
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("manufacturer", criteria.getManufacturer().getId());
+		params.put("fromDate", DbUtil.toMySqlDateString(criteria.getFromDate()));
+		params.put("toDate", DbUtil.toMySqlDateString(criteria.getToDate()));
+		
+		return getNamedParameterJdbcTemplate().query(sql,
+				params,
+				new RowMapper<StockTakeoffReportItem>() {
+
+					@Override
+					public StockTakeoffReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+						StockTakeoffReportItem item = new StockTakeoffReportItem();
+						item.setProduct(mapProduct(rs));
+						item.setUnit(rs.getString("UNIT"));
+						item.setQuantity(rs.getInt("QUANTITY"));
+						return item;
+					}
+
+					private Product mapProduct(ResultSet rs) throws SQLException {
+						Product product = new Product();
+						product.setCode(rs.getString("CODE"));
+						product.setDescription(rs.getString("DESCRIPTION"));
+						return product;
+					}
 		});
 	}
 

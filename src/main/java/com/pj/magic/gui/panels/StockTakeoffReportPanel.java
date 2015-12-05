@@ -17,8 +17,11 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.Manufacturer;
+import com.pj.magic.model.report.StockTakeoffReport;
 import com.pj.magic.model.report.StockTakeoffReportItem;
+import com.pj.magic.model.search.StockTakeoffReportCriteria;
 import com.pj.magic.service.ManufacturerService;
+import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.ListUtil;
 
@@ -29,9 +32,10 @@ public class StockTakeoffReportPanel extends StandardMagicPanel {
 
 	private static final int PRODUCT_COLUMN_INDEX = 0;
 	private static final int UNIT_COLUMN_INDEX = 1;
-	private static final int QUANTITY_DIFFERENCE_COLUMN_INDEX = 2;
+	private static final int QUANTITY_COLUMN_INDEX = 2;
 	
 	@Autowired private ManufacturerService manufacturerService;
+	@Autowired private ReportService reportService;
 	
 	private MagicComboBox<Manufacturer> manufacturerComboBox;
 	private UtilCalendarModel fromDateModel;
@@ -61,6 +65,10 @@ public class StockTakeoffReportPanel extends StandardMagicPanel {
 	private void initializeTable() {
 		tableModel = new StockTakeoffTableModel();
 		table = new MagicListTable(tableModel);
+		
+		table.getColumnModel().getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(100);
+		table.getColumnModel().getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(100);
+		table.getColumnModel().getColumn(PRODUCT_COLUMN_INDEX).setPreferredWidth(400);
 	}
 
 	public void updateDisplay() {
@@ -69,46 +77,9 @@ public class StockTakeoffReportPanel extends StandardMagicPanel {
 		manufacturerComboBox.setSelectedIndex(0);
 		fromDateModel.setValue(null);
 		toDateModel.setValue(null);
+		tableModel.clear();
 	}
 	
-	private void generateReport() {
-		if (!validateFields()) {
-			return;
-		}
-	}
-
-	private boolean validateFields() {
-		if (isManufacturerNotSpecified()) {
-			showErrorMessage("Manufacturer must be specified");
-			manufacturerComboBox.requestFocus();
-			return false;
-		}
-		
-		if (isFromDateNotSpecified()) {
-			showErrorMessage("From Date must be specified");
-			return false;
-		}
-		
-		if (isToDateNotSpecified()) {
-			showErrorMessage("To Date must be specified");
-			return false;
-		}
-		
-		return true;
-	}
-
-	private boolean isManufacturerNotSpecified() {
-		return manufacturerComboBox.getSelectedItem() == null;
-	}
-
-	private boolean isFromDateNotSpecified() {
-		return fromDateModel.getValue() == null;
-	}
-
-	private boolean isToDateNotSpecified() {
-		return toDateModel.getValue() == null;
-	}
-
 	@Override
 	protected void registerKeyBindings() {
 		// none
@@ -221,7 +192,7 @@ public class StockTakeoffReportPanel extends StandardMagicPanel {
 
 		@Override
 		protected String[] getColumnNames() {
-			return new String[] {"Product", "Unit", "Qty Difference"};
+			return new String[] {"Product", "Unit", "Quantity"};
 		}
 		
 		@Override
@@ -232,13 +203,66 @@ public class StockTakeoffReportPanel extends StandardMagicPanel {
 				return item.getProduct().getDescription();
 			case UNIT_COLUMN_INDEX:
 				return item.getUnit();
-			case QUANTITY_DIFFERENCE_COLUMN_INDEX:
-				return String.valueOf(item.getQuantityDifference());
+			case QUANTITY_COLUMN_INDEX:
+				return String.valueOf(item.getQuantity());
 			default:
 				throw new RuntimeException("Invalid column index: " + columnIndex);
 			}
 		}
 
+	}
+	
+	private void generateReport() {
+		if (!validateFields()) {
+			return;
+		}
+		
+		StockTakeoffReport report = doGenerateReport();
+		tableModel.setItems(report.getItems());
+		if (report.getItems().isEmpty()) {
+			showErrorMessage("No records found");
+		}
+	} 
+
+	private StockTakeoffReport doGenerateReport() {
+		StockTakeoffReportCriteria criteria = new StockTakeoffReportCriteria();
+		criteria.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
+		criteria.setFromDate(fromDateModel.getValue().getTime());
+		criteria.setToDate(toDateModel.getValue().getTime());
+		
+		return reportService.getStockTakeoffReport(criteria);
+	}
+
+	private boolean validateFields() {
+		if (isManufacturerNotSpecified()) {
+			showErrorMessage("Manufacturer must be specified");
+			manufacturerComboBox.requestFocus();
+			return false;
+		}
+		
+		if (isFromDateNotSpecified()) {
+			showErrorMessage("From Date must be specified");
+			return false;
+		}
+		
+		if (isToDateNotSpecified()) {
+			showErrorMessage("To Date must be specified");
+			return false;
+		}
+		
+		return true;
+	}
+
+	private boolean isManufacturerNotSpecified() {
+		return manufacturerComboBox.getSelectedItem() == null;
+	}
+
+	private boolean isFromDateNotSpecified() {
+		return fromDateModel.getValue() == null;
+	}
+
+	private boolean isToDateNotSpecified() {
+		return toDateModel.getValue() == null;
 	}
 	
 }

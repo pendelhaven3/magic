@@ -6,7 +6,7 @@ public class StockTakeoffReportItem {
 
 	private Product product;
 	private String unit;
-	private int quantityDifference;
+	private int quantity;
 
 	public Product getProduct() {
 		return product;
@@ -24,12 +24,12 @@ public class StockTakeoffReportItem {
 		this.unit = unit;
 	}
 
-	public int getQuantityDifference() {
-		return quantityDifference;
+	public int getQuantity() {
+		return quantity;
 	}
 
-	public void setQuantityDifference(int quantityDifference) {
-		this.quantityDifference = quantityDifference;
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
 	}
 
 }
