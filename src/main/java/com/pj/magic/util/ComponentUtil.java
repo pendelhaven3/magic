@@ -5,6 +5,14 @@ import java.awt.Dimension;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+import com.pj.magic.gui.component.DatePickerFormatter;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 public class ComponentUtil {
 
@@ -64,6 +72,16 @@ public class ComponentUtil {
 			panel.add(c);
 		}
 		return panel;
+	}
+	
+	public static final JDatePickerImpl createDatePicker(UtilCalendarModel model) {
+		return new JDatePickerImpl(new JDatePanelImpl(model), new DatePickerFormatter());
+	}
+	
+	public static final JScrollPane createScrollPane(JTable table) {
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setPreferredSize(new Dimension(600, 200));
+		return scrollPane;
 	}
 	
 }

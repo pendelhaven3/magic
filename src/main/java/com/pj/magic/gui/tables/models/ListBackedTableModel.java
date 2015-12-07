@@ -1,6 +1,7 @@
 package com.pj.magic.gui.tables.models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -44,6 +45,11 @@ public abstract class ListBackedTableModel<T> extends AbstractTableModel {
 	
 	public boolean hasItems() {
 		return !items.isEmpty();
+	}
+	
+	public void clear() {
+		items = Collections.emptyList();
+		fireTableDataChanged();
 	}
 	
 }
