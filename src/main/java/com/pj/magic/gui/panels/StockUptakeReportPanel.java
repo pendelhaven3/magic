@@ -17,9 +17,9 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.Manufacturer;
-import com.pj.magic.model.report.StockTakeoffReport;
-import com.pj.magic.model.report.StockTakeoffReportItem;
-import com.pj.magic.model.search.StockTakeoffReportCriteria;
+import com.pj.magic.model.report.StockUptakeReport;
+import com.pj.magic.model.report.StockUptakeReportItem;
+import com.pj.magic.model.search.StockUptakeReportCriteria;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
@@ -28,7 +28,7 @@ import com.pj.magic.util.ListUtil;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
-public class StockTakeoffReportPanel extends StandardMagicPanel {
+public class StockUptakeReportPanel extends StandardMagicPanel {
 
 	private static final int PRODUCT_COLUMN_INDEX = 0;
 	private static final int UNIT_COLUMN_INDEX = 1;
@@ -42,7 +42,7 @@ public class StockTakeoffReportPanel extends StandardMagicPanel {
 	private UtilCalendarModel toDateModel;
 	private JButton generateButton;
 	private MagicListTable table;
-	private StockTakeoffTableModel tableModel;
+	private StockUptakeTableModel tableModel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -63,7 +63,7 @@ public class StockTakeoffReportPanel extends StandardMagicPanel {
 	}
 
 	private void initializeTable() {
-		tableModel = new StockTakeoffTableModel();
+		tableModel = new StockUptakeTableModel();
 		table = new MagicListTable(tableModel);
 		
 		table.getColumnModel().getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(100);
@@ -188,7 +188,7 @@ public class StockTakeoffReportPanel extends StandardMagicPanel {
 		return panel;
 	}
 	
-	private class StockTakeoffTableModel extends ListBackedTableModel<StockTakeoffReportItem> {
+	private class StockUptakeTableModel extends ListBackedTableModel<StockUptakeReportItem> {
 
 		@Override
 		protected String[] getColumnNames() {
@@ -197,7 +197,7 @@ public class StockTakeoffReportPanel extends StandardMagicPanel {
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			StockTakeoffReportItem item = getItem(rowIndex);
+			StockUptakeReportItem item = getItem(rowIndex);
 			switch (columnIndex) {
 			case PRODUCT_COLUMN_INDEX:
 				return item.getProduct().getDescription();
@@ -217,20 +217,20 @@ public class StockTakeoffReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		StockTakeoffReport report = doGenerateReport();
+		StockUptakeReport report = doGenerateReport();
 		tableModel.setItems(report.getItems());
 		if (report.getItems().isEmpty()) {
 			showErrorMessage("No records found");
 		}
 	} 
 
-	private StockTakeoffReport doGenerateReport() {
-		StockTakeoffReportCriteria criteria = new StockTakeoffReportCriteria();
+	private StockUptakeReport doGenerateReport() {
+		StockUptakeReportCriteria criteria = new StockUptakeReportCriteria();
 		criteria.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
 		criteria.setFromDate(fromDateModel.getValue().getTime());
 		criteria.setToDate(toDateModel.getValue().getTime());
 		
-		return reportService.getStockTakeoffReport(criteria);
+		return reportService.getStockUptakeReport(criteria);
 	}
 
 	private boolean validateFields() {

@@ -99,7 +99,7 @@ import com.pj.magic.gui.panels.SalesReturnPanel;
 import com.pj.magic.gui.panels.StockCardInventoryReportPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
-import com.pj.magic.gui.panels.StockTakeoffReportPanel;
+import com.pj.magic.gui.panels.StockUptakeReportPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UnpaidCreditCardPaymentsListPanel;
 import com.pj.magic.gui.panels.UnpaidReceivingReceiptsListPanel;
@@ -280,7 +280,7 @@ public class MagicFrame extends JFrame {
 	private static final String UNPAID_CREDIT_CARD_PAYMENTS_LIST_PANEL = "UNPAID_CREDIT_CARD_PAYMENTS_LIST_PANEL";
 	private static final String CREDIT_CARD_STATEMENT_LIST_PANEL = "CREDIT_CARD_STATEMENT_LIST_PANEL";
 	private static final String CREDIT_CARD_STATEMENT_PANEL = "CREDIT_CARD_STATEMENT_PANEL";
-	private static final String STOCK_TAKEOFF_REPORT_PANEL = "STOCK_TAKEOFF_REPORT_PANEL";
+	private static final String STOCK_UPTAKE_REPORT_PANEL = "STOCK_UPTAKE_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -385,7 +385,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private UnpaidCreditCardPaymentsListPanel unpaidCreditCardPaymentsListPanel;
 	@Autowired private CreditCardStatementListPanel creditCardStatementListPanel;
 	@Autowired private CreditCardStatementPanel creditCardStatementPanel;
-	@Autowired private StockTakeoffReportPanel stockTakeoffReportPanel;
+	@Autowired private StockUptakeReportPanel stockUptakeReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -544,7 +544,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(unpaidCreditCardPaymentsListPanel, UNPAID_CREDIT_CARD_PAYMENTS_LIST_PANEL);
 		panelHolder.add(creditCardStatementListPanel, CREDIT_CARD_STATEMENT_LIST_PANEL);
 		panelHolder.add(creditCardStatementPanel, CREDIT_CARD_STATEMENT_PANEL);
-		panelHolder.add(stockTakeoffReportPanel, STOCK_TAKEOFF_REPORT_PANEL);
+		panelHolder.add(stockUptakeReportPanel, STOCK_UPTAKE_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1318,10 +1318,10 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, CREDIT_CARD_STATEMENT_LIST_PANEL);
 	}
 
-	public void switchToStockTakeoffReportPanel() {
-		addPanelNameToTitle("Stock Takeoff Report");
-		stockTakeoffReportPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_TAKEOFF_REPORT_PANEL);
+	public void switchToStockUptakeReportPanel() {
+		addPanelNameToTitle("Stock Uptake Report");
+		stockUptakeReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_UPTAKE_REPORT_PANEL);
 	}
 	
 }

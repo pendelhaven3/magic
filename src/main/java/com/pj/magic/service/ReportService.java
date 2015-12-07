@@ -7,10 +7,10 @@ import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.InventoryReport;
 import com.pj.magic.model.report.SalesByManufacturerReport;
-import com.pj.magic.model.report.StockTakeoffReport;
+import com.pj.magic.model.report.StockUptakeReport;
 import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
-import com.pj.magic.model.search.StockTakeoffReportCriteria;
+import com.pj.magic.model.search.StockUptakeReportCriteria;
 
 public interface ReportService {
 
@@ -23,6 +23,6 @@ public interface ReportService {
 
 	SalesByManufacturerReport getManufacturerSalesReport(SalesByManufacturerReportSearchCriteria criteria);
 	
-	StockTakeoffReport getStockTakeoffReport(StockTakeoffReportCriteria criteria);
+	StockUptakeReport getStockUptakeReport(StockUptakeReportCriteria criteria);
 	
 }

@@ -42,7 +42,7 @@ public class ReportsMenuPanel extends MenuPanel {
 	private static final String SALES_BY_MANUFACTURER_REPORT = "Sales By Manufacturer Report";
 	private static final String CUSTOMER_CHECK_PAYMENTS_REPORT = "Customer Check Payments Report";
 	private static final String DISBURSEMENT_REPORT = "Disbursement Report";
-	private static final String STOCK_TAKEOFF_REPORT = "Stock Takeoff Report";
+	private static final String STOCK_UPTAKE_REPORT = "Stock Uptake Report";
 
 	@Autowired private LoginService loginService;
 	
@@ -141,8 +141,8 @@ public class ReportsMenuPanel extends MenuPanel {
 		case DISBURSEMENT_REPORT:
 			getMagicFrame().switchToDisbursementReportPanel();
 			break;
-		case STOCK_TAKEOFF_REPORT:
-			getMagicFrame().switchToStockTakeoffReportPanel();
+		case STOCK_UPTAKE_REPORT:
+			getMagicFrame().switchToStockUptakeReportPanel();
 			break;
 		}
 	}
@@ -167,7 +167,7 @@ public class ReportsMenuPanel extends MenuPanel {
 				PURCHASE_PAYMENT_CHECK_PAYMENTS_REPORT,
 				PURCHASE_PAYMENT_CREDIT_CARD_PAYMENTS_REPORT,
 				SALES_BY_MANUFACTURER_REPORT,
-				STOCK_TAKEOFF_REPORT
+				STOCK_UPTAKE_REPORT
 		);
 		
 		private List<String> menuItems = new ArrayList<>();

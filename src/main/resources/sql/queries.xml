@@ -304,7 +304,7 @@ from (
 ) m
 	]]>
 	</entry>
-	<entry name="stockTakeoffReport">
+	<entry name="stockUptakeReport">
 	<![CDATA[
 select b.CODE, b.DESCRIPTION, a.UNIT, a.QUANTITY
 from (

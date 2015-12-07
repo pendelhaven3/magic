@@ -20,10 +20,10 @@ import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.report.InventoryReportItem;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
-import com.pj.magic.model.report.StockTakeoffReportItem;
+import com.pj.magic.model.report.StockUptakeReportItem;
 import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
-import com.pj.magic.model.search.StockTakeoffReportCriteria;
+import com.pj.magic.model.search.StockUptakeReportCriteria;
 import com.pj.magic.util.DbUtil;
 import com.pj.magic.util.QueriesUtil;
 
@@ -262,8 +262,8 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 	}
 
 	@Override
-	public List<StockTakeoffReportItem> searchStockTakeoffReportItems(StockTakeoffReportCriteria criteria) {
-		String sql = QueriesUtil.getSql("stockTakeoffReport");
+	public List<StockUptakeReportItem> searchStockUptakeReportItems(StockUptakeReportCriteria criteria) {
+		String sql = QueriesUtil.getSql("stockUptakeReport");
 		
 		Map<String, Object> params = new HashMap<>();
 		params.put("manufacturer", criteria.getManufacturer().getId());
@@ -272,11 +272,11 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		
 		return getNamedParameterJdbcTemplate().query(sql,
 				params,
-				new RowMapper<StockTakeoffReportItem>() {
+				new RowMapper<StockUptakeReportItem>() {
 
 					@Override
-					public StockTakeoffReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {
-						StockTakeoffReportItem item = new StockTakeoffReportItem();
+					public StockUptakeReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+						StockUptakeReportItem item = new StockUptakeReportItem();
 						item.setProduct(mapProduct(rs));
 						item.setUnit(rs.getString("UNIT"));
 						item.setQuantity(rs.getInt("QUANTITY"));
