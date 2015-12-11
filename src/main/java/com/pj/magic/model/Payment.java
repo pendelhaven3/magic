@@ -252,5 +252,9 @@ public class Payment {
 	public BigDecimal getTotalAmountDueMinusNonCashPaymentsAndAdjustments() {
 		return getTotalAmountDue().subtract(getTotalCheckPayments().add(getTotalAdjustments()));
 	}
+
+	public boolean hasCashPayment() {
+		return !cashPayments.isEmpty();
+	}
 	
 }

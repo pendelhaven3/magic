@@ -580,6 +580,11 @@ public class PaymentPanel extends StandardMagicPanel {
 	}
 
 	private void openAddCashPaymentAndPostDialog() {
+		if (payment.hasCashPayment()) {
+			showErrorMessage("Cannot use this option if cash payment has already been specified");
+			return;
+		}
+		
 		addCashPaymentAndPostDialog.updateDisplay(payment);
 		addCashPaymentAndPostDialog.setVisible(true);
 		
