@@ -109,6 +109,14 @@ public class PurchaseReturnBadStockListPanel extends StandardMagicPanel {
 				selectPurchaseReturnBadStock();
 			}
 		});
+		
+		onEscapeKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doOnBack();
+			}
+		});
 	}
 	
 	private void selectPurchaseReturnBadStock() {

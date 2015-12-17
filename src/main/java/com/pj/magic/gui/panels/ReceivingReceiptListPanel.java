@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -75,7 +76,13 @@ public class ReceivingReceiptListPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void registerKeyBindings() {
-		
+		onEscapeKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doOnBack();
+			}
+		});
 	}
 	
 	protected void switchToNewReceivingReceiptPanel() {

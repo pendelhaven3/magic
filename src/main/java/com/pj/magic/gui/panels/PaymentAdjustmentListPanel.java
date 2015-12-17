@@ -105,6 +105,14 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 				displayCurrentlySelectedPaymentAdjustment();
 			}
 		});
+		
+		onEscapeKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doOnBack();
+			}
+		});
 	}
 	
 	private void displayCurrentlySelectedPaymentAdjustment() {

@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -69,6 +70,13 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void registerKeyBindings() {
+		onEscapeKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doOnBack();
+			}
+		});
 	}
 	
 	protected void switchToNewStockQuantityConversionPanel() {

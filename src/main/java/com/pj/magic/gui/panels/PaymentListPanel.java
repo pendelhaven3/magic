@@ -95,6 +95,14 @@ public class PaymentListPanel extends StandardMagicPanel {
 			}
 			
 		});
+		
+		onEscapeKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doOnBack();
+			}
+		});
 	}
 
 	protected void selectPayment() {

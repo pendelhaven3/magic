@@ -106,6 +106,14 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 			}
 			
 		});
+		
+		onEscapeKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				doOnBack();
+			}
+		});
 	}
 
 	private void viewPurchasePaymentDetails() {
