@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.pj.magic.model.Manufacturer;
 
-public class StockUptakeReportCriteria {
+public class StockOfftakeReportCriteria {
 
 	private Manufacturer manufacturer;
 	private Date fromDate;
