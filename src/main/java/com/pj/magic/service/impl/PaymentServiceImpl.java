@@ -430,4 +430,15 @@ public class PaymentServiceImpl implements PaymentService {
 		return false;
 	}
 
+	@Transactional
+	@Override
+	public void unpost(Payment payment) {
+		Payment updated = getPayment(payment.getId());
+		updated.setPosted(false);
+		updated.setPostDate(null);
+		updated.setPostedBy(null);
+		updated.setPaymentTerminal(null);
+		paymentDao.save(updated);
+	}
+
 }

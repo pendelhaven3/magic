@@ -113,6 +113,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton cancelButton;
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton createCashPaymentAndPostButton;
+	private MagicToolBarButton unpostButton;
 	private JButton printPreviewButton;
 	private JButton printButton;
 	private JTabbedPane tabbedPane;
@@ -279,6 +280,8 @@ public class PaymentPanel extends StandardMagicPanel {
 		
 		printPreviewButton.setEnabled(!payment.isCancelled());
 		printButton.setEnabled(!payment.isCancelled());
+		
+		unpostButton.setEnabled(payment.isPosted() && loginService.getLoggedInUser().isSupervisor());
 	}
 
 	private void clearDisplay() {
@@ -316,6 +319,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		cancelButton.setEnabled(false);
 		postButton.setEnabled(false);
 		createCashPaymentAndPostButton.setEnabled(false);
+		unpostButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
 		printButton.setEnabled(false);
 	}
@@ -546,6 +550,16 @@ public class PaymentPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(postButton);
+		
+		unpostButton = new MagicToolBarButton("unpost", "Unpost");
+		unpostButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				unpostPayment();
+			}
+		});
+		toolBar.add(unpostButton);
 		
 		createCashPaymentAndPostButton = new MagicToolBarButton("cash_pay_and_post", 
 				"Create Cash Payment and Post");
@@ -1035,6 +1049,21 @@ public class PaymentPanel extends StandardMagicPanel {
 				overOrShortField.setText(FormatterUtil.formatAmount(payment.getOverOrShort()));
 			}
 		});
+	}
+
+	private void unpostPayment() {
+		cancelEditing();
+		
+		if (confirm("Unpost payment?")) {
+			try {
+				paymentService.unpost(payment);
+				showMessage("Payment unposted");
+				updateDisplay(payment);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred during unposting!");
+			}
+		}
 	}
 	
 }
