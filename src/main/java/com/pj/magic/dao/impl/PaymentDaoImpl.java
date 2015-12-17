@@ -166,6 +166,16 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 		
 	}
 
+	private static final String CONTAINS_SALES_INVOICE_NUMBER_WHERE_CLAUSE =
+			" and exists("
+			+ "  select *"
+			+ "  from PAYMENT_SALES_INVOICE psi"
+			+ "  join SALES_INVOICE si"
+			+ "    on si.ID = psi.SALES_INVOICE_ID"
+			+ "  where psi.PAYMENT_ID = a.ID"
+			+ "  and si.SALES_INVOICE_NO = ?"
+			+ ")";
+	
 	@Override
 	public List<Payment> search(PaymentSearchCriteria criteria) {
 		List<Object> params = new ArrayList<>();
@@ -196,6 +206,11 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			sql.append(" and a.POST_DT >= ? and a.POST_DT < DATE_ADD(?, INTERVAL 1 DAY)");
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
+		}
+		
+		if (criteria.getSalesInvoiceNumber() != null) {
+			sql.append(CONTAINS_SALES_INVOICE_NUMBER_WHERE_CLAUSE);
+			params.add(criteria.getSalesInvoiceNumber());
 		}
 		
 		sql.append(" order by a.PAYMENT_NO desc");

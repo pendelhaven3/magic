@@ -19,6 +19,7 @@ import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +49,7 @@ public class SearchPaymentsDialog extends MagicDialog {
 	private JLabel customerNameField;
 	private MagicComboBox<String> statusComboBox;
 	private UtilCalendarModel postDateModel;
+	private MagicTextField salesInvoiceNumberField;
 	private JButton searchButton;
 	private PaymentSearchCriteria searchCriteria;
 	private JButton selectCustomerButton;
@@ -71,6 +73,9 @@ public class SearchPaymentsDialog extends MagicDialog {
 		
 		customerCodeField = new MagicTextField();
 		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
+		
+		salesInvoiceNumberField = new MagicTextField();
+		salesInvoiceNumberField.setNumbersOnly(true);
 		
 		selectCustomerButton = new EllipsisButton();
 		selectCustomerButton.addActionListener(new ActionListener() {
@@ -143,6 +148,10 @@ public class SearchPaymentsDialog extends MagicDialog {
 			searchCriteria.setPostDate(postDateModel.getValue().getTime());
 		}
 		
+		if (NumberUtils.isDigits(salesInvoiceNumberField.getText())) {
+			searchCriteria.setSalesInvoiceNumber(Long.valueOf(salesInvoiceNumberField.getText()));
+		}
+		
 		setVisible(false);
 	}
 
@@ -163,8 +172,15 @@ public class SearchPaymentsDialog extends MagicDialog {
 			}
 		});
 		
-		customerCodeField.getInputMap().put(KeyUtil.getEnterKey(), "enter");
-		customerCodeField.getActionMap().put("enter", new AbstractAction() {
+		customerCodeField.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				salesInvoiceNumberField.requestFocusInWindow();
+			}
+		});
+		
+		salesInvoiceNumberField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -260,6 +276,22 @@ public class SearchPaymentsDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(130, "Sales Invoice No."), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		salesInvoiceNumberField.setPreferredSize(new Dimension(100, 25));
+		add(salesInvoiceNumberField, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.CENTER;
 		add(ComponentUtil.createFiller(1, 5), c);
 		
@@ -295,6 +327,7 @@ public class SearchPaymentsDialog extends MagicDialog {
 		customerNameField.setText(null);
 		statusComboBox.setSelectedIndex(0);
 		postDateModel.setValue(null);
+		salesInvoiceNumberField.setText(null);
 	}
 	
 	private JPanel createCustomerPanel() {

@@ -11,6 +11,7 @@ public class PaymentSearchCriteria {
 	private Date postDate;
 	private Long paymentNumber;
 	private Boolean cancelled;
+	private Long salesInvoiceNumber;
 
 	public Boolean getPosted() {
 		return posted;
@@ -50,6 +51,14 @@ public class PaymentSearchCriteria {
 
 	public void setCancelled(Boolean cancelled) {
 		this.cancelled = cancelled;
+	}
+
+	public Long getSalesInvoiceNumber() {
+		return salesInvoiceNumber;
+	}
+
+	public void setSalesInvoiceNumber(Long salesInvoiceNumber) {
+		this.salesInvoiceNumber = salesInvoiceNumber;
 	}
 	
 }
