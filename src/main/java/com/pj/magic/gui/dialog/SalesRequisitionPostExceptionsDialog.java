@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
@@ -25,7 +26,6 @@ import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.service.StockQuantityConversionService;
-import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class SalesRequisitionPostExceptionsDialog extends MagicDialog {
@@ -134,7 +134,7 @@ public class SalesRequisitionPostExceptionsDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createVerticalFiller(10), c);
+		add(Box.createVerticalStrut(10), c);
 		
 		currentRow++;
 		
@@ -149,7 +149,7 @@ public class SalesRequisitionPostExceptionsDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createVerticalFiller(10), c);
+		add(Box.createVerticalStrut(10), c);
 	}
 	
 	public void updateDisplay(SalesRequisitionPostException exception) {

@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -143,7 +144,7 @@ public class MaintainProductSubcategoryDialog extends MagicDialog {
 		c.gridy = currentRow;
 		c.gridwidth = 1;
 		c.anchor = GridBagConstraints.CENTER;
-		add(ComponentUtil.createVerticalFiller(10), c);
+		add(Box.createVerticalStrut(10), c);
 		
 		currentRow++;
 		
@@ -163,7 +164,7 @@ public class MaintainProductSubcategoryDialog extends MagicDialog {
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
+		add(Box.createGlue(), c);
 	}
 	
 

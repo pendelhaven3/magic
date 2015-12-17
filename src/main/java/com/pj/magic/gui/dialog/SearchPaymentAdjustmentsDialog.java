@@ -292,7 +292,7 @@ public class SearchPaymentAdjustmentsDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createVerticalFiller(10), c);
+		add(Box.createVerticalStrut(10), c);
 		
 		currentRow++;
 		
@@ -336,7 +336,7 @@ public class SearchPaymentAdjustmentsDialog extends MagicDialog {
 		c.gridx = 2;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createFiller(10, 20), c);
+		panel.add(Box.createHorizontalStrut(10), c);
 		
 		c.weightx = 0.0;
 		c.weighty = 0.0;

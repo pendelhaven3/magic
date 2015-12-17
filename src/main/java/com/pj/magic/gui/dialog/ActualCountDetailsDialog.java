@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
@@ -73,7 +74,7 @@ public class ActualCountDetailsDialog extends MagicDialog {
 		c.weightx = 1.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
+		add(Box.createGlue(), c);
 		
 		currentRow++;
 		
@@ -95,7 +96,7 @@ public class ActualCountDetailsDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(10, 10), c);
+		add(Box.createVerticalStrut(10), c);
 		
 		currentRow++;
 		

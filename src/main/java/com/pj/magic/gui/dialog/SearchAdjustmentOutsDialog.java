@@ -9,13 +9,10 @@ import java.awt.event.ActionListener;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,6 +22,10 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.search.AdjustmentOutSearchCriteria;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 public class SearchAdjustmentOutsDialog extends MagicDialog {
@@ -186,7 +187,7 @@ public class SearchAdjustmentOutsDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createVerticalFiller(10), c);
+		add(Box.createVerticalStrut(10), c);
 		
 		currentRow++;
 		
@@ -204,7 +205,7 @@ public class SearchAdjustmentOutsDialog extends MagicDialog {
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(), c);
+		add(Box.createGlue(), c);
 	}
 	
 	public AdjustmentOutSearchCriteria getSearchCriteria() {

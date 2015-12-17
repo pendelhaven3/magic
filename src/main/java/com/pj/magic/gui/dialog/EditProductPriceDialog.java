@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -140,7 +141,7 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.weightx = 1.0;
 		c.gridx = 2;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
+		add(Box.createGlue(), c);
 		
 		currentRow++;
 		
@@ -174,11 +175,10 @@ public class EditProductPriceDialog extends MagicDialog {
 
 		currentRow++;
 		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(10, 10), c);
+		add(Box.createVerticalStrut(10), c);
 		
 		currentRow++;
 		
@@ -189,19 +189,14 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.gridy = currentRow;
 		c.gridwidth = 3;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		
 		add(createTablePanel(), c);
 		
 		currentRow++;
 		
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.BOTH;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.CENTER;
-		add(ComponentUtil.createFiller(1, 20), c);
+		add(Box.createVerticalStrut(20), c);
 		
 		currentRow++;
 		
@@ -230,7 +225,7 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
+		add(Box.createGlue(), c);
 	}
 	
 	private JPanel createTablePanel() {

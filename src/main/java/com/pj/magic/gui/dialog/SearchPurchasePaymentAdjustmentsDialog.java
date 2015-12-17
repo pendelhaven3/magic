@@ -17,10 +17,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -36,6 +32,10 @@ import com.pj.magic.service.PurchasePaymentAdjustmentTypeService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 public class SearchPurchasePaymentAdjustmentsDialog extends MagicDialog {
@@ -287,7 +287,7 @@ public class SearchPurchasePaymentAdjustmentsDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createVerticalFiller(10), c);
+		add(Box.createVerticalStrut(10), c);
 		
 		currentRow++;
 		
@@ -331,7 +331,7 @@ public class SearchPurchasePaymentAdjustmentsDialog extends MagicDialog {
 		c.gridx = 2;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createFiller(10, 20), c);
+		panel.add(Box.createHorizontalStrut(10), c);
 		
 		c.weightx = 0.0;
 		c.weighty = 0.0;

@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,7 +26,6 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.service.PrintService;
-import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class PrintPreviewDialog extends MagicDialog {
@@ -209,7 +209,7 @@ public class PrintPreviewDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.weighty = 1.0;
 		c.gridy = 1;
-		panel.add(ComponentUtil.createFiller(1, 1), c);
+		panel.add(Box.createGlue(), c);
 		
 		return panel;
 	}

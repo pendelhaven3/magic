@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,7 +22,6 @@ import com.pj.magic.gui.tables.StockQuantityConversionsTable;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.search.StockQuantityConversionSearchCriteria;
 import com.pj.magic.service.StockQuantityConversionService;
-import com.pj.magic.util.ComponentUtil;
 
 @Component
 public class StockQuantityConversionListPanel extends StandardMagicPanel {
@@ -55,7 +55,7 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 5), c);
+		mainPanel.add(Box.createVerticalStrut(5), c);
 		
 		currentRow++;
 		

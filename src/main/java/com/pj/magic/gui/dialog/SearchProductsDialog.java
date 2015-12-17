@@ -10,6 +10,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 
@@ -212,14 +213,10 @@ public class SearchProductsDialog extends MagicDialog {
 
 		currentRow++;
 		
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.fill = GridBagConstraints.BOTH;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.CENTER;
-		add(ComponentUtil.createFiller(1, 5), c);
+		add(Box.createVerticalStrut(5), c);
 		
 		currentRow++;
 		
@@ -239,7 +236,7 @@ public class SearchProductsDialog extends MagicDialog {
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(1, 1), c);
+		add(Box.createGlue(), c);
 	}
 	
 	public ProductSearchCriteria getSearchCriteria() {

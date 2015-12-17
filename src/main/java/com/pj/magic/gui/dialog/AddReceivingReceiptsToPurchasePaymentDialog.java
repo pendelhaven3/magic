@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -116,7 +117,7 @@ public class AddReceivingReceiptsToPurchasePaymentDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createVerticalFiller(20), c);
+		add(Box.createVerticalStrut(20), c);
 		
 		currentRow++;
 		
@@ -132,7 +133,7 @@ public class AddReceivingReceiptsToPurchasePaymentDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createVerticalFiller(20), c);
+		add(Box.createVerticalStrut(20), c);
 	}
 	
 	public void searchReceivingReceiptsForPayment(Supplier supplier) {

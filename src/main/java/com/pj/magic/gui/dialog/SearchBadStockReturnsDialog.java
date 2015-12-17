@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -267,8 +268,7 @@ public class SearchBadStockReturnsDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.CENTER;
-		add(ComponentUtil.createFiller(1, 5), c);
+		add(Box.createVerticalStrut(5), c);
 		
 		currentRow++;
 		
@@ -286,7 +286,7 @@ public class SearchBadStockReturnsDialog extends MagicDialog {
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(), c);
+		add(Box.createGlue(), c);
 	}
 	
 	public BadStockReturnSearchCriteria getSearchCriteria() {
@@ -326,8 +326,7 @@ public class SearchBadStockReturnsDialog extends MagicDialog {
 		c.weighty = 0.0;
 		c.gridx = 2;
 		c.gridy = 0;
-		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createFiller(10, 20), c);
+		panel.add(Box.createHorizontalStrut(10), c);
 		
 		c.weightx = 0.0;
 		c.weighty = 0.0;

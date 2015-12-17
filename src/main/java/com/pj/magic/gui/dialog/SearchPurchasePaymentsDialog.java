@@ -9,14 +9,11 @@ import java.awt.event.ActionListener;
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -33,6 +30,10 @@ import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.KeyUtil;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 public class SearchPurchasePaymentsDialog extends MagicDialog {
@@ -292,8 +293,7 @@ public class SearchPurchasePaymentsDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.CENTER;
-		add(ComponentUtil.createFiller(1, 5), c);
+		add(Box.createVerticalStrut(5), c);
 		
 		currentRow++;
 		
@@ -311,7 +311,7 @@ public class SearchPurchasePaymentsDialog extends MagicDialog {
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
-		add(ComponentUtil.createFiller(), c);
+		add(Box.createGlue(), c);
 	}
 	
 	public PurchasePaymentSearchCriteria getSearchCriteria() {
@@ -353,7 +353,7 @@ public class SearchPurchasePaymentsDialog extends MagicDialog {
 		c.gridx = 2;
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createFiller(10, 20), c);
+		panel.add(Box.createHorizontalStrut(10), c);
 		
 		c.weightx = 0.0;
 		c.weighty = 0.0;
