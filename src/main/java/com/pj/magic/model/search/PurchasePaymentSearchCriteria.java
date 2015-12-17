@@ -11,6 +11,7 @@ public class PurchasePaymentSearchCriteria {
 	private Date postDate;
 	private Long paymentNumber;
 	private Boolean cancelled;
+	private Long receivingReceiptNumber;
 
 	public Boolean getPosted() {
 		return posted;
@@ -50,6 +51,14 @@ public class PurchasePaymentSearchCriteria {
 
 	public void setCancelled(Boolean cancelled) {
 		this.cancelled = cancelled;
+	}
+
+	public Long getReceivingReceiptNumber() {
+		return receivingReceiptNumber;
+	}
+
+	public void setReceivingReceiptNumber(Long receivingReceiptNumber) {
+		this.receivingReceiptNumber = receivingReceiptNumber;
 	}
 	
 }

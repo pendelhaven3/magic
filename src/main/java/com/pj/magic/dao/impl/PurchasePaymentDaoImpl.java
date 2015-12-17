@@ -112,6 +112,16 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 		}
 	}
 
+	private static final String CONTAINS_RECEIVING_RECEIPT_NUMBER_WHERE_CLAUSE =
+			" and exists("
+			+ "  select *"
+			+ "  from PURCHASE_PAYMENT_RECEIVING_RECEIPT pprr"
+			+ "  join RECEIVING_RECEIPT rr"
+			+ "    on rr.ID = pprr.RECEIVING_RECEIPT_ID"
+			+ "  where pprr.PURCHASE_PAYMENT_ID = a.ID"
+			+ "  and rr.RECEIVING_RECEIPT_NO = ?"
+			+ ")";
+	
 	@Override
 	public List<PurchasePayment> search(PurchasePaymentSearchCriteria criteria) {
 		List<Object> params = new ArrayList<>();
@@ -141,6 +151,11 @@ public class PurchasePaymentDaoImpl extends MagicDao implements PurchasePaymentD
 		if (criteria.getPostDate() != null) {
 			sql.append(" and a.POST_DT = ?");
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
+		}
+		
+		if (criteria.getReceivingReceiptNumber() != null) {
+			sql.append(CONTAINS_RECEIVING_RECEIPT_NUMBER_WHERE_CLAUSE);
+			params.add(criteria.getReceivingReceiptNumber());
 		}
 		
 		sql.append(" order by a.PURCHASE_PAYMENT_NO desc");
