@@ -45,6 +45,7 @@ import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentReceivingReceipt;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.service.SupplierService;
@@ -71,6 +72,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	@Autowired private PurchasePaymentPaymentAdjustmentsTable paymentAdjustmentsTable;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
+	@Autowired private LoginService loginService;
 	
 	private PurchasePayment purchasePayment;
 	private JLabel purchasePaymentNumberField;
@@ -101,6 +103,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton deleteAdjustmentButton;
 	private MagicToolBarButton cancelButton;
 	private MagicToolBarButton postButton;
+	private MagicToolBarButton unpostButton;
 	private JButton printPreviewButton;
 	private JButton printButton;
 	private JTabbedPane tabbedPane;
@@ -242,6 +245,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		selectSupplierButton.setEnabled(newPayment);
 		cancelButton.setEnabled(newPayment);
 		postButton.setEnabled(newPayment);
+		unpostButton.setEnabled(purchasePayment.isPosted() && loginService.getLoggedInUser().isSupervisor());
 		addReceivingReceiptButton.setEnabled(newPayment);
 		removeReceivingReceiptButton.setEnabled(newPayment);
 		addCashPaymentButton.setEnabled(newPayment);
@@ -298,6 +302,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		
 		cancelButton.setEnabled(false);
 		postButton.setEnabled(false);
+		unpostButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
 		printButton.setEnabled(false);
 	}
@@ -510,6 +515,16 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		});
 		
 		toolBar.add(postButton);
+		
+		unpostButton = new MagicToolBarButton("unpost", "Unpost");
+		unpostButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				unpostPayment();
+			}
+		});
+		toolBar.add(unpostButton);
 		
 		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {
@@ -1113,6 +1128,21 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 				overOrShortLabel.setText(FormatterUtil.formatAmount(purchasePayment.getOverOrShort()));
 			}
 		});
+	}
+	
+	private void unpostPayment() {
+		cancelEditing();
+		
+		if (confirm("Unpost payment?")) {
+			try {
+				purchasePaymentService.unpost(purchasePayment);
+				showMessage("Payment unposted");
+				updateDisplay(purchasePayment);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+			}
+		}
 	}
 	
 }

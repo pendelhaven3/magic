@@ -63,4 +63,6 @@ public interface PurchasePaymentService {
 
 	List<PurchasePaymentCashPayment> searchCashPayments(PurchasePaymentCashPaymentSearchCriteria criteria);
 
+	void unpost(PurchasePayment purchasePayment);
+
 }

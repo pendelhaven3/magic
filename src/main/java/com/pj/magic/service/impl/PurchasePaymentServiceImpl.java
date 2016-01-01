@@ -240,4 +240,14 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 		return purchasePaymentCashPaymentDao.search(criteria);
 	}
 
+	@Transactional
+	@Override
+	public void unpost(PurchasePayment purchasePayment) {
+		PurchasePayment updated = getPurchasePayment(purchasePayment.getId());
+		updated.setPosted(false);
+		updated.setPostDate(null);
+		updated.setPostedBy(null);
+		purchasePaymentDao.save(updated);
+	}
+
 }
