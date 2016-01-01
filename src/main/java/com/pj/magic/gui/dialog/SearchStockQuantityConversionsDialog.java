@@ -68,7 +68,7 @@ public class SearchStockQuantityConversionsDialog extends MagicDialog {
 			}
 		});
 		
-		focusOnComponentWhenThisPanelIsDisplayed(statusComboBox);
+		focusOnComponentWhenThisPanelIsDisplayed(stockQuantityConversionNumberField);
 	}
 
 	private void saveStockQuantityConversionCriteria() {
@@ -97,6 +97,14 @@ public class SearchStockQuantityConversionsDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
+		stockQuantityConversionNumberField.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				statusComboBox.requestFocusInWindow();
+			}
+		});
+		
 		statusComboBox.getInputMap().put(KeyUtil.getEnterKey(), "enter");
 		statusComboBox.getActionMap().put("enter", new AbstractAction() {
 			
