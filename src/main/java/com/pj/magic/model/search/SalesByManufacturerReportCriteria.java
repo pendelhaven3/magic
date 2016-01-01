@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.pj.magic.model.Customer;
 
-public class SalesByManufacturerReportSearchCriteria {
+public class SalesByManufacturerReportCriteria {
 
 	private Date fromDate;
 	private Date toDate;

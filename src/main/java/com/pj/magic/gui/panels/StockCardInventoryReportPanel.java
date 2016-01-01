@@ -39,7 +39,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.search.ProductSearchCriteria;
-import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
+import com.pj.magic.model.search.StockCardInventoryReportCriteria;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
@@ -176,7 +176,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 			productDescriptionLabel.setText(product.getDescription());
 		}
 		
-		StockCardInventoryReportSearchCriteria criteria = new StockCardInventoryReportSearchCriteria();
+		StockCardInventoryReportCriteria criteria = new StockCardInventoryReportCriteria();
 		criteria.setProduct(product);
 		if (fromDateModel.getValue() != null) {
 			criteria.setFromDate(fromDateModel.getValue().getTime());
@@ -201,7 +201,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		totalAddQuantityLabel.setText(FormatterUtil.formatInteger(getTotalAddQuantity(items)));
 	}
 
-	private void setTransactionTypeCriteria(StockCardInventoryReportSearchCriteria criteria) {
+	private void setTransactionTypeCriteria(StockCardInventoryReportCriteria criteria) {
 		List<String> transactionTypes = criteria.getTransactionTypes();
 		if (salesInvoiceTransactionTypeCheckBox.isSelected()) {
 			transactionTypes.add("SALES INVOICE");

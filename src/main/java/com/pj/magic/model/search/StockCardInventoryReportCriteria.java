@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.pj.magic.model.Product;
 
-public class StockCardInventoryReportSearchCriteria {
+public class StockCardInventoryReportCriteria {
 
 	private Product product;
 	private Date fromDate;

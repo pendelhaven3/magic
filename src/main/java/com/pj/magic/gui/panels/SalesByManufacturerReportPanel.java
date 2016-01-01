@@ -31,7 +31,7 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.report.SalesByManufacturerReport;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
-import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
+import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
@@ -129,7 +129,7 @@ public class SalesByManufacturerReportPanel extends StandardMagicPanel {
 	}
 
 	private SalesByManufacturerReport doGenerateReport() {
-		SalesByManufacturerReportSearchCriteria criteria = new SalesByManufacturerReportSearchCriteria();
+		SalesByManufacturerReportCriteria criteria = new SalesByManufacturerReportCriteria();
 		criteria.setFromDate(fromDateModel.getValue().getTime());
 		criteria.setToDate(toDateModel.getValue().getTime());
 		

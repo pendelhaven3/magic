@@ -21,8 +21,8 @@ import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.report.InventoryReportItem;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.report.StockOfftakeReportItem;
-import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
-import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
+import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
+import com.pj.magic.model.search.StockCardInventoryReportCriteria;
 import com.pj.magic.model.search.StockOfftakeReportCriteria;
 import com.pj.magic.util.DbUtil;
 import com.pj.magic.util.QueriesUtil;
@@ -34,7 +34,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 	
 	@Override
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
-			StockCardInventoryReportSearchCriteria criteria) {
+			StockCardInventoryReportCriteria criteria) {
 		StringBuilder sql = new StringBuilder(QueriesUtil.getSql("stockCardInventoryReport"));
 		sql.append(" where 1 = 1");
 		
@@ -230,7 +230,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 
 	@Override
 	public List<SalesByManufacturerReportItem> searchSalesByManufacturerReportItems(
-			SalesByManufacturerReportSearchCriteria criteria) {
+			SalesByManufacturerReportCriteria criteria) {
 		String sql = QueriesUtil.getSql("salesByManufacturerReport");
 		
 		Map<String, Object> params = new HashMap<>();

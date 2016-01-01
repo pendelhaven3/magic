@@ -8,20 +8,20 @@ import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.InventoryReport;
 import com.pj.magic.model.report.SalesByManufacturerReport;
 import com.pj.magic.model.report.StockOfftakeReport;
-import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
-import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
+import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
+import com.pj.magic.model.search.StockCardInventoryReportCriteria;
 import com.pj.magic.model.search.StockOfftakeReportCriteria;
 
 public interface ReportService {
 
 	List<StockCardInventoryReportItem> getStockCardInventoryReport(
-			StockCardInventoryReportSearchCriteria criteria);
+			StockCardInventoryReportCriteria criteria);
 
 	InventoryReport getInventoryReport();
 
 	CustomerSalesSummaryReport getCustomerSalesSummaryReport(Date fromDate, Date toDate);
 
-	SalesByManufacturerReport getManufacturerSalesReport(SalesByManufacturerReportSearchCriteria criteria);
+	SalesByManufacturerReport getManufacturerSalesReport(SalesByManufacturerReportCriteria criteria);
 	
 	StockOfftakeReport getStockOfftakeReport(StockOfftakeReportCriteria criteria);
 	

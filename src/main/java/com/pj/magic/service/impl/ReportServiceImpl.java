@@ -12,8 +12,8 @@ import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.InventoryReport;
 import com.pj.magic.model.report.SalesByManufacturerReport;
 import com.pj.magic.model.report.StockOfftakeReport;
-import com.pj.magic.model.search.SalesByManufacturerReportSearchCriteria;
-import com.pj.magic.model.search.StockCardInventoryReportSearchCriteria;
+import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
+import com.pj.magic.model.search.StockCardInventoryReportCriteria;
 import com.pj.magic.model.search.StockOfftakeReportCriteria;
 import com.pj.magic.service.ReportService;
 
@@ -24,7 +24,7 @@ public class ReportServiceImpl implements ReportService {
 	
 	@Override
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
-			StockCardInventoryReportSearchCriteria criteria) {
+			StockCardInventoryReportCriteria criteria) {
 		return reportDao.getStockCardInventoryReport(criteria);
 	}
 
@@ -43,7 +43,7 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public SalesByManufacturerReport getManufacturerSalesReport(SalesByManufacturerReportSearchCriteria criteria) {
+	public SalesByManufacturerReport getManufacturerSalesReport(SalesByManufacturerReportCriteria criteria) {
 		SalesByManufacturerReport report = new SalesByManufacturerReport();
 		report.setItems(reportDao.searchSalesByManufacturerReportItems(criteria));
 		return report; 
