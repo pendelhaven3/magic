@@ -126,6 +126,31 @@ create table USER (
   constraint USER$UK unique (USERNAME)
 );
 
+create table STOCK_QTY_CONVERSION (
+  ID integer auto_increment,
+  STOCK_QTY_CONV_NO integer not null,
+  REMARKS varchar(100) null,
+  POST_IND char(1) default 'N' not null,
+  POST_DT datetime null,
+  POST_BY integer null,
+  constraint STOCK_QTY_CONVERSION$PK primary key (ID),
+  constraint STOCK_QTY_CONVERSION$UK unique (STOCK_QTY_CONV_NO),
+  constraint STOCK_QTY_CONVERSION$FK foreign key (POST_BY) references USER (ID)
+);
+
+create table STOCK_QTY_CONVERSION_ITEM (
+  ID integer auto_increment,
+  STOCK_QTY_CONVERSION_ID integer not null,
+  PRODUCT_ID integer not null,
+  FROM_UNIT char(3) not null,
+  TO_UNIT char(3) not null,
+  QUANTITY integer(3) not null,
+  CONVERTED_QTY integer(5) null,
+  constraint STOCK_QTY_CONVERSION_ITEM$PK primary key (ID),
+  constraint STOCK_QTY_CONVERSION_ITEM$FK foreign key (STOCK_QTY_CONVERSION_ID) references STOCK_QTY_CONVERSION (ID),
+  constraint STOCK_QTY_CONVERSION_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);
+
 create table SALES_REQUISITION (
   ID integer auto_increment,
   SALES_REQUISITION_NO integer not null,
@@ -138,12 +163,14 @@ create table SALES_REQUISITION (
   MODE varchar(10) null,
   REMARKS varchar(100) null,
   PAYMENT_TERM_ID integer not null,
+  STOCK_QUANTITY_CONVERSION_ID integer null,
   constraint SALES_REQUISITION$PK primary key (ID),
   constraint SALES_REQUISITION$UK unique (SALES_REQUISITION_NO),
   constraint SALES_REQUISITION$FK1 foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID),
   constraint SALES_REQUISITION$FK2 foreign key (CUSTOMER_ID) references CUSTOMER (ID),
   constraint SALES_REQUISITION$FK3 foreign key (ENCODER) references USER (ID),
-  constraint SALES_REQUISITION$FK4 foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID)
+  constraint SALES_REQUISITION$FK4 foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID),
+  constraint SALES_REQUISITION$FK5 foreign key (STOCK_QUANTITY_CONVERSION_ID) references STOCK_QUANTITY_CONVERSION (ID)
 );
 
 create table SALES_REQUISITION_ITEM (
@@ -263,31 +290,6 @@ create table PRODUCT_PRICE_HISTORY (
   constraint PRODUCT_PRICE_HISTORY$FK foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID),
   constraint PRODUCT_PRICE_HISTORY$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID),
   constraint PRODUCT_PRICE_HISTORY$FK3 foreign key (UPDATE_BY) references USER (ID)
-);
-
-create table STOCK_QTY_CONVERSION (
-  ID integer auto_increment,
-  STOCK_QTY_CONV_NO integer not null,
-  REMARKS varchar(100) null,
-  POST_IND char(1) default 'N' not null,
-  POST_DT datetime null,
-  POST_BY integer null,
-  constraint STOCK_QTY_CONVERSION$PK primary key (ID),
-  constraint STOCK_QTY_CONVERSION$UK unique (STOCK_QTY_CONV_NO),
-  constraint STOCK_QTY_CONVERSION$FK foreign key (POST_BY) references USER (ID)
-);
-
-create table STOCK_QTY_CONVERSION_ITEM (
-  ID integer auto_increment,
-  STOCK_QTY_CONVERSION_ID integer not null,
-  PRODUCT_ID integer not null,
-  FROM_UNIT char(3) not null,
-  TO_UNIT char(3) not null,
-  QUANTITY integer(3) not null,
-  CONVERTED_QTY integer(5) null,
-  constraint STOCK_QTY_CONVERSION_ITEM$PK primary key (ID),
-  constraint STOCK_QTY_CONVERSION_ITEM$FK foreign key (STOCK_QTY_CONVERSION_ID) references STOCK_QTY_CONVERSION (ID),
-  constraint STOCK_QTY_CONVERSION_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
 
 create table PURCHASE_ORDER (

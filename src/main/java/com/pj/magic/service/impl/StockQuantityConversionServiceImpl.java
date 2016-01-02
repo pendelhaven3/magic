@@ -113,4 +113,24 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 		return stockQuantityConversionDao.search(criteria);
 	}
 
+	@Transactional
+	@Override
+	public void saveAndPost(StockQuantityConversionItem item) {
+		Product product = productDao.get(item.getProduct().getId());
+		if (!product.hasAvailableUnitQuantity(item.getFromUnit(), item.getQuantity())) {
+			throw new NotEnoughStocksException(item);
+		} else {
+			product.subtractUnitQuantity(item.getFromUnit(), item.getQuantity());
+			product.addUnitQuantity(item.getToUnit(), item.getConvertedQuantity());
+			productDao.updateAvailableQuantities(product);
+			stockQuantityConversionItemDao.save(item);
+			stockQuantityConversionItemDao.updateConvertedQuantity(item);
+		}
+	}
+
+	@Override
+	public int getNextPageNumber() {
+		return stockQuantityConversionDao.getNextPageNumber();
+	}
+
 }

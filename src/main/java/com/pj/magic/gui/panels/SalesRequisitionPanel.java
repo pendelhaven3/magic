@@ -48,6 +48,7 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
 import com.pj.magic.gui.dialog.PromoQualifyingAmountsDialog;
 import com.pj.magic.gui.dialog.SalesRequisitionPostExceptionsDialog;
+import com.pj.magic.gui.dialog.StockQuantityConversionDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.ProductInfoTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
@@ -88,6 +89,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	@Autowired private SalesRequisitionPostExceptionsDialog postExceptionsDialog;
 	@Autowired private AvailedPromoRewardsDialog availedPromoRewardsDialog;
 	@Autowired private PromoQualifyingAmountsDialog promoQualifyingAmountsDialog;
+	@Autowired private StockQuantityConversionDialog stockQuantityConversionDialog;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -107,6 +109,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private MagicToolBarButton addItemButton;
 	private MagicToolBarButton deleteItemButton;
 	private MagicToolBarButton postButton;
+	private MagicToolBarButton stockQuantityConversionButton;
 	private MagicToolBarButton showAvailedPromoRewardsButton;
 	private MagicToolBarButton showPromoQualifyingAmountsButton;
 	private ProductInfoTable productInfoTable;
@@ -416,6 +419,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		deleteItemButton.setEnabled(!salesRequisition.isPosted());
 		showPromoQualifyingAmountsButton.setEnabled(true);
 		showAvailedPromoRewardsButton.setEnabled(true);
+		stockQuantityConversionButton.setEnabled(true);
 	}
 
 	private void updateTransactionDateField() {
@@ -447,6 +451,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		postButton.setEnabled(false);
 		addItemButton.setEnabled(false);
 		deleteItemButton.setEnabled(false);
+		stockQuantityConversionButton.setEnabled(false);
 		showPromoQualifyingAmountsButton.setEnabled(false);
 		showAvailedPromoRewardsButton.setEnabled(false);
 	}
@@ -776,6 +781,16 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		
 		toolBar.add(postButton);
 
+		stockQuantityConversionButton = new MagicToolBarButton("convert", "Stock Quantity Conversion");
+		stockQuantityConversionButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showStockQuantityConversionDialog();
+			}
+		});
+		toolBar.add(stockQuantityConversionButton);
+		
 		showPromoQualifyingAmountsButton = new MagicToolBarButton("qualify", "Show Qualifying Amounts for Promos");
 		showPromoQualifyingAmountsButton.addActionListener(new ActionListener() {
 			
@@ -870,6 +885,16 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		panel.add(totalAmountField, c);
 		
 		return panel;
+	}
+	
+	private void showStockQuantityConversionDialog() {
+		if (salesRequisition.getStockQuantityConversion() == null) {
+			showErrorMessage("No stock quantity conversion");
+			return;
+		}
+		
+		stockQuantityConversionDialog.updateDisplay(salesRequisition);
+		stockQuantityConversionDialog.setVisible(true);
 	}
 	
 }

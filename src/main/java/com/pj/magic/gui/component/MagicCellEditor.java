@@ -24,5 +24,14 @@ public abstract class MagicCellEditor extends DefaultCellEditor {
 				JOptionPane.ERROR_MESSAGE
 		);
 	}
+
+	protected boolean confirm(String message) {
+		return JOptionPane.showConfirmDialog(
+				SwingUtilities.getWindowAncestor(getComponent()), 
+				message,
+				"Confirm",
+				JOptionPane.YES_NO_OPTION
+		) == JOptionPane.OK_OPTION;
+	}
 	
 }

@@ -28,6 +28,7 @@ public class SalesRequisition {
 	private String mode;
 	private String remarks;
 	private PaymentTerm paymentTerm;
+	private StockQuantityConversion stockQuantityConversion;
 
 	public SalesRequisition() {
 	}
@@ -222,6 +223,14 @@ public class SalesRequisition {
 			}
 		}
 		return null;
+	}
+
+	public StockQuantityConversion getStockQuantityConversion() {
+		return stockQuantityConversion;
+	}
+
+	public void setStockQuantityConversion(StockQuantityConversion stockQuantityConversion) {
+		this.stockQuantityConversion = stockQuantityConversion;
 	}
 	
 }

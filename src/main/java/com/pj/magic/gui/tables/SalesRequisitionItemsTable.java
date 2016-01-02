@@ -3,6 +3,7 @@ package com.pj.magic.gui.tables;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -35,7 +36,12 @@ import com.pj.magic.gui.tables.rowitems.SalesRequisitionItemRowItem;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
+import com.pj.magic.model.StockQuantityConversion;
+import com.pj.magic.model.StockQuantityConversionItem;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.SalesRequisitionService;
+import com.pj.magic.service.StockQuantityConversionService;
 import com.pj.magic.util.KeyUtil;
 
 /*
@@ -64,6 +70,9 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;
 	@Autowired private SalesRequisitionItemsTableModel tableModel;
+	@Autowired private LoginService loginService;
+	@Autowired private StockQuantityConversionService stockQuantityConversionService;
+	@Autowired private SalesRequisitionService salesRequisitionService;
 	
 	private boolean addMode;
 	private SalesRequisition salesRequisition;
@@ -497,15 +506,60 @@ public class SalesRequisitionItemsTable extends MagicTable {
 			} else {
 				SalesRequisitionItemRowItem rowItem = getCurrentlySelectedRowItem();
 				Product product = productService.getProduct(rowItem.getProduct().getId());
-				if (!product.hasAvailableUnitQuantity(rowItem.getUnit(), Integer.parseInt(quantity))) {
-					showErrorMessage("Not enough stocks");
+				String unit = rowItem.getUnit();
+				if (!product.hasAvailableUnitQuantity(unit, Integer.parseInt(quantity))) {
+					if (isQuantityConversionPossible(product, unit) 
+							&& confirm("Not enough stocks. Convert?")) {
+						addStockQuantityConversionItem(product, unit);
+						valid = true;
+					} else {
+						showErrorMessage("Not enough stocks");
+					}
 				} else {
 					valid = true;
 				}
 			}
 			return (valid) ? super.stopCellEditing() : false;
 		}
+
+		private boolean isQuantityConversionPossible(Product product, String desiredUnit) {
+			if (product.isMaxUnit(desiredUnit)) {
+				return false;
+			} else {
+				return product.hasAvailableUnitQuantity(product.getMaxUnit());
+			}
+		}
 		
+	}
+
+	private void addStockQuantityConversionItem(Product product, String unit) {
+		StockQuantityConversion conversion = salesRequisition.getStockQuantityConversion();
+		if (conversion == null) {
+			conversion = createPostedStockQuantityConversion();
+			salesRequisition.setStockQuantityConversion(conversion);
+			salesRequisitionService.save(salesRequisition);
+		}
+		
+		StockQuantityConversionItem item = new StockQuantityConversionItem();
+		item.setParent(conversion);
+		item.setProduct(product);
+		item.setFromUnit(product.getMaxUnit());
+		item.setToUnit(unit);
+		item.setQuantity(1);
+		stockQuantityConversionService.saveAndPost(item);
+	}
+
+	private StockQuantityConversion createPostedStockQuantityConversion() {
+		StockQuantityConversion conversion = new StockQuantityConversion();
+		conversion.setRemarks("SR NO. " + salesRequisition.getSalesRequisitionNumber());
+		stockQuantityConversionService.save(conversion);
+		
+		conversion.setPosted(true);
+		conversion.setPostDate(new Date());
+		conversion.setPostedBy(loginService.getLoggedInUser());
+		stockQuantityConversionService.save(conversion);
+		
+		return conversion;
 	}
 	
 }

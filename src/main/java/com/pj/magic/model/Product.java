@@ -64,6 +64,10 @@ public class Product implements Comparable<Product> {
 		return Constants.ZERO;
 	}
 	
+	public boolean hasAvailableUnitQuantity(String unit) {
+		return hasAvailableUnitQuantity(unit, 1);
+	}
+	
 	public boolean hasAvailableUnitQuantity(String unit, int quantity) {
 		return getUnitQuantity(unit) >= quantity;
 	}

@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -154,6 +157,21 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		sb.append(" order by STOCK_QTY_CONV_NO desc");
 		
 		return getJdbcTemplate().query(sb.toString(), stockQuantityConversionRowMapper, params.toArray());
+	}
+
+	private static final String GET_NEXT_PAGE_NUMBER_SQL =
+			"select coalesce(max(cast(replace(REMARKS, 'P', '') as unsigned)), 0) + 1"
+			+ " from STOCK_QTY_CONVERSION"
+			+ " where POST_DT >= :postDate and POST_DT < date_add(:postDate, interval 1 day)"
+			+ " and REMARKS like 'P%'";
+	
+	@Override
+	public int getNextPageNumber() {
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("postDate", DbUtil.toMySqlDateString(new Date()));
+		
+		return getNamedParameterJdbcTemplate().queryForObject(
+				GET_NEXT_PAGE_NUMBER_SQL, paramMap, Integer.class);
 	}
 	
 }
