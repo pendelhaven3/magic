@@ -162,13 +162,13 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 	private static final String GET_NEXT_PAGE_NUMBER_SQL =
 			"select coalesce(max(cast(replace(REMARKS, 'P', '') as unsigned)), 0) + 1"
 			+ " from STOCK_QTY_CONVERSION"
-			+ " where POST_DT >= :postDate and POST_DT < date_add(:postDate, interval 1 day)"
+			+ " where CREATE_DT >= :createDate and CREATE_DT < date_add(:createDate, interval 1 day)"
 			+ " and REMARKS like 'P%'";
 	
 	@Override
 	public int getNextPageNumber() {
 		Map<String, Object> paramMap = new HashMap<>();
-		paramMap.put("postDate", DbUtil.toMySqlDateString(new Date()));
+		paramMap.put("createDate", DbUtil.toMySqlDateString(new Date()));
 		
 		return getNamedParameterJdbcTemplate().queryForObject(
 				GET_NEXT_PAGE_NUMBER_SQL, paramMap, Integer.class);
