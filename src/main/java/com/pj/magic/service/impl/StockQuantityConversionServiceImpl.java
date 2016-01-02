@@ -102,13 +102,6 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 	}
 
 	@Override
-	public List<StockQuantityConversion> getAllNonPostedStockQuantityConversions() {
-		StockQuantityConversionSearchCriteria criteria = new StockQuantityConversionSearchCriteria();
-		criteria.setPosted(false);
-		return stockQuantityConversionDao.search(criteria);
-	}
-
-	@Override
 	public List<StockQuantityConversion> search(StockQuantityConversionSearchCriteria criteria) {
 		return stockQuantityConversionDao.search(criteria);
 	}

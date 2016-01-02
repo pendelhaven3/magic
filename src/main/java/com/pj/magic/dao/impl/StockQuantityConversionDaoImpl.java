@@ -28,7 +28,7 @@ import com.pj.magic.util.DbUtil;
 public class StockQuantityConversionDaoImpl extends MagicDao implements StockQuantityConversionDao {
 	
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, STOCK_QTY_CONV_NO, REMARKS, POST_IND, POST_DT, POST_BY,"
+			"select a.ID, STOCK_QTY_CONV_NO, REMARKS, POST_IND, POST_DT, POST_BY, PRINT_IND,"
 			+ " b.USERNAME as POST_BY_USERNAME"
 			+ " from STOCK_QTY_CONVERSION a"
 			+ " left join USER b"
@@ -74,7 +74,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 	}
 
 	private static final String UPDATE_SQL = "update STOCK_QTY_CONVERSION"
-			+ " set REMARKS = ?, POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+			+ " set REMARKS = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?, PRINT_IND = ? where ID = ?";
 	
 	private void update(StockQuantityConversion stockQuantityConversion) {
 		getJdbcTemplate().update(UPDATE_SQL, 
@@ -82,6 +82,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 				stockQuantityConversion.isPosted() ? "Y" : "N",
 				stockQuantityConversion.getPostDate(),
 				stockQuantityConversion.isPosted() ? stockQuantityConversion.getPostedBy().getId() : null,
+				stockQuantityConversion.isPrinted() ? "Y" : "N",
 				stockQuantityConversion.getId());
 	}
 
@@ -117,6 +118,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 				stockQuantityConversion.setPostedBy(
 						new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			}
+			stockQuantityConversion.setPrinted("Y".equals(rs.getString("PRINT_IND")));
 			return stockQuantityConversion;
 		}
 		
@@ -152,6 +154,11 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 			String postDateString = DbUtil.toMySqlDateString(criteria.getPostDate());
 			params.add(postDateString);
 			params.add(postDateString);
+		}
+		
+		if (criteria.getPrinted() != null) {
+			sb.append(" and PRINT_IND = ?");
+			params.add(criteria.getPrinted() ? "Y" : "N");
 		}
 		
 		sb.append(" order by STOCK_QTY_CONV_NO desc");

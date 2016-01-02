@@ -13,11 +13,12 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class StockQuantityConversionsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"SQC No.", "Remarks", "Posted", "Post Date"};
+	private static final String[] COLUMN_NAMES = {"SQC No.", "Remarks", "Posted", "Post Date", "Printed"};
 	private static final int STOCK_QUANTITY_CONVERSION_NUMBER_COLUMN_INDEX = 0;
 	private static final int REMARKS_COLUMN_INDEX = 1;
 	private static final int POSTED_COLUMN_INDEX = 2;
 	private static final int POST_DATE_COLUMN_INDEX = 3;
+	private static final int PRINTED_COLUMN_INDEX = 4;
 	
 	private List<StockQuantityConversion> stockQuantityConversions = new ArrayList<>();
 	
@@ -47,6 +48,8 @@ public class StockQuantityConversionsTableModel extends AbstractTableModel {
 			} else {
 				return null;
 			}
+		case PRINTED_COLUMN_INDEX:
+			return stockQuantityConversion.isPrinted() ? "Yes" : "No";
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
