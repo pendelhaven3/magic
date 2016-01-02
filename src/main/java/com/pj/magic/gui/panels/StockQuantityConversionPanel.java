@@ -63,6 +63,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 	private JButton postButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
+	private JButton assignPageNumberButton;
 	private ProductInfoTable productInfoTable;
 	
 	@Override
@@ -72,6 +73,15 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		postDateField = new JLabel();
 		postedByField = new JLabel();
 		remarksField = new MagicTextField();
+		
+		assignPageNumberButton = new JButton("Assign Page Number");
+		assignPageNumberButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				assignPageNumber();
+			}
+		});
 		
 		focusOnComponentWhenThisPanelIsDisplayed(remarksField);
 		updateTotalItemsFieldWhenItemsTableChanges();
@@ -214,6 +224,11 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		mainPanel.add(postDateField, c);
 		
 		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		mainPanel.add(assignPageNumberButton, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
@@ -434,6 +449,14 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		panel.add(totalItemsField, c);
 		
 		return panel;
+	}
+	
+	private void assignPageNumber() {
+		String pageNumber = "P" + stockQuantityConversionService.getNextPageNumber();
+		remarksField.setText(pageNumber);
+		stockQuantityConversion.setRemarks(pageNumber);
+		stockQuantityConversionService.save(stockQuantityConversion);
+		showMessage("Saved");
 	}
 	
 }
