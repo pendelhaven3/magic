@@ -16,5 +16,7 @@ public interface StockQuantityConversionDao {
 	void delete(StockQuantityConversion stockQuantityConversion);
 
 	List<StockQuantityConversion> search(StockQuantityConversionSearchCriteria criteria);
+
+	int getNextPageNumber();
 	
 }

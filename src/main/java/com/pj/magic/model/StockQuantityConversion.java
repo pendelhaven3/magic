@@ -13,6 +13,7 @@ public class StockQuantityConversion {
 	private boolean posted;
 	private Date postDate;
 	private User postedBy;
+	private boolean printed;
 
 	public StockQuantityConversion() {
 		// default constructor
@@ -88,6 +89,14 @@ public class StockQuantityConversion {
 
 	public void setPostedBy(User postedBy) {
 		this.postedBy = postedBy;
+	}
+
+	public boolean isPrinted() {
+		return printed;
+	}
+
+	public void setPrinted(boolean printed) {
+		this.printed = printed;
 	}
 
 }

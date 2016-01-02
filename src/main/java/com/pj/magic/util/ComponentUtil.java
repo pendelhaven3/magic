@@ -79,8 +79,12 @@ public class ComponentUtil {
 	}
 	
 	public static final JScrollPane createScrollPane(JTable table) {
+		return createScrollPane(table, 600, 200);
+	}
+
+	public static final JScrollPane createScrollPane(JTable table, int width, int height) {
 		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setPreferredSize(new Dimension(600, 200));
+		scrollPane.setPreferredSize(new Dimension(width, height));
 		return scrollPane;
 	}
 	

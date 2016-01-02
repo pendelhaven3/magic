@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -25,7 +28,7 @@ import com.pj.magic.util.DbUtil;
 public class StockQuantityConversionDaoImpl extends MagicDao implements StockQuantityConversionDao {
 	
 	private static final String BASE_SELECT_SQL = 
-			"select a.ID, STOCK_QTY_CONV_NO, REMARKS, POST_IND, POST_DT, POST_BY,"
+			"select a.ID, STOCK_QTY_CONV_NO, REMARKS, POST_IND, POST_DT, POST_BY, PRINT_IND,"
 			+ " b.USERNAME as POST_BY_USERNAME"
 			+ " from STOCK_QTY_CONVERSION a"
 			+ " left join USER b"
@@ -71,7 +74,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 	}
 
 	private static final String UPDATE_SQL = "update STOCK_QTY_CONVERSION"
-			+ " set REMARKS = ?, POST_IND = ?, POST_DT = ?, POST_BY = ? where ID = ?";
+			+ " set REMARKS = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?, PRINT_IND = ? where ID = ?";
 	
 	private void update(StockQuantityConversion stockQuantityConversion) {
 		getJdbcTemplate().update(UPDATE_SQL, 
@@ -79,6 +82,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 				stockQuantityConversion.isPosted() ? "Y" : "N",
 				stockQuantityConversion.getPostDate(),
 				stockQuantityConversion.isPosted() ? stockQuantityConversion.getPostedBy().getId() : null,
+				stockQuantityConversion.isPrinted() ? "Y" : "N",
 				stockQuantityConversion.getId());
 	}
 
@@ -114,6 +118,7 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 				stockQuantityConversion.setPostedBy(
 						new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			}
+			stockQuantityConversion.setPrinted("Y".equals(rs.getString("PRINT_IND")));
 			return stockQuantityConversion;
 		}
 		
@@ -151,9 +156,29 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 			params.add(postDateString);
 		}
 		
+		if (criteria.getPrinted() != null) {
+			sb.append(" and PRINT_IND = ?");
+			params.add(criteria.getPrinted() ? "Y" : "N");
+		}
+		
 		sb.append(" order by STOCK_QTY_CONV_NO desc");
 		
 		return getJdbcTemplate().query(sb.toString(), stockQuantityConversionRowMapper, params.toArray());
+	}
+
+	private static final String GET_NEXT_PAGE_NUMBER_SQL =
+			"select coalesce(max(cast(replace(REMARKS, 'P', '') as unsigned)), 0) + 1"
+			+ " from STOCK_QTY_CONVERSION"
+			+ " where CREATE_DT >= :createDate and CREATE_DT < date_add(:createDate, interval 1 day)"
+			+ " and REMARKS like 'P%'";
+	
+	@Override
+	public int getNextPageNumber() {
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("createDate", DbUtil.toMySqlDateString(new Date()));
+		
+		return getNamedParameterJdbcTemplate().queryForObject(
+				GET_NEXT_PAGE_NUMBER_SQL, paramMap, Integer.class);
 	}
 	
 }

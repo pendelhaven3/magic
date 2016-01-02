@@ -102,15 +102,28 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 	}
 
 	@Override
-	public List<StockQuantityConversion> getAllNonPostedStockQuantityConversions() {
-		StockQuantityConversionSearchCriteria criteria = new StockQuantityConversionSearchCriteria();
-		criteria.setPosted(false);
+	public List<StockQuantityConversion> search(StockQuantityConversionSearchCriteria criteria) {
 		return stockQuantityConversionDao.search(criteria);
 	}
 
+	@Transactional
 	@Override
-	public List<StockQuantityConversion> search(StockQuantityConversionSearchCriteria criteria) {
-		return stockQuantityConversionDao.search(criteria);
+	public void saveAndPost(StockQuantityConversionItem item) {
+		Product product = productDao.get(item.getProduct().getId());
+		if (!product.hasAvailableUnitQuantity(item.getFromUnit(), item.getQuantity())) {
+			throw new NotEnoughStocksException(item);
+		} else {
+			product.subtractUnitQuantity(item.getFromUnit(), item.getQuantity());
+			product.addUnitQuantity(item.getToUnit(), item.getConvertedQuantity());
+			productDao.updateAvailableQuantities(product);
+			stockQuantityConversionItemDao.save(item);
+			stockQuantityConversionItemDao.updateConvertedQuantity(item);
+		}
+	}
+
+	@Override
+	public int getNextPageNumber() {
+		return stockQuantityConversionDao.getNextPageNumber();
 	}
 
 }
