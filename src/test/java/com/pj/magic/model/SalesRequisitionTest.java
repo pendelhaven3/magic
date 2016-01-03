@@ -222,5 +222,54 @@ public class SalesRequisitionTest {
 		
 		assertNull(salesRequisition.findItemByProductAndUnit(product, Unit.CARTON));
 	}
+
+	@Test
+	public void extractToNewSalesRequisition() {
+		salesRequisition.setCustomer(new Customer(1L));
+		salesRequisition.setPricingScheme(new PricingScheme(1L));
+		salesRequisition.setPaymentTerm(new PaymentTerm(1L));
+		salesRequisition.setMode("DELIVERY");
+		salesRequisition.setRemarks("REMARKS");
+		
+		SalesRequisitionItem item1 = createSalesRequisitionItem(createProduct("1"), Unit.CASE);
+		SalesRequisitionItem item2 = createSalesRequisitionItem(createProduct("2"), Unit.CARTON);
+		SalesRequisitionItem item3 = createSalesRequisitionItem(createProduct("3"), Unit.CASE);
+		SalesRequisitionItem item4 = createSalesRequisitionItem(createProduct("4"), Unit.DOZEN);
+		SalesRequisitionItem item5 = createSalesRequisitionItem(createProduct("5"), Unit.PIECES);
+		salesRequisition.getItems().addAll(Arrays.asList(item1, item2, item3, item4, item5));
+
+		SalesRequisitionExtractionWhitelist whitelist = new SalesRequisitionExtractionWhitelist();
+		whitelist.getProducts().add(createProduct("5"));
+		
+		SalesRequisition newSalesRequisition = salesRequisition.extractToNewSalesRequisition(whitelist);
+		
+		assertEquals(salesRequisition.getCustomer(), newSalesRequisition.getCustomer());
+		assertEquals(salesRequisition.getPricingScheme(), newSalesRequisition.getPricingScheme());
+		assertEquals(salesRequisition.getPaymentTerm(), newSalesRequisition.getPaymentTerm());
+		assertEquals(salesRequisition.getMode(), newSalesRequisition.getMode());
+		assertEquals(salesRequisition.getRemarks(), newSalesRequisition.getRemarks());
+		
+		assertEquals(2, salesRequisition.getItems().size());
+		assertTrue(salesRequisition.getItems().contains(item2));
+		assertTrue(salesRequisition.getItems().contains(item4));
+		
+		assertEquals(3, newSalesRequisition.getItems().size());
+		assertTrue(newSalesRequisition.getItems().contains(item1));
+		assertTrue(newSalesRequisition.getItems().contains(item3));
+		assertTrue(newSalesRequisition.getItems().contains(item5));
+	}
+	
+	private SalesRequisitionItem createSalesRequisitionItem(Product product, String unit) {
+		SalesRequisitionItem item = new SalesRequisitionItem();
+		item.setProduct(product);
+		item.setUnit(unit);
+		return item;
+	}
+	
+	private Product createProduct(String code) {
+		Product product = new Product();
+		product.setCode(code);
+		return product;
+	}
 	
 }

@@ -22,5 +22,7 @@ public interface SalesRequisitionService {
 	SalesInvoice post (SalesRequisition salesRequisition) throws SalesRequisitionPostException;
 	
 	List<SalesRequisition> getAllNonPostedSalesRequisitions();
+
+	SalesRequisition separatePerCaseItems(SalesRequisition salesRequisition);
 	
 }

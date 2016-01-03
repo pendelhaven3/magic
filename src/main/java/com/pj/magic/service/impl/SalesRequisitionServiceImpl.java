@@ -16,6 +16,7 @@ import com.pj.magic.dao.PromoRedemptionRewardDao;
 import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
+import com.pj.magic.dao.SalesRequisitionExtractionWhitelistItemDao;
 import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughPromoStocksException;
@@ -30,6 +31,7 @@ import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
+import com.pj.magic.model.SalesRequisitionExtractionWhitelist;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesRequisitionService;
@@ -50,6 +52,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private PromoRedemptionDao promoRedemptionDao;
 	@Autowired private PromoRedemptionSalesInvoiceDao promoRedemptionSalesInvoiceDao;
 	@Autowired private PromoRedemptionRewardDao promoRedemptionRewardDao;
+	@Autowired private SalesRequisitionExtractionWhitelistItemDao salesRequisitionWhitelistItemDao;
 	
 	@Transactional
 	@Override
@@ -197,6 +200,30 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 			salesRequisition.setItems(salesRequisitionItemDao.findAllBySalesRequisition(salesRequisition));
 		}
 		return salesRequisitions;
+	}
+
+	private SalesRequisitionExtractionWhitelist getExtractionWhitelist() {
+		SalesRequisitionExtractionWhitelist whitelist = new SalesRequisitionExtractionWhitelist();
+		whitelist.setProducts(salesRequisitionWhitelistItemDao.getAll());
+		return whitelist;
+	}
+
+	@Transactional
+	@Override
+	public SalesRequisition separatePerCaseItems(SalesRequisition salesRequisition) {
+		SalesRequisition newSalesRequisition = 
+				salesRequisition.extractToNewSalesRequisition(getExtractionWhitelist());
+		
+		salesRequisitionDao.save(newSalesRequisition);
+		
+		for (SalesRequisitionItem item : newSalesRequisition.getItems()) {
+			salesRequisitionItemDao.delete(item);
+			item.setId(null);
+			item.setParent(newSalesRequisition);
+			salesRequisitionItemDao.save(item);
+		}
+		
+		return newSalesRequisition;
 	}
 	
 }

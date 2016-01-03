@@ -48,8 +48,8 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
 import com.pj.magic.gui.dialog.PromoQualifyingAmountsDialog;
 import com.pj.magic.gui.dialog.SalesRequisitionPostExceptionsDialog;
-import com.pj.magic.gui.dialog.StockQuantityConversionDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
+import com.pj.magic.gui.dialog.StockQuantityConversionDialog;
 import com.pj.magic.gui.tables.ProductInfoTable;
 import com.pj.magic.gui.tables.SalesRequisitionItemsTable;
 import com.pj.magic.model.Customer;
@@ -112,6 +112,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	private MagicToolBarButton stockQuantityConversionButton;
 	private MagicToolBarButton showAvailedPromoRewardsButton;
 	private MagicToolBarButton showPromoQualifyingAmountsButton;
+	private MagicToolBarButton separatePerCaseItemsButton;
 	private ProductInfoTable productInfoTable;
 	
 	@Override
@@ -810,6 +811,25 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(showAvailedPromoRewardsButton);
+		
+		separatePerCaseItemsButton = new MagicToolBarButton("copy", "Separate Per-Case Items");
+		separatePerCaseItemsButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				separatePerCaseItems();
+			}
+		});
+		toolBar.add(separatePerCaseItemsButton);
+	}
+
+	private void separatePerCaseItems() {
+		if (!confirm("Separate per-case items?")) {
+			return;
+		}
+		
+		SalesRequisition newSalesRequisition = salesRequisitionService.separatePerCaseItems(salesRequisition);
+		updateDisplay(newSalesRequisition);
 	}
 
 	private void showPromoQualifyingAmountsDialog() {
