@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.dao.UserDao;
 import com.pj.magic.model.AdjustmentIn;
@@ -119,6 +120,7 @@ public class PrintServiceImpl implements PrintService {
 	
 	@Autowired private SupplierDao supplierDao;
 	@Autowired private UserDao userDao;
+	@Autowired private StockQuantityConversionDao stockQuantityConversionDao;
 	@Autowired private PromoRedemptionService promoRedemptionService;
 	@Autowired private PrinterUtil printerUtil;
 	
@@ -364,6 +366,9 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public void print(StockQuantityConversion stockQuantityConversion) {
+		stockQuantityConversion.setPrinted(true);
+		stockQuantityConversionDao.save(stockQuantityConversion);
+		
 		try {
 			for (String printPage : generateReportAsString(stockQuantityConversion)) {
 				printerUtil.print(printPage);
