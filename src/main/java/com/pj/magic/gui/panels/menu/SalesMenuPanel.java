@@ -23,6 +23,16 @@ import com.pj.magic.gui.tables.MagicSubmenuTable;
 @Component
 public class SalesMenuPanel extends MenuPanel {
 
+	private static final String SALES_REQUISITION_EXTRACTION_WHITELIST = 
+			"Sales Requisition Extraction Whitelist";
+	private static final String NO_MORE_STOCK_ADJUSTMENT = "No More Stock Adjustment";
+	private static final String BAD_STOCK_RETURN = "Bad Stock Return";
+	private static final String SALES_RETURN = "Sales Return";
+	private static final String MARK_SALES_INVOICE = "Mark Sales Invoice";
+	private static final String SALES_INVOICE = "Sales Invoice";
+	private static final String STOCK_QUANTITY_CONVERSION = "Stock Quantity Conversion";
+	private static final String SALES_REQUISITION = "Sales Requisition";
+	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
 	
@@ -81,28 +91,28 @@ public class SalesMenuPanel extends MenuPanel {
 	
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-		case "Sales Requisition":
+		case SALES_REQUISITION:
 			getMagicFrame().switchToSalesRequisitionsListPanel();
 			break;
-		case "Stock Quantity Conversion":
+		case STOCK_QUANTITY_CONVERSION:
 			getMagicFrame().switchToStockQuantityConversionListPanel();
 			break;
-		case "Sales Invoice":
+		case SALES_INVOICE:
 			getMagicFrame().switchToSalesInvoicesListPanel();
 			break;
-		case "Mark Sales Invoice":
+		case MARK_SALES_INVOICE:
 			getMagicFrame().switchToMarkSalesInvoicesPanel();
 			break;
-		case "Sales Return":
+		case SALES_RETURN:
 			getMagicFrame().switchToSalesReturnListPanel();
 			break;
-		case "Bad Stock Return":
+		case BAD_STOCK_RETURN:
 			getMagicFrame().switchToBadStockReturnListPanel();
 			break;
-		case "No More Stock Adjustment":
+		case NO_MORE_STOCK_ADJUSTMENT:
 			getMagicFrame().switchToNoMoreStockAdjustmentListPanel();
 			break;
-		case "Sales Requisition Extraction Whitelist":
+		case SALES_REQUISITION_EXTRACTION_WHITELIST:
 			getMagicFrame().switchToSalesRequisitionExtractionWhitelistPanel();
 			break;
 		}
@@ -116,13 +126,13 @@ public class SalesMenuPanel extends MenuPanel {
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private final List<String> menuItems = Arrays.asList(
-				"Sales Requisition",
-				"Stock Quantity Conversion",
-				"Sales Invoice",
-				"Mark Sales Invoice",
-				"Sales Return",
-				"Bad Stock Return",
-				"No More Stock Adjustment"
+				SALES_REQUISITION,
+				STOCK_QUANTITY_CONVERSION,
+				SALES_INVOICE,
+				MARK_SALES_INVOICE,
+				SALES_RETURN,
+				BAD_STOCK_RETURN,
+				NO_MORE_STOCK_ADJUSTMENT
 		);
 		
 		@Override
