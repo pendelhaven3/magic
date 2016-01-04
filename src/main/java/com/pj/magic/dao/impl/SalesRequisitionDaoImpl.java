@@ -32,7 +32,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			+ " PRICING_SCHEME_ID, MODE, a.REMARKS, TRANSACTION_DT,"
 			+ " a.PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME,"
 			+ " c.NAME as CUSTOMER_NAME, d.USERNAME as ENCODER_USERNAME,"
-			+ " a.STOCK_QUANTITY_CONVERSION_ID"
+			+ " a.STOCK_QTY_CONVERSION_ID"
 			+ " from SALES_REQUISITION a"
 			+ " join PAYMENT_TERM b"
 			+ "   on b.ID = a.PAYMENT_TERM_ID"
@@ -104,7 +104,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	private static final String UPDATE_SQL =
 			"update SALES_REQUISITION"
 			+ " set CUSTOMER_ID = ?, POST_IND = ?, PRICING_SCHEME_ID = ?, MODE = ?, REMARKS = ?,"
-			+ " PAYMENT_TERM_ID = ?, TRANSACTION_DT = ?, STOCK_QUANTITY_CONVERSION_ID = ?"
+			+ " PAYMENT_TERM_ID = ?, TRANSACTION_DT = ?, STOCK_QTY_CONVERSION_ID = ?"
 			+ " where ID = ?";
 	
 	private void update(SalesRequisition salesRequisition) {
@@ -140,9 +140,9 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 					new PaymentTerm(rs.getLong("PAYMENT_TERM_ID"), rs.getString("PAYMENT_TERM_NAME")));
 			salesRequisition.setTransactionDate(rs.getDate("TRANSACTION_DT"));
 			
-			if (rs.getLong("STOCK_QUANTITY_CONVERSION_ID") != 0) {
+			if (rs.getLong("STOCK_QTY_CONVERSION_ID") != 0) {
 				salesRequisition.setStockQuantityConversion(
-						new StockQuantityConversion(rs.getLong("STOCK_QUANTITY_CONVERSION_ID")));
+						new StockQuantityConversion(rs.getLong("STOCK_QTY_CONVERSION_ID")));
 			}
 			
 			return salesRequisition;

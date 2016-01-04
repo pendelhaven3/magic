@@ -165,14 +165,14 @@ create table SALES_REQUISITION (
   MODE varchar(10) null,
   REMARKS varchar(100) null,
   PAYMENT_TERM_ID integer not null,
-  STOCK_QUANTITY_CONVERSION_ID integer null,
+  STOCK_QTY_CONVERSION_ID integer null,
   constraint SALES_REQUISITION$PK primary key (ID),
   constraint SALES_REQUISITION$UK unique (SALES_REQUISITION_NO),
   constraint SALES_REQUISITION$FK1 foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID),
   constraint SALES_REQUISITION$FK2 foreign key (CUSTOMER_ID) references CUSTOMER (ID),
   constraint SALES_REQUISITION$FK3 foreign key (ENCODER) references USER (ID),
   constraint SALES_REQUISITION$FK4 foreign key (PAYMENT_TERM_ID) references PAYMENT_TERM (ID),
-  constraint SALES_REQUISITION$FK5 foreign key (STOCK_QUANTITY_CONVERSION_ID) references STOCK_QUANTITY_CONVERSION (ID)
+  constraint SALES_REQUISITION$FK5 foreign key (STOCK_QTY_CONVERSION_ID) references STOCK_QTY_CONVERSION (ID)
 );
 
 create table SALES_REQUISITION_ITEM (
