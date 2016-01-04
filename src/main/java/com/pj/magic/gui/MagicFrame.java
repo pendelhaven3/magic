@@ -1323,5 +1323,11 @@ public class MagicFrame extends JFrame {
 		stockOfftakeReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_OFFTAKE_REPORT_PANEL);
 	}
+
+	public void switchToSalesRequisitionExtractionWhitelistPanel() {
+		addPanelNameToTitle("Sales Requisition Extraction Whitelist");
+		stockOfftakeReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_OFFTAKE_REPORT_PANEL);
+	}
 	
 }

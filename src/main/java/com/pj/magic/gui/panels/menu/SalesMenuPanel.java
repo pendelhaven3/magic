@@ -102,6 +102,9 @@ public class SalesMenuPanel extends MenuPanel {
 		case "No More Stock Adjustment":
 			getMagicFrame().switchToNoMoreStockAdjustmentListPanel();
 			break;
+		case "Sales Requisition Extraction Whitelist":
+			getMagicFrame().switchToSalesRequisitionExtractionWhitelistPanel();
+			break;
 		}
 	}
 
