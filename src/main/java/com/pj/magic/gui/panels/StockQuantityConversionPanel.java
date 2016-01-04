@@ -64,6 +64,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 	private JButton addItemButton;
 	private JButton deleteItemButton;
 	private JButton assignPageNumberButton;
+	private JButton markAsPrintedButton;
 	private ProductInfoTable productInfoTable;
 	
 	@Override
@@ -146,6 +147,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		postButton.setEnabled(!stockQuantityConversion.isPosted());
 		addItemButton.setEnabled(!stockQuantityConversion.isPosted());
 		deleteItemButton.setEnabled(!stockQuantityConversion.isPosted());
+		markAsPrintedButton.setEnabled(!stockQuantityConversion.isPrinted());
 	}
 
 	@Override
@@ -391,6 +393,16 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+		
+		markAsPrintedButton = new MagicToolBarButton("mark_print", "Mark As Printed");
+		markAsPrintedButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				markStockQuantityConversionAsPrinted();
+			}
+		});
+		toolBar.add(markAsPrintedButton);
 	}
 
 	private void printStockQuantityConversion() {
@@ -455,6 +467,12 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		String pageNumber = "P" + stockQuantityConversionService.getNextPageNumber();
 		remarksField.setText(pageNumber);
 		stockQuantityConversion.setRemarks(pageNumber);
+		stockQuantityConversionService.save(stockQuantityConversion);
+		showMessage("Saved");
+	}
+	
+	private void markStockQuantityConversionAsPrinted() {
+		stockQuantityConversion.setPrinted(true);
 		stockQuantityConversionService.save(stockQuantityConversion);
 		showMessage("Saved");
 	}
