@@ -551,7 +551,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 
 	private StockQuantityConversion createPostedStockQuantityConversion() {
 		StockQuantityConversion conversion = new StockQuantityConversion();
-		conversion.setRemarks("SR NO. " + salesRequisition.getSalesRequisitionNumber());
+		conversion.setRemarks(loginService.getLoggedInUser().getUsername());
 		stockQuantityConversionService.save(conversion);
 		
 		conversion.setPosted(true);
