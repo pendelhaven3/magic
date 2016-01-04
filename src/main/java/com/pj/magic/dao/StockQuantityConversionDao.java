@@ -18,5 +18,7 @@ public interface StockQuantityConversionDao {
 	List<StockQuantityConversion> search(StockQuantityConversionSearchCriteria criteria);
 
 	int getNextPageNumber();
+
+	List<StockQuantityConversion> getAllPending();
 	
 }

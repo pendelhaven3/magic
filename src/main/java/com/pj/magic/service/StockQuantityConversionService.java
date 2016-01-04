@@ -27,5 +27,7 @@ public interface StockQuantityConversionService {
 	void saveAndPost(StockQuantityConversionItem item);
 
 	int getNextPageNumber();
+
+	List<StockQuantityConversion> getAllPendingStockQuantityConversions();
 	
 }

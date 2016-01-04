@@ -36,14 +36,9 @@ public class StockQuantityConversionListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		table.setStockQuantityConversions(getAllNonPrintedStockQuantityConversions());
+		table.setStockQuantityConversions(
+				stockQuantityConversionService.getAllPendingStockQuantityConversions());
 		searchStockQuantityConversionsDialog.updateDisplay();
-	}
-
-	private List<StockQuantityConversion> getAllNonPrintedStockQuantityConversions() {
-		StockQuantityConversionSearchCriteria criteria = new StockQuantityConversionSearchCriteria();
-		criteria.setPrinted(false);
-		return stockQuantityConversionService.search(criteria);
 	}
 
 	public void displayStockQuantityConversionDetails(StockQuantityConversion stockQuantityConversion) {

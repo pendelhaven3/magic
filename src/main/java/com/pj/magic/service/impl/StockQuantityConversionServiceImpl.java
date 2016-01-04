@@ -126,4 +126,9 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 		return stockQuantityConversionDao.getNextPageNumber();
 	}
 
+	@Override
+	public List<StockQuantityConversion> getAllPendingStockQuantityConversions() {
+		return stockQuantityConversionDao.getAllPending();
+	}
+
 }

@@ -180,5 +180,12 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		return getNamedParameterJdbcTemplate().queryForObject(
 				GET_NEXT_PAGE_NUMBER_SQL, paramMap, Integer.class);
 	}
+
+	private static final String GET_ALL_PENDING_SQL = BASE_SELECT_SQL + " where POST_IND = 'N' or PRINT_IND = 'N'";
+	
+	@Override
+	public List<StockQuantityConversion> getAllPending() {
+		return getJdbcTemplate().query(GET_ALL_PENDING_SQL, stockQuantityConversionRowMapper);
+	}
 	
 }
