@@ -27,4 +27,8 @@ public class KeyUtil {
 		return KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 	}
 
+	public static KeyStroke getF4Key() {
+		return KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0);
+	}
+
 }

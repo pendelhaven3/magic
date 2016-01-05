@@ -23,8 +23,8 @@ import com.pj.magic.gui.tables.MagicSubmenuTable;
 @Component
 public class SalesMenuPanel extends MenuPanel {
 
-	private static final String SALES_REQUISITION_EXTRACTION_WHITELIST = 
-			"Sales Requisition Extraction Whitelist";
+	private static final String SALES_REQUISITION_SEPARATE_ITEMS_LIST = 
+			"Sales Requisition Separate Items List";
 	private static final String NO_MORE_STOCK_ADJUSTMENT = "No More Stock Adjustment";
 	private static final String BAD_STOCK_RETURN = "Bad Stock Return";
 	private static final String SALES_RETURN = "Sales Return";
@@ -112,8 +112,8 @@ public class SalesMenuPanel extends MenuPanel {
 		case NO_MORE_STOCK_ADJUSTMENT:
 			getMagicFrame().switchToNoMoreStockAdjustmentListPanel();
 			break;
-		case SALES_REQUISITION_EXTRACTION_WHITELIST:
-			getMagicFrame().switchToSalesRequisitionExtractionWhitelistPanel();
+		case SALES_REQUISITION_SEPARATE_ITEMS_LIST:
+			getMagicFrame().switchToSalesRequisitionSeparateItemsPanel();
 			break;
 		}
 	}
@@ -132,7 +132,8 @@ public class SalesMenuPanel extends MenuPanel {
 				MARK_SALES_INVOICE,
 				SALES_RETURN,
 				BAD_STOCK_RETURN,
-				NO_MORE_STOCK_ADJUSTMENT
+				NO_MORE_STOCK_ADJUSTMENT,
+				SALES_REQUISITION_SEPARATE_ITEMS_LIST
 		);
 		
 		@Override

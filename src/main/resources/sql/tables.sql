@@ -1061,3 +1061,8 @@ create table CREDIT_CARD_STATEMENT_PAYMENT (
   primary key (ID),
   constraint CREDIT_CARD_STATEMENT_PAYMENT$FK foreign key (CREDIT_CARD_STATEMENT_ID) references CREDIT_CARD_STATEMENT (ID)
 );
+
+create table SALES_REQUISITION_SEPARATE_ITEM (
+  PRODUCT_ID integer not null,
+  constraint SALES_REQUISITION_SEPARATE_ITEM$FK foreign key (PRODUCT_ID) references PRODUCT (ID)
+);

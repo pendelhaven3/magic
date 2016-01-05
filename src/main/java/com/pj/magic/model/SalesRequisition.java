@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -231,6 +232,29 @@ public class SalesRequisition {
 
 	public void setStockQuantityConversion(StockQuantityConversion stockQuantityConversion) {
 		this.stockQuantityConversion = stockQuantityConversion;
+	}
+	
+	public SalesRequisition extractToNewSalesRequisition(SalesRequisitionSeparateItemsList whitelist) {
+		SalesRequisition newSalesRequisition = new SalesRequisition();
+		newSalesRequisition.setCustomer(customer);
+		newSalesRequisition.setTransactionDate(transactionDate);
+		newSalesRequisition.setPricingScheme(pricingScheme);
+		newSalesRequisition.setPaymentTerm(paymentTerm);
+		newSalesRequisition.setMode(mode);
+		newSalesRequisition.setRemarks(remarks);
+		newSalesRequisition.setCreateDate(createDate);
+		newSalesRequisition.setEncoder(encoder);
+		
+		Iterator<SalesRequisitionItem> iterator = items.iterator();
+		while (iterator.hasNext()) {
+			SalesRequisitionItem item = iterator.next();
+			if (whitelist.isIncluded(item)) {
+				newSalesRequisition.getItems().add(item);
+				iterator.remove();
+			}
+		}
+		
+		return newSalesRequisition;
 	}
 	
 }

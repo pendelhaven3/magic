@@ -3,9 +3,11 @@ package com.pj.magic.service;
 import java.util.List;
 
 import com.pj.magic.exception.SalesRequisitionPostException;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
+import com.pj.magic.model.SalesRequisitionSeparateItemsList;
 
 public interface SalesRequisitionService {
 
@@ -22,5 +24,13 @@ public interface SalesRequisitionService {
 	SalesInvoice post (SalesRequisition salesRequisition) throws SalesRequisitionPostException;
 	
 	List<SalesRequisition> getAllNonPostedSalesRequisitions();
+
+	SalesRequisition separatePerCaseItems(SalesRequisition salesRequisition);
+
+	SalesRequisitionSeparateItemsList getSalesRequisitionSeparateItemsList();
+
+	void addSalesRequisitionSeparateItem(Product product);
+
+	void removeSalesRequisitionSeparateItem(Product product);
 	
 }
