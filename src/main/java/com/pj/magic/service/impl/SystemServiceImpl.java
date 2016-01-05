@@ -16,7 +16,7 @@ public class SystemServiceImpl implements SystemService {
 	@Autowired private SystemParameterDao systemParameterDao;
 	
 	@Override
-	public String getProgramVersion() {
+	public String getDatabaseVersion() {
 		return systemParameterDao.getSystemParameterValue("VERSION");
 	}
 

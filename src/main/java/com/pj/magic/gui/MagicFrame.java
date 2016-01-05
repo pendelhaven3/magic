@@ -408,8 +408,8 @@ public class MagicFrame extends JFrame {
 			JOptionPane.showMessageDialog(this, "Cannot connect to database", 
 					"Error Message", JOptionPane.ERROR_MESSAGE);
 			closeProgram();
-		} else if (!isProgramVersionValid()) {
-			logger.error("Program not up-to-date. Expected: " + getApplicationVersion());
+		} else if (!isDatabaseVersionCorrect()) {
+			logger.error("Program not up-to-date. Expected: " + getDatabaseVersionRequired());
 			JOptionPane.showMessageDialog(this, "Program not up-to-date", 
 					"Error Message", JOptionPane.ERROR_MESSAGE);
 			closeProgram();
@@ -418,8 +418,8 @@ public class MagicFrame extends JFrame {
 		}
 	}
 	
-	private String getApplicationVersion() {
-		return resourceBundle.getString("application.version");
+	private String getDatabaseVersionRequired() {
+		return resourceBundle.getString("db.version");
 	}
 
 	private boolean isDatabaseUp() {
@@ -435,9 +435,8 @@ public class MagicFrame extends JFrame {
 		processWindowEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 
-	private boolean isProgramVersionValid() {
-		return resourceBundle.getString("application.version")
-				.equals(systemParameterService.getProgramVersion());
+	private boolean isDatabaseVersionCorrect() {
+		return getDatabaseVersionRequired().equals(systemParameterService.getDatabaseVersion());
 	}
 
 	private void addPanels() {

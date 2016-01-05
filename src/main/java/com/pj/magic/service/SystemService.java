@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 public interface SystemService {
 
-	String getProgramVersion();
+	String getDatabaseVersion();
 	
 	BigDecimal getVatRate(); 
 	
