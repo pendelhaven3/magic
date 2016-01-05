@@ -7,10 +7,10 @@ import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.report.InventoryReportItem;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
-import com.pj.magic.model.report.StockOfftakeReportItem;
+import com.pj.magic.model.report.StockUptakeReportItem;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportCriteria;
-import com.pj.magic.model.search.StockOfftakeReportCriteria;
+import com.pj.magic.model.search.StockUptakeReportCriteria;
 
 public interface ReportDao {
 
@@ -24,6 +24,6 @@ public interface ReportDao {
 	List<SalesByManufacturerReportItem> searchSalesByManufacturerReportItems(
 			SalesByManufacturerReportCriteria criteria);
 
-	List<StockOfftakeReportItem> searchStockOfftakeReportItems(StockOfftakeReportCriteria criteria);
+	List<StockUptakeReportItem> searchStockUptakeReportItems(StockUptakeReportCriteria criteria);
 	
 }

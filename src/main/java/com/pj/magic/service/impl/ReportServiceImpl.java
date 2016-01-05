@@ -11,10 +11,10 @@ import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.InventoryReport;
 import com.pj.magic.model.report.SalesByManufacturerReport;
-import com.pj.magic.model.report.StockOfftakeReport;
+import com.pj.magic.model.report.StockUptakeReport;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportCriteria;
-import com.pj.magic.model.search.StockOfftakeReportCriteria;
+import com.pj.magic.model.search.StockUptakeReportCriteria;
 import com.pj.magic.service.ReportService;
 
 @Service
@@ -50,9 +50,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public StockOfftakeReport getStockOfftakeReport(StockOfftakeReportCriteria criteria) {
-		StockOfftakeReport report = new StockOfftakeReport();
-		report.setItems(reportDao.searchStockOfftakeReportItems(criteria));
+	public StockUptakeReport getStockUptakeReport(StockUptakeReportCriteria criteria) {
+		StockUptakeReport report = new StockUptakeReport();
+		report.setItems(reportDao.searchStockUptakeReportItems(criteria));
 		return report;
 	}
 

@@ -17,9 +17,9 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.Manufacturer;
-import com.pj.magic.model.report.StockOfftakeReport;
-import com.pj.magic.model.report.StockOfftakeReportItem;
-import com.pj.magic.model.search.StockOfftakeReportCriteria;
+import com.pj.magic.model.report.StockUptakeReport;
+import com.pj.magic.model.report.StockUptakeReportItem;
+import com.pj.magic.model.search.StockUptakeReportCriteria;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
@@ -28,7 +28,7 @@ import com.pj.magic.util.ListUtil;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
-public class StockOfftakeReportPanel extends StandardMagicPanel {
+public class StockUptakeReportPanel extends StandardMagicPanel {
 
 	private static final int PRODUCT_COLUMN_INDEX = 0;
 	private static final int UNIT_COLUMN_INDEX = 1;
@@ -188,7 +188,7 @@ public class StockOfftakeReportPanel extends StandardMagicPanel {
 		return panel;
 	}
 	
-	private class StockUptakeTableModel extends ListBackedTableModel<StockOfftakeReportItem> {
+	private class StockUptakeTableModel extends ListBackedTableModel<StockUptakeReportItem> {
 
 		@Override
 		protected String[] getColumnNames() {
@@ -197,7 +197,7 @@ public class StockOfftakeReportPanel extends StandardMagicPanel {
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			StockOfftakeReportItem item = getItem(rowIndex);
+			StockUptakeReportItem item = getItem(rowIndex);
 			switch (columnIndex) {
 			case PRODUCT_COLUMN_INDEX:
 				return item.getProduct().getDescription();
@@ -217,20 +217,20 @@ public class StockOfftakeReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		StockOfftakeReport report = doGenerateReport();
+		StockUptakeReport report = doGenerateReport();
 		tableModel.setItems(report.getItems());
 		if (report.getItems().isEmpty()) {
 			showErrorMessage("No records found");
 		}
 	} 
 
-	private StockOfftakeReport doGenerateReport() {
-		StockOfftakeReportCriteria criteria = new StockOfftakeReportCriteria();
+	private StockUptakeReport doGenerateReport() {
+		StockUptakeReportCriteria criteria = new StockUptakeReportCriteria();
 		criteria.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
 		criteria.setFromDate(fromDateModel.getValue().getTime());
 		criteria.setToDate(toDateModel.getValue().getTime());
 		
-		return reportService.getStockOfftakeReport(criteria);
+		return reportService.getStockUptakeReport(criteria);
 	}
 
 	private boolean validateFields() {

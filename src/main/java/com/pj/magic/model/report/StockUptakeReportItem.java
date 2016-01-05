@@ -2,7 +2,7 @@ package com.pj.magic.model.report;
 
 import com.pj.magic.model.Product;
 
-public class StockOfftakeReportItem {
+public class StockUptakeReportItem {
 
 	private Product product;
 	private String unit;
