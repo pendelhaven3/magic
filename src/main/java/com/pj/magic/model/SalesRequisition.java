@@ -234,7 +234,7 @@ public class SalesRequisition {
 		this.stockQuantityConversion = stockQuantityConversion;
 	}
 	
-	public SalesRequisition extractToNewSalesRequisition(SalesRequisitionExtractionWhitelist whitelist) {
+	public SalesRequisition extractToNewSalesRequisition(SalesRequisitionSeparateItemsList whitelist) {
 		SalesRequisition newSalesRequisition = new SalesRequisition();
 		newSalesRequisition.setCustomer(customer);
 		newSalesRequisition.setTransactionDate(transactionDate);

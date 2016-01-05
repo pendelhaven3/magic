@@ -16,7 +16,7 @@ import com.pj.magic.dao.PromoRedemptionRewardDao;
 import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
-import com.pj.magic.dao.SalesRequisitionExtractionWhitelistItemDao;
+import com.pj.magic.dao.SalesRequisitionSeparateItemDao;
 import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughPromoStocksException;
@@ -31,7 +31,7 @@ import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
-import com.pj.magic.model.SalesRequisitionExtractionWhitelist;
+import com.pj.magic.model.SalesRequisitionSeparateItemsList;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesRequisitionService;
@@ -52,7 +52,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private PromoRedemptionDao promoRedemptionDao;
 	@Autowired private PromoRedemptionSalesInvoiceDao promoRedemptionSalesInvoiceDao;
 	@Autowired private PromoRedemptionRewardDao promoRedemptionRewardDao;
-	@Autowired private SalesRequisitionExtractionWhitelistItemDao salesRequisitionWhitelistItemDao;
+	@Autowired private SalesRequisitionSeparateItemDao salesRequisitionSeparateItemDao;
 	
 	@Transactional
 	@Override
@@ -202,17 +202,11 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		return salesRequisitions;
 	}
 
-	private SalesRequisitionExtractionWhitelist getExtractionWhitelist() {
-		SalesRequisitionExtractionWhitelist whitelist = new SalesRequisitionExtractionWhitelist();
-		whitelist.setProducts(salesRequisitionWhitelistItemDao.getAll());
-		return whitelist;
-	}
-
 	@Transactional
 	@Override
 	public SalesRequisition separatePerCaseItems(SalesRequisition salesRequisition) {
 		SalesRequisition newSalesRequisition = 
-				salesRequisition.extractToNewSalesRequisition(getExtractionWhitelist());
+				salesRequisition.extractToNewSalesRequisition(getSalesRequisitionSeparateItemsList());
 		
 		salesRequisitionDao.save(newSalesRequisition);
 		
@@ -224,6 +218,25 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 		}
 		
 		return newSalesRequisition;
+	}
+
+	@Override
+	public SalesRequisitionSeparateItemsList getSalesRequisitionSeparateItemsList() {
+		SalesRequisitionSeparateItemsList whitelist = new SalesRequisitionSeparateItemsList();
+		whitelist.setProducts(salesRequisitionSeparateItemDao.getAll());
+		return whitelist;
+	}
+
+	@Transactional
+	@Override
+	public void addSalesRequisitionSeparateItem(Product product) {
+		salesRequisitionSeparateItemDao.add(product);
+	}
+
+	@Transactional
+	@Override
+	public void removeSalesRequisitionSeparateItem(Product product) {
+		salesRequisitionSeparateItemDao.remove(product);
 	}
 	
 }

@@ -94,12 +94,13 @@ import com.pj.magic.gui.panels.SalesInvoiceListPanel;
 import com.pj.magic.gui.panels.SalesInvoicePanel;
 import com.pj.magic.gui.panels.SalesRequisitionListPanel;
 import com.pj.magic.gui.panels.SalesRequisitionPanel;
+import com.pj.magic.gui.panels.SalesRequisitionSeparateItemsPanel;
 import com.pj.magic.gui.panels.SalesReturnListPanel;
 import com.pj.magic.gui.panels.SalesReturnPanel;
 import com.pj.magic.gui.panels.StockCardInventoryReportPanel;
+import com.pj.magic.gui.panels.StockOfftakeReportPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
-import com.pj.magic.gui.panels.StockOfftakeReportPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UnpaidCreditCardPaymentsListPanel;
 import com.pj.magic.gui.panels.UnpaidReceivingReceiptsListPanel;
@@ -281,6 +282,7 @@ public class MagicFrame extends JFrame {
 	private static final String CREDIT_CARD_STATEMENT_LIST_PANEL = "CREDIT_CARD_STATEMENT_LIST_PANEL";
 	private static final String CREDIT_CARD_STATEMENT_PANEL = "CREDIT_CARD_STATEMENT_PANEL";
 	private static final String STOCK_OFFTAKE_REPORT_PANEL = "STOCK_UPTAKE_REPORT_PANEL";
+	private static final String SALES_REQUISITION_SEPARATE_ITEMS_PANEL = "SALES_REQUISITION_SEPARATE_ITEMS_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -386,6 +388,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private CreditCardStatementListPanel creditCardStatementListPanel;
 	@Autowired private CreditCardStatementPanel creditCardStatementPanel;
 	@Autowired private StockOfftakeReportPanel stockOfftakeReportPanel;
+	@Autowired private SalesRequisitionSeparateItemsPanel salesRequisitionSeparateItemsPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -545,6 +548,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(creditCardStatementListPanel, CREDIT_CARD_STATEMENT_LIST_PANEL);
 		panelHolder.add(creditCardStatementPanel, CREDIT_CARD_STATEMENT_PANEL);
 		panelHolder.add(stockOfftakeReportPanel, STOCK_OFFTAKE_REPORT_PANEL);
+		panelHolder.add(salesRequisitionSeparateItemsPanel, SALES_REQUISITION_SEPARATE_ITEMS_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1324,10 +1328,10 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_OFFTAKE_REPORT_PANEL);
 	}
 
-	public void switchToSalesRequisitionExtractionWhitelistPanel() {
-		addPanelNameToTitle("Sales Requisition Extraction Whitelist");
-		stockOfftakeReportPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_OFFTAKE_REPORT_PANEL);
+	public void switchToSalesRequisitionSeparateItemsPanel() {
+		addPanelNameToTitle("Sales Requisition Separate Items");
+		salesRequisitionSeparateItemsPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_REQUISITION_SEPARATE_ITEMS_PANEL);
 	}
 	
 }

@@ -4,8 +4,12 @@ import java.util.List;
 
 import com.pj.magic.model.Product;
 
-public interface SalesRequisitionExtractionWhitelistItemDao {
+public interface SalesRequisitionSeparateItemDao {
 
 	List<Product> getAll();
+	
+	void add(Product product);
+	
+	void remove(Product product);
 	
 }

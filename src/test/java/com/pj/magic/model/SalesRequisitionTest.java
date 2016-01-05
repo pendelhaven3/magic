@@ -238,7 +238,7 @@ public class SalesRequisitionTest {
 		SalesRequisitionItem item5 = createSalesRequisitionItem(createProduct("5"), Unit.PIECES);
 		salesRequisition.getItems().addAll(Arrays.asList(item1, item2, item3, item4, item5));
 
-		SalesRequisitionExtractionWhitelist whitelist = new SalesRequisitionExtractionWhitelist();
+		SalesRequisitionSeparateItemsList whitelist = new SalesRequisitionSeparateItemsList();
 		whitelist.getProducts().add(createProduct("5"));
 		
 		SalesRequisition newSalesRequisition = salesRequisition.extractToNewSalesRequisition(whitelist);
