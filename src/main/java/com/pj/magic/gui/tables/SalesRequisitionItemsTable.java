@@ -508,10 +508,11 @@ public class SalesRequisitionItemsTable extends MagicTable {
 				Product product = productService.getProduct(rowItem.getProduct().getId());
 				String unit = rowItem.getUnit();
 				if (!product.hasAvailableUnitQuantity(unit, Integer.parseInt(quantity))) {
-					if (isQuantityConversionPossible(product, unit) 
-							&& confirm("Not enough stocks. Convert?")) {
-						addStockQuantityConversionItem(product, unit);
-						valid = true;
+					if (isQuantityConversionPossible(product, unit)) {
+						if (confirm("Not enough stocks. Convert?")) {
+							addStockQuantityConversionItem(product, unit);
+							valid = true;
+						}
 					} else {
 						showErrorMessage("Not enough stocks");
 					}
