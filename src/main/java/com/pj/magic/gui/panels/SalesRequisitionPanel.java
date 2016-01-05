@@ -812,7 +812,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		});
 		toolBar.add(showAvailedPromoRewardsButton);
 		
-		separatePerCaseItemsButton = new MagicToolBarButton("copy", "Separate Per-Case Items");
+		separatePerCaseItemsButton = new MagicToolBarButton("split", "Separate Per-Case Items");
 		separatePerCaseItemsButton.addActionListener(new ActionListener() {
 			
 			@Override
