@@ -15,7 +15,7 @@ public class SalesRequisitionSeparateItemDaoImpl extends MagicDao implements Sal
 
 	private static final String BASE_SELECT_SQL =
 			"select a.PRODUCT_ID, b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
-			+ " from SALES_REQUISITION_WHITELIST_ITEM a"
+			+ " from SALES_REQUISITION_SEPARATE_ITEM a"
 			+ " join PRODUCT b"
 			+ "   on b.ID = a.PRODUCT_ID";
 	
@@ -38,7 +38,7 @@ public class SalesRequisitionSeparateItemDaoImpl extends MagicDao implements Sal
 	}
 
 	private static final String INSERT_SQL = 
-			"insert into SALES_REQUISITION_WHITELIST_ITEM (PRODUCT_ID) values (?)";
+			"insert into SALES_REQUISITION_SEPARATE_ITEM (PRODUCT_ID) values (?)";
 	
 	@Override
 	public void add(Product product) {
@@ -46,7 +46,7 @@ public class SalesRequisitionSeparateItemDaoImpl extends MagicDao implements Sal
 	}
 
 	private static final String REMOVE_SQL =
-			"delete from SALES_REQUISITION_WHITELIST_ITEM where PRODUCT_ID = ?";
+			"delete from SALES_REQUISITION_SEPARATE_ITEM where PRODUCT_ID = ?";
 	
 	@Override
 	public void remove(Product product) {

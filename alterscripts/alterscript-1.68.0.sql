@@ -1,0 +1,6 @@
+drop table SALES_REQUISITION_EXTRACTION_WHITELIST;
+
+create table SALES_REQUISITION_SEPARATE_ITEM (
+  PRODUCT_ID integer not null,
+  constraint SALES_REQUISITION_SEPARATE_ITEM$FK foreign key (PRODUCT_ID) references PRODUCT (ID)
+);
