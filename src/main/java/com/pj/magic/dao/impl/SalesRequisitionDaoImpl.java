@@ -28,18 +28,20 @@ import com.pj.magic.model.User;
 public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitionDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, SALES_REQUISITION_NO, CUSTOMER_ID, CREATE_DT, ENCODER, POST_IND,"
+			"select a.ID, SALES_REQUISITION_NO, CUSTOMER_ID, a.CREATE_DT, ENCODER, a.POST_IND,"
 			+ " PRICING_SCHEME_ID, MODE, a.REMARKS, TRANSACTION_DT,"
 			+ " a.PAYMENT_TERM_ID, b.NAME as PAYMENT_TERM_NAME,"
 			+ " c.NAME as CUSTOMER_NAME, d.USERNAME as ENCODER_USERNAME,"
-			+ " a.STOCK_QTY_CONVERSION_ID"
+			+ " a.STOCK_QTY_CONVERSION_ID, e.PRINT_IND as STOCK_QTY_CONVERSION_PRINT_IND"
 			+ " from SALES_REQUISITION a"
 			+ " join PAYMENT_TERM b"
 			+ "   on b.ID = a.PAYMENT_TERM_ID"
 			+ " join CUSTOMER c"
 			+ "   on c.ID = a.CUSTOMER_ID"
 			+ " join USER d"
-			+ "   on d.ID = a.ENCODER";
+			+ "   on d.ID = a.ENCODER"
+			+ " left join STOCK_QTY_CONVERSION e"
+			+ "   on e.ID = a.STOCK_QTY_CONVERSION_ID";
 	
 	private static final String SALES_REQUISITION_NUMBER_SEQUENCE = "SALES_REQUISITION_NO_SEQ";
 	
@@ -141,11 +143,17 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 			salesRequisition.setTransactionDate(rs.getDate("TRANSACTION_DT"));
 			
 			if (rs.getLong("STOCK_QTY_CONVERSION_ID") != 0) {
-				salesRequisition.setStockQuantityConversion(
-						new StockQuantityConversion(rs.getLong("STOCK_QTY_CONVERSION_ID")));
+				salesRequisition.setStockQuantityConversion(mapStockQuantityConversion(rs));
 			}
 			
 			return salesRequisition;
+		}
+
+		private StockQuantityConversion mapStockQuantityConversion(ResultSet rs) throws SQLException {
+			StockQuantityConversion conversion = new StockQuantityConversion();
+			conversion.setId(rs.getLong("STOCK_QTY_CONVERSION_ID"));
+			conversion.setPrinted("Y".equals(rs.getString("STOCK_QTY_CONVERSION_PRINT_IND")));
+			return conversion;
 		}
 	}
 
@@ -159,7 +167,7 @@ public class SalesRequisitionDaoImpl extends MagicDao implements SalesRequisitio
 	@Override
 	public List<SalesRequisition> search(SalesRequisition criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
-		sql.append(" where POST_IND = ?");
+		sql.append(" where a.POST_IND = ?");
 		sql.append(" order by a.ID desc");
 		
 		return getJdbcTemplate().query(sql.toString(), salesRequisitionRowMapper,

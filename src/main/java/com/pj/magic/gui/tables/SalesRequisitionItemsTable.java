@@ -535,7 +535,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 
 	private void addStockQuantityConversionItem(Product product, String unit) {
 		StockQuantityConversion conversion = salesRequisition.getStockQuantityConversion();
-		if (conversion == null) {
+		if (conversion == null || conversion.isPrinted()) {
 			conversion = createPostedStockQuantityConversion();
 			salesRequisition.setStockQuantityConversion(conversion);
 			salesRequisitionService.save(salesRequisition);
