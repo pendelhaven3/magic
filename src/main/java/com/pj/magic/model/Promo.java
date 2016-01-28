@@ -29,6 +29,7 @@ public class Promo {
 	private List<PromoType2Rule> promoType2Rules;
 	private PromoType3Rule promoType3Rule;
 	private PromoType4Rule promoType4Rule;
+	private PromoType5Rule promoType5Rule;
 
 	public Promo() {
 		// default constructor
@@ -288,6 +289,14 @@ public class Promo {
 
 	public boolean isPromoType3() {
 		return promoType.isType3();
+	}
+
+	public PromoType5Rule getPromoType5Rule() {
+		return promoType5Rule;
+	}
+
+	public void setPromoType5Rule(PromoType5Rule promoType5Rule) {
+		this.promoType5Rule = promoType5Rule;
 	}
 	
 }

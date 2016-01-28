@@ -129,6 +129,7 @@ public class PromoRedemption {
 			}
 			break;
 		case PROMO_TYPE_4:
+		case PROMO_TYPE_5:
 			break;
 		}
 		
