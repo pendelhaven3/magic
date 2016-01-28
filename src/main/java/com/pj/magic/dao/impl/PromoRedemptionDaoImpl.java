@@ -19,6 +19,7 @@ import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
+import com.pj.magic.model.PromoType;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PromoRedemptionSearchCriteria;
@@ -31,7 +32,7 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			+ " POST_IND, POST_DT, POST_BY,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
-			+ " d.NAME as PROMO_NAME"
+			+ " d.NAME as PROMO_NAME, d.PROMO_TYPE_ID"
 			+ " from PROMO_REDEMPTION a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_id"
@@ -122,6 +123,7 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 			Promo promo = new Promo();
 			promo.setId(rs.getLong("PROMO_ID"));
 			promo.setName(rs.getString("PROMO_NAME"));
+			promo.setPromoType(PromoType.getPromoType(rs.getLong("PROMO_TYPE_ID")));
 			promoRedemption.setPromo(promo);
 			
 			Customer customer = new Customer();

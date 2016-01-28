@@ -9,7 +9,7 @@ public enum PromoType {
 	PROMO_TYPE_2(2L, "Buy X quantity of product, get Y product free"),
 	PROMO_TYPE_3(3L, "Buy X amount of selected products, get Y product free"),
 	PROMO_TYPE_4(4L, "Earn points by buying selected products"),
-	PROMO_TYPE_5(5L, "Buy X amount of selected products, get Y rebate amount");
+	PROMO_TYPE_5(5L, "Buy X amount of selected products, get Y rebate");
 	
 	private Long id;
 	private String description;
@@ -59,6 +59,10 @@ public enum PromoType {
 
 	public boolean isType4() {
 		return this == PROMO_TYPE_4;
+	}
+
+	public boolean isType5() {
+		return this == PROMO_TYPE_5;
 	}
 	
 }

@@ -96,6 +96,8 @@ public class Promo {
 					promoType3Rule.getFreeQuantity().toString(), promoType3Rule
 							.getFreeUnit(), promoType3Rule.getFreeProduct()
 							.getDescription());
+		case PROMO_TYPE_5:
+			return promoType5Rule.getMechanicsDescription();
 		default:
 			return null;
 		}
@@ -297,6 +299,10 @@ public class Promo {
 
 	public void setPromoType5Rule(PromoType5Rule promoType5Rule) {
 		this.promoType5Rule = promoType5Rule;
+	}
+
+	public boolean isPromoType5() {
+		return promoType.isType5();
 	}
 	
 }
