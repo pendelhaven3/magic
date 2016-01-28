@@ -26,6 +26,7 @@ import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRedemption;
+import com.pj.magic.model.PromoType;
 import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.service.impl.PromoService;
 import com.pj.magic.util.ComponentUtil;
@@ -156,14 +157,24 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 
 	protected void selectPromoRedemption() {
 		PromoRedemption promoRedemption = tableModel.getPromoRedemption(table.getSelectedRow());
-		getMagicFrame().switchToPromoRedemptionPanel(promoRedemption);
+		PromoType promoType = promoRedemption.getPromo().getPromoType();
+		
+		if (promoType.isType5()) {
+			getMagicFrame().switchToPromoRedemptionRebatesPanel(promoRedemption);
+		} else {
+			getMagicFrame().switchToPromoRedemptionPanel(promoRedemption);
+		}
 	}
 
 	private void switchToNewPromoRedemptionPanel() {
 		PromoRedemption promoRedemption = new PromoRedemption();
 		promoRedemption.setPromo(promo);
 		
-		getMagicFrame().switchToPromoRedemptionPanel(promoRedemption);
+		if (promo.isPromoType5()) {
+			getMagicFrame().switchToPromoRedemptionRebatesPanel(promoRedemption);
+		} else {
+			getMagicFrame().switchToPromoRedemptionPanel(promoRedemption);
+		}
 	}
 
 	@Override

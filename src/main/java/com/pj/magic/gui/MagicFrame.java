@@ -98,9 +98,9 @@ import com.pj.magic.gui.panels.SalesRequisitionSeparateItemsPanel;
 import com.pj.magic.gui.panels.SalesReturnListPanel;
 import com.pj.magic.gui.panels.SalesReturnPanel;
 import com.pj.magic.gui.panels.StockCardInventoryReportPanel;
-import com.pj.magic.gui.panels.StockUptakeReportPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
+import com.pj.magic.gui.panels.StockUptakeReportPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UnpaidCreditCardPaymentsListPanel;
 import com.pj.magic.gui.panels.UnpaidReceivingReceiptsListPanel;
@@ -121,6 +121,7 @@ import com.pj.magic.gui.panels.promo.PromoPanel;
 import com.pj.magic.gui.panels.promo.PromoRedemptionListPanel;
 import com.pj.magic.gui.panels.promo.PromoRedemptionPanel;
 import com.pj.magic.gui.panels.promo.PromoRedemptionPromoListPanel;
+import com.pj.magic.gui.panels.promo.PromoRedemptionRebatesPanel;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentType;
@@ -283,6 +284,7 @@ public class MagicFrame extends JFrame {
 	private static final String CREDIT_CARD_STATEMENT_PANEL = "CREDIT_CARD_STATEMENT_PANEL";
 	private static final String STOCK_UPTAKE_REPORT_PANEL = "STOCK_UPTAKE_REPORT_PANEL";
 	private static final String SALES_REQUISITION_SEPARATE_ITEMS_PANEL = "SALES_REQUISITION_SEPARATE_ITEMS_PANEL";
+	private static final String PROMO_REDEMPTION_REBATES_PANEL = "PROMO_REDEMPTION_REBATES_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -389,6 +391,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private CreditCardStatementPanel creditCardStatementPanel;
 	@Autowired private StockUptakeReportPanel stockUptakeReportPanel;
 	@Autowired private SalesRequisitionSeparateItemsPanel salesRequisitionSeparateItemsPanel;
+	@Autowired private PromoRedemptionRebatesPanel promoRedemptionRebatesPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -548,6 +551,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(creditCardStatementPanel, CREDIT_CARD_STATEMENT_PANEL);
 		panelHolder.add(stockUptakeReportPanel, STOCK_UPTAKE_REPORT_PANEL);
 		panelHolder.add(salesRequisitionSeparateItemsPanel, SALES_REQUISITION_SEPARATE_ITEMS_PANEL);
+		panelHolder.add(promoRedemptionRebatesPanel, PROMO_REDEMPTION_REBATES_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1331,6 +1335,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Sales Requisition Separate Items");
 		salesRequisitionSeparateItemsPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_REQUISITION_SEPARATE_ITEMS_PANEL);
+	}
+
+	public void switchToPromoRedemptionRebatesPanel(PromoRedemption promoRedemption) {
+		addPanelNameToTitle("Promo Redemption Rebates");
+		promoRedemptionRebatesPanel.updateDisplay(promoRedemption);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_REDEMPTION_REBATES_PANEL);
 	}
 	
 }
