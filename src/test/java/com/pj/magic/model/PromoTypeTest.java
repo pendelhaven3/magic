@@ -16,6 +16,7 @@ public class PromoTypeTest {
 		promoTypes.add(PromoType.PROMO_TYPE_2);
 		promoTypes.add(PromoType.PROMO_TYPE_3);
 		promoTypes.add(PromoType.PROMO_TYPE_4);
+		promoTypes.add(PromoType.PROMO_TYPE_5);
 		
 		assertEquals(promoTypes, PromoType.getPromoTypes());
 	}
