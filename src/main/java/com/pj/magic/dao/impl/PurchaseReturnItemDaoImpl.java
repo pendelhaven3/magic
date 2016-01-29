@@ -116,7 +116,7 @@ public class PurchaseReturnItemDaoImpl extends MagicDao implements PurchaseRetur
 	}
 
 	private static final String UPDATE_SQL = "update PURCHASE_RETURN_ITEM"
-			+ " set PURCHASE_INVOICE_ITEM_ID = ?, QUANTITY = ? where ID = ?";
+			+ " set RECEIVING_RECEIPT_ITEM_ID = ?, QUANTITY = ? where ID = ?";
 	
 	private void update(PurchaseReturnItem item) {
 		getJdbcTemplate().update(UPDATE_SQL, 
