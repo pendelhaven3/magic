@@ -421,6 +421,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		showPromoQualifyingAmountsButton.setEnabled(true);
 		showAvailedPromoRewardsButton.setEnabled(true);
 		stockQuantityConversionButton.setEnabled(true);
+		separatePerCaseItemsButton.setEnabled(true);
 	}
 
 	private void updateTransactionDateField() {
@@ -455,6 +456,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 		stockQuantityConversionButton.setEnabled(false);
 		showPromoQualifyingAmountsButton.setEnabled(false);
 		showAvailedPromoRewardsButton.setEnabled(false);
+		separatePerCaseItemsButton.setEnabled(false);		
 	}
 
 	private java.awt.Component createCustomerNamePanel() {
