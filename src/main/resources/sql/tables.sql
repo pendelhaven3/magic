@@ -122,6 +122,7 @@ create table USER (
   USERNAME varchar(15) not null,
   PASSWORD varchar(100) not null,
   SUPERVISOR_IND char(1) default 'N' not null,
+  MODIFY_PRICING_IND char(1) default 'N' not null,
   constraint USER$PK primary key (ID),
   constraint USER$UK unique (USERNAME)
 );

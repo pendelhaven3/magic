@@ -1,0 +1,1 @@
+alter table USER add MODIFY_PRICING_IND char(1) default 'N' not null;

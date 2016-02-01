@@ -10,6 +10,7 @@ public class User {
 	private String password;
 	private boolean supervisor;
 	private String plainPassword; // not stored in database
+	private boolean modifyPricing;
 
 	public User() {
 		// default constructor
@@ -88,6 +89,18 @@ public class User {
 	@Override
 	public String toString() {
 		return username;
+	}
+
+	public boolean isModifyPricing() {
+		return modifyPricing;
+	}
+
+	public void setModifyPricing(boolean modifyPricing) {
+		this.modifyPricing = modifyPricing;
+	}
+
+	public boolean canModifyPricing() {
+		return supervisor || modifyPricing;
 	}
 	
 }
