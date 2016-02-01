@@ -15,7 +15,8 @@ public class UsersTableModel extends AbstractTableModel {
 
 	private static final int USERNAME_COLUMN_INDEX = 0;
 	private static final int SUPERVISOR_COLUMN_INDEX = 1;
-	private static final String[] columnNames = {"Username", "Supervisor"};
+	private static final int MODIFY_PRICING_COLUMN_INDEX = 2;
+	private static final String[] columnNames = {"Username", "Supervisor", "Modify Pricing?"};
 	private static final ImageIcon checkIcon = createImageIcon("/images/small_check.png");
 	
 	private List<User> users = new ArrayList<>();
@@ -38,6 +39,8 @@ public class UsersTableModel extends AbstractTableModel {
 			return user.getUsername();
 		case SUPERVISOR_COLUMN_INDEX:
 			return user.isSupervisor() ? checkIcon : null;
+		case MODIFY_PRICING_COLUMN_INDEX:
+			return user.isSupervisor() || user.isModifyPricing() ? checkIcon : null;
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
@@ -45,7 +48,7 @@ public class UsersTableModel extends AbstractTableModel {
 
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex == SUPERVISOR_COLUMN_INDEX) {
+		if (columnIndex == SUPERVISOR_COLUMN_INDEX || columnIndex == MODIFY_PRICING_COLUMN_INDEX) {
 			return ImageIcon.class;
 		} else {
 			return Object.class;

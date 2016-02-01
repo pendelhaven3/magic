@@ -42,6 +42,7 @@ public class MaintainUserPanel extends StandardMagicPanel {
 	private User user;
 	private MagicTextField usernameField;
 	private JCheckBox supervisorCheckbox;
+	private JCheckBox modifyPricingCheckbox;
 	private JButton saveButton;
 	
 	@Override
@@ -50,6 +51,7 @@ public class MaintainUserPanel extends StandardMagicPanel {
 		usernameField.setMaximumLength(50);
 		
 		supervisorCheckbox = new JCheckBox();
+		modifyPricingCheckbox = new JCheckBox();
 		
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -67,6 +69,7 @@ public class MaintainUserPanel extends StandardMagicPanel {
 	protected void initializeFocusOrder(List<JComponent> focusOrder) {
 		focusOrder.add(usernameField);
 		focusOrder.add(supervisorCheckbox);
+		focusOrder.add(modifyPricingCheckbox);
 		focusOrder.add(saveButton);
 	}
 	
@@ -78,6 +81,7 @@ public class MaintainUserPanel extends StandardMagicPanel {
 		if (confirm("Save?")) {
 			user.setUsername(usernameField.getText());
 			user.setSupervisor(supervisorCheckbox.isSelected());
+			user.setModifyPricing(modifyPricingCheckbox.isSelected() || supervisorCheckbox.isSelected());
 			
 			boolean newUser = (user.getId() == null);
 			try {
@@ -180,6 +184,20 @@ public class MaintainUserPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Modify Pricing? "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(modifyPricingCheckbox, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
 		mainPanel.add(ComponentUtil.createFiller(1, 20), c);
@@ -234,6 +252,7 @@ public class MaintainUserPanel extends StandardMagicPanel {
 		
 		usernameField.setText(user.getUsername());
 		supervisorCheckbox.setSelected(user.isSupervisor());
+		modifyPricingCheckbox.setSelected(user.isModifyPricing() || user.isSupervisor());
 	}
 
 	private void clearDisplay() {
