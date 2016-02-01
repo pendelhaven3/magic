@@ -98,5 +98,9 @@ public class User {
 	public void setModifyPricing(boolean modifyPricing) {
 		this.modifyPricing = modifyPricing;
 	}
+
+	public boolean canModifyPricing() {
+		return supervisor || modifyPricing;
+	}
 	
 }

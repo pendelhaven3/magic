@@ -203,7 +203,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 	}
 
 	private void selectProductPrice() {
-		if (!loginService.getLoggedInUser().isSupervisor()) {
+		if (!loginService.getLoggedInUser().canModifyPricing()) {
 			return;
 		}
 		
