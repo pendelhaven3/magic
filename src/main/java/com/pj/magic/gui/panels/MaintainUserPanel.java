@@ -114,14 +114,22 @@ public class MaintainUserPanel extends StandardMagicPanel {
 			return false;
 		}
 		
-		User existing = userService.findUserByUsername(usernameField.getText());
-		if (existing != null && existing.getId().equals(user.getId())) {
+		if (isUsernameAlreadyUsed()) {
 			showErrorMessage("Username is already taken by another user");
 			usernameField.requestFocusInWindow();
 			return false;
 		}
 		
 		return true;
+	}
+
+	private boolean isUsernameAlreadyUsed() {
+		User existing = userService.findUserByUsername(usernameField.getText());
+		if (existing != null) {
+			return user.getId() == null || !existing.getId().equals(user.getId());
+		} else {
+			return false;
+		}
 	}
 
 	@Override
