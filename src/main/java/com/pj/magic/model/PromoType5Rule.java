@@ -78,10 +78,27 @@ public class PromoType5Rule {
 
 	public BigDecimal getQualifyingAmount(SalesInvoice salesInvoice) {
 		BigDecimal total = Constants.ZERO;
+		
 		for (PromoType5RulePromoProduct promoProduct : promoProducts) {
 			for (SalesInvoiceItem item : salesInvoice.getItems()) {
 				if (item.getProduct().getId().equals(promoProduct.getProduct().getId())) {
+					int originalQuantity = item.getQuantity();
+					for (SalesReturn salesReturn : salesInvoice.getSalesReturns()) {
+						for (SalesReturnItem salesReturnItem : salesReturn.getItems()) {
+							if (salesReturnItem.getSalesInvoiceItem().getProduct().getId().equals(item.getProduct().getId())) {
+								item.setQuantity(item.getQuantity() - salesReturnItem.getQuantity());
+							}
+						}
+					}
+					for (NoMoreStockAdjustment nms : salesInvoice.getNoMoreStockAdjustments()) {
+						for (NoMoreStockAdjustmentItem nmsItem : nms.getItems()) {
+							if (nmsItem.getSalesInvoiceItem().getProduct().getId().equals(item.getProduct().getId())) {
+								item.setQuantity(item.getQuantity() - nmsItem.getQuantity());
+							}
+						}
+					}
 					total = total.add(item.getAmount());
+					item.setQuantity(originalQuantity);
 				}
 			}
 		}

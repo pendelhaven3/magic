@@ -36,6 +36,9 @@ public class SalesInvoice {
 	private Date markDate;
 	private User markedBy;
 	private BigDecimal vatAmount;
+	
+	private List<SalesReturn> salesReturns = new ArrayList<>(); // transient
+	private List<NoMoreStockAdjustment> noMoreStockAdjustments = new ArrayList<>(); // transient
 
 	public SalesInvoice() {
 		// default constructor
@@ -356,6 +359,22 @@ public class SalesInvoice {
 			}
 		}
 		return null;
+	}
+
+	public List<SalesReturn> getSalesReturns() {
+		return salesReturns;
+	}
+
+	public void setSalesReturns(List<SalesReturn> salesReturns) {
+		this.salesReturns = salesReturns;
+	}
+
+	public List<NoMoreStockAdjustment> getNoMoreStockAdjustments() {
+		return noMoreStockAdjustments;
+	}
+
+	public void setNoMoreStockAdjustments(List<NoMoreStockAdjustment> noMoreStockAdjustments) {
+		this.noMoreStockAdjustments = noMoreStockAdjustments;
 	}
 	
 }

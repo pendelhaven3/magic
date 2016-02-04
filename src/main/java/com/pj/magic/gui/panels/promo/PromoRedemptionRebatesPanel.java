@@ -56,6 +56,7 @@ public class PromoRedemptionRebatesPanel extends StandardMagicPanel {
 	
 	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 0;
 	private static final int SALES_INVOICE_AMOUNT_COLUMN_INDEX = 1;
+	private static final int SALES_INVOICE_ADJUSTED_AMOUNT_COLUMN_INDEX = 2;
 	private static final int PAYMENT_ADJUSTMENT_NUMBER_COLUMN_INDEX = 0;
 	private static final int PAYMENT_ADJUSTMENT_AMOUNT_COLUMN_INDEX = 1;
 	
@@ -276,7 +277,7 @@ public class PromoRedemptionRebatesPanel extends StandardMagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = 0;
-		c.weightx = 0.5;
+		c.weightx = 0.6;
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
 		panel.add(createTabbedPane("Sales Invoices", createSalesInvoicesPanel()), c);
@@ -284,7 +285,7 @@ public class PromoRedemptionRebatesPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = 0;
-		c.weightx = 0.5;
+		c.weightx = 0.4;
 		c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
 		panel.add(createTabbedPane("Rebates", createRebatesPanel()), c);
@@ -362,7 +363,7 @@ public class PromoRedemptionRebatesPanel extends StandardMagicPanel {
 		c.gridwidth = 2;
 		totalAmountLabel = ComponentUtil.createRightLabel(100);
 		panel.add(ComponentUtil.createGenericPanel(
-				new JLabel("Total Amount: "), totalAmountLabel, Box.createHorizontalStrut(10)), c);
+				new JLabel("Total Adj. Amount: "), totalAmountLabel, Box.createHorizontalStrut(10)), c);
 		
 		return panel;
 	}
@@ -427,6 +428,7 @@ public class PromoRedemptionRebatesPanel extends StandardMagicPanel {
 				promoRedemptionService.save(redemptionSalesInvoice);
 				promoRedemption.getRedemptionSalesInvoices().add(redemptionSalesInvoice);
 			}
+			promoRedemption = promoRedemptionService.getPromoRedemption(promoRedemption.getId());
 			salesInvoicesTableModel.setItems(promoRedemption.getRedemptionSalesInvoices());
 		}
 	}
@@ -545,11 +547,17 @@ public class PromoRedemptionRebatesPanel extends StandardMagicPanel {
 
 	private class SalesInvoicesTableModel extends ListBackedTableModel<PromoRedemptionSalesInvoice> {
 
-		private final String[] columnNames = {"SI No.", "Amount"};
+		private final String[] columnNames = {"SI No.", "Amount", "Adj. Amount"};
 		
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			return (columnIndex == SALES_INVOICE_AMOUNT_COLUMN_INDEX) ? Number.class : String.class;
+			switch (columnIndex) {
+			case SALES_INVOICE_AMOUNT_COLUMN_INDEX:
+			case SALES_INVOICE_ADJUSTED_AMOUNT_COLUMN_INDEX:
+				return Number.class;
+			default:
+				return String.class;
+			}
 		}
 		
 		@Override
@@ -560,12 +568,22 @@ public class PromoRedemptionRebatesPanel extends StandardMagicPanel {
 				return salesInvoice.getSalesInvoiceNumber();
 			case SALES_INVOICE_AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(
+						promoRedemption.getPromo().getPromoType5Rule().getQualifyingAmount(
+								createSalesInvoiceCopyWithNoAdjustments(salesInvoice)));
+			case SALES_INVOICE_ADJUSTED_AMOUNT_COLUMN_INDEX:
+				return FormatterUtil.formatAmount(
 						promoRedemption.getPromo().getPromoType5Rule().getQualifyingAmount(salesInvoice));
 			default:
 				return null;
 			}
 		}
 		
+		private SalesInvoice createSalesInvoiceCopyWithNoAdjustments(SalesInvoice salesInvoice) {
+			SalesInvoice copy = new SalesInvoice();
+			copy.setItems(salesInvoice.getItems());
+			return copy;
+		}
+
 		public void removeItem(PromoRedemptionSalesInvoice salesInvoice) {
 			getItems().remove(salesInvoice);
 			promoRedemptionService.delete(salesInvoice);

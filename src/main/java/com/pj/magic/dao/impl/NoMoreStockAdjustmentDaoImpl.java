@@ -247,5 +247,12 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 		
 		return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
 	}
+
+	private static final String FIND_ALL_BY_SALES_INVOICE_SQL = BASE_SELECT_SQL + " where a.SALES_INVOICE_ID = ?";
+	
+	@Override
+	public List<NoMoreStockAdjustment> findAllBySalesInvoice(SalesInvoice salesInvoice) {
+		return getJdbcTemplate().query(FIND_ALL_BY_SALES_INVOICE_SQL, rowMapper, salesInvoice.getId());
+	}
 	
 }

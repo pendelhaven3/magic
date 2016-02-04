@@ -44,6 +44,7 @@ import com.pj.magic.model.search.PromoRedemptionSearchCriteria;
 import com.pj.magic.model.search.PromoSearchCriteria;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.LoginService;
+import com.pj.magic.service.NoMoreStockAdjustmentService;
 import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesReturnService;
@@ -60,10 +61,11 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Autowired private ProductDao productDao;
 	@Autowired private PromoRedemptionRewardDao promoRedemptionRewardDao;
 	@Autowired private PromoRedemptionRebateDao promoRedemptionRebateDao;
-	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private PromoPointsClaimDao promoPointsClaimDao;
 	@Autowired private AdjustmentTypeDao adjustmentTypeDao;
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
+	@Autowired private SalesReturnService salesReturnService;
+	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
 	
 	@Transactional
 	@Override
@@ -102,6 +104,9 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		for (PromoRedemptionSalesInvoice promoRedemptionSalesInvoice : promoRedemption.getRedemptionSalesInvoices()) {
 			SalesInvoice salesInvoice = promoRedemptionSalesInvoice.getSalesInvoice();
 			salesInvoice.setItems(salesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
+			salesInvoice.setSalesReturns(salesReturnService.findPostedSalesReturnsBySalesInvoice(salesInvoice));
+			salesInvoice.setNoMoreStockAdjustments(
+					noMoreStockAdjustmentService.findPostedNoMoreStockAdjustmentsBySalesInvoice(salesInvoice));
 		}
 		
 		if (promoRedemption.isPosted()) {
