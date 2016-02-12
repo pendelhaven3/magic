@@ -1,25 +1,24 @@
 package com.pj.magic.model.util;
 
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.pj.magic.Constants;
 
 public class CellStyleBuilder {
 	
-	private XSSFWorkbook workbook;
+	private Workbook workbook;
 	private Short align;
 	private Short borderBottom;
 	private Short borderRight;
 	private Boolean amountFormat;
 	
-	public static CellStyleBuilder createStyle(XSSFWorkbook workbook) {
+	public static CellStyleBuilder createStyle(Workbook workbook) {
 		return new CellStyleBuilder(workbook);
 	}
 	
-	private CellStyleBuilder(XSSFWorkbook workbook) {
+	private CellStyleBuilder(Workbook workbook) {
 		this.workbook = workbook;
 	}
 	
@@ -29,8 +28,8 @@ public class CellStyleBuilder {
 	}
 	
 	public CellStyle build() {
-		XSSFCellStyle style = workbook.createCellStyle();
-		XSSFCreationHelper creationHelper = workbook.getCreationHelper();
+		CellStyle style = workbook.createCellStyle();
+		CreationHelper creationHelper = workbook.getCreationHelper();
 		if (align != null) {
 			style.setAlignment(align);
 		}

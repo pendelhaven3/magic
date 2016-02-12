@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
+import com.pj.magic.model.report.StockUptakeReport;
+import com.pj.magic.model.report.StockUptakeReportItem;
 import com.pj.magic.model.util.CellStyleBuilder;
 import com.pj.magic.service.ExcelService;
 import com.pj.magic.util.FormatterUtil;
@@ -473,6 +476,29 @@ public class ExcelServiceImpl implements ExcelService {
 			cell = row.createCell(4);
 			cell.setCellValue(item.getTotalProfit().doubleValue());
 			cell.setCellStyle(amountFormat);
+			
+			currentRow++;
+		}
+
+		sheet.autoSizeColumn(0);
+		sheet.autoSizeColumn(1);
+		
+		return workbook;
+	}
+
+	@Override
+	public Workbook generateSpreadsheet(StockUptakeReport report) throws IOException {
+		Workbook workbook = new XSSFWorkbook(
+				getClass().getResourceAsStream("/excel/stockUptakeReport.xlsx"));
+		Sheet sheet = workbook.getSheetAt(0);
+
+		int currentRow = 1;
+		for (StockUptakeReportItem item : report.getItems()) {
+			Row row = sheet.createRow(currentRow);
+			row.createCell(0).setCellValue(item.getProduct().getCode());
+			row.createCell(1).setCellValue(item.getProduct().getDescription());
+			row.createCell(2).setCellValue(item.getUnit());
+			row.createCell(3).setCellValue(item.getQuantity());
 			
 			currentRow++;
 		}

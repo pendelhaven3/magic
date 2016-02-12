@@ -4,15 +4,21 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.ExcelFileFilter;
 import com.pj.magic.gui.component.MagicComboBox;
+import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
@@ -20,9 +26,11 @@ import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.report.StockUptakeReport;
 import com.pj.magic.model.report.StockUptakeReportItem;
 import com.pj.magic.model.search.StockUptakeReportCriteria;
+import com.pj.magic.service.ExcelService;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.ListUtil;
 
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
@@ -36,11 +44,13 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 	
 	@Autowired private ManufacturerService manufacturerService;
 	@Autowired private ReportService reportService;
+	@Autowired private ExcelService excelService;
 	
 	private MagicComboBox<Manufacturer> manufacturerComboBox;
 	private UtilCalendarModel fromDateModel;
 	private UtilCalendarModel toDateModel;
 	private JButton generateButton;
+	private JButton generateExcelButton;
 	private MagicListTable table;
 	private StockUptakeTableModel tableModel;
 	
@@ -56,6 +66,15 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				generateReport();
+			}
+		});
+		
+		generateExcelButton = new JButton("Generate Excel");
+		generateExcelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				generateExcelReport();
 			}
 		});
 		
@@ -183,7 +202,10 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 2;
-		panel.add(generateButton, c);
+		panel.add(ComponentUtil.createGenericPanel(
+				generateButton,
+				Box.createHorizontalStrut(5),
+				generateExcelButton), c);
 
 		return panel;
 	}
@@ -263,6 +285,40 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 
 	private boolean isToDateNotSpecified() {
 		return toDateModel.getValue() == null;
+	}
+	
+	private void generateExcelReport() {
+		if (!validateFields()) {
+			return;
+		}
+		
+		MagicFileChooser saveFileChooser = createSaveFileChooser();
+		if (!saveFileChooser.selectSaveFile(this)) {
+			return;
+		}
+		
+		StockUptakeReport report = doGenerateReport();
+		tableModel.setItems(report.getItems());
+		
+		try (
+			Workbook workbook = excelService.generateSpreadsheet(report);
+			FileOutputStream out = new FileOutputStream(saveFileChooser.getSelectedFile());
+		) {
+			workbook.write(out);
+		} catch (IOException e) {
+			showMessageForUnexpectedError();
+			return;
+		}
+		
+		showMessage("Excel spreadsheet generated");
+	}
+
+	private MagicFileChooser createSaveFileChooser() {
+		MagicFileChooser fileChooser = new MagicFileChooser();
+		fileChooser.setCurrentDirectory(FileUtil.getDesktopFolderPathAsFile());
+		fileChooser.setFileFilter(ExcelFileFilter.getInstance());
+		fileChooser.setSelectedFile(new File("stockUptakeReport.xlsx"));
+		return fileChooser;
 	}
 	
 }
