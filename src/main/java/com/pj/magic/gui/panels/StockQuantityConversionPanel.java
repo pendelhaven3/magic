@@ -148,6 +148,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		addItemButton.setEnabled(!stockQuantityConversion.isPosted());
 		deleteItemButton.setEnabled(!stockQuantityConversion.isPosted());
 		markAsPrintedButton.setEnabled(!stockQuantityConversion.isPrinted());
+		assignPageNumberButton.setEnabled(!stockQuantityConversion.isPosted());
 	}
 
 	@Override
@@ -464,11 +465,21 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 	}
 	
 	private void assignPageNumber() {
+		stockQuantityConversion = stockQuantityConversionService.getStockQuantityConversion(
+				stockQuantityConversion.getId());
+		
+		if (stockQuantityConversion.isPosted()) {
+			showErrorMessage("Stock Quantity Conversion is already posted");
+			updateDisplay(stockQuantityConversion);
+			return;
+		}
+		
 		String pageNumber = "P" + stockQuantityConversionService.getNextPageNumber();
 		remarksField.setText(pageNumber);
 		stockQuantityConversion.setRemarks(pageNumber);
 		stockQuantityConversionService.save(stockQuantityConversion);
 		showMessage("Saved");
+		updateDisplay(stockQuantityConversion);
 	}
 	
 	private void markStockQuantityConversionAsPrinted() {
