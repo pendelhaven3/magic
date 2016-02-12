@@ -105,6 +105,7 @@ import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UnpaidCreditCardPaymentsListPanel;
 import com.pj.magic.gui.panels.UnpaidReceivingReceiptsListPanel;
 import com.pj.magic.gui.panels.UnpaidSalesInvoicesListPanel;
+import com.pj.magic.gui.panels.UploadMaximumStockLevelChangesPanel;
 import com.pj.magic.gui.panels.UserListPanel;
 import com.pj.magic.gui.panels.menu.AdminMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryCheckMenuPanel;
@@ -285,6 +286,8 @@ public class MagicFrame extends JFrame {
 	private static final String STOCK_UPTAKE_REPORT_PANEL = "STOCK_UPTAKE_REPORT_PANEL";
 	private static final String SALES_REQUISITION_SEPARATE_ITEMS_PANEL = "SALES_REQUISITION_SEPARATE_ITEMS_PANEL";
 	private static final String PROMO_REDEMPTION_REBATES_PANEL = "PROMO_REDEMPTION_REBATES_PANEL";
+	private static final String UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL = 
+			"UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -392,6 +395,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private StockUptakeReportPanel stockUptakeReportPanel;
 	@Autowired private SalesRequisitionSeparateItemsPanel salesRequisitionSeparateItemsPanel;
 	@Autowired private PromoRedemptionRebatesPanel promoRedemptionRebatesPanel;
+	@Autowired private UploadMaximumStockLevelChangesPanel uploadMaximumStockLevelChangesPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -552,6 +556,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(stockUptakeReportPanel, STOCK_UPTAKE_REPORT_PANEL);
 		panelHolder.add(salesRequisitionSeparateItemsPanel, SALES_REQUISITION_SEPARATE_ITEMS_PANEL);
 		panelHolder.add(promoRedemptionRebatesPanel, PROMO_REDEMPTION_REBATES_PANEL);
+		panelHolder.add(uploadMaximumStockLevelChangesPanel, UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1341,6 +1346,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Promo Redemption Rebates");
 		promoRedemptionRebatesPanel.updateDisplay(promoRedemption);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_REDEMPTION_REBATES_PANEL);
+	}
+
+	public void switchToUploadMaximumStockLevelChangesPanel() {
+		addPanelNameToTitle("Upload Maximum Stock Level Changes");
+		uploadMaximumStockLevelChangesPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL);
 	}
 	
 }
