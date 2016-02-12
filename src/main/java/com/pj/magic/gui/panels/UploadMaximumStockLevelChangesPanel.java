@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.table.TableColumnModel;
@@ -49,6 +50,7 @@ public class UploadMaximumStockLevelChangesPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private ProductsTableModel tableModel;
 	private JButton uploadButton;
+	private JButton saveChangesButton;
 
 	@Override
 	protected void initializeComponents() {
@@ -60,6 +62,15 @@ public class UploadMaximumStockLevelChangesPanel extends StandardMagicPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				uploadFile();
+			}
+		});
+		
+		saveChangesButton = new JButton("Save Changes");
+		saveChangesButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveChanges();
 			}
 		});
 	}
@@ -93,6 +104,7 @@ public class UploadMaximumStockLevelChangesPanel extends StandardMagicPanel {
 		tableModel.setItems(entries);
 		if (!entries.isEmpty()) {
 			table.selectFirstRow();
+			saveChangesButton.setEnabled(true);
 		}
 	}
 
@@ -103,6 +115,35 @@ public class UploadMaximumStockLevelChangesPanel extends StandardMagicPanel {
 		return fileChooser;
 	}
 
+	private void saveChanges() {
+		if (tableModel.getItems().isEmpty()) {
+			showErrorMessage("Nothing to save");
+			return;
+		}
+		
+		if (!confirm("Save changes?")) {
+			return;
+		}
+		
+		List<Product> products = new ArrayList<>();
+		for (ProductEntry entry : tableModel.getItems()) {
+			Product product = new Product();
+			product.setId(entry.getProduct().getId());
+			product.setMaximumStockLevel(entry.getNewMaximumStockLevel());
+			products.add(product);
+		}
+		
+		try {
+			productService.updateMaximumStockLevel(products);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			showMessageForUnexpectedError();
+			return;
+		}
+		
+		showMessage("Changes saved");
+	}
+	
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
@@ -114,7 +155,8 @@ public class UploadMaximumStockLevelChangesPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.insets.top = 10;
 		c.insets.bottom = 10;
-		mainPanel.add(uploadButton, c);
+		mainPanel.add(ComponentUtil.createGenericPanel(
+				uploadButton, Box.createHorizontalStrut(5), saveChangesButton), c);
 
 		currentRow++;
 
@@ -132,6 +174,7 @@ public class UploadMaximumStockLevelChangesPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		tableModel.clear();
+		saveChangesButton.setEnabled(false);
 	}
 
 	@Override

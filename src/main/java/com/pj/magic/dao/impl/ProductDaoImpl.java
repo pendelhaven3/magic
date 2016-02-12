@@ -430,4 +430,17 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		getJdbcTemplate().update(DELETE_SQL, product.getId());
 	}
 
+	private static final String UPDATE_MAXIMUM_STOCK_LEVEL_SQL = 
+			"update PRODUCT set MAX_STOCK_LEVEL = ? where ID = ?";
+	
+	@Override
+	public void updateMaximumStockLevel(List<Product> products) {
+		List<Object[]> params = new ArrayList<>();
+		for (Product product : products) {
+			params.add(new Object[] {product.getMaximumStockLevel(), product.getId()});
+		}
+		
+		getJdbcTemplate().batchUpdate(UPDATE_MAXIMUM_STOCK_LEVEL_SQL, params);
+	}
+
 }
