@@ -341,6 +341,8 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 			itemsTable.switchToEditMode();
 		}
 		
+		updateDisplay(stockQuantityConversion);
+		
 		if (!stockQuantityConversion.hasItems()) {
 			showErrorMessage("Cannot post a stock quantity conversion with no items");
 			itemsTable.requestFocusInWindow();
@@ -352,7 +354,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 			try {
 				stockQuantityConversionService.post(stockQuantityConversion);
 				showMessage("Post successful!");
-				getMagicFrame().switchToStockQuantityConversionListPanel();
+				updateDisplay(stockQuantityConversion);
 			} catch (AlreadyPostedException e) {
 				showErrorMessage("Stock Quantity Conversion is already posted");
 			} catch (NotEnoughStocksException e) {	
@@ -407,10 +409,14 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 	}
 
 	private void printStockQuantityConversion() {
+		stockQuantityConversion = 
+				stockQuantityConversionService.getStockQuantityConversion(stockQuantityConversion.getId());
 		printService.print(stockQuantityConversion);
+		updateDisplay(stockQuantityConversion);
 	}
 
 	protected void printPreview() {
+		updateDisplay(stockQuantityConversion);
 		printPreviewDialog.updateDisplay(printService.generateReportAsString(stockQuantityConversion));
 		printPreviewDialog.setVisible(true);
 	}
@@ -486,6 +492,7 @@ public class StockQuantityConversionPanel extends StandardMagicPanel {
 		stockQuantityConversion.setPrinted(true);
 		stockQuantityConversionService.save(stockQuantityConversion);
 		showMessage("Saved");
+		updateDisplay(stockQuantityConversion);
 	}
 	
 }
