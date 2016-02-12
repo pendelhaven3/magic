@@ -185,4 +185,10 @@ public class ProductServiceImpl implements ProductService {
 		return productPriceHistoryDao.findAllByProductAndPricingScheme(product, pricingScheme);
 	}
 
+	@Transactional
+	@Override
+	public void updateMaximumStockLevel(List<Product> products) {
+		productDao.updateMaximumStockLevel(products);
+	}
+
 }

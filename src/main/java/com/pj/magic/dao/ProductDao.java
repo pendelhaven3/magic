@@ -33,4 +33,6 @@ public interface ProductDao {
 
 	void delete(Product product);
 	
+	void updateMaximumStockLevel(List<Product> products);
+	
 }
