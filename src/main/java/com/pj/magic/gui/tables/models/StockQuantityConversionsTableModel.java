@@ -13,12 +13,13 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class StockQuantityConversionsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"SQC No.", "Remarks", "Posted", "Post Date", "Printed"};
+	private static final String[] COLUMN_NAMES = {"SQC No.", "Remarks", "Posted", "Printed", "Post Date", "Posted By"};
 	private static final int STOCK_QUANTITY_CONVERSION_NUMBER_COLUMN_INDEX = 0;
 	private static final int REMARKS_COLUMN_INDEX = 1;
 	private static final int POSTED_COLUMN_INDEX = 2;
-	private static final int POST_DATE_COLUMN_INDEX = 3;
-	private static final int PRINTED_COLUMN_INDEX = 4;
+	private static final int PRINTED_COLUMN_INDEX = 3;
+	private static final int POST_DATE_COLUMN_INDEX = 4;
+	private static final int POSTED_BY_COLUMN_INDEX = 5;
 	
 	private List<StockQuantityConversion> stockQuantityConversions = new ArrayList<>();
 	
@@ -42,14 +43,20 @@ public class StockQuantityConversionsTableModel extends AbstractTableModel {
 			return stockQuantityConversion.getRemarks();
 		case POSTED_COLUMN_INDEX:
 			return stockQuantityConversion.isPosted() ? "Yes" : "No";
+		case PRINTED_COLUMN_INDEX:
+			return stockQuantityConversion.isPrinted() ? "Yes" : "No";
 		case POST_DATE_COLUMN_INDEX:
 			if (stockQuantityConversion.isPosted()) {
 				return FormatterUtil.formatDateTime(stockQuantityConversion.getPostDate());
 			} else {
 				return null;
 			}
-		case PRINTED_COLUMN_INDEX:
-			return stockQuantityConversion.isPrinted() ? "Yes" : "No";
+		case POSTED_BY_COLUMN_INDEX:
+			if (stockQuantityConversion.isPosted()) {
+				return stockQuantityConversion.getPostedBy().getUsername();
+			} else {
+				return null;
+			}
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
