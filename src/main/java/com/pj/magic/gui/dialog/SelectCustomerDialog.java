@@ -42,6 +42,7 @@ public class SelectCustomerDialog extends MagicDialog {
 		customersTable = new MagicListTable(customersTableModel);
 		
 		customersTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_CUSTOMER_ACTION_NAME);
+		customersTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECT_CUSTOMER_ACTION_NAME);
 		customersTable.getActionMap().put(SELECT_CUSTOMER_ACTION_NAME, new AbstractAction() {
 
 			@Override
@@ -49,7 +50,7 @@ public class SelectCustomerDialog extends MagicDialog {
 				selectCustomer();
 			}
 		});
-		
+
 		customersTable.addMouseListener(new MouseAdapter() {
 			
 			@Override

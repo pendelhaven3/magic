@@ -47,6 +47,7 @@ public class SelectUnitDialog extends MagicDialog {
 		add(scrollPane);	
 		
 		unitsTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_UNIT_ACTION_NAME);
+		unitsTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECT_UNIT_ACTION_NAME);
 		unitsTable.getActionMap().put(SELECT_UNIT_ACTION_NAME, new AbstractAction() {
 			
 			@Override

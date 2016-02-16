@@ -92,6 +92,7 @@ public class SelectProductDialog extends MagicDialog {
 
 	private void registerKeyBindings() {
 		productsTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_PRODUCT_ACTION_NAME);
+		productsTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECT_PRODUCT_ACTION_NAME);
 		productsTable.getActionMap().put(SELECT_PRODUCT_ACTION_NAME, new AbstractAction() {
 			
 			@Override

@@ -49,6 +49,7 @@ public class SelectSupplierDialog extends MagicDialog {
 
 	private void registerKeyBindings() {
 		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0), SELECT_SUPPLIER_ACTION);
+		table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), SELECT_SUPPLIER_ACTION);
 		table.getActionMap().put(SELECT_SUPPLIER_ACTION, new AbstractAction() {
 			
 			@Override
