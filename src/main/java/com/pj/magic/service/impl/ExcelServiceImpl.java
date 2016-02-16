@@ -23,8 +23,8 @@ import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
-import com.pj.magic.model.report.StockUptakeReport;
-import com.pj.magic.model.report.StockUptakeReportItem;
+import com.pj.magic.model.report.StockOfftakeReport;
+import com.pj.magic.model.report.StockOfftakeReportItem;
 import com.pj.magic.model.util.CellStyleBuilder;
 import com.pj.magic.service.ExcelService;
 import com.pj.magic.util.FormatterUtil;
@@ -487,13 +487,13 @@ public class ExcelServiceImpl implements ExcelService {
 	}
 
 	@Override
-	public Workbook generateSpreadsheet(StockUptakeReport report) throws IOException {
+	public Workbook generateSpreadsheet(StockOfftakeReport report) throws IOException {
 		Workbook workbook = new XSSFWorkbook(
-				getClass().getResourceAsStream("/excel/stockUptakeReport.xlsx"));
+				getClass().getResourceAsStream("/excel/stockOfftakeReport.xlsx"));
 		Sheet sheet = workbook.getSheetAt(0);
 
 		int currentRow = 1;
-		for (StockUptakeReportItem item : report.getItems()) {
+		for (StockOfftakeReportItem item : report.getItems()) {
 			Row row = sheet.createRow(currentRow);
 			row.createCell(0).setCellValue(item.getProduct().getCode());
 			row.createCell(1).setCellValue(item.getProduct().getDescription());

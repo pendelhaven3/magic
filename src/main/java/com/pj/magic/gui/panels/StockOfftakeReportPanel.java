@@ -23,9 +23,9 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.Manufacturer;
-import com.pj.magic.model.report.StockUptakeReport;
-import com.pj.magic.model.report.StockUptakeReportItem;
-import com.pj.magic.model.search.StockUptakeReportCriteria;
+import com.pj.magic.model.report.StockOfftakeReport;
+import com.pj.magic.model.report.StockOfftakeReportItem;
+import com.pj.magic.model.search.StockOfftakeReportCriteria;
 import com.pj.magic.service.ExcelService;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ReportService;
@@ -36,7 +36,7 @@ import com.pj.magic.util.ListUtil;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
-public class StockUptakeReportPanel extends StandardMagicPanel {
+public class StockOfftakeReportPanel extends StandardMagicPanel {
 
 	private static final int PRODUCT_COLUMN_INDEX = 0;
 	private static final int UNIT_COLUMN_INDEX = 1;
@@ -52,7 +52,7 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 	private JButton generateButton;
 	private JButton generateExcelButton;
 	private MagicListTable table;
-	private StockUptakeTableModel tableModel;
+	private StockOfftakeTableModel tableModel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -82,7 +82,7 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 	}
 
 	private void initializeTable() {
-		tableModel = new StockUptakeTableModel();
+		tableModel = new StockOfftakeTableModel();
 		table = new MagicListTable(tableModel);
 		
 		table.getColumnModel().getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(100);
@@ -210,7 +210,7 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 		return panel;
 	}
 	
-	private class StockUptakeTableModel extends ListBackedTableModel<StockUptakeReportItem> {
+	private class StockOfftakeTableModel extends ListBackedTableModel<StockOfftakeReportItem> {
 
 		@Override
 		protected String[] getColumnNames() {
@@ -219,7 +219,7 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			StockUptakeReportItem item = getItem(rowIndex);
+			StockOfftakeReportItem item = getItem(rowIndex);
 			switch (columnIndex) {
 			case PRODUCT_COLUMN_INDEX:
 				return item.getProduct().getDescription();
@@ -239,20 +239,20 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		StockUptakeReport report = doGenerateReport();
+		StockOfftakeReport report = doGenerateReport();
 		tableModel.setItems(report.getItems());
 		if (report.getItems().isEmpty()) {
 			showErrorMessage("No records found");
 		}
 	} 
 
-	private StockUptakeReport doGenerateReport() {
-		StockUptakeReportCriteria criteria = new StockUptakeReportCriteria();
+	private StockOfftakeReport doGenerateReport() {
+		StockOfftakeReportCriteria criteria = new StockOfftakeReportCriteria();
 		criteria.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
 		criteria.setFromDate(fromDateModel.getValue().getTime());
 		criteria.setToDate(toDateModel.getValue().getTime());
 		
-		return reportService.getStockUptakeReport(criteria);
+		return reportService.getStockOfftakeReport(criteria);
 	}
 
 	private boolean validateFields() {
@@ -297,7 +297,7 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		StockUptakeReport report = doGenerateReport();
+		StockOfftakeReport report = doGenerateReport();
 		tableModel.setItems(report.getItems());
 		
 		try (
@@ -317,7 +317,7 @@ public class StockUptakeReportPanel extends StandardMagicPanel {
 		MagicFileChooser fileChooser = new MagicFileChooser();
 		fileChooser.setCurrentDirectory(FileUtil.getDesktopFolderPathAsFile());
 		fileChooser.setFileFilter(ExcelFileFilter.getInstance());
-		fileChooser.setSelectedFile(new File("stockUptakeReport.xlsx"));
+		fileChooser.setSelectedFile(new File("stockOfftakeReport.xlsx"));
 		return fileChooser;
 	}
 	

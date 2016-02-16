@@ -100,7 +100,7 @@ import com.pj.magic.gui.panels.SalesReturnPanel;
 import com.pj.magic.gui.panels.StockCardInventoryReportPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
-import com.pj.magic.gui.panels.StockUptakeReportPanel;
+import com.pj.magic.gui.panels.StockOfftakeReportPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UnpaidCreditCardPaymentsListPanel;
 import com.pj.magic.gui.panels.UnpaidReceivingReceiptsListPanel;
@@ -283,7 +283,7 @@ public class MagicFrame extends JFrame {
 	private static final String UNPAID_CREDIT_CARD_PAYMENTS_LIST_PANEL = "UNPAID_CREDIT_CARD_PAYMENTS_LIST_PANEL";
 	private static final String CREDIT_CARD_STATEMENT_LIST_PANEL = "CREDIT_CARD_STATEMENT_LIST_PANEL";
 	private static final String CREDIT_CARD_STATEMENT_PANEL = "CREDIT_CARD_STATEMENT_PANEL";
-	private static final String STOCK_UPTAKE_REPORT_PANEL = "STOCK_UPTAKE_REPORT_PANEL";
+	private static final String STOCK_OFFTAKE_REPORT_PANEL = "STOCK_OFFTAKE_REPORT_PANEL";
 	private static final String SALES_REQUISITION_SEPARATE_ITEMS_PANEL = "SALES_REQUISITION_SEPARATE_ITEMS_PANEL";
 	private static final String PROMO_REDEMPTION_REBATES_PANEL = "PROMO_REDEMPTION_REBATES_PANEL";
 	private static final String UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL = 
@@ -392,7 +392,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private UnpaidCreditCardPaymentsListPanel unpaidCreditCardPaymentsListPanel;
 	@Autowired private CreditCardStatementListPanel creditCardStatementListPanel;
 	@Autowired private CreditCardStatementPanel creditCardStatementPanel;
-	@Autowired private StockUptakeReportPanel stockUptakeReportPanel;
+	@Autowired private StockOfftakeReportPanel stockOfftakeReportPanel;
 	@Autowired private SalesRequisitionSeparateItemsPanel salesRequisitionSeparateItemsPanel;
 	@Autowired private PromoRedemptionRebatesPanel promoRedemptionRebatesPanel;
 	@Autowired private UploadMaximumStockLevelChangesPanel uploadMaximumStockLevelChangesPanel;
@@ -553,7 +553,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(unpaidCreditCardPaymentsListPanel, UNPAID_CREDIT_CARD_PAYMENTS_LIST_PANEL);
 		panelHolder.add(creditCardStatementListPanel, CREDIT_CARD_STATEMENT_LIST_PANEL);
 		panelHolder.add(creditCardStatementPanel, CREDIT_CARD_STATEMENT_PANEL);
-		panelHolder.add(stockUptakeReportPanel, STOCK_UPTAKE_REPORT_PANEL);
+		panelHolder.add(stockOfftakeReportPanel, STOCK_OFFTAKE_REPORT_PANEL);
 		panelHolder.add(salesRequisitionSeparateItemsPanel, SALES_REQUISITION_SEPARATE_ITEMS_PANEL);
 		panelHolder.add(promoRedemptionRebatesPanel, PROMO_REDEMPTION_REBATES_PANEL);
 		panelHolder.add(uploadMaximumStockLevelChangesPanel, UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL);
@@ -1330,10 +1330,10 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, CREDIT_CARD_STATEMENT_LIST_PANEL);
 	}
 
-	public void switchToStockUptakeReportPanel() {
-		addPanelNameToTitle("Stock Uptake Report");
-		stockUptakeReportPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_UPTAKE_REPORT_PANEL);
+	public void switchToStockOfftakeReportPanel() {
+		addPanelNameToTitle("Stock Offtake Report");
+		stockOfftakeReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, STOCK_OFFTAKE_REPORT_PANEL);
 	}
 
 	public void switchToSalesRequisitionSeparateItemsPanel() {

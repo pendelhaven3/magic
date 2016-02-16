@@ -9,7 +9,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
-import com.pj.magic.model.report.StockUptakeReport;
+import com.pj.magic.model.report.StockOfftakeReport;
 
 public interface ExcelService {
 
@@ -21,6 +21,6 @@ public interface ExcelService {
 
 	XSSFWorkbook generateSpreadsheet(CustomerSalesSummaryReport report) throws IOException;
 
-	Workbook generateSpreadsheet(StockUptakeReport report) throws IOException;
+	Workbook generateSpreadsheet(StockOfftakeReport report) throws IOException;
 	
 }
