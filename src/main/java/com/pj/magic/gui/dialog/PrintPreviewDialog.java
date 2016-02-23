@@ -8,6 +8,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -151,6 +152,10 @@ public class PrintPreviewDialog extends MagicDialog {
 		});
 		toolBar.add(printButton);
 		
+		JButton printCurrentPageButton = new MagicToolBarButton("print_current", "Print Current Page");
+		printCurrentPageButton.addActionListener(e -> printCurrentPage());
+		toolBar.add(printCurrentPageButton);
+		
 		return toolBar;
 	}
 
@@ -176,6 +181,15 @@ public class PrintPreviewDialog extends MagicDialog {
 			printService.printWithCondensedFont(printPages);
 		} else {
 			printService.print(printPages);
+		}
+	}
+
+	private void printCurrentPage() {
+		List<String> toPrint = Arrays.asList(printPages.get(currentPage));
+		if (useCondensedFontForPrinting) {
+			printService.printWithCondensedFont(toPrint);
+		} else {
+			printService.print(toPrint);
 		}
 	}
 
