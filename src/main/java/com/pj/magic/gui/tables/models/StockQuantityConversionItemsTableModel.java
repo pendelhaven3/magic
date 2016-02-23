@@ -24,7 +24,7 @@ import com.pj.magic.service.StockQuantityConversionService;
 @Component
 public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 	
-	private static final String[] columnNames = {"Code", "Description", "From Unit", "Qty", "To Unit", "Converted Qty"};
+	private static final String[] columnNames = {"Code", "Description", "From Unit", "", "Qty", "To Unit", "Converted Qty"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private StockQuantityConversionService stockQuantityConversionService;
@@ -54,6 +54,8 @@ public class StockQuantityConversionItemsTableModel extends AbstractTableModel {
 			return rowItem.getFromUnit();
 		case StockQuantityConversionItemsTable.QUANTITY_COLUMN_INDEX:
 			return rowItem.getQuantity();
+		case StockQuantityConversionItemsTable.ADD_QUANTITY_COLUMN_INDEX:
+			return null;
 		case StockQuantityConversionItemsTable.TO_UNIT_COLUMN_INDEX:
 			return rowItem.getToUnit();
 		case StockQuantityConversionItemsTable.CONVERTED_QUANTITY_COLUMN_INDEX:

@@ -140,5 +140,16 @@ public class StockQuantityConversionItemDaoImpl extends MagicDao implements Stoc
 	public void updateConvertedQuantity(StockQuantityConversionItem item) {
 		getJdbcTemplate().update(UPDATE_CONVERTED_QUANTITY_SQL, item.getConvertedQuantity(), item.getId());
 	}
+
+	private static final String GET_SQL = BASE_SELECT_SQL + " where ID = ?";
+	
+	@Override
+	public StockQuantityConversionItem get(Long id) {
+		try {
+			return getJdbcTemplate().queryForObject(GET_SQL, rowMapper, id);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
 	
 }

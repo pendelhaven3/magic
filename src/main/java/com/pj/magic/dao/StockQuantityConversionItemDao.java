@@ -8,6 +8,8 @@ import com.pj.magic.model.StockQuantityConversionItem;
 
 public interface StockQuantityConversionItemDao {
 
+	StockQuantityConversionItem get(Long id);
+	
 	void save(StockQuantityConversionItem item);
 	
 	List<StockQuantityConversionItem> findAllByStockQuantityConversion(StockQuantityConversion stockQuantityConversion);

@@ -3,6 +3,8 @@ package com.pj.magic.gui.tables;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.DefaultCellEditor;
 import javax.swing.InputMap;
+import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -17,6 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,8 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
+import com.pj.magic.gui.component.TableCellButton;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.gui.tables.models.StockQuantityConversionItemsTableModel;
@@ -34,6 +40,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.StockQuantityConversionItem;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.StockQuantityConversionService;
 import com.pj.magic.util.KeyUtil;
 
 /*
@@ -48,9 +55,11 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	public static final int PRODUCT_CODE_COLUMN_INDEX = 0;
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
 	public static final int FROM_UNIT_COLUMN_INDEX = 2;
-	public static final int QUANTITY_COLUMN_INDEX = 3;
-	public static final int TO_UNIT_COLUMN_INDEX = 4;
-	public static final int CONVERTED_QUANTITY_COLUMN_INDEX = 5;
+	public static final int ADD_QUANTITY_COLUMN_INDEX = 3;
+	public static final int QUANTITY_COLUMN_INDEX = 4;
+	public static final int TO_UNIT_COLUMN_INDEX = 5;
+	public static final int CONVERTED_QUANTITY_COLUMN_INDEX = 6;
+	
 	private static final int UNIT_MAXIMUM_LENGTH = 3;
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String ADD_ITEM_ACTION_NAME = "addItem";
@@ -61,6 +70,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;
+	@Autowired private StockQuantityConversionService stockQuantityConversionService;
 	@Autowired private StockQuantityConversionItemsTableModel tableModel;
 	
 	private boolean addMode;
@@ -81,6 +91,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
 		columnModel.getColumn(FROM_UNIT_COLUMN_INDEX).setPreferredWidth(70);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
+		columnModel.getColumn(ADD_QUANTITY_COLUMN_INDEX).setMaxWidth(60);
 		columnModel.getColumn(TO_UNIT_COLUMN_INDEX).setPreferredWidth(70);
 		columnModel.getColumn(CONVERTED_QUANTITY_COLUMN_INDEX).setPreferredWidth(70);
 		
@@ -117,6 +128,11 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		});
 		getColumnModel().getColumn(FROM_UNIT_COLUMN_INDEX).setCellEditor(new FromUnitCellEditor(fromUnitTextField));
 		
+		TableColumn buttonColumn = getColumnModel().getColumn(ADD_QUANTITY_COLUMN_INDEX);
+		TableCellButton addQuantityButton = new TableCellButton("+");
+		buttonColumn.setCellRenderer(addQuantityButton);
+		// TODO: Add onhover, onpress display effects
+		
 		MagicTextField toUnitTextField = new MagicTextField();
 		toUnitTextField.setMaximumLength(UNIT_MAXIMUM_LENGTH);
 		toUnitTextField.addKeyListener(new KeyAdapter() {
@@ -132,7 +148,7 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 			}
 		});
 		getColumnModel().getColumn(TO_UNIT_COLUMN_INDEX).setCellEditor(new ToUnitCellEditor(toUnitTextField));
-		
+
 		MagicTextField quantityTextField = new MagicTextField();
 		quantityTextField.setMaximumLength(Constants.QUANTITY_MAXIMUM_LENGTH);
 		quantityTextField.setNumbersOnly(true);
@@ -255,10 +271,17 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 		clearSelection();
 		addMode = false;
 		this.stockQuantityConversion = stockQuantityConversion;
+		enableAddQuantityButton();
 		tableModel.setStockQuantityConversion(stockQuantityConversion);
 		previousSelectProductCriteria = null;
 	}
 	
+	private void enableAddQuantityButton() {
+		TableColumn buttonColumn = getColumnModel().getColumn(ADD_QUANTITY_COLUMN_INDEX);
+		JButton button = (JButton)buttonColumn.getCellRenderer();
+		button.setEnabled(stockQuantityConversion.isPosted() && !stockQuantityConversion.isPrinted());
+	}
+
 	private StockQuantityConversionItem createBlankItem() {
 		StockQuantityConversionItem item = new StockQuantityConversionItem();
 		item.setParent(stockQuantityConversion);
@@ -318,6 +341,20 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 				} else if (isUnitFieldSelected() || isQuantityFieldSelected()) {
 					copyValueFromPreviousRow();
 				}
+			}
+		});
+		
+		addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (isAddQuantityButtonClicked()) {
+					addAutoPostedQuantity();
+				}
+			}
+
+			private boolean isAddQuantityButtonClicked() {
+				return getSelectedColumn() == ADD_QUANTITY_COLUMN_INDEX;
 			}
 		});
 	}
@@ -453,6 +490,25 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 				});
 			}
 		});
+	}
+	
+	private void addAutoPostedQuantity() {
+		if (!stockQuantityConversion.isPosted() || stockQuantityConversion.isPrinted()) {
+			return;
+		}
+		
+		int selectedRow = getSelectedRow();
+		StockQuantityConversionItemRowItem rowItem = tableModel.getRowItem(selectedRow);
+		
+		try {
+			stockQuantityConversionService.addAutoPostedQuantity(rowItem.getItem());
+		} catch (NotEnoughStocksException e) {
+			showErrorMessage("Not enough stocks");
+			return;
+		}
+		
+		rowItem.setQuantity(rowItem.getQuantity() + 1);
+		tableModel.fireTableRowsUpdated(selectedRow, selectedRow);
 	}
 	
 	private class ProductCodeCellEditor extends MagicCellEditor {

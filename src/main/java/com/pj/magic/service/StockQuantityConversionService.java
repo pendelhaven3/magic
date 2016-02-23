@@ -29,5 +29,9 @@ public interface StockQuantityConversionService {
 	int getNextPageNumber();
 
 	List<StockQuantityConversion> getAllPendingStockQuantityConversions();
+
+	void addAutoPostedQuantity(StockQuantityConversionItem item);
+
+	StockQuantityConversionItem getStockQuantityConversionItem(Long id);
 	
 }

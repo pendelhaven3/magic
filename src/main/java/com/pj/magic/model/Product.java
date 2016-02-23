@@ -459,4 +459,8 @@ public class Product implements Comparable<Product> {
 		}
 	}
 	
+	public int getConvertedQuantity(String fromUnit, String toUnit) {
+		return getUnitConversion(fromUnit) / getUnitConversion(toUnit);
+	}
+	
 }
