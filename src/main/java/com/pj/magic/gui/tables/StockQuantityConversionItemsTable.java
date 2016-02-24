@@ -497,6 +497,10 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 			return;
 		}
 		
+		if (!confirm("Add quantity to convert?")) {
+			return;
+		}
+		
 		int selectedRow = getSelectedRow();
 		StockQuantityConversionItemRowItem rowItem = tableModel.getRowItem(selectedRow);
 		
