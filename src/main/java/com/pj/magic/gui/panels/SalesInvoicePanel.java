@@ -21,7 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -470,7 +470,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		}
 		
 		try (
-			XSSFWorkbook workbook = excelService.generateSpreadsheet(salesInvoice);
+			Workbook workbook = excelService.generateSpreadsheet(salesInvoice);
 			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
 		) {
 			workbook.write(out);

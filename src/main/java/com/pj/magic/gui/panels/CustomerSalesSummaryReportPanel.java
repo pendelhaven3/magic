@@ -22,11 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
-
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +39,10 @@ import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 public class CustomerSalesSummaryReportPanel extends StandardMagicPanel {
@@ -314,7 +314,7 @@ public class CustomerSalesSummaryReportPanel extends StandardMagicPanel {
 		report.setItems(tableModel.getItems());
 		
 		try (
-			XSSFWorkbook workbook = excelService.generateSpreadsheet(report);
+			Workbook workbook = excelService.generateSpreadsheet(report);
 			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
 		) {
 			workbook.write(out);

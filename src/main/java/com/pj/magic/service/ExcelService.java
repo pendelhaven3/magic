@@ -3,7 +3,6 @@ package com.pj.magic.service;
 import java.io.IOException;
 
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.PurchaseOrder;
@@ -13,13 +12,13 @@ import com.pj.magic.model.report.StockOfftakeReport;
 
 public interface ExcelService {
 
-	XSSFWorkbook generateSpreadsheet(SalesInvoice salesInvoice);
+	Workbook generateSpreadsheet(SalesInvoice salesInvoice);
 
-	XSSFWorkbook generateSpreadsheet(PurchaseOrder purchaseOrder);
+	Workbook generateSpreadsheet(PurchaseOrder purchaseOrder);
 
-	XSSFWorkbook generateSpreadsheet(PricingScheme pricingScheme) throws IOException;
+	Workbook generateSpreadsheet(PricingScheme pricingScheme) throws IOException;
 
-	XSSFWorkbook generateSpreadsheet(CustomerSalesSummaryReport report) throws IOException;
+	Workbook generateSpreadsheet(CustomerSalesSummaryReport report) throws IOException;
 
 	Workbook generateSpreadsheet(StockOfftakeReport report) throws IOException;
 	

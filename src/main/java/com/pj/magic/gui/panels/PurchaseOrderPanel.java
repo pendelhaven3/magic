@@ -36,7 +36,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -873,7 +873,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		}
 		
 		try (
-			XSSFWorkbook workbook = excelService.generateSpreadsheet(purchaseOrder);
+			Workbook workbook = excelService.generateSpreadsheet(purchaseOrder);
 			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
 		) {
 			workbook.write(out);

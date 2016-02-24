@@ -35,7 +35,7 @@ public class ExcelServiceImpl implements ExcelService {
 	@Autowired private SupplierDao supplierDao;
 	
 	@Override
-	public XSSFWorkbook generateSpreadsheet(SalesInvoice salesInvoice) {
+	public Workbook generateSpreadsheet(SalesInvoice salesInvoice) {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		Sheet sheet = workbook.createSheet();
 		int currentRow = 0;
@@ -176,7 +176,7 @@ public class ExcelServiceImpl implements ExcelService {
 	}
 
 	@Override
-	public XSSFWorkbook generateSpreadsheet(PurchaseOrder purchaseOrder) {
+	public Workbook generateSpreadsheet(PurchaseOrder purchaseOrder) {
 		purchaseOrder.setSupplier(supplierDao.get(purchaseOrder.getSupplier().getId()));
 		
 		XSSFWorkbook workbook = new XSSFWorkbook();
@@ -306,7 +306,7 @@ public class ExcelServiceImpl implements ExcelService {
 	}
 
 	@Override
-	public XSSFWorkbook generateSpreadsheet(PricingScheme pricingScheme) throws IOException {
+	public Workbook generateSpreadsheet(PricingScheme pricingScheme) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook(
 					getClass().getResourceAsStream("/excel/sellingPriceAndCost.xlsx"));
 		Sheet sheet = workbook.getSheetAt(0);
@@ -452,7 +452,7 @@ public class ExcelServiceImpl implements ExcelService {
 	}
 
 	@Override
-	public XSSFWorkbook generateSpreadsheet(CustomerSalesSummaryReport report) throws IOException {
+	public Workbook generateSpreadsheet(CustomerSalesSummaryReport report) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook(
 				getClass().getResourceAsStream("/excel/customerSalesSummaryReport.xlsx"));
 		Sheet sheet = workbook.getSheetAt(0);

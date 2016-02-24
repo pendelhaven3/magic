@@ -27,7 +27,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -402,7 +402,7 @@ public class MaintainPricingSchemePanel extends StandardMagicPanel {
 		pricingScheme.setProducts(pricesTableModel.getProducts());
 		
 		try (
-			XSSFWorkbook workbook = excelService.generateSpreadsheet(pricingScheme);
+			Workbook workbook = excelService.generateSpreadsheet(pricingScheme);
 			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
 		) {
 			workbook.write(out);
