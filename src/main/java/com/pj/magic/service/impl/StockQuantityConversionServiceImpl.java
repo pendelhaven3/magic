@@ -145,13 +145,18 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 		productDao.updateAvailableQuantities(product);
 
 		item = stockQuantityConversionItemDao.get(item.getId());
+		item.setProduct(product);
 		item.setQuantity(item.getQuantity() + 1);
+		item.calculateConvertedQuantity();
 		stockQuantityConversionItemDao.save(item);
+		stockQuantityConversionItemDao.updateConvertedQuantity(item);
 	}
 
 	@Override
 	public StockQuantityConversionItem getStockQuantityConversionItem(Long id) {
-		return stockQuantityConversionItemDao.get(id);
+		StockQuantityConversionItem item = stockQuantityConversionItemDao.get(id);
+		item.setProduct(productDao.get(item.getProduct().getId()));
+		return item;
 	}
 
 }

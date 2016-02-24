@@ -99,6 +99,10 @@ public class StockQuantityConversionItem implements Comparable<StockQuantityConv
 		return product.compareTo(o.getProduct());
 	}
 	
+	public void calculateConvertedQuantity() {
+		convertedQuantity = product.getUnitConversion(fromUnit) / product.getUnitConversion(toUnit) * quantity;
+	}
+	
 	public void setConvertedQuantity(Integer convertedQuantity) {
 		this.convertedQuantity = convertedQuantity;
 	}

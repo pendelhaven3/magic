@@ -511,7 +511,8 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 			return;
 		}
 		
-		rowItem.setQuantity(rowItem.getQuantity() + 1);
+		rowItem.setItem(stockQuantityConversionService.getStockQuantityConversionItem(rowItem.getItem().getId()));
+		rowItem.reset();
 		tableModel.fireTableRowsUpdated(selectedRow, selectedRow);
 	}
 	
