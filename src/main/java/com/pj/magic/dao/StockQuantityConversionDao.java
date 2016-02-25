@@ -1,5 +1,6 @@
 package com.pj.magic.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.model.StockQuantityConversion;
@@ -20,5 +21,7 @@ public interface StockQuantityConversionDao {
 	int getNextPageNumber();
 
 	List<StockQuantityConversion> getAllPending();
+
+	void updateCreateDateOfUnposted(Date referenceDate);
 	
 }

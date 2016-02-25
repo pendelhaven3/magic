@@ -1,30 +1,27 @@
 package com.pj.magic.dao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
-import com.pj.magic.model.StockQuantityConversion;
+import com.pj.magic.util.DateUtil;
 
-@Ignore
-@ContextConfiguration(locations={"classpath:applicationContext.xml"})
-public class StockQuantityConversionDaoTest extends AbstractTransactionalJUnit4SpringContextTests {
+public class StockQuantityConversionDaoTest extends IntegrationTest {
 	
 	@Autowired private StockQuantityConversionDao stockQuantityConversionDao;
-	
-	@Test
-	public void getAll() {
-		StockQuantityConversion stockQuantityConversion = new StockQuantityConversion();
-		stockQuantityConversionDao.save(stockQuantityConversion);
-		
-		stockQuantityConversion = new StockQuantityConversion();
-		stockQuantityConversionDao.save(stockQuantityConversion);
-		
-		assertEquals(2, stockQuantityConversionDao.getAll().size());
-	}
 
+	@Test
+	public void updateCreateDateOfUnposted() {
+		jdbcTemplate.batchUpdate(new String[] {
+			"insert into STOCK_QTY_CONVERSION (STOCK_QTY_CONV_NO, CREATE_DT, POST_IND) values (1, '2016-02-24', 'Y')",
+			"insert into STOCK_QTY_CONVERSION (STOCK_QTY_CONV_NO, CREATE_DT, POST_IND) values (2, '2016-02-24', 'N')"
+		});
+		
+		stockQuantityConversionDao.updateCreateDateOfUnposted(DateUtil.toDate("02/25/2016"));
+		
+		assertEquals(1, countRowsInTableWhere("STOCK_QTY_CONVERSION", "CREATE_DT = '2016-02-25'"));
+		assertEquals(1, countRowsInTableWhere("STOCK_QTY_CONVERSION", "STOCK_QTY_CONV_NO = 2 and CREATE_DT = '2016-02-25'"));
+	}
+	
 }

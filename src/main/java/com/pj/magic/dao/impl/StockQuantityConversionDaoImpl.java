@@ -188,4 +188,19 @@ public class StockQuantityConversionDaoImpl extends MagicDao implements StockQua
 		return getJdbcTemplate().query(GET_ALL_PENDING_SQL, stockQuantityConversionRowMapper);
 	}
 	
+	private static final String UPDATE_CREATE_DATE_OF_UNPOSTED_SQL =
+			"update STOCK_QTY_CONVERSION"
+			+ " set CREATE_DT = :createDate"
+			+ " where CREATE_DT < :createDate"
+			+ " and POST_IND = 'N'";
+			
+	
+	@Override
+	public void updateCreateDateOfUnposted(Date referenceDate) {
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("createDate", DbUtil.toMySqlDateString(referenceDate));
+		
+		getNamedParameterJdbcTemplate().update(UPDATE_CREATE_DATE_OF_UNPOSTED_SQL, paramMap);
+	}
+	
 }

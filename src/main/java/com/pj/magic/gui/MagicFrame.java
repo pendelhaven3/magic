@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
+import com.pj.magic.OnStartUp;
 import com.pj.magic.gui.panels.AdjustmentInListPanel;
 import com.pj.magic.gui.panels.AdjustmentInPanel;
 import com.pj.magic.gui.panels.AdjustmentOutListPanel;
@@ -98,9 +99,9 @@ import com.pj.magic.gui.panels.SalesRequisitionSeparateItemsPanel;
 import com.pj.magic.gui.panels.SalesReturnListPanel;
 import com.pj.magic.gui.panels.SalesReturnPanel;
 import com.pj.magic.gui.panels.StockCardInventoryReportPanel;
+import com.pj.magic.gui.panels.StockOfftakeReportPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionPanel;
-import com.pj.magic.gui.panels.StockOfftakeReportPanel;
 import com.pj.magic.gui.panels.SupplierListPanel;
 import com.pj.magic.gui.panels.UnpaidCreditCardPaymentsListPanel;
 import com.pj.magic.gui.panels.UnpaidReceivingReceiptsListPanel;
@@ -399,6 +400,7 @@ public class MagicFrame extends JFrame {
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
+	@Autowired private OnStartUp onStartUp;
 	
 	private JPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
@@ -422,6 +424,7 @@ public class MagicFrame extends JFrame {
 			closeProgram();
 		} else {
 			addPanels();
+			onStartUp.fire();
 		}
 	}
 	
