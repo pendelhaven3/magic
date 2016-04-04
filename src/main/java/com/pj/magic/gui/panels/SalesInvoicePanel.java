@@ -69,6 +69,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	private JLabel pricingSchemeNameField;
 	private JLabel modeField;
 	private JLabel remarksField;
+	private JLabel printedField;
 	private JLabel paymentTermNameField;
 	private JLabel statusField;
 	private JLabel totalItemsField;
@@ -118,6 +119,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		pricingSchemeNameField.setText(salesInvoice.getPricingScheme().getName());
 		modeField.setText(salesInvoice.getMode());
 		remarksField.setText(salesInvoice.getRemarks());
+		printedField.setText(salesInvoice.isPrinted() ? "Yes" : "No");
 		paymentTermNameField.setText(salesInvoice.getPaymentTerm().getName());
 		statusField.setText(HtmlUtil.blueUnderline(salesInvoice.getStatus()));
 		totalItemsField.setText(String.valueOf(salesInvoice.getTotalNumberOfItems()));
@@ -293,6 +295,20 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		remarksField = ComponentUtil.createLabel(200);
 		mainPanel.add(remarksField, c);
+
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Printed:"), c);
+		
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		printedField = ComponentUtil.createLabel(100);
+		mainPanel.add(printedField, c);
 		
 		currentRow++;
 		
@@ -370,14 +386,12 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		toolBar.add(printPreviewButton);
 		
 		JButton printButton = new MagicToolBarButton("print", "Print");
-		printButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				printService.print(salesInvoice);
-			}
-		});
+		printButton.addActionListener(e -> printSalesInvoice());
 		toolBar.add(printButton);
+		
+		JButton markAsPrintedButton = new MagicToolBarButton("mark_print", "Mark As Printed");
+		markAsPrintedButton.addActionListener(e -> markSalesInvoiceAsPrinted());
+		toolBar.add(markAsPrintedButton);
 		
 		JButton printBirFormCashButton = 
 				new MagicToolBarButton("print_bir_form_cash", "Print BIR form (Cash)");
@@ -442,6 +456,18 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(showAvailedPromoRewardsButton);
+	}
+
+	private void printSalesInvoice() {
+		salesInvoice = salesInvoiceService.get(salesInvoice.getId());
+		printService.print(salesInvoice);
+		updateDisplay(salesInvoice);
+	}
+
+	private void markSalesInvoiceAsPrinted() {
+		salesInvoiceService.markAsPrinted(salesInvoice);
+		showMessage("Saved");
+		updateDisplay(salesInvoice);
 	}
 
 	protected void openSetDiscountsForAllItemsDialog() {

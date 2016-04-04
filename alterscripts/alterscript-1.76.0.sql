@@ -1,0 +1,1 @@
+alter table SALES_INVOICE add PRINT_IND char(1) default 'N' not null;

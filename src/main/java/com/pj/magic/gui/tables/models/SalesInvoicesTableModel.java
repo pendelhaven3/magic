@@ -15,7 +15,7 @@ import com.pj.magic.util.FormatterUtil;
 public class SalesInvoicesTableModel extends AbstractTableModel {
 
 	private static final String[] COLUMN_NAMES = 
-		{"SI No.", "Transaction Date", "Customer", "Encoder", "Net Amount", "Status"};
+		{"SI No.", "Transaction Date", "Customer", "Encoder", "Net Amount", "Status", "Printed"};
 	
 	private List<SalesInvoice> salesInvoices = new ArrayList<>();
 	
@@ -45,6 +45,8 @@ public class SalesInvoicesTableModel extends AbstractTableModel {
 			return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
 		case SalesInvoicesTable.STATUS_COLUMN_INDEX:
 			return salesInvoice.getStatus();
+		case SalesInvoicesTable.PRINTED_COLUMN_INDEX:
+			return salesInvoice.isPrinted() ? "Yes" : "No";
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}

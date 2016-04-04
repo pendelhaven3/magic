@@ -36,6 +36,7 @@ public class SalesInvoice {
 	private Date markDate;
 	private User markedBy;
 	private BigDecimal vatAmount;
+	private boolean printed;
 	
 	private List<SalesReturn> salesReturns = new ArrayList<>(); // transient
 	private List<NoMoreStockAdjustment> noMoreStockAdjustments = new ArrayList<>(); // transient
@@ -375,6 +376,14 @@ public class SalesInvoice {
 
 	public void setNoMoreStockAdjustments(List<NoMoreStockAdjustment> noMoreStockAdjustments) {
 		this.noMoreStockAdjustments = noMoreStockAdjustments;
+	}
+
+	public boolean isPrinted() {
+		return printed;
+	}
+
+	public void setPrinted(boolean printed) {
+		this.printed = printed;
 	}
 	
 }

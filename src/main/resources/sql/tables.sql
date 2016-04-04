@@ -208,6 +208,7 @@ create table SALES_INVOICE (
   CANCEL_DT datetime null,
   CANCEL_BY integer null,
   VAT_AMOUNT numeric(8, 2) not null,
+  PRINT_IND char(1) default 'N' not null,
   constraint SALES_INVOICE$PK primary key (ID),
   constraint SALES_INVOICE$UK unique (SALES_INVOICE_NO),
   constraint SALES_INVOICE$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),

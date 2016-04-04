@@ -217,4 +217,11 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		}
 	}
 
+	@Transactional
+	@Override
+	public void markAsPrinted(SalesInvoice salesInvoice) {
+		salesInvoice.setPrinted(true);
+		salesInvoiceDao.save(salesInvoice);
+	}
+
 }

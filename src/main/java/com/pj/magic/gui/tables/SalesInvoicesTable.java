@@ -26,6 +26,7 @@ public class SalesInvoicesTable extends MagicListTable {
 	public static final int ENCODER_COLUMN_INDEX = 3;
 	public static final int NET_AMOUNT_COLUMN_INDEX = 4;
 	public static final int STATUS_COLUMN_INDEX = 5;
+	public static final int PRINTED_COLUMN_INDEX = 6;
 	private static final String GO_TO_SALES_INVOICE_ACTION_NAME = "goToSalesInvoice";
 
 	@Autowired private SalesInvoicesTableModel tableModel;

@@ -41,4 +41,6 @@ public interface SalesInvoiceService {
 	void setAllItemDiscounts(SalesInvoice salesInvoice, BigDecimal discount1, BigDecimal discount2,
 			BigDecimal discount3);
 
+	void markAsPrinted(SalesInvoice salesInvoice);
+
 }

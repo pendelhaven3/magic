@@ -34,7 +34,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, SALES_INVOICE_NO, CREATE_DT, RELATED_SALES_REQUISITION_NO, MODE, a.REMARKS, CUSTOMER_ID,"
-			+ " POST_DT, MARK_IND, MARK_DT, CANCEL_DT, CANCEL_IND, TRANSACTION_DT, VAT_AMOUNT,"
+			+ " POST_DT, MARK_IND, MARK_DT, CANCEL_DT, CANCEL_IND, TRANSACTION_DT, VAT_AMOUNT, PRINT_IND,"
 			+ " PRICING_SCHEME_ID, d.NAME as PRICING_SCHEME_NAME,"
 			+ " ENCODER, b.USERNAME as ENCODER_USERNAME,"
 			+ " a.PAYMENT_TERM_ID, e.NAME as PAYMENT_TERM_NAME, e.NUMBER_OF_DAYS as PAYMENT_TERM_NUMBER_OF_DAYS,"
@@ -161,6 +161,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 						new User(rs.getLong("CANCEL_BY"), rs.getString("CANCEL_BY_USERNAME")));
 			}
 			salesInvoice.setVatAmount(rs.getBigDecimal("VAT_AMOUNT"));
+			salesInvoice.setPrinted("Y".equals(rs.getString("PRINT_IND")));
 			return salesInvoice;
 		}
 		
@@ -169,7 +170,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	private static final String UPDATE_SQL =
 			"update SALES_INVOICE"
 			+ " set MARK_IND = ?, MARK_DT = ?, MARK_BY = ?,"
-			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?"
+			+ " CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ?, PRINT_IND = ?"
 			+ " where ID = ?";
 	
 	private void update(SalesInvoice salesInvoice) {
@@ -180,6 +181,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 				salesInvoice.isCancelled() ? "Y" : "N",
 				salesInvoice.isCancelled() ? salesInvoice.getCancelDate() : null,
 				salesInvoice.isCancelled() ? salesInvoice.getCancelledBy().getId() : null,
+				salesInvoice.isPrinted() ? "Y" : "N",
 				salesInvoice.getId());
 	}
 
