@@ -13,10 +13,12 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
@@ -38,11 +40,13 @@ public class PrintServiceTest {
 	private PrinterUtilMock printerUtil;
 	
 	@Mock private PromoRedemptionService promoRedemptionService;
+	@Mock private SalesInvoiceDao salesInvoiceDao;
 	
 	@Before
 	public void setUp() throws Exception {
 		printService = new PrintServiceImpl();
 		ReflectionTestUtils.setField(printService, "promoRedemptionService", promoRedemptionService);
+		ReflectionTestUtils.setField(printService, "salesInvoiceDao", salesInvoiceDao);
 		
 		printerUtil = new PrinterUtilMock();
 		ReflectionTestUtils.setField(printService, "printerUtil", printerUtil);
@@ -78,6 +82,14 @@ public class PrintServiceTest {
 		printService.print(salesInvoice);
 		
 		assertEquals(getExpectedPrinterOutput("salesInvoice.txt"), printerUtil.getPrinterOutput());
+		verify(salesInvoiceDao).save(argThat(new ArgumentMatcher<SalesInvoice>() {
+		
+			@Override
+			public boolean matches(Object argument) {
+				SalesInvoice arg = (SalesInvoice)argument;
+				return arg.isPrinted();
+			}
+		}));
 	}
 	
 	@Test
