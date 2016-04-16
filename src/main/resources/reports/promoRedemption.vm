@@ -30,6 +30,6 @@ $promoRedemptionReward.quantity $promoRedemptionReward.unit $promoRedemptionRewa
 #end
 #if($promoRedemption.promo.promoType.type5)
 #foreach($rebate in $promoRedemption.rebates)
-$report.field($rebate.paymentAdjustment.amount, 6, "") POINTS
+$report.field($rebate.paymentAdjustment.amount, 6, "") POINTS (CM# $rebate.paymentAdjustment.paymentAdjustmentNumber)
 #end
 #end
