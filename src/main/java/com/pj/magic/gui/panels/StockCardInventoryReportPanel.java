@@ -149,6 +149,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	private void openSelectProductDialog() {
 		ProductSearchCriteria criteria = new ProductSearchCriteria();
 		criteria.setCodeOrDescriptionLike(productCodeField.getText());
+		criteria.setActive(true);
 		
 		selectProductDialog.searchProducts(criteria);
 		selectProductDialog.setVisible(true);
