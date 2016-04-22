@@ -487,6 +487,9 @@ public class PrintServiceImpl implements PrintService {
 	}
 	
 	private void printBirForm(SalesInvoice salesInvoice, boolean cashForm) {
+		salesInvoice.setPrinted(true);
+		salesInvoiceDao.save(salesInvoice);
+		
 		Collections.sort(salesInvoice.getItems());
 		
 		List<PromoRedemption> promoRedemptions = promoRedemptionService.findAllAvailedPromoRedemptions(salesInvoice);
