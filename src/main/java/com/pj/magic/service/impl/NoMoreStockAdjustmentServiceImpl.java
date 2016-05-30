@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.NoMoreStockAdjustmentDao;
 import com.pj.magic.dao.NoMoreStockAdjustmentItemDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NoMoreStockAdjustmentItemQuantityExceededException;
@@ -34,6 +34,7 @@ public class NoMoreStockAdjustmentServiceImpl implements NoMoreStockAdjustmentSe
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
+	@Autowired private SystemDao systemDao;
 	
 	@Override
 	public List<NoMoreStockAdjustment> getNewNoMoreStockAdjustments() {
@@ -100,7 +101,7 @@ public class NoMoreStockAdjustmentServiceImpl implements NoMoreStockAdjustmentSe
 		}
 		
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		noMoreStockAdjustmentDao.save(updated);
 	}
@@ -162,7 +163,7 @@ public class NoMoreStockAdjustmentServiceImpl implements NoMoreStockAdjustmentSe
 		}
 		
 		updated.setPaid(true);
-		updated.setPaidDate(new Date());
+		updated.setPaidDate(systemDao.getCurrentDateTime());
 		updated.setPaidBy(loginService.getLoggedInUser());
 		updated.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 		noMoreStockAdjustmentDao.save(updated);

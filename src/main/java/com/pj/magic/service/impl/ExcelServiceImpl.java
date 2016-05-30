@@ -1,7 +1,6 @@
 package com.pj.magic.service.impl;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.SupplierDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseOrder;
@@ -33,6 +33,7 @@ import com.pj.magic.util.FormatterUtil;
 public class ExcelServiceImpl implements ExcelService {
 
 	@Autowired private SupplierDao supplierDao;
+	@Autowired private SystemDao systemDao;
 	
 	@Override
 	public Workbook generateSpreadsheet(SalesInvoice salesInvoice) {
@@ -215,7 +216,7 @@ public class ExcelServiceImpl implements ExcelService {
 		row.createCell(0).setCellValue("ADDRESS: " + purchaseOrder.getSupplier().getAddress());
 		row.createCell(7).setCellValue("DATE:");
 		cell = row.createCell(8);
-		cell.setCellValue(FormatterUtil.formatDate(new Date()));
+		cell.setCellValue(FormatterUtil.formatDate(systemDao.getCurrentDateTime()));
 		cell.setCellStyle(CellStyleBuilder.createStyle(workbook)
 				.setAlignment(CellStyle.ALIGN_RIGHT).build());
 

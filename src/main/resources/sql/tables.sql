@@ -620,7 +620,7 @@ create table BAD_STOCK_RETURN (
   BAD_STOCK_RETURN_NO integer not null,
   CUSTOMER_ID integer not null,
   POST_IND char(1) default 'N' not null,
-  POST_DT date null,
+  POST_DT datetime null,
   POST_BY integer null,
   PAID_IND char(1) default 'N' not null,
   PAID_DT datetime null,

@@ -3,7 +3,6 @@ package com.pj.magic.gui.tables;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -27,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectProductDialog;
@@ -73,6 +73,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 	@Autowired private LoginService loginService;
 	@Autowired private StockQuantityConversionService stockQuantityConversionService;
 	@Autowired private SalesRequisitionService salesRequisitionService;
+	@Autowired private SystemDao systemDao;
 	
 	private boolean addMode;
 	private SalesRequisition salesRequisition;
@@ -556,7 +557,7 @@ public class SalesRequisitionItemsTable extends MagicTable {
 		stockQuantityConversionService.save(conversion);
 		
 		conversion.setPosted(true);
-		conversion.setPostDate(new Date());
+		conversion.setPostDate(systemDao.getCurrentDateTime());
 		conversion.setPostedBy(loginService.getLoggedInUser());
 		stockQuantityConversionService.save(conversion);
 		

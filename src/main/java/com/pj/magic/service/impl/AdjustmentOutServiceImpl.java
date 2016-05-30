@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.AdjustmentOutDao;
 import com.pj.magic.dao.AdjustmentOutItemDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
@@ -25,6 +25,7 @@ public class AdjustmentOutServiceImpl implements AdjustmentOutService {
 	@Autowired private AdjustmentOutDao adjustmentOutDao;
 	@Autowired private AdjustmentOutItemDao adjustmentOutItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private LoginService loginService;
 	
 	@Transactional
@@ -83,7 +84,7 @@ public class AdjustmentOutServiceImpl implements AdjustmentOutService {
 			}
 		}
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		adjustmentOutDao.save(updated);
 	}

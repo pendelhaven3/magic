@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PurchaseReturnDao;
 import com.pj.magic.dao.PurchaseReturnItemDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.PurchaseReturnItem;
@@ -26,6 +26,7 @@ public class PurchaseReturnServiceImpl implements PurchaseReturnService {
 	@Autowired private PurchaseReturnItemDao purchaseReturnItemDao;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
 	@Autowired private ProductDao productDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private LoginService loginService;
 	
 	@Transactional
@@ -73,7 +74,7 @@ public class PurchaseReturnServiceImpl implements PurchaseReturnService {
 			productDao.updateAvailableQuantities(product);
 		}
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		purchaseReturnDao.save(updated);
 	}
@@ -120,7 +121,7 @@ public class PurchaseReturnServiceImpl implements PurchaseReturnService {
 	public void markAsPaid(PurchaseReturn purchaseReturn) {
 		PurchaseReturn updated = purchaseReturnDao.get(purchaseReturn.getId());
 		updated.setPaid(true);
-		updated.setPaidDate(new Date());
+		updated.setPaidDate(systemDao.getCurrentDateTime());
 		updated.setPaidBy(loginService.getLoggedInUser());
 		purchaseReturnDao.save(updated);
 	}

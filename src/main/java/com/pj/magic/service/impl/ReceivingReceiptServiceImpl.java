@@ -2,7 +2,6 @@ package com.pj.magic.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import com.pj.magic.Constants;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.ReceivingReceiptDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.model.Product;
@@ -36,6 +36,7 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	@Autowired private ReceivingReceiptDao receivingReceiptDao;
 	@Autowired private ReceivingReceiptItemDao receivingReceiptItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private LoginService loginService;
 	
 	@Transactional
@@ -118,7 +119,7 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 		}
 		
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		receivingReceiptDao.save(updated);
 	}
@@ -149,7 +150,7 @@ public class ReceivingReceiptServiceImpl implements ReceivingReceiptService {
 	public void cancel(ReceivingReceipt receivingReceipt) {
 		ReceivingReceipt updated = receivingReceiptDao.get(receivingReceipt.getId());
 		updated.setCancelled(true);
-		updated.setCancelDate(new Date());
+		updated.setCancelDate(systemDao.getCurrentDateTime());
 		updated.setCancelledBy(loginService.getLoggedInUser());
 		receivingReceiptDao.save(updated);
 	}

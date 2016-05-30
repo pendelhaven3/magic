@@ -21,6 +21,7 @@ import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesReturnDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPaidException;
@@ -69,6 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private NoMoreStockAdjustmentDao noMoreStockAdjustmentDao;
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
 	@Autowired private SalesInvoiceDao salesInvoiceDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private UserDao userDao;
 	
 	@Transactional
@@ -194,9 +196,11 @@ public class PaymentServiceImpl implements PaymentService {
 			throw new UserNotAssignedToPaymentTerminalException();
 		}
 		
+		Date currentDateTime = systemDao.getCurrentDateTime();
+		
 		Payment updated = getPayment(payment.getId());
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(currentDateTime);
 		updated.setPostedBy(user);
 		updated.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 		paymentDao.save(updated);
@@ -206,7 +210,7 @@ public class PaymentServiceImpl implements PaymentService {
 				salesReturnDao.savePaymentSalesReturn(updated, salesReturn);
 				
 				salesReturn.setPaid(true);
-				salesReturn.setPaidDate(new Date());
+				salesReturn.setPaidDate(currentDateTime);
 				salesReturn.setPaidBy(loginService.getLoggedInUser());
 				salesReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				salesReturn.setPaymentNumber(updated.getPaymentNumber());
@@ -228,7 +232,7 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 				
 				salesReturn.setPaid(true);
-				salesReturn.setPaidDate(new Date());
+				salesReturn.setPaidDate(currentDateTime);
 				salesReturn.setPaidBy(loginService.getLoggedInUser());
 				salesReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				salesReturn.setPaymentNumber(updated.getPaymentNumber());
@@ -241,7 +245,7 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 				
 				badStockReturn.setPaid(true);
-				badStockReturn.setPaidDate(new Date());
+				badStockReturn.setPaidDate(currentDateTime);
 				badStockReturn.setPaidBy(loginService.getLoggedInUser());
 				badStockReturn.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				badStockReturn.setPaymentNumber(updated.getPaymentNumber());
@@ -255,7 +259,7 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 				
 				noMoreStockAdjustment.setPaid(true);
-				noMoreStockAdjustment.setPaidDate(new Date());
+				noMoreStockAdjustment.setPaidDate(currentDateTime);
 				noMoreStockAdjustment.setPaidBy(loginService.getLoggedInUser());
 				noMoreStockAdjustment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				noMoreStockAdjustment.setPaymentNumber(updated.getPaymentNumber());
@@ -270,7 +274,7 @@ public class PaymentServiceImpl implements PaymentService {
 				}
 				
 				paymentAdjustment.setPaid(true);
-				paymentAdjustment.setPaidDate(new Date());
+				paymentAdjustment.setPaidDate(currentDateTime);
 				paymentAdjustment.setPaidBy(loginService.getLoggedInUser());
 				paymentAdjustment.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 				paymentAdjustment.setPaymentNumber(updated.getPaymentNumber());
@@ -300,7 +304,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public void cancel(Payment payment) {
 		payment.setCancelled(true);
-		payment.setCancelDate(new Date());
+		payment.setCancelDate(systemDao.getCurrentDateTime());
 		payment.setCancelledBy(loginService.getLoggedInUser());
 		paymentDao.save(payment);
 	}
@@ -367,7 +371,7 @@ public class PaymentServiceImpl implements PaymentService {
 		PaymentCashPayment cashPayment = new PaymentCashPayment();
 		cashPayment.setParent(payment);
 		cashPayment.setAmount(payment.getTotalAmountDueMinusNonCashPaymentsAndAdjustments());
-		cashPayment.setReceivedDate(new Date());
+		cashPayment.setReceivedDate(systemDao.getCurrentDateTime());
 		cashPayment.setReceivedBy(loginService.getLoggedInUser());
 		save(cashPayment);
 		
@@ -392,7 +396,7 @@ public class PaymentServiceImpl implements PaymentService {
 			salesInvoices.add(salesInvoice);
 		}
 		
-		Date now = new Date();
+		Date now = systemDao.getCurrentDateTime();
 		User payrollUser = userDao.findByUsername("PAYROLL");
 		PaymentTerminal office = paymentTerminalAssignmentDao.findByUser(payrollUser).getPaymentTerminal();
 		

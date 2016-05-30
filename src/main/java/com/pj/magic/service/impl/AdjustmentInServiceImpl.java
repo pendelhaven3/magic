@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.AdjustmentInDao;
 import com.pj.magic.dao.AdjustmentInItemDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentInItem;
 import com.pj.magic.model.Product;
@@ -24,6 +24,7 @@ public class AdjustmentInServiceImpl implements AdjustmentInService {
 	@Autowired private AdjustmentInDao adjustmentInDao;
 	@Autowired private AdjustmentInItemDao adjustmentInItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private LoginService loginService;
 	
 	@Transactional
@@ -78,7 +79,7 @@ public class AdjustmentInServiceImpl implements AdjustmentInService {
 			adjustmentInItemDao.save(item);
 		}
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		adjustmentInDao.save(updated);
 	}

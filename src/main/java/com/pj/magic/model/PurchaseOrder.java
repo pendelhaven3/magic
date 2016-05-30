@@ -121,7 +121,6 @@ public class PurchaseOrder {
 	public ReceivingReceipt createReceivingReceipt() {
 		ReceivingReceipt receivingReceipt = new ReceivingReceipt();
 		receivingReceipt.setSupplier(supplier);
-		receivingReceipt.setReceivedDate(new Date());
 		receivingReceipt.setPaymentTerm(paymentTerm);
 		receivingReceipt.setReferenceNumber(referenceNumber);
 		receivingReceipt.setRemarks(remarks);

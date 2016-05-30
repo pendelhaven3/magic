@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PurchaseOrderDao;
 import com.pj.magic.dao.PurchaseOrderItemDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.NoActualQuantityException;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
@@ -27,6 +27,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	@Autowired private PurchaseOrderDao purchaseOrderDao;
 	@Autowired private PurchaseOrderItemDao purchaseOrderItemDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
 	@Autowired private LoginService loginService;
 	@Autowired private SystemService systemService;
@@ -86,10 +87,11 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 		}
 		
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		purchaseOrderDao.save(updated);
 
 		ReceivingReceipt receivingReceipt = updated.createReceivingReceipt();
+		receivingReceipt.setReceivedDate(systemDao.getCurrentDateTime());
 		receivingReceipt.setReceivedBy(loginService.getLoggedInUser());
 		receivingReceiptService.save(receivingReceipt);
 		return receivingReceipt;

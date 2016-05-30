@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.dao.StockQuantityConversionItemDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.Product;
@@ -26,6 +26,7 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 	@Autowired private StockQuantityConversionItemDao stockQuantityConversionItemDao;
 	@Autowired private ProductDao productDao;
 	@Autowired private LoginService loginService;
+	@Autowired private SystemDao systemDao;
 	
 	@Transactional
 	@Override
@@ -84,7 +85,7 @@ public class StockQuantityConversionServiceImpl implements StockQuantityConversi
 			}
 		}
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		stockQuantityConversionDao.save(updated);
 	}

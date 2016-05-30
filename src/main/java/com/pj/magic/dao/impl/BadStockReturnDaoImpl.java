@@ -137,7 +137,7 @@ public class BadStockReturnDaoImpl extends MagicDao implements BadStockReturnDao
 			
 			badStockReturn.setPosted("Y".equals(rs.getString("POST_IND")));
 			if (badStockReturn.isPosted()) {
-				badStockReturn.setPostDate(rs.getDate("POST_DT"));
+				badStockReturn.setPostDate(rs.getTimestamp("POST_DT"));
 				badStockReturn.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
 			}
 			

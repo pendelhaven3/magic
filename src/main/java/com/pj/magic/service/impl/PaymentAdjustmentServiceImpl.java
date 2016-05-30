@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.PaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.User;
@@ -23,6 +23,7 @@ public class PaymentAdjustmentServiceImpl implements PaymentAdjustmentService {
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
+	@Autowired private SystemDao systemDao;
 	
 	@Transactional
 	@Override
@@ -45,7 +46,7 @@ public class PaymentAdjustmentServiceImpl implements PaymentAdjustmentService {
 	public void post(PaymentAdjustment paymentAdjustment) {
 		PaymentAdjustment updated = paymentAdjustmentDao.get(paymentAdjustment.getId());
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		paymentAdjustmentDao.save(updated);
 	}
@@ -61,7 +62,7 @@ public class PaymentAdjustmentServiceImpl implements PaymentAdjustmentService {
 		
 		PaymentAdjustment updated = paymentAdjustmentDao.get(paymentAdjustment.getId());
 		updated.setPaid(true);
-		updated.setPaidDate(new Date());
+		updated.setPaidDate(systemDao.getCurrentDateTime());
 		updated.setPaidBy(loginService.getLoggedInUser());
 		updated.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 		paymentAdjustmentDao.save(updated);

@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -12,6 +11,7 @@ import com.pj.magic.dao.BadStockReturnDao;
 import com.pj.magic.dao.BadStockReturnItemDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.model.BadStockReturn;
@@ -31,6 +31,7 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	@Autowired private ProductDao productDao;
+	@Autowired private SystemDao systemDao;
 	
 	@Transactional
 	@Override
@@ -81,7 +82,7 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 	public void post(BadStockReturn badStockReturn) {
 		BadStockReturn updated = getBadStockReturn(badStockReturn.getId());
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		badStockReturnDao.save(updated);
 		
@@ -103,7 +104,7 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 		
 		BadStockReturn updated = badStockReturnDao.get(badStockReturn.getId());
 		updated.setPaid(true);
-		updated.setPaidDate(new Date());
+		updated.setPaidDate(systemDao.getCurrentDateTime());
 		updated.setPaidBy(loginService.getLoggedInUser());
 		updated.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 		badStockReturnDao.save(updated);
@@ -139,7 +140,7 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 		}
 		
 		updated.setCancelled(true);
-		updated.setCancelDate(new Date());
+		updated.setCancelDate(systemDao.getCurrentDateTime());
 		updated.setCancelledBy(loginService.getLoggedInUser());
 		badStockReturnDao.save(updated);
 	}

@@ -22,6 +22,7 @@ import com.pj.magic.dao.BadStockReturnDao;
 import com.pj.magic.dao.BadStockReturnItemDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.Product;
@@ -40,6 +41,7 @@ public class BadStockReturnServiceTest {
 	@Mock private LoginService loginService;
 	@Mock private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	@Mock private ProductDao productDao;
+	@Mock private SystemDao systemDao;
 	
 	@Before
 	public void setUp() {
@@ -50,6 +52,7 @@ public class BadStockReturnServiceTest {
 		ReflectionTestUtils.setField(service, "loginService", loginService);
 		ReflectionTestUtils.setField(service, "paymentTerminalAssignmentDao", paymentTerminalAssignmentDao);
 		ReflectionTestUtils.setField(service, "productDao", productDao);
+		ReflectionTestUtils.setField(service, "systemDao", systemDao);
 	}
 	
 	@Test
@@ -167,6 +170,7 @@ public class BadStockReturnServiceTest {
 		when(badStockReturnItemDao.findAllByBadStockReturn(badStockReturn)).thenReturn(items);
 		when(loginService.getLoggedInUser()).thenReturn(loggedInUser);
 		when(productDao.get(1L)).thenReturn(product);
+		when(systemDao.getCurrentDateTime()).thenReturn(new Date());
 		
 		service.post(badStockReturn);
 		

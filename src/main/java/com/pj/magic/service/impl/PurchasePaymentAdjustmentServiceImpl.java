@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.PurchasePaymentAdjustmentDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.PurchasePaymentAdjustment;
 import com.pj.magic.model.search.PurchasePaymentAdjustmentSearchCriteria;
 import com.pj.magic.service.LoginService;
@@ -18,6 +18,7 @@ import com.pj.magic.service.PurchasePaymentAdjustmentService;
 public class PurchasePaymentAdjustmentServiceImpl implements PurchasePaymentAdjustmentService {
 
 	@Autowired private PurchasePaymentAdjustmentDao purchasePaymentAdjustmentDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private LoginService loginService;
 	
 	@Transactional
@@ -36,7 +37,7 @@ public class PurchasePaymentAdjustmentServiceImpl implements PurchasePaymentAdju
 	public void post(PurchasePaymentAdjustment paymentAdjustment) {
 		PurchasePaymentAdjustment updated = purchasePaymentAdjustmentDao.get(paymentAdjustment.getId());
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		purchasePaymentAdjustmentDao.save(updated);
 	}

@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -12,6 +11,7 @@ import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.dao.SalesReturnItemDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.SalesReturnItemQuantityExceededException;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentTerminalAssignment;
@@ -33,6 +33,7 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 	@Autowired private SalesReturnItemDao salesReturnItemDao;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private ProductDao productDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	
@@ -86,7 +87,7 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 			productDao.updateAvailableQuantities(product);
 		}
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		salesReturnDao.save(updated);
 	}
@@ -143,7 +144,7 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		
 		SalesReturn updated = salesReturnDao.get(salesReturn.getId());
 		updated.setPaid(true);
-		updated.setPaidDate(new Date());
+		updated.setPaidDate(systemDao.getCurrentDateTime());
 		updated.setPaidBy(loginService.getLoggedInUser());
 		updated.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 		salesReturnDao.save(updated);

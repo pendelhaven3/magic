@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.dao.SupplierDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.dao.UserDao;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentInItem;
@@ -123,6 +123,7 @@ public class PrintServiceImpl implements PrintService {
 	@Autowired private UserDao userDao;
 	@Autowired private StockQuantityConversionDao stockQuantityConversionDao;
 	@Autowired private SalesInvoiceDao salesInvoiceDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private PromoRedemptionService promoRedemptionService;
 	@Autowired private PrinterUtil printerUtil;
 	
@@ -172,7 +173,7 @@ public class PrintServiceImpl implements PrintService {
 	public List<String> generateReportAsString(PurchaseOrder purchaseOrder, boolean includeCost) {
 		purchaseOrder.setSupplier(supplierDao.get(purchaseOrder.getSupplier().getId()));
 		
-		String currentDate = FormatterUtil.formatDate(new Date());
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
 		
 		String reportFile = (includeCost) ? "purchaseOrder-withCost.vm" : "purchaseOrder.vm";
 		
@@ -208,7 +209,7 @@ public class PrintServiceImpl implements PrintService {
 	@Override
 	public List<String> generateReportAsString(PricingScheme pricingScheme, List<Product> products,
 			boolean includeCosts) {
-		String currentDate = FormatterUtil.formatDate(new Date());
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
 		
 		List<List<Product>> pageItems = null;
 		if (includeCosts) {
@@ -387,7 +388,7 @@ public class PrintServiceImpl implements PrintService {
 	public List<String> generateReportAsString(StockQuantityConversion stockQuantityConversion) {
 		Collections.sort(stockQuantityConversion.getItems());
 		
-		String currentDate = FormatterUtil.formatDate(new Date());
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
 		
 		List<List<StockQuantityConversionItem>> pageItems = Lists.partition(stockQuantityConversion.getItems(), 
 				STOCK_QUANTITY_CONVERSION_ITEMS_PER_PAGE);
@@ -601,7 +602,7 @@ public class PrintServiceImpl implements PrintService {
 	public List<String> generateReportAsString(AdjustmentOut adjustmentOut) {
 		Collections.sort(adjustmentOut.getItems());
 		
-		String currentDate = FormatterUtil.formatDate(new Date());
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
 		
 		List<List<AdjustmentOutItem>> pageItems = Lists.partition(adjustmentOut.getItems(), 
 				ADJUSTMENT_OUT_ITEMS_PER_PAGE);
@@ -634,7 +635,7 @@ public class PrintServiceImpl implements PrintService {
 	public List<String> generateReportAsString(AdjustmentIn adjustmentIn) {
 		Collections.sort(adjustmentIn.getItems());
 		
-		String currentDate = FormatterUtil.formatDate(new Date());
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
 		
 		List<List<AdjustmentInItem>> pageItems = Lists.partition(adjustmentIn.getItems(), 
 				ADJUSTMENT_IN_ITEMS_PER_PAGE);
@@ -686,7 +687,7 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public List<String> generateReportAsString(UnpaidSalesInvoicesReport report) {
-		String currentDate = FormatterUtil.formatDate(new Date());
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
 		
 		List<List<PaymentSalesInvoice>> pageItems = Lists.partition(report.getSalesInvoices(), 
 				UNPAID_SALES_INVOICE_ITEMS_PER_PAGE);
@@ -750,12 +751,14 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public List<String> generateReportAsString(SalesReturn salesReturn) {
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
+		
 		List<List<SalesReturnItem>> pageItems = Lists.partition(salesReturn.getItems(), 
 				SALES_RETURN_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("currentDate", new Date());
+			reportData.put("currentDate", currentDate);
 			reportData.put("salesReturn", salesReturn);
 			reportData.put("remarks", StringUtils.defaultString(salesReturn.getRemarks()));
 			reportData.put("items", pageItems.get(i));
@@ -780,12 +783,14 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public List<String> generateReportAsString(BadStockReturn badStockReturn) {
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
+		
 		List<List<BadStockReturnItem>> pageItems = Lists.partition(badStockReturn.getItems(), 
 				BAD_STOCK_RETURN_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("currentDate", new Date());
+			reportData.put("currentDate", currentDate);
 			reportData.put("badStockReturn", badStockReturn);
 			reportData.put("remarks", StringUtils.defaultString(badStockReturn.getRemarks()));
 			reportData.put("items", pageItems.get(i));
@@ -944,7 +949,7 @@ public class PrintServiceImpl implements PrintService {
 	public List<String> generateReportAsString(PurchasePayment purchasePayment) {
 		Map<String, Object> reportData = new HashMap<>();
 		reportData.put("payment", purchasePayment);
-		reportData.put("currentDate", new Date());
+		reportData.put("currentDate", systemDao.getCurrentDateTime());
 		reportData.put("newLine", "\n");
 		return Arrays.asList(generateReportAsString("reports/purchasePayment.vm", reportData));
 	}
@@ -962,12 +967,14 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public List<String> generateReportAsString(PurchaseReturnBadStock purchaseReturnBadStock) {
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
+		
 		List<List<PurchaseReturnBadStockItem>> pageItems = Lists.partition(purchaseReturnBadStock.getItems(), 
 				PURCHASE_RETURN_BAD_STOCK_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("currentDate", new Date());
+			reportData.put("currentDate", currentDate);
 			reportData.put("purchaseReturnBadStock", purchaseReturnBadStock);
 			reportData.put("remarks", StringUtils.defaultString(purchaseReturnBadStock.getRemarks()));
 			reportData.put("items", pageItems.get(i));
@@ -1039,12 +1046,14 @@ public class PrintServiceImpl implements PrintService {
 
 	@Override
 	public List<String> generateReportAsString(NoMoreStockAdjustment noMoreStockAdjustment) {
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
+		
 		List<List<NoMoreStockAdjustmentItem>> pageItems = Lists.partition(noMoreStockAdjustment.getItems(), 
 				NO_MORE_STOCK_ADJUSTMENT_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
-			reportData.put("currentDate", new Date());
+			reportData.put("currentDate", currentDate);
 			reportData.put("noMoreStockAdjustment", noMoreStockAdjustment);
 			reportData.put("remarks", StringUtils.defaultString(noMoreStockAdjustment.getRemarks()));
 			reportData.put("items", pageItems.get(i));

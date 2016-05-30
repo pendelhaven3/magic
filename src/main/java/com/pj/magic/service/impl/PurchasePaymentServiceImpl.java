@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -19,6 +18,7 @@ import com.pj.magic.dao.PurchasePaymentReceivingReceiptDao;
 import com.pj.magic.dao.PurchaseReturnBadStockDao;
 import com.pj.magic.dao.PurchaseReturnDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.PurchasePaymentBankTransfer;
@@ -56,6 +56,7 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 	@Autowired private PurchasePaymentAdjustmentService purchasePaymentAdjustmentService;
 	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;
 	@Autowired private PurchaseReturnBadStockDao purchaseReturnBadStockDao;
+	@Autowired private SystemDao systemDao;
 	
 	@Transactional
 	@Override
@@ -100,7 +101,7 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 	public void post(PurchasePayment purchasePayment) {
 		PurchasePayment updated = getPurchasePayment(purchasePayment.getId());
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		purchasePaymentDao.save(updated);
 		

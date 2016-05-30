@@ -17,6 +17,7 @@ import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
 import com.pj.magic.dao.SalesRequisitionDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.SalesRequisitionSeparateItemDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.dao.UserDao;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughPromoStocksException;
@@ -53,13 +54,14 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Autowired private PromoRedemptionSalesInvoiceDao promoRedemptionSalesInvoiceDao;
 	@Autowired private PromoRedemptionRewardDao promoRedemptionRewardDao;
 	@Autowired private SalesRequisitionSeparateItemDao salesRequisitionSeparateItemDao;
+	@Autowired private SystemDao systemDao;
 	
 	@Transactional
 	@Override
 	public void save(SalesRequisition salesRequisition) {
 		boolean isNew = (salesRequisition.getId() == null);
 		if (isNew) {
-			salesRequisition.setCreateDate(new Date());
+			salesRequisition.setCreateDate(systemDao.getCurrentDateTime());
 			salesRequisition.setTransactionDate(salesRequisition.getCreateDate());
 			salesRequisition.setEncoder(loginService.getLoggedInUser());
 		}
@@ -151,6 +153,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	}
 
 	private void postAvailedPromoRewards(SalesInvoice salesInvoice) {
+		Date now = systemDao.getCurrentDateTime();
 		for (Promo promo : promoService.getAllActivePromos()) {
 			if (!(promo.getPromoType().isType2() && promo.checkIfEligible(salesInvoice))) {
 				continue;
@@ -164,7 +167,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 				promoRedemptionDao.save(promoRedemption);
 				
 				promoRedemption.setPosted(true);
-				promoRedemption.setPostDate(new Date());
+				promoRedemption.setPostDate(now);
 				promoRedemption.setPostedBy(loginService.getLoggedInUser());
 				promoRedemptionDao.save(promoRedemption);
 				

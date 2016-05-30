@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -8,14 +7,15 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PurchaseReturnBadStockDao;
 import com.pj.magic.dao.PurchaseReturnBadStockItemDao;
-import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.PurchaseReturnBadStockItem;
 import com.pj.magic.model.search.PurchaseReturnBadStockSearchCriteria;
-import com.pj.magic.service.PurchaseReturnBadStockService;
 import com.pj.magic.service.LoginService;
+import com.pj.magic.service.PurchaseReturnBadStockService;
 
 @Service
 public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStockService {
@@ -24,6 +24,7 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
 	@Autowired private PurchaseReturnBadStockItemDao purchaseReturnBadStockItemDao;
 	@Autowired private LoginService loginService;
 	@Autowired private ProductDao productDao;
+	@Autowired private SystemDao systemDao;
 	
 	@Transactional
 	@Override
@@ -77,15 +78,9 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
 	public void post(PurchaseReturnBadStock purchaseReturnBadStock) {
 		PurchaseReturnBadStock updated = getPurchaseReturnBadStock(purchaseReturnBadStock.getId());
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		purchaseReturnBadStockDao.save(updated);
-//		
-//		for (BadPurchaseReturnItem item : updated.getItems()) {
-//			Product product = productDao.get(item.getProduct().getId());
-//			item.setCost(product.getFinalCost(item.getUnit()));
-//			badPurchaseReturnItemDao.save(item);
-//		}
 	}
 
 	@Override

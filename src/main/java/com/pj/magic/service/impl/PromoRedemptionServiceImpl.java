@@ -2,7 +2,6 @@ package com.pj.magic.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -19,6 +18,7 @@ import com.pj.magic.dao.PromoRedemptionRebateDao;
 import com.pj.magic.dao.PromoRedemptionRewardDao;
 import com.pj.magic.dao.PromoRedemptionSalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughPromoPointsException;
 import com.pj.magic.exception.NotEnoughStocksException;
@@ -64,6 +64,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 	@Autowired private PromoPointsClaimDao promoPointsClaimDao;
 	@Autowired private AdjustmentTypeDao adjustmentTypeDao;
 	@Autowired private PaymentAdjustmentDao paymentAdjustmentDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private SalesReturnService salesReturnService;
 	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
 	
@@ -154,7 +155,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		}
 		
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		promoRedemptionDao.save(updated);
 	}
@@ -244,7 +245,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		paymentAdjustment.setRemarks("PROMO REDEMPTION NO. " + promoRedemption.getPromoRedemptionNumber());
 		paymentAdjustment.setPosted(true);
 		paymentAdjustment.setPostedBy(loginService.getLoggedInUser());
-		paymentAdjustment.setPostDate(new Date());
+		paymentAdjustment.setPostDate(systemDao.getCurrentDateTime());
 		paymentAdjustmentDao.save(paymentAdjustment);
 		
 		PromoRedemptionRebate promoRedemptionRebate = new PromoRedemptionRebate();
@@ -332,7 +333,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 			if (availablePoints < claim.getPoints()) {
 				throw new NotEnoughPromoPointsException(claim.getPoints(), availablePoints);
 			}
-			claim.setClaimDate(new Date());
+			claim.setClaimDate(systemDao.getCurrentDateTime());
 			claim.setClaimBy(loginService.getLoggedInUser());
 		} else {
 			int availablePoints = getAvailablePromoPoints(claim.getPromo(), claim.getCustomer());

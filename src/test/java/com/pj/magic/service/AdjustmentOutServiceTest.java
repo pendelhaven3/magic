@@ -1,7 +1,13 @@
 package com.pj.magic.service;
 
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -19,6 +25,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.pj.magic.dao.AdjustmentOutDao;
 import com.pj.magic.dao.AdjustmentOutItemDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentOutItem;
@@ -38,6 +45,7 @@ public class AdjustmentOutServiceTest {
 	@Mock private AdjustmentOutItemDao adjustmentOutItemDao;
 	@Mock private LoginService loginService;
 	@Mock private ProductDao productDao;
+	@Mock private SystemDao systemDao;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -47,6 +55,7 @@ public class AdjustmentOutServiceTest {
 		ReflectionTestUtils.setField(service, "adjustmentOutItemDao", adjustmentOutItemDao);
 		ReflectionTestUtils.setField(service, "loginService", loginService);
 		ReflectionTestUtils.setField(service, "productDao", productDao);
+		ReflectionTestUtils.setField(service, "systemDao", systemDao);
 	}
 	
 	@Test
@@ -113,6 +122,7 @@ public class AdjustmentOutServiceTest {
 		when(adjustmentOutItemDao.findAllByAdjustmentOut(fromDb)).thenReturn(Arrays.asList(item));
 		when(loginService.getLoggedInUser()).thenReturn(loggedInUser);
 		when(productDao.get(productId)).thenReturn(product);
+		when(systemDao.getCurrentDateTime()).thenReturn(new Date());
 		
 		service.post(original);
 		

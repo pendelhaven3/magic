@@ -61,7 +61,6 @@ public class PurchaseOrderTest {
 		
 		ReceivingReceipt receivingReceipt = purchaseOrder.createReceivingReceipt();
 		assertSame(purchaseOrder.getSupplier(), receivingReceipt.getSupplier());
-		assertTrue(DateUtils.isSameDay(new Date(), receivingReceipt.getReceivedDate()));
 		assertSame(purchaseOrder.getPaymentTerm(), receivingReceipt.getPaymentTerm());
 		assertEquals(purchaseOrder.getRemarks(), receivingReceipt.getRemarks());
 		assertEquals(purchaseOrder.getPurchaseOrderNumber(), receivingReceipt.getRelatedPurchaseOrderNumber());

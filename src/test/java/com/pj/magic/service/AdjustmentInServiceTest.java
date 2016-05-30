@@ -19,6 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.pj.magic.dao.AdjustmentInDao;
 import com.pj.magic.dao.AdjustmentInItemDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.AdjustmentInItem;
 import com.pj.magic.model.Product;
@@ -37,6 +38,7 @@ public class AdjustmentInServiceTest {
 	@Mock private AdjustmentInItemDao adjustmentInItemDao;
 	@Mock private LoginService loginService;
 	@Mock private ProductDao productDao;
+	@Mock private SystemDao systemDao;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -46,6 +48,7 @@ public class AdjustmentInServiceTest {
 		ReflectionTestUtils.setField(service, "adjustmentInItemDao", adjustmentInItemDao);
 		ReflectionTestUtils.setField(service, "loginService", loginService);
 		ReflectionTestUtils.setField(service, "productDao", productDao);
+		ReflectionTestUtils.setField(service, "systemDao", systemDao);
 	}
 	
 	@Test
@@ -112,6 +115,7 @@ public class AdjustmentInServiceTest {
 		when(adjustmentInItemDao.findAllByAdjustmentIn(fromDb)).thenReturn(Arrays.asList(item));
 		when(loginService.getLoggedInUser()).thenReturn(loggedInUser);
 		when(productDao.get(productId)).thenReturn(product);
+		when(systemDao.getCurrentDateTime()).thenReturn(new Date());
 		
 		service.post(original);
 		

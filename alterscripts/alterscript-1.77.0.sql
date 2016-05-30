@@ -1,0 +1,1 @@
+alter table BAD_STOCK_RETURN modify POST_DT datetime null;

@@ -1,6 +1,5 @@
 package com.pj.magic.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import com.pj.magic.dao.AreaInventoryReportItemDao;
 import com.pj.magic.dao.InventoryCheckDao;
 import com.pj.magic.dao.InventoryCheckSummaryItemDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.AreaInventoryReportItem;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCheckSummaryItem;
@@ -26,6 +26,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 	@Autowired private InventoryCheckSummaryItemDao inventoryCheckSummaryItemDao;
 	@Autowired private ProductDao productDao;
 	@Autowired private AreaInventoryReportItemDao areaInventoryReportItemDao;
+	@Autowired private SystemDao systemDao;
 	@Autowired private LoginService loginService;
 	
 	@Override
@@ -82,7 +83,7 @@ public class InventoryCheckServiceImpl implements InventoryCheckService {
 		}
 		
 		updated.setPosted(true);
-		updated.setPostDate(new Date());
+		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
 		inventoryCheckDao.save(updated);
 	}
