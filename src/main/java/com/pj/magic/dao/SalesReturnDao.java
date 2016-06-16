@@ -20,5 +20,7 @@ public interface SalesReturnDao {
 	SalesReturn findBySalesReturnNumber(long salesReturnNumber);
 
 	List<SalesReturn> findAllBySalesInvoice(SalesInvoice salesInvoice);
+
+	void deleteAllPaymentSalesReturnAllByPayment(Payment payment);
 	
 }

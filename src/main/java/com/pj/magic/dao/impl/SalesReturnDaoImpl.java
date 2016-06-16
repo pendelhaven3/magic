@@ -301,5 +301,13 @@ public class SalesReturnDaoImpl extends MagicDao implements SalesReturnDao {
 		return getJdbcTemplate().query(FIND_ALL_BY_SALES_INVOICE_SQL, salesReturnRowMapper, 
 				salesInvoice.getId());
 	}
+
+	private static final String DELETE_ALL_PAYMENT_SALES_RETURN_BY_PAYMENT_SQL =
+			"delete from PAYMENT_SALES_RETURN where PAYMENT_ID = ?";
+	
+	@Override
+	public void deleteAllPaymentSalesReturnAllByPayment(Payment payment) {
+		getJdbcTemplate().update(DELETE_ALL_PAYMENT_SALES_RETURN_BY_PAYMENT_SQL, payment.getId());
+	}
 	
 }

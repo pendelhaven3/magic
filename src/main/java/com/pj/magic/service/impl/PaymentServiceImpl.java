@@ -443,6 +443,67 @@ public class PaymentServiceImpl implements PaymentService {
 		updated.setPostedBy(null);
 		updated.setPaymentTerminal(null);
 		paymentDao.save(updated);
+		
+		for (PaymentSalesInvoice salesInvoice : updated.getSalesInvoices()) {
+			salesReturnDao.deleteAllPaymentSalesReturnAllByPayment(updated);
+			
+			for (SalesReturn salesReturn : salesInvoice.getSalesReturns()) {
+				salesReturn = salesReturnDao.get(salesReturn.getId());
+				salesReturn.setPaid(false);
+				salesReturn.setPaidDate(null);
+				salesReturn.setPaidBy(null);
+				salesReturn.setPaymentTerminal(null);
+				salesReturn.setPaymentNumber(null);
+				salesReturnDao.save(salesReturn);
+			}
+		}
+		
+		for (PaymentPaymentAdjustment adjustment : updated.getAdjustments()) {
+			if (adjustment.getReferenceNumber() == null) {
+				continue;
+			}
+			
+			long referenceNumber = Long.valueOf(adjustment.getReferenceNumber());
+			switch (adjustment.getAdjustmentType().getCode()) {
+			case AdjustmentType.SALES_RETURN_CODE:
+				SalesReturn salesReturn = salesReturnDao.findBySalesReturnNumber(referenceNumber);
+				salesReturn.setPaid(false);
+				salesReturn.setPaidDate(null);
+				salesReturn.setPaidBy(null);
+				salesReturn.setPaymentTerminal(null);
+				salesReturn.setPaymentNumber(null);
+				salesReturnDao.save(salesReturn);
+				break;
+			case AdjustmentType.BAD_STOCK_RETURN_CODE:
+				BadStockReturn badStockReturn = badStockReturnDao.findByBadStockReturnNumber(referenceNumber);
+				badStockReturn.setPaid(false);
+				badStockReturn.setPaidDate(null);
+				badStockReturn.setPaidBy(null);
+				badStockReturn.setPaymentTerminal(null);
+				badStockReturn.setPaymentNumber(null);
+				badStockReturnDao.save(badStockReturn);
+				break;
+			case AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE:
+				NoMoreStockAdjustment noMoreStockAdjustment = noMoreStockAdjustmentDao.findByNoMoreStockAdjustmentNumber(referenceNumber);
+				noMoreStockAdjustment.setPaid(false);
+				noMoreStockAdjustment.setPaidDate(null);
+				noMoreStockAdjustment.setPaidBy(null);
+				noMoreStockAdjustment.setPaymentTerminal(null);
+				noMoreStockAdjustment.setPaymentNumber(null);
+				noMoreStockAdjustmentDao.save(noMoreStockAdjustment);
+				break;
+			default:
+				PaymentAdjustment paymentAdjustment = 
+					paymentAdjustmentDao.findByPaymentAdjustmentNumber(referenceNumber);
+				paymentAdjustment.setPaid(false);
+				paymentAdjustment.setPaidDate(null);
+				paymentAdjustment.setPaidBy(null);
+				paymentAdjustment.setPaymentTerminal(null);
+				paymentAdjustment.setPaymentNumber(null);
+				paymentAdjustmentDao.save(paymentAdjustment);
+				break;
+			}
+		}
 	}
 
 }
