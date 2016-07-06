@@ -5,9 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
 
 import com.pj.magic.Constants;
