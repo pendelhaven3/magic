@@ -87,5 +87,11 @@ public class ComponentUtil {
 		scrollPane.setPreferredSize(new Dimension(width, height));
 		return scrollPane;
 	}
+
+	public static void clearLabels(JLabel... labels) {
+		for (JLabel label : labels) {
+			label.setText(null);
+		}
+	}
 	
 }

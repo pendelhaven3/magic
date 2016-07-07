@@ -79,8 +79,10 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	private JCheckBox inventoryCheckTransactionTypeCheckBox;
 	private JCheckBox promoRedemptionTransactionTypeCheckBox;
 	private JCheckBox purchaseReturnTransactionTypeCheckBox;
+	private JLabel currentQuantityLabel;
 	private JLabel totalLessQuantityLabel;
 	private JLabel totalAddQuantityLabel;
+	private JLabel quantityDifferenceLabel;
 	private MagicListTable table;
 	private StockCardInventoryReportTableModel tableModel;
 	
@@ -198,8 +200,17 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 			table.selectFirstRow();
 		}
 		
-		totalLessQuantityLabel.setText(FormatterUtil.formatInteger(getTotalLessQuantity(items)));
-		totalAddQuantityLabel.setText(FormatterUtil.formatInteger(getTotalAddQuantity(items)));
+		if (unitComboBox.getSelectedIndex() > 0) {
+			int totalLessQuantity = getTotalLessQuantity(items);
+			int totalAddQuantity = getTotalAddQuantity(items);
+			currentQuantityLabel.setText(FormatterUtil.formatInteger(product.getUnitQuantity((String)unitComboBox.getSelectedItem())));
+			totalLessQuantityLabel.setText(FormatterUtil.formatInteger(totalLessQuantity));
+			totalAddQuantityLabel.setText(FormatterUtil.formatInteger(totalAddQuantity));
+			quantityDifferenceLabel.setText(FormatterUtil.formatInteger(totalAddQuantity - totalLessQuantity));
+		} else {
+			ComponentUtil.clearLabels(currentQuantityLabel, totalLessQuantityLabel, totalAddQuantityLabel,
+					quantityDifferenceLabel);
+		}
 	}
 
 	private void setTransactionTypeCriteria(StockCardInventoryReportCriteria criteria) {
@@ -495,8 +506,8 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		fromDateModel.setValue(null);
 		toDateModel.setValue(null);
 		unitComboBox.setSelectedItem(null);
-		totalLessQuantityLabel.setText(null);
-		totalAddQuantityLabel.setText(null);
+		ComponentUtil.clearLabels(currentQuantityLabel, totalLessQuantityLabel, totalAddQuantityLabel,
+				quantityDifferenceLabel);
 		tableModel.clear();
 		
 		salesInvoiceTransactionTypeCheckBox.setSelected(false);
@@ -530,35 +541,59 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(150, "Total Less Quantity:"), c);
+		panel.add(ComponentUtil.createLabel(150, "Current Quantity:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalLessQuantityLabel = ComponentUtil.createRightLabel(50);
-		panel.add(totalLessQuantityLabel, c);
+		c.insets.right = 20;
+		currentQuantityLabel = ComponentUtil.createRightLabel(50);
+		panel.add(currentQuantityLabel, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
-		c.gridy = currentRow;
-		panel.add(Box.createHorizontalStrut(10), c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		panel.add(ComponentUtil.createLabel(150, "Total Add Quantity:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
-		c.gridx = 1;
+		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		totalAddQuantityLabel = ComponentUtil.createRightLabel(50);
 		panel.add(totalAddQuantityLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Total Less Quantity:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.insets.right = 10;
+		totalLessQuantityLabel = ComponentUtil.createRightLabel(50);
+		panel.add(totalLessQuantityLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Difference:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		quantityDifferenceLabel = ComponentUtil.createRightLabel(50);
+		panel.add(quantityDifferenceLabel, c);
 		
 		return panel;
 	}
