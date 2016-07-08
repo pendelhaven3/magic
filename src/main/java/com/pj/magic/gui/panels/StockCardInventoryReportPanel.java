@@ -70,6 +70,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	private JButton generateButton;
 	private EllipsisButton selectProductButton;
 	private JComboBox<String> unitComboBox;
+	private JCheckBox fromLastInventoryCheckCheckBox;
 	private JCheckBox salesInvoiceTransactionTypeCheckBox;
 	private JCheckBox stockQuantityConversionTransactionTypeCheckBox;
 	private JCheckBox salesReturnTransactionTypeCheckBox;
@@ -108,6 +109,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		
 		unitComboBox = new JComboBox<>(
 				new String[] {null, Unit.PIECES, Unit.DOZEN, Unit.CARTON, Unit.TIE, Unit.CASE});
+		fromLastInventoryCheckCheckBox = new JCheckBox();
 		
 		salesInvoiceTransactionTypeCheckBox = new JCheckBox();
 		receivingReceiptTransactionTypeCheckBox = new JCheckBox();
@@ -190,6 +192,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		if (unitComboBox.getSelectedItem() != null) {
 			criteria.setUnit((String)unitComboBox.getSelectedItem());
 		}
+		criteria.setFromLastInventoryCheck(fromLastInventoryCheckCheckBox.isSelected());
 		setTransactionTypeCriteria(criteria);
 		
 		List<StockCardInventoryReportItem> items = reportService.getStockCardInventoryReport(criteria);
@@ -342,10 +345,19 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
-		c.gridwidth = 4;
 		c.anchor = GridBagConstraints.WEST;
 		unitComboBox.setPreferredSize(new Dimension(60, 25));
 		mainPanel.add(unitComboBox, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.gridwidth = 2;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(
+				ComponentUtil.createGenericPanel(
+						ComponentUtil.createLabel(160, "From Last Inventory: "),
+						fromLastInventoryCheckCheckBox), c);
 		
 		currentRow++;
 		
@@ -506,6 +518,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		fromDateModel.setValue(null);
 		toDateModel.setValue(null);
 		unitComboBox.setSelectedItem(null);
+		fromLastInventoryCheckCheckBox.setSelected(false);
 		ComponentUtil.clearLabels(currentQuantityLabel, totalLessQuantityLabel, totalAddQuantityLabel,
 				quantityDifferenceLabel);
 		tableModel.clear();

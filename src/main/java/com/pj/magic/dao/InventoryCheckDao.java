@@ -13,5 +13,7 @@ public interface InventoryCheckDao {
 	List<InventoryCheck> getAll();
 	
 	List<InventoryCheck> search(InventoryCheck criteria);
+
+	InventoryCheck getMostRecent();
 	
 }

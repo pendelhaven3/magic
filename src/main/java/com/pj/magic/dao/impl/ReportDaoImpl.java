@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.pj.magic.dao.ReportDao;
 import com.pj.magic.model.Customer;
@@ -290,6 +291,21 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 						return product;
 					}
 		});
+	}
+
+	@Override
+	public List<StockCardInventoryReportItem> getStockCardInventoryReportItem(StockCardInventoryReportCriteria criteria) {
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("product", criteria.getProduct().getId());
+		paramMap.put("inventoryCheck", criteria.getInventoryCheck().getId());
+		
+		StringBuilder sql = new StringBuilder(QueriesUtil.getSql("inventoryCheckStockCardInventoryReportItem"));
+		if (!StringUtils.isEmpty(criteria.getUnit())) {
+			sql.append(" and a.UNIT = :unit");
+			paramMap.put("unit", criteria.getUnit());
+		}
+		
+		return getNamedParameterJdbcTemplate().query(sql.toString(), paramMap, rowMapper);
 	}
 
 }

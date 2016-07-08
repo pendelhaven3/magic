@@ -14,8 +14,7 @@ import com.pj.magic.model.search.StockOfftakeReportCriteria;
 
 public interface ReportDao {
 
-	List<StockCardInventoryReportItem> getStockCardInventoryReport(
-			StockCardInventoryReportCriteria criteria);
+	List<StockCardInventoryReportItem> getStockCardInventoryReport(StockCardInventoryReportCriteria criteria);
 
 	List<InventoryReportItem> getAllInventoryReportItems();
 
@@ -25,5 +24,7 @@ public interface ReportDao {
 			SalesByManufacturerReportCriteria criteria);
 
 	List<StockOfftakeReportItem> searchStockOfftakeReportItems(StockOfftakeReportCriteria criteria);
+
+	List<StockCardInventoryReportItem> getStockCardInventoryReportItem(StockCardInventoryReportCriteria criteria);
 	
 }

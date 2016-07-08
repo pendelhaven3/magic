@@ -3,10 +3,13 @@ package com.pj.magic.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.dao.InventoryCheckDao;
 import com.pj.magic.dao.ReportDao;
+import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.InventoryReport;
@@ -21,11 +24,30 @@ import com.pj.magic.service.ReportService;
 public class ReportServiceImpl implements ReportService {
 
 	@Autowired private ReportDao reportDao;
+	@Autowired private InventoryCheckDao inventoryCheckDao;
 	
 	@Override
-	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
-			StockCardInventoryReportCriteria criteria) {
-		return reportDao.getStockCardInventoryReport(criteria);
+	public List<StockCardInventoryReportItem> getStockCardInventoryReport(StockCardInventoryReportCriteria criteria) {
+		InventoryCheck lastInventoryCheck = null;
+		
+		if (criteria.isFromLastInventoryCheck()) {
+			lastInventoryCheck = inventoryCheckDao.getMostRecent();
+			criteria.setFromDate(DateUtils.addDays(lastInventoryCheck.getInventoryDate(), 1));
+			criteria.setToDate(null);
+		}		
+		
+		List<StockCardInventoryReportItem> items = reportDao.getStockCardInventoryReport(criteria);
+		
+		if (lastInventoryCheck != null) {
+			StockCardInventoryReportCriteria inventoryCheckCriteria = new StockCardInventoryReportCriteria();
+			inventoryCheckCriteria.setProduct(criteria.getProduct());
+			inventoryCheckCriteria.setInventoryCheck(lastInventoryCheck);
+			inventoryCheckCriteria.setUnit(criteria.getUnit());
+			
+			items.addAll(reportDao.getStockCardInventoryReportItem(inventoryCheckCriteria));
+		}
+		
+		return items;
 	}
 
 	@Override

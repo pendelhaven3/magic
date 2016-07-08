@@ -116,4 +116,11 @@ public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao
 		return getJdbcTemplate().query(sb.toString(), inventoryCheckRowMapper, params.toArray());
 	}
 
+	private static final String GET_MOST_RECENT_SQL = BASE_SELECT_SQL + " where post_ind = 'Y' order by id desc limit 1";
+	
+	@Override
+	public InventoryCheck getMostRecent() {
+		return getJdbcTemplate().queryForObject(GET_MOST_RECENT_SQL, inventoryCheckRowMapper);
+	}
+
 }

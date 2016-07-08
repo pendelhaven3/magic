@@ -356,4 +356,17 @@ join PRODUCT b
 order by b.CODE
 	]]>
 	</entry>
+	<entry name="inventoryCheckStockCardInventoryReportItem">
+	<![CDATA[
+select b.POST_DT, null as TRANSACTION_NO,
+	null as CUSTOMER_SUPPLIER_NAME,
+	'INVENTORY CHECK' as TRANSACTION_TYPE, 'INVENTORY CHECK AFTER' as TRANSACTION_TYPE_KEY, a.UNIT, a.ACTUAL_COUNT as QUANTITY,
+	null as UNIT_COST_OR_PRICE, null as REFERENCE_NO
+from INVENTORY_CHECK_SUMMARY_ITEM a
+join INVENTORY_CHECK b
+	on b.ID = a.INVENTORY_CHECK_ID
+where a.PRODUCT_ID = :product
+and b.ID = :inventoryCheck
+	]]>
+	</entry>
 </root>

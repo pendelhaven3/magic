@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Product;
 
 public class StockCardInventoryReportCriteria {
@@ -13,6 +14,8 @@ public class StockCardInventoryReportCriteria {
 	private Date toDate;
 	private List<String> transactionTypes = new ArrayList<>();
 	private String unit;
+	private boolean fromLastInventoryCheck;
+	private InventoryCheck inventoryCheck;
 
 	public Product getProduct() {
 		return product;
@@ -48,6 +51,22 @@ public class StockCardInventoryReportCriteria {
 
 	public void setUnit(String unit) {
 		this.unit = unit;
+	}
+
+	public boolean isFromLastInventoryCheck() {
+		return fromLastInventoryCheck;
+	}
+
+	public void setFromLastInventoryCheck(boolean fromLastInventoryCheck) {
+		this.fromLastInventoryCheck = fromLastInventoryCheck;
+	}
+
+	public InventoryCheck getInventoryCheck() {
+		return inventoryCheck;
+	}
+
+	public void setInventoryCheck(InventoryCheck inventoryCheck) {
+		this.inventoryCheck = inventoryCheck;
 	}
 
 }
