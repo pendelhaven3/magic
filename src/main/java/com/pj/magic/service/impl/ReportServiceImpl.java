@@ -33,7 +33,12 @@ public class ReportServiceImpl implements ReportService {
 			lastInventoryCheck = inventoryCheckDao.getMostRecent();
 			criteria.setFromDate(lastInventoryCheck.getInventoryDate());
 			criteria.setToDate(null);
-			criteria.addAllTransactionTypesExceptInventoryCheck();
+			
+			if (criteria.getTransactionTypes().isEmpty()) {
+				criteria.addAllTransactionTypesExceptInventoryCheck();
+			} else {
+				criteria.getTransactionTypes().remove("INVENTORY CHECK");
+			}
 		}		
 		
 		List<StockCardInventoryReportItem> items = reportDao.getStockCardInventoryReport(criteria);
