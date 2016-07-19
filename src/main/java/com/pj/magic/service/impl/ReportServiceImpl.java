@@ -3,7 +3,6 @@ package com.pj.magic.service.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +31,9 @@ public class ReportServiceImpl implements ReportService {
 		
 		if (criteria.isFromLastInventoryCheck()) {
 			lastInventoryCheck = inventoryCheckDao.getMostRecent();
-			criteria.setFromDate(DateUtils.addDays(lastInventoryCheck.getInventoryDate(), 1));
+			criteria.setFromDate(lastInventoryCheck.getInventoryDate());
 			criteria.setToDate(null);
+			criteria.addAllTransactionTypesExceptInventoryCheck();
 		}		
 		
 		List<StockCardInventoryReportItem> items = reportDao.getStockCardInventoryReport(criteria);

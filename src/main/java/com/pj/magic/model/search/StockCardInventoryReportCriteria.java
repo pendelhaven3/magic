@@ -17,6 +17,17 @@ public class StockCardInventoryReportCriteria {
 	private boolean fromLastInventoryCheck;
 	private InventoryCheck inventoryCheck;
 
+	public void addAllTransactionTypesExceptInventoryCheck() {
+		transactionTypes.add("SALES INVOICE");
+		transactionTypes.add("RECEIVING RECEIPT");
+		transactionTypes.add("ADJUSTMENT OUT");
+		transactionTypes.add("ADJUSTMENT IN");
+		transactionTypes.add("STOCK QTY CONVERSION");
+		transactionTypes.add("SALES RETURN");
+		transactionTypes.add("PROMO REDEMPTION");
+		transactionTypes.add("PURCHASE RETURN");
+	}
+	
 	public Product getProduct() {
 		return product;
 	}
