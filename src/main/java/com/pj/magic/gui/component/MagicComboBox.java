@@ -10,7 +10,15 @@ public class MagicComboBox<E> extends JComboBox<E> {
 	private boolean triggerCustomListeners = true;
 	
 	public MagicComboBox() {
-		super();
+		init();
+	}
+	
+	public MagicComboBox(E[] values) {
+		super(values);
+		init();
+	}
+	
+	private void init() {
 		putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 	}
 	

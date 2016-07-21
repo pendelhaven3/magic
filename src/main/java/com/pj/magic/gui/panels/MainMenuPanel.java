@@ -38,7 +38,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 	private static final String ADMIN = "Admin";
 	private static final String BACKUP_RESTORE_DATA = "Backup/Restore Data";
 	private static final String RECORDS_MAINTENANCE = "Records Maintenance";
-	private static final String INVENTORY_CHECK = "Inventory Check";
+	private static final String INVENTORY_CHECK = "<html>Inventory Check<br>and Correction</html>";
 	private static final String REPORTS = "Reports";
 	private static final String STOCK_MOVEMENT = "Stock Movement";
 	private static final String SALES_PAYMENT = "Sales Payment";

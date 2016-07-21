@@ -39,6 +39,8 @@ import com.pj.magic.gui.panels.CustomerSalesSummaryReportPanel;
 import com.pj.magic.gui.panels.DisbursementReportPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
 import com.pj.magic.gui.panels.InventoryCheckPanel;
+import com.pj.magic.gui.panels.InventoryCorrectionListPanel;
+import com.pj.magic.gui.panels.InventoryCorrectionPanel;
 import com.pj.magic.gui.panels.InventoryReportPanel;
 import com.pj.magic.gui.panels.LoginPanel;
 import com.pj.magic.gui.panels.MainMenuPanel;
@@ -134,6 +136,7 @@ import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardStatement;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.InventoryCorrection;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.Payment;
@@ -289,6 +292,8 @@ public class MagicFrame extends JFrame {
 	private static final String PROMO_REDEMPTION_REBATES_PANEL = "PROMO_REDEMPTION_REBATES_PANEL";
 	private static final String UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL = 
 			"UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL";
+	private static final String INVENTORY_CORRECTION_LIST_PANEL = "INVENTORY_CORRECTION_LIST_PANEL";
+	private static final String INVENTORY_CORRECTION_PANEL = "INVENTORY_CORRECTION_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -397,6 +402,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private SalesRequisitionSeparateItemsPanel salesRequisitionSeparateItemsPanel;
 	@Autowired private PromoRedemptionRebatesPanel promoRedemptionRebatesPanel;
 	@Autowired private UploadMaximumStockLevelChangesPanel uploadMaximumStockLevelChangesPanel;
+	@Autowired private InventoryCorrectionListPanel inventoryCorrectionListPanel;
+	@Autowired private InventoryCorrectionPanel inventoryCorrectionPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -560,6 +567,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(salesRequisitionSeparateItemsPanel, SALES_REQUISITION_SEPARATE_ITEMS_PANEL);
 		panelHolder.add(promoRedemptionRebatesPanel, PROMO_REDEMPTION_REBATES_PANEL);
 		panelHolder.add(uploadMaximumStockLevelChangesPanel, UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL);
+		panelHolder.add(inventoryCorrectionListPanel, INVENTORY_CORRECTION_LIST_PANEL);
+		panelHolder.add(inventoryCorrectionPanel, INVENTORY_CORRECTION_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1355,6 +1364,18 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Upload Maximum Stock Level Changes");
 		uploadMaximumStockLevelChangesPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL);
+	}
+
+	public void switchToInventoryCorrectionListPanel() {
+		addPanelNameToTitle("Inventory Correction List");
+		inventoryCorrectionListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, INVENTORY_CORRECTION_LIST_PANEL);
+	}
+
+	public void switchToInventoryCorrectionPanel(InventoryCorrection inventoryCorrection) {
+		addPanelNameToTitle("Inventory Correction");
+		inventoryCorrectionPanel.updateDisplay(inventoryCorrection);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, INVENTORY_CORRECTION_PANEL);
 	}
 	
 }

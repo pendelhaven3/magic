@@ -462,5 +462,13 @@ public class Product implements Comparable<Product> {
 	public int getConvertedQuantity(String fromUnit, String toUnit) {
 		return getUnitConversion(fromUnit) / getUnitConversion(toUnit);
 	}
+
+	public void setUnitQuanty(String unit, int newQuantity) {
+		for (UnitQuantity unitQuantity : unitQuantities) {
+			if (unit.equals(unitQuantity.getUnit())) {
+				unitQuantity.setQuantity(newQuantity);
+			}
+		}
+	}
 	
 }

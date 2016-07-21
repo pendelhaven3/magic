@@ -46,5 +46,9 @@ public class Unit {
 			return 0;
 		}
 	}
+
+	public static String[] values() {
+		return new String[] {null, Unit.PIECES, Unit.DOZEN, Unit.CARTON, Unit.TIE, Unit.CASE};
+	}
 	
 }

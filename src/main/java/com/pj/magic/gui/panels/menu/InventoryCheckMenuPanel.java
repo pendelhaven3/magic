@@ -23,6 +23,8 @@ import com.pj.magic.gui.tables.MagicSubmenuTable;
 @Component
 public class InventoryCheckMenuPanel extends MenuPanel {
 
+	private static final String INVENTORY_CORRECTION = "Inventory Correction";
+	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
 	
@@ -87,6 +89,9 @@ public class InventoryCheckMenuPanel extends MenuPanel {
 		case "Area Inventory Reports":
 			getMagicFrame().switchToAreaInventoryReportListPanel();
 			break;
+		case INVENTORY_CORRECTION:
+			getMagicFrame().switchToInventoryCorrectionListPanel();
+			break;
 		}
 	}
 
@@ -99,7 +104,8 @@ public class InventoryCheckMenuPanel extends MenuPanel {
 
 		private final List<String> menuItems = Arrays.asList(
 				"Inventory Check Summary",
-				"Area Inventory Reports"
+				"Area Inventory Reports",
+				INVENTORY_CORRECTION
 		);
 		
 		@Override

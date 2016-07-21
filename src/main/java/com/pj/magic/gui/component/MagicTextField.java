@@ -1,8 +1,10 @@
 package com.pj.magic.gui.component;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 
+import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -61,6 +63,17 @@ public class MagicTextField extends JTextField {
 	public void onF5Key(Action action) {
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), Constants.F5_KEY_ACTION_NAME);
 		getActionMap().put(Constants.F5_KEY_ACTION_NAME, action);
+	}
+
+	public void onF5Key(CustomAction action) {
+		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), Constants.F5_KEY_ACTION_NAME);
+		getActionMap().put(Constants.F5_KEY_ACTION_NAME, new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				action.doAction();
+			}
+		});
 	}
 
 	public void setAllowLowerCase(boolean allowLowerCase) {
