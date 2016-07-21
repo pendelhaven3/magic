@@ -42,7 +42,10 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		Map<String, Object> params = new HashMap<>();
 		params.put("product", criteria.getProduct().getId());
 		
-		if (criteria.getFromDate() != null) {
+		if (criteria.getFromDateTime() != null) {
+			sql.append(" and POST_DT >= :fromDate");
+			params.put("fromDate", DbUtil.toMySqlDateTimeString(criteria.getFromDateTime()));
+		} else if (criteria.getFromDate() != null) {
 			sql.append(" and POST_DT >= :fromDate");
 			params.put("fromDate", DbUtil.toMySqlDateString(criteria.getFromDate()));
 		}

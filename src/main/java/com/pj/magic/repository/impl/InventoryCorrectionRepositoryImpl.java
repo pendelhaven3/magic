@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -52,7 +53,7 @@ public class InventoryCorrectionRepositoryImpl extends MagicDao implements Inven
 			"insert into INVENTORY_CORRECTION"
 			+ " (PRODUCT_ID, UNIT, NEW_QUANTITY, OLD_QUANTITY, COST, POST_DT, POST_BY, REMARKS)"
 			+ " values"
-			+ " (?, ?, ?, ?, ?, current_date(), ?, ?)";
+			+ " (?, ?, ?, ?, ?, current_timestamp(), ?, ?)";
 
 	@Override
 	public void save(final InventoryCorrection inventoryCorrection) {
@@ -103,6 +104,18 @@ public class InventoryCorrectionRepositoryImpl extends MagicDao implements Inven
 			return product;
 		}
 		
+	}
+
+	private static final String FIND_MOST_RECENT_BY_PRODUCT_SQL = 
+			BASE_SELECT_SQL + " where a.PRODUCT_ID = ? order by POST_DT desc limit 1";
+	
+	@Override
+	public InventoryCorrection findMostRecentByProduct(Product product) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_MOST_RECENT_BY_PRODUCT_SQL, new Object[] {product.getId()}, rowMapper);
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
 	}
 	
 }

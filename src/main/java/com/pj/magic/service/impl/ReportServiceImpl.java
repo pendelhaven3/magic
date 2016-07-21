@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.InventoryCheckDao;
 import com.pj.magic.dao.ReportDao;
 import com.pj.magic.model.InventoryCheck;
+import com.pj.magic.model.InventoryCorrection;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.InventoryReport;
@@ -17,6 +18,7 @@ import com.pj.magic.model.report.StockOfftakeReport;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportCriteria;
 import com.pj.magic.model.search.StockOfftakeReportCriteria;
+import com.pj.magic.repository.InventoryCorrectionRepository;
 import com.pj.magic.service.ReportService;
 
 @Service
@@ -24,14 +26,27 @@ public class ReportServiceImpl implements ReportService {
 
 	@Autowired private ReportDao reportDao;
 	@Autowired private InventoryCheckDao inventoryCheckDao;
+	@Autowired private InventoryCorrectionRepository inventoryCorrectionRepository;
 	
 	@Override
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(StockCardInventoryReportCriteria criteria) {
 		InventoryCheck lastInventoryCheck = null;
+		InventoryCorrection lastInventoryCorrection = null;
 		
 		if (criteria.isFromLastInventoryCheck()) {
+			lastInventoryCorrection = inventoryCorrectionRepository.findMostRecentByProduct(criteria.getProduct());
 			lastInventoryCheck = inventoryCheckDao.getMostRecent();
-			criteria.setFromDate(lastInventoryCheck.getInventoryDate());
+			
+			if (lastInventoryCorrection != null && lastInventoryCheck != null) {
+				if (lastInventoryCorrection.getPostDate().compareTo(lastInventoryCheck.getInventoryDate()) > 0) {
+					criteria.setFromDateTime(lastInventoryCorrection.getPostDate());
+					lastInventoryCheck = null;
+				} else {
+					criteria.setFromDate(lastInventoryCheck.getInventoryDate());
+					lastInventoryCorrection = null;
+				}
+			}
+			
 			criteria.setToDate(null);
 			
 			if (criteria.getTransactionTypes().isEmpty()) {
@@ -50,6 +65,15 @@ public class ReportServiceImpl implements ReportService {
 			inventoryCheckCriteria.setUnit(criteria.getUnit());
 			
 			items.addAll(reportDao.getStockCardInventoryReportItem(inventoryCheckCriteria));
+		} else if (lastInventoryCorrection != null) {
+			StockCardInventoryReportItem item = new StockCardInventoryReportItem();
+			item.setPostDate(lastInventoryCorrection.getPostDate());
+			item.setTransactionType("INVENTORY CORRECTION");
+			item.setCurrentCostOrSellingPrice(lastInventoryCorrection.getCost());
+			item.setUnit(lastInventoryCorrection.getUnit());
+			item.setAddQuantity(lastInventoryCorrection.getNewQuantity());
+			
+			items.add(item);
 		}
 		
 		return items;

@@ -16,6 +16,7 @@ public class StockCardInventoryReportCriteria {
 	private String unit;
 	private boolean fromLastInventoryCheck;
 	private InventoryCheck inventoryCheck;
+	private Date fromDateTime;
 
 	public void addAllTransactionTypesExceptInventoryCheck() {
 		transactionTypes.add("SALES INVOICE");
@@ -78,6 +79,14 @@ public class StockCardInventoryReportCriteria {
 
 	public void setInventoryCheck(InventoryCheck inventoryCheck) {
 		this.inventoryCheck = inventoryCheck;
+	}
+
+	public Date getFromDateTime() {
+		return fromDateTime;
+	}
+
+	public void setFromDateTime(Date fromDateTime) {
+		this.fromDateTime = fromDateTime;
 	}
 
 }

@@ -356,7 +356,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(
 				ComponentUtil.createGenericPanel(
-						ComponentUtil.createLabel(160, "From Last Inventory: "),
+						ComponentUtil.createLabel(280, "From Last Inventory Check/Correction: "),
 						fromLastInventoryCheckCheckBox), c);
 		
 		currentRow++;
