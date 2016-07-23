@@ -4,12 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -252,7 +255,7 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postDateLabel.setPreferredSize(new Dimension(100, 25));
+		postDateLabel.setPreferredSize(new Dimension(150, 25));
 		panel.add(postDateLabel, c);
 		
 		currentRow++;
@@ -272,25 +275,50 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 	protected void registerKeyBindings() {
 		selectProductButton.addOnSelectProductAction(product -> updateCurrentQuantityLabel(product));
 		unitComboBox.addOnSelectListener(e -> updateCurrentQuantityLabel());
+		newQuantityField.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				updateDiscrepancyLabel();
+			}
+		});
 		saveButton.onEnterKey(() -> saveInventoryCorrection());
+	}
+
+	private void updateDiscrepancyLabel() {
+		if (!StringUtils.isEmpty(currentQuantityLabel.getText()) && !StringUtils.isEmpty(newQuantityField.getText())) {
+			int currentQuantity = Integer.parseInt(currentQuantityLabel.getText());
+			int newQuantity = Integer.parseInt(newQuantityField.getText());
+			discrepancyLabel.setText(String.valueOf(newQuantity - currentQuantity));
+		} else {
+			discrepancyLabel.setText(null);
+		}
 	}
 
 	private void updateCurrentQuantityLabel(Product product) {
 		if (unitComboBox.getSelectedItem() != null) {
 			String unit = (String)unitComboBox.getSelectedItem();
 			currentQuantityLabel.setText(String.valueOf(product.getUnitQuantity(unit)));
+			updateDiscrepancyLabel();
+		} else {
+			currentQuantityLabel.setText(null);
+			discrepancyLabel.setText(null);
 		}
 	}
 
 	private void updateCurrentQuantityLabel() {
-		if (unitComboBox.getSelectedItem() != null && productCodeField.getText().isEmpty()) {
+		if (unitComboBox.getSelectedItem() != null && !productCodeField.getText().isEmpty()) {
 			Product product = productService.findProductByCode(productCodeField.getText());
 			if (product != null) {
 				String unit = (String)unitComboBox.getSelectedItem();
 				currentQuantityLabel.setText(String.valueOf(product.getUnitQuantity(unit)));
+				updateDiscrepancyLabel();
 			} else {
 				currentQuantityLabel.setText(null);
+				discrepancyLabel.setText(null);
 			}
+		} else {
+			discrepancyLabel.setText(null);
 		}
 	}
 
@@ -306,9 +334,18 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		productCodeField.setText(inventoryCorrection.getProduct().getCode());
 		productDescriptionLabel.setText(inventoryCorrection.getProduct().getDescription());
 		unitComboBox.setSelectedItem(inventoryCorrection.getUnit());
+		currentQuantityLabel.setText(String.valueOf(inventoryCorrection.getOldQuantity()));
+		newQuantityField.setText(String.valueOf(inventoryCorrection.getNewQuantity()));
+		discrepancyLabel.setText(String.valueOf(inventoryCorrection.getDiscrepancy()));
 		remarksField.setText(inventoryCorrection.getRemarks());
-		postDateLabel.setText(FormatterUtil.formatDate(inventoryCorrection.getPostDate()));
+		postDateLabel.setText(FormatterUtil.formatDateTime(inventoryCorrection.getPostDate()));
 		saveButton.setEnabled(false);
+		
+		productCodeField.setEditable(false);
+		selectProductButton.setEnabled(false);
+		unitComboBox.setEnabled(false);
+		newQuantityField.setEditable(false);
+		remarksField.setEditable(false);
 	}
 
 	private void clearDisplay() {
@@ -317,7 +354,16 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		unitComboBox.setSelectedItem(null);
 		remarksField.setText(null);
 		postDateLabel.setText(null);
+		currentQuantityLabel.setText(null);
+		newQuantityField.setText(null);
+		discrepancyLabel.setText(null);
 		saveButton.setEnabled(true);
+		
+		productCodeField.setEditable(true);
+		selectProductButton.setEnabled(true);
+		unitComboBox.setEnabled(true);
+		newQuantityField.setEditable(true);
+		remarksField.setEditable(true);
 	}
 
 	@Override
