@@ -51,6 +51,7 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 	private JLabel discrepancyLabel;
 	private MagicTextField remarksField;
 	private JLabel postDateLabel;
+	private JLabel postedByLabel;
 	private MagicButton saveButton;
 	
 	@Override
@@ -75,6 +76,7 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		remarksField.setMaximumLength(100);
 		
 		postDateLabel = new JLabel();
+		postedByLabel = new JLabel();
 		
 		saveButton = new MagicButton("Save");
 		saveButton.addActionListener(e -> saveInventoryCorrection());
@@ -263,6 +265,21 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Posted By: "), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postedByLabel.setPreferredSize(new Dimension(100, 25));
+		panel.add(postedByLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
 		c.gridwidth = 2;
 		c.insets.top = 10;
 		saveButton.setPreferredSize(new Dimension(100, 25));
@@ -339,6 +356,7 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		discrepancyLabel.setText(String.valueOf(inventoryCorrection.getDiscrepancy()));
 		remarksField.setText(inventoryCorrection.getRemarks());
 		postDateLabel.setText(FormatterUtil.formatDateTime(inventoryCorrection.getPostDate()));
+		postedByLabel.setText(inventoryCorrection.getPostedBy().getUsername());
 		saveButton.setEnabled(false);
 		
 		productCodeField.setEditable(false);
@@ -354,6 +372,7 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		unitComboBox.setSelectedItem(null);
 		remarksField.setText(null);
 		postDateLabel.setText(null);
+		postedByLabel.setText(null);
 		currentQuantityLabel.setText(null);
 		newQuantityField.setText(null);
 		discrepancyLabel.setText(null);
