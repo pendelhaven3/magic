@@ -2,6 +2,7 @@ package com.pj.magic.util;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -67,7 +68,7 @@ public class ComponentUtil {
 	}
 	
 	public static final JPanel createGenericPanel(Component... components) {
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		for (Component c : components) {
 			panel.add(c);
 		}
