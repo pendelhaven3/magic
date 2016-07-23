@@ -37,7 +37,9 @@ public class ReportServiceImpl implements ReportService {
 			lastInventoryCorrection = inventoryCorrectionRepository.findMostRecentByProduct(criteria.getProduct());
 			lastInventoryCheck = inventoryCheckDao.getMostRecent();
 			
-			if (lastInventoryCorrection != null && lastInventoryCheck != null) {
+			if (lastInventoryCorrection == null) {
+				criteria.setFromDate(lastInventoryCheck.getInventoryDate());
+			} else {
 				if (lastInventoryCorrection.getPostDate().compareTo(lastInventoryCheck.getInventoryDate()) > 0) {
 					criteria.setFromDateTime(lastInventoryCorrection.getPostDate());
 					lastInventoryCheck = null;
