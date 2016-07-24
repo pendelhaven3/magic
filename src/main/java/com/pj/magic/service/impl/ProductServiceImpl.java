@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductPriceHistory;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.ProductSearchCriteria;
+import com.pj.magic.repository.DailyProductStartingQuantityRepository;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.ProductService;
 
@@ -41,6 +43,7 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired private AreaInventoryReportItemDao areaInventoryReportItemDao;
 	@Autowired private ProductPriceHistoryDao productPriceHistoryDao;
 	@Autowired private LoginService loginService;
+	@Autowired private DailyProductStartingQuantityRepository dailyProductStartingQuantityRepository;
 	
 	@Override
 	public List<Product> getAllProducts() {
@@ -189,6 +192,19 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public void updateMaximumStockLevel(List<Product> products) {
 		productDao.updateMaximumStockLevel(products);
+	}
+
+	@Transactional
+	@Override
+	public boolean saveDailyProductStartingQuantities() {
+		try {
+			dailyProductStartingQuantityRepository.getCheckValueForToday();
+			return false;
+		} catch (EmptyResultDataAccessException e) {
+			dailyProductStartingQuantityRepository.saveCheckValueForToday();
+			dailyProductStartingQuantityRepository.saveQuantitiesForToday();
+			return true;
+		}
 	}
 
 }

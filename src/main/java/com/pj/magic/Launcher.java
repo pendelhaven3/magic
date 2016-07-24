@@ -1,7 +1,5 @@
 package com.pj.magic;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +17,7 @@ public class Launcher {
 		configLocations.add("magicframe.xml");
 		configLocations.add("datasource.xml");
 		
-		if (isHttpServerEnabled()) {
+		if (ApplicationProperties.isServer()) {
 			configLocations.add("httpserver.xml");
 		}
 		
@@ -30,10 +28,6 @@ public class Launcher {
 		
 		MagicFrame frame = context.getBean(MagicFrame.class);
 		frame.setVisible(true);
-	}
-
-	private boolean isHttpServerEnabled() {
-		return Files.exists(Paths.get("magic-lib", "httpserver"));
 	}
 
 }

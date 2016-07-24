@@ -48,5 +48,10 @@ public interface ProductService {
 	List<ProductPriceHistory> getProductPriceHistory(Product product, PricingScheme pricingScheme);
 
 	void updateMaximumStockLevel(List<Product> products);
+
+	/**
+	 * @return true if quantities are saved, false if not (probably existing already)
+	 */
+	boolean saveDailyProductStartingQuantities();
 	
 }
