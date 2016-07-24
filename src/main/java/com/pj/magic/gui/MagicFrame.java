@@ -825,7 +825,7 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADJUSTMENT_IN_LIST_PANEL);
 	}
 	
-	public void switchToAddBadStockReturnPanel(AdjustmentIn adjustmentIn) {
+	public void switchToAdjustmentInPanel(AdjustmentIn adjustmentIn) {
 		addPanelNameToTitle("Adjustment In");
 		adjustmentInPanel.updateDisplay(adjustmentIn);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, ADJUSTMENT_IN_PANEL);
