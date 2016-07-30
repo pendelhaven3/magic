@@ -321,7 +321,10 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			+ "   select distinct DATE"
 			+ "   from DAILY_PRODUCT_STARTING_QUANTITY"
 			+ " ) a"
-			+ " left join PRODUCT_QUANTITY_DISCREPANCY_REPORT b"
+			+ " left join ("
+			+ "	  select distinct DATE"
+			+ "   from PRODUCT_QUANTITY_DISCREPANCY_REPORT"
+			+ " ) b"
 			+ "   on b.DATE = a.DATE"
 			+ " order by date desc";
 	

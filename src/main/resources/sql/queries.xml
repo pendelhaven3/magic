@@ -383,10 +383,14 @@ from (
 	join DAILY_PRODUCT_STARTING_QUANTITY qty_today
 		on p.ID = qty_today.PRODUCT_ID
 		and qty_today.DATE = current_date()
-	join DAILY_PRODUCT_MOVEMENT qty_moved
+	join (
+		select PRODUCT_ID, UNIT, sum(QUANTITY) as QUANTITY
+		from DAILY_PRODUCT_MOVEMENT
+		where UNIT = 'CSE'
+		group by PRODUCT_ID, UNIT
+	) qty_moved
 		on p.ID = qty_moved.PRODUCT_ID
 	where p.ACTIVE_IND = 'Y'
-	and qty_moved.UNIT = 'CSE'
 	union all
 	select p.ID, p.CODE, qty_moved.UNIT, qty_yesterday.AVAIL_QTY_CTN as QTY_YESTERDAY, qty_moved.QUANTITY as QTY_MOVED, qty_today.AVAIL_QTY_CTN as QTY_TODAY
 	from PRODUCT p
@@ -396,10 +400,14 @@ from (
 	join DAILY_PRODUCT_STARTING_QUANTITY qty_today
 		on p.ID = qty_today.PRODUCT_ID
 		and qty_today.DATE = current_date()
-	join DAILY_PRODUCT_MOVEMENT qty_moved
+	join (
+		select PRODUCT_ID, UNIT, sum(QUANTITY) as QUANTITY
+		from DAILY_PRODUCT_MOVEMENT
+		where UNIT = 'CTN'
+		group by PRODUCT_ID, UNIT
+	) qty_moved
 		on p.ID = qty_moved.PRODUCT_ID
 	where p.ACTIVE_IND = 'Y'
-	and qty_moved.UNIT = 'CTN'
 	union all
 	select p.ID, p.CODE, qty_moved.UNIT, qty_yesterday.AVAIL_QTY_TIE as QTY_YESTERDAY, qty_moved.QUANTITY as QTY_MOVED, qty_today.AVAIL_QTY_TIE as QTY_TODAY
 	from PRODUCT p
@@ -409,10 +417,14 @@ from (
 	join DAILY_PRODUCT_STARTING_QUANTITY qty_today
 		on p.ID = qty_today.PRODUCT_ID
 		and qty_today.DATE = current_date()
-	join DAILY_PRODUCT_MOVEMENT qty_moved
+	join (
+		select PRODUCT_ID, UNIT, sum(QUANTITY) as QUANTITY
+		from DAILY_PRODUCT_MOVEMENT
+		where UNIT = 'TIE'
+		group by PRODUCT_ID, UNIT
+	) qty_moved
 		on p.ID = qty_moved.PRODUCT_ID
 	where p.ACTIVE_IND = 'Y'
-	and qty_moved.UNIT = 'TIE'
 	union all
 	select p.ID, p.CODE, qty_moved.UNIT, qty_yesterday.AVAIL_QTY_DOZ as QTY_YESTERDAY, qty_moved.QUANTITY as QTY_MOVED, qty_today.AVAIL_QTY_DOZ as QTY_TODAY
 	from PRODUCT p
@@ -422,10 +434,14 @@ from (
 	join DAILY_PRODUCT_STARTING_QUANTITY qty_today
 		on p.ID = qty_today.PRODUCT_ID
 		and qty_today.DATE = current_date()
-	join DAILY_PRODUCT_MOVEMENT qty_moved
+	join (
+		select PRODUCT_ID, UNIT, sum(QUANTITY) as QUANTITY
+		from DAILY_PRODUCT_MOVEMENT
+		where UNIT = 'DOZ'
+		group by PRODUCT_ID, UNIT
+	) qty_moved
 		on p.ID = qty_moved.PRODUCT_ID
 	where p.ACTIVE_IND = 'Y'
-	and qty_moved.UNIT = 'DOZ'
 	union all
 	select p.ID, p.CODE, qty_moved.UNIT, qty_yesterday.AVAIL_QTY_PCS as QTY_YESTERDAY, qty_moved.QUANTITY as QTY_MOVED, qty_today.AVAIL_QTY_PCS as QTY_TODAY
 	from PRODUCT p
@@ -435,10 +451,14 @@ from (
 	join DAILY_PRODUCT_STARTING_QUANTITY qty_today
 		on p.ID = qty_today.PRODUCT_ID
 		and qty_today.DATE = current_date()
-	join DAILY_PRODUCT_MOVEMENT qty_moved
+	join (
+		select PRODUCT_ID, UNIT, sum(QUANTITY) as QUANTITY
+		from DAILY_PRODUCT_MOVEMENT
+		where UNIT = 'PCS'
+		group by PRODUCT_ID, UNIT
+	) qty_moved
 		on p.ID = qty_moved.PRODUCT_ID
 	where p.ACTIVE_IND = 'Y'
-	and qty_moved.UNIT = 'PCS'
 ) a
 where QTY_YESTERDAY - QTY_MOVED <> QTY_TODAY
 	]]>
