@@ -1,10 +1,11 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import com.pj.magic.dao.PurchaseOrderItemDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
 import com.pj.magic.dao.StockQuantityConversionItemDao;
 import com.pj.magic.dao.SupplierDao;
+import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductPriceHistory;
@@ -44,6 +46,7 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired private ProductPriceHistoryDao productPriceHistoryDao;
 	@Autowired private LoginService loginService;
 	@Autowired private DailyProductStartingQuantityRepository dailyProductStartingQuantityRepository;
+	@Autowired private SystemDao systemDao;
 	
 	@Override
 	public List<Product> getAllProducts() {
@@ -197,14 +200,19 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional
 	@Override
 	public boolean saveDailyProductStartingQuantities() {
-		try {
-			dailyProductStartingQuantityRepository.getCheckValueForToday();
+		Date today = systemDao.getCurrentDateTime();
+		if (dailyProductStartingQuantityRepository.getCountByDate(today) == 0) {
+			dailyProductStartingQuantityRepository.saveQuantities(today);
+		} else {
 			return false;
-		} catch (EmptyResultDataAccessException e) {
-			dailyProductStartingQuantityRepository.saveCheckValueForToday();
-			dailyProductStartingQuantityRepository.saveQuantitiesForToday();
-			return true;
 		}
+		
+		Date yesterday = DateUtils.addDays(today, -1);
+		if (dailyProductStartingQuantityRepository.getCountByDate(yesterday) == 0) {
+			dailyProductStartingQuantityRepository.saveQuantities(yesterday);
+		}
+		
+		return true;
 	}
 
 }

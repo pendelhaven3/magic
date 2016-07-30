@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.dao.SystemDao;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.ReportService;
 
 @Component
 public class OnStartUp {
@@ -21,6 +22,7 @@ public class OnStartUp {
 	@Autowired private SystemDao systemDao;
 	@Autowired private TransactionTemplate transactionTemplate;
 	@Autowired private ProductService productService;
+	@Autowired private ReportService reportService;
 	
 	public void fire() {
 		resetCreateDateOfUnpostedStockQuantityConversions();
@@ -46,7 +48,7 @@ public class OnStartUp {
 	private void generateDailyProductQuantityDiscrepancyReport() {
 		new Thread(() -> {
 			if (saveDailyProductStartingQuantities()) {
-				doGenerateDailyProductQuantityDiscrepancyReport();
+				reportService.generateDailyProductQuantityDiscrepancyReport();
 			};
 		}).start();
 	}
@@ -59,10 +61,6 @@ public class OnStartUp {
 				return productService.saveDailyProductStartingQuantities();
 			}
 		});
-	}
-	
-	private void doGenerateDailyProductQuantityDiscrepancyReport() {
-		// TODO!
 	}
 	
 }

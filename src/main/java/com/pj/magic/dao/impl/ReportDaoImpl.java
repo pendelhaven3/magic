@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -20,6 +22,8 @@ import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.report.InventoryReportItem;
+import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
+import com.pj.magic.model.report.ProductQuantityDiscrepancyReportItem;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.report.StockOfftakeReportItem;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
@@ -309,6 +313,81 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		}
 		
 		return getNamedParameterJdbcTemplate().query(sql.toString(), paramMap, rowMapper);
+	}
+
+	private static final String GET_PRODUCT_QUANTITY_DISCREPANCY_REPORTS_SQL =
+			"select a.DATE, case when b.DATE is null then 'N' else 'Y' end AS HAS_DISCREPANCY"
+			+ " from ("
+			+ "   select distinct DATE"
+			+ "   from DAILY_PRODUCT_STARTING_QUANTITY"
+			+ " ) a"
+			+ " left join PRODUCT_QUANTITY_DISCREPANCY_REPORT b"
+			+ "   on b.DATE = a.DATE"
+			+ " order by date desc";
+	
+	@Override
+	public List<ProductQuantityDiscrepancyReport> getProductQuantityDiscrepancyReports() {
+		return getJdbcTemplate().query(GET_PRODUCT_QUANTITY_DISCREPANCY_REPORTS_SQL, 
+				new RowMapper<ProductQuantityDiscrepancyReport>() {
+
+					@Override
+					public ProductQuantityDiscrepancyReport mapRow(ResultSet rs, int rowNum) throws SQLException {
+						ProductQuantityDiscrepancyReport report = new ProductQuantityDiscrepancyReport();
+						report.setDate(rs.getDate("DATE"));
+						if ("Y".equals(rs.getString("HAS_DISCREPANCY"))) {
+							report.getItems().add(new ProductQuantityDiscrepancyReportItem());
+						}
+						return report;
+					}
+			
+		});
+	}
+
+	@Override
+	public void createProductQuantityDiscrepancyReportForToday() {
+		getJdbcTemplate().update(QueriesUtil.getSql("productQuantityDiscrepancyReport"));
+	}
+
+	private static final String GET_PRODUCT_QUANTITY_DISCREPANCY_REPORT_BY_DATE_SQL =
+			"select DATE, PRODUCT_ID, UNIT, PREVIOUS_QTY, QTY_MOVED, NEW_QTY"
+			+ " , b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
+			+ " from PRODUCT_QUANTITY_DISCREPANCY_REPORT a"
+			+ " join PRODUCT b"
+			+ "	  on b.ID = a.PRODUCT_ID"
+			+ " where DATE = ?"
+			+ " order by b.CODE";
+
+	@Override
+	public ProductQuantityDiscrepancyReport getProductQuantityDiscrepancyReportByDate(Date date) {
+		return getJdbcTemplate().query(GET_PRODUCT_QUANTITY_DISCREPANCY_REPORT_BY_DATE_SQL,
+				new Object[] {DbUtil.toMySqlDateString(date)},
+				new ResultSetExtractor<ProductQuantityDiscrepancyReport>() {
+
+					@Override
+					public ProductQuantityDiscrepancyReport extractData(ResultSet rs)
+							throws SQLException, DataAccessException {
+						ProductQuantityDiscrepancyReport report = new ProductQuantityDiscrepancyReport();
+						report.setDate(date);
+						while (rs.next()) {
+							ProductQuantityDiscrepancyReportItem item = new ProductQuantityDiscrepancyReportItem();
+							item.setProduct(mapProduct(rs));
+							item.setUnit(rs.getString("UNIT"));
+							item.setPreviousQuantity(rs.getInt("PREVIOUS_QTY"));
+							item.setQuantityMoved(rs.getInt("QTY_MOVED"));
+							item.setNewQuantity(rs.getInt("NEW_QTY"));
+							report.getItems().add(item);
+						}
+						return report;
+					}
+
+					private Product mapProduct(ResultSet rs) throws SQLException {
+						Product product = new Product(rs.getLong("PRODUCT_ID"));
+						product.setCode(rs.getString("PRODUCT_CODE"));
+						product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
+						return product;
+					}
+			
+		});
 	}
 
 }

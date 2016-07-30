@@ -36,6 +36,8 @@ import com.pj.magic.gui.panels.CreditCardStatementPanel;
 import com.pj.magic.gui.panels.CustomerCheckPaymentsReportPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.CustomerSalesSummaryReportPanel;
+import com.pj.magic.gui.panels.DailyProductQuantityDiscrepancyReportListPanel;
+import com.pj.magic.gui.panels.ProductQuantityDiscrepancyReportPanel;
 import com.pj.magic.gui.panels.DisbursementReportPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
 import com.pj.magic.gui.panels.InventoryCheckPanel;
@@ -161,6 +163,7 @@ import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.StockQuantityConversion;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
+import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.service.SystemService;
 
 /**
@@ -294,6 +297,10 @@ public class MagicFrame extends JFrame {
 			"UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL";
 	private static final String INVENTORY_CORRECTION_LIST_PANEL = "INVENTORY_CORRECTION_LIST_PANEL";
 	private static final String INVENTORY_CORRECTION_PANEL = "INVENTORY_CORRECTION_PANEL";
+	private static final String DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_LIST_PANEL = 
+			"DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_LIST_PANEL";
+	private static final String PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL = 
+			"DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -404,6 +411,8 @@ public class MagicFrame extends JFrame {
 	@Autowired private UploadMaximumStockLevelChangesPanel uploadMaximumStockLevelChangesPanel;
 	@Autowired private InventoryCorrectionListPanel inventoryCorrectionListPanel;
 	@Autowired private InventoryCorrectionPanel inventoryCorrectionPanel;
+	@Autowired private DailyProductQuantityDiscrepancyReportListPanel dailyProductQuantityDiscrepancyReportListPanel;
+	@Autowired private ProductQuantityDiscrepancyReportPanel productQuantityDiscrepancyReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -569,6 +578,9 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(uploadMaximumStockLevelChangesPanel, UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES_PANEL);
 		panelHolder.add(inventoryCorrectionListPanel, INVENTORY_CORRECTION_LIST_PANEL);
 		panelHolder.add(inventoryCorrectionPanel, INVENTORY_CORRECTION_PANEL);
+		panelHolder.add(dailyProductQuantityDiscrepancyReportListPanel, 
+				DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_LIST_PANEL);
+		panelHolder.add(productQuantityDiscrepancyReportPanel, PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1376,6 +1388,18 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Inventory Correction");
 		inventoryCorrectionPanel.updateDisplay(inventoryCorrection);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, INVENTORY_CORRECTION_PANEL);
+	}
+
+	public void switchToDailyProductQuantityDiscrepancyReportListPanel() {
+		addPanelNameToTitle("Daily Product Quantity Discrepancy Report List");
+		dailyProductQuantityDiscrepancyReportListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_LIST_PANEL);
+	}
+
+	public void switchToProductQuantityDiscrepancyReportPanel(ProductQuantityDiscrepancyReport report) {
+		addPanelNameToTitle("Product Quantity Discrepancy Report");
+		productQuantityDiscrepancyReportPanel.updateDisplay(report);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL);
 	}
 	
 }

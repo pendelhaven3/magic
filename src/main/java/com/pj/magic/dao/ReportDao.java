@@ -6,6 +6,7 @@ import java.util.List;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.report.InventoryReportItem;
+import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.report.StockOfftakeReportItem;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
@@ -26,5 +27,11 @@ public interface ReportDao {
 	List<StockOfftakeReportItem> searchStockOfftakeReportItems(StockOfftakeReportCriteria criteria);
 
 	List<StockCardInventoryReportItem> getStockCardInventoryReportItem(StockCardInventoryReportCriteria criteria);
+
+	List<ProductQuantityDiscrepancyReport> getProductQuantityDiscrepancyReports();
+
+	void createProductQuantityDiscrepancyReportForToday();
+
+	ProductQuantityDiscrepancyReport getProductQuantityDiscrepancyReportByDate(Date date);
 	
 }

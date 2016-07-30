@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pj.magic.dao.InventoryCheckDao;
 import com.pj.magic.dao.ReportDao;
@@ -13,6 +14,7 @@ import com.pj.magic.model.InventoryCorrection;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.InventoryReport;
+import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.SalesByManufacturerReport;
 import com.pj.magic.model.report.StockOfftakeReport;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
@@ -107,6 +109,22 @@ public class ReportServiceImpl implements ReportService {
 		StockOfftakeReport report = new StockOfftakeReport();
 		report.setItems(reportDao.searchStockOfftakeReportItems(criteria));
 		return report;
+	}
+
+	@Override
+	public List<ProductQuantityDiscrepancyReport> getProductQuantityDiscrepancyReports() {
+		return reportDao.getProductQuantityDiscrepancyReports();
+	}
+
+	@Transactional
+	@Override
+	public void generateDailyProductQuantityDiscrepancyReport() {
+		reportDao.createProductQuantityDiscrepancyReportForToday();
+	}
+
+	@Override
+	public ProductQuantityDiscrepancyReport getProductQuantityDiscrepancyReport(Date date) {
+		return reportDao.getProductQuantityDiscrepancyReportByDate(date);
 	}
 
 }

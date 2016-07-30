@@ -1,15 +1,11 @@
 package com.pj.magic.repository;
 
+import java.util.Date;
+
 public interface DailyProductStartingQuantityRepository {
 
-	int getCheckValueForToday();
+	void saveQuantities(Date date);
 
-	void saveCheckValueForToday();
-
-	int getProductCountForToday();
-
-	void saveQuantitiesForToday();
-
-	void deleteQuantitiesForToday();
-
+	int getCountByDate(Date date);
+	
 }
