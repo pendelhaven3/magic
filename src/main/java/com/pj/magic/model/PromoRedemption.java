@@ -22,11 +22,14 @@ public class PromoRedemption {
 	private List<PromoRedemptionSalesInvoice> redemptionSalesInvoices = new ArrayList<>();
 	private List<PromoRedemptionReward> rewards = new ArrayList<>();
 	private List<PromoRedemptionRebate> rebates = new ArrayList<>();
+	private boolean cancelled;
+	private Date cancelDate;
+	private User cancelledBy;
 
 	public PromoRedemption() {
 		// default constructor
 	}
-	
+
 	public PromoRedemption(long id) {
 		this.id = id;
 	}
@@ -105,20 +108,25 @@ public class PromoRedemption {
 					}
 				}));
 	}
-	
+
 	public String getStatus() {
-		return (posted) ? "Posted" : "New";
+		if (cancelled) {
+			return "Cancelled";
+		} else if (posted) {
+			return "Posted";
+		} else {
+			return "New";
+		}
 	}
 
 	public BigDecimal getTotalAmount() {
 		BigDecimal total = Constants.ZERO;
-		
+
 		switch (promo.getPromoType()) {
 		case PROMO_TYPE_1: {
 			PromoType1Rule rule = promo.getPromoType1Rule();
 			for (PromoRedemptionSalesInvoice salesInvoice : redemptionSalesInvoices) {
-				total = total.add(salesInvoice.getSalesInvoice().getSalesByManufacturer(
-						rule.getManufacturer()));
+				total = total.add(salesInvoice.getSalesInvoice().getSalesByManufacturer(rule.getManufacturer()));
 			}
 			break;
 		}
@@ -132,17 +140,17 @@ public class PromoRedemption {
 			break;
 		case PROMO_TYPE_4:
 			break;
-		case PROMO_TYPE_5: 
+		case PROMO_TYPE_5:
 			total = getPromoType5TotalAmount();
 			break;
 		}
-		
+
 		return total;
 	}
-	
+
 	private BigDecimal getPromoType5TotalAmount() {
 		PromoType5Rule rule = promo.getPromoType5Rule();
-		
+
 		BigDecimal total = BigDecimal.ZERO;
 		for (PromoRedemptionSalesInvoice salesInvoice : redemptionSalesInvoices) {
 			total = total.add(rule.getQualifyingAmount(salesInvoice.getSalesInvoice()));
@@ -151,10 +159,10 @@ public class PromoRedemption {
 	}
 
 	public int getFreeQuantity(PromoType2Rule rule) {
-		return getTotalQuantityByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit())
-				/ rule.getPromoQuantity() * rule.getFreeQuantity();
+		return getTotalQuantityByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit()) / rule.getPromoQuantity()
+				* rule.getFreeQuantity();
 	}
-	
+
 	public int getTotalQuantityByProductAndUnit(Product product, String unit) {
 		int total = 0;
 		for (PromoRedemptionSalesInvoice salesInvoice : redemptionSalesInvoices) {
@@ -176,8 +184,7 @@ public class PromoRedemption {
 
 	public PromoRedemptionReward getRewardByRule(PromoType2Rule rule) {
 		for (PromoRedemptionReward reward : rewards) {
-			if (reward.getProduct().equals(rule.getFreeProduct()) 
-					&& reward.getUnit().equals(rule.getFreeUnit())) {
+			if (reward.getProduct().equals(rule.getFreeProduct()) && reward.getUnit().equals(rule.getFreeUnit())) {
 				return reward;
 			}
 		}
@@ -185,7 +192,7 @@ public class PromoRedemption {
 	}
 
 	public PromoRedemptionReward getFreeQuantity(PromoType3Rule rule) {
-		List<SalesInvoice> salesInvoices = new ArrayList<>(Collections2.transform(this.redemptionSalesInvoices, 
+		List<SalesInvoice> salesInvoices = new ArrayList<>(Collections2.transform(this.redemptionSalesInvoices,
 				new Function<PromoRedemptionSalesInvoice, SalesInvoice>() {
 
 					@Override
@@ -193,14 +200,14 @@ public class PromoRedemption {
 						return input.getSalesInvoice();
 					}
 				}));
-		
+
 		return rule.evaluate(salesInvoices);
 	}
 
 	public int getTotalRewards() {
 		return rewards.size();
 	}
-	
+
 	public int getTotalRewardQuantity() {
 		int total = 0;
 		for (PromoRedemptionReward reward : rewards) {
@@ -208,13 +215,14 @@ public class PromoRedemption {
 		}
 		return total;
 	}
-	
+
 	public void validateSalesInvoicesPricingScheme() throws SalesInvoiceIneligibleForPromoRedemptionException {
 		PricingScheme promoPricingScheme = getPromo().getPricingScheme();
 		if (promoPricingScheme != null) {
 			for (PromoRedemptionSalesInvoice redemptionSalesInvoice : redemptionSalesInvoices) {
 				if (!redemptionSalesInvoice.getSalesInvoice().getPricingScheme().equals(promoPricingScheme)) {
-					throw new SalesInvoiceIneligibleForPromoRedemptionException(redemptionSalesInvoice.getSalesInvoice());
+					throw new SalesInvoiceIneligibleForPromoRedemptionException(
+							redemptionSalesInvoice.getSalesInvoice());
 				}
 			}
 		}
@@ -237,11 +245,33 @@ public class PromoRedemption {
 			return total;
 		} else {
 			PromoType5Rule rule = getPromo().getPromoType5Rule();
-			return getPromoType5TotalAmount()
-					.divideToIntegralValue(rule.getTargetAmount())
-					.multiply(rule.getRebate())
+			return getPromoType5TotalAmount().divideToIntegralValue(rule.getTargetAmount()).multiply(rule.getRebate())
 					.setScale(2);
 		}
 	}
-	
+
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
+
+	public Date getCancelDate() {
+		return cancelDate;
+	}
+
+	public void setCancelDate(Date cancelDate) {
+		this.cancelDate = cancelDate;
+	}
+
+	public User getCancelledBy() {
+		return cancelledBy;
+	}
+
+	public void setCancelledBy(User cancelledBy) {
+		this.cancelledBy = cancelledBy;
+	}
+
 }

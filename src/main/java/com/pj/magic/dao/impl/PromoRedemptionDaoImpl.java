@@ -30,16 +30,20 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PROMO_ID, PROMO_REDEMPTION_NO, CUSTOMER_ID,"
 			+ " POST_IND, POST_DT, POST_BY,"
+			+ " CANCEL_IND, CANCEL_DT, CANCEL_BY,"
 			+ " b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
-			+ " d.NAME as PROMO_NAME, d.PROMO_TYPE_ID"
+			+ " d.NAME as PROMO_NAME, d.PROMO_TYPE_ID,"
+			+ " e.USERNAME as CANCEL_BY_USERNAME"
 			+ " from PROMO_REDEMPTION a"
 			+ " join CUSTOMER b"
 			+ "   on b.ID = a.CUSTOMER_id"
 			+ " left join USER c"
 			+ "   on c.ID = a.POST_BY"
 			+ " join PROMO d"
-			+ "   on d.ID = a.PROMO_ID";
+			+ "   on d.ID = a.PROMO_ID"
+			+ " left join USER e"
+			+ "   on e.ID = a.CANCEL_BY";
 	
 	private PromoRedemptionRowMapper promoRedemptionRowMapper = new PromoRedemptionRowMapper();
 	
@@ -89,7 +93,7 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 	
 	private static final String UPDATE_SQL = "update PROMO_REDEMPTION"
 			+ " set CUSTOMER_ID = ?, POST_IND = ?, POST_DT = ?,"
-			+ " POST_BY = ? where ID = ?";
+			+ " POST_BY = ?, CANCEL_IND = ?, CANCEL_DT = ?, CANCEL_BY = ? where ID = ?";
 	
 	private void update(PromoRedemption promoRedemption) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -97,6 +101,9 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 				promoRedemption.isPosted() ? "Y" : "N",
 				promoRedemption.isPosted() ? promoRedemption.getPostDate() : null,
 				promoRedemption.isPosted() ? promoRedemption.getPostedBy().getId() : null,
+				promoRedemption.isCancelled() ? "Y" : "N",
+				promoRedemption.isCancelled() ? promoRedemption.getCancelDate() : null,
+				promoRedemption.isCancelled() ? promoRedemption.getCancelledBy().getId() : null,
 				promoRedemption.getId());
 	}
 
@@ -137,6 +144,13 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 				promoRedemption.setPostDate(rs.getTimestamp("POST_DT"));
 				promoRedemption.setPostedBy(
 						new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+			}
+			
+			promoRedemption.setCancelled("Y".equals(rs.getString("CANCEL_IND")));
+			if (promoRedemption.isCancelled()) {
+				promoRedemption.setCancelDate(rs.getTimestamp("CANCEL_DT"));
+				promoRedemption.setCancelledBy(
+						new User(rs.getLong("CANCEL_BY"), rs.getString("CANCEL_BY_USERNAME")));
 			}
 			
 			return promoRedemption;

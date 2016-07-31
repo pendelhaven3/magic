@@ -397,4 +397,21 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		promoPointsClaimDao.delete(claim);
 	}
 
+	@Transactional
+	@Override
+	public void cancel(PromoRedemption promoRedemption) {
+		promoRedemption = getPromoRedemption(promoRedemption.getId());
+		
+		promoRedemption.setCancelled(true);
+		promoRedemption.setCancelledBy(loginService.getLoggedInUser());
+		promoRedemption.setCancelDate(systemDao.getCurrentDateTime());
+		promoRedemptionDao.save(promoRedemption);
+		
+		for (PromoRedemptionReward reward : promoRedemption.getRewards()) {
+			Product product = productDao.get(reward.getProduct().getId());
+			product.addUnitQuantity(reward.getUnit(), reward.getQuantity());
+			productDao.updateAvailableQuantities(product);
+		}
+	}
+
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
+import com.pj.magic.dao.PromoRedemptionDao;
 import com.pj.magic.dao.SalesInvoiceDao;
 import com.pj.magic.dao.SalesInvoiceItemDao;
 import com.pj.magic.dao.SalesRequisitionDao;
@@ -21,6 +22,7 @@ import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.SellingPriceLessThanCostException;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesRequisition;
@@ -29,6 +31,7 @@ import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.SalesReturnItem;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.LoginService;
+import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.service.SalesInvoiceService;
 
 @Service
@@ -44,6 +47,8 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 	@Autowired private SalesReturnDao salesReturnDao;
 	@Autowired private SalesReturnItemDao salesReturnItemDao;
 	@Autowired private SystemDao systemDao;
+	@Autowired private PromoRedemptionDao promoRedemptionDao;
+	@Autowired private PromoRedemptionService promoRedemptionService;
 	
 	@Transactional
 	@Override
@@ -127,6 +132,12 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 				}
 			}
 		}
+		
+		for (PromoRedemption promoRedemption : promoRedemptionDao.findAllBySalesInvoice(salesInvoice)) {
+			if (promoRedemption.getPromo().isPromoType2()) {
+				promoRedemptionService.cancel(promoRedemption);
+			}
+		};
 	}
 
 	@Override

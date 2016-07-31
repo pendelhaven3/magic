@@ -910,11 +910,15 @@ create table PROMO_REDEMPTION (
   POST_IND char(1) default 'N' not null,
   POST_DT datetime null,
   POST_BY integer null,
+  CANCEL_IND char(1) default 'N' not null,
+  CANCEL_DT datetime null,
+  CANCEL_BY integer null,
   primary key (ID),
   unique key PROMO_REDEMPTION$UK (PROMO_ID, PROMO_REDEMPTION_NO),
   constraint PROMO_REDEMPTION$FK foreign key (PROMO_ID) references PROMO (ID),
   constraint PROMO_REDEMPTION$FK2 foreign key (CUSTOMER_ID) references CUSTOMER (ID),
-  constraint PROMO_REDEMPTION$FK3 foreign key (POST_BY) references USER (ID)
+  constraint PROMO_REDEMPTION$FK3 foreign key (POST_BY) references USER (ID),
+  constraint PROMO_REDEMPTION$FK4 foreign key (CANCEL_BY) references USER (ID)
 );
 
 create table PROMO_REDEMPTION_SALES_INVOICE (

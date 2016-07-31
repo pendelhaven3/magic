@@ -40,5 +40,7 @@ public interface PromoRedemptionService {
 	void save(PromoPointsClaim claim) throws NotEnoughPromoPointsException;
 
 	void delete(PromoPointsClaim claim);
+
+	void cancel(PromoRedemption promoRedemption);
 	
 }

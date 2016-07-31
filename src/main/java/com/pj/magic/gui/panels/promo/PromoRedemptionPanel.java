@@ -81,6 +81,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	private JLabel promoRedemptionNumberLabel;
 	private MagicTextField customerCodeField;
 	private JLabel customerNameLabel;
+	private JLabel statusLabel;
 	private EllipsisButton selectCustomerButton;
 	private MagicListTable salesInvoicesTable;
 	private MagicListTable prizesTable;
@@ -102,6 +103,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		customerCodeField.setMaximumLength(Constants.CUSTOMER_CODE_MAXIMUM_LENGTH);
 		
 		customerNameLabel = new JLabel();
+		statusLabel = new JLabel();
 		
 		selectCustomerButton = new EllipsisButton("Select Customer (F5)");
 		selectCustomerButton.addActionListener(new ActionListener() {
@@ -237,6 +239,22 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(createCustomerPanel(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Status:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.weightx = 1.0;
+		c.anchor = GridBagConstraints.WEST;
+		statusLabel.setPreferredSize(new Dimension(100, 25));
+		mainPanel.add(statusLabel, c);
 		
 		currentRow++;
 		
@@ -546,6 +564,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		customerCodeField.setEnabled(!promoRedemption.isPosted());
 		customerCodeField.setText(promoRedemption.getCustomer().getCode());
 		customerNameLabel.setText(promoRedemption.getCustomer().getName());
+		statusLabel.setText(promoRedemption.getStatus());
 		totalAmountLabel.setText(FormatterUtil.formatAmount(promoRedemption.getTotalAmount()));
 		
 		salesInvoicesTableModel.setPromoRedemption(promoRedemption);
@@ -570,6 +589,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		customerCodeField.setEnabled(true);
 		customerCodeField.setText(null);
 		customerNameLabel.setText(null);
+		statusLabel.setText(null);
 		totalAmountLabel.setText(null);
 		
 		salesInvoicesTableModel.clear();

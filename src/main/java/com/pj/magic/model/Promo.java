@@ -304,5 +304,9 @@ public class Promo {
 	public boolean isPromoType5() {
 		return promoType.isType5();
 	}
+
+	public boolean isPromoType2() {
+		return promoType.isType2();
+	}
 	
 }
