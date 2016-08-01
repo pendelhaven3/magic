@@ -2,6 +2,7 @@ package com.pj.magic.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.pj.magic.model.report.StockOfftakeReportItem;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportCriteria;
 import com.pj.magic.model.search.StockOfftakeReportCriteria;
+import com.pj.magic.util.DateUtil;
 import com.pj.magic.util.DbUtil;
 import com.pj.magic.util.QueriesUtil;
 
@@ -352,7 +354,18 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 
 	@Override
 	public void createProductQuantityDiscrepancyReportForToday() {
-		getJdbcTemplate().update(QueriesUtil.getSql("productQuantityDiscrepancyReport"));
+		recreateDailyProductMovementView();
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("yesterday", DateUtil.isMonday(new Date()) ? -2 : -1);
+		getNamedParameterJdbcTemplate().update(QueriesUtil.getSql("productQuantityDiscrepancyReport"), params);
+	}
+
+	private void recreateDailyProductMovementView() {
+		int previousDayModifier = DateUtil.isMonday(new Date()) ? -2 : -1;
+		String sql = MessageFormat.format(QueriesUtil.getSql("recreateDailyProductMovementView"), previousDayModifier);
+		getJdbcTemplate().update(sql);
+		
 	}
 
 	private static final String GET_PRODUCT_QUANTITY_DISCREPANCY_REPORT_BY_DATE_SQL =

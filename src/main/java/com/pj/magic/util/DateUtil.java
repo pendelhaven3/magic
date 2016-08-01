@@ -3,8 +3,10 @@ package com.pj.magic.util;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.util.StringUtils;
 
 import com.pj.magic.Constants;
@@ -41,6 +43,10 @@ public class DateUtil {
 		} catch (ParseException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
+	}
+
+	public static boolean isMonday(Date date) {
+		return DateUtils.toCalendar(date).get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY;
 	}
 	
 }
