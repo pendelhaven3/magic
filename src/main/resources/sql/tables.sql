@@ -1135,7 +1135,7 @@ create table PRODUCT_QUANTITY_DISCREPANCY_REPORT (
   PREVIOUS_QTY integer not null,
   QTY_MOVED integer not null,
   NEW_QTY integer not null,
-  primary key (DATE, PRODUCT_ID),
+  primary key (DATE, PRODUCT_ID, UNIT),
   constraint PRODUCT_QUANTITY_DISCREPANCY_REPORT$FK foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
 
