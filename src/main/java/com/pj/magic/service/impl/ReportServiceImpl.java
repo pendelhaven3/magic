@@ -3,6 +3,7 @@ package com.pj.magic.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,7 +120,13 @@ public class ReportServiceImpl implements ReportService {
 	@Transactional
 	@Override
 	public void generateDailyProductQuantityDiscrepancyReport() {
-		reportDao.createProductQuantityDiscrepancyReportForToday();
+		if (!hasInventoryCheckYesterday()) {
+			reportDao.createProductQuantityDiscrepancyReportForToday();
+		}
+	}
+
+	private boolean hasInventoryCheckYesterday() {
+		return inventoryCheckDao.findByInventoryDate(DateUtils.addDays(new Date(), -1)) != null;
 	}
 
 	@Override

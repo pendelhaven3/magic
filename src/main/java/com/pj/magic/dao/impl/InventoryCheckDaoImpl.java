@@ -1,12 +1,12 @@
 package com.pj.magic.dao.impl;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import com.pj.magic.dao.InventoryCheckDao;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.User;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao {
@@ -51,7 +52,7 @@ public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao
 			public PreparedStatement createPreparedStatement(Connection con)
 					throws SQLException {
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
-				ps.setDate(1, new Date(inventoryCheck.getInventoryDate().getTime()));
+				ps.setDate(1, new java.sql.Date(inventoryCheck.getInventoryDate().getTime()));
 				return ps;
 			}
 		}, holder);
@@ -121,6 +122,18 @@ public class InventoryCheckDaoImpl extends MagicDao implements InventoryCheckDao
 	@Override
 	public InventoryCheck getMostRecent() {
 		return getJdbcTemplate().queryForObject(GET_MOST_RECENT_SQL, inventoryCheckRowMapper);
+	}
+
+	private static final String FIND_BY_INVENTORY_DATE_SQL = BASE_SELECT_SQL + " where INVENTORY_DT = ?";
+	
+	@Override
+	public InventoryCheck findByInventoryDate(Date inventoryDate) {
+		try {
+			return getJdbcTemplate().queryForObject(FIND_BY_INVENTORY_DATE_SQL, inventoryCheckRowMapper, 
+					DbUtil.toMySqlDateString(inventoryDate));
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
 	}
 
 }

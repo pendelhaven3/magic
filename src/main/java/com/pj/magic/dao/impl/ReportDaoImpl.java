@@ -355,17 +355,37 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 	@Override
 	public void createProductQuantityDiscrepancyReportForToday() {
 		recreateDailyProductMovementView();
-		
-		Map<String, Object> params = new HashMap<>();
-		params.put("yesterday", DateUtil.isMonday(new Date()) ? -2 : -1);
-		getNamedParameterJdbcTemplate().update(QueriesUtil.getSql("productQuantityDiscrepancyReport"), params);
+		doCreateProductQuantityDiscrepancyReportForToday();
+		deleteProductQuantityDiscrepancyReportItemsTodayWithCorrections();
 	}
 
 	private void recreateDailyProductMovementView() {
 		int previousDayModifier = DateUtil.isMonday(new Date()) ? -2 : -1;
 		String sql = MessageFormat.format(QueriesUtil.getSql("recreateDailyProductMovementView"), previousDayModifier);
 		getJdbcTemplate().update(sql);
+	}
+	
+	private void doCreateProductQuantityDiscrepancyReportForToday() {
+		Map<String, Object> params = new HashMap<>();
+		params.put("yesterday", DateUtil.isMonday(new Date()) ? -2 : -1);
+		getNamedParameterJdbcTemplate().update(QueriesUtil.getSql("productQuantityDiscrepancyReport"), params);
+	}
+
+	private static final String DELETE_PRODUCT_QUANTITY_DISCREPANCY_REPORT_ITEMS_WITH_CORRECTION_SQL =
+			"delete a from PRODUCT_QUANTITY_DISCREPANCY_REPORT a"
+			+ " where a.DATE = :date"
+			+ " and exists ("
+			+ "   select 1"
+			+ "   from INVENTORY_CORRECTION b"
+			+ "   where b.POST_DT >= date_add(:date, interval -1 day)"
+			+ "   and b.PRODUCT_ID = a.PRODUCT_ID"
+			+ " )";
+	
+	private void deleteProductQuantityDiscrepancyReportItemsTodayWithCorrections() {
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("date", DbUtil.toMySqlDateString(new Date()));
 		
+		getNamedParameterJdbcTemplate().update(DELETE_PRODUCT_QUANTITY_DISCREPANCY_REPORT_ITEMS_WITH_CORRECTION_SQL, paramMap);
 	}
 
 	private static final String GET_PRODUCT_QUANTITY_DISCREPANCY_REPORT_BY_DATE_SQL =
