@@ -46,11 +46,9 @@ public class OnStartUp {
 	}
 
 	private void generateDailyProductQuantityDiscrepancyReport() {
-		new Thread(() -> {
-			if (saveDailyProductStartingQuantities()) {
-				reportService.generateDailyProductQuantityDiscrepancyReport();
-			};
-		}).start();
+		if (saveDailyProductStartingQuantities()) {
+			reportService.generateDailyProductQuantityDiscrepancyReport();
+		};
 	}
 	
 	private boolean saveDailyProductStartingQuantities() {
