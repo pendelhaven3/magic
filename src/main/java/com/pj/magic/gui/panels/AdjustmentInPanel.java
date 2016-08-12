@@ -8,15 +8,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -46,8 +44,6 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 
 	private static final Logger logger = LoggerFactory.getLogger(AdjustmentInPanel.class);
 	
-	private static final String FOCUS_NEXT_FIELD_ACTION_NAME = "focusNextField";
-	
 	@Autowired private AdjustmentInItemsTable itemsTable;
 	@Autowired private ProductService productService;
 	@Autowired private AdjustmentInService adjustmentInService;
@@ -55,8 +51,8 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	
 	private AdjustmentIn adjustmentIn;
-	private JLabel adjustmentInNumberField;
-	private JLabel statusField;
+	private JLabel adjustmentInNumberLabel;
+	private JLabel statusLabel;
 	private MagicTextField remarksField;
 	private JLabel postDateField;
 	private JLabel postedByField;
@@ -90,16 +86,13 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
-		remarksField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
-				FOCUS_NEXT_FIELD_ACTION_NAME);
-		remarksField.getActionMap().put(FOCUS_NEXT_FIELD_ACTION_NAME, new AbstractAction() {
+		remarksField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				itemsTable.highlight();
 			}
 		});
-		
 	}
 
 	protected void saveRemarks() {
@@ -107,12 +100,14 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 			adjustmentIn.setRemarks(remarksField.getText());
 			try {
 				adjustmentInService.save(adjustmentIn);
-				updateDisplay(adjustmentIn);
-				itemsTable.highlight();
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error on saving");
+				return;
 			}
+			
+			updateDisplay(adjustmentIn);
+			itemsTable.highlight();
 		}
 	}
 
@@ -142,11 +137,10 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		this.adjustmentIn = adjustmentInService.getAdjustmentIn(adjustmentIn.getId());
-		adjustmentIn = this.adjustmentIn;
+		this.adjustmentIn = adjustmentIn = adjustmentInService.getAdjustmentIn(adjustmentIn.getId());
 		
-		adjustmentInNumberField.setText(adjustmentIn.getAdjustmentInNumber().toString());
-		statusField.setText(adjustmentIn.getStatus());
+		adjustmentInNumberLabel.setText(adjustmentIn.getAdjustmentInNumber().toString());
+		statusLabel.setText(adjustmentIn.getStatus());
 		if (adjustmentIn.getPostDate() != null) {
 			postDateField.setText(FormatterUtil.formatDateTime(adjustmentIn.getPostDate()));
 		} else {
@@ -171,8 +165,8 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 	}
 
 	private void clearDisplay() {
-		adjustmentInNumberField.setText(null);
-		statusField.setText(null);
+		adjustmentInNumberLabel.setText(null);
+		statusLabel.setText(null);
 		postDateField.setText(null);
 		postedByField.setText(null);
 		remarksField.setEnabled(true);
@@ -190,76 +184,68 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(50, 30), c);
+		mainPanel.add(Box.createHorizontalStrut(50));
 
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Adj. In No.:"), c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		adjustmentInNumberField = ComponentUtil.createLabel(200, "");
-		mainPanel.add(adjustmentInNumberField, c);
+		adjustmentInNumberLabel = ComponentUtil.createLabel(200, "");
+		mainPanel.add(adjustmentInNumberLabel, c);
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(50, 1), c);
-		
-		c.weightx = c.weighty = 0.0;
+		mainPanel.add(Box.createHorizontalStrut(50), c);
+
+		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Status:"), c);
 		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		statusField = ComponentUtil.createLabel(100, "");
-		mainPanel.add(statusField, c);
+		statusLabel = ComponentUtil.createLabel(100, "");
+		mainPanel.add(statusLabel, c);
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Remarks:"), c);
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		remarksField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(remarksField, c);
 
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Post Date:"), c);
 		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -267,14 +253,14 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
+		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(100, "Posted By:"), c);
 		
+		c = new GridBagConstraints();
 		c.weightx = 1.0;
-		c.weighty = 0.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
@@ -283,47 +269,33 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
-		c.weightx = c.weighty = 0.0;
-		c.fill = GridBagConstraints.NONE;
+		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(50, 10), c);
-		
-		currentRow++;
-		
-		c.fill = GridBagConstraints.NONE;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridx = 0;
-		c.gridy = currentRow;
+		c.insets.top = 10;
 		c.gridwidth = 6;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(createItemsTableToolBar(), c);
 
 		currentRow++;
 		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 6;
-		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
-		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
-		mainPanel.add(itemsTableScrollPane, c);
+		mainPanel.add(ComponentUtil.createScrollPane(itemsTable, 600, 100), c);
 
 		currentRow++;
 		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 0.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 6;
 		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane infoTableScrollPane = new JScrollPane(productInfoTable);
-		infoTableScrollPane.setPreferredSize(new Dimension(500, 65));
-		mainPanel.add(infoTableScrollPane, c);
+		mainPanel.add(ComponentUtil.createScrollPane(productInfoTable, 500, 65), c);
 		
 		currentRow++;
 		
@@ -350,14 +322,10 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
+		c.insets.right = 10;
 		c.anchor = GridBagConstraints.WEST;
 		totalItemsField = ComponentUtil.createLabel(60);
 		panel.add(totalItemsField, c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		panel.add(ComponentUtil.createHorizontalFiller(10), c);
 		
 		currentRow++;
 		
@@ -371,6 +339,7 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
+		c.insets.right = 10;
 		c.anchor = GridBagConstraints.WEST;
 		totalAmountField = ComponentUtil.createLabel(100);
 		panel.add(totalAmountField, c);
