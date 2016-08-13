@@ -4,4 +4,4 @@
 /.settings
 /bin
 magic.log
-/magic-lib/httpserver
+/magic-lib
