@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,10 +22,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
-
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
-import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,6 +41,8 @@ import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.PromoRedemption;
+import com.pj.magic.model.PromoType;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.report.PostedSalesAndProfitReport;
@@ -51,6 +50,7 @@ import com.pj.magic.model.report.PostedSalesAndProfitReportItem;
 import com.pj.magic.model.search.BadStockReturnSearchCriteria;
 import com.pj.magic.model.search.NoMoreStockAdjustmentSearchCriteria;
 import com.pj.magic.model.search.PaymentAdjustmentSearchCriteria;
+import com.pj.magic.model.search.PromoRedemptionSearchCriteria;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.service.BadStockReturnService;
@@ -59,10 +59,15 @@ import com.pj.magic.service.NoMoreStockAdjustmentService;
 import com.pj.magic.service.PaymentAdjustmentService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
+import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
@@ -86,6 +91,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
 	@Autowired private BadStockReturnService badStockReturnService;
 	@Autowired private PaymentAdjustmentService paymentAdjustmentService;
+	@Autowired private PromoRedemptionService promoRedemptionService;
 	
 	private MagicTextField customerCodeField;
 	private JLabel customerNameLabel;
@@ -280,6 +286,27 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	
 				@Override
 				public PostedSalesAndProfitReportItem apply(PaymentAdjustment input) {
+					return new PostedSalesAndProfitReportItem(input);
+				}
+			})
+		);
+		
+		PromoRedemptionSearchCriteria promoRedemptionCriteria = new PromoRedemptionSearchCriteria();
+		promoRedemptionCriteria.setPosted(true);
+		promoRedemptionCriteria.setCustomer(customer);
+		promoRedemptionCriteria.setCancelled(false);
+		promoRedemptionCriteria.setPromoTypes(Arrays.asList(PromoType.PROMO_TYPE_1, PromoType.PROMO_TYPE_2, PromoType.PROMO_TYPE_3));
+		promoRedemptionCriteria.setPostDateFrom(fromDateModel.getValue().getTime());
+		promoRedemptionCriteria.setPostDateTo(toDateModel.getValue().getTime());
+		
+		List<PromoRedemption> promoRedemptions = 
+				promoRedemptionService.search(promoRedemptionCriteria);
+		items.addAll(
+			Collections2.transform(promoRedemptions, 
+					new Function<PromoRedemption, PostedSalesAndProfitReportItem>() {
+	
+				@Override
+				public PostedSalesAndProfitReportItem apply(PromoRedemption input) {
 					return new PostedSalesAndProfitReportItem(input);
 				}
 			})

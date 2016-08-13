@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -23,6 +25,7 @@ import com.pj.magic.model.PromoType;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PromoRedemptionSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionDao {
@@ -217,6 +220,34 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 		if (criteria.getPromoType() != null) {
 			sql.append(" and d.PROMO_TYPE_ID = ?");
 			params.add(criteria.getPromoType().getId());
+		}
+		
+		if (criteria.getCustomer() != null) {
+			sql.append(" and a.CUSTOMER_ID = ?");
+			params.add(criteria.getCustomer().getId());
+		}
+		
+		if (criteria.getPromoTypes() != null) {
+			List<Long> promoTypes = criteria.getPromoTypes().stream()
+					.map(promoType -> promoType.getId()).collect(Collectors.toList());
+			
+			sql.append(" and d.PROMO_TYPE_ID in (");
+			sql.append(StringUtils.join(promoTypes, ',')).append(")");
+		}
+		
+		if (criteria.getCancelled() != null) {
+			sql.append(" and CANCEL_IND = ?");
+			params.add(criteria.getCancelled() ? "Y" : "N");
+		}
+		
+		if (criteria.getPostDateFrom() != null) {
+			sql.append(" and a.POST_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDateFrom()));
+		}
+		
+		if (criteria.getPostDateTo() != null) {
+			sql.append(" and a.POST_DT < date_add(?, interval 1 day)");
+			params.add(DbUtil.toMySqlDateString(criteria.getPostDateTo()));
 		}
 		
 		return getJdbcTemplate().query(sql.toString(), promoRedemptionRowMapper, params.toArray());

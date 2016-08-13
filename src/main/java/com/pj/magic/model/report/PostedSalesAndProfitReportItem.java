@@ -8,6 +8,7 @@ import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.NoMoreStockAdjustment;
 import com.pj.magic.model.PaymentAdjustment;
+import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 
@@ -82,6 +83,14 @@ public class PostedSalesAndProfitReportItem {
 		customer = paymentAdjustment.getCustomer();
 		netAmount = paymentAdjustment.getAmount().negate();
 		netProfit = paymentAdjustment.getAmount().negate();
+	}
+
+	public PostedSalesAndProfitReportItem(PromoRedemption promoRedemption) {
+		transactionDate = promoRedemption.getPostDate();
+		transactionType = "PROMO REDEMPTION";
+		transactionNumber = promoRedemption.getPromoRedemptionNumber();
+		customer = promoRedemption.getCustomer();
+		netAmount = netProfit = promoRedemption.getRewardsTotalCost().negate();
 	}
 
 	public Date getTransactionDate() {

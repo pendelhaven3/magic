@@ -250,6 +250,12 @@ public class PromoRedemption {
 		}
 	}
 
+	public BigDecimal getRewardsTotalCost() {
+		return rewards.stream()
+				.map(reward -> reward.getTotalCost())
+				.reduce(BigDecimal.ZERO, (x,y) -> x.add(y));
+	}
+	
 	public boolean isCancelled() {
 		return cancelled;
 	}

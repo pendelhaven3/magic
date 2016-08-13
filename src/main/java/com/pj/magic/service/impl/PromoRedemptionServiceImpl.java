@@ -268,7 +268,8 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		return promoRedemptions;
 	}
 
-	private List<PromoRedemption> search(PromoRedemptionSearchCriteria criteria) {
+	@Override
+	public List<PromoRedemption> search(PromoRedemptionSearchCriteria criteria) {
 		List<PromoRedemption> promoRedemptions = promoRedemptionDao.search(criteria);
 		for (PromoRedemption promoRedemption : promoRedemptions) {
 			promoRedemption.setRewards(promoRedemptionRewardDao.findAllByPromoRedemption(promoRedemption));

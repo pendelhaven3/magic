@@ -10,6 +10,7 @@ import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.PromoPointsClaim;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.search.PromoRedemptionSearchCriteria;
 
 public interface PromoRedemptionService {
 
@@ -42,5 +43,7 @@ public interface PromoRedemptionService {
 	void delete(PromoPointsClaim claim);
 
 	void cancel(PromoRedemption promoRedemption);
+
+	List<PromoRedemption> search(PromoRedemptionSearchCriteria promoRedemptionCriteria);
 	
 }

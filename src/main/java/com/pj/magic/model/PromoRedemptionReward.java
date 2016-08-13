@@ -1,5 +1,8 @@
 package com.pj.magic.model;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class PromoRedemptionReward {
 
 	private Long id;
@@ -8,6 +11,10 @@ public class PromoRedemptionReward {
 	private String unit;
 	private Integer quantity;
 
+	public BigDecimal getTotalCost() {
+		return product.getFinalCost(unit).multiply(new BigDecimal(quantity)).setScale(2, RoundingMode.HALF_UP);
+	}
+	
 	public Long getId() {
 		return id;
 	}
