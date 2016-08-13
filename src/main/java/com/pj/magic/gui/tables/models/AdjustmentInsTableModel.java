@@ -14,7 +14,7 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class AdjustmentInsTableModel extends AbstractTableModel {
 
-	private static final String[] COLUMN_NAMES = {"Adj. In No.", "Remarks", "Posted", "Post Date"};
+	private static final String[] COLUMN_NAMES = {"Adj. In No.", "Remarks", "Posted", "Post Date", "Pilferage"};
 	
 	private List<AdjustmentIn> adjustmentIns = new ArrayList<>();
 	
@@ -40,6 +40,8 @@ public class AdjustmentInsTableModel extends AbstractTableModel {
 			return adjustmentIn.isPosted() ? "Yes" : "No";
 		case AdjustmentInsTable.POST_DATE_COLUMN_INDEX:
 			return adjustmentIn.isPosted() ? FormatterUtil.formatDateTime(adjustmentIn.getPostDate()) : null;
+		case AdjustmentInsTable.PILFERAGE_FLAG_COLUMN_INDEX:
+			return adjustmentIn.getPilferageFlag() ? "Yes" : "No";
 		default:
 			throw new RuntimeException("Fetch invalid column index: " + columnIndex);
 		}
@@ -67,6 +69,17 @@ public class AdjustmentInsTableModel extends AbstractTableModel {
 	public void remove(AdjustmentIn adjustmentIn) {
 		adjustmentIns.remove(adjustmentIn);
 		fireTableDataChanged();
+	}
+	
+	@Override
+	public Class<?> getColumnClass(int columnIndex) {
+		switch (columnIndex) {
+		case AdjustmentInsTable.POSTED_COLUMN_INDEX:
+		case AdjustmentInsTable.PILFERAGE_FLAG_COLUMN_INDEX:
+			return Number.class;
+		default:
+			return Object.class;
+		}
 	}
 	
 }

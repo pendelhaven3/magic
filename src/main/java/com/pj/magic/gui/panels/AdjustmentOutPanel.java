@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -26,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.NotEnoughStocksException;
+import com.pj.magic.gui.component.MagicCheckBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -55,6 +58,7 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 	private JLabel adjustmentOutNumberLabel;
 	private JLabel statusLabel;
 	private MagicTextField remarksField;
+	private MagicCheckBox pilferageCheckBox;
 	private JLabel postDateField;
 	private JLabel postedByField;
 	private JLabel totalItemsField;
@@ -75,6 +79,15 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 			@Override
 			public void focusLost(FocusEvent e) {
 				saveRemarks();
+			}
+		});
+		
+		pilferageCheckBox = new MagicCheckBox();
+		pilferageCheckBox.addOnClickListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				savePilferageFlag();
 			}
 		});
 		
@@ -110,6 +123,20 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		}
 	}
 
+	private void savePilferageFlag() {
+		if (adjustmentOut.getPilferageFlag() == pilferageCheckBox.isSelected()) {
+			return;
+		}
+		
+		adjustmentOut.setPilferageFlag(pilferageCheckBox.isSelected());
+		try {
+			adjustmentOutService.save(adjustmentOut);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			showErrorMessage("Unexpected error on saving");
+		}
+	}
+	
 	@Override
 	protected void doOnBack() {
 		if (itemsTable.isEditing()) {
@@ -142,6 +169,8 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		statusLabel.setText(adjustmentOut.getStatus());
 		remarksField.setEnabled(!adjustmentOut.isPosted());
 		remarksField.setText(adjustmentOut.getRemarks());
+		pilferageCheckBox.setSelected(adjustmentOut.getPilferageFlag(), false);
+		pilferageCheckBox.setEnabled(!adjustmentOut.isPosted());
 		if (adjustmentOut.getPostDate() != null) {
 			postDateField.setText(FormatterUtil.formatDateTime(adjustmentOut.getPostDate()));
 		} else {
@@ -166,6 +195,8 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		statusLabel.setText(null);
 		remarksField.setEnabled(true);
 		remarksField.setText(null);
+		pilferageCheckBox.setEnabled(true);
+		pilferageCheckBox.setSelected(false, false);
 		postDateField.setText(null);
 		postedByField.setText(null);
 		totalItemsField.setText(null);
@@ -248,6 +279,18 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		mainPanel.add(postDateField, c);
 		
 		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Pilferage:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(pilferageCheckBox, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;

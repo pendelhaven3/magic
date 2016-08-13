@@ -381,6 +381,7 @@ create table ADJUSTMENT_OUT (
   REMARKS varchar(100) null,
   POST_DT datetime null,
   POSTED_BY integer null,
+  PILFERAGE_IND char(1) default 'N' not null,
   constraint ADJUSTMENT_OUT$PK primary key (ID),
   constraint ADJUSTMENT_OUT$UK unique (ADJUSTMENT_OUT_NO),
   constraint ADJUSTMENT_OUT$FK foreign key (POSTED_BY) references USER (ID)
@@ -405,6 +406,7 @@ create table ADJUSTMENT_IN (
   REMARKS varchar(100) null,
   POST_DT datetime null,
   POSTED_BY integer null,
+  PILFERAGE_IND char(1) default 'N' not null,
   constraint ADJUSTMENT_IN$PK primary key (ID),
   constraint ADJUSTMENT_IN$UK unique (ADJUSTMENT_IN_NO),
   constraint ADJUSTMENT_IN$FK foreign key (POSTED_BY) references USER (ID)

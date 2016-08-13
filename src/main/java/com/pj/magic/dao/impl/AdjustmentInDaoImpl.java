@@ -25,7 +25,7 @@ import com.pj.magic.util.DbUtil;
 public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, ADJUSTMENT_IN_NO, a.REMARKS, POST_IND, POST_DT, POSTED_BY,"
+			"select a.ID, ADJUSTMENT_IN_NO, a.REMARKS, POST_IND, POST_DT, POSTED_BY, PILFERAGE_IND,"
 			+ " b.USERNAME as POSTED_BY_USERNAME"
 			+ " from ADJUSTMENT_IN a"
 			+ " left join USER b"
@@ -85,7 +85,7 @@ public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 
 	private static final String UPDATE_SQL =
 			"update ADJUSTMENT_IN"
-			+ " set REMARKS = ?, POST_IND = ?, POST_DT = ?, POSTED_BY = ?"
+			+ " set REMARKS = ?, POST_IND = ?, POST_DT = ?, POSTED_BY = ?, PILFERAGE_IND = ?"
 			+ " where ID = ?";
 	
 	private void update(AdjustmentIn adjustmentIn) {
@@ -93,6 +93,7 @@ public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 				adjustmentIn.isPosted() ? "Y" : "N",
 				adjustmentIn.getPostDate(),
 				adjustmentIn.isPosted() ? adjustmentIn.getPostedBy().getId() : null,
+				adjustmentIn.getPilferageFlag() ? "Y" : "N",
 				adjustmentIn.getId());
 	}
 	
@@ -113,6 +114,8 @@ public class AdjustmentInDaoImpl extends MagicDao implements AdjustmentInDao {
 				user.setUsername(rs.getString("POSTED_BY_USERNAME"));
 				adjustmentIn.setPostedBy(user);
 			}
+			
+			adjustmentIn.setPilferageFlag("Y".equals(rs.getString("PILFERAGE_IND")));
 			
 			return adjustmentIn;
 		}

@@ -18,6 +18,7 @@ public class AdjustmentOut {
 	private User postedBy;
 	private List<AdjustmentOutItem> items = new ArrayList<>();
 	private String remarks;
+	private boolean pilferageFlag;
 
 	public AdjustmentOut() {
 	}
@@ -121,6 +122,14 @@ public class AdjustmentOut {
 
 	public String getStatus() {
 		return posted ? "Posted" : "New";
+	}
+
+	public boolean getPilferageFlag() {
+		return pilferageFlag;
+	}
+
+	public void setPilferageFlag(boolean pilferageFlag) {
+		this.pilferageFlag = pilferageFlag;
 	}
 	
 }

@@ -18,6 +18,7 @@ public class AdjustmentIn {
 	private User postedBy;
 	private List<AdjustmentInItem> items = new ArrayList<>();
 	private String remarks;
+	private boolean pilferageFlag;
 
 	public AdjustmentIn() {
 	}
@@ -121,6 +122,14 @@ public class AdjustmentIn {
 
 	public String getStatus() {
 		return posted ? "Posted" : "New";
+	}
+
+	public boolean getPilferageFlag() {
+		return pilferageFlag;
+	}
+
+	public void setPilferageFlag(boolean pilferageFlag) {
+		this.pilferageFlag = pilferageFlag;
 	}
 	
 }

@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.CenterTableCellRenderer;
 import com.pj.magic.gui.panels.AdjustmentInListPanel;
 import com.pj.magic.gui.tables.models.AdjustmentInsTableModel;
 import com.pj.magic.model.AdjustmentIn;
@@ -27,6 +28,7 @@ public class AdjustmentInsTable extends MagicListTable {
 	public static final int REMARKS_COLUMN_INDEX = 1;
 	public static final int POSTED_COLUMN_INDEX = 2;
 	public static final int POST_DATE_COLUMN_INDEX = 3;
+	public static final int PILFERAGE_FLAG_COLUMN_INDEX = 4;
 	
 	private static final String GO_TO_ADJUSTMENT_IN_ACTION_NAME = "goToAdjustmentIn";
 	private static final String DELETE_ADJUSTMENT_IN_ACTION_NAME = "deleteAdjustmentIn";
@@ -37,6 +39,7 @@ public class AdjustmentInsTable extends MagicListTable {
 	@Autowired
 	public AdjustmentInsTable(AdjustmentInsTableModel tableModel) {
 		super(tableModel);
+		initializeTable();
 	}
 	
 	@PostConstruct
@@ -44,6 +47,18 @@ public class AdjustmentInsTable extends MagicListTable {
 		registerKeyBindings();
     }
 	
+	private void initializeTable() {
+		columnModel.getColumn(ADJUSTMENT_IN_NUMBER_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(REMARKS_COLUMN_INDEX).setPreferredWidth(300);
+		columnModel.getColumn(POSTED_COLUMN_INDEX).setPreferredWidth(80);
+		columnModel.getColumn(POST_DATE_COLUMN_INDEX).setPreferredWidth(120);
+		columnModel.getColumn(PILFERAGE_FLAG_COLUMN_INDEX).setPreferredWidth(80);
+		
+		CenterTableCellRenderer centerRenderer = new CenterTableCellRenderer();
+		columnModel.getColumn(POSTED_COLUMN_INDEX).setCellRenderer(centerRenderer);
+		columnModel.getColumn(PILFERAGE_FLAG_COLUMN_INDEX).setCellRenderer(centerRenderer);
+	}
+
 	public void update() {
 		List<AdjustmentIn> salesRequisitions = salesRequisitionService.getAllNonPostedAdjustmentIns();
 		tableModel.setAdjustmentIns(salesRequisitions);
