@@ -61,6 +61,8 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void initializeComponents() {
+		promoMechanicsLabel = new JLabel();
+		
 		tableModel = new PromoRedemptionsTableModel();
 		table = new MagicListTable(tableModel);
 		
@@ -104,7 +106,7 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
-		promoMechanicsLabel = new JLabel();
+		promoMechanicsLabel.setPreferredSize(new Dimension(600, 50));
 		mainPanel.add(promoMechanicsLabel, c);
 		
 		currentRow++;

@@ -207,6 +207,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.weightx = 1.0;
 		c.anchor = GridBagConstraints.WEST;
+		promoMechanicsLabel.setPreferredSize(new Dimension(600, 50));
 		mainPanel.add(promoMechanicsLabel, c);
 		
 		currentRow++;
