@@ -528,7 +528,7 @@ where a.POST_IND = ''Y''
 and a.POST_DT >= date_add(current_date(), interval {0} day)
 and a.POST_DT < current_date()
 union all
-select b.PRODUCT_ID, b.TO_UNIT as UNIT, -1 * b.QUANTITY as QUANTITY
+select b.PRODUCT_ID, b.TO_UNIT as UNIT, -1 * b.CONVERTED_QTY as QUANTITY
 from STOCK_QTY_CONVERSION a
 join STOCK_QTY_CONVERSION_ITEM b
 	on b.STOCK_QTY_CONVERSION_ID = a.ID
