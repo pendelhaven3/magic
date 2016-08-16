@@ -219,7 +219,7 @@ public class RemittanceReportPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(30), c);
+		mainPanel.add(Box.createHorizontalStrut(30), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;

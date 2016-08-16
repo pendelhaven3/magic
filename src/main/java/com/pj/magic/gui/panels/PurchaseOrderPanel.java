@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -614,7 +615,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 		c.weightx = 1.0;
 		c.gridx = 4;
 		c.gridy = currentRow;
-		panel.add(ComponentUtil.createHorizontalFiller(30), c);
+		panel.add(Box.createHorizontalStrut(30), c);
 		
 		currentRow++;
 		

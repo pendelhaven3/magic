@@ -382,7 +382,7 @@ public class DisbursementReportPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 3;

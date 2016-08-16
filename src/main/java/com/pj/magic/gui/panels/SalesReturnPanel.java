@@ -13,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -282,7 +283,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
@@ -417,7 +418,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
-		panel.add(ComponentUtil.createHorizontalFiller(10), c);
+		panel.add(Box.createHorizontalStrut(10), c);
 		
 		currentRow++;
 		

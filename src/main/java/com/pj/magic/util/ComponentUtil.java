@@ -31,10 +31,6 @@ public class ComponentUtil {
 		return createFiller(1, height);
 	}
 	
-	public static final JLabel createHorizontalFiller(int width) {
-		return createFiller(width, 1);
-	}
-	
 	public static final JLabel createLabel(int width) {
 		return createLabel(width, "");
 	}

@@ -808,7 +808,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;

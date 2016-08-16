@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -101,7 +102,7 @@ public class MaintainManufacturerPanel extends StandardMagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(30), c);
+		mainPanel.add(Box.createHorizontalStrut(30), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
