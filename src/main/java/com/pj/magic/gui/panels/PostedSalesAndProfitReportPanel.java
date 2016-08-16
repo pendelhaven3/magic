@@ -13,14 +13,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +26,14 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.pj.magic.Constants;
-import com.pj.magic.gui.component.DatePickerFormatter;
-import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.component.SelectCustomerEllipsisButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.NoMoreStockAdjustment;
@@ -65,8 +62,6 @@ import com.pj.magic.service.SalesReturnService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
-import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
-import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
@@ -99,7 +94,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	private UtilCalendarModel toDateModel;
 	private JCheckBox treatNoMoreStockAsSalesReturnCheckBox;
 	private JButton generateButton;
-	private EllipsisButton selectCustomerButton;
+	private SelectCustomerEllipsisButton selectCustomerButton;
 	private MagicListTable table;
 	private PostedSalesAndProfitReportItemsTableModel tableModel;
 	private Customer customer;
@@ -114,15 +109,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		
 		customerNameLabel = new JLabel();
 		
-		selectCustomerButton = new EllipsisButton();
-		selectCustomerButton.setToolTipText("Select Customer");
-		selectCustomerButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				openSelectCustomerDialog();
-			}
-		});
+		selectCustomerButton = new SelectCustomerEllipsisButton(selectCustomerDialog, customerCodeField, customerNameLabel);
 		
 		fromDateModel = new UtilCalendarModel();
 		toDateModel = new UtilCalendarModel();
@@ -150,17 +137,6 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		TableColumnModel columnModel = table.getColumnModel();
 		columnModel.getColumn(SALES_INVOICE_NUMBER_COLUMN_INDEX).setPreferredWidth(50);
 		columnModel.getColumn(CUSTOMER_COLUMN_INDEX).setPreferredWidth(200);
-	}
-
-	protected void openSelectCustomerDialog() {
-		selectCustomerDialog.searchCustomers(customerCodeField.getText());
-		selectCustomerDialog.setVisible(true);
-		
-		Customer customer = selectCustomerDialog.getSelectedCustomer();
-		if (customer != null) {
-			customerCodeField.setText(customer.getCode());
-			customerNameLabel.setText(customer.getName());
-		}
 	}
 
 	private void generateReport() {
@@ -337,7 +313,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
@@ -350,7 +326,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		c.gridwidth = 5;
-		mainPanel.add(createCustomerPanel(), c);
+		mainPanel.add(selectCustomerButton.getFieldsPanel(), c);
 		
 		currentRow++;
 		
@@ -364,15 +340,12 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		
-		JDatePanelImpl datePanel = new JDatePanelImpl(fromDateModel);
-		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
-		mainPanel.add(datePicker, c);
+		mainPanel.add(ComponentUtil.createDatePicker(fromDateModel), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createHorizontalFiller(50), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
@@ -384,16 +357,13 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		
-		datePanel = new JDatePanelImpl(toDateModel);
-		datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
-		mainPanel.add(datePicker, c);
+		mainPanel.add(ComponentUtil.createDatePicker(toDateModel), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0; // right space filler
 		c.gridx = 6;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(), c);
+		mainPanel.add(Box.createGlue(), c);
 		
 		currentRow++;
 		
@@ -409,7 +379,7 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createVerticalFiller(20), c);
+		mainPanel.add(Box.createVerticalStrut(20), c);
 		
 		currentRow++;
 		
@@ -425,19 +395,17 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(ComponentUtil.createFiller(1, 30), c);
+		mainPanel.add(Box.createVerticalStrut(30), c);
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 7;
-		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane itemsTableScrollPane = new JScrollPane(table);
-		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
-		mainPanel.add(itemsTableScrollPane, c);
+		mainPanel.add(ComponentUtil.createScrollPane(table, 600, 100), c);
 		
 		currentRow++;
 		
@@ -521,27 +489,8 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		return panel;
 	}
 
-	private JPanel createCustomerPanel() {
-		customerCodeField.setPreferredSize(new Dimension(150, 25));
-		customerNameLabel.setPreferredSize(new Dimension(300, 20));
-		
-		JPanel panel = new JPanel();
-		panel.add(customerCodeField);
-		panel.add(selectCustomerButton);
-		panel.add(Box.createHorizontalStrut(10));
-		panel.add(customerNameLabel);
-		return panel;
-	}
-
 	@Override
 	protected void registerKeyBindings() {
-		customerCodeField.onF5Key(new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				openSelectCustomerDialog();
-			}
-		});
 	}
 
 	public void updateDisplay() {
@@ -565,23 +514,11 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
 		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
-		printPreviewButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				printPreviewReport();
-			}
-		});
+		printPreviewButton.addActionListener(e -> printPreviewReport());
 		toolBar.add(printPreviewButton);
 		
 		JButton printButton = new MagicToolBarButton("print", "Print");
-		printButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				printReport();
-			}
-		});
+		printButton.addActionListener(e -> printReport());
 		toolBar.add(printButton);
 	}
 
@@ -611,46 +548,15 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		printService.print(createReport());
 	}
 
-	private class PostedSalesAndProfitReportItemsTableModel extends AbstractTableModel {
+	private class PostedSalesAndProfitReportItemsTableModel extends ListBackedTableModel<PostedSalesAndProfitReportItem> {
 
 		private final String[] columnNames =
 			{"Tran. Date", "Tran. Type", "Ref. No.", "Customer", "Total Amount", "Total Disc.", "Net Amount",
 				"Net Cost", "Net Profit"};
 		
-		private List<PostedSalesAndProfitReportItem> items = new ArrayList<>();
-		
-		public void setItems(List<PostedSalesAndProfitReportItem> items) {
-			this.items = items;
-			fireTableDataChanged();
-		}
-		
-		public List<PostedSalesAndProfitReportItem> getItems() {
-			return items;
-		}
-		
-		public void clear() {
-			items.clear();
-			fireTableDataChanged();
-		}
-
-		@Override
-		public int getRowCount() {
-			return items.size();
-		}
-
-		@Override
-		public int getColumnCount() {
-			return columnNames.length;
-		}
-
-		@Override
-		public String getColumnName(int column) {
-			return columnNames[column];
-		}
-		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			PostedSalesAndProfitReportItem item = items.get(rowIndex);
+			PostedSalesAndProfitReportItem item = getItem(rowIndex);
 			switch (columnIndex) {
 			case TRANSACTION_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDate(item.getTransactionDate());
@@ -692,6 +598,11 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 			default:
 				return Object.class;
 			}
+		}
+
+		@Override
+		protected String[] getColumnNames() {
+			return columnNames;
 		}
 		
 	}
