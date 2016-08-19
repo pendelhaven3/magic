@@ -116,11 +116,11 @@ public class ProductQuantityDiscrepancyReportPanel extends StandardMagicPanel {
 			case PREVIOUS_QUANTITY_COLUMN_INDEX:
 				return item.getPreviousQuantity();
 			case QUANTITY_MOVED_COLUMN_INDEX:
-				return item.getQuantityMoved();
+				return item.getQuantityMoved() * -1;
 			case NEW_QUANTITY_COLUMN_INDEX:
 				return item.getNewQuantity();
 			case DISCREPANCY_COLUMN_INDEX:
-				return item.getDiscrepancy();
+				return item.getDiscrepancy() * -1;
 			default:
 				return null;
 			}
