@@ -23,10 +23,12 @@ import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.report.InventoryReportItem;
+import com.pj.magic.model.report.PilferageReportItem;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReportItem;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.report.StockOfftakeReportItem;
+import com.pj.magic.model.search.PilferageReportCriteria;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportCriteria;
 import com.pj.magic.model.search.StockOfftakeReportCriteria;
@@ -427,6 +429,36 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 						return product;
 					}
 			
+		});
+	}
+
+	@Override
+	public List<PilferageReportItem> searchPilferageReportItems(PilferageReportCriteria criteria) {
+		Map<String, Object> paramMap = new HashMap<>();
+		
+		StringBuilder sql = new StringBuilder(QueriesUtil.getSql("pilferageReportItems"));
+		if (criteria.getFrom() != null) {
+			sql.append(" and POST_DT >= :from");
+			paramMap.put("from", DbUtil.toMySqlDateString(criteria.getFrom()));
+		}
+		if (criteria.getTo() != null) {
+			sql.append(" and POST_DT < date_add(:to, interval 1 day)");
+			paramMap.put("to", DbUtil.toMySqlDateString(criteria.getTo()));
+		}
+		
+		sql.append(" order by POST_DT, DESCRIPTION");
+		
+		System.out.println(sql.toString());
+		
+		return getNamedParameterJdbcTemplate().query(sql.toString(), paramMap, (rs, rowNum) -> {
+			PilferageReportItem item = new PilferageReportItem();
+			item.setDate(rs.getDate("POST_DT"));
+			item.setProduct(new Product());
+			item.getProduct().setCode(rs.getString("CODE"));
+			item.getProduct().setDescription(rs.getString("DESCRIPTION"));
+			item.setQuantity(rs.getInt("QUANTITY"));
+			item.setCost(rs.getBigDecimal("COST"));
+			return item;
 		});
 	}
 

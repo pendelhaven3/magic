@@ -37,7 +37,6 @@ import com.pj.magic.gui.panels.CustomerCheckPaymentsReportPanel;
 import com.pj.magic.gui.panels.CustomerListPanel;
 import com.pj.magic.gui.panels.CustomerSalesSummaryReportPanel;
 import com.pj.magic.gui.panels.DailyProductQuantityDiscrepancyReportListPanel;
-import com.pj.magic.gui.panels.ProductQuantityDiscrepancyReportPanel;
 import com.pj.magic.gui.panels.DisbursementReportPanel;
 import com.pj.magic.gui.panels.InventoryCheckListPanel;
 import com.pj.magic.gui.panels.InventoryCheckPanel;
@@ -70,12 +69,14 @@ import com.pj.magic.gui.panels.PaymentListPanel;
 import com.pj.magic.gui.panels.PaymentPanel;
 import com.pj.magic.gui.panels.PaymentTermListPanel;
 import com.pj.magic.gui.panels.PaymentTerminalAssignmentListPanel;
+import com.pj.magic.gui.panels.PilferageReportPanel;
 import com.pj.magic.gui.panels.PostedSalesAndProfitReportPanel;
 import com.pj.magic.gui.panels.PriceChangesReportPanel;
 import com.pj.magic.gui.panels.PricingSchemeListPanel;
 import com.pj.magic.gui.panels.ProductCanvassPanel;
 import com.pj.magic.gui.panels.ProductCategoryListPanel;
 import com.pj.magic.gui.panels.ProductListPanel;
+import com.pj.magic.gui.panels.ProductQuantityDiscrepancyReportPanel;
 import com.pj.magic.gui.panels.PromoPointsPanel;
 import com.pj.magic.gui.panels.PurchaseOrderListPanel;
 import com.pj.magic.gui.panels.PurchaseOrderPanel;
@@ -301,6 +302,7 @@ public class MagicFrame extends JFrame {
 			"DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_LIST_PANEL";
 	private static final String PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL = 
 			"DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL";
+	private static final String PILFERAGE_REPORT_PANEL = "PILFERAGE_REPORT_PANEL";
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -413,6 +415,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private InventoryCorrectionPanel inventoryCorrectionPanel;
 	@Autowired private DailyProductQuantityDiscrepancyReportListPanel dailyProductQuantityDiscrepancyReportListPanel;
 	@Autowired private ProductQuantityDiscrepancyReportPanel productQuantityDiscrepancyReportPanel;
+	@Autowired private PilferageReportPanel pilferageReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -581,6 +584,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(dailyProductQuantityDiscrepancyReportListPanel, 
 				DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_LIST_PANEL);
 		panelHolder.add(productQuantityDiscrepancyReportPanel, PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL);
+		panelHolder.add(pilferageReportPanel, PILFERAGE_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1400,6 +1404,12 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Product Quantity Discrepancy Report");
 		productQuantityDiscrepancyReportPanel.updateDisplay(report);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL);
+	}
+
+	public void switchToPilferageReportPanel() {
+		addPanelNameToTitle("Pilferage Report");
+		pilferageReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PILFERAGE_REPORT_PANEL);
 	}
 	
 }

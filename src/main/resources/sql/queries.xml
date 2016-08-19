@@ -576,4 +576,39 @@ and a.POST_DT >= date_add(current_date(), interval {0} day)
 and a.POST_DT < current_date();
 	]]>
 	</entry>
+	<entry name="pilferageReportItems">
+<![CDATA[
+select *
+from (
+	select a.POST_DT, c.ID as PRODUCT_ID, c.CODE, c.DESCRIPTION, b.QUANTITY, b.COST
+	from ADJUSTMENT_IN a
+	join ADJUSTMENT_IN_ITEM b
+		on b.ADJUSTMENT_IN_ID = a.ID
+	join PRODUCT c
+		on c.ID = b.PRODUCT_ID
+	where a.POST_IND = 'Y'
+	and a.PILFERAGE_IND = 'Y'
+	union all
+	select a.POST_DT, c.ID as PRODUCT_ID, c.CODE, c.DESCRIPTION, b.QUANTITY, -b.UNIT_PRICE as COST
+	from ADJUSTMENT_OUT a
+	join ADJUSTMENT_OUT_ITEM b
+		on b.ADJUSTMENT_OUT_ID = a.ID
+	join PRODUCT c
+		on c.ID = b.PRODUCT_ID
+	where a.POST_IND = 'Y'
+	and a.PILFERAGE_IND = 'Y'
+	union all
+	select a.POST_DT, d.ID as PRODUCT_ID, d.CODE, d.DESCRIPTION, b.QUANTITY, -c.COST as COST
+	from NO_MORE_STOCK_ADJUSTMENT a
+	join NO_MORE_STOCK_ADJUSTMENT_ITEM b
+		on b.NO_MORE_STOCK_ADJUSTMENT_ID = a.ID
+	join SALES_INVOICE_ITEM c
+		on c.ID = b.SALES_INVOICE_ITEM_ID
+	join PRODUCT d
+		on d.ID = c.PRODUCT_ID
+	where a.POST_IND = 'Y'
+) a
+where 1 = 1
+	]]>
+	</entry>
 </root>

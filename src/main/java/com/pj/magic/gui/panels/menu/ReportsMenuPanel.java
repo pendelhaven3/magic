@@ -44,6 +44,7 @@ public class ReportsMenuPanel extends MenuPanel {
 	private static final String DISBURSEMENT_REPORT = "Disbursement Report";
 	private static final String STOCK_OFFTAKE_REPORT = "Stock Offtake Report";
 	private static final String DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT = "Daily Product Quantity Discrepancy Report";
+	private static final String PILFERAGE_REPORT = "Pilferage Report";
 
 	@Autowired private LoginService loginService;
 	
@@ -148,6 +149,9 @@ public class ReportsMenuPanel extends MenuPanel {
 		case DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT:
 			getMagicFrame().switchToDailyProductQuantityDiscrepancyReportListPanel();
 			break;
+		case PILFERAGE_REPORT:
+			getMagicFrame().switchToPilferageReportPanel();
+			break;
 		}
 	}
 
@@ -172,7 +176,8 @@ public class ReportsMenuPanel extends MenuPanel {
 				PURCHASE_PAYMENT_CREDIT_CARD_PAYMENTS_REPORT,
 				SALES_BY_MANUFACTURER_REPORT,
 				STOCK_OFFTAKE_REPORT,
-				DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT
+				DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT,
+				PILFERAGE_REPORT
 		);
 		
 		private List<String> menuItems = new ArrayList<>();

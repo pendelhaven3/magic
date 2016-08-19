@@ -15,9 +15,11 @@ import com.pj.magic.model.InventoryCorrection;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReport;
 import com.pj.magic.model.report.InventoryReport;
+import com.pj.magic.model.report.PilferageReport;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.SalesByManufacturerReport;
 import com.pj.magic.model.report.StockOfftakeReport;
+import com.pj.magic.model.search.PilferageReportCriteria;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportCriteria;
 import com.pj.magic.model.search.StockOfftakeReportCriteria;
@@ -132,6 +134,13 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public ProductQuantityDiscrepancyReport getProductQuantityDiscrepancyReport(Date date) {
 		return reportDao.getProductQuantityDiscrepancyReportByDate(date);
+	}
+
+	@Override
+	public PilferageReport getPilferageReport(PilferageReportCriteria criteria) {
+		PilferageReport report = new PilferageReport();
+		report.setItems(reportDao.searchPilferageReportItems(criteria));
+		return report;
 	}
 
 }
