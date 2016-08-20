@@ -204,7 +204,7 @@ public class ReportsMenuPanel extends MenuPanel {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			return allMenuItems.get(rowIndex);
+			return menuItems.get(rowIndex);
 		}
 		
 	}
