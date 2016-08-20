@@ -31,9 +31,10 @@ public class PilferageReportPanel extends StandardMagicPanel {
 	private static final int DATE_COLUMN_INDEX = 0;
 	private static final int PRODUCT_CODE_COLUMN_INDEX = 1;
 	private static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 2;
-	private static final int QUANTITY_COLUMN_INDEX = 3;
-	private static final int COST_COLUMN_INDEX = 4;
-	private static final int AMOUNT_COLUMN_INDEX = 5;
+	private static final int UNIT_COLUMN_INDEX = 3;
+	private static final int QUANTITY_COLUMN_INDEX = 4;
+	private static final int COST_COLUMN_INDEX = 5;
+	private static final int AMOUNT_COLUMN_INDEX = 6;
 	
 	@Autowired private ReportService reportService;
 	
@@ -63,6 +64,7 @@ public class PilferageReportPanel extends StandardMagicPanel {
 		columnModel.getColumn(DATE_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(COST_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(100);
@@ -76,7 +78,9 @@ public class PilferageReportPanel extends StandardMagicPanel {
 		
 		PilferageReportCriteria criteria = new PilferageReportCriteria();
 		criteria.setFrom(fromDateModel.getValue().getTime());
-		criteria.setTo(toDateModel.getValue().getTime());
+		if (toDateModel.getValue() != null) {
+			criteria.setTo(toDateModel.getValue().getTime());
+		}
 		
 		PilferageReport report = reportService.getPilferageReport(criteria);
 		tableModel.setItems(report.getItems());
@@ -225,7 +229,7 @@ public class PilferageReportPanel extends StandardMagicPanel {
 
 	private class PilferageReportItemsTableModel extends ListBackedTableModel<PilferageReportItem> {
 
-		private final String[] columnNames = {"Date", "Product Code", "Product Description", "Quantity", "Cost", "Amount"};
+		private final String[] columnNames = {"Date", "Product Code", "Product Description", "Unit", "Quantity", "Cost", "Amount"};
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
@@ -237,6 +241,8 @@ public class PilferageReportPanel extends StandardMagicPanel {
 				return item.getProduct().getCode();
 			case PRODUCT_DESCRIPTION_COLUMN_INDEX:
 				return item.getProduct().getDescription();
+			case UNIT_COLUMN_INDEX:
+				return item.getUnit();
 			case QUANTITY_COLUMN_INDEX:
 				return item.getQuantity();
 			case COST_COLUMN_INDEX:

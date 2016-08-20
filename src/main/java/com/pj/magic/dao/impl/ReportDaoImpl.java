@@ -448,14 +448,13 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		
 		sql.append(" order by POST_DT, DESCRIPTION");
 		
-		System.out.println(sql.toString());
-		
 		return getNamedParameterJdbcTemplate().query(sql.toString(), paramMap, (rs, rowNum) -> {
 			PilferageReportItem item = new PilferageReportItem();
 			item.setDate(rs.getDate("POST_DT"));
 			item.setProduct(new Product());
 			item.getProduct().setCode(rs.getString("CODE"));
 			item.getProduct().setDescription(rs.getString("DESCRIPTION"));
+			item.setUnit(rs.getString("UNIT"));
 			item.setQuantity(rs.getInt("QUANTITY"));
 			item.setCost(rs.getBigDecimal("COST"));
 			return item;

@@ -10,6 +10,7 @@ public class PilferageReportItem {
 
 	private Date date;
 	private Product product;
+	private String unit;
 	private Integer quantity;
 	private BigDecimal cost;
 
@@ -27,6 +28,14 @@ public class PilferageReportItem {
 
 	public void setProduct(Product product) {
 		this.product = product;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 
 	public Integer getQuantity() {
