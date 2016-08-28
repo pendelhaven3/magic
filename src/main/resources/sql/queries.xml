@@ -618,6 +618,15 @@ from (
 	join PRODUCT d
 		on d.ID = c.PRODUCT_ID
 	where a.POST_IND = 'Y'
+	union all
+	select a.POST_DT, 'INV CHECK' as TRANSACTION_TYPE,
+		b.PRODUCT_ID, c.CODE, c.DESCRIPTION, b.UNIT, b.ACTUAL_COUNT - b.BEGINNING_INV as QUANTITY, b.COST
+	from INVENTORY_CHECK a
+	join INVENTORY_CHECK_SUMMARY_ITEM b
+		on b.INVENTORY_CHECK_ID = a.ID
+	join PRODUCT c
+		on c.ID = b.PRODUCT_ID
+	where b.ACTUAL_COUNT <> b.BEGINNING_INV
 ) a
 where 1 = 1
 	]]>
