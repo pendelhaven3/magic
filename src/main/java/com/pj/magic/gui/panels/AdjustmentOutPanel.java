@@ -38,6 +38,7 @@ import com.pj.magic.gui.tables.ProductInfoTable;
 import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.AdjustmentOutService;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
@@ -53,6 +54,7 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 	@Autowired private AdjustmentOutService adjustmentOutService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
+	@Autowired private LoginService loginService;
 	
 	private AdjustmentOut adjustmentOut;
 	private JLabel adjustmentOutNumberLabel;
@@ -170,7 +172,7 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		remarksField.setEnabled(!adjustmentOut.isPosted());
 		remarksField.setText(adjustmentOut.getRemarks());
 		pilferageCheckBox.setSelected(adjustmentOut.getPilferageFlag(), false);
-		pilferageCheckBox.setEnabled(!adjustmentOut.isPosted());
+		pilferageCheckBox.setEnabled(!adjustmentOut.isPosted() && loginService.getLoggedInUser().isSupervisor());
 		if (adjustmentOut.getPostDate() != null) {
 			postDateField.setText(FormatterUtil.formatDateTime(adjustmentOut.getPostDate()));
 		} else {

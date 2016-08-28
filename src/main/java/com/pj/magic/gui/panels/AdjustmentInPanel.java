@@ -37,6 +37,7 @@ import com.pj.magic.gui.tables.ProductInfoTable;
 import com.pj.magic.model.AdjustmentIn;
 import com.pj.magic.model.Product;
 import com.pj.magic.service.AdjustmentInService;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
@@ -52,6 +53,7 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 	@Autowired private AdjustmentInService adjustmentInService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
+	@Autowired private LoginService loginService;
 	
 	private AdjustmentIn adjustmentIn;
 	private JLabel adjustmentInNumberLabel;
@@ -180,7 +182,7 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		}
 		remarksField.setEnabled(!adjustmentIn.isPosted());
 		remarksField.setText(adjustmentIn.getRemarks());
-		pilferageCheckBox.setEnabled(!adjustmentIn.isPosted());
+		pilferageCheckBox.setEnabled(!adjustmentIn.isPosted() && loginService.getLoggedInUser().isSupervisor());
 		pilferageCheckBox.setSelected(adjustmentIn.getPilferageFlag(), false);
 		totalItemsField.setText(String.valueOf(adjustmentIn.getTotalItems()));
 		totalAmountField.setText(adjustmentIn.getTotalAmount().toString());
