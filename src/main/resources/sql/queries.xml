@@ -587,9 +587,9 @@ and a.POST_DT < current_date();
 	</entry>
 	<entry name="pilferageReportItems">
 <![CDATA[
-select *
+select POST_DT, PRODUCT_ID, CODE, DESCRIPTION, UNIT, QUANTITY, COST
 from (
-	select a.POST_DT, c.ID as PRODUCT_ID, c.CODE, c.DESCRIPTION, b.QUANTITY, b.COST
+	select a.POST_DT, c.ID as PRODUCT_ID, c.CODE, c.DESCRIPTION, b.UNIT, b.QUANTITY, b.COST
 	from ADJUSTMENT_IN a
 	join ADJUSTMENT_IN_ITEM b
 		on b.ADJUSTMENT_IN_ID = a.ID
@@ -598,7 +598,7 @@ from (
 	where a.POST_IND = 'Y'
 	and a.PILFERAGE_IND = 'Y'
 	union all
-	select a.POST_DT, c.ID as PRODUCT_ID, c.CODE, c.DESCRIPTION, b.QUANTITY, -b.UNIT_PRICE as COST
+	select a.POST_DT, c.ID as PRODUCT_ID, c.CODE, c.DESCRIPTION, b.UNIT, b.QUANTITY, -b.UNIT_PRICE as COST
 	from ADJUSTMENT_OUT a
 	join ADJUSTMENT_OUT_ITEM b
 		on b.ADJUSTMENT_OUT_ID = a.ID
@@ -607,7 +607,7 @@ from (
 	where a.POST_IND = 'Y'
 	and a.PILFERAGE_IND = 'Y'
 	union all
-	select a.POST_DT, d.ID as PRODUCT_ID, d.CODE, d.DESCRIPTION, b.QUANTITY, -c.COST as COST
+	select a.POST_DT, d.ID as PRODUCT_ID, d.CODE, d.DESCRIPTION, c.UNIT, b.QUANTITY, -c.COST as COST
 	from NO_MORE_STOCK_ADJUSTMENT a
 	join NO_MORE_STOCK_ADJUSTMENT_ITEM b
 		on b.NO_MORE_STOCK_ADJUSTMENT_ID = a.ID
