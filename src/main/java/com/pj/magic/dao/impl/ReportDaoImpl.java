@@ -451,6 +451,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		return getNamedParameterJdbcTemplate().query(sql.toString(), paramMap, (rs, rowNum) -> {
 			PilferageReportItem item = new PilferageReportItem();
 			item.setDate(rs.getDate("POST_DT"));
+			item.setTransactionType(rs.getString("TRANSACTION_TYPE"));
 			item.setProduct(new Product());
 			item.getProduct().setCode(rs.getString("CODE"));
 			item.getProduct().setDescription(rs.getString("DESCRIPTION"));

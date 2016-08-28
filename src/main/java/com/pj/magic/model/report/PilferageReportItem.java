@@ -9,6 +9,7 @@ import com.pj.magic.model.Product;
 public class PilferageReportItem {
 
 	private Date date;
+	private String transactionType;
 	private Product product;
 	private String unit;
 	private Integer quantity;
@@ -20,6 +21,14 @@ public class PilferageReportItem {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
 	}
 
 	public Product getProduct() {
