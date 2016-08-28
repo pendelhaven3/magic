@@ -34,7 +34,7 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, NO_MORE_STOCK_ADJUSTMENT_NO, SALES_INVOICE_ID, b.SALES_INVOICE_NO, a.PAYMENT_NO,"
 			+ " a.POST_IND, a.POST_DT, a.POST_BY,"
-			+ " PAID_IND, PAID_BY, PAID_DT, a.REMARKS,"
+			+ " PAID_IND, PAID_BY, PAID_DT, a.REMARKS, a.PILFERAGE_IND,"
 			+ " b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME,"
 			+ " d.USERNAME as POST_BY_USERNAME,"
 			+ " e.USERNAME as PAID_BY_USERNAME,"
@@ -86,6 +86,8 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 				salesReturn.setPaymentNumber(rs.getLong("PAYMENT_NO"));
 			}
 			
+			salesReturn.setPilferageFlag("Y".equals(rs.getString("PILFERAGE_IND")));
+			
 			return salesReturn;
 		}
 		
@@ -103,7 +105,7 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 	private static final String UPDATE_SQL =
 			"update NO_MORE_STOCK_ADJUSTMENT set SALES_INVOICE_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
 			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, PAYMENT_TERMINAL_ID = ?, REMARKS = ?,"
-			+ " PAYMENT_NO = ? where ID = ?";
+			+ " PAYMENT_NO = ?, PILFERAGE_IND = ? where ID = ?";
 	
 	private void update(NoMoreStockAdjustment noMoreStockAdjustment) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -117,6 +119,7 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 				noMoreStockAdjustment.isPaid() ? noMoreStockAdjustment.getPaymentTerminal().getId() : null,
 				noMoreStockAdjustment.getRemarks(),
 				noMoreStockAdjustment.getPaymentNumber(),
+				noMoreStockAdjustment.getPilferageFlag() ? "Y" : "N",
 				noMoreStockAdjustment.getId());
 	}
 	

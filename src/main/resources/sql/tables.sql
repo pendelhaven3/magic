@@ -671,6 +671,7 @@ create table NO_MORE_STOCK_ADJUSTMENT (
   PAYMENT_TERMINAL_ID integer null,
   REMARKS varchar(100) null,
   PAYMENT_NO integer null,
+  PILFERAGE_IND char(1) default 'N' not null,
   constraint NO_MORE_STOCK_ADJUSTMENT$PK primary key (ID),
   constraint NO_MORE_STOCK_ADJUSTMENT$UK unique (NO_MORE_STOCK_ADJUSTMENT_NO),
   constraint NO_MORE_STOCK_ADJUSTMENT$FK foreign key (SALES_INVOICE_ID) references SALES_INVOICE (ID),

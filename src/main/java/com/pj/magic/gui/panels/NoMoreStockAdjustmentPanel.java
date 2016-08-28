@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
 import com.pj.magic.exception.NoMoreStockAdjustmentItemQuantityExceededException;
+import com.pj.magic.gui.component.MagicCheckBox;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -71,6 +72,7 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 	private JLabel customerField;
 	private JLabel statusField;
 	private MagicTextField remarksField;
+	private MagicCheckBox pilferageCheckBox;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private JButton postButton;
@@ -111,11 +113,28 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 			}
 		});
 		
+		pilferageCheckBox = new MagicCheckBox();
+		pilferageCheckBox.addOnClickListener(e -> savePilferageFlag());
+
 		focusOnComponentWhenThisPanelIsDisplayed(salesInvoiceNumberField);
 		
 		updateTotalFieldsWhenItemsTableChanges();
 	}
 
+	private void savePilferageFlag() {
+		if (noMoreStockAdjustment.getPilferageFlag() == pilferageCheckBox.isSelected()) {
+			return;
+		}
+		
+		noMoreStockAdjustment.setPilferageFlag(pilferageCheckBox.isSelected());
+		try {
+			noMoreStockAdjustmentService.save(noMoreStockAdjustment);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			showErrorMessage("Unexpected error on saving");
+		}
+	}
+	
 	private void saveRemarks() {
 		if (!remarksField.getText().equals(noMoreStockAdjustment.getRemarks())) {
 			noMoreStockAdjustment.setRemarks(remarksField.getText());
@@ -228,6 +247,9 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		remarksField.setText(noMoreStockAdjustment.getRemarks());
 		remarksField.setEnabled(!noMoreStockAdjustment.isPosted());
 		
+		pilferageCheckBox.setEnabled(!noMoreStockAdjustment.isPosted() && loginService.getLoggedInUser().isSupervisor());
+		pilferageCheckBox.setSelected(noMoreStockAdjustment.getPilferageFlag(), false);
+		
 		itemsTable.setNoMoreStockAdjustment(noMoreStockAdjustment);
 		
 		postButton.setEnabled(!noMoreStockAdjustment.isPosted());
@@ -246,6 +268,8 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		customerField.setText(null);
 		remarksField.setText(null);
 		remarksField.setEnabled(false);
+		pilferageCheckBox.setEnabled(true);
+		pilferageCheckBox.setSelected(false, false);
 		itemsTable.setNoMoreStockAdjustment(noMoreStockAdjustment);
 		postButton.setEnabled(false);
 		markAsPaidButton.setEnabled(false);
@@ -288,7 +312,7 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Status:"), c);
+		mainPanel.add(ComponentUtil.createLabel(110, "Status:"), c);
 		
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
@@ -316,7 +340,7 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Payment No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(110, "Payment No.:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 5;
@@ -355,6 +379,18 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		remarksField.setPreferredSize(new Dimension(200, 25));
 		mainPanel.add(remarksField, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(110, "Pilferage:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(pilferageCheckBox, c);
 		
 		currentRow++;
 		

@@ -22,6 +22,7 @@ public class NoMoreStockAdjustment {
 	private String remarks;
 	private List<NoMoreStockAdjustmentItem> items = new ArrayList<>();
 	private Long paymentNumber;
+	private boolean pilferageFlag;
 
 	public NoMoreStockAdjustment() {
 		// default constructor
@@ -167,6 +168,14 @@ public class NoMoreStockAdjustment {
 
 	public void setPaymentNumber(Long paymentNumber) {
 		this.paymentNumber = paymentNumber;
+	}
+
+	public boolean getPilferageFlag() {
+		return pilferageFlag;
+	}
+
+	public void setPilferageFlag(boolean pilferageFlag) {
+		this.pilferageFlag = pilferageFlag;
 	}
 	
 }
