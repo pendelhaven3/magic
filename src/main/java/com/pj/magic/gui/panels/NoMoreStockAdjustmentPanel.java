@@ -183,6 +183,7 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		}
 		
 		noMoreStockAdjustment.setSalesInvoice(salesInvoice);
+		noMoreStockAdjustment.setPilferageFlag(true);
 		try {
 			noMoreStockAdjustmentService.save(noMoreStockAdjustment);
 			updateDisplay(noMoreStockAdjustment);
@@ -268,8 +269,8 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		customerField.setText(null);
 		remarksField.setText(null);
 		remarksField.setEnabled(false);
-		pilferageCheckBox.setEnabled(true);
-		pilferageCheckBox.setSelected(false, false);
+		pilferageCheckBox.setEnabled(false);
+		pilferageCheckBox.setSelected(true, false);
 		itemsTable.setNoMoreStockAdjustment(noMoreStockAdjustment);
 		postButton.setEnabled(false);
 		markAsPaidButton.setEnabled(false);

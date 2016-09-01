@@ -125,7 +125,7 @@ public class NoMoreStockAdjustmentDaoImpl extends MagicDao implements NoMoreStoc
 	
 	private static final String INSERT_SQL = 
 			"insert into NO_MORE_STOCK_ADJUSTMENT"
-			+ " (NO_MORE_STOCK_ADJUSTMENT_NO, SALES_INVOICE_ID) values (?, ?)";
+			+ " (NO_MORE_STOCK_ADJUSTMENT_NO, SALES_INVOICE_ID, PILFERAGE_IND) values (?, ?, 'Y')";
 
 	private void insert(final NoMoreStockAdjustment noMoreStockAdjustment) {
 		KeyHolder holder = new GeneratedKeyHolder();
