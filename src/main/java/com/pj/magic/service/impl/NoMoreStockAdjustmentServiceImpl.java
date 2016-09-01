@@ -51,11 +51,14 @@ public class NoMoreStockAdjustmentServiceImpl implements NoMoreStockAdjustmentSe
 	@Transactional
 	@Override
 	public void save(NoMoreStockAdjustment noMoreStockAdjustment) {
-		boolean newNoMoreStockAdjustment = (noMoreStockAdjustment.getId() == null);
-		noMoreStockAdjustmentDao.save(noMoreStockAdjustment);
-		if (!newNoMoreStockAdjustment) {
-			noMoreStockAdjustmentItemDao.deleteAllByNoMoreStockAdjustment(noMoreStockAdjustment);
+		if (!noMoreStockAdjustment.isNew()) {
+			NoMoreStockAdjustment existing = noMoreStockAdjustmentDao.get(noMoreStockAdjustment.getId());
+			if (!existing.getSalesInvoice().getSalesInvoiceNumber()
+					.equals(noMoreStockAdjustment.getSalesInvoice().getSalesInvoiceNumber())) {
+				noMoreStockAdjustmentItemDao.deleteAllByNoMoreStockAdjustment(noMoreStockAdjustment);
+			}
 		}
+		noMoreStockAdjustmentDao.save(noMoreStockAdjustment);
 	}
 
 	@Override

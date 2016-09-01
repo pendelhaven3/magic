@@ -32,6 +32,11 @@ public class NoMoreStockAdjustment {
 		this.id = id;
 	}
 
+	
+	public boolean isNew() {
+		return id == null;
+	}
+	
 	public Long getId() {
 		return id;
 	}
