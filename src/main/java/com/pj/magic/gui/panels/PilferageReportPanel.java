@@ -13,12 +13,18 @@ import javax.swing.table.TableColumnModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.Constants;
+import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.SelectProductEllipsisButton;
+import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.report.PilferageReport;
 import com.pj.magic.model.report.PilferageReportItem;
 import com.pj.magic.model.search.PilferageReportCriteria;
+import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -37,10 +43,15 @@ public class PilferageReportPanel extends StandardMagicPanel {
 	private static final int COST_COLUMN_INDEX = 6;
 	private static final int AMOUNT_COLUMN_INDEX = 7;
 	
+	@Autowired private ProductService productService;
 	@Autowired private ReportService reportService;
+	@Autowired private SelectProductDialog selectProductDialog;
 	
 	private UtilCalendarModel fromDateModel;
 	private UtilCalendarModel toDateModel;
+	private MagicTextField productCodeField;
+	private JLabel productDescriptionLabel;
+	private SelectProductEllipsisButton selectProductButton;
 	private JButton generateButton;
 	private MagicListTable table;
 	private PilferageReportItemsTableModel tableModel;
@@ -50,6 +61,13 @@ public class PilferageReportPanel extends StandardMagicPanel {
 	protected void initializeComponents() {
 		fromDateModel = new UtilCalendarModel();
 		toDateModel = new UtilCalendarModel();
+		
+		productCodeField = new MagicTextField();
+		productCodeField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
+
+		productDescriptionLabel = new JLabel();
+		
+		selectProductButton = new SelectProductEllipsisButton(selectProductDialog, productCodeField, productDescriptionLabel);
 		
 		generateButton = new JButton("Generate");
 		generateButton.addActionListener(e -> generateReport());
@@ -82,6 +100,15 @@ public class PilferageReportPanel extends StandardMagicPanel {
 		criteria.setFrom(fromDateModel.getValue().getTime());
 		if (toDateModel.getValue() != null) {
 			criteria.setTo(toDateModel.getValue().getTime());
+		}
+		if (!productCodeField.isEmpty()) {
+			Product product = productService.findProductByCode(productCodeField.getText());
+			if (product == null) {
+				productDescriptionLabel.setText(null);
+			} else {
+				productDescriptionLabel.setText(product.getDescription());
+				criteria.setProduct(product);
+			}
 		}
 		
 		PilferageReport report = reportService.getPilferageReport(criteria);
@@ -137,6 +164,21 @@ public class PilferageReportPanel extends StandardMagicPanel {
 		c.gridx = 6;
 		c.gridy = currentRow;
 		mainPanel.add(Box.createGlue(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Product:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridwidth = 5;
+		mainPanel.add(selectProductButton.getFieldsPanel(), c);
 		
 		currentRow++;
 		
@@ -216,6 +258,8 @@ public class PilferageReportPanel extends StandardMagicPanel {
 	public void updateDisplay() {
 		fromDateModel.setValue(null);
 		toDateModel.setValue(null);
+		productCodeField.setText(null);
+		productDescriptionLabel.setText(null);
 		tableModel.clear();
 		totalAmountLabel.setText(null);
 	}

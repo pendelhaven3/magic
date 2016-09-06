@@ -445,6 +445,10 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			sql.append(" and POST_DT < date_add(:to, interval 1 day)");
 			paramMap.put("to", DbUtil.toMySqlDateString(criteria.getTo()));
 		}
+		if (criteria.getProduct() != null) {
+			sql.append(" and PRODUCT_ID = :product");
+			paramMap.put("product", criteria.getProduct().getId());
+		}
 		
 		sql.append(" order by POST_DT, DESCRIPTION");
 		

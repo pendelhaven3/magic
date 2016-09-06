@@ -93,4 +93,8 @@ public class MagicTextField extends JTextField {
 		return null;
 	}
 	
+	public boolean isEmpty() {
+		return StringUtils.isEmpty(getText());
+	}
+	
 }
