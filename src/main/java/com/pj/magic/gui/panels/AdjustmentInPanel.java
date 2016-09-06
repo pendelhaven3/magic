@@ -182,7 +182,7 @@ public class AdjustmentInPanel extends StandardMagicPanel {
 		}
 		remarksField.setEnabled(!adjustmentIn.isPosted());
 		remarksField.setText(adjustmentIn.getRemarks());
-		pilferageCheckBox.setEnabled(!adjustmentIn.isPosted() && loginService.getLoggedInUser().isSupervisor());
+		pilferageCheckBox.setEnabled(loginService.getLoggedInUser().isSupervisor());
 		pilferageCheckBox.setSelected(adjustmentIn.getPilferageFlag(), false);
 		totalItemsField.setText(String.valueOf(adjustmentIn.getTotalItems()));
 		totalAmountField.setText(adjustmentIn.getTotalAmount().toString());

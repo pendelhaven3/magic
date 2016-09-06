@@ -248,7 +248,7 @@ public class NoMoreStockAdjustmentPanel extends StandardMagicPanel {
 		remarksField.setText(noMoreStockAdjustment.getRemarks());
 		remarksField.setEnabled(!noMoreStockAdjustment.isPosted());
 		
-		pilferageCheckBox.setEnabled(!noMoreStockAdjustment.isPosted() && loginService.getLoggedInUser().isSupervisor());
+		pilferageCheckBox.setEnabled(loginService.getLoggedInUser().isSupervisor());
 		pilferageCheckBox.setSelected(noMoreStockAdjustment.getPilferageFlag(), false);
 		
 		itemsTable.setNoMoreStockAdjustment(noMoreStockAdjustment);

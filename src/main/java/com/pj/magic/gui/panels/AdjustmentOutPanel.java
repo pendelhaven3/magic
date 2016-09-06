@@ -172,7 +172,7 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		remarksField.setEnabled(!adjustmentOut.isPosted());
 		remarksField.setText(adjustmentOut.getRemarks());
 		pilferageCheckBox.setSelected(adjustmentOut.getPilferageFlag(), false);
-		pilferageCheckBox.setEnabled(!adjustmentOut.isPosted() && loginService.getLoggedInUser().isSupervisor());
+		pilferageCheckBox.setEnabled(loginService.getLoggedInUser().isSupervisor());
 		if (adjustmentOut.getPostDate() != null) {
 			postDateField.setText(FormatterUtil.formatDateTime(adjustmentOut.getPostDate()));
 		} else {
