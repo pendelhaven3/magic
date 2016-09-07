@@ -66,7 +66,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 	@Autowired private NoMoreStockAdjustmentItemsTableModel tableModel;
 	
 	private boolean addMode;
-	private NoMoreStockAdjustment salesReturn;
+	private NoMoreStockAdjustment noMoreStockAdjustment;
 	private String previousSelectProductCriteria;
 	
 	@Autowired
@@ -182,7 +182,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 		}
 		
 		addMode = false;
-		List<NoMoreStockAdjustmentItem> items = salesReturn.getItems();
+		List<NoMoreStockAdjustmentItem> items = noMoreStockAdjustment.getItems();
 		tableModel.setItems(items);
 		
 		if (items.size() > 0) {
@@ -194,7 +194,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 		int selectedRowIndex = getSelectedRow();
 		NoMoreStockAdjustmentItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
-		salesReturn.getItems().remove(item);
+		noMoreStockAdjustment.getItems().remove(item);
 		tableModel.removeItem(selectedRowIndex);
 		
 		if (tableModel.hasItems()) {
@@ -216,7 +216,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 	}
 	
 	private boolean hasDuplicate(String unit, NoMoreStockAdjustmentItemRowItem rowItem) {
-		for (NoMoreStockAdjustmentItem item : salesReturn.getItems()) {
+		for (NoMoreStockAdjustmentItem item : noMoreStockAdjustment.getItems()) {
 			if (item.getSalesInvoiceItem().getProduct().equals(rowItem.getProduct()) 
 					&& item.getSalesInvoiceItem().getUnit().equals(unit) && item != rowItem.getItem()) {
 				return true;
@@ -225,17 +225,17 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 		return tableModel.hasDuplicate(unit, rowItem);
 	}
 	
-	public void setNoMoreStockAdjustment(NoMoreStockAdjustment salesReturn) {
+	public void setNoMoreStockAdjustment(NoMoreStockAdjustment noMoreStockAdjustment) {
 		clearSelection();
 		addMode = false;
-		this.salesReturn = salesReturn;
-		tableModel.setNoMoreStockAdjustment(salesReturn);
+		this.noMoreStockAdjustment = noMoreStockAdjustment;
+		tableModel.setNoMoreStockAdjustment(noMoreStockAdjustment);
 		previousSelectProductCriteria = null;
 	}
 	
 	private NoMoreStockAdjustmentItem createBlankItem() {
 		NoMoreStockAdjustmentItem item = new NoMoreStockAdjustmentItem();
-		item.setParent(salesReturn);
+		item.setParent(noMoreStockAdjustment);
 		return item;
 	}
 	
@@ -252,7 +252,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (salesReturn.isPosted()) {
+				if (noMoreStockAdjustment.isPosted()) {
 					return;
 				}
 				switchToAddMode();
@@ -262,7 +262,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (salesReturn.isPosted()) {
+				if (noMoreStockAdjustment.isPosted()) {
 					return;
 				}
 				if (isProductCodeFieldSelected()) {
@@ -280,7 +280,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (salesReturn.isPosted()) {
+				if (noMoreStockAdjustment.isPosted()) {
 					return;
 				}
 				if (isEditing()) {
@@ -297,7 +297,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (salesReturn.isPosted()) {
+				if (noMoreStockAdjustment.isPosted()) {
 					return;
 				}
 				removeCurrentlySelectedItem();
@@ -308,7 +308,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (salesReturn.isPosted()) {
+				if (noMoreStockAdjustment.isPosted()) {
 					return;
 				}
 				if (isProductCodeFieldSelected()) {
@@ -366,7 +366,6 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 	private void openSelectProductDialog(String criteria, String currentlySelectedCode) {
 		previousSelectProductCriteria = criteria;
 		
-//		selectProductDialog.searchProducts(criteria, currentlySelectedCode, salesReturn.getPricingScheme());
 		selectProductDialog.searchProducts(criteria, currentlySelectedCode);
 		selectProductDialog.setVisible(true);
 		
@@ -391,14 +390,14 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 	}
 
 	public void highlightColumn(NoMoreStockAdjustmentItem item, int column) {
-		int row = salesReturn.getItems().indexOf(item);
+		int row = noMoreStockAdjustment.getItems().indexOf(item);
 		changeSelection(row, column, false, false);
 		editCellAt(row, column);
 		getEditorComponent().requestFocusInWindow();
 	}
 	
 	public void highlight() {
-		if (!salesReturn.hasItems()) {
+		if (!noMoreStockAdjustment.hasItems()) {
 			switchToAddMode();
 		} else {
 			changeSelection(0, 0, false, false);
@@ -459,7 +458,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 				Product product = productService.findProductByCode(code);
 				if (product == null) {
 					showErrorMessage("No product matching code specified");
-				} else if (!salesReturn.getSalesInvoice().hasProduct(product)) {
+				} else if (!noMoreStockAdjustment.getSalesInvoice().hasProduct(product)) {
 					showErrorMessage("Sales Invoice does not have specified product");
 				} else {
 					valid = true;
@@ -488,7 +487,7 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 					showErrorMessage("Product does not have unit specified");
 				} else if (hasDuplicate(unit, rowItem)) {
 					showErrorMessage("Duplicate item");
-				} else if (!salesReturn.getSalesInvoice().hasProductAndUnit(rowItem.getProduct(), unit)) {
+				} else if (!noMoreStockAdjustment.getSalesInvoice().hasProductAndUnit(rowItem.getProduct(), unit)) {
 					showErrorMessage("Sales Invoice does not have specified product and unit");
 				} else {
 					valid = true;
@@ -515,9 +514,9 @@ public class NoMoreStockAdjustmentItemsTable extends MagicTable {
 				showErrorMessage("Quantity must be greater than 0");
 			} else {
 				NoMoreStockAdjustmentItemRowItem rowItem = getCurrentlySelectedRowItem();
-				SalesInvoiceItem item = salesReturn.getSalesInvoice()
+				SalesInvoiceItem item = noMoreStockAdjustment.getSalesInvoice()
 						.findItemByProductAndUnit(rowItem.getProduct(), rowItem.getUnit());
-				if (Integer.parseInt(quantity) > item.getQuantity()) { // TODO: Consider other Sales Return?
+				if (Integer.parseInt(quantity) > item.getQuantity()) {
 					showErrorMessage("Quantity cannot be more than Sales Invoice item quantity");
 				} else {
 					valid = true;

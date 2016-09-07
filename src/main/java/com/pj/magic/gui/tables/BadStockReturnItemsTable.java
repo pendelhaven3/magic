@@ -57,7 +57,7 @@ public class BadStockReturnItemsTable extends MagicTable {
 	@Autowired private BadStockReturnItemsTableModel tableModel;
 	
 	private boolean addMode;
-	private BadStockReturn adjustmentIn;
+	private BadStockReturn badStockReturn;
 	private String previousSelectProductCriteria;
 	
 	@Autowired
@@ -165,8 +165,7 @@ public class BadStockReturnItemsTable extends MagicTable {
 		}
 		
 		addMode = false;
-		List<BadStockReturnItem> items = adjustmentIn.getItems();
-//		items.addAll(tableModel.getItems());
+		List<BadStockReturnItem> items = badStockReturn.getItems();
 		tableModel.setItems(items);
 		
 		if (items.size() > 0) {
@@ -178,7 +177,7 @@ public class BadStockReturnItemsTable extends MagicTable {
 		int selectedRowIndex = getSelectedRow();
 		BadStockReturnItem item = getCurrentlySelectedRowItem().getItem();
 		clearSelection(); // clear row selection so model listeners will not cause exceptions while model items are being updated
-		adjustmentIn.getItems().remove(item);
+		badStockReturn.getItems().remove(item);
 		tableModel.removeItem(selectedRowIndex);
 		
 		if (tableModel.hasItems()) {
@@ -195,7 +194,7 @@ public class BadStockReturnItemsTable extends MagicTable {
 	}
 	
 	private boolean hasDuplicate(String unit, BadStockReturnItemRowItem rowItem) {
-		for (BadStockReturnItem item : adjustmentIn.getItems()) {
+		for (BadStockReturnItem item : badStockReturn.getItems()) {
 			if (item.getProduct().equals(rowItem.getProduct()) 
 					&& item.getUnit().equals(unit) && item != rowItem.getItem()) {
 				return true;
@@ -204,17 +203,17 @@ public class BadStockReturnItemsTable extends MagicTable {
 		return tableModel.hasDuplicate(unit, rowItem);
 	}
 	
-	public void setBadStockReturn(BadStockReturn adjustmentIn) {
+	public void setBadStockReturn(BadStockReturn badStockReturn) {
 		clearSelection();
 		addMode = false;
-		this.adjustmentIn = adjustmentIn;
-		tableModel.setBadStockReturn(adjustmentIn);
+		this.badStockReturn = badStockReturn;
+		tableModel.setBadStockReturn(badStockReturn);
 		previousSelectProductCriteria = null;
 	}
 	
 	private BadStockReturnItem createBlankItem() {
 		BadStockReturnItem item = new BadStockReturnItem();
-		item.setParent(adjustmentIn);
+		item.setParent(badStockReturn);
 		return item;
 	}
 	
@@ -354,14 +353,14 @@ public class BadStockReturnItemsTable extends MagicTable {
 	}
 
 	public void highlightColumn(BadStockReturnItem item, int column) {
-		int row = adjustmentIn.getItems().indexOf(item);
+		int row = badStockReturn.getItems().indexOf(item);
 		changeSelection(row, column, false, false);
 		editCellAt(row, column);
 		getEditorComponent().requestFocusInWindow();
 	}
 	
 	public void highlight() {
-		if (!adjustmentIn.hasItems()) {
+		if (!badStockReturn.hasItems()) {
 			switchToAddMode();
 		} else {
 			changeSelection(0, 0, false, false);
