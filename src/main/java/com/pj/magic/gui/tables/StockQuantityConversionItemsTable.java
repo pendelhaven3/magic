@@ -157,6 +157,10 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	}
 	
 	public void switchToAddMode() {
+		if (stockQuantityConversion.isPosted()) {
+			return;
+		}
+		
 		clearSelection();
 		if (isEditing()) {
 			getCellEditor().cancelCellEditing();
@@ -222,6 +226,10 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	}
 	
 	public void removeCurrentlySelectedRow() {
+		if (stockQuantityConversion.isPosted()) {
+			return;
+		}
+		
 		if (tableModel.hasItems()) {
 			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
 				if (confirm("Do you wish to delete the selected item?")) {
@@ -384,6 +392,10 @@ public class StockQuantityConversionItemsTable extends MagicTable {
 	}
 	
 	protected void showSelectionDialog() {
+		if (stockQuantityConversion.isPosted()) {
+			return;
+		}
+		
 		if (isProductCodeFieldSelected()) {
 			if (!isEditing()) {
 				editCellAt(getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);

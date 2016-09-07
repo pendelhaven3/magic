@@ -113,6 +113,10 @@ public class AdjustmentOutItemsTable extends MagicTable {
 	}
 	
 	public void switchToAddMode() {
+		if (adjustmentOut.isPosted()) {
+			return;
+		}
+		
 		clearSelection();
 		if (isEditing()) {
 			getCellEditor().cancelCellEditing();
@@ -233,6 +237,10 @@ public class AdjustmentOutItemsTable extends MagicTable {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				if (adjustmentOut.isPosted()) {
+					return;
+				}
+				
 				if (isProductCodeFieldSelected()) {
 					if (!isEditing()) {
 						editCellAt(getSelectedRow(), PRODUCT_CODE_COLUMN_INDEX);
@@ -310,6 +318,10 @@ public class AdjustmentOutItemsTable extends MagicTable {
 	}
 
 	public void removeCurrentlySelectedItem() {
+		if (adjustmentOut.isPosted()) {
+			return;
+		}
+		
 		if (getSelectedRow() != -1) {
 			if (getCurrentlySelectedRowItem().isValid()) { // check valid row to prevent deleting the blank row
 				if (confirm("Do you wish to delete the selected item?")) {
