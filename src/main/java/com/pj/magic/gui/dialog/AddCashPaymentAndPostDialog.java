@@ -221,6 +221,7 @@ public class AddCashPaymentAndPostDialog extends MagicDialog {
 		remainingAmountDueLabel.setText(FormatterUtil.formatAmount(
 				payment.getTotalAmountDueMinusNonCashPaymentsAndAdjustments()));
 		amountGivenField.setText(null);
+		amountGivenField.requestFocusInWindow();
 	}
 
 }
