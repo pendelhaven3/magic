@@ -152,6 +152,14 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			case "PURCHASE RETURN":
 				item.setLessQuantity(rs.getInt("QUANTITY"));
 				break;
+			case "INVENTORY CORRECTION":
+				int quantity = rs.getInt("QUANTITY");
+				if (quantity > 0) {
+					item.setAddQuantity(quantity);
+				} else {
+					item.setLessQuantity(-quantity);
+				}
+				break;
 			}
 			
 			return item;

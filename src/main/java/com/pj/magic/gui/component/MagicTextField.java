@@ -2,6 +2,9 @@ package com.pj.magic.gui.component;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -90,6 +93,20 @@ public class MagicTextField extends JTextField {
 
 	public boolean isEmpty() {
 		return StringUtils.isEmpty(getText());
+	}
+
+	public Date getTextAsDateTime() {
+		String text = getText();
+		
+		if (StringUtils.isEmpty(text)) {
+			return null;
+		}
+		
+		try {
+			return new SimpleDateFormat(Constants.DATETIME_FORMAT).parse(text);
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 	
 }

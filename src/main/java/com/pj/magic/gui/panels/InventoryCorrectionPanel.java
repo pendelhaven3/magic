@@ -4,15 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,7 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.component.SelectProductEllipsisButton;
 import com.pj.magic.gui.component.UnitComboBox;
 import com.pj.magic.gui.dialog.SelectProductDialog;
@@ -42,20 +41,22 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 	@Autowired private SelectProductDialog selectProductDialog;
 	
 	private InventoryCorrection inventoryCorrection;
+	private JLabel inventoryCorrectionNumberLabel;
+	private MagicTextField postDateField;
 	private MagicTextField productCodeField;
 	private SelectProductEllipsisButton selectProductButton;
 	private JLabel productDescriptionLabel;
 	private UnitComboBox unitComboBox;
-	private JLabel currentQuantityLabel;
-	private MagicTextField newQuantityField;
-	private JLabel discrepancyLabel;
+	private MagicTextField quantityField;
 	private MagicTextField remarksField;
-	private JLabel postDateLabel;
-	private JLabel postedByLabel;
+	private JLabel updateDateLabel;
+	private JLabel updatedByLabel;
 	private MagicButton saveButton;
 	
 	@Override
 	protected void initializeComponents() {
+		postDateField = new MagicTextField();
+		
 		productCodeField = new MagicTextField();
 		productCodeField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
 		
@@ -65,30 +66,26 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		
 		unitComboBox = new UnitComboBox();
 		
-		currentQuantityLabel = new JLabel();
-		
-		newQuantityField = new MagicTextField();
-		newQuantityField.setNumbersOnly(true);
-		
-		discrepancyLabel = new JLabel();
+		quantityField = new MagicTextField();
 		
 		remarksField = new MagicTextField();
 		remarksField.setMaximumLength(100);
 		
-		postDateLabel = new JLabel();
-		postedByLabel = new JLabel();
+		updateDateLabel = new JLabel();
+		updatedByLabel = new JLabel();
 		
 		saveButton = new MagicButton("Save");
 		saveButton.addActionListener(e -> saveInventoryCorrection());
 		
-		focusOnComponentWhenThisPanelIsDisplayed(productCodeField);
+		focusOnComponentWhenThisPanelIsDisplayed(postDateField);
 	}
 
 	@Override
 	protected void initializeFocusOrder(List<JComponent> focusOrder) {
+		focusOrder.add(postDateField);
 		focusOrder.add(productCodeField);
 		focusOrder.add(unitComboBox);
-		focusOrder.add(newQuantityField);
+		focusOrder.add(quantityField);
 		focusOrder.add(saveButton);
 	}
 	
@@ -97,13 +94,13 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		if (confirm("WARNING! Saving will automatically post this inventory correction. Proceed?")) {
+		if (confirm("Save inventory correction?")) {
 			Product product = productService.findProductByCode(productCodeField.getText());
 			String unit = (String)unitComboBox.getSelectedItem();
+			inventoryCorrection.setPostDate(postDateField.getTextAsDateTime());
 			inventoryCorrection.setProduct(product);
 			inventoryCorrection.setUnit(unit);
-			inventoryCorrection.setNewQuantity(Integer.parseInt(newQuantityField.getText()));
-			inventoryCorrection.setOldQuantity(product.getUnitQuantity(unit));
+			inventoryCorrection.setQuantity(quantityField.getTextAsInteger());
 			inventoryCorrection.setRemarks(remarksField.getText());
 			try {
 				inventoryCorrectionService.save(inventoryCorrection);
@@ -129,9 +126,9 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 			return false;
 		}
 		
-		if (isNewQuantityNotSpecified()) {
-			showErrorMessage("New Quantity must be specified");
-			newQuantityField.requestFocusInWindow();
+		if (isQuantityNotSpecified()) {
+			showErrorMessage("Quantity must be specified");
+			quantityField.requestFocusInWindow();
 			return false;
 		}
 		
@@ -146,8 +143,8 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		return unitComboBox.getSelectedItem() == null;
 	}
 
-	private boolean isNewQuantityNotSpecified() {
-		return newQuantityField.getText().isEmpty();
+	private boolean isQuantityNotSpecified() {
+		return quantityField.getText().isEmpty();
 	}
 	
 	@Override
@@ -162,7 +159,37 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(150, "Product Code:"));
+		panel.add(ComponentUtil.createLabel(150, "Inv. Correction No.:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		inventoryCorrectionNumberLabel = ComponentUtil.createLabel(100);
+		panel.add(inventoryCorrectionNumberLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Post Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		postDateField.setPreferredSize(new Dimension(150, 25));
+		panel.add(postDateField, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Product Code:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
@@ -191,44 +218,14 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(150, "Current Quantity: "), c);
+		panel.add(ComponentUtil.createLabel(150, "Quantity: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		currentQuantityLabel.setPreferredSize(new Dimension(100, 25));
-		panel.add(currentQuantityLabel, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(150, "New Quantity: "), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		newQuantityField.setPreferredSize(new Dimension(100, 25));
-		panel.add(newQuantityField, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(150, "Discrepancy: "), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		discrepancyLabel.setPreferredSize(new Dimension(100, 25));
-		panel.add(discrepancyLabel, c);
+		quantityField.setPreferredSize(new Dimension(100, 25));
+		panel.add(quantityField, c);
 		
 		currentRow++;
 		
@@ -251,14 +248,14 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(150, "Post Date: "), c);
+		panel.add(ComponentUtil.createLabel(150, "Update Date: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postDateLabel.setPreferredSize(new Dimension(150, 25));
-		panel.add(postDateLabel, c);
+		updateDateLabel.setPreferredSize(new Dimension(150, 25));
+		panel.add(updateDateLabel, c);
 		
 		currentRow++;
 		
@@ -266,14 +263,14 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(150, "Posted By: "), c);
+		panel.add(ComponentUtil.createLabel(150, "Update By: "), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		postedByLabel.setPreferredSize(new Dimension(100, 25));
-		panel.add(postedByLabel, c);
+		updatedByLabel.setPreferredSize(new Dimension(100, 25));
+		panel.add(updatedByLabel, c);
 		
 		currentRow++;
 		
@@ -290,53 +287,7 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
-		selectProductButton.addOnSelectProductAction(product -> updateCurrentQuantityLabel(product));
-		unitComboBox.addOnSelectListener(e -> updateCurrentQuantityLabel());
-		newQuantityField.addFocusListener(new FocusAdapter() {
-			
-			@Override
-			public void focusLost(FocusEvent e) {
-				updateDiscrepancyLabel();
-			}
-		});
 		saveButton.onEnterKey(() -> saveInventoryCorrection());
-	}
-
-	private void updateDiscrepancyLabel() {
-		if (!StringUtils.isEmpty(currentQuantityLabel.getText()) && !StringUtils.isEmpty(newQuantityField.getText())) {
-			int currentQuantity = Integer.parseInt(currentQuantityLabel.getText());
-			int newQuantity = Integer.parseInt(newQuantityField.getText());
-			discrepancyLabel.setText(String.valueOf(newQuantity - currentQuantity));
-		} else {
-			discrepancyLabel.setText(null);
-		}
-	}
-
-	private void updateCurrentQuantityLabel(Product product) {
-		if (unitComboBox.getSelectedItem() != null) {
-			String unit = (String)unitComboBox.getSelectedItem();
-			currentQuantityLabel.setText(String.valueOf(product.getUnitQuantity(unit)));
-			updateDiscrepancyLabel();
-		} else {
-			currentQuantityLabel.setText(null);
-			discrepancyLabel.setText(null);
-		}
-	}
-
-	private void updateCurrentQuantityLabel() {
-		if (unitComboBox.getSelectedItem() != null && !productCodeField.getText().isEmpty()) {
-			Product product = productService.findProductByCode(productCodeField.getText());
-			if (product != null) {
-				String unit = (String)unitComboBox.getSelectedItem();
-				currentQuantityLabel.setText(String.valueOf(product.getUnitQuantity(unit)));
-				updateDiscrepancyLabel();
-			} else {
-				currentQuantityLabel.setText(null);
-				discrepancyLabel.setText(null);
-			}
-		} else {
-			discrepancyLabel.setText(null);
-		}
 	}
 
 	public void updateDisplay(InventoryCorrection inventoryCorrection) {
@@ -348,40 +299,42 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 		
 		this.inventoryCorrection = inventoryCorrection =
 				inventoryCorrectionService.getInventoryCorrection(inventoryCorrection.getId());
+		postDateField.setText(FormatterUtil.formatDateTime(inventoryCorrection.getPostDate()));
+		inventoryCorrectionNumberLabel.setText(String.valueOf(inventoryCorrection.getInventoryCorrectionNumber()));
 		productCodeField.setText(inventoryCorrection.getProduct().getCode());
 		productDescriptionLabel.setText(inventoryCorrection.getProduct().getDescription());
 		unitComboBox.setSelectedItem(inventoryCorrection.getUnit());
-		currentQuantityLabel.setText(String.valueOf(inventoryCorrection.getOldQuantity()));
-		newQuantityField.setText(String.valueOf(inventoryCorrection.getNewQuantity()));
-		discrepancyLabel.setText(String.valueOf(inventoryCorrection.getDiscrepancy()));
+		quantityField.setText(String.valueOf(inventoryCorrection.getQuantity()));
 		remarksField.setText(inventoryCorrection.getRemarks());
-		postDateLabel.setText(FormatterUtil.formatDateTime(inventoryCorrection.getPostDate()));
-		postedByLabel.setText(inventoryCorrection.getPostedBy().getUsername());
-		saveButton.setEnabled(false);
+		updateDateLabel.setText(FormatterUtil.formatDateTime(inventoryCorrection.getUpdateDate()));
+		updatedByLabel.setText(inventoryCorrection.getUpdatedBy().getUsername());
 		
-		productCodeField.setEditable(false);
-		selectProductButton.setEnabled(false);
-		unitComboBox.setEnabled(false);
-		newQuantityField.setEditable(false);
-		remarksField.setEditable(false);
+		boolean editable = !inventoryCorrection.isDeleted();
+		postDateField.setEditable(editable);
+		productCodeField.setEditable(editable);
+		selectProductButton.setEnabled(editable);
+		unitComboBox.setEnabled(editable);
+		quantityField.setEditable(editable);
+		remarksField.setEditable(editable);
+		saveButton.setEnabled(editable);
 	}
 
 	private void clearDisplay() {
+		postDateField.setText(null);
+		inventoryCorrectionNumberLabel.setText(null);
 		productCodeField.setText(null);
 		productDescriptionLabel.setText(null);
 		unitComboBox.setSelectedItem(null);
 		remarksField.setText(null);
-		postDateLabel.setText(null);
-		postedByLabel.setText(null);
-		currentQuantityLabel.setText(null);
-		newQuantityField.setText(null);
-		discrepancyLabel.setText(null);
+		updateDateLabel.setText(null);
+		updatedByLabel.setText(null);
+		quantityField.setText(null);
 		saveButton.setEnabled(true);
 		
 		productCodeField.setEditable(true);
 		selectProductButton.setEnabled(true);
 		unitComboBox.setEnabled(true);
-		newQuantityField.setEditable(true);
+		quantityField.setEditable(true);
 		remarksField.setEditable(true);
 	}
 
@@ -392,6 +345,24 @@ public class InventoryCorrectionPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton cancelButton = new MagicToolBarButton("cancel", "Delete");
+		cancelButton.addActionListener(e -> deleteInventoryCorrection());
+		toolBar.add(cancelButton);
+		
+	}
+
+	private void deleteInventoryCorrection() {
+		if (confirm("Delete record?")) {
+			inventoryCorrection.setDeleted(true);
+			try {
+				inventoryCorrectionService.save(inventoryCorrection);
+				showMessage("Record deleted");
+				getMagicFrame().switchToInventoryCorrectionListPanel();
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+			}
+		}
 	}
 
 }

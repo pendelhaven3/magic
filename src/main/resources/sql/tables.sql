@@ -1106,17 +1106,18 @@ create table SALES_REQUISITION_SEPARATE_ITEM (
 
 create table INVENTORY_CORRECTION (
   ID integer auto_increment,
+  INVENTORY_CORRECTION_NO integer not null,
+  POST_DT datetime not null,
   PRODUCT_ID integer not null,
   UNIT char(3) not null,
-  NEW_QUANTITY integer not null,
-  OLD_QUANTITY integer not null,
-  COST numeric(10, 2) null,
-  POST_DT datetime not null,
-  POST_BY integer not null,
+  QUANTITY integer not null,
+  UPDATE_DT datetime not null,
+  UPDATE_BY integer not null,
+  DELETE_IND char(1) default 'N' not null,
   REMARKS varchar(100) null,
   primary key (ID),
   constraint INVENTORY_CORRECTION$FK foreign key (PRODUCT_ID) references PRODUCT (ID),
-  constraint INVENTORY_CORRECTION$FK2 foreign key (POST_BY) references USER (ID)
+  constraint INVENTORY_CORRECTION$FK2 foreign key (UPDATE_BY) references USER (ID)
 );
 
 create table DAILY_PRODUCT_STARTING_QUANTITY (
@@ -1141,4 +1142,3 @@ create table PRODUCT_QUANTITY_DISCREPANCY_REPORT (
   primary key (DATE, PRODUCT_ID, UNIT),
   constraint PRODUCT_QUANTITY_DISCREPANCY_REPORT$FK foreign key (PRODUCT_ID) references PRODUCT (ID)
 );
-

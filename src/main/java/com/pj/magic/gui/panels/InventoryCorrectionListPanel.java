@@ -2,8 +2,6 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -24,13 +22,12 @@ import com.pj.magic.util.FormatterUtil;
 @Component
 public class InventoryCorrectionListPanel extends StandardMagicPanel {
 	
-	private static final int POST_DATE_COLUMN_INDEX = 0;
-	private static final int PRODUCT_CODE_COLUMN_INDEX = 1;
-	private static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 2;
-	private static final int UNIT_COLUMN_INDEX = 3;
-	private static final int NEW_QUANTITY_COLUMN_INDEX = 4;
-	private static final int OLD_QUANTITY_COLUMN_INDEX = 5;
-	private static final int DISCREPANCY_COLUMN_INDEX = 6;
+	private static final int INVENTORY_CORRECTION_NUMBER_COLUMN_INDEX = 0;
+	private static final int POST_DATE_COLUMN_INDEX = 1;
+	private static final int PRODUCT_CODE_COLUMN_INDEX = 2;
+	private static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 3;
+	private static final int UNIT_COLUMN_INDEX = 4;
+	private static final int QUANTITY_COLUMN_INDEX = 5;
 	
 	@Autowired private InventoryCorrectionService inventoryCorrectionService;
 	
@@ -50,13 +47,12 @@ public class InventoryCorrectionListPanel extends StandardMagicPanel {
 		table.onEnterKeyAndDoubleClick(() -> displaySelectedInventoryCorrectionDetails());
 		
 		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(INVENTORY_CORRECTION_NUMBER_COLUMN_INDEX).setPreferredWidth(120);
 		columnModel.getColumn(POST_DATE_COLUMN_INDEX).setPreferredWidth(150);
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(120);
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
-		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(60);
-		columnModel.getColumn(NEW_QUANTITY_COLUMN_INDEX).setPreferredWidth(80);
-		columnModel.getColumn(OLD_QUANTITY_COLUMN_INDEX).setPreferredWidth(80);
-		columnModel.getColumn(DISCREPANCY_COLUMN_INDEX).setPreferredWidth(80);
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(80);
+		columnModel.getColumn(QUANTITY_COLUMN_INDEX).setPreferredWidth(80);
 	}
 
 	public void updateDisplay() {
@@ -101,13 +97,7 @@ public class InventoryCorrectionListPanel extends StandardMagicPanel {
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
 		JButton addButton = new MagicToolBarButton("plus", "New");
-		addButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				switchToNewInventoryCorrectionPanel();
-			}
-		});
+		addButton.addActionListener(e -> switchToNewInventoryCorrectionPanel());
 		toolBar.add(addButton);
 	}
 
@@ -117,6 +107,8 @@ public class InventoryCorrectionListPanel extends StandardMagicPanel {
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			InventoryCorrection item = getItem(rowIndex);
 			switch (columnIndex) {
+			case INVENTORY_CORRECTION_NUMBER_COLUMN_INDEX:
+				return item.getInventoryCorrectionNumber();
 			case POST_DATE_COLUMN_INDEX:
 				return FormatterUtil.formatDateTime(item.getPostDate());
 			case PRODUCT_CODE_COLUMN_INDEX:
@@ -125,12 +117,8 @@ public class InventoryCorrectionListPanel extends StandardMagicPanel {
 				return item.getProduct().getDescription();
 			case UNIT_COLUMN_INDEX:
 				return item.getUnit();
-			case NEW_QUANTITY_COLUMN_INDEX:
-				return item.getNewQuantity();
-			case OLD_QUANTITY_COLUMN_INDEX:
-				return item.getOldQuantity();
-			case DISCREPANCY_COLUMN_INDEX:
-				return item.getDiscrepancy();
+			case QUANTITY_COLUMN_INDEX:
+				return item.getQuantity();
 			default:
 				return null;
 			}
@@ -138,20 +126,7 @@ public class InventoryCorrectionListPanel extends StandardMagicPanel {
 
 		@Override
 		protected String[] getColumnNames() {
-			return new String[] {"Date", "Product Code", "Product Description", "Unit", 
-					"New Qty", "Old Qty", "Discrepancy"};
-		}
-		
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			switch (columnIndex) {
-			case NEW_QUANTITY_COLUMN_INDEX:
-			case OLD_QUANTITY_COLUMN_INDEX:
-			case DISCREPANCY_COLUMN_INDEX:
-				return Number.class;
-			default:
-				return Object.class;
-			}
+			return new String[] {"Inv. Correction No.", "Post Date", "Product Code", "Product Description", "Unit", "Quantity"};
 		}
 		
 	}

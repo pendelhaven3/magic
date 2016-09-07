@@ -316,6 +316,14 @@ from (
 		on e.ID = d.SUPPLIER_ID
 	where c.PRODUCT_ID = :product
 	and a.POST_IND = 'Y'
+	union all
+	select a.POST_DT, a.INVENTORY_CORRECTION_NO as TRANSACTION_NO,
+		null as CUSTOMER_SUPPLIER_NAME,
+		'INVENTORY CORRECTION' as TRANSACTION_TYPE, 'INVENTORY CORRECTION' as TRANSACTION_TYPE_KEY, a.UNIT, a.QUANTITY,
+		null as UNIT_COST_OR_PRICE, null as REFERENCE_NO
+	from INVENTORY_CORRECTION a
+	where a.PRODUCT_ID = :product
+	and a.DELETE_IND = 'N'
 ) m
 	]]>
 	</entry>

@@ -1,22 +1,22 @@
 package com.pj.magic.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class InventoryCorrection {
 
 	private Long id;
+	private Long inventoryCorrectionNumber;
+	private Date postDate;
 	private Product product;
 	private String unit;
-	private int newQuantity;
-	private int oldQuantity;
-	private BigDecimal cost;
-	private Date postDate;
-	private User postedBy;
+	private Integer quantity;
+	private Date updateDate;
+	private User updatedBy;
 	private String remarks;
+	private boolean deleted;
 
-	public int getDiscrepancy() {
-		return newQuantity - oldQuantity;
+	public boolean isNew() {
+		return id == null;
 	}
 	
 	public Long getId() {
@@ -25,6 +25,22 @@ public class InventoryCorrection {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Long getInventoryCorrectionNumber() {
+		return inventoryCorrectionNumber;
+	}
+
+	public void setInventoryCorrectionNumber(Long inventoryCorrectionNumber) {
+		this.inventoryCorrectionNumber = inventoryCorrectionNumber;
+	}
+
+	public Date getPostDate() {
+		return postDate;
+	}
+
+	public void setPostDate(Date postDate) {
+		this.postDate = postDate;
 	}
 
 	public Product getProduct() {
@@ -43,36 +59,28 @@ public class InventoryCorrection {
 		this.unit = unit;
 	}
 
-	public Date getPostDate() {
-		return postDate;
+	public Integer getQuantity() {
+		return quantity;
 	}
 
-	public void setPostDate(Date postDate) {
-		this.postDate = postDate;
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
 	}
 
-	public User getPostedBy() {
-		return postedBy;
+	public Date getUpdateDate() {
+		return updateDate;
 	}
 
-	public void setPostedBy(User postedBy) {
-		this.postedBy = postedBy;
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
 	}
 
-	public int getNewQuantity() {
-		return newQuantity;
+	public User getUpdatedBy() {
+		return updatedBy;
 	}
 
-	public void setNewQuantity(int newQuantity) {
-		this.newQuantity = newQuantity;
-	}
-
-	public int getOldQuantity() {
-		return oldQuantity;
-	}
-
-	public void setOldQuantity(int oldQuantity) {
-		this.oldQuantity = oldQuantity;
+	public void setUpdatedBy(User updatedBy) {
+		this.updatedBy = updatedBy;
 	}
 
 	public String getRemarks() {
@@ -83,12 +91,12 @@ public class InventoryCorrection {
 		this.remarks = remarks;
 	}
 
-	public BigDecimal getCost() {
-		return cost;
+	public boolean isDeleted() {
+		return deleted;
 	}
 
-	public void setCost(BigDecimal cost) {
-		this.cost = cost;
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 }
