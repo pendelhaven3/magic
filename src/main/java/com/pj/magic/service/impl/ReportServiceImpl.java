@@ -18,6 +18,7 @@ import com.pj.magic.model.report.PilferageReport;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.SalesByManufacturerReport;
 import com.pj.magic.model.report.StockOfftakeReport;
+import com.pj.magic.model.search.InventoryReportCriteria;
 import com.pj.magic.model.search.PilferageReportCriteria;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportCriteria;
@@ -61,9 +62,9 @@ public class ReportServiceImpl implements ReportService {
 	}
 
 	@Override
-	public InventoryReport getInventoryReport() {
+	public InventoryReport getInventoryReport(InventoryReportCriteria criteria) {
 		InventoryReport report = new InventoryReport();
-		report.setItems(reportDao.getAllInventoryReportItems());
+		report.setItems(reportDao.getInventoryReportItems(criteria));
 		return report;
 	}
 

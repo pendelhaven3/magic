@@ -3,6 +3,7 @@ package com.pj.magic.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReportItem;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.report.StockOfftakeReportItem;
+import com.pj.magic.model.search.InventoryReportCriteria;
 import com.pj.magic.model.search.PilferageReportCriteria;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportCriteria;
@@ -170,36 +172,44 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 	private static final String GET_ALL_INVENTORY_REPORT_ITEMS_SQL =
 			" select ID, CODE, DESCRIPTION, UNIT, QUANTITY, COST"
 			+ " from ("
-			+ "   select ID, CODE, DESCRIPTION, 'CSE' as UNIT, AVAIL_QTY_CSE as QUANTITY, FINAL_COST_CSE as COST"
+			+ "   select ID, CODE, DESCRIPTION, 'CSE' as UNIT, AVAIL_QTY_CSE as QUANTITY, FINAL_COST_CSE as COST, MANUFACTURER_ID"
 			+ "   from PRODUCT"
 			+ "   where UNIT_IND_CSE = 'Y'"
 			+ "   and AVAIL_QTY_CSE > 0"
 			+ "   union all"
-			+ "   select ID, CODE, DESCRIPTION, 'TIE' as UNIT, AVAIL_QTY_TIE as QUANTITY, FINAL_COST_TIE as COST"
+			+ "   select ID, CODE, DESCRIPTION, 'TIE' as UNIT, AVAIL_QTY_TIE as QUANTITY, FINAL_COST_TIE as COST, MANUFACTURER_ID"
 			+ "   from PRODUCT"
 			+ "   where UNIT_IND_TIE = 'Y'"
 			+ "   and AVAIL_QTY_TIE > 0"
 			+ "   union all"
-			+ "   select ID, CODE, DESCRIPTION, 'CTN' as UNIT, AVAIL_QTY_CTN as QUANTITY, FINAL_COST_CTN as COST"
+			+ "   select ID, CODE, DESCRIPTION, 'CTN' as UNIT, AVAIL_QTY_CTN as QUANTITY, FINAL_COST_CTN as COST, MANUFACTURER_ID"
 			+ "   from PRODUCT"
 			+ "   where UNIT_IND_CTN = 'Y'"
 			+ "   and AVAIL_QTY_CTN > 0"
 			+ "   union all"
-			+ "   select ID, CODE, DESCRIPTION, 'DOZ' as UNIT, AVAIL_QTY_DOZ as QUANTITY, FINAL_COST_DOZ as COST"
+			+ "   select ID, CODE, DESCRIPTION, 'DOZ' as UNIT, AVAIL_QTY_DOZ as QUANTITY, FINAL_COST_DOZ as COST, MANUFACTURER_ID"
 			+ "   from PRODUCT"
 			+ "   where UNIT_IND_DOZ = 'Y'"
 			+ "   and AVAIL_QTY_DOZ > 0"
 			+ "   union all"
-			+ "   select ID, CODE, DESCRIPTION, 'PCS' as UNIT, AVAIL_QTY_PCS as QUANTITY, FINAL_COST_PCS as COST"
+			+ "   select ID, CODE, DESCRIPTION, 'PCS' as UNIT, AVAIL_QTY_PCS as QUANTITY, FINAL_COST_PCS as COST, MANUFACTURER_ID"
 			+ "   from PRODUCT"
 			+ "   where UNIT_IND_PCS = 'Y'"
 			+ "   and AVAIL_QTY_PCS > 0"
-			+ " ) a"
-			+ " order by CODE";
+			+ " ) a";
 	
 	@Override
-	public List<InventoryReportItem> getAllInventoryReportItems() {
-		return getJdbcTemplate().query(GET_ALL_INVENTORY_REPORT_ITEMS_SQL, new RowMapper<InventoryReportItem>() {
+	public List<InventoryReportItem> getInventoryReportItems(InventoryReportCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		
+		StringBuilder sql = new StringBuilder(GET_ALL_INVENTORY_REPORT_ITEMS_SQL);
+		if (criteria.getManufacturer() != null) {
+			sql.append(" where a.MANUFACTURER_ID = ?");
+			params.add(criteria.getManufacturer().getId());
+		}
+		sql.append(" order by CODE");
+		
+		return getJdbcTemplate().query(sql.toString(), params.toArray(), new RowMapper<InventoryReportItem>() {
 
 			@Override
 			public InventoryReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {

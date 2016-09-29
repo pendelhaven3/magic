@@ -10,6 +10,7 @@ import com.pj.magic.model.report.PilferageReportItem;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.report.StockOfftakeReportItem;
+import com.pj.magic.model.search.InventoryReportCriteria;
 import com.pj.magic.model.search.PilferageReportCriteria;
 import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.model.search.StockCardInventoryReportCriteria;
@@ -19,7 +20,7 @@ public interface ReportDao {
 
 	List<StockCardInventoryReportItem> getStockCardInventoryReport(StockCardInventoryReportCriteria criteria);
 
-	List<InventoryReportItem> getAllInventoryReportItems();
+	List<InventoryReportItem> getInventoryReportItems(InventoryReportCriteria criteria);
 
 	List<CustomerSalesSummaryReportItem> searchCustomerSalesSummaryReportItems(Date fromDate, Date toDate);
 

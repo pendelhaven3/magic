@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -16,13 +17,18 @@ import javax.swing.table.AbstractTableModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.report.InventoryReport;
 import com.pj.magic.model.report.InventoryReportItem;
+import com.pj.magic.model.search.InventoryReportCriteria;
+import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.ListUtil;
 
 @Component
 public class InventoryReportPanel extends StandardMagicPanel {
@@ -35,25 +41,43 @@ public class InventoryReportPanel extends StandardMagicPanel {
 	private static final int TOTAL_COST_COLUMN_INDEX = 5;
 	
 	@Autowired private ReportService reportService;
+	@Autowired private ManufacturerService manufacturerService;
 	
 	private JLabel totalCostLabel;
 	private JTable table;
 	private InventoryReportItemsTableModel tableModel;
+	private MagicComboBox<Manufacturer> manufacturerComboBox;
+	private JButton generateButton;
 	
 	public void updateDisplay() {
-		InventoryReport report = reportService.getInventoryReport();
+		manufacturerComboBox.setSelectedIndex(0);
+		generateReport();
+	}
+
+	@Override
+	protected void initializeComponents() {
+		manufacturerComboBox = new MagicComboBox<>();
+		manufacturerComboBox.setModel(ListUtil.toDefaultComboBoxModel(manufacturerService.getAllManufacturers(), true));
+		
+		generateButton = new JButton("Generate");
+		generateButton.addActionListener(e -> generateReport());
+		
+		totalCostLabel = new JLabel();
+		
+		initializeTable();
+		focusOnComponentWhenThisPanelIsDisplayed(table);
+	}
+
+	private void generateReport() {
+		InventoryReportCriteria criteria = new InventoryReportCriteria();
+		criteria.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
+		
+		InventoryReport report = reportService.getInventoryReport(criteria);
 		tableModel.setItems(report.getItems());
 		if (!report.getItems().isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
 		totalCostLabel.setText(FormatterUtil.formatAmount(report.getTotalCost()));
-	}
-
-	@Override
-	protected void initializeComponents() {
-		totalCostLabel = new JLabel();
-		initializeTable();
-		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 
 	private void initializeTable() {
@@ -68,20 +92,60 @@ public class InventoryReportPanel extends StandardMagicPanel {
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
 		
-		GridBagConstraints c = new GridBagConstraints();
 		int currentRow = 0;
 		
-		c.fill = GridBagConstraints.NONE;
+		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
-		mainPanel.add(Box.createVerticalStrut(5), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Manufacturer:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		manufacturerComboBox.setPreferredSize(new Dimension(200, 25));
+		mainPanel.add(manufacturerComboBox, c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.weightx = 1.0;
+		mainPanel.add(Box.createGlue(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createVerticalStrut(20), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		generateButton.setPreferredSize(new Dimension(120, 25));
+		mainPanel.add(generateButton, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createVerticalStrut(20), c);
 		
 		currentRow++;
 		
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.gridwidth = 4;
 		mainPanel.add(new JScrollPane(table), c);
 		
 		currentRow++;
@@ -89,6 +153,7 @@ public class InventoryReportPanel extends StandardMagicPanel {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.gridwidth = 4;
 		c.anchor = GridBagConstraints.EAST;
 		totalCostLabel.setPreferredSize(new Dimension(100, 20));
 		mainPanel.add(ComponentUtil.createGenericPanel(
@@ -107,7 +172,6 @@ public class InventoryReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		// none
 	}
 
 	private class InventoryReportItemsTableModel extends AbstractTableModel {
