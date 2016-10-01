@@ -36,12 +36,13 @@ public class PilferageReportPanel extends StandardMagicPanel {
 
 	private static final int DATE_COLUMN_INDEX = 0;
 	private static final int TRANSACTION_TYPE_COLUMN_INDEX = 1;
-	private static final int PRODUCT_CODE_COLUMN_INDEX = 2;
-	private static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 3;
-	private static final int UNIT_COLUMN_INDEX = 4;
-	private static final int QUANTITY_COLUMN_INDEX = 5;
-	private static final int COST_COLUMN_INDEX = 6;
-	private static final int AMOUNT_COLUMN_INDEX = 7;
+	private static final int TRANSACTION_NUMBER_COLUMN_INDEX = 2;
+	private static final int PRODUCT_CODE_COLUMN_INDEX = 3;
+	private static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 4;
+	private static final int UNIT_COLUMN_INDEX = 5;
+	private static final int QUANTITY_COLUMN_INDEX = 6;
+	private static final int COST_COLUMN_INDEX = 7;
+	private static final int AMOUNT_COLUMN_INDEX = 8;
 	
 	@Autowired private ProductService productService;
 	@Autowired private ReportService reportService;
@@ -82,6 +83,7 @@ public class PilferageReportPanel extends StandardMagicPanel {
 		TableColumnModel columnModel = table.getColumnModel();
 		columnModel.getColumn(DATE_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(TRANSACTION_TYPE_COLUMN_INDEX).setPreferredWidth(100);
+		columnModel.getColumn(TRANSACTION_NUMBER_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(PRODUCT_DESCRIPTION_COLUMN_INDEX).setPreferredWidth(300);
 		columnModel.getColumn(UNIT_COLUMN_INDEX).setPreferredWidth(60);
@@ -276,7 +278,7 @@ public class PilferageReportPanel extends StandardMagicPanel {
 	private class PilferageReportItemsTableModel extends ListBackedTableModel<PilferageReportItem> {
 
 		private final String[] columnNames = 
-			{"Date", "Tran Type", "Product Code", "Product Description", "Unit", "Quantity", "Cost", "Amount"};
+			{"Date", "Tran Type", "Tran No", "Product Code", "Product Description", "Unit", "Quantity", "Cost", "Amount"};
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
@@ -286,6 +288,8 @@ public class PilferageReportPanel extends StandardMagicPanel {
 				return FormatterUtil.formatDate(item.getDate());
 			case TRANSACTION_TYPE_COLUMN_INDEX:
 				return item.getTransactionType();
+			case TRANSACTION_NUMBER_COLUMN_INDEX:
+				return item.getTransactionNumber();
 			case PRODUCT_CODE_COLUMN_INDEX:
 				return item.getProduct().getCode();
 			case PRODUCT_DESCRIPTION_COLUMN_INDEX:

@@ -10,6 +10,7 @@ public class PilferageReportItem {
 
 	private Date date;
 	private String transactionType;
+	private Long transactionNumber;
 	private Product product;
 	private String unit;
 	private Integer quantity;
@@ -29,6 +30,14 @@ public class PilferageReportItem {
 
 	public void setTransactionType(String transactionType) {
 		this.transactionType = transactionType;
+	}
+
+	public Long getTransactionNumber() {
+		return transactionNumber;
+	}
+
+	public void setTransactionNumber(Long transactionNumber) {
+		this.transactionNumber = transactionNumber;
 	}
 
 	public Product getProduct() {

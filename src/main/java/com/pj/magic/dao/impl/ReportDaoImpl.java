@@ -474,6 +474,9 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			PilferageReportItem item = new PilferageReportItem();
 			item.setDate(rs.getDate("POST_DT"));
 			item.setTransactionType(rs.getString("TRANSACTION_TYPE"));
+			if (rs.getLong("TRANSACTION_NO") != 0) {
+				item.setTransactionNumber(rs.getLong("TRANSACTION_NO"));
+			}
 			item.setProduct(new Product());
 			item.getProduct().setCode(rs.getString("CODE"));
 			item.getProduct().setDescription(rs.getString("DESCRIPTION"));
