@@ -115,7 +115,7 @@ public class PromoType3Rule {
 		for (PromoType3RulePromoProduct promoProduct : promoProducts) {
 			for (SalesInvoiceItem item : salesInvoice.getItems()) {
 				if (item.getProduct().getId().equals(promoProduct.getProduct().getId())) {
-					total = total.add(item.getAmount());
+					total = total.add(item.getNetAmount());
 				}
 			}
 		}
