@@ -71,7 +71,7 @@ public class PromoType3RuleTest {
 		
 		SalesInvoiceItem item = mock(SalesInvoiceItem.class);
 		when(item.getProduct()).thenReturn(product);
-		when(item.getAmount()).thenReturn(new BigDecimal("5000"));
+		when(item.getNetAmount()).thenReturn(new BigDecimal("5000"));
 
 		SalesInvoice salesInvoice = new SalesInvoice();
 		salesInvoice.setItems(Arrays.asList(item));
@@ -98,7 +98,7 @@ public class PromoType3RuleTest {
 		
 		SalesInvoiceItem item = mock(SalesInvoiceItem.class);
 		when(item.getProduct()).thenReturn(product);
-		when(item.getAmount()).thenReturn(new BigDecimal("1000"));
+		when(item.getNetAmount()).thenReturn(new BigDecimal("1000"));
 
 		SalesInvoice salesInvoice = new SalesInvoice();
 		salesInvoice.setItems(Arrays.asList(item));
@@ -118,15 +118,15 @@ public class PromoType3RuleTest {
 		
 		SalesInvoiceItem item = mock(SalesInvoiceItem.class);
 		when(item.getProduct()).thenReturn(product);
-		when(item.getAmount()).thenReturn(new BigDecimal("1000"));
+		when(item.getNetAmount()).thenReturn(new BigDecimal("1000"));
 
 		SalesInvoiceItem item2 = mock(SalesInvoiceItem.class);
 		when(item2.getProduct()).thenReturn(product);
-		when(item2.getAmount()).thenReturn(new BigDecimal("1000"));
+		when(item2.getNetAmount()).thenReturn(new BigDecimal("1000"));
 
 		SalesInvoiceItem item3 = mock(SalesInvoiceItem.class);
 		when(item3.getProduct()).thenReturn(new Product(2L));
-		when(item3.getAmount()).thenReturn(new BigDecimal("1000"));
+		when(item3.getNetAmount()).thenReturn(new BigDecimal("1000"));
 
 		SalesInvoice salesInvoice = new SalesInvoice();
 		salesInvoice.setItems(Arrays.asList(item, item2, item3));
