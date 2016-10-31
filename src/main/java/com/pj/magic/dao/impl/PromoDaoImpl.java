@@ -145,7 +145,7 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 	}
 
 	private static final String FIND_ALL_BY_ACTIVE_SQL = BASE_SELECT_SQL
-			+ " where a.ACTIVE_IND = ?";
+			+ " where a.ACTIVE_IND = ? order by PROMO_NO desc";
 	
 	@Override
 	public List<Promo> findAllByActive(boolean active) {
