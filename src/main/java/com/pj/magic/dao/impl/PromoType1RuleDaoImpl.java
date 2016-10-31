@@ -24,6 +24,7 @@ public class PromoType1RuleDaoImpl extends MagicDao implements PromoType1RuleDao
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PROMO_ID, TARGET_AMOUNT, a.MANUFACTURER_ID, PRODUCT_ID, UNIT, QUANTITY,"
+			+ " a.DAILY_REDEEM_LIMIT_PER_CUSTOMER,"
 			+ " b.NAME as MANUFACTURER_NAME,"
 			+ " c.CODE as PRODUCT_CODE, c.DESCRIPTION as PRODUCT_DESCRIPTION"
 			+ " from PROMO_TYPE_1_RULE a"
@@ -60,8 +61,8 @@ public class PromoType1RuleDaoImpl extends MagicDao implements PromoType1RuleDao
 
 	private static final String INSERT_SQL =
 			"insert into PROMO_TYPE_1_RULE"
-			+ " (PROMO_ID, TARGET_AMOUNT, MANUFACTURER_ID, PRODUCT_ID, UNIT, QUANTITY) values"
-			+ " (?, ?, ?, ?, ?, ?)";
+			+ " (PROMO_ID, TARGET_AMOUNT, MANUFACTURER_ID, PRODUCT_ID, UNIT, QUANTITY, DAILY_REDEEM_LIMIT_PER_CUSTOMER) values"
+			+ " (?, ?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final PromoType1Rule rule) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -77,6 +78,7 @@ public class PromoType1RuleDaoImpl extends MagicDao implements PromoType1RuleDao
 				ps.setLong(4, rule.getProduct().getId());
 				ps.setString(5, rule.getUnit());
 				ps.setInt(6, rule.getQuantity());
+				ps.setInt(7, rule.getDailyRedeemLimitPerCustomer());
 				return ps;
 			}
 
@@ -98,7 +100,7 @@ public class PromoType1RuleDaoImpl extends MagicDao implements PromoType1RuleDao
 
 	private static final String UPDATE_SQL = 
 			"update PROMO_TYPE_1_RULE set TARGET_AMOUNT = ?, MANUFACTURER_ID = ?,"
-			+ " PRODUCT_ID = ?, UNIT = ?, QUANTITY = ? where ID = ?";
+			+ " PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, DAILY_REDEEM_LIMIT_PER_CUSTOMER = ? where ID = ?";
 	
 	private void update(PromoType1Rule rule) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -107,6 +109,7 @@ public class PromoType1RuleDaoImpl extends MagicDao implements PromoType1RuleDao
 				rule.getProduct().getId(),
 				rule.getUnit(),
 				rule.getQuantity(),
+				rule.getDailyRedeemLimitPerCustomer(),
 				rule.getId());
 	}
 
@@ -131,6 +134,8 @@ public class PromoType1RuleDaoImpl extends MagicDao implements PromoType1RuleDao
 			product.setCode(rs.getString("PRODUCT_CODE"));
 			product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
 			rule.setProduct(product);
+			
+			rule.setDailyRedeemLimitPerCustomer(rs.getInt("DAILY_REDEEM_LIMIT_PER_CUSTOMER"));
 			
 			return rule;
 		}

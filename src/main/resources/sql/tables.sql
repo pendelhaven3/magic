@@ -947,6 +947,7 @@ create table PROMO_TYPE_1_RULE (
   PRODUCT_ID integer not null,
   UNIT char(3) not null,
   QUANTITY integer not null,
+  DAILY_REDEEM_LIMIT_PER_CUSTOMER integer(1) default 0 not null,
   primary key (ID),
   constraint PROMO_TYPE_1_RULE$FK foreign key (PROMO_ID) references PROMO (ID),
   constraint PROMO_TYPE_1_RULE$FK2 foreign key (MANUFACTURER_ID) references MANUFACTURER (ID),

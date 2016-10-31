@@ -11,7 +11,6 @@ import java.util.List;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.pj.magic.Constants;
-import com.pj.magic.util.FormatterUtil;
 
 public class Promo {
 
@@ -68,13 +67,7 @@ public class Promo {
 
 		switch (promoType) {
 		case PROMO_TYPE_1:
-			mechanics = "For every P{0} worth of {1} products, get {2} {3} {4}";
-			return MessageFormat.format(mechanics, FormatterUtil
-					.formatAmount(promoType1Rule.getTargetAmount()),
-					promoType1Rule.getManufacturer().getName(), promoType1Rule
-							.getQuantity().toString(),
-					promoType1Rule.getUnit(), promoType1Rule.getProduct()
-							.getDescription());
+			return promoType1Rule.getMechanicsDescription();
 		case PROMO_TYPE_2:
 			StringBuilder sb = new StringBuilder();
 			for (PromoType2Rule rule : promoType2Rules) {

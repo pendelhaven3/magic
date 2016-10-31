@@ -226,6 +226,13 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 			throw new NothingToRedeemException();
 		}
 		
+		if (rule.getDailyRedeemLimitPerCustomer() > 0) {
+			int redeemed = getNumberOfRedemptionsToday(promoRedemption.getPromo(), promoRedemption.getCustomer());
+			if (reward.getQuantity() > (rule.getDailyRedeemLimitPerCustomer() - redeemed)) {
+				reward.setQuantity(rule.getDailyRedeemLimitPerCustomer() - redeemed);
+			}
+		}
+		
 		Product product = productDao.get(rule.getProduct().getId());
 		if (product.getUnitQuantity(rule.getUnit()) < rule.getQuantity().intValue()) {
 			throw new NotEnoughStocksException();

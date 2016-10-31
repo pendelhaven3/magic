@@ -450,7 +450,21 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		List<SalesInvoice> selectedSalesInvoices = 
 				selectSalesInvoicesForPromoRedemptionDialog.getSelectedSalesInvoices();
 		if (!selectedSalesInvoices.isEmpty()) {
-			if (promoRedemption.getPromo().isPromoType3()) {
+			if (promoRedemption.getPromo().isPromoType1()) {
+				PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
+				if (rule.getDailyRedeemLimitPerCustomer() > 0) {
+					int redeemed = promoRedemptionService.getNumberOfRedemptionsToday(
+							promoRedemption.getPromo(), promoRedemption.getCustomer());
+					
+					if (redeemed == rule.getDailyRedeemLimitPerCustomer()) {
+						showErrorMessage("Customer has already redeemed the daily limit for this promo");
+						return;
+					} else if (redeemed > 0) {
+						showErrorMessage("Customer can redeem " + (rule.getDailyRedeemLimitPerCustomer() - redeemed) 
+								+ " more times for this day");
+					}
+				}
+			} else if (promoRedemption.getPromo().isPromoType1()) {
 				PromoType3Rule rule = promoRedemption.getPromo().getPromoType3Rule();
 				if (rule.getDailyRedeemLimitPerCustomer() > 0) {
 					int redeemed = promoRedemptionService.getNumberOfRedemptionsToday(
@@ -702,6 +716,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		private final String[] columnNames = {"Item Description", "Unit", "Quantity"};
 		
 		private PromoRedemption promoRedemption;
+		private PromoType1Rule promoType1Rule;
 		private PromoType3Rule promoType3Rule;
 		
 		@Override
@@ -804,7 +819,9 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		}
 
 		public Object getValueAtForPromoType1(int rowIndex, int columnIndex) {
-			PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
+			Promo promo = promoRedemption.getPromo();
+			PromoType1Rule rule = (promoType1Rule != null) ? promoType1Rule : promo.getPromoType1Rule();
+			
 			switch (columnIndex) {
 			case ITEM_DESCRIPTION_COLUMN_INDEX:
 				return rule.getProduct().getDescription();
@@ -828,9 +845,20 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		
 		public void setPromoRedemption(PromoRedemption promoRedemption) {
 			this.promoRedemption = promoRedemption;
+			promoType1Rule = null;
 			promoType3Rule = null;
 			
-			if (promoRedemption.getPromo().isPromoType3()) {
+			if (promoRedemption.getPromo().isPromoType1()) {
+				PromoType1Rule rule = promoRedemption.getPromo().getPromoType1Rule();
+				
+				if (rule.getDailyRedeemLimitPerCustomer() > 0) {
+					int redeemed = promoRedemptionService.getNumberOfRedemptionsToday(
+							promoRedemption.getPromo(), promoRedemption.getCustomer());
+					
+					promoType1Rule = (PromoType1Rule)ObjectUtils.clone(rule);
+					promoType1Rule.setDailyRedeemLimitPerCustomer(rule.getDailyRedeemLimitPerCustomer() - redeemed);
+				}
+			} else if (promoRedemption.getPromo().isPromoType3()) {
 				PromoType3Rule rule = promoRedemption.getPromo().getPromoType3Rule();
 				
 				if (rule.getDailyRedeemLimitPerCustomer() > 0) {

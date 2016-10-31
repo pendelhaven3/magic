@@ -480,6 +480,9 @@ public class PromoPanel extends StandardMagicPanel {
 			rule.setProduct(productService.findProductByCode(freeProductCodeField.getText()));
 			rule.setUnit((String)freeUnitComboBox.getSelectedItem());
 			rule.setQuantity(Integer.valueOf(freeQuantityField.getText()));
+			if (!StringUtils.isEmpty(dailyRedeemLimitPerCustomerField.getText())) {
+				rule.setDailyRedeemLimitPerCustomer(Integer.valueOf(dailyRedeemLimitPerCustomerField.getText()));
+			}
 			
 			try {
 				promoService.save(promo);
@@ -1032,8 +1035,17 @@ public class PromoPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		freeQuantityField.setPreferredSize(new Dimension(100, 25));
-		panel.add(freeQuantityField, c);
+		freeQuantityField.setPreferredSize(new Dimension(50, 25));
+		dailyRedeemLimitPerCustomerField.setPreferredSize(new Dimension(50, 25));
+		panel.add(ComponentUtil.createGenericPanel(
+				freeQuantityField,
+				Box.createHorizontalStrut(50),
+				new JLabel("Daily Redeem Limit Per Customer:"),
+				Box.createHorizontalStrut(30),
+				dailyRedeemLimitPerCustomerField,
+				Box.createHorizontalStrut(5),
+				new JLabel("(0 = No Limit)")
+		), c);
 		
 		currentRow++;
 		
@@ -1532,6 +1544,7 @@ public class PromoPanel extends StandardMagicPanel {
 			freeProductDescriptionLabel.setText(rule.getProduct().getDescription());
 			freeUnitComboBox.setSelectedItem(rule.getUnit());
 			freeQuantityField.setText(rule.getQuantity().toString());
+			dailyRedeemLimitPerCustomerField.setText(String.valueOf(rule.getDailyRedeemLimitPerCustomer()));
 		} else {
 			manufacturerComboBox.setSelectedIndex(0);
 			targetAmountField.setText(null);
@@ -1539,6 +1552,7 @@ public class PromoPanel extends StandardMagicPanel {
 			freeProductDescriptionLabel.setText(null);
 			freeUnitComboBox.setSelectedItem(null);
 			freeQuantityField.setText(null);
+			dailyRedeemLimitPerCustomerField.setText(null);
 		}
 	}
 
