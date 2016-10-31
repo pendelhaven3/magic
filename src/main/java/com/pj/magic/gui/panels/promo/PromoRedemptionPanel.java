@@ -22,6 +22,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -449,6 +450,22 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		List<SalesInvoice> selectedSalesInvoices = 
 				selectSalesInvoicesForPromoRedemptionDialog.getSelectedSalesInvoices();
 		if (!selectedSalesInvoices.isEmpty()) {
+			if (promoRedemption.getPromo().isPromoType3()) {
+				PromoType3Rule rule = promoRedemption.getPromo().getPromoType3Rule();
+				if (rule.getDailyRedeemLimitPerCustomer() > 0) {
+					int redeemed = promoRedemptionService.getNumberOfRedemptionsToday(
+							promoRedemption.getPromo(), promoRedemption.getCustomer());
+					
+					if (redeemed == rule.getDailyRedeemLimitPerCustomer()) {
+						showErrorMessage("Customer has already redeemed the daily limit for this promo");
+						return;
+					} else if (redeemed > 0) {
+						showErrorMessage("Customer can redeem " + (rule.getDailyRedeemLimitPerCustomer() - redeemed) 
+								+ " more times for this day");
+					}
+				}
+			}
+			
 			for (SalesInvoice salesInvoice : selectedSalesInvoices) {
 				PromoRedemptionSalesInvoice redemptionSalesInvoice = new PromoRedemptionSalesInvoice();
 				redemptionSalesInvoice.setParent(promoRedemption);
@@ -685,6 +702,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		private final String[] columnNames = {"Item Description", "Unit", "Quantity"};
 		
 		private PromoRedemption promoRedemption;
+		private PromoType3Rule promoType3Rule;
 		
 		@Override
 		public String getColumnName(int column) {
@@ -742,7 +760,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		
 		public Object getValueAtForPromoType3(int rowIndex, int columnIndex) {
 			Promo promo = promoRedemption.getPromo();
-			PromoType3Rule rule = promo.getPromoType3Rule();
+			PromoType3Rule rule = (promoType3Rule != null) ? promoType3Rule : promo.getPromoType3Rule();
 			
 			switch (columnIndex) {
 			case ITEM_DESCRIPTION_COLUMN_INDEX:
@@ -750,11 +768,15 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			case UNIT_COLUMN_INDEX:
 				return rule.getFreeUnit();
 			case QUANTITY_COLUMN_INDEX:
-				PromoRedemptionReward reward = promoRedemption.getFreeQuantity(rule);
-				if (reward != null) {
-					return reward.getQuantity();
+				if (promoRedemption.isPosted()) {
+					return promoRedemption.getRewards().get(0).getQuantity();
 				} else {
-					return 0;
+					PromoRedemptionReward reward = rule.evaluate(promoRedemption.getSalesInvoices());
+					if (reward != null) {
+						return reward.getQuantity();
+					} else {
+						return 0;
+					}
 				}
 			default:
 				return null;
@@ -806,6 +828,20 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 		
 		public void setPromoRedemption(PromoRedemption promoRedemption) {
 			this.promoRedemption = promoRedemption;
+			promoType3Rule = null;
+			
+			if (promoRedemption.getPromo().isPromoType3()) {
+				PromoType3Rule rule = promoRedemption.getPromo().getPromoType3Rule();
+				
+				if (rule.getDailyRedeemLimitPerCustomer() > 0) {
+					int redeemed = promoRedemptionService.getNumberOfRedemptionsToday(
+							promoRedemption.getPromo(), promoRedemption.getCustomer());
+					
+					promoType3Rule = (PromoType3Rule)ObjectUtils.clone(rule);
+					promoType3Rule.setDailyRedeemLimitPerCustomer(rule.getDailyRedeemLimitPerCustomer() - redeemed);
+				}
+			}
+			
 			fireTableDataChanged();
 		}
 		

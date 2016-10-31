@@ -30,6 +30,7 @@ import com.pj.magic.model.PromoType;
 import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.service.impl.PromoService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.HtmlUtil;
 
 @Component
@@ -38,6 +39,7 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 	private static final int PROMO_REDEMPTION_NUMBER_COLUMN_INDEX = 0;
 	private static final int CUSTOMER_COLUMN_INDEX = 1;
 	private static final int STATUS_COLUMN_INDEX = 2;
+	private static final int POST_DATE_COLUMN_INDEX = 3;
 	
 	@Autowired private PromoRedemptionService promoRedemptionService;
 	@Autowired private PromoService promoService;
@@ -199,7 +201,7 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 	
 	private class PromoRedemptionsTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"Promo Redemption No.", "Customer", "Status"};
+		private final String[] columnNames = {"Promo Redemption No.", "Customer", "Status", "Post Date"};
 
 		private List<PromoRedemption> promoRedemptions = new ArrayList<>();
 		
@@ -237,6 +239,8 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 				return promoRedemption.getCustomer().getName();
 			case STATUS_COLUMN_INDEX:
 				return promoRedemption.getStatus();
+			case POST_DATE_COLUMN_INDEX:
+				return promoRedemption.isPosted() ? FormatterUtil.formatDate(promoRedemption.getPostDate()) : null;
 			default:
 				return null;
 			}

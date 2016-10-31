@@ -207,6 +207,11 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
 		sql.append(" where 1 = 1");
 		
+		if (criteria.getPromo() != null) {
+			sql.append(" and PROMO_ID = ?");
+			params.add(criteria.getPromo().getId());
+		}
+		
 		if (criteria.getPosted() != null) {
 			sql.append(" and POST_IND = ?");
 			params.add(criteria.getPosted() ? "Y" : "N");

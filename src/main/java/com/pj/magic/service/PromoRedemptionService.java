@@ -46,4 +46,6 @@ public interface PromoRedemptionService {
 
 	List<PromoRedemption> search(PromoRedemptionSearchCriteria promoRedemptionCriteria);
 	
+	int getNumberOfRedemptionsToday(Promo promo, Customer customer);
+	
 }

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType;
 import com.pj.magic.model.SalesInvoice;
 
@@ -17,6 +18,7 @@ public class PromoRedemptionSearchCriteria {
 	private Date postDateTo;
 	private Boolean cancelled;
 	private List<PromoType> promoTypes;
+	private Promo promo;
 
 	public SalesInvoice getSalesInvoice() {
 		return salesInvoice;
@@ -80,6 +82,14 @@ public class PromoRedemptionSearchCriteria {
 
 	public void setPromoTypes(List<PromoType> promoTypes) {
 		this.promoTypes = promoTypes;
+	}
+
+	public Promo getPromo() {
+		return promo;
+	}
+
+	public void setPromo(Promo promo) {
+		this.promo = promo;
 	}
 
 }

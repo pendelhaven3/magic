@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +99,7 @@ public class PromoPanel extends StandardMagicPanel {
 	private EllipsisButton selectProductButton;
 	private JComboBox<String> freeUnitComboBox;
 	private MagicTextField freeQuantityField;
+	private MagicTextField dailyRedeemLimitPerCustomerField;
 	private MagicTextField rebateField;
 	private MagicButton saveButton;
 	private JButton addRuleButton;
@@ -154,6 +156,9 @@ public class PromoPanel extends StandardMagicPanel {
 		
 		freeQuantityField = new MagicTextField();
 		freeQuantityField.setNumbersOnly(true);
+		
+		dailyRedeemLimitPerCustomerField = new MagicTextField();
+		dailyRedeemLimitPerCustomerField.setNumbersOnly(true);
 		
 		pricingSchemeComboBox = new JComboBox<>();
 		
@@ -331,6 +336,9 @@ public class PromoPanel extends StandardMagicPanel {
 			rule.setFreeProduct(productService.findProductByCode(freeProductCodeField.getText()));
 			rule.setFreeUnit((String)freeUnitComboBox.getSelectedItem());
 			rule.setFreeQuantity(Integer.valueOf(freeQuantityField.getText()));
+			if (!StringUtils.isEmpty(dailyRedeemLimitPerCustomerField.getText())) {
+				rule.setDailyRedeemLimitPerCustomer(Integer.valueOf(dailyRedeemLimitPerCustomerField.getText()));
+			}
 			
 			try {
 				promoService.save(promo);
@@ -578,7 +586,7 @@ public class PromoPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		nameField.setPreferredSize(new Dimension(200, 25));
+		nameField.setPreferredSize(new Dimension(300, 25));
 		mainPanel.add(nameField, c);
 		
 		currentRow++;
@@ -791,8 +799,17 @@ public class PromoPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		freeQuantityField.setPreferredSize(new Dimension(100, 25));
-		panel.add(freeQuantityField, c);
+		freeQuantityField.setPreferredSize(new Dimension(50, 25));
+		dailyRedeemLimitPerCustomerField.setPreferredSize(new Dimension(50, 25));
+		panel.add(ComponentUtil.createGenericPanel(
+				freeQuantityField,
+				Box.createHorizontalStrut(50),
+				new JLabel("Daily Redeem Limit Per Customer:"),
+				Box.createHorizontalStrut(30),
+				dailyRedeemLimitPerCustomerField,
+				Box.createHorizontalStrut(5),
+				new JLabel("(0 = No Limit)")
+		), c);
 		
 		currentRow++;
 		
@@ -1467,6 +1484,7 @@ public class PromoPanel extends StandardMagicPanel {
 			freeProductDescriptionLabel.setText(rule.getFreeProduct().getDescription());
 			freeUnitComboBox.setSelectedItem(rule.getFreeUnit());
 			freeQuantityField.setText(rule.getFreeQuantity().toString());
+			dailyRedeemLimitPerCustomerField.setText(String.valueOf(rule.getDailyRedeemLimitPerCustomer()));
 			promoType3RulePromoProductsTable.setRule(rule);
 			addType3PromoProductButton.setEnabled(true);
 			removeType3PromoProductButton.setEnabled(true);
@@ -1478,6 +1496,7 @@ public class PromoPanel extends StandardMagicPanel {
 			freeProductDescriptionLabel.setText(null);
 			freeUnitComboBox.setSelectedItem(null);
 			freeQuantityField.setText(null);
+			dailyRedeemLimitPerCustomerField.setText(null);
 			promoType3RulePromoProductsTable.clear();
 			addType3PromoProductButton.setEnabled(false);
 			removeType3PromoProductButton.setEnabled(false);

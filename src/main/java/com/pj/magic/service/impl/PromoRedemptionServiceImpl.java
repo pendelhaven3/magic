@@ -2,6 +2,7 @@ package com.pj.magic.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -164,9 +165,18 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		promoRedemption.validateSalesInvoicesPricingScheme();
 		
 		PromoType3Rule rule = promoRedemption.getPromo().getPromoType3Rule();
+		
 		PromoRedemptionReward reward = rule.evaluate(promoRedemption.getSalesInvoices());
 		if (reward != null) {
 			int freeQuantity = reward.getQuantity().intValue();
+			
+			if (rule.getDailyRedeemLimitPerCustomer() > 0) {
+				int redeemed = getNumberOfRedemptionsToday(promoRedemption.getPromo(), promoRedemption.getCustomer());
+				if (freeQuantity > (rule.getDailyRedeemLimitPerCustomer() - redeemed)) {
+					freeQuantity = (rule.getDailyRedeemLimitPerCustomer() - redeemed);
+				}
+			}
+			
 			Product product = productDao.get(rule.getFreeProduct().getId());
 			
 			if (product.getUnitQuantity(rule.getFreeUnit()) < freeQuantity) {
@@ -413,6 +423,22 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 			product.addUnitQuantity(reward.getUnit(), reward.getQuantity());
 			productDao.updateAvailableQuantities(product);
 		}
+	}
+
+	@Override
+	public int getNumberOfRedemptionsToday(Promo promo, Customer customer) {
+		PromoRedemptionSearchCriteria criteria = new PromoRedemptionSearchCriteria();
+		criteria.setPromo(promo);
+		criteria.setCustomer(customer);
+		criteria.setPostDateFrom(new Date());
+		
+		return search(criteria).stream()
+			.mapToInt(promoRedemption -> {
+				return promoRedemption.getRewards().stream()
+						.mapToInt(reward -> reward.getQuantity())
+						.sum();
+			})
+			.sum();
 	}
 
 }

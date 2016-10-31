@@ -90,12 +90,7 @@ public class Promo {
 			}
 			return sb.toString();
 		case PROMO_TYPE_3:
-			mechanics = "Buy {0} worth of participating products, get {1} {2} {3} free";
-			return MessageFormat.format(mechanics, FormatterUtil
-					.formatAmount(promoType3Rule.getTargetAmount()),
-					promoType3Rule.getFreeQuantity().toString(), promoType3Rule
-							.getFreeUnit(), promoType3Rule.getFreeProduct()
-							.getDescription());
+			return promoType3Rule.getMechanicsDescription();
 		case PROMO_TYPE_5:
 			return promoType5Rule.getMechanicsDescription();
 		default:

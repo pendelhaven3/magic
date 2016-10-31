@@ -23,6 +23,7 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PROMO_ID, TARGET_AMOUNT, FREE_PRODUCT_ID, FREE_UNIT, FREE_QUANTITY,"
+			+ " a.DAILY_REDEEM_LIMIT_PER_CUSTOMER,"
 			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
 			+ " from PROMO_TYPE_3_RULE a"
 			+ " join PRODUCT b"
@@ -41,7 +42,7 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 
 	private static final String INSERT_SQL =
 			"insert into PROMO_TYPE_3_RULE (PROMO_ID, TARGET_AMOUNT, FREE_PRODUCT_ID, FREE_UNIT,"
-			+ " FREE_QUANTITY) values (?, ?, ?, ?, ?)";
+			+ " FREE_QUANTITY, DAILY_REDEEM_LIMIT_PER_CUSTOMER) values (?, ?, ?, ?, ?, ?)";
 	
 	private void insert(final PromoType3Rule rule) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -56,6 +57,7 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 				ps.setLong(3, rule.getFreeProduct().getId());
 				ps.setString(4, rule.getFreeUnit());
 				ps.setInt(5, rule.getFreeQuantity());
+				ps.setInt(6, rule.getDailyRedeemLimitPerCustomer());
 				return ps;
 			}
 
@@ -77,7 +79,7 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 
 	private static final String UPDATE_SQL =
 			"update PROMO_TYPE_3_RULE set TARGET_AMOUNT = ?, FREE_PRODUCT_ID = ?, FREE_UNIT = ?,"
-			+ " FREE_QUANTITY = ? where ID = ?";
+			+ " FREE_QUANTITY = ?, DAILY_REDEEM_LIMIT_PER_CUSTOMER = ? where ID = ?";
 	
 	private void update(PromoType3Rule rule) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -85,6 +87,7 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 				rule.getFreeProduct().getId(),
 				rule.getFreeUnit(),
 				rule.getFreeQuantity(),
+				rule.getDailyRedeemLimitPerCustomer(),
 				rule.getId());
 	}
 
@@ -105,6 +108,7 @@ public class PromoType3RuleDaoImpl extends MagicDao implements PromoType3RuleDao
 			
 			rule.setFreeUnit(rs.getString("FREE_UNIT"));
 			rule.setFreeQuantity(rs.getInt("FREE_QUANTITY"));
+			rule.setDailyRedeemLimitPerCustomer(rs.getInt("DAILY_REDEEM_LIMIT_PER_CUSTOMER"));
 			
 			return rule;
 		}
