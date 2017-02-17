@@ -30,6 +30,7 @@ import com.pj.magic.service.ExcelService;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.ExcelUtil;
 import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.ListUtil;
 
@@ -300,9 +301,11 @@ public class StockOfftakeReportPanel extends StandardMagicPanel {
 		StockOfftakeReport report = doGenerateReport();
 		tableModel.setItems(report.getItems());
 		
+		File file = saveFileChooser.getSelectedFile();
+		
 		try (
 			Workbook workbook = excelService.generateSpreadsheet(report);
-			FileOutputStream out = new FileOutputStream(saveFileChooser.getSelectedFile());
+			FileOutputStream out = new FileOutputStream(file);
 		) {
 			workbook.write(out);
 		} catch (IOException e) {
@@ -310,7 +313,17 @@ public class StockOfftakeReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-		showMessage("Excel spreadsheet generated");
+		if (confirm("Excel file generated.\nDo you wish to open the file?")) {
+			openExcelFile(file);
+		}
+	}
+
+	private void openExcelFile(File file) {
+		try {
+			ExcelUtil.openExcelFile(file);
+		} catch (IOException e) {
+			showMessageForUnexpectedError();
+		}
 	}
 
 	private MagicFileChooser createSaveFileChooser() {
