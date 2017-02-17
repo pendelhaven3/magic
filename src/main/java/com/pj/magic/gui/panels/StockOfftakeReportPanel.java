@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -32,6 +33,7 @@ import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.ExcelUtil;
 import com.pj.magic.util.FileUtil;
+import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.ListUtil;
 
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
@@ -330,8 +332,20 @@ public class StockOfftakeReportPanel extends StandardMagicPanel {
 		MagicFileChooser fileChooser = new MagicFileChooser();
 		fileChooser.setCurrentDirectory(FileUtil.getDesktopFolderPathAsFile());
 		fileChooser.setFileFilter(ExcelFileFilter.getInstance());
-		fileChooser.setSelectedFile(new File("stockOfftakeReport.xlsx"));
+		fileChooser.setSelectedFile(new File(constructDefaultExcelFileName()));
 		return fileChooser;
+	}
+
+	private String constructDefaultExcelFileName() {
+		Manufacturer manufacturer = (Manufacturer)manufacturerComboBox.getSelectedItem();
+		Date date = toDateModel.getValue().getTime();
+		
+		return new StringBuilder()
+				.append(manufacturer.getName())
+				.append(" - ")
+				.append(FormatterUtil.formatDateInFilename(date))
+				.append(".xlsx")
+				.toString();
 	}
 	
 }
