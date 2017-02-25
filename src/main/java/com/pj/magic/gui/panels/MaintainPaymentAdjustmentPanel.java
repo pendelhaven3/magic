@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.exception.PaymentAdjustmentAlreadyUsedException;
 import com.pj.magic.exception.ValidationException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
@@ -68,6 +69,7 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 	private JLabel paymentNumberLabel;
 	private JButton saveButton;
 	private JButton postButton;
+	private JButton unpostButton;
 	private JButton markAsPaidButton;
 	
 	@Override
@@ -420,6 +422,7 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		}
 		saveButton.setEnabled(!posted);
 		postButton.setEnabled(!posted);
+		unpostButton.setEnabled(posted);
 		selectCustomerButton.setEnabled(!posted);
 		markAsPaidButton.setEnabled(posted && !paymentAdjustment.isPaid());
 	}
@@ -438,6 +441,7 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		remarksField.setText(null);
 		saveButton.setEnabled(true);
 		postButton.setEnabled(false);
+		unpostButton.setEnabled(false);
 		selectCustomerButton.setEnabled(true);
 		markAsPaidButton.setEnabled(false);
 	}
@@ -459,6 +463,10 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		});
 		
 		toolBar.add(postButton);
+		
+		unpostButton = new MagicToolBarButton("unpost", "Unpost");
+		unpostButton.addActionListener(e -> unpostPaymentAdjustment());
+		toolBar.add(unpostButton);
 		
 		markAsPaidButton = new MagicToolBarButton("coins", "Mark As Paid");
 		markAsPaidButton.addActionListener(new ActionListener() {
@@ -508,4 +516,19 @@ public class MaintainPaymentAdjustmentPanel extends StandardMagicPanel {
 		}
 	}
 
+	private void unpostPaymentAdjustment() {
+		if (confirm("Unpost Payment Adjustment?")) {
+			try {
+				paymentAdjustmentService.unpost(paymentAdjustment);
+				showMessage("Payment Adjustment unposted");
+				updateDisplay(paymentAdjustment);
+			} catch (PaymentAdjustmentAlreadyUsedException e) {
+				showMessage("Cannot unpost. Payment Adjustment already used by Payment No. " + e.getPayment().getPaymentNumber());
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showErrorMessage("Unexpected error occurred during posting!");
+			}
+		}
+	}
+	
 }

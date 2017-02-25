@@ -176,6 +176,17 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 			+ "  and si.SALES_INVOICE_NO = ?"
 			+ ")";
 	
+	private static final String CONTAINS_PAYMENT_ADJUSTMENT_NUMBER_WHERE_CLAUSE =
+			" and exists("
+			+ "  select *"
+			+ "  from PAYMENT_PAYMENT_ADJUSTMENT ppa"
+			+ "  join ADJUSTMENT_TYPE at"
+			+ "    on at.ID = ppa.ADJUSTMENT_TYPE_ID"
+			+ "  where ppa.PAYMENT_ID = a.ID"
+			+ "  and at.CODE not in ('BSR', 'NMS', 'SR')"
+			+ "  and ppa.REFERENCE_NO = ?"
+			+ ")";
+	
 	@Override
 	public List<Payment> search(PaymentSearchCriteria criteria) {
 		List<Object> params = new ArrayList<>();
@@ -211,6 +222,11 @@ public class PaymentDaoImpl extends MagicDao implements PaymentDao {
 		if (criteria.getSalesInvoiceNumber() != null) {
 			sql.append(CONTAINS_SALES_INVOICE_NUMBER_WHERE_CLAUSE);
 			params.add(criteria.getSalesInvoiceNumber());
+		}
+		
+		if (criteria.getPaymentAdjustmentNumber() != null) {
+			sql.append(CONTAINS_PAYMENT_ADJUSTMENT_NUMBER_WHERE_CLAUSE);
+			params.add(criteria.getPaymentAdjustmentNumber());
 		}
 		
 		sql.append(" order by a.PAYMENT_NO desc");

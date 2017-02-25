@@ -8,12 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.pj.magic.dao.PaymentAdjustmentDao;
+import com.pj.magic.dao.PaymentDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
 import com.pj.magic.dao.SystemDao;
+import com.pj.magic.exception.PaymentAdjustmentAlreadyUsedException;
+import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentTerminalAssignment;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PaymentAdjustmentSearchCriteria;
+import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentAdjustmentService;
 
@@ -24,6 +28,7 @@ public class PaymentAdjustmentServiceImpl implements PaymentAdjustmentService {
 	@Autowired private LoginService loginService;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	@Autowired private SystemDao systemDao;
+	@Autowired private PaymentDao paymentDao;
 	
 	@Transactional
 	@Override
@@ -84,6 +89,24 @@ public class PaymentAdjustmentServiceImpl implements PaymentAdjustmentService {
 		criteria.setPaid(false);
 		
 		return search(criteria);
+	}
+
+	@Transactional
+	@Override
+	public void unpost(PaymentAdjustment paymentAdjustment) throws PaymentAdjustmentAlreadyUsedException {
+		PaymentSearchCriteria criteria = new PaymentSearchCriteria();
+		criteria.setPaymentAdjustmentNumber(paymentAdjustment.getPaymentAdjustmentNumber());
+		
+		List<Payment> payments = paymentDao.search(criteria);
+		if (!payments.isEmpty()) {
+			throw new PaymentAdjustmentAlreadyUsedException(paymentAdjustment, payments.get(0));
+		}
+		
+		PaymentAdjustment updated = paymentAdjustmentDao.get(paymentAdjustment.getId());
+		updated.setPosted(false);
+		updated.setPostDate(null);
+		updated.setPostedBy(null);
+		paymentAdjustmentDao.save(updated);
 	}
 
 }

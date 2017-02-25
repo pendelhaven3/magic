@@ -2,6 +2,7 @@ package com.pj.magic.service;
 
 import java.util.List;
 
+import com.pj.magic.exception.PaymentAdjustmentAlreadyUsedException;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.search.PaymentAdjustmentSearchCriteria;
 
@@ -22,5 +23,7 @@ public interface PaymentAdjustmentService {
 	List<PaymentAdjustment> search(PaymentAdjustmentSearchCriteria criteria);
 
 	List<PaymentAdjustment> getUnpaidPaymentAdjustments();
+
+	void unpost(PaymentAdjustment paymentAdjustment) throws PaymentAdjustmentAlreadyUsedException;
 	
 }
