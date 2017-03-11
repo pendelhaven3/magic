@@ -21,19 +21,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DatePickerFormatter;
+import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.MagicListTable;
+import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.ProductPriceHistory;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.report.PriceChangesReport;
 import com.pj.magic.model.search.ProductPriceHistorySearchCriteria;
+import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.ProductPriceService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.ListUtil;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -53,17 +57,20 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	@Autowired private ProductPriceService productPriceService;
+	@Autowired private PricingSchemeService pricingSchemeService;
 	
 	private MagicListTable table;
 	private PriceChangesTableModel tableModel;
 	private UtilCalendarModel fromDateModel;
 	private UtilCalendarModel toDateModel;
+	private MagicComboBox<PricingScheme> pricingSchemeComboBox;
 	private JButton generateButton;
 	
 	@Override
 	protected void initializeComponents() {
 		fromDateModel = new UtilCalendarModel();
 		toDateModel = new UtilCalendarModel();
+		pricingSchemeComboBox = new MagicComboBox<>();
 		
 		generateButton = new JButton("Generate Report");
 		generateButton.addActionListener(new ActionListener() {
@@ -96,6 +103,7 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 		ProductPriceHistorySearchCriteria criteria = new ProductPriceHistorySearchCriteria();
 		criteria.setFromDate(fromDateModel.getValue().getTime());
 		criteria.setToDate(toDateModel.getValue().getTime());
+		criteria.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
 		
 		return productPriceService.searchProductPriceHistories(criteria);
 	}
@@ -129,6 +137,10 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 		fromDateModel.setValue(cal);
 		toDateModel.setValue(cal);
 		tableModel.clear();
+		
+		pricingSchemeComboBox.setModel(
+				ListUtil.toDefaultComboBoxModel(pricingSchemeService.getAllPricingSchemes()));
+		pricingSchemeComboBox.setSelectedItem(0);
 	}
 
 	@Override
@@ -187,6 +199,20 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.weightx = 1.0;
 		mainPanel.add(Box.createGlue(), c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Pricing Scheme:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(pricingSchemeComboBox, c);
 		
 		currentRow++;
 		

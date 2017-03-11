@@ -144,6 +144,11 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
+		if (criteria.getPricingScheme() != null) {
+			sql.append(" and a.PRICING_SCHEME_ID = ?");
+			params.add(criteria.getPricingScheme().getId());
+		}
+		
 		sql.append(" order by c.DESCRIPTION");
 		
 		return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
