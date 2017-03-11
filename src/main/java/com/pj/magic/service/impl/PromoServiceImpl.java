@@ -18,6 +18,7 @@ import com.pj.magic.dao.PromoType4RuleDao;
 import com.pj.magic.dao.PromoType4RulePromoProductDao;
 import com.pj.magic.dao.PromoType5RuleDao;
 import com.pj.magic.dao.PromoType5RulePromoProductDao;
+import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PromoType3Rule;
@@ -222,6 +223,12 @@ public class PromoServiceImpl implements PromoService {
 	@Override
 	public void removeAllPromoProducts(PromoType5Rule rule) {
 		promoType5RulePromoProductDao.deleteAllByRule(rule);
+	}
+
+	@Override
+	public void addAllPromoProductsByManufacturer(PromoType4Rule rule, Manufacturer manufacturer) {
+		removeAllPromoProducts(rule);
+		promoType4RuleDao.addAllPromoProductsByManufacturer(rule, manufacturer);
 	}
 
 }

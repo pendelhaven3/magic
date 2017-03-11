@@ -38,6 +38,7 @@ import com.pj.magic.gui.component.MagicButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SelectManufacturerDialog;
 import com.pj.magic.gui.dialog.SelectProductDialog;
 import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.PromoType2RulesTable;
@@ -78,6 +79,7 @@ public class PromoPanel extends StandardMagicPanel {
 	@Autowired private ManufacturerService manufacturerService;
 	@Autowired private PricingSchemeService pricingSchemeService;
 	@Autowired private SelectProductDialog selectProductDialog;
+	@Autowired private SelectManufacturerDialog selectManufacturerDialog;
 	@Autowired private PromoType2RulesTable promoType2RulesTable;
 	@Autowired private PromoType3RulePromoProductsTable promoType3RulePromoProductsTable;
 	@Autowired private PromoType4RulePromoProductsTable promoType4RulePromoProductsTable;
@@ -112,6 +114,7 @@ public class PromoPanel extends StandardMagicPanel {
 	private JButton removeType4PromoProductButton;
 	private JButton addAllType4PromoProductButton;
 	private JButton removeAllType4PromoProductButton;
+	private JButton addAllType4PromoProductByManufacturerButton;
 	private JButton addType5PromoProductButton;
 	private JButton removeType5PromoProductButton;
 	private JButton addAllType5PromoProductButton;
@@ -1174,6 +1177,7 @@ public class PromoPanel extends StandardMagicPanel {
 			removeType4PromoProductButton.setEnabled(true);
 			addAllType4PromoProductButton.setEnabled(true);
 			removeType4PromoProductButton.setEnabled(true);
+			addAllType4PromoProductByManufacturerButton.setEnabled(true);
 		} else {
 			targetAmountField.setText(null);
 			promoType4RulePromoProductsTable.clear();
@@ -1181,6 +1185,7 @@ public class PromoPanel extends StandardMagicPanel {
 			removeType4PromoProductButton.setEnabled(false);
 			addAllType4PromoProductButton.setEnabled(false);
 			removeAllType4PromoProductButton.setEnabled(false);
+			addAllType4PromoProductByManufacturerButton.setEnabled(false);
 		}
 	}
 
@@ -1279,6 +1284,16 @@ public class PromoPanel extends StandardMagicPanel {
 		});
 		panel.add(removeAllType4PromoProductButton, BorderLayout.WEST);
 		
+		addAllType4PromoProductByManufacturerButton = new MagicToolBarButton("add_all_by_manufacturer", "Add All Promo Product By Manufacturer", true);
+		addAllType4PromoProductByManufacturerButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addAllType4PromoProductByManufacturer();
+			}
+		});
+		panel.add(addAllType4PromoProductByManufacturerButton, BorderLayout.WEST);
+		
 		return panel;
 	}
 
@@ -1311,6 +1326,25 @@ public class PromoPanel extends StandardMagicPanel {
 		promoType4RulePromoProductsTable.removeCurrentlySelectedPromoProduct();
 	}
 
+	private void addAllType4PromoProductByManufacturer() {
+		selectManufacturerDialog.searchManufacturers();
+		selectManufacturerDialog.setVisible(true);
+		
+		Manufacturer manufacturer = selectManufacturerDialog.getSelectedManufacturer();
+		if (manufacturer != null) {
+			if (confirm("Add all products by " + manufacturer.getName() + " to promo?")) {
+				try {
+					promoService.addAllPromoProductsByManufacturer(promo.getPromoType4Rule(), manufacturer);
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
+					showMessageForUnexpectedError();
+					return;
+				}
+				updateDisplay(promo);
+			}
+		}
+	}
+	
 	private void addType4PromoProduct() {
 		promoType4RulePromoProductsTable.addNewRow();
 	}

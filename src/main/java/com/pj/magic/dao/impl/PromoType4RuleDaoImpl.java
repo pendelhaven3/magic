@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PromoType4RuleDao;
+import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType4Rule;
 
@@ -108,6 +109,16 @@ public class PromoType4RuleDaoImpl extends MagicDao implements PromoType4RuleDao
 	@Override
 	public void addAllPromoProducts(PromoType4Rule rule) {
 		getJdbcTemplate().update(ADD_ALL_PRODUCTS_TO_PROMO_TYPE_4, rule.getId());
+	}
+
+	private static final String ADD_ALL_PRODUCTS_BY_MANUFACTURER_TO_PROMO_TYPE_4 = 
+			"insert into PROMO_TYPE_4_RULE_PROMO_PRODUCT"
+			+ " (PROMO_TYPE_4_RULE_ID, PRODUCT_ID)"
+			+ " select ?, ID from PRODUCT where ACTIVE_IND = 'Y' and MANUFACTURER_ID = ?";
+	
+	@Override
+	public void addAllPromoProductsByManufacturer(PromoType4Rule rule, Manufacturer manufacturer) {
+		getJdbcTemplate().update(ADD_ALL_PRODUCTS_BY_MANUFACTURER_TO_PROMO_TYPE_4, rule.getId(), manufacturer.getId());
 	}
 	
 }
