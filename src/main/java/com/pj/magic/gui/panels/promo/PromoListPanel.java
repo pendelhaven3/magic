@@ -19,10 +19,13 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SearchPromosDialog;
 import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Promo;
+import com.pj.magic.model.search.PromoSearchCriteria;
 import com.pj.magic.service.impl.PromoService;
+import com.pj.magic.util.FormatterUtil;
 
 @Component
 public class PromoListPanel extends StandardMagicPanel {
@@ -30,14 +33,17 @@ public class PromoListPanel extends StandardMagicPanel {
 	private static final int PROMO_NUMBER_COLUMN_INDEX = 0;
 	private static final int NAME_COLUMN_INDEX = 1;
 	private static final int ACTIVE_COLUMN_INDEX = 2;
+	private static final int START_DATE_COLUMN_INDEX = 3;
+	private static final int END_DATE_COLUMN_INDEX = 4;
 	
 	@Autowired private PromoService promoService;
+	@Autowired private SearchPromosDialog searchPromosDialog;
 	
 	private MagicListTable table;
 	private PromosTableModel tableModel;
 	
 	public void updateDisplay() {
-		List<Promo> promos = promoService.getAllPromos();
+		List<Promo> promos = promoService.getAllActivePromos();
 		tableModel.setPromos(promos);
 		if (!promos.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
@@ -115,11 +121,31 @@ public class PromoListPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(postButton);
+		
+		JButton searchButton = new MagicToolBarButton("search", "Search");
+		searchButton.addActionListener(e -> searchPromos());
+		toolBar.add(searchButton);
+	}
+	
+	private void searchPromos() {
+		searchPromosDialog.setVisible(true);
+		
+		PromoSearchCriteria criteria = searchPromosDialog.getSearchCriteria();
+		if (criteria != null) {
+			List<Promo> promos = promoService.search(criteria);
+			tableModel.setPromos(promos);
+			if (!promos.isEmpty()) {
+				table.changeSelection(0, 0, false, false);
+				table.requestFocusInWindow();
+			} else {
+				showMessage("No matching records");
+			}
+		}
 	}
 	
 	private class PromosTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"Promo No.", "Name", "Active?"};
+		private final String[] columnNames = {"Promo No.", "Name", "Active?", "Start Date", "End Date"};
 
 		private List<Promo> promos = new ArrayList<>();
 		
@@ -157,6 +183,10 @@ public class PromoListPanel extends StandardMagicPanel {
 				return promo.getName();
 			case ACTIVE_COLUMN_INDEX:
 				return promo.isActive() ? "Yes" : "No";
+			case START_DATE_COLUMN_INDEX:
+				return promo.getStartDate() != null ? FormatterUtil.formatDate(promo.getStartDate()) : null;
+			case END_DATE_COLUMN_INDEX:
+				return promo.getEndDate() != null ? FormatterUtil.formatDate(promo.getEndDate()) : null;
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}

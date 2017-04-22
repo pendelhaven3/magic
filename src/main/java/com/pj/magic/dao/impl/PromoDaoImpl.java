@@ -197,6 +197,16 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 			params.add(criteria.getActive() ? "Y" : "N");
 		}
 		
+		if (criteria.getStartDate() != null) {
+			sql.append(" and a.START_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getStartDate()));
+		}
+		
+		if (criteria.getEndDate() != null) {
+			sql.append(" and ? <= a.END_DT");
+			params.add(DbUtil.toMySqlDateString(criteria.getEndDate()));
+		}
+		
 		sql.append(" order by PROMO_NO desc");
 		
 		return getJdbcTemplate().query(sql.toString(), promoRowMapper, params.toArray());

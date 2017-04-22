@@ -13,6 +13,8 @@ public class PromoSearchCriteria {
 	private Boolean active;
 	private PricingScheme acceptedPricingScheme;
 	private List<PromoType> promoTypes;
+	private Date startDate;
+	private Date endDate;
 	
 	public PromoType getPromoType() {
 		return promoType;
@@ -55,6 +57,22 @@ public class PromoSearchCriteria {
 
 	public void setPromoTypes(List<PromoType> promoTypes) {
 		this.promoTypes = promoTypes;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 	
 }
