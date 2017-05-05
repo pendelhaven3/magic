@@ -33,7 +33,6 @@ import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.dialog.PrintChequeDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SetDiscountsForAllItemsDialog;
 import com.pj.magic.gui.dialog.StatusDetailsDialog;
@@ -60,7 +59,6 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private StatusDetailsDialog statusDialog;
 	@Autowired private SetDiscountsForAllItemsDialog setDiscountsForAllItemsDialog;
-	@Autowired private PrintChequeDialog printChequeDialog;
 	
 	private ReceivingReceipt receivingReceipt;
 	private JLabel receivingReceiptNumberField;
@@ -517,10 +515,6 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
-		
-		MagicToolBarButton printChequeButton = new MagicToolBarButton("cheque", "Print Cheque");
-		printChequeButton.addActionListener(e -> printCheque());
-		toolBar.add(printChequeButton);
 	}
 
 	protected void openSetDiscountsForAllItemsDialog() {
@@ -571,9 +565,4 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		}
 	}
 
-	private void printCheque() {
-		printChequeDialog.updateDisplay(receivingReceipt);
-		printChequeDialog.setVisible(true);
-	}
-	
 }

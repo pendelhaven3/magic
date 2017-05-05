@@ -33,6 +33,7 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AddReceivingReceiptsToPurchasePaymentDialog;
+import com.pj.magic.gui.dialog.PrintChequeDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.PurchasePaymentBankTransfersTable;
@@ -73,6 +74,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	@Autowired private LoginService loginService;
+	@Autowired private PrintChequeDialog printChequeDialog;
 	
 	private PurchasePayment purchasePayment;
 	private JLabel purchasePaymentNumberField;
@@ -545,6 +547,10 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 			}
 		});	
 		toolBar.add(printButton);
+		
+		MagicToolBarButton printChequeButton = new MagicToolBarButton("cheque", "Print Cheque");
+		printChequeButton.addActionListener(e -> printCheque());
+		toolBar.add(printChequeButton);
 	}
 
 	private void printPaymentSummary() {
@@ -1143,6 +1149,11 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 				showMessageForUnexpectedError();
 			}
 		}
+	}
+	
+	private void printCheque() {
+		printChequeDialog.updateDisplay(purchasePayment);
+		printChequeDialog.setVisible(true);
 	}
 	
 }

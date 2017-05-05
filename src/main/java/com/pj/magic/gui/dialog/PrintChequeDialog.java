@@ -8,16 +8,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -26,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.ExcelUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -62,7 +59,7 @@ public class PrintChequeDialog extends MagicDialog {
 		amountField = new MagicTextField();
 		dateModel = new UtilCalendarModel();
 		
-		printButton = new JButton("Search");
+		printButton = new JButton("Print");
 		printButton.addActionListener(e -> printCheque());
 		
 		focusOnComponentWhenThisPanelIsDisplayed(nameField);
@@ -150,9 +147,9 @@ public class PrintChequeDialog extends MagicDialog {
 		add(Box.createGlue(), c);
 	}
 	
-	public void updateDisplay(ReceivingReceipt receivingReceipt) {
-		nameField.setText(receivingReceipt.getSupplier().getName());
-		amountField.setText(FormatterUtil.formatAmount(receivingReceipt.getTotalNetAmount()));
+	public void updateDisplay(PurchasePayment purchasePayment) {
+		nameField.setText(purchasePayment.getSupplier().getName());
+		amountField.setText(FormatterUtil.formatAmount(purchasePayment.getTotalAmountDue()));
 		
 		dateModel.setValue(null);
 		dateModel.setValue(Calendar.getInstance());
@@ -162,34 +159,36 @@ public class PrintChequeDialog extends MagicDialog {
 		try {
 			XSSFWorkbook workbook = new XSSFWorkbook(
 					getClass().getResourceAsStream("/excel/printCheque.xlsx"));
-			Sheet sheet = workbook.getSheetAt(0);
+			try {
+				Sheet sheet = workbook.getSheetAt(0);
 
-			Row row = sheet.getRow(1);
-			row.getCell(7).setCellValue(FormatterUtil.formatChequeDate(dateModel.getValue().getTime()));
-			
-			row = sheet.getRow(2);
-			row.getCell(1).setCellValue(nameField.getText());
-			row.getCell(7).setCellValue(NumberUtil.toBigDecimal(amountField.getText()).floatValue());
-			
-			row = sheet.getRow(3);
-			row.getCell(1).setCellValue(convertToText(NumberUtil.toBigDecimal(amountField.getText())));
-			
-			File tempFile = new File(Paths.get(System.getProperty("user.home")).toAbsolutePath().toString() + "/magic-print-cheque.xlsx");
-			try (
-				FileOutputStream out = new FileOutputStream(tempFile);
+				Row row = sheet.getRow(1);
+				row.getCell(7).setCellValue(FormatterUtil.formatChequeDate(dateModel.getValue().getTime()));
+				
+				row = sheet.getRow(2);
+				row.getCell(1).setCellValue(nameField.getText());
+				row.getCell(7).setCellValue(NumberUtil.toBigDecimal(amountField.getText()).floatValue());
+				
+				row = sheet.getRow(3);
+				row.getCell(1).setCellValue(convertToText(NumberUtil.toBigDecimal(amountField.getText())));
+				
+				File tempFile = new File(Paths.get(System.getProperty("user.home")).toAbsolutePath().toString() + "/magic-print-cheque.xlsx");
+				try (
+					FileOutputStream out = new FileOutputStream(tempFile);
 				) {
 					workbook.write(out);
 					ExcelUtil.openExcelFile(tempFile);
 				} catch (IOException e) {
-					
 					showUnexpectedErrorMessage();
 				}
+			} finally {
+				workbook.close();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			LOGGER.error("Unexpected error", e);
 			showUnexpectedErrorMessage();
 		}
-			
 	}
 
 	private static String convertToText(BigDecimal amount) {
