@@ -198,7 +198,7 @@ public class AdjustmentOutPanel extends StandardMagicPanel {
 		remarksField.setEnabled(true);
 		remarksField.setText(null);
 		pilferageCheckBox.setEnabled(loginService.getLoggedInUser().isSupervisor());
-		pilferageCheckBox.setSelected(!loginService.getLoggedInUser().isSupervisor(), false);
+		pilferageCheckBox.setSelected(true, false);
 		postDateField.setText(null);
 		postedByField.setText(null);
 		totalItemsField.setText(null);

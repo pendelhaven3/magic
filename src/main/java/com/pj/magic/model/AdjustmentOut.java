@@ -18,7 +18,7 @@ public class AdjustmentOut {
 	private User postedBy;
 	private List<AdjustmentOutItem> items = new ArrayList<>();
 	private String remarks;
-	private boolean pilferageFlag;
+	private boolean pilferageFlag = true;
 
 	public AdjustmentOut() {
 	}

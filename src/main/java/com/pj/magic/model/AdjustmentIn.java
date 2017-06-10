@@ -18,7 +18,7 @@ public class AdjustmentIn {
 	private User postedBy;
 	private List<AdjustmentInItem> items = new ArrayList<>();
 	private String remarks;
-	private boolean pilferageFlag;
+	private boolean pilferageFlag = true;
 
 	public AdjustmentIn() {
 	}
