@@ -167,7 +167,7 @@ public class PrintChequeDialog extends MagicDialog {
 				
 				row = sheet.getRow(2);
 				row.getCell(1).setCellValue(nameField.getText());
-				row.getCell(7).setCellValue(NumberUtil.toBigDecimal(amountField.getText()).floatValue());
+				row.getCell(7).setCellValue(FormatterUtil.formatAmount(NumberUtil.toBigDecimal(amountField.getText())));
 				
 				row = sheet.getRow(3);
 				row.getCell(1).setCellValue(convertToText(NumberUtil.toBigDecimal(amountField.getText())));
@@ -229,6 +229,8 @@ public class PrintChequeDialog extends MagicDialog {
 		if (cents > 0) {
 			sb.append("& ");
 			sb.append(String.valueOf(cents)).append("/100");
+		} else {
+			sb.append("ONLY");
 		}
 		
 		return sb.toString();
