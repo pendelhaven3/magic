@@ -1,6 +1,7 @@
 package com.pj.magic.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,7 @@ public class ProductPriceHistory {
 	private PricingScheme pricingScheme;
 	private Product product;
 	private List<UnitPrice> unitPrices = new ArrayList<>();
+	private List<UnitPrice> previousUnitPrices = new ArrayList<>();
 	private List<String> activeUnits = new ArrayList<>();
 	private Date updateDate;
 	private User updatedBy;
@@ -87,4 +89,52 @@ public class ProductPriceHistory {
 		return null;
 	}
 	
+	public BigDecimal getPreviousActiveUnitPrice(String unit) {
+		if (activeUnits.contains(unit)) {
+			return getPreviousUnitPrice(unit);
+		}
+		return null;
+	}
+	
+	public BigDecimal getPreviousUnitPrice(String unit) {
+		return previousUnitPrices.stream()
+				.filter(unitPrice -> unitPrice.getUnit().equals(unit))
+				.map(unitPrice -> unitPrice.getPrice())
+				.findAny()
+				.orElse(null);
+	}
+	
+	public BigDecimal getPercentIncrease() {
+		String maxUnit = getMaxUnit();
+		BigDecimal unitPrice = getUnitPrice(maxUnit);
+		BigDecimal previousUnitPrice = getPreviousUnitPrice(maxUnit);
+		
+		return unitPrice.subtract(previousUnitPrice).divide(previousUnitPrice, 4, RoundingMode.HALF_UP)
+				.multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP);
+	}
+	
+	private String getMaxUnit() {
+		if (getUnitPrice(Unit.CASE) != null) {
+			return Unit.CASE;
+		}
+		if (getActiveUnitPrice(Unit.TIE) != null) {
+			return Unit.TIE;
+		}
+		if (getActiveUnitPrice(Unit.CARTON) != null) {
+			return Unit.CARTON;
+		}
+		if (getActiveUnitPrice(Unit.DOZEN) != null) {
+			return Unit.DOZEN;
+		}
+		return Unit.PIECES;
+	}
+	
+	public void setPreviousUnitPrices(List<UnitPrice> previousUnitPrices) {
+		this.previousUnitPrices = previousUnitPrices;
+	}
+	
+	public List<UnitPrice> getPreviousUnitPrices() {
+		return previousUnitPrices;
+	}
+
 }

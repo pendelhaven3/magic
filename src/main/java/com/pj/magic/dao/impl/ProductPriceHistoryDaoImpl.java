@@ -25,6 +25,7 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 	private static final String BASE_SELECT_SQL =
 			"select PRICING_SCHEME_ID, PRODUCT_ID, UPDATE_DT, UPDATE_BY,"
 			+ " UNIT_PRICE_CSE, UNIT_PRICE_TIE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
+			+ " PREV_UNIT_PRICE_CSE, PREV_UNIT_PRICE_TIE, PREV_UNIT_PRICE_CTN, PREV_UNIT_PRICE_DOZ, PREV_UNIT_PRICE_PCS,"
 			+ " c.ACTIVE_UNIT_IND_PCS, c.ACTIVE_UNIT_IND_DOZ, c.ACTIVE_UNIT_IND_CTN, c.ACTIVE_UNIT_IND_TIE,"
 			+ " b.USERNAME as UPDATE_BY_USERNAME,"
 			+ " c.DESCRIPTION as PRODUCT_DESCRIPTION"
@@ -37,8 +38,9 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 	private static final String INSERT_SQL =
 			"insert into PRODUCT_PRICE_HISTORY"
 			+ " (PRICING_SCHEME_ID, PRODUCT_ID, UPDATE_DT, UPDATE_BY,"
-			+ " UNIT_PRICE_CSE, UNIT_PRICE_TIE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS)"
-			+ " values (?, ?, now(), ?, ?, ?, ?, ?, ?)";
+			+ " UNIT_PRICE_CSE, UNIT_PRICE_TIE, UNIT_PRICE_CTN, UNIT_PRICE_DOZ, UNIT_PRICE_PCS,"
+			+ " PREV_UNIT_PRICE_CSE, PREV_UNIT_PRICE_TIE, PREV_UNIT_PRICE_CTN, PREV_UNIT_PRICE_DOZ, PREV_UNIT_PRICE_PCS)"
+			+ " values (?, ?, now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private ProductPriceHistoryRowMapper rowMapper = new ProductPriceHistoryRowMapper();
 	
@@ -52,7 +54,12 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 				history.getUnitPrice(Unit.TIE),
 				history.getUnitPrice(Unit.CARTON),
 				history.getUnitPrice(Unit.DOZEN),
-				history.getUnitPrice(Unit.PIECES)
+				history.getUnitPrice(Unit.PIECES),
+				history.getPreviousUnitPrice(Unit.CASE),
+				history.getPreviousUnitPrice(Unit.TIE),
+				history.getPreviousUnitPrice(Unit.CARTON),
+				history.getPreviousUnitPrice(Unit.DOZEN),
+				history.getPreviousUnitPrice(Unit.PIECES)
 		);
 	}
 
@@ -106,6 +113,8 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 				history.getUnitPrices().add(new UnitPrice(Unit.PIECES, unitPricePieces));
 			}
 			
+			history.setPreviousUnitPrices(getPreviousUnitPrices(rs));
+			
 			if ("Y".equals(rs.getString("ACTIVE_UNIT_IND_TIE"))) {
 				history.getActiveUnits().add(Unit.TIE);
 			}
@@ -123,6 +132,37 @@ public class ProductPriceHistoryDaoImpl extends MagicDao implements ProductPrice
 			}
 			
 			return history;
+		}
+
+		private List<UnitPrice> getPreviousUnitPrices(ResultSet rs) throws SQLException {
+			List<UnitPrice> unitPrices = new ArrayList<>();
+			
+			BigDecimal unitPriceCase = rs.getBigDecimal("PREV_UNIT_PRICE_CSE");
+			if (unitPriceCase != null) {
+				unitPrices.add(new UnitPrice(Unit.CASE, unitPriceCase));
+			}
+			
+			BigDecimal unitPriceTie = rs.getBigDecimal("PREV_UNIT_PRICE_TIE");
+			if (unitPriceTie != null) {
+				unitPrices.add(new UnitPrice(Unit.TIE, unitPriceTie));
+			}
+			
+			BigDecimal unitPriceCarton = rs.getBigDecimal("PREV_UNIT_PRICE_CTN");
+			if (unitPriceCarton != null) {
+				unitPrices.add(new UnitPrice(Unit.CARTON, unitPriceCarton));
+			}
+
+			BigDecimal unitPriceDozen = rs.getBigDecimal("PREV_UNIT_PRICE_DOZ");
+			if (unitPriceDozen != null) {
+				unitPrices.add(new UnitPrice(Unit.DOZEN, unitPriceDozen));
+			}
+
+			BigDecimal unitPricePieces = rs.getBigDecimal("PREV_UNIT_PRICE_PCS");
+			if (unitPricePieces != null) {
+				unitPrices.add(new UnitPrice(Unit.PIECES, unitPricePieces));
+			}
+			
+			return unitPrices;
 		}
 		
 	}

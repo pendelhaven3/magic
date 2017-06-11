@@ -129,17 +129,21 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional
 	@Override
 	public void saveUnitCostsAndPrices(Product product, PricingScheme pricingScheme) {
+		Product productBeforeUpdate = productDao.findByIdAndPricingScheme(product.getId(), pricingScheme);
+		
 		productPriceDao.updateUnitPrices(product, pricingScheme);
 		productDao.updateCosts(product);
-		productPriceHistoryDao.save(createProductPriceHistory(product, pricingScheme));
+		productPriceHistoryDao.save(createProductPriceHistory(product, pricingScheme, productBeforeUpdate));
 	}
 
-	private ProductPriceHistory createProductPriceHistory(Product product, PricingScheme pricingScheme) {
+	private ProductPriceHistory createProductPriceHistory(Product product, PricingScheme pricingScheme,
+			Product productBeforeUpdate) {
 		ProductPriceHistory history = new ProductPriceHistory();
 		history.setPricingScheme(pricingScheme);
 		history.setProduct(product);
 		history.setUpdatedBy(loginService.getLoggedInUser());
 		history.setUnitPrices(product.getUnitPrices());
+		history.setPreviousUnitPrices(productBeforeUpdate.getUnitPrices());
 		return history;
 	}
 

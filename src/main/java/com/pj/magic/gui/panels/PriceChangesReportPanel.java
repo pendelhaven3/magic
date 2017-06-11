@@ -5,6 +5,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,11 +20,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicComboBox;
+import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
@@ -36,8 +41,11 @@ import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PrintServiceImpl;
 import com.pj.magic.service.ProductPriceService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.ExcelUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.ListUtil;
+import com.pj.magic.util.PriceChangesExcelReportGenerator;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -103,6 +111,8 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 		ProductPriceHistorySearchCriteria criteria = new ProductPriceHistorySearchCriteria();
 		criteria.setFromDate(fromDateModel.getValue().getTime());
 		criteria.setToDate(toDateModel.getValue().getTime());
+//		criteria.setFromDate(DateUtil.toDate("02/01/2015"));
+//		criteria.setToDate(DateUtil.toDate("02/28/2015"));
 		criteria.setPricingScheme((PricingScheme)pricingSchemeComboBox.getSelectedItem());
 		
 		return productPriceService.searchProductPriceHistories(criteria);
@@ -274,6 +284,10 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+		
+		JButton generateExcelButton = new MagicToolBarButton("excel", "Generate Excel");
+		generateExcelButton.addActionListener(e -> generateExcel());
+		toolBar.add(generateExcelButton);
 	}
 
 	private void print() {
@@ -309,6 +323,57 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 		printPreviewDialog.setVisible(true);
 	}
 
+	private void generateExcel() {
+		if (!validateCriteria()) {
+			return;
+		}
+		
+		MagicFileChooser saveFileChooser = FileUtil.createSaveFileChooser(constructDefaultExcelFileName());
+		if (!saveFileChooser.selectSaveFile(this)) {
+			return;
+		}
+		
+		PriceChangesReport report = createPriceChangesReport();
+		tableModel.setItems(report.getItems());
+		
+		File file = saveFileChooser.getSelectedFile();
+		
+		try (
+			Workbook workbook = PriceChangesExcelReportGenerator.generate(report);
+			FileOutputStream out = new FileOutputStream(file);
+		) {
+			workbook.write(out);
+		} catch (IOException e) {
+			showMessageForUnexpectedError();
+			return;
+		}
+		
+		if (confirm("Excel file generated.\nDo you wish to open the file?")) {
+			openExcelFile(file);
+		}
+	}
+	
+	private void openExcelFile(File file) {
+		try {
+			ExcelUtil.openExcelFile(file);
+		} catch (IOException e) {
+			showMessageForUnexpectedError();
+		}
+	}
+	
+	private String constructDefaultExcelFileName() {
+		Date from = fromDateModel.getValue().getTime();
+		Date to = toDateModel.getValue().getTime();
+		
+		return new StringBuilder()
+				.append("Price Changes Report ")
+				.append(FormatterUtil.formatDateInFilename(from))
+				.append(" - ")
+				.append(FormatterUtil.formatDateInFilename(to))
+				.append(".xlsx")
+				.toString();
+	}
+	
 	private class PriceChangesTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = {"Product", "Effective Date/Time", "CSE", "TIE", "CTN", "DOZ", "PCS"};
