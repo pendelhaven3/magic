@@ -14,6 +14,7 @@ import javax.swing.JScrollPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SearchSalesInvoicesDialog;
@@ -45,7 +46,9 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	}
 
 	public void displaySalesInvoiceDetails(SalesInvoice salesInvoice) {
-		getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
+		MagicFrame magicFrame = getMagicFrame();
+		magicFrame.saveAsPreviousPanel(MagicFrame.SALES_INVOICES_LIST_PANEL);
+		magicFrame.switchToSalesInvoicePanel(salesInvoice);
 	}
 	
 	@Override
