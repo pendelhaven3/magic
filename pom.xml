@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pj</groupId>
 	<artifactId>magic</artifactId>
-	<version>1.93.1</version>
+	<version>1.94.0</version>
 	<properties>
 		<spring.version>4.0.6.RELEASE</spring.version>
 		<poi.version>3.11</poi.version>
