@@ -365,13 +365,21 @@ public class PriceChangesReportPanel extends StandardMagicPanel {
 		Date from = fromDateModel.getValue().getTime();
 		Date to = toDateModel.getValue().getTime();
 		
-		return new StringBuilder()
-				.append("Price Changes Report ")
-				.append(FormatterUtil.formatDateInFilename(from))
-				.append(" - ")
-				.append(FormatterUtil.formatDateInFilename(to))
-				.append(".xlsx")
-				.toString();
+		if (from.equals(to)) {
+			return new StringBuilder()
+					.append("Price Changes Report - ")
+					.append(FormatterUtil.formatDateInFilename(from))
+					.append(".xlsx")
+					.toString();
+		} else {
+			return new StringBuilder()
+					.append("Price Changes Report ")
+					.append(FormatterUtil.formatDateInFilename(from))
+					.append(" - ")
+					.append(FormatterUtil.formatDateInFilename(to))
+					.append(".xlsx")
+					.toString();
+		}
 	}
 	
 	private class PriceChangesTableModel extends AbstractTableModel {
