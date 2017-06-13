@@ -109,6 +109,10 @@ public class ProductPriceHistory {
 		BigDecimal unitPrice = getUnitPrice(maxUnit);
 		BigDecimal previousUnitPrice = getPreviousUnitPrice(maxUnit);
 		
+		if (BigDecimal.ZERO.setScale(2).equals(previousUnitPrice.setScale(2))) {
+			return null;
+		}
+		
 		return unitPrice.subtract(previousUnitPrice).divide(previousUnitPrice, 4, RoundingMode.HALF_UP)
 				.multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP);
 	}

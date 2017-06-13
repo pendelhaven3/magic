@@ -156,7 +156,14 @@ public class PriceChangesExcelReportGenerator {
 				createAmountCell(row, 10, item.getPreviousActiveUnitPrice(Unit.TIE), amountStyle, borderedStyle);
 				createAmountCell(row, 11, item.getPreviousUnitPrice(Unit.CASE), amountStyle, borderedStyle);
 				
-				createAmountCell(row, 12, item.getPercentIncrease(), amountStyle, borderedStyle);
+				BigDecimal percentIncrease = item.getPercentIncrease();
+				if (percentIncrease != null) {
+					createAmountCell(row, 12, percentIncrease, amountStyle, borderedStyle);
+				} else {
+					cell = row.createCell(12, Cell.CELL_TYPE_STRING);
+					cell.setCellValue("-");
+					cell.setCellStyle(borderedStyle);
+				}
 				
 				currentRow++;
 			}
