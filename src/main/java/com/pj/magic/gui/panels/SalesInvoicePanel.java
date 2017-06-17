@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.ExcelFileFilter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -146,7 +147,12 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToSalesInvoicesListPanel();
+		MagicFrame magicFrame = getMagicFrame();
+		if (magicFrame.isPreviousPanelSet()) {
+			getMagicFrame().back();
+		} else {
+			getMagicFrame().switchToSalesInvoicesListPanel();
+		}
 	}
 	
 	@Override

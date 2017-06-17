@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.util.StringUtils;
 
 import com.pj.magic.OnStartUp;
 import com.pj.magic.gui.panels.AdjustmentInListPanel;
@@ -1423,6 +1424,15 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Pilferage Report");
 		pilferageReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PILFERAGE_REPORT_PANEL);
+	}
+	
+	public boolean isPreviousPanelSet() {
+		return !StringUtils.isEmpty(previousPanelName);
+	}
+	
+	public void clearPreviousPanel() {
+		previousPanelName = null;
+		previousPanelTitle = null;
 	}
 	
 }
