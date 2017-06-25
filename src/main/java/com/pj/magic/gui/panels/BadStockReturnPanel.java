@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPaidException;
+import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -90,6 +91,10 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	private JButton deleteItemButton;
 	private JButton printPreviewButton;
 	private JButton printButton;
+	
+	public BadStockReturnPanel() {
+		setTitle("Bad Stock Return List");
+	}
 	
 	@Override
 	protected void initializeComponents() {
@@ -228,7 +233,7 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		if (itemsTable.isEditing()) {
 			itemsTable.getCellEditor().cancelCellEditing();
 		}
-		getMagicFrame().switchToBadStockReturnListPanel();
+		getMagicFrame().back(MagicFrame.BAD_STOCK_RETURN_LIST_PANEL);
 	}
 	
 	private void updateTotalAmountFieldWhenItemsTableChanges() {

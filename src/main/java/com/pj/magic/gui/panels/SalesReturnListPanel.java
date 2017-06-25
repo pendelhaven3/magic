@@ -34,6 +34,12 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private SalesReturnsTableModel tableModel = new SalesReturnsTableModel();
 	
+	private SalesReturnSearchCriteria searchCriteria;
+	
+	public SalesReturnListPanel() {
+		setTitle("Sales Return List");
+	}
+	
 	public void updateDisplay() {
 		List<SalesReturn> salesReturns = salesReturnService.getUnpaidSalesReturns();
 		tableModel.setSalesReturns(salesReturns);
@@ -41,6 +47,7 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 			table.changeSelection(0, 0, false, false);
 		}
 		searchSalesReturnsDialog.updateDisplay();
+		searchCriteria = null;
 	}
 
 	@Override
@@ -142,6 +149,7 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 		
 		SalesReturnSearchCriteria criteria = searchSalesReturnsDialog.getSearchCriteria();
 		if (criteria != null) {
+			searchCriteria = criteria;
 			List<SalesReturn> salesReturns = salesReturnService.search(criteria);
 			tableModel.setSalesReturns(salesReturns);
 			if (!salesReturns.isEmpty()) {
@@ -150,6 +158,16 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 			} else {
 				showMessage("No matching records");
 			}
+		}
+	}
+	
+	@Override
+	public void updateDisplayOnBack() {
+		if (searchCriteria != null) {
+			List<SalesReturn> salesReturns = salesReturnService.search(searchCriteria);
+			tableModel.setSalesReturns(salesReturns);
+		} else {
+			updateDisplay();
 		}
 	}
 	

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
 import com.pj.magic.exception.SalesReturnItemQuantityExceededException;
+import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -189,7 +190,7 @@ public class SalesReturnPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToSalesReturnListPanel();
+		getMagicFrame().back(MagicFrame.SALES_RETURN_LIST_PANEL);
 	}
 	
 	private void updateTotalFieldsWhenItemsTableChanges() {

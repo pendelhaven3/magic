@@ -42,6 +42,8 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private BadStockReturnsTableModel tableModel;
 	
+	private BadStockReturnSearchCriteria searchCriteria;
+	
 	@Override
 	public void initializeComponents() {
 		initializeTable();
@@ -57,6 +59,7 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	public void updateDisplay() {
 		tableModel.setBadStockReturns(badStockReturnService.getUnpaidBadStockReturns());
 		searchBadStockReturnsDialog.updateDisplay();
+		searchCriteria = null;
 	}
 
 	public void displayBadStockReturnDetails(BadStockReturn badStockReturn) {
@@ -159,6 +162,7 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 		
 		BadStockReturnSearchCriteria criteria = searchBadStockReturnsDialog.getSearchCriteria();
 		if (criteria != null) {
+			searchCriteria = criteria;
 			List<BadStockReturn> badStockReturns = badStockReturnService.search(criteria);
 			tableModel.setBadStockReturns(badStockReturns);
 			if (!badStockReturns.isEmpty()) {
@@ -170,6 +174,16 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 		}
 	}
 
+	@Override
+	public void updateDisplayOnBack() {
+		if (searchCriteria != null) {
+			List<BadStockReturn> badStockReturns = badStockReturnService.search(searchCriteria);
+			tableModel.setBadStockReturns(badStockReturns);
+		} else {
+			updateDisplay();
+		}
+	}
+	
 	private class BadStockReturnsTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = 
