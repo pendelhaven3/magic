@@ -9,15 +9,14 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.util.StringUtils;
 
 import com.pj.magic.OnStartUp;
+import com.pj.magic.gui.component.CardLayoutPanel;
 import com.pj.magic.gui.panels.AdjustmentInListPanel;
 import com.pj.magic.gui.panels.AdjustmentInPanel;
 import com.pj.magic.gui.panels.AdjustmentOutListPanel;
@@ -104,6 +103,7 @@ import com.pj.magic.gui.panels.SalesRequisitionPanel;
 import com.pj.magic.gui.panels.SalesRequisitionSeparateItemsPanel;
 import com.pj.magic.gui.panels.SalesReturnListPanel;
 import com.pj.magic.gui.panels.SalesReturnPanel;
+import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.panels.StockCardInventoryReportPanel;
 import com.pj.magic.gui.panels.StockOfftakeReportPanel;
 import com.pj.magic.gui.panels.StockQuantityConversionListPanel;
@@ -422,12 +422,9 @@ public class MagicFrame extends JFrame {
 	@Autowired private DataSource dataSource;
 	@Autowired private OnStartUp onStartUp;
 	
-	private JPanel panelHolder;
+	private CardLayoutPanel panelHolder;
 	private static final ResourceBundle resourceBundle = ResourceBundle.getBundle("application");
 	
-	private String previousPanelName;
-	private String previousPanelTitle;
-
 	public MagicFrame() {
 		this.setSize(1024, 640);
 		setLocationRelativeTo(null);
@@ -473,7 +470,7 @@ public class MagicFrame extends JFrame {
 	}
 
 	private void addPanels() {
-		panelHolder = new JPanel(new CardLayout());
+		panelHolder = new CardLayoutPanel();
 		panelHolder.add(loginPanel, LOGIN_PANEL);
 		panelHolder.add(mainMenuPanel, MAIN_MENU_PANEL);
 		panelHolder.add(salesRequisitionsListPanel, SALES_REQUISITIONS_LIST_PANEL);
@@ -626,14 +623,11 @@ public class MagicFrame extends JFrame {
 		setTitle(constructTitle() + " - " + panelName);
 	}
 
-	public void saveAsPreviousPanel(String name) {
-		previousPanelName = name;
-		previousPanelTitle = getTitle();
-	}
-	
-	public void back() {
-		setTitle(previousPanelTitle);
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, previousPanelName);
+	public void back(String panelName) {
+		StandardMagicPanel panel = panelHolder.getCardPanel(panelName);
+		panel.updateDisplayOnBack();
+		addPanelNameToTitle(panel.getTitle());
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, panelName);
 	}
 	
 	public void switchToSalesInvoicesListPanel() {
@@ -1424,15 +1418,6 @@ public class MagicFrame extends JFrame {
 		addPanelNameToTitle("Pilferage Report");
 		pilferageReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PILFERAGE_REPORT_PANEL);
-	}
-	
-	public boolean isPreviousPanelSet() {
-		return !StringUtils.isEmpty(previousPanelName);
-	}
-	
-	public void clearPreviousPanel() {
-		previousPanelName = null;
-		previousPanelTitle = null;
 	}
 	
 }

@@ -147,12 +147,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	
 	@Override
 	protected void doOnBack() {
-		MagicFrame magicFrame = getMagicFrame();
-		if (magicFrame.isPreviousPanelSet()) {
-			getMagicFrame().back();
-		} else {
-			getMagicFrame().switchToSalesInvoicesListPanel();
-		}
+		getMagicFrame().back(MagicFrame.SALES_INVOICES_LIST_PANEL);
 	}
 	
 	@Override

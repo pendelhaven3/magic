@@ -14,7 +14,6 @@ import javax.swing.JScrollPane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SearchSalesInvoicesDialog;
@@ -30,6 +29,12 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private SearchSalesInvoicesDialog searchSalesInvoicesDialog;
 	
+	private SalesInvoiceSearchCriteria searchCriteria;
+	
+	public SalesInvoiceListPanel() {
+		setTitle("Sales Invoices List");
+	}
+	
 	@Override
 	protected void initializeComponents() {
 		focusOnComponentWhenThisPanelIsDisplayed(table);
@@ -43,12 +48,11 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	public void updateDisplay() {
 		table.setSalesInvoices(salesInvoiceService.getAllNewSalesInvoices());
 		searchSalesInvoicesDialog.updateDisplay();
+		searchCriteria = null;
 	}
 
 	public void displaySalesInvoiceDetails(SalesInvoice salesInvoice) {
-		MagicFrame magicFrame = getMagicFrame();
-		magicFrame.saveAsPreviousPanel(MagicFrame.SALES_INVOICES_LIST_PANEL);
-		magicFrame.switchToSalesInvoicePanel(salesInvoice);
+		getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
 	}
 	
 	@Override
@@ -95,6 +99,7 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 		
 		SalesInvoiceSearchCriteria criteria = searchSalesInvoicesDialog.getSearchCriteria();
 		if (criteria != null) {
+			searchCriteria = criteria;
 			List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
 			table.setSalesInvoices(salesInvoices);
 			if (!salesInvoices.isEmpty()) {
@@ -106,4 +111,14 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 		}
 	}
 
+	@Override
+	public void updateDisplayOnBack() {
+		if (searchCriteria != null) {
+			List<SalesInvoice> salesInvoices = salesInvoiceService.search(searchCriteria);
+			table.setSalesInvoices(salesInvoices);
+		} else {
+			updateDisplay();
+		}
+	}
+	
 }

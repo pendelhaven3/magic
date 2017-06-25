@@ -17,6 +17,8 @@ import com.pj.magic.util.ComponentUtil;
 
 public abstract class StandardMagicPanel extends AbstractMagicPanel {
 
+	private String title;
+	
 	@PostConstruct
 	@Override
 	public void initialize() {
@@ -83,6 +85,18 @@ public abstract class StandardMagicPanel extends AbstractMagicPanel {
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Constants.ESCAPE_KEY_ACTION_NAME);
 		getActionMap().put(Constants.ESCAPE_KEY_ACTION_NAME, action);
+	}
+	
+	public void updateDisplayOnBack() {
+		// for overriding
+	}
+	
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+	public String getTitle() {
+		return title;
 	}
 	
 }

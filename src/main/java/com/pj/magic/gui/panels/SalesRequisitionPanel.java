@@ -547,7 +547,6 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			try {
 				SalesInvoice salesInvoice = salesRequisitionService.post(salesRequisition);
 				JOptionPane.showMessageDialog(this, "Post successful!");
-				getMagicFrame().clearPreviousPanel();
 				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
 			} catch (SalesRequisitionPostException e) {
 				postExceptionsDialog.updateDisplay(e);
