@@ -14,6 +14,7 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPaidException;
+import com.pj.magic.exception.NoItemException;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.PaymentTerminalAssignment;
@@ -81,6 +82,11 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 	@Override
 	public void post(BadStockReturn badStockReturn) {
 		BadStockReturn updated = getBadStockReturn(badStockReturn.getId());
+		
+		if (updated.getItems().isEmpty()) {
+			throw new NoItemException();
+		}
+		
 		updated.setPosted(true);
 		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());

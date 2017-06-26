@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPaidException;
+import com.pj.magic.exception.NoItemException;
 import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
@@ -546,6 +547,9 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 			try {
 				badStockReturnService.post(badStockReturn);
 				showMessage("Post successful!");
+				updateDisplay(badStockReturn);
+			} catch (NoItemException e) {
+				showErrorMessage(e.getMessage());
 				updateDisplay(badStockReturn);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);

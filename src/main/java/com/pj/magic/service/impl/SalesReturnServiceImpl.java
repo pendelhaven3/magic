@@ -12,6 +12,7 @@ import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.SalesReturnDao;
 import com.pj.magic.dao.SalesReturnItemDao;
 import com.pj.magic.dao.SystemDao;
+import com.pj.magic.exception.NoItemException;
 import com.pj.magic.exception.SalesReturnItemQuantityExceededException;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentTerminalAssignment;
@@ -75,6 +76,10 @@ public class SalesReturnServiceImpl implements SalesReturnService {
 		SalesReturn updated = salesReturnDao.get(salesReturn.getId());
 		updated.setItems(salesReturnItemDao.findAllBySalesReturn(salesReturn));
 		updated.setSalesInvoice(salesInvoiceService.get(updated.getSalesInvoice().getId()));
+		
+		if (updated.getItems().isEmpty()) {
+			throw new NoItemException();
+		}
 		
 		for (SalesReturnItem item : updated.getItems()) {
 			int totalQuantity = findTotalQuantityFromAllSalesReturnsOfSalesInvoice(item);

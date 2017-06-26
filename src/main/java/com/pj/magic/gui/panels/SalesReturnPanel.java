@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.exception.NoItemException;
 import com.pj.magic.exception.SalesReturnItemQuantityExceededException;
 import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.MagicTextField;
@@ -522,6 +523,10 @@ public class SalesReturnPanel extends StandardMagicPanel {
 		if (confirm("Do you want to post this Sales Return?")) {
 			try {
 				salesReturnService.post(salesReturn);
+			} catch (NoItemException e) {
+				showErrorMessage(e.getMessage());
+				updateDisplay(salesReturn);
+				return;
 			} catch (SalesReturnItemQuantityExceededException e) {
 				showErrorMessage(e.getMessage());
 				return;
