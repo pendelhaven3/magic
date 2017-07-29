@@ -31,7 +31,7 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	@Autowired private SearchSalesInvoicesDialog searchSalesInvoicesDialog;
 	
 	private SalesInvoiceSearchCriteria searchCriteria;
-	private int selectedRow = 0;
+	private int selectedRow;
 	private Rectangle visibleRect;
 	
 	public SalesInvoiceListPanel() {
@@ -127,6 +127,7 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 			salesInvoices = salesInvoiceService.search(searchCriteria);
 		} else {
 	        salesInvoices = salesInvoiceService.getAllNewSalesInvoices();
+	        searchSalesInvoicesDialog.updateDisplay();
 		}
 		
         table.setSalesInvoices(salesInvoices);
