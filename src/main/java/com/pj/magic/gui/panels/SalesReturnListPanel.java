@@ -51,6 +51,8 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 		}
 		searchSalesReturnsDialog.updateDisplay();
 		searchCriteria = null;
+        selectedRow = 0;
+        visibleRect = null;
 	}
 
 	@Override
@@ -118,6 +120,9 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 	}
 
 	private void switchToNewSalesReturnPanel() {
+        searchCriteria = null;
+        selectedRow = 0;
+        visibleRect = null;
 		getMagicFrame().switchToSalesReturnPanel(new SalesReturn());
 	}
 
@@ -185,7 +190,9 @@ public class SalesReturnListPanel extends StandardMagicPanel {
             selectedRow = salesReturns.size() - 1;
         }
         table.changeSelection(selectedRow, 0, false, false);
-        table.scrollRectToVisible(visibleRect);
+        if (visibleRect != null) {
+            table.scrollRectToVisible(visibleRect);
+        }
 	}
 	
 }

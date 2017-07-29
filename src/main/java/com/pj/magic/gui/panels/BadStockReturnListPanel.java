@@ -2,6 +2,7 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -43,7 +44,13 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	private BadStockReturnsTableModel tableModel;
 	
 	private BadStockReturnSearchCriteria searchCriteria;
+    private int selectedRow;
+    private Rectangle visibleRect;
 	
+    public BadStockReturnListPanel() {
+        setTitle("Bad Stock Return List");
+    }
+    
 	@Override
 	public void initializeComponents() {
 		initializeTable();
@@ -57,9 +64,15 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		tableModel.setBadStockReturns(badStockReturnService.getUnpaidBadStockReturns());
+	    List<BadStockReturn> badStockReturns = badStockReturnService.getUnpaidBadStockReturns();
+		tableModel.setBadStockReturns(badStockReturns);
+		if (!badStockReturns.isEmpty()) {
+            table.changeSelection(0, 0, false, false);
+		}
 		searchBadStockReturnsDialog.updateDisplay();
 		searchCriteria = null;
+        selectedRow = 0;
+        visibleRect = null;
 	}
 
 	public void displayBadStockReturnDetails(BadStockReturn badStockReturn) {
@@ -117,6 +130,9 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	}
 	
 	private void selectBadStockReturn() {
+        selectedRow = table.getSelectedRow();
+        visibleRect = table.getVisibleRect();
+        
 		displayBadStockReturnDetails(getCurrentlySelectedBadStockReturn());
 	}
 
@@ -125,6 +141,9 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 	}
 	
 	protected void switchToNewBadStockReturnPanel() {
+	    searchCriteria = null;
+	    selectedRow = 0;
+	    visibleRect = null;
 		getMagicFrame().switchToBadStockReturnPanel(new BadStockReturn());
 	}
 
@@ -163,6 +182,8 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 		BadStockReturnSearchCriteria criteria = searchBadStockReturnsDialog.getSearchCriteria();
 		if (criteria != null) {
 			searchCriteria = criteria;
+            selectedRow = 0;
+            visibleRect = null;
 			List<BadStockReturn> badStockReturns = badStockReturnService.search(criteria);
 			tableModel.setBadStockReturns(badStockReturns);
 			if (!badStockReturns.isEmpty()) {
@@ -176,12 +197,23 @@ public class BadStockReturnListPanel extends StandardMagicPanel {
 
 	@Override
 	public void updateDisplayOnBack() {
+	    List<BadStockReturn> badStockReturns = null;
+	    
 		if (searchCriteria != null) {
-			List<BadStockReturn> badStockReturns = badStockReturnService.search(searchCriteria);
-			tableModel.setBadStockReturns(badStockReturns);
+			badStockReturns = badStockReturnService.search(searchCriteria);
 		} else {
-			updateDisplay();
+	        badStockReturns = badStockReturnService.getUnpaidBadStockReturns();
+	        searchBadStockReturnsDialog.updateDisplay();
 		}
+		
+        tableModel.setBadStockReturns(badStockReturns);
+        if (badStockReturns.size() - 1 < selectedRow) {
+            selectedRow = badStockReturns.size() - 1;
+        }
+        table.changeSelection(selectedRow, 0, false, false);
+        if (visibleRect != null) {
+            table.scrollRectToVisible(visibleRect);
+        }
 	}
 	
 	private class BadStockReturnsTableModel extends AbstractTableModel {

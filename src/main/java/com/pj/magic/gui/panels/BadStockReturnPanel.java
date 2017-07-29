@@ -93,10 +93,6 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 	private JButton printPreviewButton;
 	private JButton printButton;
 	
-	public BadStockReturnPanel() {
-		setTitle("Bad Stock Return List");
-	}
-	
 	@Override
 	protected void initializeComponents() {
 		customerCodeField = new MagicTextField();
