@@ -2,6 +2,7 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -30,6 +31,8 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 	@Autowired private SearchSalesInvoicesDialog searchSalesInvoicesDialog;
 	
 	private SalesInvoiceSearchCriteria searchCriteria;
+	private int selectedRow = 0;
+	private Rectangle visibleRect;
 	
 	public SalesInvoiceListPanel() {
 		setTitle("Sales Invoices List");
@@ -49,9 +52,12 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 		table.setSalesInvoices(salesInvoiceService.getAllNewSalesInvoices());
 		searchSalesInvoicesDialog.updateDisplay();
 		searchCriteria = null;
+		clearTableSelection();
 	}
 
 	public void displaySalesInvoiceDetails(SalesInvoice salesInvoice) {
+	    selectedRow = table.getSelectedRow();
+	    visibleRect = table.getVisibleRect();
 		getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
 	}
 	
@@ -100,6 +106,8 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 		SalesInvoiceSearchCriteria criteria = searchSalesInvoicesDialog.getSearchCriteria();
 		if (criteria != null) {
 			searchCriteria = criteria;
+			selectedRow = 0;
+			visibleRect = null;
 			List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
 			table.setSalesInvoices(salesInvoices);
 			if (!salesInvoices.isEmpty()) {
@@ -113,12 +121,27 @@ public class SalesInvoiceListPanel extends StandardMagicPanel {
 
 	@Override
 	public void updateDisplayOnBack() {
+	    List<SalesInvoice> salesInvoices = null;
+	    
 		if (searchCriteria != null) {
-			List<SalesInvoice> salesInvoices = salesInvoiceService.search(searchCriteria);
-			table.setSalesInvoices(salesInvoices);
+			salesInvoices = salesInvoiceService.search(searchCriteria);
 		} else {
-			updateDisplay();
+	        salesInvoices = salesInvoiceService.getAllNewSalesInvoices();
 		}
+		
+        table.setSalesInvoices(salesInvoices);
+        if (salesInvoices.size() - 1 < selectedRow) {
+            selectedRow = salesInvoices.size() - 1;
+        }
+        table.changeSelection(selectedRow, 0, false, false);
+        if (visibleRect != null) {
+            table.scrollRectToVisible(visibleRect);
+        }
+	}
+	
+	public void clearTableSelection() {
+	    selectedRow = 0;
+	    visibleRect = null;
 	}
 	
 }

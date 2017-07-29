@@ -90,6 +90,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	@Autowired private AvailedPromoRewardsDialog availedPromoRewardsDialog;
 	@Autowired private PromoQualifyingAmountsDialog promoQualifyingAmountsDialog;
 	@Autowired private StockQuantityConversionDialog stockQuantityConversionDialog;
+	@Autowired private SalesInvoiceListPanel salesInvoiceListPanel;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -547,6 +548,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 			try {
 				SalesInvoice salesInvoice = salesRequisitionService.post(salesRequisition);
 				JOptionPane.showMessageDialog(this, "Post successful!");
+				salesInvoiceListPanel.clearTableSelection();
 				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);
 			} catch (SalesRequisitionPostException e) {
 				postExceptionsDialog.updateDisplay(e);
