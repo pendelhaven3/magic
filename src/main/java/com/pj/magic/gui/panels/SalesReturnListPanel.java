@@ -2,6 +2,7 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -35,6 +36,8 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 	private SalesReturnsTableModel tableModel = new SalesReturnsTableModel();
 	
 	private SalesReturnSearchCriteria searchCriteria;
+	private int selectedRow;
+	private Rectangle visibleRect;
 	
 	public SalesReturnListPanel() {
 		setTitle("Sales Return List");
@@ -107,6 +110,9 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 	}
 
 	protected void selectSalesReturn() {
+        selectedRow = table.getSelectedRow();
+        visibleRect = table.getVisibleRect();
+        
 		SalesReturn salesReturn = tableModel.getSalesReturn(table.getSelectedRow());
 		getMagicFrame().switchToSalesReturnPanel(salesReturn);
 	}
@@ -150,6 +156,8 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 		SalesReturnSearchCriteria criteria = searchSalesReturnsDialog.getSearchCriteria();
 		if (criteria != null) {
 			searchCriteria = criteria;
+            selectedRow = 0;
+            visibleRect = null;
 			List<SalesReturn> salesReturns = salesReturnService.search(criteria);
 			tableModel.setSalesReturns(salesReturns);
 			if (!salesReturns.isEmpty()) {
@@ -163,12 +171,21 @@ public class SalesReturnListPanel extends StandardMagicPanel {
 	
 	@Override
 	public void updateDisplayOnBack() {
+	    List<SalesReturn> salesReturns = null;
+	    
 		if (searchCriteria != null) {
-			List<SalesReturn> salesReturns = salesReturnService.search(searchCriteria);
-			tableModel.setSalesReturns(salesReturns);
+			salesReturns = salesReturnService.search(searchCriteria);
 		} else {
-			updateDisplay();
+	        salesReturns = salesReturnService.getUnpaidSalesReturns();
+	        searchSalesReturnsDialog.updateDisplay();
 		}
+		
+        tableModel.setSalesReturns(salesReturns);
+        if (salesReturns.size() - 1 < selectedRow) {
+            selectedRow = salesReturns.size() - 1;
+        }
+        table.changeSelection(selectedRow, 0, false, false);
+        table.scrollRectToVisible(visibleRect);
 	}
 	
 }
