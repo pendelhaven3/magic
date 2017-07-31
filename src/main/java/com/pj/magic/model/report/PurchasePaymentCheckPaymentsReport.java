@@ -14,6 +14,7 @@ public class PurchasePaymentCheckPaymentsReport {
 	private Date fromDate;
 	private Date toDate;
 	private Supplier supplier;
+	private BigDecimal amount;
 	private List<PurchasePaymentCheckPayment> checkPayments = new ArrayList<>();
 
 	public Date getFromDate() {
@@ -55,5 +56,13 @@ public class PurchasePaymentCheckPaymentsReport {
 	public void setSupplier(Supplier supplier) {
 		this.supplier = supplier;
 	}
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
 	
 }

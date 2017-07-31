@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -37,6 +38,7 @@ import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.NumberUtil;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
@@ -65,6 +67,7 @@ public class PurchasePaymentCheckPaymentsReportPanel extends StandardMagicPanel 
 	private MagicTextField supplierCodeField;
 	private JLabel supplierNameLabel;
 	private EllipsisButton selectSupplierButton;
+	private MagicTextField amountField;
 	
 	@Override
 	protected void initializeComponents() {
@@ -84,6 +87,8 @@ public class PurchasePaymentCheckPaymentsReportPanel extends StandardMagicPanel 
 				openSelectSupplierDialog();
 			}
 		});
+		
+		amountField = new MagicTextField();
 		
 		generateButton = new JButton("Generate");
 		generateButton.addActionListener(new ActionListener() {
@@ -121,6 +126,11 @@ public class PurchasePaymentCheckPaymentsReportPanel extends StandardMagicPanel 
 			return;
 		}
 		
+		if (!amountField.isEmpty() && !NumberUtil.isAmount(amountField.getText())) {
+            showErrorMessage("Amount must be a valid amount");
+            return;
+		}
+		
 		PurchasePaymentCheckPaymentsReport report = doGenerateReport();
 		tableModel.setCheckPayments(report.getCheckPayments());
 		if (!report.getCheckPayments().isEmpty()) {
@@ -147,11 +157,18 @@ public class PurchasePaymentCheckPaymentsReportPanel extends StandardMagicPanel 
 			report.setSupplier(supplierService.findSupplierByCode(supplierCode));
 		}
 		
+		BigDecimal amount = null;
+		if (!amountField.isEmpty()) {
+		    amount = NumberUtil.toBigDecimal(amountField.getText());
+		    report.setAmount(amount);
+		}
+		
 		PurchasePaymentCheckPaymentSearchCriteria criteria = new PurchasePaymentCheckPaymentSearchCriteria();
 		criteria.setPosted(true);
 		criteria.setFromDate(report.getFromDate());
 		criteria.setToDate(report.getToDate());
 		criteria.setSupplier(report.getSupplier());
+		criteria.setAmount(amount);
 		report.setCheckPayments(purchasePaymentService.searchCheckPayments(criteria));
 		
 		return report;
@@ -257,6 +274,22 @@ public class PurchasePaymentCheckPaymentsReportPanel extends StandardMagicPanel 
 		c.anchor = GridBagConstraints.WEST;
 		c.gridwidth = 4;
 		mainPanel.add(createSupplierPanel(), c);
+
+        currentRow++;
+        
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = currentRow;
+        c.anchor = GridBagConstraints.WEST;
+        mainPanel.add(ComponentUtil.createLabel(120, "Amount:"), c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 2;
+        c.gridy = currentRow;
+        c.anchor = GridBagConstraints.WEST;
+        c.gridwidth = 4;
+        amountField.setPreferredSize(new Dimension(100, 25));
+        mainPanel.add(amountField, c);
 
 		currentRow++;
 		

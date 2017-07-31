@@ -153,6 +153,11 @@ public class PurchasePaymentCheckPaymentDaoImpl extends MagicDao implements Purc
 			params.add(DbUtil.toMySqlDateString(criteria.getToDate()));
 		}
 		
+        if (criteria.getAmount() != null) {
+            sql.append(" and a.AMOUNT = ?");
+            params.add(criteria.getAmount());
+        }
+        
 		sql.append(" order by a.CHECK_DT, c.NAME, b.PURCHASE_PAYMENT_NO, a.BANK");
 		
 		return getJdbcTemplate().query(sql.toString(), checkPaymentRowMapper, params.toArray());
