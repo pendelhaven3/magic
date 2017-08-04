@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -206,7 +207,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		if (receivingReceiptsTable.isEditing()) {
 			receivingReceiptsTable.getCellEditor().cancelCellEditing();
 		}
-		getMagicFrame().switchToPurchasePaymentListPanel();
+        getMagicFrame().back(MagicFrame.PURCHASE_PAYMENT_LIST_PANEL);
 	}
 	
 	public void updateDisplay(PurchasePayment purchasePayment) {

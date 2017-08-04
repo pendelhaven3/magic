@@ -2,6 +2,7 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -43,6 +44,14 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private PurchasePaymentsTableModel tableModel;
 	
+    private PurchasePaymentSearchCriteria searchCriteria;
+    private int selectedRow;
+    private Rectangle visibleRect;
+	
+    public PurchasePaymentListPanel() {
+        setTitle("Purchase Payment List");
+    }
+    
 	public void updateDisplay() {
 		List<PurchasePayment> purchasePayments = purchasePaymentService.getAllNewPurchasePayments();
 		tableModel.setPurchasePayments(purchasePayments);
@@ -50,6 +59,8 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 			table.changeSelection(0, 0, false, false);
 		}
 		searchPurchasePaymentsDialog.updateDisplay();
+        searchCriteria = null;
+        clearTableSelection();
 	}
 
 	@Override
@@ -117,6 +128,8 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 	}
 
 	private void viewPurchasePaymentDetails() {
+        selectedRow = table.getSelectedRow();
+        visibleRect = table.getVisibleRect();
 		PurchasePayment purchasePayment = tableModel.getPurchasePayment(table.getSelectedRow());
 		getMagicFrame().switchToPurchasePaymentPanel(purchasePayment);
 	}
@@ -159,6 +172,10 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 		
 		PurchasePaymentSearchCriteria criteria = searchPurchasePaymentsDialog.getSearchCriteria();
 		if (criteria != null) {
+            searchCriteria = criteria;
+            selectedRow = 0;
+            visibleRect = null;
+            
 			List<PurchasePayment> payments = purchasePaymentService.searchPurchasePayments(criteria);
 			tableModel.setPurchasePayments(payments);
 			if (!payments.isEmpty()) {
@@ -171,9 +188,38 @@ public class PurchasePaymentListPanel extends StandardMagicPanel {
 	}
 
 	private void switchToNewPurchasePaymentPanel() {
+        searchCriteria = null;
+        selectedRow = 0;
+        visibleRect = null;
 		getMagicFrame().switchToPurchasePaymentPanel(new PurchasePayment());
 	}
 
+    @Override
+    public void updateDisplayOnBack() {
+        List<PurchasePayment> purchasePayments = null;
+        
+        if (searchCriteria != null) {
+            purchasePayments = purchasePaymentService.searchPurchasePayments(searchCriteria);
+        } else {
+            purchasePayments = purchasePaymentService.getAllNewPurchasePayments();
+            searchPurchasePaymentsDialog.updateDisplay();
+        }
+        
+        tableModel.setPurchasePayments(purchasePayments);
+        if (purchasePayments.size() - 1 < selectedRow) {
+            selectedRow = purchasePayments.size() - 1;
+        }
+        table.changeSelection(selectedRow, 0, false, false);
+        if (visibleRect != null) {
+            table.scrollRectToVisible(visibleRect);
+        }
+    }
+    
+    public void clearTableSelection() {
+        selectedRow = 0;
+        visibleRect = null;
+    }
+	
 	private class PurchasePaymentsTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = {"Purchase Payment No.", "Supplier", "Status", "Post Date"};
