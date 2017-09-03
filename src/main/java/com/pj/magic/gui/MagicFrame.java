@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.stereotype.Component;
 
 import com.pj.magic.OnStartUp;
 import com.pj.magic.gui.component.CardLayoutPanel;
@@ -176,6 +177,7 @@ import com.pj.magic.service.SystemService;
  *
  */
 
+@Component
 public class MagicFrame extends JFrame {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MagicFrame.class);
