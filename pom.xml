@@ -132,25 +132,17 @@
                     </execution>
                 </executions>
             </plugin>
-			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
 				<configuration>
 					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>magic-lib/</classpathPrefix>
-							<mainClass>com.pj.magic.Magic</mainClass>
-						</manifest>
 						<manifestEntries>
-							<SplashScreen-Image>images/splash.png</SplashScreen-Image>
+							<SplashScreen-Image>BOOT-INF/classes/images/splash.png</SplashScreen-Image>
 						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
-			-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
