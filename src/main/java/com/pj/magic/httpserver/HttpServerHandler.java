@@ -36,6 +36,10 @@ public class HttpServerHandler extends AbstractHandler {
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		switch (target) {
+        case "/hello":
+            response.getWriter().print("Hello World");
+            response.flushBuffer();
+            break;
 		case "/salesInvoice/search":
 			searchSalesInvoices(request, response);
 			break;

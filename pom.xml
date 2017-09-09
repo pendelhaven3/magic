@@ -85,6 +85,58 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<profiles>
+		<profile>
+			<id>client</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<resources>
+			        <resource>
+			            <directory>src/main/resources</directory>
+			            <excludes>
+			                <exclude>server.properties</exclude>
+			            </excludes>
+			        </resource>
+				</resources>
+				<plugins>
+		            <plugin>
+		                <groupId>org.springframework.boot</groupId>
+		                <artifactId>spring-boot-maven-plugin</artifactId>
+		                <executions>
+		                    <execution>
+		                        <goals>
+		                            <goal>repackage</goal>
+		                        </goals>
+		                    </execution>
+		                </executions>
+		            </plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>server</id>
+			<build>
+				<finalName>${artifactId}-SERVER-${version}</finalName>
+				<plugins>
+		            <plugin>
+		                <groupId>org.springframework.boot</groupId>
+		                <artifactId>spring-boot-maven-plugin</artifactId>
+		                <executions>
+		                    <execution>
+		                        <goals>
+		                            <goal>repackage</goal>
+		                        </goals>
+		                    </execution>
+		                </executions>
+		            </plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	
 	<build>
 	
 		<!-- Configuration only. For actual plugins to invoke, use separate <plugins> section instead. -->
@@ -121,17 +173,6 @@
 		</pluginManagement>
 	
 		<plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>

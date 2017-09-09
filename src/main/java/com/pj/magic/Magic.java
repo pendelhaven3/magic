@@ -17,10 +17,6 @@ public class Magic {
             public void run() {
                 UISettings.initialize();
                 
-//                if (ApplicationProperties.isServer()) {
-//                    configLocations.add("httpserver.xml");
-//                }
-                
                 ConfigurableApplicationContext context = new SpringApplicationBuilder(Magic.class).headless(false).run(args);
                 
                 MagicFrame frame = context.getBean(MagicFrame.class);
