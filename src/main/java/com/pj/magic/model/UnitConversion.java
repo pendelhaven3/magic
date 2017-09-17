@@ -1,11 +1,15 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class UnitConversion {
+public class UnitConversion implements Serializable {
 
-	private String unit;
+    private static final long serialVersionUID = 4920172342587480215L;
+    
+    private String unit;
 	private int quantity;
 
 	public UnitConversion() {

@@ -1,5 +1,7 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,9 +15,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name="PRODUCT_SUBCATEGORY")
-public class ProductSubcategory {
+public class ProductSubcategory implements Serializable {
 
-	@Id
+    private static final long serialVersionUID = 1609612926058033707L;
+    
+    @Id
 	@GeneratedValue
 	private Long id;
 	private String name;

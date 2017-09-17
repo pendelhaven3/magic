@@ -1,5 +1,6 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -9,9 +10,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import com.pj.magic.Constants;
 import com.pj.magic.model.util.Percentage;
 
-public class SalesInvoiceItem implements Comparable<SalesInvoiceItem> {
+public class SalesInvoiceItem implements Comparable<SalesInvoiceItem>, Serializable {
 
-	private Long id;
+    private static final long serialVersionUID = -5385600090647746687L;
+    
+    private Long id;
 	private SalesInvoice parent;
 	private Product product;
 	private String unit;

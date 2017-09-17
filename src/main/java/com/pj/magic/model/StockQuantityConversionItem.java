@@ -1,11 +1,15 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class StockQuantityConversionItem implements Comparable<StockQuantityConversionItem> {
+public class StockQuantityConversionItem implements Comparable<StockQuantityConversionItem>, Serializable {
 
-	private Long id;
+    private static final long serialVersionUID = -995920799377050401L;
+    
+    private Long id;
 	private StockQuantityConversion parent;
 	private Product product;
 	private String fromUnit;

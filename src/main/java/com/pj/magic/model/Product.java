@@ -1,5 +1,6 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -13,9 +14,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import com.pj.magic.Constants;
 import com.pj.magic.util.NumberUtil;
 
-public class Product implements Comparable<Product> {
+public class Product implements Comparable<Product>, Serializable {
 
-	private Long id;
+    private static final long serialVersionUID = -6522062463737148407L;
+    
+    private Long id;
 	private String code;
 	private String description;
 	private List<String> units = new ArrayList<>();

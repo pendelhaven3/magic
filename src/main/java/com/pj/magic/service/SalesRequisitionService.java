@@ -8,6 +8,7 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.model.SalesRequisitionSeparateItemsList;
+import com.pj.magic.model.User;
 
 public interface SalesRequisitionService {
 
@@ -23,6 +24,8 @@ public interface SalesRequisitionService {
 
 	SalesInvoice post (SalesRequisition salesRequisition) throws SalesRequisitionPostException;
 	
+    SalesInvoice post (SalesRequisition salesRequisition, User postedBy) throws SalesRequisitionPostException;
+    
 	List<SalesRequisition> getAllNonPostedSalesRequisitions();
 
 	SalesRequisition separatePerCaseItems(SalesRequisition salesRequisition);

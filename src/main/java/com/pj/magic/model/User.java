@@ -1,11 +1,15 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class User {
+public class User implements Serializable {
 
-	private Long id;
+    private static final long serialVersionUID = -8624069925842088821L;
+    
+    private Long id;
 	private String username;
 	private String password;
 	private boolean supervisor;

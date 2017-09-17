@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.client.service.SalesRequisitionServiceClient;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NotEnoughPromoStocksException;
 import com.pj.magic.exception.SalesRequisitionPostException;
@@ -59,6 +60,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.service.CustomerService;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PaymentTermService;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.ProductService;
@@ -91,6 +93,8 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 	@Autowired private PromoQualifyingAmountsDialog promoQualifyingAmountsDialog;
 	@Autowired private StockQuantityConversionDialog stockQuantityConversionDialog;
 	@Autowired private SalesInvoiceListPanel salesInvoiceListPanel;
+	@Autowired private SalesRequisitionServiceClient salesRequisitionServiceClient;
+	@Autowired private LoginService loginService;
 	
 	private SalesRequisition salesRequisition;
 	private JLabel salesRequisitionNumberField;
@@ -546,7 +550,7 @@ public class SalesRequisitionPanel extends StandardMagicPanel {
 				return;
 			}
 			try {
-				SalesInvoice salesInvoice = salesRequisitionService.post(salesRequisition);
+				SalesInvoice salesInvoice = salesRequisitionServiceClient.post(salesRequisition, loginService.getLoggedInUser());
 				JOptionPane.showMessageDialog(this, "Post successful!");
 				salesInvoiceListPanel.clearTableSelection();
 				getMagicFrame().switchToSalesInvoicePanel(salesInvoice);

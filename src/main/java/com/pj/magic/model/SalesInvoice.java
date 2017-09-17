@@ -1,5 +1,6 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -13,9 +14,11 @@ import org.apache.commons.lang.time.DateUtils;
 import com.pj.magic.Constants;
 import com.pj.magic.util.ListUtil;
 
-public class SalesInvoice {
+public class SalesInvoice implements Serializable {
 
-	private Long id;
+    private static final long serialVersionUID = -6766882154444060022L;
+    
+    private Long id;
 	private Long salesInvoiceNumber;
 	private Customer customer;
 	private Date createDate;

@@ -1,10 +1,13 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class UnitCost {
+public class UnitCost implements Serializable {
 
-	private String unit;
+    private static final long serialVersionUID = 6995330371612371709L;
+    
+    private String unit;
 	private BigDecimal grossCost = BigDecimal.ZERO;
 	private BigDecimal finalCost = BigDecimal.ZERO;
 

@@ -1,8 +1,12 @@
 package com.pj.magic.model;
 
-public class UnitQuantity {
+import java.io.Serializable;
 
-	private String unit;
+public class UnitQuantity implements Serializable {
+
+    private static final long serialVersionUID = 2053446161848737786L;
+    
+    private String unit;
 	private int quantity;
 	
 	public UnitQuantity(String unit, int quantity) {

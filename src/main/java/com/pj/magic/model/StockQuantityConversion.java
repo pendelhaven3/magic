@@ -1,12 +1,15 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class StockQuantityConversion {
+public class StockQuantityConversion implements Serializable {
 
-	private Long id;
+    private static final long serialVersionUID = -1696900768471273923L;
+    
+    private Long id;
 	private Long stockQuantityConversionNumber;
 	private String remarks;
 	private List<StockQuantityConversionItem> items = new ArrayList<>();

@@ -1,5 +1,6 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -16,9 +17,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import com.pj.magic.model.util.BooleanToStringConverter;
 
 @Entity
-public class Customer {
+public class Customer implements Serializable {
 
-	@Id
+    private static final long serialVersionUID = 4994363059129213047L;
+    
+    @Id
 	@GeneratedValue
 	private Long id;
 	private String code;

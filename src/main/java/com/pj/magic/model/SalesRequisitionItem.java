@@ -1,13 +1,16 @@
 package com.pj.magic.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class SalesRequisitionItem {
+public class SalesRequisitionItem implements Serializable {
 
-	private Long id;
+    private static final long serialVersionUID = -2221752168346969004L;
+    
+    private Long id;
 	private SalesRequisition parent;
 	private Product product;
 	private String unit;

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,12 +34,14 @@ import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesRequisitionItem;
 import com.pj.magic.model.SalesRequisitionSeparateItemsList;
+import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.SalesRequisitionService;
 import com.pj.magic.service.SystemService;
 
 @Service
+@Primary
 public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 
 	@Autowired private SalesRequisitionDao salesRequisitionDao;
@@ -110,46 +113,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	@Override
 	public SalesInvoice post(SalesRequisition salesRequisition)
 			throws SalesRequisitionPostException {
-		SalesRequisition updated = getSalesRequisition(salesRequisition.getId());
-		
-		if (updated.isPosted()) {
-			throw new AlreadyPostedException();
-		}
-		
-		SalesRequisitionPostException exception = new SalesRequisitionPostException();
-		
-		for (SalesRequisitionItem item : updated.getItems()) {
-			if (item.getProduct().hasNoSellingPrice(item.getUnit())) {
-				exception.add(new SalesRequisitionItemPostException(item, "No selling price"));
-			} else if (item.getProduct().hasSellingPriceLessThanCost(item.getUnit())) {
-				exception.add(new SalesRequisitionItemPostException(item, "Selling price less than cost"));
-			}
-				
-			Product product = productDao.get(item.getProduct().getId());
-			if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity())) {
-				exception.add(new SalesRequisitionItemNotEnoughStocksException(item));
-			} else if (exception.isEmpty()) {
-				product.subtractUnitQuantity(item.getUnit(), item.getQuantity());
-				productDao.updateAvailableQuantities(product);
-			}
-		}
-		
-		if (!exception.isEmpty()) {
-			throw exception;
-		}
-		
-		updated.setPosted(true);
-		salesRequisitionDao.save(updated);
-
-		SalesInvoice salesInvoice = updated.createSalesInvoice();
-		salesInvoice.setPostedBy(loginService.getLoggedInUser());
-		salesInvoice.setVatAmount(salesInvoice.getTotalNetAmount().multiply(systemService.getVatRate())
-				.setScale(2, RoundingMode.HALF_UP));
-		salesInvoiceService.save(salesInvoice);
-		
-		postAvailedPromoRewards(salesInvoice);
-		
-		return salesInvoice;
+	    return post(salesRequisition, loginService.getLoggedInUser());
 	}
 
 	private void postAvailedPromoRewards(SalesInvoice salesInvoice) {
@@ -241,5 +205,50 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	public void removeSalesRequisitionSeparateItem(Product product) {
 		salesRequisitionSeparateItemDao.remove(product);
 	}
+
+	@Transactional
+    @Override
+    public SalesInvoice post(SalesRequisition salesRequisition, User postedBy) throws SalesRequisitionPostException {
+        SalesRequisition updated = getSalesRequisition(salesRequisition.getId());
+        
+        if (updated.isPosted()) {
+            throw new AlreadyPostedException();
+        }
+        
+        SalesRequisitionPostException exception = new SalesRequisitionPostException();
+        
+        for (SalesRequisitionItem item : updated.getItems()) {
+            if (item.getProduct().hasNoSellingPrice(item.getUnit())) {
+                exception.add(new SalesRequisitionItemPostException(item, "No selling price"));
+            } else if (item.getProduct().hasSellingPriceLessThanCost(item.getUnit())) {
+                exception.add(new SalesRequisitionItemPostException(item, "Selling price less than cost"));
+            }
+                
+            Product product = productDao.get(item.getProduct().getId());
+            if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity())) {
+                exception.add(new SalesRequisitionItemNotEnoughStocksException(item));
+            } else if (exception.isEmpty()) {
+                product.subtractUnitQuantity(item.getUnit(), item.getQuantity());
+                productDao.updateAvailableQuantities(product);
+            }
+        }
+        
+        if (!exception.isEmpty()) {
+            throw exception;
+        }
+        
+        updated.setPosted(true);
+        salesRequisitionDao.save(updated);
+
+        SalesInvoice salesInvoice = updated.createSalesInvoice();
+        salesInvoice.setPostedBy(postedBy);
+        salesInvoice.setVatAmount(salesInvoice.getTotalNetAmount().multiply(systemService.getVatRate())
+                .setScale(2, RoundingMode.HALF_UP));
+        salesInvoiceService.save(salesInvoice);
+        
+        postAvailedPromoRewards(salesInvoice);
+        
+        return salesInvoice;
+    }
 	
 }

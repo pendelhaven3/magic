@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.pj.magic.dao.CustomerDao;
 import com.pj.magic.dao.ProductDao;
@@ -54,7 +55,9 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 	@Override
 	public void save(SalesInvoice salesInvoice) {
 		salesInvoice.setPostDate(systemDao.getCurrentDateTime());
-		salesInvoice.setPostedBy(loginService.getLoggedInUser());
+		if (salesInvoice.getPostedBy() == null) {
+	        salesInvoice.setPostedBy(loginService.getLoggedInUser());
+		}
 		salesInvoiceDao.save(salesInvoice);
 		for (SalesInvoiceItem item : salesInvoice.getItems()) {
 			salesInvoiceItemDao.save(item);

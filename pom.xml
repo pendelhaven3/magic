@@ -89,9 +89,6 @@
 	<profiles>
 		<profile>
 			<id>client</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<resources>
 			        <resource>
@@ -118,6 +115,9 @@
 		</profile>
 		<profile>
 			<id>server</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>${artifactId}-SERVER-${version}</finalName>
 				<plugins>
