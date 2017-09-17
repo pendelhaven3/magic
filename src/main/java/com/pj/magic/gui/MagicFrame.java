@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 
@@ -168,6 +169,7 @@ import com.pj.magic.model.Supplier;
 import com.pj.magic.model.User;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.service.SystemService;
+import com.pj.magic.util.ApplicationUtil;
 
 /**
  * Main JFrame that holds all the panels.
@@ -180,7 +182,9 @@ import com.pj.magic.service.SystemService;
 @Component
 public class MagicFrame extends JFrame {
 	
-	private static final Logger logger = LoggerFactory.getLogger(MagicFrame.class);
+    private static final long serialVersionUID = 8652209770458750280L;
+
+    private static final Logger logger = LoggerFactory.getLogger(MagicFrame.class);
 	
 	public static final String LOGIN_PANEL = "LOGIN_PANEL";
 	public static final String MAIN_MENU_PANEL = "MAIN_MENU_PANEL";
@@ -306,6 +310,9 @@ public class MagicFrame extends JFrame {
 	public static final String PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL = 
 			"DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL";
 	public static final String PILFERAGE_REPORT_PANEL = "PILFERAGE_REPORT_PANEL";
+	
+	@Value("${application.title}")
+	private String baseTitle;
 	
 	@Autowired private LoginPanel loginPanel;
 	@Autowired private MainMenuPanel mainMenuPanel;
@@ -433,7 +440,7 @@ public class MagicFrame extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
-	@PostConstruct
+    @PostConstruct
 	public void initialize() {
 		if (!isDatabaseUp()) {
 			JOptionPane.showMessageDialog(this, "Cannot connect to database", 
@@ -445,12 +452,19 @@ public class MagicFrame extends JFrame {
 					"Error Message", JOptionPane.ERROR_MESSAGE);
 			closeProgram();
 		} else {
+            initializeBaseTitle();
 			addPanels();
 			onStartUp.fire();
 		}
 	}
 	
-	private String getDatabaseVersionRequired() {
+	private void initializeBaseTitle() {
+	    if (ApplicationUtil.isServer()) {
+	        baseTitle = baseTitle.replace("Magic", "Magic SERVER");
+	    }
+    }
+
+    private String getDatabaseVersionRequired() {
 		return resourceBundle.getString("db.version");
 	}
 
@@ -600,7 +614,7 @@ public class MagicFrame extends JFrame {
 	}
 	
 	public void switchToMainMenuPanel() {
-		setTitle(constructTitle());
+		setTitle(baseTitle);
 		mainMenuPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAIN_MENU_PANEL);
 	}
@@ -617,12 +631,8 @@ public class MagicFrame extends JFrame {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_REQUISITION_PANEL);
 	}
 	
-	public String constructTitle() {
-		return resourceBundle.getString("application.title");
-	}
-	
 	public void addPanelNameToTitle(String panelName) {
-		setTitle(constructTitle() + " - " + panelName);
+		setTitle(baseTitle + " - " + panelName);
 	}
 
 	public void back(String panelName) {
