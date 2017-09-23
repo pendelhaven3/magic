@@ -1,8 +1,5 @@
 package com.pj.magic;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -14,6 +11,7 @@ import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.dao.SystemDao;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
+import com.pj.magic.util.ApplicationUtil;
 
 @Component
 public class OnStartUp {
@@ -26,13 +24,9 @@ public class OnStartUp {
 	
 	public void fire() {
 		resetCreateDateOfUnpostedStockQuantityConversions();
-		if (isServer()) {
+		if (ApplicationUtil.isServer()) {
 			generateDailyProductQuantityDiscrepancyReport();
 		}
-	}
-
-	private boolean isServer() {
-		return Files.exists(Paths.get("magic-lib", "httpserver"));
 	}
 
 	private void resetCreateDateOfUnpostedStockQuantityConversions() {
