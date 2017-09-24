@@ -14,7 +14,7 @@ public class RmiClientConfig {
     @DependsOn("salesRequisitionServiceExporter")
     RmiProxyFactoryBean salesRequisitionServiceRmiClient() {
         RmiProxyFactoryBean rmiProxyFactory = new RmiProxyFactoryBean();
-        rmiProxyFactory.setServiceUrl("rmi://localhost:1099/SalesRequisitionService");
+        rmiProxyFactory.setServiceUrl("rmi://magic-db:1099/SalesRequisitionService");
         rmiProxyFactory.setServiceInterface(SalesRequisitionService.class);
         return rmiProxyFactory;
     }
