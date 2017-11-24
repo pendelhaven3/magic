@@ -1,12 +1,12 @@
 package com.pj.magic.model;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Unit {
 
-	// TODO: Find occurences and replace them
-	
 	public static final String CASE = "CSE";
 	public static final String TIE = "TIE";
 	public static final String CARTON = "CTN";
@@ -49,6 +49,11 @@ public class Unit {
 
 	public static String[] values() {
 		return new String[] {null, Unit.PIECES, Unit.DOZEN, Unit.CARTON, Unit.TIE, Unit.CASE};
+	}
+	
+	public static List<String> sortDescending(List<String> units) {
+        Collections.sort(units, (unit1, unit2) -> -Unit.compare(unit1, unit2));
+        return units;
 	}
 	
 }

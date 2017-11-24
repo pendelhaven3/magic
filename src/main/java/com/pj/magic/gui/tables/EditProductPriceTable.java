@@ -1,6 +1,7 @@
 package com.pj.magic.gui.tables;
 
 import java.awt.Color;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JLabel;
@@ -19,12 +20,15 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.models.EditProductPriceTableModel;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.Unit;
 import com.pj.magic.util.NumberUtil;
 
 @Component
 public class EditProductPriceTable extends MagicTable {
 
-	public static final int UNIT_COLUMN_INDEX = 0;
+    private static final long serialVersionUID = 3315995393924397381L;
+    
+    public static final int UNIT_COLUMN_INDEX = 0;
 	public static final int SELLING_PRICE_COLUMN_INDEX = 1;
 	public static final int FINAL_COST_COLUMN_INDEX = 2;
 	public static final int PERCENT_PROFIT_COLUMN_INDEX = 3;
@@ -56,11 +60,12 @@ public class EditProductPriceTable extends MagicTable {
 		return valid;
 	}
 
-	private boolean validateSellingPrice(String amount) {
+	private boolean validateSellingPrice(int row, String amount) {
 		boolean valid = validateAmount(amount, "Selling Price");
 		if (valid) {
-			String maxUnit = product.getUnits().get(0);
-			if (product.getFinalCost(maxUnit).compareTo(NumberUtil.toBigDecimal(amount)) > 0) {
+		    List<String> units = Unit.sortDescending(product.getUnits());
+			String unit = units.get(row);
+			if (product.getFinalCost(unit).compareTo(NumberUtil.toBigDecimal(amount)) > 0) {
 				showErrorMessage("Selling price less than cost");
 				valid = false;
 			}
@@ -79,7 +84,7 @@ public class EditProductPriceTable extends MagicTable {
 					boolean hasFocus, int row, int column) {
 				java.awt.Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
 						row, column);
-				if (row == 0) {
+				if (tableModel.isCellEditable(row, column)) {
 					c.setBackground(Color.yellow);
 				} else if (!isSelected) {
 					c.setBackground(null);
@@ -152,6 +157,8 @@ public class EditProductPriceTable extends MagicTable {
 	}
 	
 	private class SellingPriceCellEditor extends MagicCellEditor {
+	    
+	    private int row;
 
 		public SellingPriceCellEditor() {
 			super(new MagicTextField());
@@ -164,7 +171,14 @@ public class EditProductPriceTable extends MagicTable {
 		@Override
 		public boolean stopCellEditing() {
 			String amount = ((JTextField)getComponent()).getText();
-			return (validateSellingPrice(amount)) ? super.stopCellEditing() : false;
+			return (validateSellingPrice(row, amount)) ? super.stopCellEditing() : false;
+		}
+		
+		@Override
+		public java.awt.Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
+		        int column) {
+		    this.row = row;
+		    return super.getTableCellEditorComponent(table, value, isSelected, row, column);
 		}
 		
 	}

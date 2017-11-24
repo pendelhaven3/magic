@@ -17,7 +17,9 @@ import com.pj.magic.util.NumberUtil;
 @Component
 public class EditProductPriceTableModel extends AbstractTableModel {
 
-	private static final String[] columnNames =
+    private static final long serialVersionUID = -5735905664227935245L;
+
+    private static final String[] columnNames =
 		{"Unit", "Selling Price", "Final Cost", "% Profit", "Flat Profit"};
 
 	private Product product;
@@ -72,18 +74,18 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return rowIndex == 0 && (columnIndex == EditProductPriceTable.FINAL_COST_COLUMN_INDEX
-				|| columnIndex == EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX
-				|| columnIndex == EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX
-				|| columnIndex == EditProductPriceTable.FLAT_PROFIT_COLUMN_INDEX);
+	    if (rowIndex == 0) {
+	        return columnIndex == EditProductPriceTable.FINAL_COST_COLUMN_INDEX
+	                || columnIndex == EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX
+	                || columnIndex == EditProductPriceTable.PERCENT_PROFIT_COLUMN_INDEX
+	                || columnIndex == EditProductPriceTable.FLAT_PROFIT_COLUMN_INDEX;
+	    } else {
+	        return columnIndex == EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX;
+	    }
 	}
 
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		if (rowIndex != 0) {
-			throw new RuntimeException("Cannot directly update costs/prices for smaller units of product");
-		}
-		
 		BigDecimal val = NumberUtil.toBigDecimal((String)value);
 		String unit = product.getUnits().get(rowIndex);
 		switch (columnIndex) {
@@ -107,8 +109,8 @@ public class EditProductPriceTableModel extends AbstractTableModel {
 		fireTableCellUpdated(rowIndex, EditProductPriceTable.FLAT_PROFIT_COLUMN_INDEX);
 		
 		if (product.getUnits().size() > 1) {
-			product.autoCalculateCostsOfSmallerUnits();
-			product.autoCalculatePricesOfSmallerUnits();
+			product.autoCalculateCostsOfSmallerUnits(unit);
+			product.autoCalculatePricesOfSmallerUnits(unit);
 			for (int i = 1; i < product.getUnits().size(); i++) {
 				fireTableCellUpdated(i, EditProductPriceTable.FINAL_COST_COLUMN_INDEX);
 				fireTableCellUpdated(i, EditProductPriceTable.SELLING_PRICE_COLUMN_INDEX);

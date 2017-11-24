@@ -374,6 +374,26 @@ public class Product implements Comparable<Product>, Serializable {
 		}
 	}
 
+    public void autoCalculatePricesOfSmallerUnits(String referenceUnit) {
+        Collections.sort(units, new Comparator<String>() {
+
+            @Override
+            public int compare(String unit1, String unit2) {
+                return Unit.compare(unit1, unit2) * -1;
+            }
+        });
+        
+        String maxUnit = referenceUnit;
+        BigDecimal priceOfMaxUnit = getUnitPrice(maxUnit);
+        int conversionOfMaxUnit = getUnitConversion(maxUnit);
+        for (int i = (units.indexOf(referenceUnit) + 1); i < units.size(); i++) {
+            String unit = units.get(i);
+            BigDecimal unitPrice = priceOfMaxUnit.divide(new BigDecimal(conversionOfMaxUnit / getUnitConversion(unit)), 
+                    2, RoundingMode.HALF_UP);
+            setUnitPrice(unit, NumberUtil.roundUpToNearestFiveCents(unitPrice));
+        }
+    }
+
 	public String getMaxUnit() {
 		Collections.sort(units, new Comparator<String>() {
 
