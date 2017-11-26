@@ -68,6 +68,8 @@ public class EditProductPriceTable extends MagicTable {
 			if (product.getFinalCost(unit).compareTo(NumberUtil.toBigDecimal(amount)) > 0) {
 				showErrorMessage("Selling price less than cost");
 				valid = false;
+			} else if (row > 0 && !confirm("Do you really want to update selling price of smaller unit?")) {
+                valid = false;
 			}
 		}
 		return valid;
