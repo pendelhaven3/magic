@@ -50,6 +50,7 @@ import com.pj.magic.model.PromoRedemptionSalesInvoice;
 import com.pj.magic.model.PromoType1Rule;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PromoType3Rule;
+import com.pj.magic.model.PromoType6Rule;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PromoRedemptionService;
@@ -61,7 +62,9 @@ import com.pj.magic.util.HtmlUtil;
 @Component
 public class PromoRedemptionPanel extends StandardMagicPanel {
 
-	private static final Logger logger = LoggerFactory.getLogger(PromoRedemptionPanel.class);
+    private static final long serialVersionUID = 6083153304325244026L;
+
+    private static final Logger logger = LoggerFactory.getLogger(PromoRedemptionPanel.class);
 	
 	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 0;
 	private static final int AMOUNT_COLUMN_INDEX = 1;
@@ -713,11 +716,14 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 	
 	private class PromoRedemptionPrizesTableModel extends AbstractTableModel {
 
-		private final String[] columnNames = {"Item Description", "Unit", "Quantity"};
+        private static final long serialVersionUID = -458112066996485874L;
+
+        private final String[] columnNames = {"Item Description", "Unit", "Quantity"};
 		
 		private PromoRedemption promoRedemption;
 		private PromoType1Rule promoType1Rule;
 		private PromoType3Rule promoType3Rule;
+        private PromoType6Rule promoType6Rule;
 		
 		@Override
 		public String getColumnName(int column) {
@@ -742,6 +748,7 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 			case PROMO_TYPE_2:
 				return promo.getPromoType2Rules().size();
 			case PROMO_TYPE_3:
+            case PROMO_TYPE_6:
 				return 1;
 			default:
 				return 0;
@@ -768,6 +775,8 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 				return getValueAtForPromoType2(rowIndex, columnIndex);
 			case PROMO_TYPE_3:
 				return getValueAtForPromoType3(rowIndex, columnIndex);
+            case PROMO_TYPE_6:
+                return getValueAtForPromoType6(rowIndex, columnIndex);
 			default:
 				return null;
 			}
@@ -842,6 +851,22 @@ public class PromoRedemptionPanel extends StandardMagicPanel {
 				return null;
 			}
 		}
+		
+        public Object getValueAtForPromoType6(int rowIndex, int columnIndex) {
+            Promo promo = promoRedemption.getPromo();
+            PromoType6Rule rule = (promoType6Rule != null) ? promoType6Rule : promo.getPromoType6Rule();
+            
+            switch (columnIndex) {
+            case ITEM_DESCRIPTION_COLUMN_INDEX:
+                return rule.getProduct().getDescription();
+            case UNIT_COLUMN_INDEX:
+                return rule.getUnit();
+            case QUANTITY_COLUMN_INDEX:
+                return promoRedemption.getRewards().get(0).getQuantity();
+            default:
+                return null;
+            }
+        }
 		
 		public void setPromoRedemption(PromoRedemption promoRedemption) {
 			this.promoRedemption = promoRedemption;

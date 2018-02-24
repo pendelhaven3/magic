@@ -25,6 +25,13 @@ FREE: $report.field($reward.product.description, 34)   [ ] $report.field($reward
 #end
 #end
 #end
+#foreach($promoRedemption in $promoRedemptions)
+#if ($promoRedemption.promo.isPromoType6())
+#foreach($reward in $promoRedemption.rewards)
+FREE: $report.field($reward.product.description, 34)   [ ] $report.field($reward.unit, 4) $report.field($reward.quantity, 4, "right")
+#end
+#end
+#end
 #if($isLastPage == true)
                                                                  ------------
 Total Items => $report.field($totalItems, 3) Total Qty => $report.field($totalQuantity, 4, "right")                 Sub Total : $report.field($salesInvoice.totalAmount, 12, "right")

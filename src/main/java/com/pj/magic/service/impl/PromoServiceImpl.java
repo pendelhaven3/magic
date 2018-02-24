@@ -18,6 +18,8 @@ import com.pj.magic.dao.PromoType4RuleDao;
 import com.pj.magic.dao.PromoType4RulePromoProductDao;
 import com.pj.magic.dao.PromoType5RuleDao;
 import com.pj.magic.dao.PromoType5RulePromoProductDao;
+import com.pj.magic.dao.PromoType6RuleDao;
+import com.pj.magic.dao.PromoType6RulePromoProductDao;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoType2Rule;
@@ -27,6 +29,8 @@ import com.pj.magic.model.PromoType4Rule;
 import com.pj.magic.model.PromoType4RulePromoProduct;
 import com.pj.magic.model.PromoType5Rule;
 import com.pj.magic.model.PromoType5RulePromoProduct;
+import com.pj.magic.model.PromoType6Rule;
+import com.pj.magic.model.PromoType6RulePromoProduct;
 import com.pj.magic.model.search.PromoSearchCriteria;
 
 @Service
@@ -38,11 +42,13 @@ public class PromoServiceImpl implements PromoService {
 	@Autowired private PromoType3RuleDao promoType3RuleDao;
 	@Autowired private PromoType4RuleDao promoType4RuleDao;
 	@Autowired private PromoType5RuleDao promoType5RuleDao;
+    @Autowired private PromoType6RuleDao promoType6RuleDao;
 	@Autowired private ProductDao productDao;
 	@Autowired private PromoRedemptionDao promoRedemptionDao;
 	@Autowired private PromoType3RulePromoProductDao promoType3RulePromoProductDao;
 	@Autowired private PromoType4RulePromoProductDao promoType4RulePromoProductDao;
 	@Autowired private PromoType5RulePromoProductDao promoType5RulePromoProductDao;
+    @Autowired private PromoType6RulePromoProductDao promoType6RulePromoProductDao;
 	
 	@Override
 	public List<Promo> getAllPromos() {
@@ -70,6 +76,9 @@ public class PromoServiceImpl implements PromoService {
 			case PROMO_TYPE_5:
 				promoType5RuleDao.save(promo.getPromoType5Rule());
 				break;
+            case PROMO_TYPE_6:
+                promoType6RuleDao.save(promo.getPromoType6Rule());
+                break;
 			default:
 				break;
 			}
@@ -117,6 +126,13 @@ public class PromoServiceImpl implements PromoService {
 			}
 			promo.setPromoType5Rule(type5Rule);
 			break;
+        case PROMO_TYPE_6:
+            PromoType6Rule type6Rule = promoType6RuleDao.findByPromo(promo);
+            if (type6Rule != null) {
+                type6Rule.setPromoProducts(promoType6RulePromoProductDao.findAllByRule(type6Rule));
+            }
+            promo.setPromoType6Rule(type6Rule);
+            break;
 		}
 	}
 
@@ -230,5 +246,23 @@ public class PromoServiceImpl implements PromoService {
 		removeAllPromoProducts(rule);
 		promoType4RuleDao.addAllPromoProductsByManufacturer(rule, manufacturer);
 	}
+
+	@Transactional
+    @Override
+    public void save(PromoType6RulePromoProduct promoProduct) {
+	    promoType6RulePromoProductDao.save(promoProduct);
+    }
+
+	@Transactional
+    @Override
+    public void delete(PromoType6RulePromoProduct promoProduct) {
+        promoType6RulePromoProductDao.delete(promoProduct);     
+    }
+
+	@Transactional
+    @Override
+    public void removeAllPromoProducts(PromoType6Rule rule) {
+        promoType6RulePromoProductDao.deleteAllByRule(rule);
+    }
 
 }

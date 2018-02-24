@@ -29,6 +29,7 @@ public class Promo {
 	private PromoType3Rule promoType3Rule;
 	private PromoType4Rule promoType4Rule;
 	private PromoType5Rule promoType5Rule;
+    private PromoType6Rule promoType6Rule;
 
 	public Promo() {
 		// default constructor
@@ -86,6 +87,8 @@ public class Promo {
 			return promoType3Rule.getMechanicsDescription();
 		case PROMO_TYPE_5:
 			return promoType5Rule.getMechanicsDescription();
+        case PROMO_TYPE_6:
+            return promoType6Rule.getMechanicsDescription();
 		default:
 			return null;
 		}
@@ -117,30 +120,44 @@ public class Promo {
 
 	public List<PromoRedemptionReward> evaluateForRewards(SalesRequisition salesRequisition) {
 		List<PromoRedemptionReward> rewards = new ArrayList<>();
-		for (PromoType2Rule rule : promoType2Rules) {
-			SalesRequisitionItem item = salesRequisition.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit());
-			if (item != null) {
-				PromoRedemptionReward reward = rule.evaluate(item);
-				if (reward != null) {
-					rewards.add(reward);
-				}
-			}
+		if (isPromoType2()) {
+	        for (PromoType2Rule rule : promoType2Rules) {
+	            SalesRequisitionItem item = salesRequisition.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit());
+	            if (item != null) {
+	                PromoRedemptionReward reward = rule.evaluate(item);
+	                if (reward != null) {
+	                    rewards.add(reward);
+	                }
+	            }
+	        }
+		} else if (isPromoType6()) {
+            PromoRedemptionReward reward = promoType6Rule.evaluate(salesRequisition);
+            if (reward != null) {
+                rewards.add(reward);
+            }
 		}
 		return rewards;
 	}
 
 	public List<PromoRedemptionReward> evaluateForRewards(SalesInvoice salesInvoice) {
-		List<PromoRedemptionReward> rewards = new ArrayList<>();
-		for (PromoType2Rule rule : promoType2Rules) {
-			SalesInvoiceItem item = salesInvoice.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit());
-			if (item != null) {
-				PromoRedemptionReward reward = rule.evaluate(item);
-				if (reward != null) {
-					rewards.add(reward);
-				}
-			}
+        List<PromoRedemptionReward> rewards = new ArrayList<>();
+		if (isPromoType2()) {
+	        for (PromoType2Rule rule : promoType2Rules) {
+	            SalesInvoiceItem item = salesInvoice.findItemByProductAndUnit(rule.getPromoProduct(), rule.getPromoUnit());
+	            if (item != null) {
+	                PromoRedemptionReward reward = rule.evaluate(item);
+	                if (reward != null) {
+	                    rewards.add(reward);
+	                }
+	            }
+	        }
+		} else if (isPromoType6()) {
+		    PromoRedemptionReward reward = promoType6Rule.evaluate(salesInvoice);
+		    if (reward != null) {
+		        rewards.add(reward);
+		    }
 		}
-		return rewards;
+        return rewards;
 	}
 
 	public PromoType1Rule getPromoType1Rule() {
@@ -296,5 +313,17 @@ public class Promo {
 	public boolean isPromoType2() {
 		return promoType.isType2();
 	}
+	
+    public boolean isPromoType6() {
+        return promoType.isType6();
+    }
+    
+    public PromoType6Rule getPromoType6Rule() {
+        return promoType6Rule;
+    }
+
+    public void setPromoType6Rule(PromoType6Rule promoType6Rule) {
+        this.promoType6Rule = promoType6Rule;
+    }
 	
 }

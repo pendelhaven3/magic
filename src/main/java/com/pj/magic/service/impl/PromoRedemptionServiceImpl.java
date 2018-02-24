@@ -2,6 +2,7 @@ package com.pj.magic.service.impl;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -299,7 +300,7 @@ public class PromoRedemptionServiceImpl implements PromoRedemptionService {
 		PromoRedemptionSearchCriteria criteria = new PromoRedemptionSearchCriteria();
 		criteria.setSalesInvoice(salesInvoice);
 		criteria.setPosted(true);
-		criteria.setPromoType(PromoType.PROMO_TYPE_2);
+		criteria.setPromoTypes(Arrays.asList(PromoType.PROMO_TYPE_2, PromoType.PROMO_TYPE_6));
 		
 		List<PromoRedemption> promoRedemptions = search(criteria);
 		for (PromoRedemption promoRedemption : promoRedemptions) {

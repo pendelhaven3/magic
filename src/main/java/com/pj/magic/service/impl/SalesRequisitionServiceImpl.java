@@ -119,7 +119,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 	private void postAvailedPromoRewards(SalesInvoice salesInvoice) {
 		Date now = systemDao.getCurrentDateTime();
 		for (Promo promo : promoService.getAllActivePromos()) {
-			if (!(promo.getPromoType().isType2() && promo.checkIfEligible(salesInvoice))) {
+			if (!((promo.getPromoType().isType2() || promo.getPromoType().isType6()) && promo.checkIfEligible(salesInvoice))) {
 				continue;
 			}
 			

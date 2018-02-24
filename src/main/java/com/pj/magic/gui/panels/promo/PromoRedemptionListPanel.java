@@ -36,7 +36,9 @@ import com.pj.magic.util.HtmlUtil;
 @Component
 public class PromoRedemptionListPanel extends StandardMagicPanel {
 
-	private static final int PROMO_REDEMPTION_NUMBER_COLUMN_INDEX = 0;
+    private static final long serialVersionUID = -2064127800885223406L;
+    
+    private static final int PROMO_REDEMPTION_NUMBER_COLUMN_INDEX = 0;
 	private static final int CUSTOMER_COLUMN_INDEX = 1;
 	private static final int STATUS_COLUMN_INDEX = 2;
 	private static final int POST_DATE_COLUMN_INDEX = 3;
@@ -49,6 +51,7 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 	private Promo promo;
 	private JLabel promoNameLabel;
 	private JLabel promoMechanicsLabel;
+	private JButton addButton;
 	
 	public void updateDisplay(Promo promo) {
 		this.promo = promo = promoService.getPromo(promo.getId());
@@ -59,6 +62,8 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 		}
 		promoNameLabel.setText(promo.getName());
 		promoMechanicsLabel.setText(HtmlUtil.html(promo.getMechanicsDescription()));
+		
+		addButton.setEnabled(!promo.isPromoType6());
 	}
 
 	@Override
@@ -188,15 +193,15 @@ public class PromoRedemptionListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		JButton postButton = new MagicToolBarButton("plus", "New");
-		postButton.addActionListener(new ActionListener() {
+		addButton = new MagicToolBarButton("plus", "New");
+		addButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				switchToNewPromoRedemptionPanel();
 			}
 		});
-		toolBar.add(postButton);
+		toolBar.add(addButton);
 	}
 	
 	private class PromoRedemptionsTableModel extends AbstractTableModel {

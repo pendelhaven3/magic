@@ -27,7 +27,9 @@ import com.pj.magic.service.impl.PromoService;
 @Component
 public class AvailedPromoRewardsDialog extends MagicDialog {
 
-	private static final int PROMO_COLUMN_INDEX = 0;
+    private static final long serialVersionUID = -4331289280982373485L;
+    
+    private static final int PROMO_COLUMN_INDEX = 0;
 	private static final int PRODUCT_CODE_COLUMN_INDEX = 1;
 	private static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 2;
 	private static final int UNIT_COLUMN_INDEX = 3;
@@ -100,7 +102,7 @@ public class AvailedPromoRewardsDialog extends MagicDialog {
 	private List<PromoRedemptionReward> getAvailedPromoRewards(SalesRequisition salesRequisition) {
 		List<PromoRedemptionReward> rewards = new ArrayList<>();
 		for (Promo promo : promoService.getAllActivePromos()) {
-			if (promo.getPromoType().isType2() && promo.checkIfEligible(salesRequisition)) {
+			if ((promo.getPromoType().isType2() || promo.getPromoType().isType6()) && promo.checkIfEligible(salesRequisition)) {
 				rewards.addAll(promo.evaluateForRewards(salesRequisition));
 			}
 		}
@@ -126,7 +128,9 @@ public class AvailedPromoRewardsDialog extends MagicDialog {
 
 	private class AvailedPromoRewardsTableModel extends AbstractTableModel {
 		
-		private final String[] columnNames = {"Promo", "Product Code", "Description", "Unit", "Qty"};
+        private static final long serialVersionUID = -1564238549137493237L;
+
+        private final String[] columnNames = {"Promo", "Product Code", "Description", "Unit", "Qty"};
 		
 		private List<PromoRedemptionReward> rewards = new ArrayList<>();
 		
