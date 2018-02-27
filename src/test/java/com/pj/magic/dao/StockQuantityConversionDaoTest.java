@@ -2,11 +2,13 @@ package com.pj.magic.dao;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.pj.magic.util.DateUtil;
 
+@Ignore
 public class StockQuantityConversionDaoTest extends IntegrationTest {
 	
 	@Autowired private StockQuantityConversionDao stockQuantityConversionDao;
