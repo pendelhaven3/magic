@@ -139,6 +139,8 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		for (PromoRedemption promoRedemption : promoRedemptionDao.findAllBySalesInvoice(salesInvoice)) {
 			if (promoRedemption.getPromo().isPromoType2()) {
 				promoRedemptionService.cancel(promoRedemption);
+			} else if (promoRedemption.getPromo().isPromoType6()) {
+                promoRedemptionService.cancel(promoRedemption);
 			}
 		};
 	}
