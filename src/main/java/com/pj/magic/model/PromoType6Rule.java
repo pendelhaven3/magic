@@ -58,7 +58,7 @@ public class PromoType6Rule {
             reward.getParent().setPromo(parent);
             reward.setProduct(product);
             reward.setUnit(unit);
-            reward.setQuantity(promoQuantity / targetQuantity);
+            reward.setQuantity((promoQuantity / targetQuantity) * quantity);
             return reward;
         } else {
             return null;
