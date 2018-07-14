@@ -31,7 +31,8 @@ public class InventoryMenuPanel extends MenuPanel {
 	private static final String PRICING_SCHEME = "Pricing Scheme";
 	private static final String PRODUCT_LIST = "Product List";
 	private static final String INVENTORY_REPORT = "Inventory Report";
-	private static final String UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES = "Upload Maximum Stock Level Changes";
+    private static final String UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES = "Upload Maximum Stock Level Changes";
+	private static final String SCHEDULED_PRICE_CHANGES = "Scheduled Price Changes";
 
 	@Autowired private LoginService loginService;
 	
@@ -109,6 +110,9 @@ public class InventoryMenuPanel extends MenuPanel {
 		case UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES:
 			getMagicFrame().switchToUploadMaximumStockLevelChangesPanel();
 			break;
+        case SCHEDULED_PRICE_CHANGES:
+            getMagicFrame().switchToScheduledPriceChangesListPanel();
+            break;
 		}
 	}
 
@@ -124,7 +128,8 @@ public class InventoryMenuPanel extends MenuPanel {
 				PRICING_SCHEME,
 				PRICE_CHANGES_REPORT,
 				INVENTORY_REPORT,
-				UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES
+				UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES,
+				SCHEDULED_PRICE_CHANGES
 		);
 		
 		private List<String> menuItems = new ArrayList<>();

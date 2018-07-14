@@ -2,6 +2,7 @@ package com.pj.magic.gui.component;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
 import com.pj.magic.Constants;
+import com.pj.magic.util.NumberUtil;
 
 public class MagicTextField extends JTextField {
 
@@ -109,4 +111,14 @@ public class MagicTextField extends JTextField {
 		}
 	}
 	
+    public BigDecimal getTextAsBigDecimal() {
+        String text = getText();
+        
+        if (StringUtils.isEmpty(text)) {
+            return null;
+        }
+        
+        return NumberUtil.toBigDecimal(text);
+    }
+    
 }

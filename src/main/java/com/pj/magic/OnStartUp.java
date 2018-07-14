@@ -1,5 +1,7 @@
 package com.pj.magic;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -26,10 +28,11 @@ public class OnStartUp {
 		resetCreateDateOfUnpostedStockQuantityConversions();
 		if (ApplicationUtil.isServer()) {
 			generateDailyProductQuantityDiscrepancyReport();
+	        applyScheduledPriceChanges();
 		}
 	}
 
-	private void resetCreateDateOfUnpostedStockQuantityConversions() {
+    private void resetCreateDateOfUnpostedStockQuantityConversions() {
 		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 			
 			@Override
@@ -54,5 +57,16 @@ public class OnStartUp {
 			}
 		});
 	}
+	
+    private void applyScheduledPriceChanges() {
+        transactionTemplate.execute(new TransactionCallback<Boolean>() {
+
+            @Override
+            public Boolean doInTransaction(TransactionStatus status) {
+                productService.applyScheduledPriceChanges(new Date());
+                return true;
+            }
+        });
+    }
 	
 }

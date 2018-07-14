@@ -14,10 +14,14 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.EditProductPriceTable;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
@@ -25,11 +29,17 @@ import com.pj.magic.model.UnitCost;
 import com.pj.magic.model.UnitPrice;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.DateUtil;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.NumberUtil;
+
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 public class EditProductPriceDialog extends MagicDialog {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EditProductPriceDialog.class);
+    
 	@Autowired private ProductService productService;
 	@Autowired private EditProductPriceTable table;
 	@Autowired private ProductPriceHistoryDialog productPriceHistoryDialog;
@@ -42,9 +52,12 @@ public class EditProductPriceDialog extends MagicDialog {
 	private JLabel companyListPriceLabel;
 	private JButton saveButton;
 	private JButton showPriceHistoryButton;
+    private JButton scheduleButton;
+    private UtilCalendarModel effectiveDateModel;
+    private MagicTextField newCompanyListPriceField;
 	
 	public EditProductPriceDialog() {
-		setSize(600, 400);
+		setSize(600, 490);
 		setLocationRelativeTo(null);
 		setTitle("Edit Product Price");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
@@ -81,6 +94,11 @@ public class EditProductPriceDialog extends MagicDialog {
 				productPriceHistoryDialog.setVisible(true);
 			}
 		});
+		
+		scheduleButton = new JButton("Schedule");
+		scheduleButton.addActionListener(e -> schedule());
+		effectiveDateModel = new UtilCalendarModel();
+		newCompanyListPriceField = new MagicTextField();
 	}
 
 	private void saveUnitCostsAndPrices() {
@@ -208,20 +226,71 @@ public class EditProductPriceDialog extends MagicDialog {
 		saveButton.setPreferredSize(new Dimension(100, 25));
 		add(saveButton, c);
 		
+        currentRow++;
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = currentRow;
+        c.gridwidth = 3;
+        c.insets.top = 10;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        add(new JSeparator(), c);
+        
+        currentRow++;
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = currentRow;
+        c.gridwidth = 3;
+        c.insets.top = 10;
+        add(ComponentUtil.createGenericPanel(new JLabel("Effective Date"), 
+                Box.createHorizontalStrut(10), ComponentUtil.createDatePicker(effectiveDateModel)), c);
+        
+        currentRow++;
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = currentRow;
+        c.gridwidth = 3;
+        c.insets.top = 10;
+        newCompanyListPriceField.setPreferredSize(new Dimension(100, 25));
+        add(ComponentUtil.createGenericPanel(new JLabel("New Company List Price"), 
+                Box.createHorizontalStrut(10), newCompanyListPriceField), c);
+        
+        currentRow++;
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = currentRow;
+        c.gridwidth = 3;
+        c.insets.top = 10;
+        scheduleButton.setPreferredSize(new Dimension(100, 25));
+        add(scheduleButton, c);
+        
+        currentRow++;
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = currentRow;
+        c.gridwidth = 3;
+        c.insets.top = 10;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        add(new JSeparator(), c);
+        
+        currentRow++;
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = currentRow;
+        c.gridwidth = 3;
+        c.insets.top = 10;
+        showPriceHistoryButton.setPreferredSize(new Dimension(180, 25));
+        add(showPriceHistoryButton, c);
+        
 		currentRow++;
 		
 		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 3;
-		c.insets.top = 10;
-		showPriceHistoryButton.setPreferredSize(new Dimension(180, 25));
-		add(showPriceHistoryButton, c);
-		
-		currentRow++;
-		
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.0;
 		c.weighty = 1.0; // bottom space filler
 		c.gridx = 0;
 		c.gridy = currentRow;
@@ -274,4 +343,42 @@ public class EditProductPriceDialog extends MagicDialog {
 		return clone;
 	}
 
+	private void schedule() {
+	    if (!validateScheduleFields()) {
+	        return;
+	    }
+	    
+        product.setCompanyListPrice(newCompanyListPriceField.getTextAsBigDecimal());
+
+        try {
+            productService.schedulePriceChange(product, pricingScheme, effectiveDateModel.getValue().getTime());
+        } catch (Exception e) {
+            LOGGER.error("Error while saving scheduled price change", e);
+            showErrorMessage("Unexpected error occurred");
+            return;
+        }
+        
+        showMessage("Price change scheduled");
+	}
+
+    private boolean validateScheduleFields() {
+        if (effectiveDateModel.getValue() == null) {
+            showErrorMessage("Effective Date must be specified");
+            return false;
+        }
+        
+        if (!effectiveDateModel.getValue().getTime().after(DateUtil.currentDate())) {
+            showErrorMessage("Effective Date must be a future date");
+            return false;
+        }
+        
+        if (!newCompanyListPriceField.isEmpty() && !NumberUtil.isAmount(newCompanyListPriceField.getText())) {
+            showErrorMessage("New Company List Price must be a valid amount");
+            newCompanyListPriceField.requestFocusInWindow();
+            return false;
+        }
+        
+        return true;
+    }
+	
 }

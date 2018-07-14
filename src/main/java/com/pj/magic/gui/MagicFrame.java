@@ -105,6 +105,7 @@ import com.pj.magic.gui.panels.SalesRequisitionPanel;
 import com.pj.magic.gui.panels.SalesRequisitionSeparateItemsPanel;
 import com.pj.magic.gui.panels.SalesReturnListPanel;
 import com.pj.magic.gui.panels.SalesReturnPanel;
+import com.pj.magic.gui.panels.ScheduledPriceChangesListPanel;
 import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.panels.StockCardInventoryReportPanel;
 import com.pj.magic.gui.panels.StockOfftakeReportPanel;
@@ -309,7 +310,8 @@ public class MagicFrame extends JFrame {
 			"DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_LIST_PANEL";
 	public static final String PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL = 
 			"DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL";
-	public static final String PILFERAGE_REPORT_PANEL = "PILFERAGE_REPORT_PANEL";
+    public static final String PILFERAGE_REPORT_PANEL = "PILFERAGE_REPORT_PANEL";
+	public static final String SCHEDULED_PRICE_CHANGES_LIST_PANEL = "SCHEDULED_PRICE_CHANGES_LIST_PANEL";
 	
 	@Value("${application.title}")
 	private String baseTitle;
@@ -426,6 +428,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private DailyProductQuantityDiscrepancyReportListPanel dailyProductQuantityDiscrepancyReportListPanel;
 	@Autowired private ProductQuantityDiscrepancyReportPanel productQuantityDiscrepancyReportPanel;
 	@Autowired private PilferageReportPanel pilferageReportPanel;
+    @Autowired private ScheduledPriceChangesListPanel scheduledPriceChangesListPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -601,7 +604,8 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(dailyProductQuantityDiscrepancyReportListPanel, 
 				DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT_LIST_PANEL);
 		panelHolder.add(productQuantityDiscrepancyReportPanel, PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL);
-		panelHolder.add(pilferageReportPanel, PILFERAGE_REPORT_PANEL);
+        panelHolder.add(pilferageReportPanel, PILFERAGE_REPORT_PANEL);
+		panelHolder.add(scheduledPriceChangesListPanel, SCHEDULED_PRICE_CHANGES_LIST_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1431,5 +1435,11 @@ public class MagicFrame extends JFrame {
 		pilferageReportPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, PILFERAGE_REPORT_PANEL);
 	}
+
+    public void switchToScheduledPriceChangesListPanel() {
+        addPanelNameToTitle("Scheduled Price Changes List");
+        scheduledPriceChangesListPanel.updateDisplay();
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, SCHEDULED_PRICE_CHANGES_LIST_PANEL);
+    }
 	
 }

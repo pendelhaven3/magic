@@ -1,10 +1,12 @@
 package com.pj.magic.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductPriceHistory;
+import com.pj.magic.model.ScheduledPriceChange;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.ProductSearchCriteria;
 
@@ -53,5 +55,13 @@ public interface ProductService {
 	 * @return true if quantities are saved, false if not (probably existing already)
 	 */
 	boolean saveDailyProductStartingQuantities();
+	
+	void schedulePriceChange(Product product, PricingScheme pricingScheme, Date effectiveDate);
+
+    List<ScheduledPriceChange> getPresentAndFutureScheduledPriceChanges();
+
+    void applyScheduledPriceChanges(Date date);
+
+    void deleteScheduledPriceChange(ScheduledPriceChange scheduledPriceChange);
 	
 }

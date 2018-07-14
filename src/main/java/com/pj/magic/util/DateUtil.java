@@ -48,5 +48,9 @@ public class DateUtil {
 	public static boolean isMonday(Date date) {
 		return DateUtils.toCalendar(date).get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY;
 	}
+
+    public static Date currentDate() {
+        return DateUtils.truncate(new Date(), Calendar.DATE);
+    }
 	
 }

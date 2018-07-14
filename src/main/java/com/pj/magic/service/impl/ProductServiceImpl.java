@@ -17,17 +17,20 @@ import com.pj.magic.dao.ProductPriceDao;
 import com.pj.magic.dao.ProductPriceHistoryDao;
 import com.pj.magic.dao.PurchaseOrderItemDao;
 import com.pj.magic.dao.SalesRequisitionItemDao;
+import com.pj.magic.dao.ScheduledPriceChangeDao;
 import com.pj.magic.dao.StockQuantityConversionItemDao;
 import com.pj.magic.dao.SupplierDao;
 import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductPriceHistory;
+import com.pj.magic.model.ScheduledPriceChange;
 import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.ProductSearchCriteria;
 import com.pj.magic.repository.DailyProductStartingQuantityRepository;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.util.DateUtil;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -46,6 +49,7 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired private LoginService loginService;
 	@Autowired private DailyProductStartingQuantityRepository dailyProductStartingQuantityRepository;
 	@Autowired private SystemDao systemDao;
+	@Autowired private ScheduledPriceChangeDao scheduledPriceChangeDao;
 	
 	@Override
 	public List<Product> getAllProducts() {
@@ -210,5 +214,54 @@ public class ProductServiceImpl implements ProductService {
 		}
 		return false;
 	}
+
+	@Transactional
+    @Override
+    public void schedulePriceChange(Product product, PricingScheme pricingScheme, Date effectiveDate) {
+        ScheduledPriceChange scheduledPriceChange = new ScheduledPriceChange();
+        scheduledPriceChange.setEffectiveDate(effectiveDate);
+        scheduledPriceChange.setProduct(product);
+        scheduledPriceChange.setPricingScheme(pricingScheme);
+        scheduledPriceChange.setCreateDate(new Date());
+        scheduledPriceChange.setCreateBy(loginService.getLoggedInUser());
+        
+        scheduledPriceChangeDao.save(scheduledPriceChange);
+    }
+
+    @Override
+    public List<ScheduledPriceChange> getPresentAndFutureScheduledPriceChanges() {
+        return scheduledPriceChangeDao.findAllByEffectiveDateGreaterThanOrEqual(new Date());
+    }
+
+    @Transactional
+    @Override
+    public void applyScheduledPriceChanges(Date date) {
+        for (ScheduledPriceChange scheduledPriceChange : scheduledPriceChangeDao.findAllByEffectiveDateAndApplied(date, false)) {
+            Product product = scheduledPriceChange.getProduct();
+            PricingScheme pricingScheme = scheduledPriceChange.getPricingScheme();
+            Product productBeforeUpdate = productDao.findByIdAndPricingScheme(product.getId(), pricingScheme);
+            
+            productPriceDao.updateUnitPrices(product, pricingScheme);
+            
+            productBeforeUpdate.setCompanyListPrice(product.getCompanyListPrice());
+            productDao.save(productBeforeUpdate);
+            
+            ProductPriceHistory history = new ProductPriceHistory();
+            history.setPricingScheme(pricingScheme);
+            history.setProduct(product);
+            history.setUpdatedBy(scheduledPriceChange.getCreateBy());
+            history.setUnitPrices(product.getUnitPrices());
+            history.setPreviousUnitPrices(productBeforeUpdate.getUnitPrices());
+            productPriceHistoryDao.save(history);
+            
+            scheduledPriceChangeDao.markAsApplied(scheduledPriceChange);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteScheduledPriceChange(ScheduledPriceChange scheduledPriceChange) {
+        scheduledPriceChangeDao.delete(scheduledPriceChange);
+    }
 
 }
