@@ -243,8 +243,10 @@ public class ProductServiceImpl implements ProductService {
             
             productPriceDao.updateUnitPrices(product, pricingScheme);
             
-            productBeforeUpdate.setCompanyListPrice(product.getCompanyListPrice());
-            productDao.save(productBeforeUpdate);
+            if (product.getCompanyListPrice() != null) {
+                productBeforeUpdate.setCompanyListPrice(product.getCompanyListPrice());
+                productDao.save(productBeforeUpdate);
+            }
             
             ProductPriceHistory history = new ProductPriceHistory();
             history.setPricingScheme(pricingScheme);
