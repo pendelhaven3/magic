@@ -10,16 +10,19 @@ import java.awt.event.ActionListener;
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.EditProductPriceTable;
@@ -55,6 +58,9 @@ public class EditProductPriceDialog extends MagicDialog {
     private JButton scheduleButton;
     private UtilCalendarModel effectiveDateModel;
     private MagicTextField newCompanyListPriceField;
+    private ButtonGroup scheduleButtonGroup;
+    private JRadioButton immediateRadio;
+    private JRadioButton scheduledRadio;
 	
 	public EditProductPriceDialog() {
 		setSize(600, 490);
@@ -77,13 +83,7 @@ public class EditProductPriceDialog extends MagicDialog {
 		companyListPriceLabel = new JLabel();
 		
 		saveButton = new JButton("Save");
-		saveButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				saveUnitCostsAndPrices();
-			}
-		});
+		saveButton.addActionListener(e -> saveOrSchedule());
 		
 		showPriceHistoryButton = new JButton("Show Price History");
 		showPriceHistoryButton.addActionListener(new ActionListener() {
@@ -99,17 +99,46 @@ public class EditProductPriceDialog extends MagicDialog {
 		scheduleButton.addActionListener(e -> schedule());
 		effectiveDateModel = new UtilCalendarModel();
 		newCompanyListPriceField = new MagicTextField();
+		
+		immediateRadio = new JRadioButton("Immediate");
+        scheduledRadio = new JRadioButton("Scheduled");
+		scheduleButtonGroup = new ButtonGroup();
+		scheduleButtonGroup.add(immediateRadio);
+        scheduleButtonGroup.add(scheduledRadio);
 	}
 
-	private void saveUnitCostsAndPrices() {
+	private void saveOrSchedule() {
+	    if (immediateRadio.isSelected()) {
+	        if (confirm("Save now?")) {
+	            saveUnitCostsAndPrices();
+	        }
+	    } else if (scheduledRadio.isSelected()) {
+	        if (confirm(createScheduleConfirmMessage())) {
+	            schedule();
+	        }
+	    }
+    }
+
+    private void saveUnitCostsAndPrices() {
 		if (table.isEditing()) {
 			if (!table.getCellEditor().stopCellEditing()) {
 				table.getEditorComponent().requestFocusInWindow();
 				return;
 			}
 		}
+		
+		Product temp = null;
+		if (!StringUtils.isEmpty(newCompanyListPriceField.getText())) {
+	        temp = productService.getProduct(product.getId());
+	        temp.setCompanyListPrice(newCompanyListPriceField.getTextAsBigDecimal());
+	        productService.save(temp);
+		}
+		
 		productService.saveUnitCostsAndPrices(product, pricingScheme);
 		JOptionPane.showMessageDialog(this, "Saved!");
+		if (temp != null) {
+	        updateDisplay(temp, pricingScheme);
+		}
 	}
 
 	private void registerKeyBindings() {
@@ -216,47 +245,49 @@ public class EditProductPriceDialog extends MagicDialog {
 		c.gridy = currentRow;
 		add(Box.createVerticalStrut(20), c);
 		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = currentRow;
-		c.gridwidth = 3;
-		c.anchor = GridBagConstraints.CENTER;
-		saveButton.setPreferredSize(new Dimension(100, 25));
-		add(saveButton, c);
-		
         currentRow++;
         
         c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = currentRow;
-        c.gridwidth = 3;
-        c.insets.top = 10;
-        c.fill = GridBagConstraints.HORIZONTAL;
-        add(new JSeparator(), c);
-        
-        currentRow++;
-        
+        c.anchor = GridBagConstraints.WEST;
+        add(ComponentUtil.createLabel(190, "New Company List Price:"), c);
+
         c = new GridBagConstraints();
-        c.gridx = 0;
+        c.gridx = 1;
         c.gridy = currentRow;
-        c.gridwidth = 3;
-        c.insets.top = 10;
-        add(ComponentUtil.createGenericPanel(new JLabel("Effective Date"), 
-                Box.createHorizontalStrut(10), ComponentUtil.createDatePicker(effectiveDateModel)), c);
-        
-        currentRow++;
-        
-        c = new GridBagConstraints();
-        c.gridx = 0;
-        c.gridy = currentRow;
-        c.gridwidth = 3;
-        c.insets.top = 10;
+        c.anchor = GridBagConstraints.WEST;
         newCompanyListPriceField.setPreferredSize(new Dimension(100, 25));
-        add(ComponentUtil.createGenericPanel(new JLabel("New Company List Price"), 
-                Box.createHorizontalStrut(10), newCompanyListPriceField), c);
+        add(newCompanyListPriceField, c);
+
+        currentRow++;
         
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = currentRow;
+        c.anchor = GridBagConstraints.WEST;
+        add(ComponentUtil.createLabel(130, "Schedule Date:"), c);
+
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = currentRow;
+        c.anchor = GridBagConstraints.WEST;
+        add(ComponentUtil.createGenericPanel(immediateRadio, scheduledRadio), c);
+
+        currentRow++;
+        
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = currentRow;
+        c.anchor = GridBagConstraints.WEST;
+        add(ComponentUtil.createLabel(130, "Effective Date:"), c);
+
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = currentRow;
+        c.anchor = GridBagConstraints.WEST;
+        add(ComponentUtil.createDatePicker(effectiveDateModel), c);
+
         currentRow++;
         
         c = new GridBagConstraints();
@@ -264,8 +295,8 @@ public class EditProductPriceDialog extends MagicDialog {
         c.gridy = currentRow;
         c.gridwidth = 3;
         c.insets.top = 10;
-        scheduleButton.setPreferredSize(new Dimension(100, 25));
-        add(scheduleButton, c);
+        saveButton.setPreferredSize(new Dimension(100, 25));
+        add(saveButton, c);
         
         currentRow++;
         
@@ -327,6 +358,11 @@ public class EditProductPriceDialog extends MagicDialog {
 		
 		table.setProduct(this.product);
 		table.highlight();
+		
+		newCompanyListPriceField.setText(null);
+		immediateRadio.setSelected(false);
+		scheduledRadio.setSelected(false);
+		effectiveDateModel.setValue(null);
 	}
 
 	private Product clone(Product product) {
@@ -340,6 +376,7 @@ public class EditProductPriceDialog extends MagicDialog {
 			clone.getUnitCosts().add(new UnitCost(unitCost));
 		}
 		clone.getUnitConversions().addAll(product.getUnitConversions());
+		clone.setCompanyListPrice(product.getCompanyListPrice());
 		return clone;
 	}
 
@@ -381,4 +418,10 @@ public class EditProductPriceDialog extends MagicDialog {
         return true;
     }
 	
+    private String createScheduleConfirmMessage() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Confirm Schedule Price Change?");
+        return sb.toString();
+    }
+    
 }
