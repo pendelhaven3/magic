@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -30,7 +31,6 @@ import com.pj.magic.model.search.ProductSearchCriteria;
 import com.pj.magic.repository.DailyProductStartingQuantityRepository;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.ProductService;
-import com.pj.magic.util.DateUtil;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -244,8 +244,7 @@ public class ProductServiceImpl implements ProductService {
             productPriceDao.updateUnitPrices(product, pricingScheme);
             
             if (product.getCompanyListPrice() != null) {
-                productBeforeUpdate.setCompanyListPrice(product.getCompanyListPrice());
-                productDao.save(productBeforeUpdate);
+                productDao.updateCompanyListPrice(productBeforeUpdate, product.getCompanyListPrice());
             }
             
             ProductPriceHistory history = new ProductPriceHistory();
@@ -264,6 +263,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteScheduledPriceChange(ScheduledPriceChange scheduledPriceChange) {
         scheduledPriceChangeDao.delete(scheduledPriceChange);
+    }
+
+    @Transactional
+    @Override
+    public void updateCompanyListPrice(Product product, BigDecimal companyListPrice) {
+        productDao.updateCompanyListPrice(product, companyListPrice);
     }
 
 }

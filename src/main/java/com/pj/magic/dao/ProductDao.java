@@ -1,5 +1,6 @@
 package com.pj.magic.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.pj.magic.model.PricingScheme;
@@ -34,5 +35,7 @@ public interface ProductDao {
 	void delete(Product product);
 	
 	void updateMaximumStockLevel(List<Product> products);
+
+    void updateCompanyListPrice(Product product, BigDecimal companyListPrice);
 	
 }

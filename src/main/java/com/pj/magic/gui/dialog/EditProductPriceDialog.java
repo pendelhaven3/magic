@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 
 import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
@@ -127,18 +128,15 @@ public class EditProductPriceDialog extends MagicDialog {
 			}
 		}
 		
-		Product temp = null;
 		if (!StringUtils.isEmpty(newCompanyListPriceField.getText())) {
-	        temp = productService.getProduct(product.getId());
-	        temp.setCompanyListPrice(newCompanyListPriceField.getTextAsBigDecimal());
-	        productService.save(temp);
+            BigDecimal newCompanyListPrice = newCompanyListPriceField.getTextAsBigDecimal();
+            productService.updateCompanyListPrice(product, newCompanyListPrice);
+            product.setCompanyListPrice(newCompanyListPrice);
+            companyListPriceLabel.setText(FormatterUtil.formatAmount(newCompanyListPrice));
 		}
 		
 		productService.saveUnitCostsAndPrices(product, pricingScheme);
 		JOptionPane.showMessageDialog(this, "Saved!");
-		if (temp != null) {
-	        updateDisplay(temp, pricingScheme);
-		}
 	}
 
 	private void registerKeyBindings() {

@@ -1,5 +1,6 @@
 package com.pj.magic.dao.impl;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -442,5 +443,13 @@ public class ProductDaoImpl extends MagicDao implements ProductDao {
 		
 		getJdbcTemplate().batchUpdate(UPDATE_MAXIMUM_STOCK_LEVEL_SQL, params);
 	}
+
+	private static final String UPDATE_COMPANY_LIST_PRICE_SQL =
+	        "update PRODUCT set COMPANY_LIST_PRICE = ? where ID = ?";
+	
+    @Override
+    public void updateCompanyListPrice(Product product, BigDecimal companyListPrice) {
+        getJdbcTemplate().update(UPDATE_COMPANY_LIST_PRICE_SQL, companyListPrice, product.getId());
+    }
 
 }

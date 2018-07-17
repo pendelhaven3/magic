@@ -1,5 +1,6 @@
 package com.pj.magic.service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,8 @@ public interface ProductService {
 	Product getProduct(long id, PricingScheme pricingScheme);
 
 	void save(Product product);
+	
+	void updateCompanyListPrice(Product product, BigDecimal companyListPrice);
 	
 	void addProductSupplier(Product product, Supplier supplier);
 
@@ -63,5 +66,5 @@ public interface ProductService {
     void applyScheduledPriceChanges(Date date);
 
     void deleteScheduledPriceChange(ScheduledPriceChange scheduledPriceChange);
-	
+    
 }
