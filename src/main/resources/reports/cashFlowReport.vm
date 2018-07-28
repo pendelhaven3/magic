@@ -18,6 +18,6 @@ $report.time($item.time) $report.field($item.transactionType, 13) $report.field(
 #end
 #if($isLastPage == true)
                                                                         -------------  
-                                                           T O T A L => $report.field($cashFlowReport.totalAmount, 13, "right")
+                                                           T O T A L => #if($isSupervisor == true)$report.field($cashFlowReport.totalAmount, 13, "right")#{else} #end
                                                                         =============
 #end

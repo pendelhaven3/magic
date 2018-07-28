@@ -126,6 +126,7 @@ public class PrintServiceImpl implements PrintService {
 	@Autowired private SystemDao systemDao;
 	@Autowired private PromoRedemptionService promoRedemptionService;
 	@Autowired private PrinterUtil printerUtil;
+	@Autowired private LoginService loginService;
 	
 	public PrintServiceImpl() {
 		Velocity.setProperty("file.resource.loader.class", 
@@ -847,6 +848,7 @@ public class PrintServiceImpl implements PrintService {
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			reportData.put("isSupervisor", loginService.getLoggedInUser().isSupervisor());
 			printPages.add(generateReportAsString("reports/cashFlowReport.vm", reportData));
 		}
 		return printPages;

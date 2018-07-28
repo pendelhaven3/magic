@@ -50,6 +50,7 @@ import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.SalesReturnSearchCriteria;
 import com.pj.magic.model.util.TimePeriod;
 import com.pj.magic.service.BadStockReturnService;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.NoMoreStockAdjustmentService;
 import com.pj.magic.service.PaymentAdjustmentService;
 import com.pj.magic.service.PaymentService;
@@ -79,6 +80,7 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 	@Autowired private BadStockReturnService badStockReturnService;
 	@Autowired private NoMoreStockAdjustmentService noMoreStockAdjustmentService;
 	@Autowired private PaymentAdjustmentService paymentAdjustmentService;
+	@Autowired private LoginService loginService;
 	
 	private MagicListTable table;
 	private CashFlowReportItemsTableModel tableModel;
@@ -311,7 +313,11 @@ public class CashFlowReportPanel extends StandardMagicPanel {
 			table.changeSelection(0, 0, false, false);
 		}
 		totalItemsLabel.setText(String.valueOf(report.getItems().size()));
-		totalAmountLabel.setText(FormatterUtil.formatAmount(report.getTotalAmount()));
+		if (loginService.getLoggedInUser().isSupervisor()) {
+	        totalAmountLabel.setText(FormatterUtil.formatAmount(report.getTotalAmount()));
+		} else {
+	        totalAmountLabel.setText(null);
+		}
 	}
 
 	@Override
