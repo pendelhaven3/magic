@@ -33,6 +33,7 @@ public class InventoryMenuPanel extends MenuPanel {
 	private static final String INVENTORY_REPORT = "Inventory Report";
     private static final String UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES = "Upload Maximum Stock Level Changes";
 	private static final String SCHEDULED_PRICE_CHANGES = "Scheduled Price Changes";
+    private static final String EDIT_PRODUCT_PRICES = "Edit Product Prices";
 
 	@Autowired private LoginService loginService;
 	
@@ -113,6 +114,9 @@ public class InventoryMenuPanel extends MenuPanel {
         case SCHEDULED_PRICE_CHANGES:
             getMagicFrame().switchToScheduledPriceChangesListPanel();
             break;
+        case EDIT_PRODUCT_PRICES:
+            getMagicFrame().switchToEditProductPricesListPanel();
+            break;
 		}
 	}
 
@@ -129,7 +133,8 @@ public class InventoryMenuPanel extends MenuPanel {
 				PRICE_CHANGES_REPORT,
 				INVENTORY_REPORT,
 				UPLOAD_MAXIMUM_STOCK_LEVEL_CHANGES,
-				SCHEDULED_PRICE_CHANGES
+				SCHEDULED_PRICE_CHANGES,
+                EDIT_PRODUCT_PRICES
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
