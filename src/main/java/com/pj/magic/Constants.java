@@ -29,6 +29,7 @@ public class Constants {
 	public static final BigDecimal ONE_HUNDRED = new BigDecimal("100").setScale(2);
 	public static final BigDecimal FIVE_CENTS = new BigDecimal("0.05");
 	public static final long CANVASSER_PRICING_SCHEME_ID = 1L;
+    public static final long PRICELIST_PRICING_SCHEME_ID = 2L;
 	public static final int CUSTOMER_CODE_MAXIMUM_LENGTH = 12;
 	public static final int SUPPLIER_CODE_MAXIMUM_LENGTH = 12;
 	

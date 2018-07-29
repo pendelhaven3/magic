@@ -333,7 +333,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private ProductQuantityDiscrepancyReportPanel productQuantityDiscrepancyReportPanel;
 	@Autowired private PilferageReportPanel pilferageReportPanel;
     @Autowired private ScheduledPriceChangesListPanel scheduledPriceChangesListPanel;
-//    @Autowired private EditProductPricesListPanel editProductPricesListPanel;
+    @Autowired private EditProductPricesListPanel editProductPricesListPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -511,7 +511,7 @@ public class MagicFrame extends JFrame {
 		panelHolder.add(productQuantityDiscrepancyReportPanel, PRODUCT_QUANTITY_DISCREPANCY_REPORT_PANEL);
         panelHolder.add(pilferageReportPanel, PILFERAGE_REPORT_PANEL);
 		panelHolder.add(scheduledPriceChangesListPanel, SCHEDULED_PRICE_CHANGES_LIST_PANEL);
-//        panelHolder.add(editProductPricesListPanel, EDIT_PRODUCT_PRICES_LIST_PANEL);
+        panelHolder.add(editProductPricesListPanel, EDIT_PRODUCT_PRICES_LIST_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1349,9 +1349,9 @@ public class MagicFrame extends JFrame {
     }
 
     public void switchToEditProductPricesListPanel() {
-//        addPanelNameToTitle("Edit Product Prices List");
-//        editProductPricesListPanel.updateDisplay();
-//        ((CardLayout)panelHolder.getLayout()).show(panelHolder, EDIT_PRODUCT_PRICES_LIST_PANEL);
+        addPanelNameToTitle("Edit Product Prices List");
+        editProductPricesListPanel.updateDisplay();
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, EDIT_PRODUCT_PRICES_LIST_PANEL);
     }
 	
 }

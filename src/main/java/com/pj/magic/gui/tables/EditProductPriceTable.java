@@ -3,7 +3,6 @@ package com.pj.magic.gui.tables;
 import java.awt.Color;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -18,10 +17,11 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.tables.models.EditProductPriceTableModel;
-import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 import com.pj.magic.util.NumberUtil;
+
+
 
 @Component
 public class EditProductPriceTable extends MagicTable {
@@ -41,11 +41,7 @@ public class EditProductPriceTable extends MagicTable {
 	@Autowired
 	public EditProductPriceTable(EditProductPriceTableModel tableModel) {
 		super(tableModel);
-	}
-	
-	@PostConstruct
-	public void initialize() {
-		initializeColumns();
+        initializeColumns();
 	}
 	
 	private boolean validateAmount(String amount, String fieldName) {
@@ -185,7 +181,8 @@ public class EditProductPriceTable extends MagicTable {
 		
 	}
 
-	public void updateDisplay(InventoryCheck inventoryCheck, Product product2) {
-	}
+	public void setTableModel(EditProductPriceTableModel tableModel) {
+        this.tableModel = tableModel;
+    }
 	
 }

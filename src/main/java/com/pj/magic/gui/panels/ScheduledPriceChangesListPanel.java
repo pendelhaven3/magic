@@ -2,9 +2,11 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -84,7 +86,13 @@ public class ScheduledPriceChangesListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
-		// none
+        onEscapeKey(new AbstractAction() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                doOnBack();
+            }
+        });
 	}
 
 	@Override
