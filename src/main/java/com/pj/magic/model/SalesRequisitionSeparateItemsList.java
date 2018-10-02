@@ -16,7 +16,8 @@ public class SalesRequisitionSeparateItemsList {
 	}
 
 	public boolean isIncluded(SalesRequisitionItem item) {
-		return item.getUnit().equals(Unit.CASE) || products.contains(item.getProduct());
+		return item.getUnit().equals(Unit.CASE) || products.contains(item.getProduct()) ||
+		        (item.getUnit().equals(Unit.PIECES) && item.getProduct().getUnits().contains(Unit.DOZEN));
 	}
 	
 }
