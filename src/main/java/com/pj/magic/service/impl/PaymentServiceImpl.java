@@ -250,7 +250,7 @@ public class PaymentServiceImpl implements PaymentService {
 			case AdjustmentType.BAD_STOCK_RETURN_CODE:
 				BadStockReturn badStockReturn = badStockReturnDao.findByBadStockReturnNumber(referenceNumber);
 				if (badStockReturn.isPaid()) {
-					throw new RuntimeException("Bad Stock Return " + badStockReturn.getBadStockReturnNumber() + " is already paid");
+					throw new PaymentPostException("Bad Stock Return " + badStockReturn.getBadStockReturnNumber() + " is already paid");
 				}
 				
 				badStockReturn.setPaid(true);
@@ -263,7 +263,7 @@ public class PaymentServiceImpl implements PaymentService {
 			case AdjustmentType.NO_MORE_STOCK_ADJUSTMENT_CODE:
 				NoMoreStockAdjustment noMoreStockAdjustment = noMoreStockAdjustmentDao.findByNoMoreStockAdjustmentNumber(referenceNumber);
 				if (noMoreStockAdjustment.isPaid()) {
-					throw new RuntimeException("No More Stock Adjustment " + 
+					throw new PaymentPostException("No More Stock Adjustment " + 
 						noMoreStockAdjustment.getNoMoreStockAdjustmentNumber() + " is already paid");
 				}
 				
@@ -278,7 +278,7 @@ public class PaymentServiceImpl implements PaymentService {
 				PaymentAdjustment paymentAdjustment = 
 					paymentAdjustmentDao.findByPaymentAdjustmentNumber(referenceNumber);
 				if (paymentAdjustment.isPaid()) {
-					throw new RuntimeException("Payment Adjustment " + 
+					throw new PaymentPostException("Payment Adjustment " + 
 							paymentAdjustment.getPaymentAdjustmentNumber() + " is already paid");
 				}
 				
