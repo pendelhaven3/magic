@@ -33,7 +33,7 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
     private static final Logger logger = LoggerFactory.getLogger(PaymentSalesInvoiceDaoImpl.class);
     
 	private static final String BASE_SELECT_SQL =
-			"   select a.ID, PAYMENT_ID, SALES_INVOICE_ID, b.SALES_INVOICE_NO, ADJUSTMENT_AMOUNT,"
+			"   select a.ID, PAYMENT_ID, SALES_INVOICE_ID, b.SALES_INVOICE_NO, b.CANCEL_IND, ADJUSTMENT_AMOUNT,"
 			+ " c.PAYMENT_NO, c.POST_DT,"
 			+ " b.CUSTOMER_ID, d.NAME as CUSTOMER_NAME,"
 			+ " b.TRANSACTION_DT, e.NUMBER_OF_DAYS as PAYMENT_TERM_NUMBER_OF_DAYS,"
@@ -128,6 +128,7 @@ public class PaymentSalesInvoiceDaoImpl extends MagicDao implements PaymentSales
 			salesInvoice.setSalesInvoiceNumber(rs.getLong("SALES_INVOICE_NO"));
 			salesInvoice.setCustomer(new Customer(rs.getLong("CUSTOMER_ID"), rs.getString("CUSTOMER_NAME")));
 			salesInvoice.setTransactionDate(rs.getDate("TRANSACTION_DT"));
+			salesInvoice.setCancelled("Y".equals(rs.getString("CANCEL_IND")));
 			item.setSalesInvoice(salesInvoice);
 			
 			PaymentTerm paymentTerm = new PaymentTerm();

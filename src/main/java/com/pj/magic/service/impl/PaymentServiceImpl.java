@@ -27,6 +27,7 @@ import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.AmountGivenLessThanRemainingAmountDueException;
+import com.pj.magic.exception.PaymentPostException;
 import com.pj.magic.exception.UserNotAssignedToPaymentTerminalException;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.BadStockReturn;
@@ -199,12 +200,20 @@ public class PaymentServiceImpl implements PaymentService {
 		Date currentDateTime = systemDao.getCurrentDateTime();
 		
 		Payment updated = getPayment(payment.getId());
+		
+        for (PaymentSalesInvoice paymentSalesInvoice : updated.getSalesInvoices()) {
+            SalesInvoice salesInvoice = paymentSalesInvoice.getSalesInvoice();
+            if (salesInvoice.isCancelled()) {
+                throw new PaymentPostException("Sales Invoice " + salesInvoice.getSalesInvoiceNumber() + " is cancelled");
+            }
+        }
+		
 		updated.setPosted(true);
 		updated.setPostDate(currentDateTime);
 		updated.setPostedBy(user);
 		updated.setPaymentTerminal(paymentTerminalAssignment.getPaymentTerminal());
 		paymentDao.save(updated);
-		
+
 		for (PaymentSalesInvoice salesInvoice : updated.getSalesInvoices()) {
 			for (SalesReturn salesReturn : salesInvoice.getSalesReturns()) {
 				salesReturnDao.savePaymentSalesReturn(updated, salesReturn);
@@ -228,7 +237,7 @@ public class PaymentServiceImpl implements PaymentService {
 			case AdjustmentType.SALES_RETURN_CODE:
 				SalesReturn salesReturn = salesReturnDao.findBySalesReturnNumber(referenceNumber);
 				if (salesReturn.isPaid()) {
-					throw new RuntimeException("Sales Return " + salesReturn.getSalesReturnNumber() + " is already paid");
+					throw new PaymentPostException("Sales Return " + salesReturn.getSalesReturnNumber() + " is already paid");
 				}
 				
 				salesReturn.setPaid(true);

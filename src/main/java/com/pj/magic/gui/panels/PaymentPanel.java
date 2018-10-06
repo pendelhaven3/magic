@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.exception.PaymentPostException;
 import com.pj.magic.exception.UserNotAssignedToPaymentTerminalException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
@@ -653,6 +654,9 @@ public class PaymentPanel extends StandardMagicPanel {
 				showErrorMessage("User " + loginService.getLoggedInUser().getUsername()
 						+ " is not assigned to payment terminal");
 				return;
+            } catch (PaymentPostException e) {
+                showErrorMessage(e.getMessage());
+                return;
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");
