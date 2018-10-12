@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
 import com.pj.magic.exception.ValidationException;
+import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
@@ -417,7 +418,7 @@ public class MaintainPurchasePaymentAdjustmentPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToPurchasePaymentAdjustmentListPanel();
+		getMagicFrame().back(MagicFrame.PURCHASE_PAYMENT_ADJUSTMENT_LIST_PANEL);
 	}
 
 	@Override

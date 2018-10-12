@@ -2,6 +2,7 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -43,6 +44,14 @@ public class PurchasePaymentAdjustmentListPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private PurchasePaymentAdjustmentsTableModel tableModel;
 	
+    private PurchasePaymentAdjustmentSearchCriteria searchCriteria;
+    private int selectedRow;
+    private Rectangle visibleRect;
+	
+    public PurchasePaymentAdjustmentListPanel() {
+        setTitle("Purchase Payment Adjustment List");
+    }
+    
 	@Override
 	public void initializeComponents() {
 		initializeTable();
@@ -62,8 +71,31 @@ public class PurchasePaymentAdjustmentListPanel extends StandardMagicPanel {
 			table.changeSelection(0, 0);
 		}
 		searchPurchasePaymentAdjustmentsDialog.updateDisplay();
+        searchCriteria = null;
+        clearTableSelection();
 	}
 
+    @Override
+    public void updateDisplayOnBack() {
+        List<PurchasePaymentAdjustment> salesInvoices = null;
+        
+        if (searchCriteria != null) {
+            salesInvoices = purchasePaymentAdjustmentService.search(searchCriteria);
+        } else {
+            salesInvoices = purchasePaymentAdjustmentService.getAllNewPaymentAdjustments();
+            searchPurchasePaymentAdjustmentsDialog.updateDisplay();
+        }
+        
+        tableModel.setPaymentAdjustments(salesInvoices);
+        if (salesInvoices.size() - 1 < selectedRow) {
+            selectedRow = salesInvoices.size() - 1;
+        }
+        table.changeSelection(selectedRow, 0, false, false);
+        if (visibleRect != null) {
+            table.scrollRectToVisible(visibleRect);
+        }
+    }
+    
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
@@ -117,6 +149,8 @@ public class PurchasePaymentAdjustmentListPanel extends StandardMagicPanel {
 	}
 	
 	private void displayCurrentlySelectedPurchasePaymentAdjustment() {
+        selectedRow = table.getSelectedRow();
+        visibleRect = table.getVisibleRect();
 		getMagicFrame().switchToEditPurchasePaymentAdjustmentPanel(getCurrentlySelectedPaymentAdjustment());
 	}
 
@@ -163,6 +197,9 @@ public class PurchasePaymentAdjustmentListPanel extends StandardMagicPanel {
 		PurchasePaymentAdjustmentSearchCriteria criteria = 
 				searchPurchasePaymentAdjustmentsDialog.getSearchCriteria();
 		if (criteria != null) {
+            searchCriteria = criteria;
+            selectedRow = 0;
+            visibleRect = null;
 			List<PurchasePaymentAdjustment> adjustmentIns = purchasePaymentAdjustmentService.search(criteria);
 			tableModel.setPaymentAdjustments(adjustmentIns);
 			if (!adjustmentIns.isEmpty()) {
@@ -175,6 +212,11 @@ public class PurchasePaymentAdjustmentListPanel extends StandardMagicPanel {
 
 	}
 
+    public void clearTableSelection() {
+        selectedRow = 0;
+        visibleRect = null;
+    }
+	
 	private class PurchasePaymentAdjustmentsTableModel extends AbstractTableModel {
 
 		private String[] columnNames = 
