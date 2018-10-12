@@ -2,6 +2,7 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -43,6 +44,14 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private PaymentAdjustmentsTableModel tableModel;
 	
+	private PaymentAdjustmentSearchCriteria searchCriteria;
+    private int selectedRow;
+    private Rectangle visibleRect;
+	
+    public PaymentAdjustmentListPanel() {
+        setTitle("Payment Adjustment List");
+    }
+    
 	@Override
 	public void initializeComponents() {
 		initializeTable();
@@ -61,8 +70,30 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 			table.changeSelection(0, 0);
 		}
 		searchPaymentAdjustmentsDialog.updateDisplay();
+        searchCriteria = null;
+        clearTableSelection();
 	}
 
+	public void updateDisplayOnBack() {
+        List<PaymentAdjustment> paymentAdjustments = null;
+        
+        if (searchCriteria != null) {
+            paymentAdjustments = paymentAdjustmentService.search(searchCriteria);
+        } else {
+            paymentAdjustments = paymentAdjustmentService.getUnpaidPaymentAdjustments();
+            searchPaymentAdjustmentsDialog.updateDisplay();
+        }
+        
+        tableModel.setPaymentAdjustments(paymentAdjustments);
+        if (paymentAdjustments.size() - 1 < selectedRow) {
+            selectedRow = paymentAdjustments.size() - 1;
+        }
+        table.changeSelection(selectedRow, 0, false, false);
+        if (visibleRect != null) {
+            table.scrollRectToVisible(visibleRect);
+        }
+	}
+	
 	@Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
@@ -116,6 +147,8 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 	}
 	
 	private void displayCurrentlySelectedPaymentAdjustment() {
+        selectedRow = table.getSelectedRow();
+        visibleRect = table.getVisibleRect();
 		getMagicFrame().switchToEditPaymentAdjustmentPanel(getCurrentlySelectedPaymentAdjustment());
 	}
 
@@ -161,6 +194,9 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 		
 		PaymentAdjustmentSearchCriteria criteria = searchPaymentAdjustmentsDialog.getSearchCriteria();
 		if (criteria != null) {
+            searchCriteria = criteria;
+            selectedRow = 0;
+            visibleRect = null;
 			List<PaymentAdjustment> adjustmentIns = paymentAdjustmentService.search(criteria);
 			tableModel.setPaymentAdjustments(adjustmentIns);
 			if (!adjustmentIns.isEmpty()) {
@@ -173,6 +209,11 @@ public class PaymentAdjustmentListPanel extends StandardMagicPanel {
 
 	}
 
+    public void clearTableSelection() {
+        selectedRow = 0;
+        visibleRect = null;
+    }
+	
 	private class PaymentAdjustmentsTableModel extends AbstractTableModel {
 
 		private String[] columnNames = 
