@@ -532,16 +532,6 @@ public class PaymentPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		cancelButton = new MagicToolBarButton("cancel", "Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cancelPayment();
-			}
-		});
-		toolBar.add(cancelButton);
-		
 		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
 			
@@ -592,6 +582,10 @@ public class PaymentPanel extends StandardMagicPanel {
 			}
 		});	
 		toolBar.add(printButton);
+		
+        cancelButton = new MagicToolBarButton("cancel", "Cancel");
+        cancelButton.addActionListener(e -> cancelPayment());
+        toolBar.add(cancelButton);
 	}
 
 	private void openAddCashPaymentAndPostDialog() {

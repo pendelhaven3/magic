@@ -476,16 +476,6 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 		});
 		toolBar.add(setDiscountsForAllButton);
 		
-		cancelButton = new MagicToolBarButton("cancel", "Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cancelReceivingReceipt();
-			}
-		});
-		toolBar.add(cancelButton);
-		
 		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
 			
@@ -515,6 +505,10 @@ public class ReceivingReceiptPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+		
+        cancelButton = new MagicToolBarButton("cancel", "Cancel");
+        cancelButton.addActionListener(e -> cancelReceivingReceipt());
+        toolBar.add(cancelButton);
 	}
 
 	protected void openSetDiscountsForAllItemsDialog() {
