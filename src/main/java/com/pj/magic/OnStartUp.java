@@ -13,7 +13,6 @@ import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.dao.SystemDao;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
-import com.pj.magic.util.ApplicationUtil;
 
 @Component
 public class OnStartUp {
@@ -26,10 +25,8 @@ public class OnStartUp {
 	
 	public void fire() {
 		resetCreateDateOfUnpostedStockQuantityConversions();
-		if (ApplicationUtil.isServer()) {
-			generateDailyProductQuantityDiscrepancyReport();
-	        applyScheduledPriceChanges();
-		}
+		generateDailyProductQuantityDiscrepancyReport();
+        applyScheduledPriceChanges();
 	}
 
     private void resetCreateDateOfUnpostedStockQuantityConversions() {

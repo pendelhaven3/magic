@@ -362,7 +362,9 @@ public class MagicFrame extends JFrame {
 		} else {
             initializeBaseTitle();
 			addPanels();
-			onStartUp.fire();
+			if (ApplicationUtil.isServer()) {
+	            onStartUp.fire();
+			}
 		}
 	}
 	
