@@ -65,6 +65,7 @@ import com.pj.magic.service.ProductService;
 import com.pj.magic.service.PurchaseOrderService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.ExcelUtil;
 import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -866,7 +867,8 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	}
 
 	private void generateExcelSpreadsheetFromPurchaseOrder() {
-		excelFileChooser.setSelectedFile(new File(generateDefaultSpreadsheetName() + ".xlsx"));
+	    File file = new File(generateDefaultSpreadsheetName() + ".xlsx");
+		excelFileChooser.setSelectedFile(file);
 		
 		int returnVal = excelFileChooser.showSaveDialog(this);
 		if (returnVal != JFileChooser.APPROVE_OPTION) {
@@ -878,10 +880,14 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
 		) {
 			workbook.write(out);
-			showMessage("Excel spreadsheet generated successfully");
 		} catch (IOException e) {
 			showErrorMessage("Unexpected error during excel generation");
+			return;
 		}
+
+        if (confirm("Excel file generated.\nDo you wish to open the file?")) {
+            openExcelFile(excelFileChooser.getSelectedFile());
+        }
 	}
 
 	private String generateDefaultSpreadsheetName() {
@@ -893,6 +899,16 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 			.append(purchaseOrder.getPurchaseOrderNumber())
 			.toString();
 	}
+	
+    private void openExcelFile(File file) {
+        try {
+            System.out.println("Here!");
+            ExcelUtil.openExcelFile(file);
+            System.out.println("There!");
+        } catch (IOException e) {
+            showMessageForUnexpectedError();
+        }
+    }
 	
 	private void deletePurchaseOrder() {
 		if (confirm("Do you really want to delete this Purchase Order?")) {
