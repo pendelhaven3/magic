@@ -15,6 +15,7 @@ public class PromoSearchCriteria {
 	private List<PromoType> promoTypes;
 	private Date startDate;
 	private Date endDate;
+	private Date endDateLessThan;
 	
 	public PromoType getPromoType() {
 		return promoType;
@@ -74,5 +75,13 @@ public class PromoSearchCriteria {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+
+    public Date getEndDateLessThan() {
+        return endDateLessThan;
+    }
+
+    public void setEndDateLessThan(Date endDateLessThan) {
+        this.endDateLessThan = endDateLessThan;
+    }
 	
 }

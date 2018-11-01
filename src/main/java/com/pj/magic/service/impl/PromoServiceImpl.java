@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -263,6 +264,23 @@ public class PromoServiceImpl implements PromoService {
     @Override
     public void removeAllPromoProducts(PromoType6Rule rule) {
         promoType6RulePromoProductDao.deleteAllByRule(rule);
+    }
+
+	@Transactional
+    @Override
+    public void updatePromoStatusBasedOnDuration() {
+	    for (Promo promo : findAllActivePromosWithEndDateLessThan(new Date())) {
+	        promo.setActive(false);
+	        promoDao.save(promo);
+	    }
+    }
+
+    private List<Promo> findAllActivePromosWithEndDateLessThan(Date date) {
+        PromoSearchCriteria criteria = new PromoSearchCriteria();
+        criteria.setActive(true);
+        criteria.setEndDateLessThan(date);
+        
+        return search(criteria);
     }
 
 }

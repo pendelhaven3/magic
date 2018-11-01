@@ -13,6 +13,7 @@ import com.pj.magic.dao.StockQuantityConversionDao;
 import com.pj.magic.dao.SystemDao;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
+import com.pj.magic.service.impl.PromoService;
 
 @Component
 public class OnStartUp {
@@ -22,11 +23,13 @@ public class OnStartUp {
 	@Autowired private TransactionTemplate transactionTemplate;
 	@Autowired private ProductService productService;
 	@Autowired private ReportService reportService;
+	@Autowired private PromoService promoService;
 	
 	public void fire() {
 		resetCreateDateOfUnpostedStockQuantityConversions();
 		generateDailyProductQuantityDiscrepancyReport();
         applyScheduledPriceChanges();
+        updatePromoStatusBasedOnDuration();
 	}
 
     private void resetCreateDateOfUnpostedStockQuantityConversions() {
@@ -66,4 +69,14 @@ public class OnStartUp {
         });
     }
 	
+    private void updatePromoStatusBasedOnDuration() {
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                promoService.updatePromoStatusBasedOnDuration();
+            }
+        });
+    }
+    
 }

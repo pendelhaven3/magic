@@ -62,5 +62,7 @@ public interface PromoService {
     void delete(PromoType6RulePromoProduct promoProduct);
 
     void removeAllPromoProducts(PromoType6Rule promoType6Rule);
+
+    void updatePromoStatusBasedOnDuration();
 	
 }
