@@ -23,6 +23,7 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.ScheduledPriceChange;
 import com.pj.magic.model.Unit;
+import com.pj.magic.service.LoginService;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.util.FormatterUtil;
 
@@ -45,6 +46,9 @@ public class ScheduledPriceChangesListPanel extends StandardMagicPanel {
 	
 	@Autowired
 	private ProductService productService;
+	
+	@Autowired
+	private LoginService loginService;
 	
 	private MagicListTable table;
 	private JButton deleteButton;
@@ -82,6 +86,7 @@ public class ScheduledPriceChangesListPanel extends StandardMagicPanel {
 	    if (!scheduledPriceChanges.isEmpty()) {
 	        table.selectFirstRow();
 	    }
+	    deleteButton.setEnabled(loginService.getLoggedInUser().isSupervisor());
 	}
 
 	@Override
