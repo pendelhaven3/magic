@@ -122,12 +122,12 @@ public class ScheduledPriceChangeDaoImpl implements ScheduledPriceChangeDao {
         scheduledPriceChange.setId(holder.getKey().longValue());
     }
 
-    private static final String FIND_ALL_BY_EFFECTIVE_DATE_AND_APPLIED_SQL = BASE_SELECT_SQL
-            + " and EFFECTIVE_DT = ? and APPLIED = ? order by a.ID";
+    private static final String FIND_ALL_BY_EFFECTIVE_DATE_LESS_THAN_EQUAL_AND_APPLIED_SQL = BASE_SELECT_SQL
+            + " and EFFECTIVE_DT <= ? and APPLIED = ? order by a.ID";
     
     @Override
-    public List<ScheduledPriceChange> findAllByEffectiveDateAndApplied(Date date, boolean applied) {
-        return jdbcTemplate.query(FIND_ALL_BY_EFFECTIVE_DATE_AND_APPLIED_SQL, 
+    public List<ScheduledPriceChange> findAllByEffectiveDateLessThanEqualAndApplied(Date date, boolean applied) {
+        return jdbcTemplate.query(FIND_ALL_BY_EFFECTIVE_DATE_LESS_THAN_EQUAL_AND_APPLIED_SQL, 
                 new Object[] {DateUtils.truncate(date, Calendar.DATE), applied ? "Y" : "N"}, rowMapper);
     }
 

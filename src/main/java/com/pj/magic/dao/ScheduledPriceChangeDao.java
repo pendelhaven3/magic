@@ -9,7 +9,7 @@ public interface ScheduledPriceChangeDao {
 
     void save(ScheduledPriceChange scheduledPriceChange);
 
-    List<ScheduledPriceChange> findAllByEffectiveDateAndApplied(Date date, boolean applied);
+    List<ScheduledPriceChange> findAllByEffectiveDateLessThanEqualAndApplied(Date date, boolean applied);
 
     void markAsApplied(ScheduledPriceChange scheduledPriceChange);
 

@@ -236,7 +236,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void applyScheduledPriceChanges(Date date) {
-        for (ScheduledPriceChange scheduledPriceChange : scheduledPriceChangeDao.findAllByEffectiveDateAndApplied(date, false)) {
+        for (ScheduledPriceChange scheduledPriceChange : scheduledPriceChangeDao.findAllByEffectiveDateLessThanEqualAndApplied(date, false)) {
             Product product = scheduledPriceChange.getProduct();
             PricingScheme pricingScheme = scheduledPriceChange.getPricingScheme();
             Product productBeforeUpdate = productDao.findByIdAndPricingScheme(product.getId(), pricingScheme);
