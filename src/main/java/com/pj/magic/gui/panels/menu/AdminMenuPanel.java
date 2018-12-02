@@ -3,6 +3,7 @@ package com.pj.magic.gui.panels.menu;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,17 +14,28 @@ import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
+import com.pj.magic.model.User;
+import com.pj.magic.service.LoginService;
 
 @Component
 public class AdminMenuPanel extends MenuPanel {
 
-	private MagicListTable table;
+    private static final String USER_LIST = "User List";
+    private static final String RESET_PASSWORD = "Reset Password";
+	private static final String PAYMENT_TERMINAL_ASSIGNMENTS = "Payment Terminal Assignments";
+    private static final String CHANGE_PASSWORD = "Change Password";
+    
+    @Autowired
+    private LoginService loginService;
+    
+    private MagicListTable table;
 	private MainMenuTableModel tableModel;
 	
 	@Override
@@ -76,20 +88,24 @@ public class AdminMenuPanel extends MenuPanel {
 	}
 
 	public void updateDisplay() {
+	    tableModel.setUser(loginService.getLoggedInUser());
 		table.changeSelection(0, 0, false, false);
 	}
 	
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-		case "User List":
+		case USER_LIST:
 			getMagicFrame().switchToUserListPanel();
 			break;
-		case "Reset Password":
+		case RESET_PASSWORD:
 			getMagicFrame().switchToResetPasswordPanel();
 			break;
-		case "Payment Terminal Assignments":
+		case PAYMENT_TERMINAL_ASSIGNMENTS:
 			getMagicFrame().switchToPaymentTerminalAssignmentListPanel();
 			break;
+        case CHANGE_PASSWORD:
+            getMagicFrame().switchToChangePasswordPanel();
+            break;
 		}
 	}
 
@@ -100,11 +116,14 @@ public class AdminMenuPanel extends MenuPanel {
 
 	private class MainMenuTableModel extends AbstractTableModel {
 
-		private final List<String> menuItems = Arrays.asList(
-				"User List",
-				"Reset Password",
-				"Payment Terminal Assignments"
-		);
+        private final List<String> allMenuItems = Arrays.asList(
+                USER_LIST,
+                RESET_PASSWORD,
+                PAYMENT_TERMINAL_ASSIGNMENTS,
+                CHANGE_PASSWORD
+        );
+        
+		private final List<String> menuItems = new ArrayList<>();
 		
 		@Override
 		public int getRowCount() {
@@ -120,6 +139,17 @@ public class AdminMenuPanel extends MenuPanel {
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			return menuItems.get(rowIndex);
 		}
+		
+        public void setUser(User user) {
+            menuItems.clear();
+            menuItems.addAll(allMenuItems);
+            if (!user.isSupervisor()) {
+                menuItems.remove(USER_LIST);
+                menuItems.remove(RESET_PASSWORD);
+                menuItems.remove(PAYMENT_TERMINAL_ASSIGNMENTS);
+            }
+            fireTableDataChanged();
+        }
 		
 	}
 

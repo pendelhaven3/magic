@@ -6,7 +6,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -28,14 +27,12 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicTable;
-import com.pj.magic.model.User;
 import com.pj.magic.service.LoginService;
 
 @Component
 public class MainMenuPanel extends StandardMagicPanel {
 
-	private static final String CHANGE_PASSWORD = "Change Password";
-	private static final String ADMIN = "Admin";
+	private static final String ADMIN = "Admin / Change Password";
 	private static final String BACKUP_RESTORE_DATA = "Backup/Restore Data";
 	private static final String RECORDS_MAINTENANCE = "Records Maintenance";
 	private static final String INVENTORY_CHECK = "<html>Inventory Check<br>and Correction</html>";
@@ -61,7 +58,6 @@ public class MainMenuPanel extends StandardMagicPanel {
 		MENU_ITEM_IMAGE_MAP.put(INVENTORY_CHECK, "inventory_check");
 		MENU_ITEM_IMAGE_MAP.put(RECORDS_MAINTENANCE, "records");
 		MENU_ITEM_IMAGE_MAP.put(BACKUP_RESTORE_DATA, "database_backup");
-		MENU_ITEM_IMAGE_MAP.put(CHANGE_PASSWORD, "change_password");
 		MENU_ITEM_IMAGE_MAP.put(PROMO, "promo");
 		MENU_ITEM_IMAGE_MAP.put(PROMO_REDEMPTION, "promo");
 	}
@@ -165,7 +161,6 @@ public class MainMenuPanel extends StandardMagicPanel {
 	}
 
 	public void updateDisplay() {
-		tableModel.setUser(loginService.getLoggedInUser());
 		table.changeSelection(0, 0, false, false);
 	}
 	
@@ -213,9 +208,6 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case ADMIN:
 			getMagicFrame().switchToAdminMenuPanel();
 			break;
-		case CHANGE_PASSWORD:
-			getMagicFrame().switchToChangePasswordPanel();
-			break;
 		case PROMO:
 			getMagicFrame().switchToPromoListPanel();
 			break;
@@ -232,7 +224,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 
 	private class MainMenuTableModel extends AbstractTableModel {
 
-		private final List<String> allMenuItems = Arrays.asList(
+		private final List<String> menuItems = Arrays.asList(
 				SALES,
 				PURCHASES,
 				PRODUCT_MAINTENANCE_AND_PRICING_SCHEMES,
@@ -245,11 +237,8 @@ public class MainMenuPanel extends StandardMagicPanel {
 				INVENTORY_CHECK,
 				RECORDS_MAINTENANCE,
 				BACKUP_RESTORE_DATA,
-				ADMIN,
-				CHANGE_PASSWORD
+				ADMIN
 		);
-		
-		private List<String> menuItems = new ArrayList<>();
 		
 		@Override
 		public int getRowCount() {
@@ -257,15 +246,6 @@ public class MainMenuPanel extends StandardMagicPanel {
 			return itemCount / 2 + itemCount % 2;
 		}
 
-		public void setUser(User user) {
-			menuItems.clear();
-			menuItems.addAll(allMenuItems);
-			if (!user.isSupervisor()) {
-				menuItems.remove(ADMIN);
-			}
-			fireTableDataChanged();
-		}
-		
 		@Override
 		public int getColumnCount() {
 			return 2;
