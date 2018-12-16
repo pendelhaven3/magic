@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.FocusManager;
@@ -224,6 +225,22 @@ public abstract class AbstractMagicPanel extends JPanel {
 	
 	protected void showMessageForUnexpectedError() {
 		showErrorMessage(Constants.UNEXPECTED_ERROR_MESSAGE);
+	}
+	
+    protected void onEscapeKey(Action action) {
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Constants.ESCAPE_KEY_ACTION_NAME);
+        getActionMap().put(Constants.ESCAPE_KEY_ACTION_NAME, action);
+    }
+    
+	protected void registerEscapeKeyAsBack() {
+        onEscapeKey(new AbstractAction() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                doOnBack();
+            }
+        });
 	}
 	
 }

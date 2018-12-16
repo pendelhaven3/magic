@@ -45,6 +45,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 	private static final String SALES = "Sales";
 	private static final String PROMO_REDEMPTION = "Promo Redemption";
 	private static final String PROMO = "Promo";
+    private static final String BAD_STOCK = "Bad Stock";
 
 	private static final Map<String, String> MENU_ITEM_IMAGE_MAP = new HashMap<>();
 	
@@ -60,6 +61,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 		MENU_ITEM_IMAGE_MAP.put(BACKUP_RESTORE_DATA, "database_backup");
 		MENU_ITEM_IMAGE_MAP.put(PROMO, "promo");
 		MENU_ITEM_IMAGE_MAP.put(PROMO_REDEMPTION, "promo");
+        MENU_ITEM_IMAGE_MAP.put(BAD_STOCK, "bad_stock");
 	}
 	
 	@Autowired private LoginService loginService;
@@ -199,6 +201,9 @@ public class MainMenuPanel extends StandardMagicPanel {
 		case INVENTORY_CHECK:
 			getMagicFrame().switchToInventoryCheckMenuPanel();
 			break;
+        case BAD_STOCK:
+            getMagicFrame().switchToBadStockMenuPanel();
+            break;
 		case RECORDS_MAINTENANCE:
 			getMagicFrame().switchToRecordsMaintenanceMenuPanel();
 			break;
@@ -235,6 +240,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 				STOCK_MOVEMENT,
 				REPORTS,
 				INVENTORY_CHECK,
+                BAD_STOCK,
 				RECORDS_MAINTENANCE,
 				BACKUP_RESTORE_DATA,
 				ADMIN

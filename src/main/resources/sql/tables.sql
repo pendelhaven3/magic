@@ -1191,3 +1191,14 @@ create table SCHEDULED_PRICE_CHANGE (
   constraint SCHEDULED_PRICE_CHANGE$FK2 foreign key (PRICING_SCHEME_ID) references PRICING_SCHEME (ID),
   constraint SCHEDULED_PRICE_CHANGE$FK3 foreign key (CREATE_BY) references USER (ID)
 );
+
+create table BAD_STOCK (
+  PRODUCT_ID integer not null,
+  AVAIL_QTY_CSE integer(4),
+  AVAIL_QTY_TIE integer(4),
+  AVAIL_QTY_CTN integer(4),
+  AVAIL_QTY_DOZ integer(4),
+  AVAIL_QTY_PCS integer(4),
+  primary key (PRODUCT_ID),
+  constraint BAD_STOCK$FK foreign key (PRODUCT_ID) references PRODUCT (ID)
+);
