@@ -8,6 +8,17 @@ public class BadStock {
     private Product product;
     private List<UnitQuantity> unitQuantities = new ArrayList<>();
 
+    public BadStock() {
+        // default constructor
+    }
+    
+    public BadStock(Product product) {
+        this.product = product;
+        for (String unit : product.getUnits()) {
+            unitQuantities.add(new UnitQuantity(unit, 0));
+        }
+    }
+    
     public Integer getUnitQuantity(String unit) {
         for (UnitQuantity unitQuantity : unitQuantities) {
             if (unitQuantity.getUnit().equals(unit)) {
@@ -15,6 +26,17 @@ public class BadStock {
             }
         }
         return null;
+    }
+    
+    public void addUnitQuantity(String unit, Integer quantity) {
+        for (UnitQuantity unitQuantity : unitQuantities) {
+            if (unitQuantity.getUnit().equals(unit)) {
+                unitQuantity.setQuantity(unitQuantity.getQuantity() + quantity);
+                return;
+            }
+        }
+        
+        unitQuantities.add(new UnitQuantity(unit, quantity));
     }
     
     public Product getProduct() {

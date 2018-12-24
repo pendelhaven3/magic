@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.dao.BadStockDao;
 import com.pj.magic.dao.BadStockReturnDao;
 import com.pj.magic.dao.BadStockReturnItemDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
@@ -15,6 +16,7 @@ import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.exception.NoItemException;
+import com.pj.magic.model.BadStock;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.PaymentTerminalAssignment;
@@ -33,6 +35,7 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	@Autowired private ProductDao productDao;
 	@Autowired private SystemDao systemDao;
+	@Autowired private BadStockDao badStockDao;
 	
 	@Transactional
 	@Override
@@ -96,10 +99,22 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 			Product product = productDao.get(item.getProduct().getId());
 			item.setCost(product.getFinalCost(item.getUnit()));
 			badStockReturnItemDao.save(item);
+			
+			BadStock badStock = getOrCreateBadStock(product);
+			badStock.addUnitQuantity(item.getUnit(), item.getQuantity());
+			badStockDao.save(badStock);
 		}
 	}
 
-	@Transactional
+	private BadStock getOrCreateBadStock(Product product) {
+	    BadStock badStock = badStockDao.get(product.getId());
+	    if (badStock == null) {
+	        badStock = new BadStock(product);
+	    }
+        return badStock;
+    }
+
+    @Transactional
 	@Override
 	public void markAsPaid(BadStockReturn badStockReturn) {
 		User user = loginService.getLoggedInUser();
