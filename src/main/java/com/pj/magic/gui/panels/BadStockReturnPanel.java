@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.exception.NoItemException;
+import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicTextField;
@@ -46,6 +47,7 @@ import com.pj.magic.gui.tables.BadStockReturnItemsTable;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PaymentTerminalAssignment;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.User;
 import com.pj.magic.service.BadStockReturnService;
 import com.pj.magic.service.CustomerService;
@@ -620,6 +622,9 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 			} catch (AlreadyPaidException e) {
 				showErrorMessage(e.getMessage());
 				updateDisplay(badStockReturn);
+			} catch (NotEnoughStocksException e) {
+                showErrorMessage(constructNotEnoughStocksExceptionErrorMessage(e.getBadStockReturnItem().getProduct()));
+                updateDisplay(badStockReturn);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error occurred during posting!");
@@ -627,7 +632,15 @@ public class BadStockReturnPanel extends StandardMagicPanel {
 		}
 	}
 
-	private void markBadStockReturnAsPaid() {
+	private String constructNotEnoughStocksExceptionErrorMessage(Product product) {
+	    return new StringBuilder("Not enough available stocks!\n")
+	            .append(product.getCode())
+	            .append(" - ")
+	            .append(product.getDescription())
+	            .toString();
+    }
+
+    private void markBadStockReturnAsPaid() {
 		if (!isUserAssignedToPaymentTerminal()) {
 			showErrorMessage("User is not assigned to a payment terminal");
 			return;

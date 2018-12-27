@@ -16,6 +16,7 @@ import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.AlreadyCancelledException;
 import com.pj.magic.exception.AlreadyPaidException;
 import com.pj.magic.exception.NoItemException;
+import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.model.BadStock;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BadStockReturnItem;
@@ -148,6 +149,7 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 		return search(criteria);
 	}
 
+	@Transactional
 	@Override
 	public void cancel(BadStockReturn badStockReturn) {
 		BadStockReturn updated = getBadStockReturn(badStockReturn.getId());
@@ -159,6 +161,15 @@ public class BadStockReturnServiceImpl implements BadStockReturnService {
 		if (updated.isPaid()) {
 			throw new AlreadyPaidException("Bad Stock Return already paid. BSR No.: " + updated.getBadStockReturnNumber());
 		}
+		
+        for (BadStockReturnItem item : updated.getItems()) {
+            BadStock badStock = badStockDao.get(item.getProduct().getId());
+            if (badStock == null || badStock.getUnitQuantity(item.getUnit()) < item.getQuantity()) {
+                throw new NotEnoughStocksException(item);
+            }
+            badStock.addUnitQuantity(item.getUnit(), -1 * item.getQuantity());
+            badStockDao.save(badStock);
+        }
 		
 		updated.setCancelled(true);
 		updated.setCancelDate(systemDao.getCurrentDateTime());
