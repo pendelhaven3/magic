@@ -3,7 +3,7 @@ package com.pj.magic.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BadStock {
+public class BadStock implements Comparable<BadStock> {
 
     private Product product;
     private List<UnitQuantity> unitQuantities = new ArrayList<>();
@@ -37,6 +37,11 @@ public class BadStock {
         }
         
         unitQuantities.add(new UnitQuantity(unit, quantity));
+    }
+    
+    @Override
+    public int compareTo(BadStock o) {
+        return product.compareTo(o.getProduct());
     }
     
     public Product getProduct() {

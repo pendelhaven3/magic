@@ -24,6 +24,7 @@ import com.pj.magic.gui.tables.MagicSubmenuTable;
 public class BadStockMenuPanel extends MenuPanel {
 
     private static final String INVENTORY_LIST = "Bad Stock Inventory List";
+    private static final String ADJUSTMENT_IN = "Bad Stock Adjustment In";
     
     private MagicListTable table;
 	private MainMenuTableModel tableModel;
@@ -85,6 +86,9 @@ public class BadStockMenuPanel extends MenuPanel {
 		case INVENTORY_LIST:
 			getMagicFrame().switchToBadStockInventoryListPanel();
 			break;
+        case ADJUSTMENT_IN:
+            getMagicFrame().switchToBadStockAdjustmentInListPanel();
+            break;
 		}
 	}
 
@@ -96,7 +100,8 @@ public class BadStockMenuPanel extends MenuPanel {
 	private class MainMenuTableModel extends AbstractTableModel {
 
         private final List<String> menuItems = Arrays.asList(
-                INVENTORY_LIST
+                INVENTORY_LIST,
+                ADJUSTMENT_IN
         );
         
 		@Override

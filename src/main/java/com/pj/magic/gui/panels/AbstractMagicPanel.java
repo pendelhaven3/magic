@@ -127,6 +127,11 @@ public abstract class AbstractMagicPanel extends JPanel {
 		return (MagicFrame)SwingUtilities.getRoot(this);
 	}
 	
+	/**
+	 * Move focus to target component when this panel is displayed
+	 * 
+	 * @param component The target component
+	 */
 	protected void focusOnComponentWhenThisPanelIsDisplayed(JComponent component) {
 		final JComponent target = component;
 		addComponentListener(new ComponentAdapter() {

@@ -219,6 +219,7 @@ public class MagicFrame extends JFrame {
     public static final String EDIT_PRODUCT_PRICES_LIST_PANEL = "EDIT_PRODUCT_PRICES_LIST_PANEL";
     public static final String BAD_STOCK_MENU_PANEL = "BAD_STOCK_MENU_PANEL";
     public static final String BAD_STOCK_INVENTORY_LIST_PANEL = "BAD_STOCK_INVENTORY_LIST_PANEL";
+    public static final String BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL = "BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL";
 	
 	@Value("${application.title}")
 	private String baseTitle;
@@ -339,6 +340,7 @@ public class MagicFrame extends JFrame {
     @Autowired private EditProductPricesListPanel editProductPricesListPanel;
     @Autowired private BadStockMenuPanel badStockMenuPanel;
     @Autowired private BadStockInventoryListPanel badStockInventoryListPanel;
+    @Autowired private BadStockAdjustmentInListPanel badStockAdjustmentInListPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -521,6 +523,7 @@ public class MagicFrame extends JFrame {
         panelHolder.add(editProductPricesListPanel, EDIT_PRODUCT_PRICES_LIST_PANEL);
         panelHolder.add(badStockMenuPanel, BAD_STOCK_MENU_PANEL);
         panelHolder.add(badStockInventoryListPanel, BAD_STOCK_INVENTORY_LIST_PANEL);
+        panelHolder.add(badStockAdjustmentInListPanel, BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1373,6 +1376,12 @@ public class MagicFrame extends JFrame {
         addPanelNameToTitle("Bad Stock Inventory List");
         badStockInventoryListPanel.updateDisplay();
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_INVENTORY_LIST_PANEL);
+    }
+
+    public void switchToBadStockAdjustmentInListPanel() {
+        addPanelNameToTitle("Bad Stock Adjustment In List");
+        badStockAdjustmentInListPanel.updateDisplay();
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL);
     }
 	
 }
