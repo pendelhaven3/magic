@@ -7,13 +7,13 @@ public class BadStockAdjustmentInItem implements Comparable<BadStockAdjustmentIn
 
 	private Long id;
 	private BadStockAdjustmentIn parent;
-	private BadStock badStock;
+	private Product product;
 	private String unit;
 	private Integer quantity;
 
     public int hashCode() {
         return new HashCodeBuilder()
-            .append(badStock)
+            .append(product)
             .append(unit)
             .toHashCode();
     }
@@ -28,14 +28,14 @@ public class BadStockAdjustmentInItem implements Comparable<BadStockAdjustmentIn
         }
         BadStockAdjustmentInItem other = (BadStockAdjustmentInItem)obj;     
         return new EqualsBuilder()
-            .append(badStock, other.getBadStock())
+            .append(product, other.getProduct())
             .append(unit, other.getUnit())
             .isEquals();
     }
 	
     @Override
     public int compareTo(BadStockAdjustmentInItem o) {
-        int result = badStock.compareTo(o.getBadStock());
+        int result = product.compareTo(o.getProduct());
         if (result == 0) {
             return Unit.compare(unit, o.getUnit());
         } else {
@@ -75,12 +75,12 @@ public class BadStockAdjustmentInItem implements Comparable<BadStockAdjustmentIn
 		this.parent = parent;
 	}
 
-    public BadStock getBadStock() {
-        return badStock;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setBadStock(BadStock badStock) {
-        this.badStock = badStock;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 	
 }

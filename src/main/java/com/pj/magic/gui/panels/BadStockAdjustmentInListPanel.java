@@ -4,6 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.TableColumnModel;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.BadStockAdjustmentIn;
@@ -26,10 +28,11 @@ public class BadStockAdjustmentInListPanel extends StandardMagicPanel {
     private BadStockAdjustmentInService badStockAdjustmentInService;
     
 	private MagicListTable table;
-	private BadStockAdjustmentInsTableModel tableModel = new BadStockAdjustmentInsTableModel();
+	private BadStockAdjustmentInsTableModel tableModel;
 	
 	@Override
 	public void initializeComponents() {
+	    tableModel = new BadStockAdjustmentInsTableModel();
 	    table = new MagicListTable(tableModel);
         setTableColumnWidths();
 		focusOnComponentWhenThisPanelIsDisplayed(table);
@@ -59,18 +62,27 @@ public class BadStockAdjustmentInListPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void registerKeyBindings() {
+	    table.onEnterKeyAndDoubleClick(() -> selectAdjustmentIn());
 	}
 	
-	@Override
+	private void selectAdjustmentIn() {
+	    BadStockAdjustmentIn selected = tableModel.getItem(table.getSelectedRow());
+        getMagicFrame().switchToBadStockAdjustmentInPanel(selected);
+    }
+
+    @Override
 	protected void doOnBack() {
 		getMagicFrame().switchToBadStockMenuPanel();
 	}
 	
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+        JButton addButton = new MagicToolBarButton("plus", "New");
+        addButton.addActionListener(e -> getMagicFrame().switchToNewBadStockAdjustmentInPanel());
+        toolBar.add(addButton);
 	}
 
-	private static final int BAD_STOCK_ADJUSTMENT_IN_NUMBER_COLUMN_INDEX = 0;
+    private static final int BAD_STOCK_ADJUSTMENT_IN_NUMBER_COLUMN_INDEX = 0;
 	private static final int REMARKS_COLUMN_INDEX = 1;
 	private static final int POSTED_COLUMN_INDEX = 2;
 	private static final int POST_DATE_COLUMN_INDEX = 3;

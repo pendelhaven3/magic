@@ -1218,10 +1218,10 @@ create table BAD_STOCK_ADJUSTMENT_IN (
 create table BAD_STOCK_ADJUSTMENT_IN_ITEM (
   ID integer auto_increment,
   BAD_STOCK_ADJUSTMENT_IN_ID integer not null,
-  BAD_STOCK_ID integer not null,
+  PRODUCT_ID integer not null,
   UNIT char(3) not null,
   QUANTITY integer not null,
   constraint BAD_STOCK_ADJUSTMENT_IN_ITEM$PK primary key (ID),
   constraint BAD_STOCK_ADJUSTMENT_IN_ITEM$FK foreign key (BAD_STOCK_ADJUSTMENT_IN_ID) references BAD_STOCK_ADJUSTMENT_IN (ID),
-  constraint BAD_STOCK_ADJUSTMENT_IN_ITEM$FK2 foreign key (BAD_STOCK_ID) references BAD_STOCK (PRODUCT_ID)
+  constraint BAD_STOCK_ADJUSTMENT_IN_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );

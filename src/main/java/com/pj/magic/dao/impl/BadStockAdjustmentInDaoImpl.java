@@ -1,11 +1,18 @@
 package com.pj.magic.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.BadStockAdjustmentInDao;
@@ -22,6 +29,8 @@ public class BadStockAdjustmentInDaoImpl extends MagicDao implements BadStockAdj
             + " from BAD_STOCK_ADJUSTMENT_IN a"
             + " left join USER b"
             + "   on b.ID = a.POSTED_BY";
+    
+    private static final String BAD_STOCK_ADJUSTMENT_IN_NUMBER_SEQUENCE = "BAD_STOCK_ADJUSTMENT_IN_NO_SEQ";
     
     private RowMapper<BadStockAdjustmentIn> rowMapper = new RowMapper<BadStockAdjustmentIn>() {
 
@@ -59,6 +68,68 @@ public class BadStockAdjustmentInDaoImpl extends MagicDao implements BadStockAdj
         sb.append(" order by BAD_STOCK_ADJUSTMENT_IN_NO desc");
         
         return getJdbcTemplate().query(sb.toString(), rowMapper, params.toArray());
+    }
+
+    private static final String GET_SQL = BASE_SELECT_SQL + " where a.ID = ?";
+    
+    @Override
+    public BadStockAdjustmentIn get(Long id) {
+        try {
+            return getJdbcTemplate().queryForObject(GET_SQL, rowMapper, id);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public void save(BadStockAdjustmentIn adjustmentIn) {
+        if (adjustmentIn.getId() == null) {
+            insert(adjustmentIn);
+        } else {
+            update(adjustmentIn);
+        }
+    }
+
+    private static final String INSERT_SQL =
+            "insert into BAD_STOCK_ADJUSTMENT_IN"
+            + " (BAD_STOCK_ADJUSTMENT_IN_NO, REMARKS)"
+            + " values (?, ?)";
+    
+    private void insert(BadStockAdjustmentIn adjustmentIn) {
+        long badStockAdjustmentInNumber = getNextBadStockAdjustmentInNumber();
+        
+        KeyHolder holder = new GeneratedKeyHolder();
+        getJdbcTemplate().update(new PreparedStatementCreator() {
+            
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con)
+                    throws SQLException {
+                PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
+                ps.setLong(1, badStockAdjustmentInNumber);
+                ps.setString(2, adjustmentIn.getRemarks());
+                return ps;
+            }
+        }, holder);
+        
+        adjustmentIn.setId(holder.getKey().longValue());
+        adjustmentIn.setBadStockAdjustmentInNumber(badStockAdjustmentInNumber);
+    }
+
+    private long getNextBadStockAdjustmentInNumber() {
+        return getNextSequenceValue(BAD_STOCK_ADJUSTMENT_IN_NUMBER_SEQUENCE);
+    }
+    
+    private static final String UPDATE_SQL =
+            "update BAD_STOCK_ADJUSTMENT_IN"
+            + " set REMARKS = ?, POST_IND = ?, POST_DT = ?, POSTED_BY = ?"
+            + " where ID = ?";
+    
+    private void update(BadStockAdjustmentIn adjustmentIn) {
+        getJdbcTemplate().update(UPDATE_SQL, adjustmentIn.getRemarks(), 
+                adjustmentIn.isPosted() ? "Y" : "N",
+                adjustmentIn.getPostDate(),
+                adjustmentIn.isPosted() ? adjustmentIn.getPostedBy().getId() : null,
+                adjustmentIn.getId());
     }
 
 }

@@ -11,9 +11,21 @@ public class BadStockAdjustmentIn {
     private boolean posted;
     private Date postDate;
     private User postedBy;
-    private List<AdjustmentInItem> items = new ArrayList<>();
+    private List<BadStockAdjustmentInItem> items = new ArrayList<>();
     private String remarks;
 
+    public String getStatus() {
+        return posted ? "Posted" : "New";
+    }
+    
+    public int getTotalItems() {
+        return items.size();
+    }
+    
+    public boolean hasItems() {
+        return !items.isEmpty();
+    }
+    
     public Long getId() {
         return id;
     }
@@ -53,12 +65,12 @@ public class BadStockAdjustmentIn {
     public void setPostedBy(User postedBy) {
         this.postedBy = postedBy;
     }
-
-    public List<AdjustmentInItem> getItems() {
+    
+    public List<BadStockAdjustmentInItem> getItems() {
         return items;
     }
 
-    public void setItems(List<AdjustmentInItem> items) {
+    public void setItems(List<BadStockAdjustmentInItem> items) {
         this.items = items;
     }
 
