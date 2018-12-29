@@ -13,7 +13,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.slf4j.Logger;
@@ -21,6 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.exception.AlreadyPostedException;
+import com.pj.magic.exception.NoItemException;
+import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -101,7 +103,7 @@ public class BadStockAdjustmentInPanel extends StandardMagicPanel {
 		if (itemsTable.isEditing()) {
 			itemsTable.getCellEditor().cancelCellEditing();
 		}
-		getMagicFrame().switchToBadStockAdjustmentInListPanel();
+        getMagicFrame().back(MagicFrame.BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL);
 	}
 	
 	public void updateDisplay(BadStockAdjustmentIn adjustmentIn) {
@@ -318,22 +320,26 @@ public class BadStockAdjustmentInPanel extends StandardMagicPanel {
 		if (itemsTable.isAdding()) {
 			itemsTable.switchToEditMode();
 		}
+
+        if (!adjustmentIn.hasItems()) {
+            showErrorMessage("Cannot post with no items");
+            itemsTable.requestFocusInWindow();
+            return;
+        }
 		
-		int confirm = showConfirmMessage("Do you want to post this Adjustment In?");
-		if (confirm == JOptionPane.OK_OPTION) {
-			if (!adjustmentIn.hasItems()) {
-				showErrorMessage("Cannot post a Adjustment In with no items");
-				itemsTable.requestFocusInWindow();
-				return;
-			}
-			try {
-				badStockAdjustmentInService.post(adjustmentIn);
-				JOptionPane.showMessageDialog(this, "Post successful!");
-				updateDisplay(adjustmentIn);
-			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
-				showErrorMessage("Unexpected error occurred during posting!");
-			}
+		if (confirm("Do you want to post this Bad Stock Adjustment In?")) {
+		    try {
+	            badStockAdjustmentInService.post(adjustmentIn);
+	            showMessage("Post successful");
+	            updateDisplay(adjustmentIn);
+		    } catch (AlreadyPostedException e) {
+		        showErrorMessage("Already posted");
+            } catch (NoItemException e) {
+                showErrorMessage("Cannot post with no items");
+		    } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+                showMessageForUnexpectedError();
+		    }
 		}
 	}
 

@@ -58,12 +58,21 @@ public class MagicTextField extends JTextField {
 		this.numbersOnly = numbersOnly;
 	}
 	
-	// TODO: Migrate references here
 	public void onEnterKey(Action action) {
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), Constants.ENTER_KEY_ACTION_NAME);
 		getActionMap().put(Constants.ENTER_KEY_ACTION_NAME, action);
 	}
 
+    public void onEnterKey(CustomAction action) {
+        onEnterKey(new AbstractAction() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action.doAction();
+            }
+        });
+    }
+	
 	public void onF5Key(Action action) {
 		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), Constants.F5_KEY_ACTION_NAME);
 		getActionMap().put(Constants.F5_KEY_ACTION_NAME, action);

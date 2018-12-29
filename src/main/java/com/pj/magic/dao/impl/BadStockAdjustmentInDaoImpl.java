@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,6 +20,7 @@ import com.pj.magic.dao.BadStockAdjustmentInDao;
 import com.pj.magic.model.BadStockAdjustmentIn;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.BadStockAdjustmentInSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class BadStockAdjustmentInDaoImpl extends MagicDao implements BadStockAdjustmentInDao {
@@ -63,6 +65,21 @@ public class BadStockAdjustmentInDaoImpl extends MagicDao implements BadStockAdj
         if (criteria.getPosted() != null) {
             sb.append(" and POST_IND = ?");
             params.add(criteria.getPosted() ? "Y" : "N");
+        }
+        
+        if (criteria.getBadStockAdjustmentInNumber() != null) {
+            sb.append(" and BAD_STOCK_ADJUSTMENT_IN_NO = ?");
+            params.add(criteria.getBadStockAdjustmentInNumber());
+        }
+        
+        if (criteria.getPostDateFrom() != null) {
+            sb.append(" and POST_DT >= ?");
+            params.add(DbUtil.toSqlDate(criteria.getPostDateFrom()));
+        }
+
+        if (criteria.getPostDateTo() != null) {
+            sb.append(" and POST_DT < ?");
+            params.add(DbUtil.toSqlDate(DateUtils.addDays(criteria.getPostDateTo(), 1)));
         }
 
         sb.append(" order by BAD_STOCK_ADJUSTMENT_IN_NO desc");

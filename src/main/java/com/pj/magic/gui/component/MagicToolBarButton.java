@@ -1,6 +1,7 @@
 package com.pj.magic.gui.component;
 
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -20,6 +21,11 @@ public class MagicToolBarButton extends JButton {
 		setIcon(new ImageIcon(getClass().getResource("/images/" + imageName + ".png")));
 		setToolTipText(toolTipText);
 	}
+	
+    public MagicToolBarButton(String imageName, String toolTipText, ActionListener actionListener) {
+        this(imageName, toolTipText);
+        addActionListener(actionListener);
+    }
 	
 	public void useSmallerSize() {
 		setPreferredSize(new Dimension(32, 32));

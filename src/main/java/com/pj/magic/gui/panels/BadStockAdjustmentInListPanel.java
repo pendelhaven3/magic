@@ -4,7 +4,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.TableColumnModel;
@@ -14,11 +13,14 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SearchBadStockAdjustmentInsDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.BadStockAdjustmentIn;
+import com.pj.magic.model.search.BadStockAdjustmentInSearchCriteria;
 import com.pj.magic.service.BadStockAdjustmentInService;
 import com.pj.magic.util.FormatterUtil;
+import com.pj.magic.util.RetainCriteriaInfo;
 import com.pj.magic.util.StringUtil;
 
 @Component
@@ -29,6 +31,12 @@ public class BadStockAdjustmentInListPanel extends StandardMagicPanel {
     
 	private MagicListTable table;
 	private BadStockAdjustmentInsTableModel tableModel;
+	private SearchBadStockAdjustmentInsDialog searchBadStockAdjustmentInsDialog;
+	private RetainCriteriaInfo<BadStockAdjustmentInSearchCriteria> retainCriteriaInfo = new RetainCriteriaInfo<>();
+	
+	public BadStockAdjustmentInListPanel() {
+	    setTitle("Bad Stock Adjustment In List");
+	}
 	
 	@Override
 	public void initializeComponents() {
@@ -39,22 +47,27 @@ public class BadStockAdjustmentInListPanel extends StandardMagicPanel {
 	}
 
     public void updateDisplay() {
-        List<BadStockAdjustmentIn> adjustmentIns = badStockAdjustmentInService.getAllUnpostedBadStockAdjustmentIn();
-        tableModel.setItems(adjustmentIns);
-        if (!adjustmentIns.isEmpty()) {
+        tableModel.setItems(badStockAdjustmentInService.getAllUnpostedBadStockAdjustmentIn());
+        if (tableModel.hasItems()) {
             table.selectFirstRow();
         }
+        
+        if (searchBadStockAdjustmentInsDialog != null) {
+            searchBadStockAdjustmentInsDialog.resetDisplay();
+        }
+        
+        retainCriteriaInfo.clear();
 	}
 
-	@Override
+    @Override
 	protected void layoutMainPanel(JPanel mainPanel) {
 		mainPanel.setLayout(new GridBagLayout());
-		int currentRow = 0;
+		
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
-		c.gridy = currentRow;
+		c.gridy = 0;
 		
 		JScrollPane scrollPane = new JScrollPane(table);
 		mainPanel.add(scrollPane, c);
@@ -68,6 +81,8 @@ public class BadStockAdjustmentInListPanel extends StandardMagicPanel {
 	private void selectAdjustmentIn() {
 	    BadStockAdjustmentIn selected = tableModel.getItem(table.getSelectedRow());
         getMagicFrame().switchToBadStockAdjustmentInPanel(selected);
+        
+        retainCriteriaInfo.setSelectionInfo(table);
     }
 
     @Override
@@ -77,11 +92,44 @@ public class BadStockAdjustmentInListPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-        JButton addButton = new MagicToolBarButton("plus", "New");
-        addButton.addActionListener(e -> getMagicFrame().switchToNewBadStockAdjustmentInPanel());
-        toolBar.add(addButton);
+	    toolBar.add(new MagicToolBarButton("plus", "New", e -> getMagicFrame().switchToNewBadStockAdjustmentInPanel()));
+        toolBar.add(new MagicToolBarButton("search", "Search", e -> searchAdjustmentIns()));
 	}
 
+    private void searchAdjustmentIns() {
+        if (searchBadStockAdjustmentInsDialog == null) {
+            searchBadStockAdjustmentInsDialog = new SearchBadStockAdjustmentInsDialog();
+        }
+        
+        searchBadStockAdjustmentInsDialog.setVisible(true);
+        
+        BadStockAdjustmentInSearchCriteria criteria = searchBadStockAdjustmentInsDialog.getSearchCriteria();
+        if (criteria != null) {
+            tableModel.setItems(badStockAdjustmentInService.search(criteria));
+            if (tableModel.hasItems()) {
+                table.selectFirstRowThenFocus();
+            } else {
+                showMessage("No matching records");
+            }
+            
+            retainCriteriaInfo.setCriteria(criteria);
+        }
+    }
+
+    @Override
+    public void updateDisplayOnBack() {
+        List<BadStockAdjustmentIn> adjustmentIns;
+        if (retainCriteriaInfo.hasCriteria()) {
+            adjustmentIns = badStockAdjustmentInService.search(retainCriteriaInfo.getCriteria());
+        } else {
+            adjustmentIns = badStockAdjustmentInService.getAllUnpostedBadStockAdjustmentIn();
+        }
+        tableModel.setItems(adjustmentIns);
+        
+        retainCriteriaInfo.adjustSelectionBasedOnTotalRecords(adjustmentIns.size());
+        retainCriteriaInfo.applySelectionInfo(table);
+    }
+    
     private static final int BAD_STOCK_ADJUSTMENT_IN_NUMBER_COLUMN_INDEX = 0;
 	private static final int REMARKS_COLUMN_INDEX = 1;
 	private static final int POSTED_COLUMN_INDEX = 2;

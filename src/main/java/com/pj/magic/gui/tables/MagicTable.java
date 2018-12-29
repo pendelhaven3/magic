@@ -159,6 +159,15 @@ public class MagicTable extends JTable {
 		changeSelection(0, 0, false, false);
 	}
 	
+    public void selectFirstRowThenFocus() {
+        changeSelection(0, 0, false, false);
+        requestFocusInWindow();
+    }
+    
+    public void selectRow(int row) {
+        changeSelection(row, 0, false, false);
+    }
+    
 	protected void onF4Key(Action action) {
 		InputMap inputMap = getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		inputMap.put(KeyUtil.getF4Key(), Constants.F4_KEY_ACTION_NAME);

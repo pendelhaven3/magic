@@ -56,6 +56,13 @@ public class BadStockAdjustmentInServiceImpl implements BadStockAdjustmentInServ
     @Transactional
     @Override
     public void save(BadStockAdjustmentIn adjustmentIn) {
+        if (!adjustmentIn.isNew() && !adjustmentIn.isPosted()) {
+            BadStockAdjustmentIn updated = badStockAdjustmentInDao.get(adjustmentIn.getId());
+            if (updated.isPosted()) {
+                return;
+            }
+        }
+        
         badStockAdjustmentInDao.save(adjustmentIn);
     }
 
@@ -102,6 +109,11 @@ public class BadStockAdjustmentInServiceImpl implements BadStockAdjustmentInServ
             badStock = new BadStock(product);
         }
         return badStock;
+    }
+
+    @Override
+    public List<BadStockAdjustmentIn> search(BadStockAdjustmentInSearchCriteria criteria) {
+        return badStockAdjustmentInDao.search(criteria);
     }
     
 }
