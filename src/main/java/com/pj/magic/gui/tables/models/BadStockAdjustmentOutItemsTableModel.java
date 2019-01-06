@@ -8,7 +8,6 @@ import javax.swing.table.AbstractTableModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.tables.AdjustmentOutItemsTable;
 import com.pj.magic.gui.tables.BadStockAdjustmentOutItemsTable;
 import com.pj.magic.gui.tables.rowitems.BadStockAdjustmentOutItemRowItem;
 import com.pj.magic.model.BadStockAdjustmentOut;
@@ -44,13 +43,13 @@ public class BadStockAdjustmentOutItemsTableModel extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 	    BadStockAdjustmentOutItemRowItem rowItem = rowItems.get(rowIndex);
 		switch (columnIndex) {
-		case AdjustmentOutItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+		case BadStockAdjustmentOutItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 			return rowItem.getProductCode();
-		case AdjustmentOutItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
+		case BadStockAdjustmentOutItemsTable.PRODUCT_DESCRIPTION_COLUMN_INDEX:
 			return (rowItem.getProduct() != null) ? rowItem.getProduct().getDescription() : null;
-		case AdjustmentOutItemsTable.UNIT_COLUMN_INDEX:
+		case BadStockAdjustmentOutItemsTable.UNIT_COLUMN_INDEX:
 			return rowItem.getUnit();
-		case AdjustmentOutItemsTable.QUANTITY_COLUMN_INDEX:
+		case BadStockAdjustmentOutItemsTable.QUANTITY_COLUMN_INDEX:
 			return rowItem.getQuantity();
 		default:
 		    return null;
@@ -90,17 +89,17 @@ public class BadStockAdjustmentOutItemsTableModel extends AbstractTableModel {
 	    BadStockAdjustmentOutItemRowItem rowItem = rowItems.get(rowIndex);
 		String val = (String)value;
 		switch (columnIndex) {
-		case AdjustmentOutItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+		case BadStockAdjustmentOutItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 			if (rowItem.getProduct() != null && rowItem.getProduct().getCode().equals(val)) {
 				return;
 			}
 			rowItem.setProduct(productService.findProductByCode(val));
 			rowItem.setUnit(null);
 			break;
-		case AdjustmentOutItemsTable.UNIT_COLUMN_INDEX:
+		case BadStockAdjustmentOutItemsTable.UNIT_COLUMN_INDEX:
 			rowItem.setUnit(val);
 			break;
-		case AdjustmentOutItemsTable.QUANTITY_COLUMN_INDEX:
+		case BadStockAdjustmentOutItemsTable.QUANTITY_COLUMN_INDEX:
 			rowItem.setQuantity(Integer.valueOf(val));
 			break;
 		}

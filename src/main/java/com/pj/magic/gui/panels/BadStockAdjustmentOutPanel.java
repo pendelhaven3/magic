@@ -9,11 +9,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.event.TableModelEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +27,9 @@ import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
-import com.pj.magic.gui.tables.AdjustmentOutItemsTable;
 import com.pj.magic.gui.tables.BadStockAdjustmentOutItemsTable;
-import com.pj.magic.gui.tables.BadStockInfoTable;
-import com.pj.magic.model.BadStock;
 import com.pj.magic.model.BadStockAdjustmentOut;
-import com.pj.magic.model.Product;
 import com.pj.magic.service.BadStockAdjustmentOutService;
-import com.pj.magic.service.BadStockService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -49,11 +44,8 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 	@Autowired
 	private BadStockAdjustmentOutItemsTable itemsTable;
 	
-	@Autowired
-	private BadStockService badStockService;
-	
 	private BadStockAdjustmentOut adjustmentOut;
-	private JLabel adjustmentOutNumberLabel;
+	private JLabel adjustmentInNumberLabel;
 	private JLabel statusLabel;
 	private MagicTextField remarksField;
 	private JLabel postDateField;
@@ -62,7 +54,6 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 	private JButton postButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
-    private BadStockInfoTable badStockInfoTable;
 	
 	@Override
 	protected void initializeComponents() {
@@ -79,12 +70,18 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		});
 		
 		focusOnComponentWhenThisPanelIsDisplayed(remarksField);
-        initializeQuantitiesTable();
+		updateTotalItemsFieldWhenItemsTableChanges();
 	}
 
 	@Override
 	protected void registerKeyBindings() {
-		remarksField.onEnterKey(() -> itemsTable.highlight());
+		remarksField.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				itemsTable.highlight();
+			}
+		});
 	}
 
 	protected void saveRemarks() {
@@ -110,7 +107,7 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		}
         getMagicFrame().back(MagicFrame.BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL);
 	}
-	
+
 	public void updateDisplay(BadStockAdjustmentOut adjustmentOut) {
 		if (adjustmentOut.getId() == null) {
 			this.adjustmentOut = adjustmentOut;
@@ -120,7 +117,7 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		
 		this.adjustmentOut = adjustmentOut = badStockAdjustmentOutService.getBadStockAdjustmentOut(adjustmentOut.getId());
 		
-		adjustmentOutNumberLabel.setText(adjustmentOut.getBadStockAdjustmentOutNumber().toString());
+		adjustmentInNumberLabel.setText(adjustmentOut.getBadStockAdjustmentOutNumber().toString());
 		statusLabel.setText(adjustmentOut.getStatus());
 		if (adjustmentOut.getPostDate() != null) {
 			postDateField.setText(FormatterUtil.formatDateTime(adjustmentOut.getPostDate()));
@@ -143,7 +140,7 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 	}
 
 	private void clearDisplay() {
-		adjustmentOutNumberLabel.setText(null);
+		adjustmentInNumberLabel.setText(null);
 		statusLabel.setText(null);
 		postDateField.setText(null);
 		postedByField.setText(null);
@@ -170,14 +167,14 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "BS Adj. Out No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(120, "BS Adj. In No.:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		adjustmentOutNumberLabel = ComponentUtil.createLabel(200, "");
-		mainPanel.add(adjustmentOutNumberLabel, c);
+		adjustmentInNumberLabel = ComponentUtil.createLabel(200, "");
+		mainPanel.add(adjustmentInNumberLabel, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 3;
@@ -262,15 +259,6 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		c.gridwidth = 6;
 		mainPanel.add(ComponentUtil.createScrollPane(itemsTable, 600, 100), c);
 
-        currentRow++;
-        
-        c = new GridBagConstraints();
-        c.fill = GridBagConstraints.BOTH;
-        c.gridx = 0;
-        c.gridy = currentRow;
-        c.gridwidth = 6;
-        mainPanel.add(ComponentUtil.createScrollPane(badStockInfoTable, 500, 65), c);
-        
 		currentRow++;
 		
 		c = new GridBagConstraints();
@@ -350,7 +338,7 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		        showErrorMessage("Already posted");
             } catch (NoItemException e) {
                 showErrorMessage("Cannot post with no items");
-            } catch (NotEnoughStocksException e) {
+            } catch (NotEnoughStocksException e) {  
                 showErrorMessage("Not enough available stocks!");
                 updateDisplay(adjustmentOut);
                 itemsTable.highlightColumn(e.getBadStockAdjustmentOutItem(), 
@@ -364,39 +352,15 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		postButton = new MagicToolBarButton("post", "Post", e -> postAdjustmentOut());
+		postButton = new MagicToolBarButton("post", "Post");
+		postButton.addActionListener(e -> postAdjustmentOut());
 		toolBar.add(postButton);
 	}
 
-    private void initializeQuantitiesTable() {
-        badStockInfoTable = new BadStockInfoTable();
-        
+    private void updateTotalItemsFieldWhenItemsTableChanges() {
         itemsTable.getModel().addTableModelListener(e -> {
-            if (e.getColumn() == AdjustmentOutItemsTable.PRODUCT_CODE_COLUMN_INDEX ||
-                    e.getColumn() == TableModelEvent.ALL_COLUMNS) {
-                updateQuantitiesTable();
-            }
+            totalItemsField.setText(String.valueOf(adjustmentOut.getTotalItems()));
         });
-        
-        itemsTable.getSelectionModel().addListSelectionListener(e -> updateQuantitiesTable());
     }
-
-    private void updateQuantitiesTable() {
-        if (itemsTable.getSelectedRow() == -1) {
-            badStockInfoTable.setBadStock(null);
-            return;
-        }
-        
-        Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
-        if (product != null) {
-            BadStock badStock = badStockService.getBadStock(product);
-            if (badStock == null) {
-                badStock = new BadStock(product);
-            }
-            badStockInfoTable.setBadStock(badStock);
-        } else {
-            badStockInfoTable.setBadStock(null);
-        }
-    }
-    
+	
 }
