@@ -76,6 +76,10 @@ public abstract class StandardMagicPanel extends AbstractMagicPanel {
 		// use layoutMainPanel instead
 	}
 	
+	public void updateDisplay() {
+	    // for overriding
+	}
+	
 	public void updateDisplayOnBack() {
 		// for overriding
 	}

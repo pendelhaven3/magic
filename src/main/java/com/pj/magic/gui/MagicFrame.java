@@ -43,6 +43,7 @@ import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.BadStockAdjustmentIn;
+import com.pj.magic.model.BadStockAdjustmentOut;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardStatement;
@@ -222,6 +223,8 @@ public class MagicFrame extends JFrame {
     public static final String BAD_STOCK_INVENTORY_LIST_PANEL = "BAD_STOCK_INVENTORY_LIST_PANEL";
     public static final String BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL = "BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL";
     public static final String BAD_STOCK_ADJUSTMENT_IN_PANEL = "BAD_STOCK_ADJUSTMENT_IN_PANEL";
+    public static final String BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL = "BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL";
+    public static final String BAD_STOCK_ADJUSTMENT_OUT_PANEL = "BAD_STOCK_ADJUSTMENT_OUT_PANEL";
 	
 	@Value("${application.title}")
 	private String baseTitle;
@@ -344,6 +347,8 @@ public class MagicFrame extends JFrame {
     @Autowired private BadStockInventoryListPanel badStockInventoryListPanel;
     @Autowired private BadStockAdjustmentInListPanel badStockAdjustmentInListPanel;
     @Autowired private BadStockAdjustmentInPanel badStockAdjustmentInPanel;
+    @Autowired private BadStockAdjustmentOutListPanel badStockAdjustmentOutListPanel;
+    @Autowired private BadStockAdjustmentOutPanel badStockAdjustmentOutPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -528,6 +533,8 @@ public class MagicFrame extends JFrame {
         panelHolder.add(badStockInventoryListPanel, BAD_STOCK_INVENTORY_LIST_PANEL);
         panelHolder.add(badStockAdjustmentInListPanel, BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL);
         panelHolder.add(badStockAdjustmentInPanel, BAD_STOCK_ADJUSTMENT_IN_PANEL);
+        panelHolder.add(badStockAdjustmentOutListPanel, BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL);
+        panelHolder.add(badStockAdjustmentOutPanel, BAD_STOCK_ADJUSTMENT_OUT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1376,18 +1383,6 @@ public class MagicFrame extends JFrame {
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_MENU_PANEL);
     }
 
-    public void switchToBadStockInventoryListPanel() {
-        addPanelNameToTitle("Bad Stock Inventory List");
-        badStockInventoryListPanel.updateDisplay();
-        ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_INVENTORY_LIST_PANEL);
-    }
-
-    public void switchToBadStockAdjustmentInListPanel() {
-        addPanelNameToTitle("Bad Stock Adjustment In List");
-        badStockAdjustmentInListPanel.updateDisplay();
-        ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL);
-    }
-
     public void switchToNewBadStockAdjustmentInPanel() {
         switchToBadStockAdjustmentInPanel(null);
     }
@@ -1400,6 +1395,27 @@ public class MagicFrame extends JFrame {
         addPanelNameToTitle("Bad Stock Adjustment In");
         badStockAdjustmentInPanel.updateDisplay(adjustmentIn);
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_ADJUSTMENT_IN_PANEL);
+    }
+
+    public void switchPanel(String panelName) {
+        StandardMagicPanel panel = panelHolder.getCardPanel(panelName);
+        addPanelNameToTitle(panel.getTitle());
+        panel.updateDisplay();
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, panelName);
+    }
+
+    public void switchToNewBadStockAdjustmentOutPanel() {
+        switchToBadStockAdjustmentOutPanel(null);
+    }
+    
+    public void switchToBadStockAdjustmentOutPanel(BadStockAdjustmentOut adjustmentOut) {
+        if (adjustmentOut == null) {
+            adjustmentOut = new BadStockAdjustmentOut();
+        }
+        
+        addPanelNameToTitle("Bad Stock Adjustment Out");
+        badStockAdjustmentOutPanel.updateDisplay(adjustmentOut);
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_ADJUSTMENT_OUT_PANEL);
     }
     
 }

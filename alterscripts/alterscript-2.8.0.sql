@@ -1,4 +1,5 @@
 insert into SEQUENCE (NAME) values ('BAD_STOCK_ADJUSTMENT_IN_NO_SEQ');
+insert into SEQUENCE (NAME) values ('BAD_STOCK_ADJUSTMENT_OUT_NO_SEQ');
 
 create table BAD_STOCK (
   PRODUCT_ID integer not null,
@@ -32,4 +33,27 @@ create table BAD_STOCK_ADJUSTMENT_IN_ITEM (
   constraint BAD_STOCK_ADJUSTMENT_IN_ITEM$PK primary key (ID),
   constraint BAD_STOCK_ADJUSTMENT_IN_ITEM$FK foreign key (BAD_STOCK_ADJUSTMENT_IN_ID) references BAD_STOCK_ADJUSTMENT_IN (ID),
   constraint BAD_STOCK_ADJUSTMENT_IN_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
+);
+
+create table BAD_STOCK_ADJUSTMENT_OUT (
+  ID integer auto_increment,
+  BAD_STOCK_ADJUSTMENT_OUT_NO integer not null,
+  POST_IND char(1) default 'N' not null,
+  REMARKS varchar(100) null,
+  POST_DT datetime null,
+  POSTED_BY integer null,
+  constraint BAD_STOCK_ADJUSTMENT_OUT$PK primary key (ID),
+  constraint BAD_STOCK_ADJUSTMENT_OUT$UK unique (BAD_STOCK_ADJUSTMENT_OUT_NO),
+  constraint BAD_STOCK_ADJUSTMENT_OUT$FK foreign key (POSTED_BY) references USER (ID)
+);
+
+create table BAD_STOCK_ADJUSTMENT_OUT_ITEM (
+  ID integer auto_increment,
+  BAD_STOCK_ADJUSTMENT_OUT_ID integer not null,
+  PRODUCT_ID integer not null,
+  UNIT char(3) not null,
+  QUANTITY integer not null,
+  constraint BAD_STOCK_ADJUSTMENT_OUT_ITEM$PK primary key (ID),
+  constraint BAD_STOCK_ADJUSTMENT_OUT_ITEM$FK foreign key (BAD_STOCK_ADJUSTMENT_OUT_ID) references BAD_STOCK_ADJUSTMENT_OUT (ID),
+  constraint BAD_STOCK_ADJUSTMENT_OUT_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)
 );

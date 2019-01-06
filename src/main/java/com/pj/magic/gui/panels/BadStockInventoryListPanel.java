@@ -28,6 +28,10 @@ public class BadStockInventoryListPanel extends StandardMagicPanel {
 	private JTable table;
 	private BadStockTableModel tableModel = new BadStockTableModel();
 	
+	public BadStockInventoryListPanel() {
+	    setTitle("Bad Stock Inventory List");
+	}
+	
     @Override
     protected void initializeComponents() {
         table = new MagicListTable(tableModel);

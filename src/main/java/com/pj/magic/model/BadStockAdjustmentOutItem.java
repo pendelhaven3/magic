@@ -8,10 +8,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BadStockAdjustmentInItem implements Comparable<BadStockAdjustmentInItem> {
+public class BadStockAdjustmentOutItem implements Comparable<BadStockAdjustmentOutItem> {
 
 	private Long id;
-	private BadStockAdjustmentIn parent;
+	private BadStockAdjustmentOut parent;
 	private Product product;
 	private String unit;
 	private Integer quantity;
@@ -28,10 +28,10 @@ public class BadStockAdjustmentInItem implements Comparable<BadStockAdjustmentIn
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof BadStockAdjustmentInItem)) {
+        if (!(obj instanceof BadStockAdjustmentOutItem)) {
             return false;
         }
-        BadStockAdjustmentInItem other = (BadStockAdjustmentInItem)obj;     
+        BadStockAdjustmentOutItem other = (BadStockAdjustmentOutItem)obj;     
         return new EqualsBuilder()
             .append(product, other.getProduct())
             .append(unit, other.getUnit())
@@ -39,7 +39,7 @@ public class BadStockAdjustmentInItem implements Comparable<BadStockAdjustmentIn
     }
 	
     @Override
-    public int compareTo(BadStockAdjustmentInItem o) {
+    public int compareTo(BadStockAdjustmentOutItem o) {
         int result = product.compareTo(o.getProduct());
         if (result == 0) {
             return Unit.compare(unit, o.getUnit());

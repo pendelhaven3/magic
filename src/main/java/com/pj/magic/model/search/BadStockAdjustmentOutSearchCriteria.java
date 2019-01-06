@@ -7,10 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BadStockAdjustmentInSearchCriteria {
+public class BadStockAdjustmentOutSearchCriteria {
 
     private Boolean posted;
-    private Long badStockAdjustmentInNumber;
+    private Long badStockAdjustmentOutNumber;
     private Date postDateFrom;
     private Date postDateTo;
 

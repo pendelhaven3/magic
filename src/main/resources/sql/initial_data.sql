@@ -18,6 +18,7 @@ insert into SEQUENCE (NAME) values ('PROMO_NO_SEQ');
 insert into SEQUENCE (NAME) values ('CREDIT_CARD_STATEMENT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('INVENTORY_CORRECTION_NO_SEQ');
 insert into SEQUENCE (NAME) values ('BAD_STOCK_ADJUSTMENT_IN_NO_SEQ');
+insert into SEQUENCE (NAME) values ('BAD_STOCK_ADJUSTMENT_OUT_NO_SEQ');
 
 insert into SYSTEM_PARAMETER (NAME, VALUE) values ('VERSION', '0.17.0');
 

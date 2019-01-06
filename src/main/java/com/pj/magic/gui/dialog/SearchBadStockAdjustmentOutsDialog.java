@@ -3,6 +3,7 @@ package com.pj.magic.gui.dialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Calendar;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -13,21 +14,21 @@ import org.springframework.util.StringUtils;
 import com.pj.magic.gui.component.MagicButton;
 import com.pj.magic.gui.component.MagicComboBox;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.model.search.BadStockAdjustmentInSearchCriteria;
+import com.pj.magic.model.search.BadStockAdjustmentOutSearchCriteria;
 import com.pj.magic.util.ComponentUtil;
 
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
-public class SearchBadStockAdjustmentInsDialog extends MagicDialog {
+public class SearchBadStockAdjustmentOutsDialog extends MagicDialog {
 
-	private MagicTextField adjustmentInNumberField;
+	private MagicTextField adjustmentOutNumberField;
 	private MagicComboBox<String> statusComboBox;
 	private UtilCalendarModel postDateFromModel;
     private UtilCalendarModel postDateToModel;
 	private MagicButton searchButton;
-	private BadStockAdjustmentInSearchCriteria searchCriteria;
+	private BadStockAdjustmentOutSearchCriteria searchCriteria;
 	
-	public SearchBadStockAdjustmentInsDialog() {
+	public SearchBadStockAdjustmentOutsDialog() {
 		setSize(380, 225);
 		setLocationRelativeTo(null);
 		setTitle("Search Bad Stock Adjustment Ins");
@@ -39,9 +40,9 @@ public class SearchBadStockAdjustmentInsDialog extends MagicDialog {
 	}
 
 	private void initializeComponents() {
-		adjustmentInNumberField = new MagicTextField();
-		adjustmentInNumberField.setNumbersOnly(true);
-		adjustmentInNumberField.setMaximumLength(10);
+		adjustmentOutNumberField = new MagicTextField();
+		adjustmentOutNumberField.setNumbersOnly(true);
+		adjustmentOutNumberField.setMaximumLength(10);
 		
 		statusComboBox = new MagicComboBox<>();
 		statusComboBox.setModel(new DefaultComboBoxModel<>(new String[] {"All", "Not Posted", "Posted"}));
@@ -52,13 +53,13 @@ public class SearchBadStockAdjustmentInsDialog extends MagicDialog {
 		searchButton = new MagicButton("Search");
 		searchButton.addActionListener(e -> saveAdjustmentInCriteria());
 		
-		focusOnComponentWhenThisPanelIsDisplayed(adjustmentInNumberField);
+		focusOnComponentWhenThisPanelIsDisplayed(adjustmentOutNumberField);
 	}
 
 	private void saveAdjustmentInCriteria() {
-		searchCriteria = new BadStockAdjustmentInSearchCriteria();
-		if (!StringUtils.isEmpty(adjustmentInNumberField.getText())) {
-			searchCriteria.setBadStockAdjustmentInNumber(Long.valueOf(adjustmentInNumberField.getText()));
+		searchCriteria = new BadStockAdjustmentOutSearchCriteria();
+		if (!StringUtils.isEmpty(adjustmentOutNumberField.getText())) {
+			searchCriteria.setBadStockAdjustmentOutNumber(Long.valueOf(adjustmentOutNumberField.getText()));
 		}
 		
 		if (statusComboBox.getSelectedIndex() != 0) {
@@ -84,7 +85,7 @@ public class SearchBadStockAdjustmentInsDialog extends MagicDialog {
 	}
 
 	private void registerKeyBindings() {
-		adjustmentInNumberField.onEnterKey(() -> statusComboBox.requestFocusInWindow());
+		adjustmentOutNumberField.onEnterKey(() -> statusComboBox.requestFocusInWindow());
 		statusComboBox.onEnterKey(() -> searchButton.requestFocusInWindow());
 		searchButton.onEnterKey(() -> saveAdjustmentInCriteria());
 	}
@@ -102,15 +103,15 @@ public class SearchBadStockAdjustmentInsDialog extends MagicDialog {
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		add(ComponentUtil.createLabel(140, "BS Adj. In No.:"), c);
+		add(ComponentUtil.createLabel(140, "BS Adj. Out No.:"), c);
 
 		c = new GridBagConstraints();
 		c.weightx = 1.0;
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		adjustmentInNumberField.setPreferredSize(new Dimension(100, 25));
-		add(adjustmentInNumberField, c);
+		adjustmentOutNumberField.setPreferredSize(new Dimension(100, 25));
+		add(adjustmentOutNumberField, c);
 
 		currentRow++;
 		
@@ -178,7 +179,7 @@ public class SearchBadStockAdjustmentInsDialog extends MagicDialog {
 		add(Box.createGlue(), c);
 	}
 	
-	public BadStockAdjustmentInSearchCriteria getSearchCriteria() {
+	public BadStockAdjustmentOutSearchCriteria getSearchCriteria() {
 	    try {
 	        return searchCriteria;
 	    } finally {
@@ -188,10 +189,12 @@ public class SearchBadStockAdjustmentInsDialog extends MagicDialog {
 	
 	public void resetDisplay() {
 		searchCriteria = null;
-		adjustmentInNumberField.setText(null);
+		adjustmentOutNumberField.setText(null);
 		statusComboBox.setSelectedIndex(0);
-		postDateFromModel.setValue(null);
-        postDateToModel.setValue(null);
+		
+		Calendar now = Calendar.getInstance();
+		postDateFromModel.setValue(now);
+        postDateToModel.setValue(now);
 	}
 	
 }

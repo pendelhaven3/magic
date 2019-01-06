@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.pj.magic.model.BadStockAdjustmentInItem;
+import com.pj.magic.model.BadStockAdjustmentOutItem;
 import com.pj.magic.model.Product;
 
 import lombok.Getter;
@@ -12,14 +12,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BadStockAdjustmentInItemRowItem {
+public class BadStockAdjustmentOutItemRowItem {
 
-	private BadStockAdjustmentInItem item;
+	private BadStockAdjustmentOutItem item;
 	private Product product;
 	private String unit;
 	private Integer quantity;
 
-	public BadStockAdjustmentInItemRowItem(BadStockAdjustmentInItem item) {
+	public BadStockAdjustmentOutItemRowItem(BadStockAdjustmentOutItem item) {
 		this.item = item;
 		if (item.getProduct() != null) {
 			product = item.getProduct();
@@ -51,10 +51,10 @@ public class BadStockAdjustmentInItemRowItem {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof BadStockAdjustmentInItemRowItem)) {
+        if (!(obj instanceof BadStockAdjustmentOutItemRowItem)) {
             return false;
         }
-        BadStockAdjustmentInItemRowItem other = (BadStockAdjustmentInItemRowItem)obj;       
+        BadStockAdjustmentOutItemRowItem other = (BadStockAdjustmentOutItemRowItem)obj;       
         return new EqualsBuilder()
             .append(product, other.getProduct())
             .append(unit, other.getUnit())

@@ -2,11 +2,9 @@ package com.pj.magic.gui.panels.menu;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -15,7 +13,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.springframework.stereotype.Component;
 
-import com.pj.magic.gui.component.DoubleClickMouseAdapter;
+import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
@@ -25,6 +23,7 @@ public class BadStockMenuPanel extends MenuPanel {
 
     private static final String INVENTORY_LIST = "Bad Stock Inventory List";
     private static final String ADJUSTMENT_IN = "Bad Stock Adjustment In";
+    private static final String ADJUSTMENT_OUT = "Bad Stock Adjustment Out";
     
     private MagicListTable table;
 	private MainMenuTableModel tableModel;
@@ -60,21 +59,7 @@ public class BadStockMenuPanel extends MenuPanel {
 
 	@Override
 	protected void registerKeyBindings() {
-		table.onEnterKey(new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				selectMenuItem();
-			}
-		});
-		
-		table.addMouseListener(new DoubleClickMouseAdapter() {
-			
-			@Override
-			protected void onDoubleClick() {
-				selectMenuItem();
-			}
-		});
+	    table.onEnterKeyAndDoubleClick(() -> selectMenuItem());
 	}
 
 	public void updateDisplay() {
@@ -84,10 +69,13 @@ public class BadStockMenuPanel extends MenuPanel {
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
 		case INVENTORY_LIST:
-			getMagicFrame().switchToBadStockInventoryListPanel();
+            getMagicFrame().switchPanel(MagicFrame.BAD_STOCK_INVENTORY_LIST_PANEL);
 			break;
         case ADJUSTMENT_IN:
-            getMagicFrame().switchToBadStockAdjustmentInListPanel();
+            getMagicFrame().switchPanel(MagicFrame.BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL);
+            break;
+        case ADJUSTMENT_OUT:
+            getMagicFrame().switchPanel(MagicFrame.BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL);
             break;
 		}
 	}
@@ -101,7 +89,8 @@ public class BadStockMenuPanel extends MenuPanel {
 
         private final List<String> menuItems = Arrays.asList(
                 INVENTORY_LIST,
-                ADJUSTMENT_IN
+                ADJUSTMENT_IN,
+                ADJUSTMENT_OUT
         );
         
 		@Override
