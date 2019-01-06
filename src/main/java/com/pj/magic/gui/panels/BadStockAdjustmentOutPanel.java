@@ -14,6 +14,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.event.TableModelEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +29,12 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.BadStockAdjustmentOutItemsTable;
+import com.pj.magic.gui.tables.BadStockInfoTable;
+import com.pj.magic.model.BadStock;
 import com.pj.magic.model.BadStockAdjustmentOut;
+import com.pj.magic.model.Product;
 import com.pj.magic.service.BadStockAdjustmentOutService;
+import com.pj.magic.service.BadStockService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
@@ -44,6 +49,9 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 	@Autowired
 	private BadStockAdjustmentOutItemsTable itemsTable;
 	
+	@Autowired
+	private BadStockService badStockService;
+	
 	private BadStockAdjustmentOut adjustmentOut;
 	private JLabel adjustmentInNumberLabel;
 	private JLabel statusLabel;
@@ -54,6 +62,7 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 	private JButton postButton;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
+	private BadStockInfoTable badStockInfoTable;
 	
 	@Override
 	protected void initializeComponents() {
@@ -71,6 +80,7 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		
 		focusOnComponentWhenThisPanelIsDisplayed(remarksField);
 		updateTotalItemsFieldWhenItemsTableChanges();
+		initializeUnitQuantitiesTable();
 	}
 
 	@Override
@@ -259,6 +269,15 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		c.gridwidth = 6;
 		mainPanel.add(ComponentUtil.createScrollPane(itemsTable, 600, 100), c);
 
+        currentRow++;
+        
+        c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.gridx = 0;
+        c.gridy = currentRow;
+        c.gridwidth = 6;
+        mainPanel.add(ComponentUtil.createScrollPane(badStockInfoTable, 500, 45), c);
+        
 		currentRow++;
 		
 		c = new GridBagConstraints();
@@ -363,4 +382,37 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
         });
     }
 	
+    private void initializeUnitQuantitiesTable() {
+        badStockInfoTable = new BadStockInfoTable();
+        
+        itemsTable.getModel().addTableModelListener(e -> {
+            if (e.getColumn() == BadStockAdjustmentOutItemsTable.PRODUCT_CODE_COLUMN_INDEX ||
+                    e.getColumn() == TableModelEvent.ALL_COLUMNS) {
+                updateUnitQuantitiesTable();
+            }
+        });
+            
+        itemsTable.getSelectionModel().addListSelectionListener(e -> {
+            updateUnitQuantitiesTable();
+        });
+    }
+    
+    private void updateUnitQuantitiesTable() {
+        if (itemsTable.getSelectedRow() == -1) {
+            badStockInfoTable.setBadStock(null);
+            return;
+        }
+        
+        Product product = itemsTable.getCurrentlySelectedRowItem().getProduct();
+        if (product != null) {
+            BadStock badStock = badStockService.getBadStock(product);
+            if (badStock == null) {
+                badStock = new BadStock(product);
+            }
+            badStockInfoTable.setBadStock(badStock);
+        } else {
+            badStockInfoTable.setBadStock(null);
+        }
+    }
+    
 }
