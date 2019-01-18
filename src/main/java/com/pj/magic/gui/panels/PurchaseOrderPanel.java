@@ -902,9 +902,7 @@ public class PurchaseOrderPanel extends StandardMagicPanel {
 	
     private void openExcelFile(File file) {
         try {
-            System.out.println("Here!");
             ExcelUtil.openExcelFile(file);
-            System.out.println("There!");
         } catch (IOException e) {
             showMessageForUnexpectedError();
         }

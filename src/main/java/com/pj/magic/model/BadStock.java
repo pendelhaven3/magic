@@ -53,6 +53,10 @@ public class BadStock implements Comparable<BadStock> {
         return getUnitQuantity(unit) >= quantity;
     }
     
+    public boolean hasAvailableUnitQuantity(String unit) {
+        return hasAvailableUnitQuantity(unit, 1);
+    }
+    
     public String getUnitQuantityForDisplay(String unit) {
         Integer quantity = getUnitQuantity(unit);
         if (quantity != null) {
@@ -62,7 +66,7 @@ public class BadStock implements Comparable<BadStock> {
         }
     }
 
-    private boolean hasUnit(String unit) {
+    public boolean hasUnit(String unit) {
         for (UnitQuantity unitQuantity : unitQuantities) {
             if (unit.equals(unitQuantity.getUnit())) {
                 return true;
@@ -70,5 +74,5 @@ public class BadStock implements Comparable<BadStock> {
         }
         return false;
     }
-    
+
 }

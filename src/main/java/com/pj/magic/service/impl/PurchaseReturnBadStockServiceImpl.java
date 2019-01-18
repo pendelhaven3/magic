@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -7,15 +8,26 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.pj.magic.Constants;
+import com.pj.magic.dao.BadStockDao;
 import com.pj.magic.dao.ProductDao;
 import com.pj.magic.dao.PurchaseReturnBadStockDao;
 import com.pj.magic.dao.PurchaseReturnBadStockItemDao;
 import com.pj.magic.dao.SystemDao;
+import com.pj.magic.exception.AlreadyPostedException;
+import com.pj.magic.exception.NotEnoughStocksException;
+import com.pj.magic.model.BadStock;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.PurchaseReturnBadStockItem;
+import com.pj.magic.model.ReceivingReceiptItem;
+import com.pj.magic.model.Supplier;
+import com.pj.magic.model.Unit;
+import com.pj.magic.model.search.BadStockSearchCriteria;
 import com.pj.magic.model.search.PurchaseReturnBadStockSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PurchaseReturnBadStockService;
+import com.pj.magic.service.ReceivingReceiptService;
 
 @Service
 public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStockService {
@@ -25,6 +37,12 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
 	@Autowired private LoginService loginService;
 	@Autowired private ProductDao productDao;
 	@Autowired private SystemDao systemDao;
+	
+	@Autowired
+	private BadStockDao badStockDao;
+	
+	@Autowired
+	private ReceivingReceiptService receivingReceiptService;
 	
 	@Transactional
 	@Override
@@ -77,6 +95,20 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
 	@Override
 	public void post(PurchaseReturnBadStock purchaseReturnBadStock) {
 		PurchaseReturnBadStock updated = getPurchaseReturnBadStock(purchaseReturnBadStock.getId());
+		
+		if (updated.isPosted()) {
+		    throw new AlreadyPostedException("PRBS No. " + updated.getPurchaseReturnBadStockNumber().toString() + " is already posted");
+		}
+		
+		for (PurchaseReturnBadStockItem item : purchaseReturnBadStockItemDao.findAllByPurchaseReturnBadStock(purchaseReturnBadStock)) {
+            BadStock badStock = badStockDao.get(item.getProduct().getId());
+            if (badStock.getUnitQuantity(item.getUnit()) < item.getQuantity()) {
+                throw new NotEnoughStocksException("Not enough bad stock: " + item.getProduct().getDisplayCodeAndDescription());
+            }
+            badStock.addUnitQuantity(item.getUnit(), -1 * item.getQuantity());
+            badStockDao.save(badStock);
+		}
+		
 		updated.setPosted(true);
 		updated.setPostDate(systemDao.getCurrentDateTime());
 		updated.setPostedBy(loginService.getLoggedInUser());
@@ -94,5 +126,57 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
 		}
 		return purchaseReturnBadStock;
 	}
+
+	@Transactional
+    @Override
+    public void addAllBadStockForSupplier(PurchaseReturnBadStock purchaseReturnBadStock) {
+        for (BadStock badStock : findAllNonEmptyBadStockBySupplier(purchaseReturnBadStock.getSupplier())) {
+            for (String unit : Unit.values()) {
+                if (badStock.hasUnit(unit)) {
+                    Integer quantity = badStock.getUnitQuantity(unit);
+                    if (quantity > 0) {
+                        PurchaseReturnBadStockItem item = purchaseReturnBadStock.findItemByProductAndUnit(badStock.getProduct(), unit);
+                        if (item == null) {
+                            item = new PurchaseReturnBadStockItem();
+                            item.setParent(purchaseReturnBadStock);
+                            item.setProduct(badStock.getProduct());
+                            item.setUnit(unit);
+                            item.setQuantity(quantity);
+                            item.setUnitCost(getDefaultUnitCost(badStock.getProduct(), unit, purchaseReturnBadStock.getSupplier()));
+                            purchaseReturnBadStockItemDao.save(item);
+                        } else if (item.getQuantity() != quantity) {
+                            item.setQuantity(quantity);
+                            purchaseReturnBadStockItemDao.save(item);
+                        }
+                        // if (item.getQuantity() == quantity) then no update is needed
+                    }
+                }
+            }
+        }
+    }
+
+    private List<BadStock> findAllNonEmptyBadStockBySupplier(Supplier supplier) {
+        BadStockSearchCriteria criteria = new BadStockSearchCriteria();
+        criteria.setSupplier(supplier);
+        criteria.setEmpty(false);
+        
+        return badStockDao.search(criteria);
+    }
+    
+    private BigDecimal getDefaultUnitCost(Product product, String unit, Supplier supplier) {
+        ReceivingReceiptItem receivingReceiptItem =
+                receivingReceiptService.findMostRecentReceivingReceiptItem(supplier, product);
+        if (receivingReceiptItem != null) {
+            return receivingReceiptItem.getProduct().getFinalCost(unit);
+        } else {
+            return Constants.ZERO;
+        }
+    }
+    
+    @Transactional
+    @Override
+    public void deleteAllItems(PurchaseReturnBadStock purchaseReturnBadStock) {
+        purchaseReturnBadStockItemDao.deleteAllByPurchaseReturnBadStock(purchaseReturnBadStock);
+    }
 
 }

@@ -225,6 +225,8 @@ public class MagicFrame extends JFrame {
     public static final String BAD_STOCK_ADJUSTMENT_IN_PANEL = "BAD_STOCK_ADJUSTMENT_IN_PANEL";
     public static final String BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL = "BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL";
     public static final String BAD_STOCK_ADJUSTMENT_OUT_PANEL = "BAD_STOCK_ADJUSTMENT_OUT_PANEL";
+    public static final String BAD_STOCK_REPORT_LIST_PANEL = "BAD_STOCK_REPORT_LIST_PANEL";
+    public static final String BAD_STOCK_REPORT_PANEL = "BAD_STOCK_REPORT_PANEL";
 	
 	@Value("${application.title}")
 	private String baseTitle;
@@ -1417,5 +1419,5 @@ public class MagicFrame extends JFrame {
         badStockAdjustmentOutPanel.updateDisplay(adjustmentOut);
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_ADJUSTMENT_OUT_PANEL);
     }
-    
+
 }

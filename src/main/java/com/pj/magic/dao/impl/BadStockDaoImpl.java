@@ -2,6 +2,7 @@ package com.pj.magic.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -13,13 +14,15 @@ import com.pj.magic.model.BadStock;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.UnitQuantity;
+import com.pj.magic.model.search.BadStockSearchCriteria;
 
 @Repository
 public class BadStockDaoImpl extends MagicDao implements BadStockDao {
 
     private static final String BASE_SELECT_SQL =
             "select b.ID as PRODUCT_ID, b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION,"
-            + " a.AVAIL_QTY_CSE, a.AVAIL_QTY_TIE, a.AVAIL_QTY_CTN, a.AVAIL_QTY_DOZ, a.AVAIL_QTY_PCS"
+            + " a.AVAIL_QTY_CSE, a.AVAIL_QTY_TIE, a.AVAIL_QTY_CTN, a.AVAIL_QTY_DOZ, a.AVAIL_QTY_PCS,"
+            + " b.UNIT_IND_CSE, b.UNIT_IND_TIE, b.UNIT_IND_CTN, b.UNIT_IND_DOZ, b.UNIT_IND_PCS"
             + " from BAD_STOCK a"
             + " join PRODUCT b"
             + "   on b.ID = a.PRODUCT_ID";
@@ -39,6 +42,7 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
             product.setId(rs.getLong("PRODUCT_ID"));
             product.setCode(rs.getString("PRODUCT_CODE"));
             product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
+            mapUnits(product.getUnits(), rs);
             return product;
         }
         
@@ -54,6 +58,16 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
             int quantity = rs.getInt(columnName);
             if (!rs.wasNull()) {
                 unitQuantities.add(new UnitQuantity(unit, quantity));
+            }
+        }
+        
+        private void mapUnits(List<String> units, ResultSet rs) throws SQLException {
+            mapUnit(units, rs, Unit.CASE, "UNIT_IND_CSE");
+        }
+
+        private void mapUnit(List<String> units, ResultSet rs, String unit, String columnName) throws SQLException {
+            if ("Y".equals(rs.getString(columnName))) {
+                units.add(unit);
             }
         }
         
@@ -111,6 +125,29 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
                 badStock.getUnitQuantity(Unit.CARTON),
                 badStock.getUnitQuantity(Unit.DOZEN),
                 badStock.getUnitQuantity(Unit.PIECES));
+    }
+
+    @Override
+    public List<BadStock> search(BadStockSearchCriteria criteria) {
+        StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+        List<Object> params = new ArrayList<>();
+        
+        if (criteria.getSupplier() != null) {
+            sql.append(" and exists (select 1 from SUPPLIER_PRODUCT sp where sp.PRODUCT_ID = a.PRODUCT_ID and sp.SUPPLIER_ID = ?)");
+            params.add(criteria.getSupplier().getId());
+        }
+        
+        if (criteria.getEmpty() != null) {
+            if (!criteria.getEmpty()) {
+                sql.append(" and (a.AVAIL_QTY_CSE > 0 or a.AVAIL_QTY_TIE > 0 or a.AVAIL_QTY_CTN > 0 and a.AVAIL_QTY_DOZ > 0 or a.AVAIL_QTY_PCS > 0)");
+            } else {
+                throw new UnsupportedOperationException("Search empty bad stock not supported");
+            }
+        }
+        
+        sql.append(" order by b.DESCRIPTION");
+        
+        return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
     }
 
 }

@@ -75,10 +75,11 @@ public class BadStockAdjustmentOutListPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void registerKeyBindings() {
-	    table.onEnterKeyAndDoubleClick(() -> selectAdjustmentIn());
+	    table.onEnterKeyAndDoubleClick(() -> selectAdjustmentOut());
+	    registerEscapeKeyAsBack();
 	}
 	
-	private void selectAdjustmentIn() {
+	private void selectAdjustmentOut() {
 	    BadStockAdjustmentOut selected = tableModel.getItem(table.getSelectedRow());
         getMagicFrame().switchToBadStockAdjustmentOutPanel(selected);
         

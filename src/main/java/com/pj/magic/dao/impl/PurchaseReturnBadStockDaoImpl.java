@@ -31,6 +31,7 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 			"select a.ID, PURCHASE_RETURN_BAD_STOCK_NO, SUPPLIER_ID, POST_IND, POST_DT, POST_BY,"
 			+ " a.REMARKS,"
 			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME,"
+			+ " b.FAX_NUMBER as SUPPLIER_FAX_NUMBER, b.CONTACT_NUMBER as SUPPLIER_CONTACT_NUMBER, b.ADDRESS as SUPPLIER_ADDRESS,"
 			+ " c.USERNAME as POST_BY_USERNAME"
 			+ " from PURCHASE_RETURN_BAD_STOCK a"
 			+ " join SUPPLIER b"
@@ -38,14 +39,45 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 			+ " left join USER c"
 			+ "   on c.ID = a.POST_BY";
 
-	private PurchaseReturnBadStockRowMapper purchaseReturnBadStockRowMapper = new PurchaseReturnBadStockRowMapper();
+	private RowMapper<PurchaseReturnBadStock> rowMapper = new RowMapper<PurchaseReturnBadStock>() {
+
+        @Override
+        public PurchaseReturnBadStock mapRow(ResultSet rs, int rowNum) throws SQLException {
+            PurchaseReturnBadStock purchaseReturnBadStock = new PurchaseReturnBadStock();
+            purchaseReturnBadStock.setId(rs.getLong("ID"));
+            purchaseReturnBadStock.setPurchaseReturnBadStockNumber(rs.getLong("PURCHASE_RETURN_BAD_STOCK_NO"));
+            purchaseReturnBadStock.setSupplier(mapSupplier(rs));
+            
+            purchaseReturnBadStock.setPosted("Y".equals(rs.getString("POST_IND")));
+            if (purchaseReturnBadStock.isPosted()) {
+                purchaseReturnBadStock.setPostDate(rs.getDate("POST_DT"));
+                purchaseReturnBadStock.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+            }
+            
+            purchaseReturnBadStock.setRemarks(rs.getString("REMARKS"));
+            
+            return purchaseReturnBadStock;
+        }
+
+        private Supplier mapSupplier(ResultSet rs) throws SQLException {
+            Supplier supplier = new Supplier();
+            supplier.setId(rs.getLong("SUPPLIER_ID"));
+            supplier.setCode(rs.getString("SUPPLIER_CODE"));
+            supplier.setName(rs.getString("SUPPLIER_NAME"));
+            supplier.setContactNumber(rs.getString("SUPPLIER_CONTACT_NUMBER"));
+            supplier.setFaxNumber(rs.getString("SUPPLIER_FAX_NUMBER"));
+            supplier.setAddress(rs.getString("SUPPLIER_ADDRESS"));
+            return supplier;
+        }
+	    
+	};
 	
 	private static final String GET_SQL = BASE_SELECT_SQL + " where a.ID = ?";
 	
 	@Override
 	public PurchaseReturnBadStock get(long id) {
 		try {
-			return getJdbcTemplate().queryForObject(GET_SQL, purchaseReturnBadStockRowMapper, id);
+			return getJdbcTemplate().queryForObject(GET_SQL, rowMapper, id);
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
@@ -100,33 +132,6 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 		return getNextSequenceValue(PURCHASE_RETURN_BAD_STOCK_NUMBER_SEQUENCE);
 	}
 
-	private class PurchaseReturnBadStockRowMapper implements RowMapper<PurchaseReturnBadStock> {
-
-		@Override
-		public PurchaseReturnBadStock mapRow(ResultSet rs, int rowNum) throws SQLException {
-			PurchaseReturnBadStock purchaseReturnBadStock = new PurchaseReturnBadStock();
-			purchaseReturnBadStock.setId(rs.getLong("ID"));
-			purchaseReturnBadStock.setPurchaseReturnBadStockNumber(rs.getLong("PURCHASE_RETURN_BAD_STOCK_NO"));
-			
-			Supplier customer = new Supplier();
-			customer.setId(rs.getLong("SUPPLIER_ID"));
-			customer.setCode(rs.getString("SUPPLIER_CODE"));
-			customer.setName(rs.getString("SUPPLIER_NAME"));
-			purchaseReturnBadStock.setSupplier(customer);
-			
-			purchaseReturnBadStock.setPosted("Y".equals(rs.getString("POST_IND")));
-			if (purchaseReturnBadStock.isPosted()) {
-				purchaseReturnBadStock.setPostDate(rs.getDate("POST_DT"));
-				purchaseReturnBadStock.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
-			}
-			
-			purchaseReturnBadStock.setRemarks(rs.getString("REMARKS"));
-			
-			return purchaseReturnBadStock;
-		}
-		
-	}
-
 	@Override
 	public List<PurchaseReturnBadStock> search(PurchaseReturnBadStockSearchCriteria criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
@@ -156,7 +161,7 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 		
 		sql.append(" order by PURCHASE_RETURN_BAD_STOCK_NO desc");
 		
-		return getJdbcTemplate().query(sql.toString(), purchaseReturnBadStockRowMapper, params.toArray());
+		return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
 	}
 
 	private static final String FIND_BY_PURCHASE_RETURN_BAD_STOCK_NUMBER_SQL = BASE_SELECT_SQL +
@@ -166,7 +171,7 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 	public PurchaseReturnBadStock findByPurchaseReturnBadStockNumber(long purchaseReturnBadStockNumber) {
 		try {
 			return getJdbcTemplate().queryForObject(FIND_BY_PURCHASE_RETURN_BAD_STOCK_NUMBER_SQL,
-					purchaseReturnBadStockRowMapper, purchaseReturnBadStockNumber);
+					rowMapper, purchaseReturnBadStockNumber);
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}

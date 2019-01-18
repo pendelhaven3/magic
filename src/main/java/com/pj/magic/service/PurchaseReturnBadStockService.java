@@ -24,5 +24,9 @@ public interface PurchaseReturnBadStockService {
 			long purchaseReturnBadStockNumber);
 
 	List<PurchaseReturnBadStock> search(PurchaseReturnBadStockSearchCriteria criteria);
+
+    void addAllBadStockForSupplier(PurchaseReturnBadStock purchaseReturnBadStock);
+
+    void deleteAllItems(PurchaseReturnBadStock purchaseReturnBadStock);
 	
 }

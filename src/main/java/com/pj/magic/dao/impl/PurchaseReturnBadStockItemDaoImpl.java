@@ -116,5 +116,13 @@ public class PurchaseReturnBadStockItemDaoImpl extends MagicDao implements Purch
 		}
 		
 	}
+
+	private static final String DELETE_ALL_BY_PURCHASE_RETURN_BAD_STOCK_SQL =
+	        "delete from PURCHASE_RETURN_BAD_STOCK_ITEM where PURCHASE_RETURN_BAD_STOCK_ID = ?";
+	
+    @Override
+    public void deleteAllByPurchaseReturnBadStock(PurchaseReturnBadStock purchaseReturnBadStock) {
+        getJdbcTemplate().update(DELETE_ALL_BY_PURCHASE_RETURN_BAD_STOCK_SQL, purchaseReturnBadStock.getId());
+    }
 	
 }

@@ -76,6 +76,7 @@ public class BadStockAdjustmentInListPanel extends StandardMagicPanel {
 	@Override
 	protected void registerKeyBindings() {
 	    table.onEnterKeyAndDoubleClick(() -> selectAdjustmentIn());
+	    registerEscapeKeyAsBack();
 	}
 	
 	private void selectAdjustmentIn() {

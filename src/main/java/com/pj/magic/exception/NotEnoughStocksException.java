@@ -21,6 +21,10 @@ public class NotEnoughStocksException extends RuntimeException {
 		
 	}
 	
+    public NotEnoughStocksException(String message) {
+        super(message);
+    }
+	
 	public NotEnoughStocksException(SalesRequisitionItem item) {
 		this.salesRequisitionItem = item;
 	}

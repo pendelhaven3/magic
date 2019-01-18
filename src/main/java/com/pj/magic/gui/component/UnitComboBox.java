@@ -5,7 +5,7 @@ import com.pj.magic.model.Unit;
 public class UnitComboBox extends MagicComboBox<String> {
 
 	public UnitComboBox() {
-		super(Unit.values());
+		super(Unit.comboBoxValues());
 	}
 	
 }

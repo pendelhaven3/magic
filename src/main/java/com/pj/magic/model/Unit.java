@@ -48,9 +48,13 @@ public class Unit {
 	}
 
 	public static String[] values() {
-		return new String[] {null, Unit.PIECES, Unit.DOZEN, Unit.CARTON, Unit.TIE, Unit.CASE};
+		return new String[] {Unit.PIECES, Unit.DOZEN, Unit.CARTON, Unit.TIE, Unit.CASE};
 	}
 	
+    public static String[] comboBoxValues() {
+        return new String[] {null, Unit.PIECES, Unit.DOZEN, Unit.CARTON, Unit.TIE, Unit.CASE};
+    }
+    
 	public static List<String> sortDescending(List<String> units) {
         Collections.sort(units, (unit1, unit2) -> -Unit.compare(unit1, unit2));
         return units;

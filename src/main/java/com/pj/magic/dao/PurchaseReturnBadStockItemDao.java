@@ -13,4 +13,6 @@ public interface PurchaseReturnBadStockItemDao {
 
 	void delete(PurchaseReturnBadStockItem item);
 
+    void deleteAllByPurchaseReturnBadStock(PurchaseReturnBadStock purchaseReturnBadStock);
+
 }
