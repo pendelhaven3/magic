@@ -6,18 +6,21 @@ import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SearchBadStocksDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.BadStock;
 import com.pj.magic.model.Unit;
+import com.pj.magic.model.search.BadStockSearchCriteria;
 import com.pj.magic.service.BadStockService;
+import com.pj.magic.service.SupplierService;
 
 @Component
 public class BadStockInventoryListPanel extends StandardMagicPanel {
@@ -25,8 +28,12 @@ public class BadStockInventoryListPanel extends StandardMagicPanel {
 	@Autowired
 	private BadStockService badStockService;
 	
-	private JTable table;
+	@Autowired
+	private SupplierService supplierService;
+	
+	private MagicListTable table;
 	private BadStockTableModel tableModel = new BadStockTableModel();
+    private SearchBadStocksDialog searchBadStocksDialog;
 	
 	public BadStockInventoryListPanel() {
 	    setTitle("Bad Stock Inventory List");
@@ -57,6 +64,9 @@ public class BadStockInventoryListPanel extends StandardMagicPanel {
 		if (!products.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
 		}
+        if (searchBadStocksDialog != null) {
+            searchBadStocksDialog.resetDisplay();
+        }
 	}
 
 	@Override
@@ -82,8 +92,28 @@ public class BadStockInventoryListPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+        toolBar.add(new MagicToolBarButton("search", "Search", e -> searchBadStocks()));
 	}
 
+	private void searchBadStocks() {
+        if (searchBadStocksDialog == null) {
+            searchBadStocksDialog = new SearchBadStocksDialog(supplierService);
+            searchBadStocksDialog.resetDisplay();
+        }
+        
+        searchBadStocksDialog.setVisible(true);
+        
+        BadStockSearchCriteria criteria = searchBadStocksDialog.getSearchCriteria();
+        if (criteria != null) {
+            tableModel.setItems(badStockService.search(criteria));
+            if (tableModel.hasItems()) {
+                table.selectFirstRowThenFocus();
+            } else {
+                showMessage("No matching records");
+            }
+        }
+	}
+	
 	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
     private static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
     private static final int AVAILABLE_QTY_CSE_COLUMN_INDEX = 2;

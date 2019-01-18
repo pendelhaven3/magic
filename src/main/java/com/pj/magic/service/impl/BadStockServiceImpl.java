@@ -30,4 +30,9 @@ public class BadStockServiceImpl implements BadStockService {
         return badStockDao.get(product.getId());
     }
 
+    @Override
+    public List<BadStock> search(BadStockSearchCriteria criteria) {
+        return badStockDao.search(criteria);
+    }
+
 }
