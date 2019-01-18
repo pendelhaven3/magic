@@ -52,7 +52,7 @@ public class BadStockInventoryListPanel extends StandardMagicPanel {
     }
 
     public void updateDisplay() {
-		List<BadStock> products = badStockService.getAllBadStocks();
+		List<BadStock> products = badStockService.getAllAvailableBadStocks();
 		tableModel.setItems(products);
 		if (!products.isEmpty()) {
 			table.changeSelection(0, 0, false, false);

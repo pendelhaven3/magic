@@ -7,7 +7,7 @@ import com.pj.magic.model.Product;
 
 public interface BadStockService {
 
-    List<BadStock> getAllBadStocks();
+    List<BadStock> getAllAvailableBadStocks();
 
     BadStock getBadStock(Product product);
     

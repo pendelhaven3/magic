@@ -73,13 +73,6 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
         
     };
     
-    private static final String GET_ALL_SQL = BASE_SELECT_SQL + " order by b.DESCRIPTION";
-
-    @Override
-    public List<BadStock> getAll() {
-        return getJdbcTemplate().query(GET_ALL_SQL, rowMapper);
-    }
-
     private static final String GET_SQL = BASE_SELECT_SQL + " where a.PRODUCT_ID = ?";
     
     @Override

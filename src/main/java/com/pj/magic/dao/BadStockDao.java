@@ -7,8 +7,6 @@ import com.pj.magic.model.search.BadStockSearchCriteria;
 
 public interface BadStockDao {
 
-    List<BadStock> getAll();
-
     BadStock get(Long id);
 
     void save(BadStock badStock);
