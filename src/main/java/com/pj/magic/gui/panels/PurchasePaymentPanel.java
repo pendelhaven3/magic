@@ -250,7 +250,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		cancelButton.setEnabled(newPayment);
 		postButton.setEnabled(newPayment);
 		unpostButton.setEnabled(purchasePayment.isPosted() && loginService.getLoggedInUser().isSupervisor());
-		generateEwtButton.setEnabled(!purchasePayment.isPosted());
+		generateEwtButton.setEnabled(true);
 		addReceivingReceiptButton.setEnabled(newPayment);
 		removeReceivingReceiptButton.setEnabled(newPayment);
 		addCashPaymentButton.setEnabled(newPayment);
