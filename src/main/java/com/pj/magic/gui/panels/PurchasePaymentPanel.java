@@ -1174,8 +1174,13 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
         }
 	    
 	    showMessage("EWT adjustment added");
-	    updateDisplay(purchasePayment);
-        tabbedPane.setSelectedIndex(5);
+	    
+	    if (!purchasePayment.isPosted()) {
+	        updateDisplay(purchasePayment);
+	        tabbedPane.setSelectedIndex(5);
+	    } else {
+	        getMagicFrame().switchToPurchasePaymentAdjustmentListPanel();
+	    }
 	}
 	
 }

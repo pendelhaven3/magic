@@ -286,12 +286,14 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
                     purchasePayment.getPurchasePaymentNumber().toString(), receivingReceipt.getReceivingReceiptNumber().toString()));
             purchasePaymentAdjustmentDao.save(ewtAdjustment);
             
-            PurchasePaymentPaymentAdjustment paymentAdjustment = new PurchasePaymentPaymentAdjustment();
-            paymentAdjustment.setParent(purchasePayment);
-            paymentAdjustment.setAdjustmentType(ewtAdjustment.getAdjustmentType());
-            paymentAdjustment.setReferenceNumber(ewtAdjustment.getPurchasePaymentAdjustmentNumber().toString());
-            paymentAdjustment.setAmount(ewtAdjustment.getAmount());
-            purchasePaymentPaymentAdjustmentDao.save(paymentAdjustment);
+            if (!purchasePayment.isPosted()) {
+                PurchasePaymentPaymentAdjustment paymentAdjustment = new PurchasePaymentPaymentAdjustment();
+                paymentAdjustment.setParent(purchasePayment);
+                paymentAdjustment.setAdjustmentType(ewtAdjustment.getAdjustmentType());
+                paymentAdjustment.setReferenceNumber(ewtAdjustment.getPurchasePaymentAdjustmentNumber().toString());
+                paymentAdjustment.setAmount(ewtAdjustment.getAmount());
+                purchasePaymentPaymentAdjustmentDao.save(paymentAdjustment);
+            }
         }
     }
 
