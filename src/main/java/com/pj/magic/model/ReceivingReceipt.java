@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.pj.magic.Constants;
 
 public class ReceivingReceipt {
@@ -283,4 +286,21 @@ public class ReceivingReceipt {
 		return false;
 	}
 
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(id).toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ReceivingReceipt other = (ReceivingReceipt) obj;
+        return new EqualsBuilder().append(id, other.getId()).isEquals();
+    }
+	
 }

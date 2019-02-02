@@ -21,6 +21,14 @@ public class PurchasePaymentPaymentAdjustment {
 		this.id = id;
 	}
 	
+    public boolean isBadStockAdjustment() {
+        return PurchasePaymentAdjustmentType.PURCHASE_RETURN_BAD_STOCK_CODE.equals(adjustmentType.getCode());
+    }
+    
+    public boolean isCancelledItemsAdjustment() {
+        return PurchasePaymentAdjustmentType.PURCHASE_RETURN_GOOD_STOCK_CODE.equals(adjustmentType.getCode());
+    }
+    
 	public Long getId() {
 		return id;
 	}
@@ -81,5 +89,5 @@ public class PurchasePaymentPaymentAdjustment {
 			.append(id, other.getId())
 			.isEquals();
 	}
-	
+
 }
