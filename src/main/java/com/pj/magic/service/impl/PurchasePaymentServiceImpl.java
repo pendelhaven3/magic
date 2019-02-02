@@ -272,7 +272,8 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
             BigDecimal invoiceAmount = receivingReceipt.getTotalNetAmountWithVat();
             BigDecimal grossAmount = invoiceAmount.subtract(cancelledItemsAmountMap.get(receivingReceipt));
             if (i == 0) {
-                grossAmount = grossAmount.subtract(purchasePayment.getBadStockAdjustmentsTotalAmount());
+                grossAmount = grossAmount.subtract(purchasePayment.getBadStockAdjustmentsTotalAmount())
+                        .subtract(purchasePayment.getDiscountAdjustmentsTotalAmount());
             }
             BigDecimal netOfVatAmount = grossAmount.divide(new BigDecimal("1.12"), RoundingMode.HALF_UP);
             BigDecimal ewt = netOfVatAmount.multiply(new BigDecimal("0.01")).setScale(2, RoundingMode.HALF_UP);
