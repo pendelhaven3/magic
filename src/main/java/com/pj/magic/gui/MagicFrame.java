@@ -216,6 +216,7 @@ public class MagicFrame extends JFrame {
     public static final String PILFERAGE_REPORT_PANEL = "PILFERAGE_REPORT_PANEL";
 	public static final String SCHEDULED_PRICE_CHANGES_LIST_PANEL = "SCHEDULED_PRICE_CHANGES_LIST_PANEL";
     public static final String EDIT_PRODUCT_PRICES_LIST_PANEL = "EDIT_PRODUCT_PRICES_LIST_PANEL";
+    public static final String EWT_REPORT_PANEL = "EWT_REPORT_LIST_PANEL";
 	
 	@Value("${application.title}")
 	private String baseTitle;
@@ -334,6 +335,7 @@ public class MagicFrame extends JFrame {
 	@Autowired private PilferageReportPanel pilferageReportPanel;
     @Autowired private ScheduledPriceChangesListPanel scheduledPriceChangesListPanel;
     @Autowired private EditProductPricesListPanel editProductPricesListPanel;
+    @Autowired private EwtReportPanel ewtReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -514,6 +516,7 @@ public class MagicFrame extends JFrame {
         panelHolder.add(pilferageReportPanel, PILFERAGE_REPORT_PANEL);
 		panelHolder.add(scheduledPriceChangesListPanel, SCHEDULED_PRICE_CHANGES_LIST_PANEL);
         panelHolder.add(editProductPricesListPanel, EDIT_PRODUCT_PRICES_LIST_PANEL);
+        panelHolder.add(ewtReportPanel, EWT_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1355,5 +1358,12 @@ public class MagicFrame extends JFrame {
         editProductPricesListPanel.updateDisplay();
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, EDIT_PRODUCT_PRICES_LIST_PANEL);
     }
-	
+    
+    public void switchPanel(String panelName) {
+        StandardMagicPanel panel = panelHolder.getCardPanel(panelName);
+        addPanelNameToTitle(panel.getTitle());
+        panel.updateDisplay();
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, panelName);
+    }
+
 }

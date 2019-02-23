@@ -1,7 +1,6 @@
 package com.pj.magic.model.util;
 
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -11,11 +10,16 @@ public class CellStyleBuilder {
 	
 	private Workbook workbook;
 	private Short align;
+    private Short borderTop;
 	private Short borderBottom;
 	private Short borderRight;
 	private Boolean amountFormat;
 	private Font font;
 	private Boolean fullBorderThin;
+	private Boolean underline;
+    private Boolean text;
+    private Boolean dateFormat;
+    private Boolean bold;
 	
 	public static CellStyleBuilder createStyle(Workbook workbook) {
 		return new CellStyleBuilder(workbook);
@@ -32,10 +36,12 @@ public class CellStyleBuilder {
 	
 	public CellStyle build() {
 		CellStyle style = workbook.createCellStyle();
-		CreationHelper creationHelper = workbook.getCreationHelper();
 		if (align != null) {
 			style.setAlignment(align);
 		}
+        if (borderTop != null) {
+            style.setBorderTop(borderTop);
+        }
 		if (borderBottom != null) {
 			style.setBorderBottom(borderBottom);
 		}
@@ -43,17 +49,37 @@ public class CellStyleBuilder {
 			style.setBorderRight(borderRight);
 		}
 		if (amountFormat != null && amountFormat) {
-			style.setDataFormat(creationHelper.createDataFormat().getFormat(Constants.AMOUNT_FORMAT));
+			style.setDataFormat(workbook.createDataFormat().getFormat(Constants.AMOUNT_FORMAT));
 		}
-		if (font != null) {
-			style.setFont(font);
-		}
+        if (text != null && text) {
+            style.setDataFormat(workbook.createDataFormat().getFormat("@"));
+        }
+        if (dateFormat != null && dateFormat) {
+            style.setDataFormat(workbook.createDataFormat().getFormat("m/d/yy"));
+        }
 		if (fullBorderThin != null) {
 			style.setBorderLeft(CellStyle.BORDER_THIN);
 			style.setBorderTop(CellStyle.BORDER_THIN);
 			style.setBorderRight(CellStyle.BORDER_THIN);
 			style.setBorderBottom(CellStyle.BORDER_THIN);
 		}
+		
+        if (bold != null && bold) {
+            if (font == null) {
+                font = workbook.createFont();
+            }
+            font.setBold(true);
+        }
+		if (underline != null && underline) {
+		    if (font == null) {
+		        font = workbook.createFont();
+		    }
+		    font.setUnderline(Font.U_SINGLE);
+		}
+        if (font != null) {
+            style.setFont(font);
+        }
+        
 		return style;
 	}
 
@@ -82,4 +108,29 @@ public class CellStyleBuilder {
 		return this;
 	}
 	
+	public CellStyleBuilder setUnderline(boolean underline) {
+	    this.underline = underline;
+	    return this;
+	}
+	
+    public CellStyleBuilder setText(boolean text) {
+        this.text = text;
+        return this;
+    }
+	
+    public CellStyleBuilder setDateFormat(boolean dateFormat) {
+        this.dateFormat = dateFormat;
+        return this;
+    }
+    
+    public CellStyleBuilder setBold(boolean bold) {
+        this.bold = bold;
+        return this;
+    }
+    
+    public CellStyleBuilder setBorderTop(short borderTop) {
+        this.borderTop = borderTop;
+        return this;
+    }
+    
 }

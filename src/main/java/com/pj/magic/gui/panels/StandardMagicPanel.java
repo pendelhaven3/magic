@@ -99,4 +99,8 @@ public abstract class StandardMagicPanel extends AbstractMagicPanel {
 		return title;
 	}
 	
+	public void updateDisplay() {
+	    // for overriding
+	}
+	
 }
