@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pj</groupId>
 	<artifactId>magic</artifactId>
-	<version>2.8.2</version>
+	<version>2.9.1</version>
 	
 	<parent>
 	    <groupId>org.springframework.boot</groupId>
@@ -72,6 +72,10 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
 		</dependency>
 				
 		<!-- test dependencies -->
