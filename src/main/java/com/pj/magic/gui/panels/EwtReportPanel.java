@@ -243,7 +243,9 @@ public class EwtReportPanel extends StandardMagicPanel {
 			return;
 		}
 		
-        openExcelFile(file);
+        if (confirm("Excel file generated.\nDo you wish to open the file?")) {
+            openExcelFile(file);
+        }
 	}
 
 	private void openExcelFile(File file) {
