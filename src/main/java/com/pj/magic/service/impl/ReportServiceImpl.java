@@ -132,6 +132,8 @@ public class ReportServiceImpl implements ReportService {
     public EwtReport generateEwtReport(EwtReportCriteria criteria) {
         EwtReport report = new EwtReport();
         report.setSupplier(criteria.getSupplier());
+        report.setFromDate(criteria.getFromDate());
+        report.setToDate(criteria.getToDate());
         report.setItems(getEwtReportItems(criteria));
         return report;
     }

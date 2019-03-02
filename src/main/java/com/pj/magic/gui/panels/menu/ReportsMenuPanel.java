@@ -47,6 +47,7 @@ public class ReportsMenuPanel extends MenuPanel {
 	private static final String DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT = "Daily Product Quantity Discrepancy Report";
 	private static final String PILFERAGE_REPORT = "Pilferage Report";
     private static final String EWT_REPORT = "BIR EWT Report";
+    private static final String BIR_FORM_2307_REPORT = "BIR Form 2307 Report";
 
 	@Autowired private LoginService loginService;
 	
@@ -157,6 +158,9 @@ public class ReportsMenuPanel extends MenuPanel {
         case EWT_REPORT:
             getMagicFrame().switchPanel(MagicFrame.EWT_REPORT_PANEL);
             break;
+        case BIR_FORM_2307_REPORT:
+            getMagicFrame().switchPanel(MagicFrame.BIR_FORM_2307_REPORT_PANEL);
+            break;
 		}
 	}
 
@@ -183,7 +187,8 @@ public class ReportsMenuPanel extends MenuPanel {
 				STOCK_OFFTAKE_REPORT,
 				DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT,
 				PILFERAGE_REPORT,
-                EWT_REPORT
+                EWT_REPORT,
+                BIR_FORM_2307_REPORT
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
