@@ -1,10 +1,13 @@
 package com.pj.magic.gui.panels;
 
+import static java.util.Calendar.*;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.Box;
@@ -195,10 +198,20 @@ public class BirForm2307ReportPanel extends StandardMagicPanel {
 			return false;
 		}
 		
+		if (!isFromDateLessThanToDate()) {
+            showErrorMessage("From Date must be less than To Date");
+            return false;
+		}
+		
+		if (!isSameQuarter()) {
+            showErrorMessage("From Date and To Date must be within same quarter");
+            return false;
+		}
+		
 		return true;
 	}
 
-	private boolean isSupplierNotSpecified() {
+    private boolean isSupplierNotSpecified() {
 		return supplierComboBox.getSelectedItem() == null;
 	}
 
@@ -209,6 +222,46 @@ public class BirForm2307ReportPanel extends StandardMagicPanel {
 	private boolean isToDateNotSpecified() {
 		return toDateModel.getValue() == null;
 	}
+	
+	private boolean isFromDateLessThanToDate() {
+        Date from = fromDateModel.getValue().getTime();
+        Date to = toDateModel.getValue().getTime();
+        
+        return from.compareTo(to) <= 0;
+	}
+	
+    private boolean isSameQuarter() {
+        Calendar from = fromDateModel.getValue();
+        Calendar to = toDateModel.getValue();
+        
+        int fromYear = from.get(YEAR);
+        int toYear = to.get(YEAR);
+        
+        if (fromYear != toYear) {
+            return false;
+        }
+        
+        int fromMonth = from.get(MONTH);
+        int toMonth = to.get(MONTH);
+        
+        if (fromMonth >= JANUARY && fromMonth <= MARCH && toMonth >= fromMonth && toMonth <= MARCH) {
+            return true;
+        }
+        
+        if (fromMonth >= APRIL && fromMonth <= JUNE && toMonth >= fromMonth && toMonth <= JUNE) {
+            return true;
+        }
+        
+        if (fromMonth >= JULY && fromMonth <= SEPTEMBER && toMonth >= fromMonth && toMonth <= SEPTEMBER) {
+            return true;
+        }
+        
+        if (fromMonth >= OCTOBER && fromMonth <= DECEMBER && toMonth >= fromMonth && toMonth <= DECEMBER) {
+            return true;
+        }
+        
+        return false;
+    }
 	
 	private void generateExcelReport() {
 		if (!validateFields()) {

@@ -19,6 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFSimpleShape;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -63,7 +64,7 @@ public class BirForm2307ReportExcelGenerator {
         HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
         shapes = patriarch.getChildren();
         
-        Calendar fromDate = DateUtils.toCalendar(report.getFromDate());
+        Calendar fromDate = DateUtils.toCalendar(report.getForm2307FromDate());
         Calendar toDate = DateUtils.toCalendar(report.getToDate());
         
         setText(SHAPE_INDEX_PERIOD_FROM_MONTH, StringUtils.leftPad(String.valueOf(fromDate.get(Calendar.MONTH) + 1), 2, '0'));
@@ -77,16 +78,14 @@ public class BirForm2307ReportExcelGenerator {
         if (isValidTin(report.getSupplier().getTin())) {
             String[] tinParts = getTinParts(report.getSupplier().getTin());
             
-            setText(SHAPE_INDEX_PAYOR_TIN_1, tinParts[0]);
-            setText(SHAPE_INDEX_PAYOR_TIN_2, tinParts[1]);
-            setText(SHAPE_INDEX_PAYOR_TIN_3, tinParts[2]);
-            setText(SHAPE_INDEX_PAYOR_TIN_4, tinParts[3]);
+            setText(SHAPE_INDEX_PAYEE_TIN_1, tinParts[0]);
+            setText(SHAPE_INDEX_PAYEE_TIN_2, tinParts[1]);
+            setText(SHAPE_INDEX_PAYEE_TIN_3, tinParts[2]);
+            setText(SHAPE_INDEX_PAYEE_TIN_4, tinParts[3]);
         }
         
-        setLeftAlignText(SHAPE_INDEX_PAYOR_NAME, report.getSupplier().getName().toUpperCase());
-        setLeftAlignText(SHAPE_INDEX_PAYOR_ADDRESS, report.getSupplier().getAddress().toUpperCase());
-        
-        int currentRow = 31;
+        setNameText(SHAPE_INDEX_PAYEE_NAME, report.getSupplier().getName().toUpperCase());
+        setAddressText(SHAPE_INDEX_PAYEE_ADDRESS, report.getSupplier().getAddress().toUpperCase(), workbook);
         
         BigDecimal month1Total = BigDecimal.ZERO;
         BigDecimal month2Total = BigDecimal.ZERO;
@@ -140,8 +139,22 @@ public class BirForm2307ReportExcelGenerator {
         shape.setString(string);
     }
     
-    private void setLeftAlignText(int index, String text) {
+    private void setNameText(int index, String text) {
         HSSFRichTextString string = new HSSFRichTextString("  " + text);
+        HSSFSimpleShape shape = (HSSFSimpleShape)shapes.get(index);
+        shape.setString(string);
+        
+        TextObjectRecord textObjRecord = (TextObjectRecord)ReflectionTestUtils.invokeGetterMethod(shape, "getTextObjectRecord");
+        textObjRecord.setHorizontalTextAlignment(TextObjectRecord.HORIZONTAL_TEXT_ALIGNMENT_LEFT_ALIGNED);
+    }
+    
+    private void setAddressText(int index, String text, Workbook workbook) {
+        HSSFRichTextString string = new HSSFRichTextString("  " + text);
+        
+        Font font = workbook.createFont();
+        font.setFontHeightInPoints((short)9);
+        string.applyFont(font);
+        
         HSSFSimpleShape shape = (HSSFSimpleShape)shapes.get(index);
         shape.setString(string);
         
