@@ -239,13 +239,13 @@ public class BirForm2307ReportPanel extends StandardMagicPanel {
         c.gridy = currentRow;
         c.anchor = GridBagConstraints.WEST;
         c.insets.left = 50;
-        panel.add(ComponentUtil.createLabel(120, "Report No:"), c);
+        panel.add(ComponentUtil.createLabel(90, "Report No:"), c);
         
         c = new GridBagConstraints();
         c.gridx = 1;
         c.gridy = currentRow;
         c.anchor = GridBagConstraints.WEST;
-        reportNumberLabel.setPreferredSize(new Dimension(100, 25));
+        reportNumberLabel.setPreferredSize(new Dimension(100, 30));
         panel.add(reportNumberLabel, c);
         
         currentRow++;
@@ -278,7 +278,7 @@ public class BirForm2307ReportPanel extends StandardMagicPanel {
         c.gridx = 1;
         c.gridy = currentRow;
         c.anchor = GridBagConstraints.WEST;
-        createDateLabel.setPreferredSize(new Dimension(150, 25));
+        createDateLabel.setPreferredSize(new Dimension(150, 30));
         panel.add(createDateLabel, c);
         
         currentRow++;
@@ -293,7 +293,7 @@ public class BirForm2307ReportPanel extends StandardMagicPanel {
         c.gridx = 1;
         c.gridy = currentRow;
         c.anchor = GridBagConstraints.WEST;
-        createdByLabel.setPreferredSize(new Dimension(150, 25));
+        createdByLabel.setPreferredSize(new Dimension(150, 30));
         panel.add(createdByLabel, c);
         
         return panel;
@@ -448,7 +448,7 @@ public class BirForm2307ReportPanel extends StandardMagicPanel {
             return;
         }
         
-        if (!confirm("Regenerate Form 2307? Report No. will still be maintained.")) {
+        if (!confirm("Regenerate Form 2307?\nReport No. will still be retained.")) {
             return;
         }
         
