@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.pj.magic.model.BirForm2307Report;
 import com.pj.magic.model.report.EwtReport;
 import com.pj.magic.model.report.EwtReportItem;
 import com.pj.magic.model.util.CellStyleBuilder;
@@ -57,7 +58,7 @@ public class BirForm2307ReportExcelGenerator {
     
     private List<HSSFShape> shapes;
     
-    public Workbook generate(EwtReport report) throws IOException {
+    public Workbook generate(BirForm2307Report report) throws IOException {
         HSSFWorkbook workbook = new HSSFWorkbook(getClass().getResourceAsStream("/excel/form2307.xls"));
         
         HSSFSheet sheet = workbook.getSheetAt(0);
@@ -65,7 +66,7 @@ public class BirForm2307ReportExcelGenerator {
         shapes = patriarch.getChildren();
         
         Calendar fromDate = DateUtils.toCalendar(report.getForm2307FromDate());
-        Calendar toDate = DateUtils.toCalendar(report.getToDate());
+        Calendar toDate = DateUtils.toCalendar(report.getForm2307ToDate());
         
         setText(SHAPE_INDEX_PERIOD_FROM_MONTH, StringUtils.leftPad(String.valueOf(fromDate.get(Calendar.MONTH) + 1), 2, '0'));
         setText(SHAPE_INDEX_PERIOD_FROM_DATE, StringUtils.leftPad(String.valueOf(fromDate.get(Calendar.DATE)), 2, '0'));
@@ -87,46 +88,38 @@ public class BirForm2307ReportExcelGenerator {
         setNameText(SHAPE_INDEX_PAYEE_NAME, report.getSupplier().getName().toUpperCase());
         setAddressText(SHAPE_INDEX_PAYEE_ADDRESS, report.getSupplier().getAddress().toUpperCase(), workbook);
         
-        BigDecimal month1Total = BigDecimal.ZERO;
-        BigDecimal month2Total = BigDecimal.ZERO;
-        BigDecimal month3Total = BigDecimal.ZERO;
-        for (EwtReportItem item : report.getItems()) {
-            switch (getQuarterPosition(item.getReceivingReceipt().getReceivedDate())) {
-            case 1:
-                month1Total = month1Total.add(item.getInvoiceAmount());
-                break;
-            case 2:
-                month2Total = month2Total.add(item.getInvoiceAmount());
-                break;
-            case 3:
-                month3Total = month3Total.add(item.getInvoiceAmount());
-                break;
-            }
-        }
-        
         CellStyle amountStyle = CellStyleBuilder.createStyle(workbook)
                 .setAlignment(CellStyle.ALIGN_RIGHT).setAmountFormat(true).setFullBorderThin(true).build();
         
         Row row = sheet.getRow(32);
         Cell cell;
         
-        if (!month1Total.equals(BigDecimal.ZERO)) {
+        if (!report.getMonth1NetAmount().equals(BigDecimal.ZERO)) {
             cell = row.getCell(16);
-            cell.setCellValue(month1Total.doubleValue());
+            cell.setCellValue(report.getMonth1NetAmount().doubleValue());
             cell.setCellStyle(amountStyle);
         }
         
-        if (!month2Total.equals(BigDecimal.ZERO)) {
+        if (!report.getMonth2NetAmount().equals(BigDecimal.ZERO)) {
             cell = row.getCell(21);
-            cell.setCellValue(month2Total.doubleValue());
+            cell.setCellValue(report.getMonth2NetAmount().doubleValue());
             cell.setCellStyle(amountStyle);
         }
         
-        if (!month3Total.equals(BigDecimal.ZERO)) {
+        if (!report.getMonth3NetAmount().equals(BigDecimal.ZERO)) {
             cell = row.getCell(26);
-            cell.setCellValue(month3Total.doubleValue());
+            cell.setCellValue(report.getMonth3NetAmount().doubleValue());
             cell.setCellStyle(amountStyle);
         }
+        
+        Font font = workbook.createFont();
+        font.setFontHeightInPoints((short)6);
+        CellStyle reportNumberStyle = CellStyleBuilder.createStyle(workbook).setFont(font).build();
+        
+        row = sheet.getRow(79);
+        cell = row.createCell(43);
+        cell.setCellValue(report.getReportNumber());
+        cell.setCellStyle(reportNumberStyle);
 
         HSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
         
