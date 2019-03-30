@@ -34,13 +34,13 @@ public class EwtReport {
         for (EwtReportItem item : items) {
             switch (getQuarterPosition(item.getReceivingReceipt().getReceivedDate())) {
             case 1:
-                month1Total = month1Total.add(item.getInvoiceAmount());
+                month1Total = month1Total.add(item.getNetOfVatAmount());
                 break;
             case 2:
-                month2Total = month2Total.add(item.getInvoiceAmount());
+                month2Total = month2Total.add(item.getNetOfVatAmount());
                 break;
             case 3:
-                month3Total = month3Total.add(item.getInvoiceAmount());
+                month3Total = month3Total.add(item.getNetOfVatAmount());
                 break;
             }
         }

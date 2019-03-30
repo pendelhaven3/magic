@@ -37,4 +37,8 @@ public class EwtReportItem {
         return getInvoiceAmount().subtract(badStockAndDiscountTotalAmount).subtract(cancelledItemsTotalAmount);
     }
     
+    public BigDecimal getNetOfVatAmount() {
+        return getInvoiceAmount().divide(new BigDecimal("1.12"), RoundingMode.HALF_UP);
+    }
+    
 }
