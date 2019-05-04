@@ -201,7 +201,7 @@ public class ReportsMenuPanel extends MenuPanel {
 		public void setUser(User user) {
 			menuItems.clear();
 			menuItems.addAll(allMenuItems);
-			if (!user.isSupervisor()) {
+			if (!user.isManager()) {
 				menuItems.remove(POSTED_SALES_AND_PROFIT_REPORT);
 				menuItems.remove(CUSTOMER_SALES_SUMMARY_REPORT);
 			}
