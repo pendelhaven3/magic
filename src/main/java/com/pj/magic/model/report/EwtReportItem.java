@@ -38,7 +38,7 @@ public class EwtReportItem {
     }
     
     public BigDecimal getNetOfVatAmount() {
-        return getInvoiceAmount().divide(new BigDecimal("1.12"), RoundingMode.HALF_UP);
+        return getGrossAmount().divide(new BigDecimal("1.12"), RoundingMode.HALF_UP);
     }
     
 }
