@@ -10,6 +10,7 @@ public class CellStyleBuilder {
 	
 	private Workbook workbook;
 	private Short align;
+    private Short verticalAlign;
     private Short borderTop;
 	private Short borderBottom;
 	private Short borderRight;
@@ -34,10 +35,18 @@ public class CellStyleBuilder {
 		return this;
 	}
 	
+	public CellStyleBuilder setVerticalAlignment(short verticalAlign) {
+		this.verticalAlign = verticalAlign;
+		return this;
+	}
+	
 	public CellStyle build() {
 		CellStyle style = workbook.createCellStyle();
 		if (align != null) {
 			style.setAlignment(align);
+		}
+		if (verticalAlign != null) {
+			style.setVerticalAlignment(verticalAlign);
 		}
         if (borderTop != null) {
             style.setBorderTop(borderTop);
