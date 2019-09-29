@@ -8,6 +8,7 @@ import static java.util.Calendar.JULY;
 import static java.util.Calendar.JUNE;
 import static java.util.Calendar.MARCH;
 import static java.util.Calendar.MONTH;
+import static java.util.Calendar.SEPTEMBER;
 import static java.util.Calendar.OCTOBER;
 
 import java.math.BigDecimal;
@@ -81,8 +82,8 @@ public class BirForm2307Report {
             cal.set(MONTH, JUNE);
             cal.set(DATE, 30);
         } else if (month < OCTOBER) {
-            cal.set(MONTH, JULY);
-            cal.set(DATE, 31);
+            cal.set(MONTH, SEPTEMBER);
+            cal.set(DATE, 30);
         } else {
             cal.set(MONTH, DECEMBER);
             cal.set(DATE, 31);
