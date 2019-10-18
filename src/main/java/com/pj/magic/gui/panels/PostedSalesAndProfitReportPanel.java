@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -256,6 +257,9 @@ public class PostedSalesAndProfitReportPanel extends StandardMagicPanel {
 		
 		List<PaymentAdjustment> paymentAdjustments = 
 				paymentAdjustmentService.search(paymentAdjustmentCriteria);
+		paymentAdjustments = paymentAdjustments.stream()
+				.filter(paymentAdjustment -> "BARTER".equals(paymentAdjustment.getAdjustmentType().getCode()))
+				.collect(Collectors.toList());
 		items.addAll(
 			Collections2.transform(paymentAdjustments, 
 					new Function<PaymentAdjustment, PostedSalesAndProfitReportItem>() {
