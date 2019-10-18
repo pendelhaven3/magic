@@ -1,5 +1,6 @@
 package com.pj.magic.excel;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Date;
 
@@ -18,8 +19,8 @@ import com.pj.magic.util.FormatterUtil;
 
 public class EwtReportExcelGenerator {
 
-    public Workbook generate(EwtReport report) {
-        XSSFWorkbook workbook = new XSSFWorkbook();
+    public Workbook generate(EwtReport report) throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook(getClass().getResourceAsStream("/excel/ewtReport.xlsx"));
         
         CellStyle centerUnderline = CellStyleBuilder.createStyle(workbook).setAlignment(CellStyle.ALIGN_CENTER).setUnderline(true).build();
         CellStyle amountStyle = CellStyleBuilder.createStyle(workbook).setAlignment(CellStyle.ALIGN_RIGHT).setAmountFormat(true).build();
@@ -29,7 +30,7 @@ public class EwtReportExcelGenerator {
                 .setAmountFormat(true).setBorderTop(CellStyle.BORDER_THIN).setBorderBottom(CellStyle.BORDER_DOUBLE).setBold(true).build();
         CellStyle boldStyle = CellStyleBuilder.createStyle(workbook).setBold(true).build();
         
-        Sheet sheet = workbook.createSheet();
+        Sheet sheet = workbook.getSheetAt(0);
         int currentRow = 0;
 
         Row row = sheet.createRow(currentRow);
