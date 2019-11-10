@@ -4,9 +4,14 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 
@@ -17,6 +22,7 @@ import javax.swing.JButton;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,9 +162,10 @@ public class PrintChequeDialog extends MagicDialog {
 	}
 	
 	private void printCheque() {
-		try {
-			XSSFWorkbook workbook = new XSSFWorkbook(
-					getClass().getResourceAsStream("/excel/printCheque.xlsx"));
+		try (
+			InputStream templateStream = getTemplateStream();
+			Workbook workbook = new XSSFWorkbook(templateStream);
+		) {
 			try {
 				Sheet sheet = workbook.getSheetAt(0);
 
@@ -171,6 +178,10 @@ public class PrintChequeDialog extends MagicDialog {
 				
 				row = sheet.getRow(3);
 				row.getCell(1).setCellValue(convertToText(NumberUtil.toBigDecimal(amountField.getText())));
+				
+				if (localTemplateExists()) {
+					templateStream.close();
+				}
 				
 				File tempFile = new File(Paths.get(System.getProperty("user.home")).toAbsolutePath().toString() + "/magic-print-cheque.xlsx");
 				try (
@@ -313,6 +324,26 @@ public class PrintChequeDialog extends MagicDialog {
 			}
 		}
 		return "";
+	}
+	
+	private InputStream getTemplateStream() throws FileNotFoundException {
+		return localTemplateExists() ? localTemplateStream() : applicationTemplateStream();
+	}
+	
+	private boolean localTemplateExists() {
+		return Files.exists(localTemplatePath());
+	}
+	
+	private Path localTemplatePath() {
+		return Paths.get(System.getProperty("user.home"), "magic-print-cheque.xlsx");
+	}
+	
+	private InputStream localTemplateStream() throws FileNotFoundException {
+		return new FileInputStream(localTemplatePath().toFile());
+	}
+
+	private InputStream applicationTemplateStream() {
+		return getClass().getResourceAsStream("/excel/printCheque.xlsx");
 	}
 	
 }
