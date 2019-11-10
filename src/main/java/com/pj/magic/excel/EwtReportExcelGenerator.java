@@ -178,6 +178,13 @@ public class EwtReportExcelGenerator {
         cell.setCellFormula(MessageFormat.format("SUM(I8:I{0})", String.valueOf(7 + report.getItems().size())));
         cell.setCellStyle(totalStyle);
         
+        currentRow += 3;
+        
+        row = sheet.createRow(currentRow);
+        
+        cell = row.createCell(0);
+        cell.setCellValue("Received by: _________________________");
+        
         sheet.setColumnWidth(0, 5387);
         sheet.setColumnWidth(1, 2196);
         sheet.setColumnWidth(2, 3190);
