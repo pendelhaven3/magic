@@ -1,6 +1,6 @@
 $report.center("JC HARMONY SELLING INC.", 77)
 $report.center("251 GEN.P.ALVAREZ ST.CALOOCAN CITY", 77)
-$report.center("TEL.NO.3621785 3195946", 77)
+$report.center("TEL.NO.83621785 83195946", 77)
 
   Delivery Receipt : $report.field($adjustmentOut.adjustmentOutNumber, 7, "right")                               Date : $currentDate
 
