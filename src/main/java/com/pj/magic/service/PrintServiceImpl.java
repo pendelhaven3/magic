@@ -556,7 +556,6 @@ public class PrintServiceImpl implements PrintService {
 		
 		try {
 			for (String printPage : printPages) {
-				System.out.println(printPage);
 				printerUtil.print(printPage);
 			}
 		} catch (PrintException e) {
