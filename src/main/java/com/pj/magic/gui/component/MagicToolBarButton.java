@@ -23,7 +23,7 @@ public class MagicToolBarButton extends JButton {
 	}
 	
     public MagicToolBarButton(String imageName, String toolTipText, ActionListener actionListener) {
-        this(imageName, toolTipText);
+        this(imageName, toolTipText, false);
         addActionListener(actionListener);
     }
 	

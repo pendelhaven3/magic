@@ -28,6 +28,10 @@ public class User implements Serializable {
 		this.id = id;
 		this.username = username;
 	}
+	
+	public boolean isManager() {
+	    return "IRENE".equals(username) || "JOY".equals(username);
+	}
 
 	public Long getId() {
 		return id;

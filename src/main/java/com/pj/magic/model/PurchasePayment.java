@@ -240,5 +240,25 @@ public class PurchasePayment {
 	public BigDecimal getTotalAmountDue() {
 		return getTotalAmount().subtract(getTotalAdjustments());
 	}
+
+    public BigDecimal getBadStockAdjustmentsTotalAmount() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (PurchasePaymentPaymentAdjustment paymentAdjustment : paymentAdjustments) {
+            if (paymentAdjustment.isBadStockAdjustment()) {
+                total = total.add(paymentAdjustment.getAmount());
+            }
+        }
+        return total;
+    }
+
+    public BigDecimal getDiscountAdjustmentsTotalAmount() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (PurchasePaymentPaymentAdjustment paymentAdjustment : paymentAdjustments) {
+            if (paymentAdjustment.isDiscountAdjustment()) {
+                total = total.add(paymentAdjustment.getAmount());
+            }
+        }
+        return total;
+    }
 	
 }

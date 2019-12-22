@@ -503,21 +503,36 @@ public class PrintServiceImpl implements PrintService {
 							createSingletonMap("item", item)));
 
 			for (PromoRedemption promoRedemption : promoRedemptions) {
-				for (PromoType2Rule rule : promoRedemption.getPromo().getPromoType2Rules()) {
-					if (rule.getPromoProduct().equals(item.getProduct())) {
-						for (PromoRedemptionReward reward : promoRedemption.getRewards()) {
-							if (reward.getProduct().equals(rule.getFreeProduct())) {
-								SalesInvoiceItem rewardItem = new SalesInvoiceItem();
-								rewardItem.setProduct(reward.getProduct());
-								rewardItem.setUnit(reward.getUnit());
-								rewardItem.setQuantity(reward.getQuantity());
-								rewardItem.setUnitPrice(BigDecimal.ZERO);
-								itemLines.add(
-										generateReportAsString("reports/salesInvoiceBirForm-freeItem.vm", 
-												createSingletonMap("item", (Object)rewardItem)));
+				if (promoRedemption.getPromo().isPromoType2()) {
+					for (PromoType2Rule rule : promoRedemption.getPromo().getPromoType2Rules()) {
+						if (rule.getPromoProduct().equals(item.getProduct())) {
+							for (PromoRedemptionReward reward : promoRedemption.getRewards()) {
+								if (reward.getProduct().equals(rule.getFreeProduct())) {
+									SalesInvoiceItem rewardItem = new SalesInvoiceItem();
+									rewardItem.setProduct(reward.getProduct());
+									rewardItem.setUnit(reward.getUnit());
+									rewardItem.setQuantity(reward.getQuantity());
+									rewardItem.setUnitPrice(BigDecimal.ZERO);
+									itemLines.add(
+											generateReportAsString("reports/salesInvoiceBirForm-freeItem.vm", 
+													createSingletonMap("item", (Object)rewardItem)));
+								}
 							}
 						}
 					}
+				}
+			}
+		}
+		for (PromoRedemption promoRedemption : promoRedemptions) {
+			if (promoRedemption.getPromo().isPromoType6()) {
+				for (PromoRedemptionReward reward : promoRedemption.getRewards()) {
+					SalesInvoiceItem rewardItem = new SalesInvoiceItem();
+					rewardItem.setProduct(reward.getProduct());
+					rewardItem.setUnit(reward.getUnit());
+					rewardItem.setQuantity(reward.getQuantity());
+					itemLines.add(
+							generateReportAsString("reports/salesInvoiceBirForm-freeItem.vm", 
+									createSingletonMap("item", (Object)rewardItem)));
 				}
 			}
 		}

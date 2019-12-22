@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pj</groupId>
 	<artifactId>magic</artifactId>
-	<version>2.7.1</version>
+	<version>2.10.11</version>
 	
 	<parent>
 	    <groupId>org.springframework.boot</groupId>
@@ -82,7 +82,6 @@
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	

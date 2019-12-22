@@ -1,5 +1,6 @@
 package com.pj.magic.service.impl;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
@@ -244,7 +245,7 @@ public class SalesRequisitionServiceImpl implements SalesRequisitionService {
 
         SalesInvoice salesInvoice = updated.createSalesInvoice();
         salesInvoice.setPostedBy(postedBy);
-        salesInvoice.setVatAmount(salesInvoice.getTotalNetAmount().multiply(systemService.getVatRate())
+        salesInvoice.setVatAmount(salesInvoice.getTotalNetAmount().divide(new BigDecimal("1.12"), RoundingMode.HALF_UP).multiply(systemService.getVatRate())
                 .setScale(2, RoundingMode.HALF_UP));
         salesInvoiceService.save(salesInvoice);
         

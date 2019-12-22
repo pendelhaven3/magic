@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
@@ -45,6 +46,8 @@ public class ReportsMenuPanel extends MenuPanel {
 	private static final String STOCK_OFFTAKE_REPORT = "Stock Offtake Report";
 	private static final String DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT = "Daily Product Quantity Discrepancy Report";
 	private static final String PILFERAGE_REPORT = "Pilferage Report";
+    private static final String EWT_REPORT = "BIR EWT Report";
+    private static final String BIR_FORM_2307_REPORT_LIST = "BIR Form 2307 Report List";
 
 	@Autowired private LoginService loginService;
 	
@@ -152,6 +155,12 @@ public class ReportsMenuPanel extends MenuPanel {
 		case PILFERAGE_REPORT:
 			getMagicFrame().switchToPilferageReportPanel();
 			break;
+        case EWT_REPORT:
+            getMagicFrame().switchPanel(MagicFrame.EWT_REPORT_PANEL);
+            break;
+        case BIR_FORM_2307_REPORT_LIST:
+            getMagicFrame().switchPanel(MagicFrame.BIR_FORM_2307_REPORT_LIST_PANEL);
+            break;
 		}
 	}
 
@@ -177,7 +186,9 @@ public class ReportsMenuPanel extends MenuPanel {
 				SALES_BY_MANUFACTURER_REPORT,
 				STOCK_OFFTAKE_REPORT,
 				DAILY_PRODUCT_QUANTITY_DISCREPANCY_REPORT,
-				PILFERAGE_REPORT
+				PILFERAGE_REPORT,
+                EWT_REPORT,
+                BIR_FORM_2307_REPORT_LIST
 		);
 		
 		private List<String> menuItems = new ArrayList<>();
@@ -190,7 +201,7 @@ public class ReportsMenuPanel extends MenuPanel {
 		public void setUser(User user) {
 			menuItems.clear();
 			menuItems.addAll(allMenuItems);
-			if (!user.isSupervisor()) {
+			if (!user.isManager()) {
 				menuItems.remove(POSTED_SALES_AND_PROFIT_REPORT);
 				menuItems.remove(CUSTOMER_SALES_SUMMARY_REPORT);
 			}

@@ -17,6 +17,7 @@ insert into SEQUENCE (NAME) values ('PURCHASE_RETURN_BAD_STOCK_NO_SEQ');
 insert into SEQUENCE (NAME) values ('PROMO_NO_SEQ');
 insert into SEQUENCE (NAME) values ('CREDIT_CARD_STATEMENT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('INVENTORY_CORRECTION_NO_SEQ');
+insert into SEQUENCE (NAME) values ('BIR_FORM_2307_REPORT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('BAD_STOCK_ADJUSTMENT_IN_NO_SEQ');
 insert into SEQUENCE (NAME) values ('BAD_STOCK_ADJUSTMENT_OUT_NO_SEQ');
 

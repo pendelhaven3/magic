@@ -1192,6 +1192,22 @@ create table SCHEDULED_PRICE_CHANGE (
   constraint SCHEDULED_PRICE_CHANGE$FK3 foreign key (CREATE_BY) references USER (ID)
 );
 
+create table BIR_FORM_2307_REPORT (
+  ID integer auto_increment,
+  REPORT_NO integer not null,
+  FROM_DT date not null,
+  TO_DT date not null,
+  SUPPLIER_ID integer not null,
+  MONTH1_NET_AMT numeric(12, 2) null,
+  MONTH2_NET_AMT numeric(12, 2) null,
+  MONTH3_NET_AMT numeric(12, 2) null,
+  CREATE_DT datetime not null,
+  CREATED_BY integer not null,
+  primary key (ID),
+  constraint BIR_FORM_2307_REPORT$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),
+  constraint BIR_FORM_2307_REPORT$FK3 foreign key (CREATE_BY) references USER (ID)
+);
+
 create table BAD_STOCK (
   PRODUCT_ID integer not null,
   AVAIL_QTY_CSE integer(4),
