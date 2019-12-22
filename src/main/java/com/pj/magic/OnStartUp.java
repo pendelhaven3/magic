@@ -15,7 +15,6 @@ import com.pj.magic.dao.SystemDao;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.service.impl.PromoService;
-import com.pj.magic.util.QueriesUtil;
 
 @Component
 public class OnStartUp {
@@ -26,14 +25,12 @@ public class OnStartUp {
 	@Autowired private ProductService productService;
 	@Autowired private ReportService reportService;
 	@Autowired private PromoService promoService;
-	@Autowired private JdbcTemplate jdbcTemplate;
 	
 	public void fire() {
 		resetCreateDateOfUnpostedStockQuantityConversions();
 		generateDailyProductQuantityDiscrepancyReport();
         applyScheduledPriceChanges();
         updatePromoStatusBasedOnDuration();
-        createBirForm2307ReportTable();
 	}
 
     private void resetCreateDateOfUnpostedStockQuantityConversions() {
@@ -81,15 +78,6 @@ public class OnStartUp {
                 promoService.updatePromoStatusBasedOnDuration();
             }
         });
-    }
-    
-    private void createBirForm2307ReportTable() {
-        String sql = "select count(1) from information_schema.tables where table_schema = 'magic' and table_name = 'bir_form_2307_report'";
-        Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
-        if (result == 0) {
-            jdbcTemplate.update(QueriesUtil.getSql("createBirForm2307ReportTable"));
-            jdbcTemplate.update("insert into SEQUENCE (NAME) values ('BIR_FORM_2307_REPORT_NO_SEQ')");
-        }
     }
     
 }
