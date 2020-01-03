@@ -21,6 +21,7 @@ import com.pj.magic.OnStartUp;
 import com.pj.magic.gui.component.CardLayoutPanel;
 import com.pj.magic.gui.panels.*;
 import com.pj.magic.gui.panels.menu.AdminMenuPanel;
+import com.pj.magic.gui.panels.menu.BadStockMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryCheckMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryMenuPanel;
 import com.pj.magic.gui.panels.menu.PurchasePaymentsMenuPanel;
@@ -41,6 +42,8 @@ import com.pj.magic.model.AdjustmentOut;
 import com.pj.magic.model.AdjustmentType;
 import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
+import com.pj.magic.model.BadStockAdjustmentIn;
+import com.pj.magic.model.BadStockAdjustmentOut;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BirForm2307Report;
 import com.pj.magic.model.CreditCard;
@@ -220,6 +223,14 @@ public class MagicFrame extends JFrame {
     public static final String EWT_REPORT_PANEL = "EWT_REPORT_PANEL";
     public static final String BIR_FORM_2307_REPORT_LIST_PANEL = "BIR_FORM_2307_REPORT_LIST_PANEL";
     public static final String BIR_FORM_2307_REPORT_PANEL = "BIR_FORM_2307_REPORT_PANEL";
+    public static final String BAD_STOCK_MENU_PANEL = "BAD_STOCK_MENU_PANEL";
+    public static final String BAD_STOCK_INVENTORY_LIST_PANEL = "BAD_STOCK_INVENTORY_LIST_PANEL";
+    public static final String BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL = "BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL";
+    public static final String BAD_STOCK_ADJUSTMENT_IN_PANEL = "BAD_STOCK_ADJUSTMENT_IN_PANEL";
+    public static final String BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL = "BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL";
+    public static final String BAD_STOCK_ADJUSTMENT_OUT_PANEL = "BAD_STOCK_ADJUSTMENT_OUT_PANEL";
+    public static final String BAD_STOCK_REPORT_LIST_PANEL = "BAD_STOCK_REPORT_LIST_PANEL";
+    public static final String BAD_STOCK_REPORT_PANEL = "BAD_STOCK_REPORT_PANEL";
 	
 	@Value("${application.title}")
 	private String baseTitle;
@@ -341,6 +352,12 @@ public class MagicFrame extends JFrame {
     @Autowired private EwtReportPanel ewtReportPanel;
     @Autowired private BirForm2307ReportListPanel birForm2307ReportListPanel;
     @Autowired private BirForm2307ReportPanel birForm2307ReportPanel;
+    @Autowired private BadStockMenuPanel badStockMenuPanel;
+    @Autowired private BadStockInventoryListPanel badStockInventoryListPanel;
+    @Autowired private BadStockAdjustmentInListPanel badStockAdjustmentInListPanel;
+    @Autowired private BadStockAdjustmentInPanel badStockAdjustmentInPanel;
+    @Autowired private BadStockAdjustmentOutListPanel badStockAdjustmentOutListPanel;
+    @Autowired private BadStockAdjustmentOutPanel badStockAdjustmentOutPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -524,6 +541,12 @@ public class MagicFrame extends JFrame {
         panelHolder.add(ewtReportPanel, EWT_REPORT_PANEL);
         panelHolder.add(birForm2307ReportListPanel, BIR_FORM_2307_REPORT_LIST_PANEL);
         panelHolder.add(birForm2307ReportPanel, BIR_FORM_2307_REPORT_PANEL);
+        panelHolder.add(badStockMenuPanel, BAD_STOCK_MENU_PANEL);
+        panelHolder.add(badStockInventoryListPanel, BAD_STOCK_INVENTORY_LIST_PANEL);
+        panelHolder.add(badStockAdjustmentInListPanel, BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL);
+        panelHolder.add(badStockAdjustmentInPanel, BAD_STOCK_ADJUSTMENT_IN_PANEL);
+        panelHolder.add(badStockAdjustmentOutListPanel, BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL);
+        panelHolder.add(badStockAdjustmentOutPanel, BAD_STOCK_ADJUSTMENT_OUT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1365,7 +1388,27 @@ public class MagicFrame extends JFrame {
         editProductPricesListPanel.updateDisplay();
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, EDIT_PRODUCT_PRICES_LIST_PANEL);
     }
-    
+
+    public void switchToBadStockMenuPanel() {
+        addPanelNameToTitle("Bad Stock Menu");
+        badStockMenuPanel.updateDisplay();
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_MENU_PANEL);
+    }
+
+    public void switchToNewBadStockAdjustmentInPanel() {
+        switchToBadStockAdjustmentInPanel(null);
+    }
+	
+    public void switchToBadStockAdjustmentInPanel(BadStockAdjustmentIn adjustmentIn) {
+        if (adjustmentIn == null) {
+            adjustmentIn = new BadStockAdjustmentIn();
+        }
+        
+        addPanelNameToTitle("Bad Stock Adjustment In");
+        badStockAdjustmentInPanel.updateDisplay(adjustmentIn);
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_ADJUSTMENT_IN_PANEL);
+    }
+
     public void switchPanel(String panelName) {
         StandardMagicPanel panel = panelHolder.getCardPanel(panelName);
         addPanelNameToTitle(panel.getTitle());
@@ -1373,6 +1416,20 @@ public class MagicFrame extends JFrame {
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, panelName);
     }
 
+    public void switchToNewBadStockAdjustmentOutPanel() {
+        switchToBadStockAdjustmentOutPanel(null);
+    }
+    
+    public void switchToBadStockAdjustmentOutPanel(BadStockAdjustmentOut adjustmentOut) {
+        if (adjustmentOut == null) {
+            adjustmentOut = new BadStockAdjustmentOut();
+        }
+        
+        addPanelNameToTitle("Bad Stock Adjustment Out");
+        badStockAdjustmentOutPanel.updateDisplay(adjustmentOut);
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_ADJUSTMENT_OUT_PANEL);
+    }
+    
     public void switchToBirForm2307ReportPanel(BirForm2307Report report) {
         addPanelNameToTitle(birForm2307ReportPanel.getTitle());
         birForm2307ReportPanel.updateDisplay(report);

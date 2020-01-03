@@ -9,6 +9,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -22,12 +27,17 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.dao.SystemDao;
+import com.pj.magic.excel.PurchaseReturnBadStockExcelGenerator;
 import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.ExcelFileFilter;
+import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -40,6 +50,8 @@ import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PurchaseReturnBadStockService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.ExcelUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
@@ -58,6 +70,9 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 	@Autowired private PrintService printService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	
+	@Autowired
+	private SystemDao systemDao;
+	
 	private PurchaseReturnBadStock purchaseReturnBadStock;
 	private JLabel purchaseReturnBadStockNumberField;
 	private JTextField supplierCodeField;
@@ -71,8 +86,12 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 	private JLabel totalAmountField;
 	private JButton addItemButton;
 	private JButton deleteItemButton;
+    private JButton addAllSupplierItemsButton;
+    private JButton deleteAllItemsButton;
 	private JButton printPreviewButton;
 	private JButton printButton;
+	private JButton generateExcelButton;
+    private MagicFileChooser excelFileChooser;
 	
 	@Override
 	protected void initializeComponents() {
@@ -99,6 +118,10 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 			}
 		});
 		
+        excelFileChooser = new MagicFileChooser();
+        excelFileChooser.setCurrentDirectory(new File(FileUtil.getDesktopFolderPath()));
+        excelFileChooser.setFileFilter(ExcelFileFilter.getInstance());
+        
 		focusOnComponentWhenThisPanelIsDisplayed(supplierCodeField);
 		updateTotalAmountFieldWhenItemsTableChanges();
 	}
@@ -242,8 +265,10 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		remarksField.setEnabled(!purchaseReturnBadStock.isPosted());
 		totalItemsField.setText(String.valueOf(purchaseReturnBadStock.getTotalItems()));
 		totalAmountField.setText(purchaseReturnBadStock.getTotalAmount().toString());
-		addItemButton.setEnabled(!purchaseReturnBadStock.isPosted());
-		deleteItemButton.setEnabled(!purchaseReturnBadStock.isPosted());
+		
+		ComponentUtil.enableButtons(!purchaseReturnBadStock.isPosted(),
+		        addItemButton, deleteItemButton, addAllSupplierItemsButton, deleteAllItemsButton);
+		
 		printPreviewButton.setEnabled(true);
 		printButton.setEnabled(true);
 		
@@ -264,10 +289,9 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		totalItemsField.setText(null);
 		totalAmountField.setText(null);
 		itemsTable.setPurchaseReturnBadStock(purchaseReturnBadStock);
-		addItemButton.setEnabled(false);
-		deleteItemButton.setEnabled(false);
-		printPreviewButton.setEnabled(false);
-		printButton.setEnabled(false);
+		
+        ComponentUtil.enableButtons(false,
+                addItemButton, deleteItemButton, addAllSupplierItemsButton, deleteAllItemsButton, printPreviewButton, printButton);
 	}
 
 	@Override
@@ -344,6 +368,19 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = currentRow;
+        c.anchor = GridBagConstraints.WEST;
+        mainPanel.add(ComponentUtil.createLabel(100, "Remarks:"), c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 2;
+        c.gridy = currentRow;
+        c.anchor = GridBagConstraints.WEST;
+        remarksField.setPreferredSize(new Dimension(300, 25));
+        mainPanel.add(remarksField, c);
+        
 		c = new GridBagConstraints();
 		c.gridx = 4;
 		c.gridy = currentRow;
@@ -357,21 +394,6 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		c.anchor = GridBagConstraints.WEST;
 		postedByField = ComponentUtil.createLabel(100, "");
 		mainPanel.add(postedByField, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 1;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(100, "Remarks:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 2;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		remarksField.setPreferredSize(new Dimension(300, 25));
-		mainPanel.add(remarksField, c);
 		
 		currentRow++;
 		
@@ -513,6 +535,14 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		});
 		panel.add(deleteItemButton, BorderLayout.WEST);
 		
+        addAllSupplierItemsButton = new MagicToolBarButton("add_all_small", "Add All Supplier Items", true);
+        addAllSupplierItemsButton.addActionListener(e -> allAllSupplierItems());
+        panel.add(addAllSupplierItemsButton, BorderLayout.WEST);
+		
+        deleteAllItemsButton = new MagicToolBarButton("delete_all_small", "Delete All Items", true);
+        deleteAllItemsButton.addActionListener(e -> deleteAllSupplierItems());
+        panel.add(deleteAllItemsButton, BorderLayout.WEST);
+        
 		return panel;
 	}
 
@@ -538,6 +568,81 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 			}
 		});
 		toolBar.add(printButton);
+		
+        generateExcelButton = new MagicToolBarButton("excel", "Generate Excel", e -> generateExcel());
+        toolBar.add(generateExcelButton);
+	}
+	
+    private void allAllSupplierItems() {
+	    if (confirm("Add all available bad stock for supplier items?")) {
+	        try {
+	            purchaseReturnBadStockService.addAllBadStockForSupplier(purchaseReturnBadStock);
+	        } catch (Exception e) {
+                logger.error("Unable to add all available supplier bad stock to Purchase Return Bad Stock", e);
+                showMessageForUnexpectedError();
+                return;
+	        }
+            updateDisplay(purchaseReturnBadStock);
+	    }
 	}
 
+    private void deleteAllSupplierItems() {
+        if (confirm("Delete all items?")) {
+            try {
+                purchaseReturnBadStockService.deleteAllItems(purchaseReturnBadStock);
+            } catch (Exception e) {
+                logger.error("Unable to delete all Purchase Return Bad Stock items", e);
+                showMessageForUnexpectedError();
+                return;
+            }
+            updateDisplay(purchaseReturnBadStock);
+        }
+    }
+
+    private void generateExcel() {
+        File file = new File(generateDefaultSpreadsheetName() + ".xlsx");
+        excelFileChooser.setSelectedFile(file);
+        
+        if (!excelFileChooser.selectSaveFile(this)) {
+            return;
+        }
+
+        PurchaseReturnBadStockExcelGenerator excelGenerator = new PurchaseReturnBadStockExcelGenerator(systemDao);
+        purchaseReturnBadStock = purchaseReturnBadStockService.getPurchaseReturnBadStock(purchaseReturnBadStock.getId());
+        
+        try (
+            Workbook workbook = excelGenerator.generate(purchaseReturnBadStock);
+            FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
+        ) {
+            workbook.write(out);
+        } catch (IOException e) {
+            logger.error("Unable to generate Excel file", e);
+            showErrorMessage("Unexpected error during excel generation");
+            return;
+        }
+
+        if (confirm("Excel file generated.\nDo you wish to open the file?")) {
+            openExcelFile(excelFileChooser.getSelectedFile());
+        }
+    }
+
+    private String generateDefaultSpreadsheetName() {
+        return new StringBuilder()
+            .append(purchaseReturnBadStock.getSupplier().getName())
+            .append(" - ")
+            .append(new SimpleDateFormat("MMM-dd-yyyy").format(new Date()))
+            .append(" - PRBS ")
+            .append(purchaseReturnBadStock.getPurchaseReturnBadStockNumber())
+            .toString();
+    }
+    
+    private void openExcelFile(File file) {
+        try {
+            ExcelUtil.openExcelFile(file);
+        } catch (IOException e) {
+            logger.error("Unable to open Excel file", e);
+            showMessageForUnexpectedError();
+        }
+    }
+    
 }

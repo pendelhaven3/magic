@@ -494,4 +494,8 @@ public class Product implements Comparable<Product>, Serializable {
 		}
 	}
 	
+	public String getDisplayCodeAndDescription() {
+	    return new StringBuilder().append(code).append(" - ").append(description).toString();
+	}
+	
 }

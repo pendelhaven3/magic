@@ -603,7 +603,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 				updateDisplay(purchasePayment);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
-				showErrorMessage("Unexpected error occurred during posting!");
+				showErrorMessage("Unexpected error occurred during posting!\n" + e.getMessage());
 			}
 		}
 	}

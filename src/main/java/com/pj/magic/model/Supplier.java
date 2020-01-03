@@ -3,6 +3,11 @@ package com.pj.magic.model;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Supplier {
 
 	private Long id;
@@ -28,8 +33,6 @@ public class Supplier {
 		this.id = id;
 	}
 
-
-
 	public Supplier(Long id, String name) {
 		this.id = id;
 		this.name = name;
@@ -37,78 +40,6 @@ public class Supplier {
 
 	public Supplier(String name) {
 		this.name = name;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getContactNumber() {
-		return contactNumber;
-	}
-
-	public void setContactNumber(String contactNumber) {
-		this.contactNumber = contactNumber;
-	}
-
-	public String getContactPerson() {
-		return contactPerson;
-	}
-
-	public void setContactPerson(String contactPerson) {
-		this.contactPerson = contactPerson;
-	}
-
-	public String getFaxNumber() {
-		return faxNumber;
-	}
-
-	public void setFaxNumber(String faxNumber) {
-		this.faxNumber = faxNumber;
-	}
-
-	public String getEmailAddress() {
-		return emailAddress;
-	}
-
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
-
-	public String getTin() {
-		return tin;
-	}
-
-	public void setTin(String tin) {
-		this.tin = tin;
-	}
-
-	public PaymentTerm getPaymentTerm() {
-		return paymentTerm;
-	}
-
-	public void setPaymentTerm(PaymentTerm paymentTerm) {
-		this.paymentTerm = paymentTerm;
 	}
 
 	@Override
@@ -137,36 +68,4 @@ public class Supplier {
 		return name;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getRemarks() {
-		return remarks;
-	}
-
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
-
-	public String getDiscount() {
-		return discount;
-	}
-
-	public void setDiscount(String discount) {
-		this.discount = discount;
-	}
-
-	public boolean isVatInclusive() {
-		return vatInclusive;
-	}
-
-	public void setVatInclusive(boolean vatInclusive) {
-		this.vatInclusive = vatInclusive;
-	}
-	
 }

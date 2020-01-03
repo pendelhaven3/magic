@@ -231,7 +231,7 @@ public class ChangePasswordPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToAdminMenuPanel();
 	}
 
 	public void updateDisplay() {

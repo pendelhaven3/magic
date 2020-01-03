@@ -13,15 +13,14 @@ import com.pj.magic.gui.MagicFrame;
 public class Magic {
 
 	public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                UISettings.initialize();
-                
-                ConfigurableApplicationContext context = new SpringApplicationBuilder(Magic.class).headless(false).run(args);
-                
-                MagicFrame frame = context.getBean(MagicFrame.class);
-                frame.setVisible(true);
-            }
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            UISettings.initialize();
+            
+            ConfigurableApplicationContext context = new SpringApplicationBuilder(Magic.class).headless(false).run(args);
+            
+            MagicFrame frame = context.getBean(MagicFrame.class);
+            frame.setVisible(true);
+            
         });
 	}
 	

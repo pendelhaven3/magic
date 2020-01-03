@@ -7,6 +7,11 @@ import java.util.List;
 
 import com.pj.magic.Constants;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class PurchaseReturnBadStock {
 
 	private Long id;
@@ -27,46 +32,6 @@ public class PurchaseReturnBadStock {
 		this.id = id;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Long getPurchaseReturnBadStockNumber() {
-		return purchaseReturnBadStockNumber;
-	}
-
-	public void setPurchaseReturnBadStockNumber(Long purchaseReturnBadStockNumber) {
-		this.purchaseReturnBadStockNumber = purchaseReturnBadStockNumber;
-	}
-
-	public Supplier getSupplier() {
-		return supplier;
-	}
-
-	public void setSupplier(Supplier supplier) {
-		this.supplier = supplier;
-	}
-
-	public List<PurchaseReturnBadStockItem> getItems() {
-		return items;
-	}
-
-	public void setItems(List<PurchaseReturnBadStockItem> items) {
-		this.items = items;
-	}
-
-	public boolean isPosted() {
-		return posted;
-	}
-
-	public void setPosted(boolean posted) {
-		this.posted = posted;
-	}
-
 	public String getStatus() {
 		return (posted) ? "Posted" : "New";
 	}
@@ -79,22 +44,6 @@ public class PurchaseReturnBadStock {
 		return !items.isEmpty();
 	}
 
-	public Date getPostDate() {
-		return postDate;
-	}
-
-	public void setPostDate(Date postDate) {
-		this.postDate = postDate;
-	}
-
-	public User getPostedBy() {
-		return postedBy;
-	}
-
-	public void setPostedBy(User postedBy) {
-		this.postedBy = postedBy;
-	}
-
 	public BigDecimal getTotalAmount() {
 		BigDecimal total = Constants.ZERO;
 		for (PurchaseReturnBadStockItem item : items) {
@@ -103,12 +52,13 @@ public class PurchaseReturnBadStock {
 		return total;
 	}
 
-	public String getRemarks() {
-		return remarks;
-	}
-
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
+    public PurchaseReturnBadStockItem findItemByProductAndUnit(Product product, String unit) {
+        for (PurchaseReturnBadStockItem item : items) {
+            if (product.equals(item.getProduct()) && unit.equals(item.getUnit())) {
+                return item;
+            }
+        }
+        return null;
+    }
 
 }

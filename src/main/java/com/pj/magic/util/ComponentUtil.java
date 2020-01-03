@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
+import javax.swing.AbstractButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -90,5 +91,12 @@ public class ComponentUtil {
 			label.setText(null);
 		}
 	}
+	
+	public static void enableButtons(boolean enable, AbstractButton... buttons) {
+	    for (AbstractButton button : buttons) {
+	        button.setEnabled(enable);
+	}
+
+}
 	
 }
