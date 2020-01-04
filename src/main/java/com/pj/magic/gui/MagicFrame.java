@@ -242,6 +242,9 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
     private static final Map<String, Class<? extends StandardMagicPanel>> panelClasses = new HashMap<>();
     
     static {
+    	panelClasses.put(BAD_STOCK_INVENTORY_LIST_PANEL, BadStockInventoryListPanel.class);
+    	panelClasses.put(BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL, BadStockAdjustmentInListPanel.class);
+    	panelClasses.put(BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL, BadStockAdjustmentOutListPanel.class);
     	panelClasses.put(BAD_STOCK_REPORT_LIST_PANEL, BadStockReportListPanel.class);
     }
     
@@ -368,10 +371,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
     @Autowired private BirForm2307ReportListPanel birForm2307ReportListPanel;
     @Autowired private BirForm2307ReportPanel birForm2307ReportPanel;
     @Autowired private BadStockMenuPanel badStockMenuPanel;
-    @Autowired private BadStockInventoryListPanel badStockInventoryListPanel;
-    @Autowired private BadStockAdjustmentInListPanel badStockAdjustmentInListPanel;
     @Autowired private BadStockAdjustmentInPanel badStockAdjustmentInPanel;
-    @Autowired private BadStockAdjustmentOutListPanel badStockAdjustmentOutListPanel;
     @Autowired private BadStockAdjustmentOutPanel badStockAdjustmentOutPanel;
     @Autowired private BadStockReportPanel badStockReportPanel;
 	
@@ -558,10 +558,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
         panelHolder.add(birForm2307ReportListPanel, BIR_FORM_2307_REPORT_LIST_PANEL);
         panelHolder.add(birForm2307ReportPanel, BIR_FORM_2307_REPORT_PANEL);
         panelHolder.add(badStockMenuPanel, BAD_STOCK_MENU_PANEL);
-        panelHolder.add(badStockInventoryListPanel, BAD_STOCK_INVENTORY_LIST_PANEL);
-        panelHolder.add(badStockAdjustmentInListPanel, BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL);
         panelHolder.add(badStockAdjustmentInPanel, BAD_STOCK_ADJUSTMENT_IN_PANEL);
-        panelHolder.add(badStockAdjustmentOutListPanel, BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL);
         panelHolder.add(badStockAdjustmentOutPanel, BAD_STOCK_ADJUSTMENT_OUT_PANEL);
         panelHolder.add(badStockReportPanel, BAD_STOCK_REPORT_PANEL);
         getContentPane().add(panelHolder);
@@ -1467,6 +1464,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
     			(StandardMagicPanel)beanFactory.autowire(panelClasses.get(panelName), AutowireCapableBeanFactory.AUTOWIRE_NO, false);
     	panel.afterPropertiesSet(); // TODO: Convert to InitializingBean 
     	panelHolder.add(panel, panelName);
+    	logger.info("Initialized {}", panelName);
     	return panel;
 	}
 
