@@ -44,6 +44,7 @@ import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.BadStockAdjustmentIn;
 import com.pj.magic.model.BadStockAdjustmentOut;
+import com.pj.magic.model.BadStockReport;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BirForm2307Report;
 import com.pj.magic.model.CreditCard;
@@ -358,6 +359,8 @@ public class MagicFrame extends JFrame {
     @Autowired private BadStockAdjustmentInPanel badStockAdjustmentInPanel;
     @Autowired private BadStockAdjustmentOutListPanel badStockAdjustmentOutListPanel;
     @Autowired private BadStockAdjustmentOutPanel badStockAdjustmentOutPanel;
+    @Autowired private BadStockReportListPanel badStockReportListPanel;
+    @Autowired private BadStockReportPanel badStockReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -547,6 +550,8 @@ public class MagicFrame extends JFrame {
         panelHolder.add(badStockAdjustmentInPanel, BAD_STOCK_ADJUSTMENT_IN_PANEL);
         panelHolder.add(badStockAdjustmentOutListPanel, BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL);
         panelHolder.add(badStockAdjustmentOutPanel, BAD_STOCK_ADJUSTMENT_OUT_PANEL);
+        panelHolder.add(badStockReportListPanel, BAD_STOCK_REPORT_LIST_PANEL);
+        panelHolder.add(badStockReportPanel, BAD_STOCK_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1435,5 +1440,11 @@ public class MagicFrame extends JFrame {
         birForm2307ReportPanel.updateDisplay(report);
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, BIR_FORM_2307_REPORT_PANEL);
     }
+
+	public void switchToBadStockReportPanel(BadStockReport report) {
+        addPanelNameToTitle(badStockReportPanel.getTitle());
+        badStockReportPanel.updateDisplay(report);
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_REPORT_PANEL);
+	}
 
 }
