@@ -9,7 +9,6 @@ import javax.swing.JScrollPane;
 import javax.swing.table.TableColumnModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -23,7 +22,6 @@ import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.RetainCriteriaInfo;
 import com.pj.magic.util.StringUtil;
 
-@Component
 public class BadStockReportListPanel extends StandardMagicPanel {
 	
     @Autowired

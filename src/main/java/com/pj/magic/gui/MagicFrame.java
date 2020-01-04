@@ -3,6 +3,8 @@ package com.pj.magic.gui;
 import java.awt.CardLayout;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.annotation.PostConstruct;
@@ -12,8 +14,12 @@ import javax.swing.JOptionPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 
@@ -89,7 +95,7 @@ import com.pj.magic.util.ApplicationUtil;
  */
 
 @Component
-public class MagicFrame extends JFrame {
+public class MagicFrame extends JFrame implements ApplicationContextAware {
 	
     private static final long serialVersionUID = 8652209770458750280L;
 
@@ -233,6 +239,14 @@ public class MagicFrame extends JFrame {
     public static final String BAD_STOCK_REPORT_LIST_PANEL = "BAD_STOCK_REPORT_LIST_PANEL";
     public static final String BAD_STOCK_REPORT_PANEL = "BAD_STOCK_REPORT_PANEL";
 	
+    private static final Map<String, Class<? extends StandardMagicPanel>> panelClasses = new HashMap<>();
+    
+    static {
+    	panelClasses.put(BAD_STOCK_REPORT_LIST_PANEL, BadStockReportListPanel.class);
+    }
+    
+    private AutowireCapableBeanFactory beanFactory;
+    
 	@Value("${application.title}")
 	private String baseTitle;
 	
@@ -359,7 +373,6 @@ public class MagicFrame extends JFrame {
     @Autowired private BadStockAdjustmentInPanel badStockAdjustmentInPanel;
     @Autowired private BadStockAdjustmentOutListPanel badStockAdjustmentOutListPanel;
     @Autowired private BadStockAdjustmentOutPanel badStockAdjustmentOutPanel;
-    @Autowired private BadStockReportListPanel badStockReportListPanel;
     @Autowired private BadStockReportPanel badStockReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
@@ -550,7 +563,6 @@ public class MagicFrame extends JFrame {
         panelHolder.add(badStockAdjustmentInPanel, BAD_STOCK_ADJUSTMENT_IN_PANEL);
         panelHolder.add(badStockAdjustmentOutListPanel, BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL);
         panelHolder.add(badStockAdjustmentOutPanel, BAD_STOCK_ADJUSTMENT_OUT_PANEL);
-        panelHolder.add(badStockReportListPanel, BAD_STOCK_REPORT_LIST_PANEL);
         panelHolder.add(badStockReportPanel, BAD_STOCK_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
@@ -1416,6 +1428,9 @@ public class MagicFrame extends JFrame {
 
     public void switchPanel(String panelName) {
         StandardMagicPanel panel = panelHolder.getCardPanel(panelName);
+        if (panel == null) {
+        	panel = loadPanel(panelName);
+        }
         addPanelNameToTitle(panel.getTitle());
         panel.updateDisplay();
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, panelName);
@@ -1447,4 +1462,17 @@ public class MagicFrame extends JFrame {
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_REPORT_PANEL);
 	}
 
+    private StandardMagicPanel loadPanel(String panelName) {
+    	StandardMagicPanel panel = 
+    			(StandardMagicPanel)beanFactory.autowire(panelClasses.get(panelName), AutowireCapableBeanFactory.AUTOWIRE_NO, false);
+    	panel.afterPropertiesSet(); // TODO: Convert to InitializingBean 
+    	panelHolder.add(panel, panelName);
+    	return panel;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		beanFactory = applicationContext.getAutowireCapableBeanFactory();
+	}
+	
 }

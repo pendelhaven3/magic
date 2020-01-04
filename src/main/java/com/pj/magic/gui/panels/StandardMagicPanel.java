@@ -17,6 +17,10 @@ public abstract class StandardMagicPanel extends AbstractMagicPanel {
 	@PostConstruct
 	@Override
 	public void initialize() {
+		afterPropertiesSet();
+	}
+	
+	public void afterPropertiesSet()  {
 		setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		initializeComponents();
 		registerKeyBindings();
