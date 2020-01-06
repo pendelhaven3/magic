@@ -17,8 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.TableModelEvent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,11 +37,12 @@ import com.pj.magic.service.BadStockService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(BadStockAdjustmentOutPanel.class);
-	
 	@Autowired
 	private BadStockAdjustmentOutService badStockAdjustmentOutService;
 	
@@ -104,7 +103,7 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 			try {
 			    badStockAdjustmentOutService.save(adjustmentOut);
 			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
+				log.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error on saving");
 				return;
 			}
@@ -123,7 +122,7 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		try {
 			badStockAdjustmentOutService.save(adjustmentOut);
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 			showErrorMessage("Unexpected error on saving");
 		}
 	}
@@ -400,7 +399,7 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
                 itemsTable.highlightColumn(e.getBadStockAdjustmentOutItem(), 
                         BadStockAdjustmentOutItemsTable.QUANTITY_COLUMN_INDEX);
 		    } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 showMessageForUnexpectedError();
 		    }
 		}
