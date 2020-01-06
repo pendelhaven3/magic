@@ -12,6 +12,7 @@ import java.awt.event.FocusEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.TableModelEvent;
@@ -56,6 +57,7 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 	private JLabel adjustmentInNumberLabel;
 	private JLabel statusLabel;
 	private MagicTextField remarksField;
+	private JCheckBox pilferageCheckBox = new JCheckBox();
 	private JLabel postDateField;
 	private JLabel postedByField;
 	private JLabel totalItemsField;
@@ -78,6 +80,8 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 			}
 		});
 		
+		pilferageCheckBox.addItemListener(e -> savePilferage());
+
 		focusOnComponentWhenThisPanelIsDisplayed(remarksField);
 		updateTotalItemsFieldWhenItemsTableChanges();
 		initializeUnitQuantitiesTable();
@@ -110,6 +114,20 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		}
 	}
 
+	private void savePilferage() {
+		if (adjustmentOut.isPilferage() == pilferageCheckBox.isSelected()) {
+			return;
+		}
+		
+		adjustmentOut.setPilferage(pilferageCheckBox.isSelected());
+		try {
+			badStockAdjustmentOutService.save(adjustmentOut);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			showErrorMessage("Unexpected error on saving");
+		}
+	}
+	
 	@Override
 	protected void doOnBack() {
 		if (itemsTable.isEditing()) {
@@ -141,6 +159,9 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		}
 		remarksField.setEnabled(!adjustmentOut.isPosted());
 		remarksField.setText(adjustmentOut.getRemarks());
+		pilferageCheckBox.setSelected(adjustmentOut.isPilferage());
+		pilferageCheckBox.setEnabled(!adjustmentOut.isPosted());
+		
 		totalItemsField.setText(String.valueOf(adjustmentOut.getTotalItems()));
 		postButton.setEnabled(!adjustmentOut.isPosted());
 		addItemButton.setEnabled(!adjustmentOut.isPosted());
@@ -156,6 +177,8 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		postedByField.setText(null);
 		remarksField.setEnabled(true);
 		remarksField.setText(null);
+		pilferageCheckBox.setSelected(true);
+		pilferageCheckBox.setEnabled(true);
 		totalItemsField.setText(null);
 		itemsTable.setAdjustmentOut(adjustmentOut);
 		postButton.setEnabled(false);
@@ -234,6 +257,20 @@ public class BadStockAdjustmentOutPanel extends StandardMagicPanel {
 		mainPanel.add(postDateField, c);
 		
 		currentRow++;
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(100, "Pilferage:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(pilferageCheckBox, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;

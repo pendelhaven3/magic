@@ -1247,6 +1247,7 @@ create table BAD_STOCK_ADJUSTMENT_OUT (
   BAD_STOCK_ADJUSTMENT_OUT_NO integer not null,
   POST_IND char(1) default 'N' not null,
   REMARKS varchar(100) null,
+  PILFERAGE boolean default false not null,
   POST_DT datetime null,
   POSTED_BY integer null,
   constraint BAD_STOCK_ADJUSTMENT_OUT$PK primary key (ID),

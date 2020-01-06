@@ -18,6 +18,7 @@ public class BadStockAdjustmentOut {
     private User postedBy;
     private List<BadStockAdjustmentOutItem> items = new ArrayList<>();
     private String remarks;
+	private boolean pilferage = true;
 
     public String getStatus() {
         return posted ? "Posted" : "New";

@@ -26,7 +26,7 @@ import com.pj.magic.util.DbUtil;
 public class BadStockAdjustmentOutDaoImpl extends MagicDao implements BadStockAdjustmentOutDao {
 
     private static final String BASE_SELECT_SQL =
-            "select a.ID, BAD_STOCK_ADJUSTMENT_OUT_NO, REMARKS, POST_IND, POST_DT, POSTED_BY,"
+            "select a.ID, BAD_STOCK_ADJUSTMENT_OUT_NO, REMARKS, PILFERAGE, POST_IND, POST_DT, POSTED_BY,"
             + " b.USERNAME as POSTED_BY_USERNAME"
             + " from BAD_STOCK_ADJUSTMENT_OUT a"
             + " left join USER b"
@@ -42,6 +42,7 @@ public class BadStockAdjustmentOutDaoImpl extends MagicDao implements BadStockAd
             adjustmentOut.setId(rs.getLong("ID"));
             adjustmentOut.setBadStockAdjustmentOutNumber(rs.getLong("BAD_STOCK_ADJUSTMENT_OUT_NO"));
             adjustmentOut.setRemarks(rs.getString("REMARKS"));
+            adjustmentOut.setPilferage(rs.getBoolean("PILFERAGE"));
             adjustmentOut.setPosted("Y".equals(rs.getString("POST_IND")));
             adjustmentOut.setPostDate(rs.getTimestamp("POST_DT"));
             adjustmentOut.setPostedBy(mapUser(rs));
@@ -109,8 +110,8 @@ public class BadStockAdjustmentOutDaoImpl extends MagicDao implements BadStockAd
 
     private static final String INSERT_SQL =
             "insert into BAD_STOCK_ADJUSTMENT_OUT"
-            + " (BAD_STOCK_ADJUSTMENT_OUT_NO, REMARKS)"
-            + " values (?, ?)";
+            + " (BAD_STOCK_ADJUSTMENT_OUT_NO, REMARKS, PILFERAGE)"
+            + " values (?, ?, ?)";
     
     private void insert(BadStockAdjustmentOut adjustmentOut) {
         long badStockAdjustmentOutNumber = getNextBadStockAdjustmentOutNumber();
@@ -124,6 +125,7 @@ public class BadStockAdjustmentOutDaoImpl extends MagicDao implements BadStockAd
                 PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
                 ps.setLong(1, badStockAdjustmentOutNumber);
                 ps.setString(2, adjustmentOut.getRemarks());
+                ps.setBoolean(3, adjustmentOut.isPilferage());
                 return ps;
             }
         }, holder);
@@ -138,11 +140,13 @@ public class BadStockAdjustmentOutDaoImpl extends MagicDao implements BadStockAd
     
     private static final String UPDATE_SQL =
             "update BAD_STOCK_ADJUSTMENT_OUT"
-            + " set REMARKS = ?, POST_IND = ?, POST_DT = ?, POSTED_BY = ?"
+            + " set REMARKS = ?, PILFERAGE = ?, POST_IND = ?, POST_DT = ?, POSTED_BY = ?"
             + " where ID = ?";
     
     private void update(BadStockAdjustmentOut adjustmentOut) {
-        getJdbcTemplate().update(UPDATE_SQL, adjustmentOut.getRemarks(), 
+        getJdbcTemplate().update(UPDATE_SQL,
+        		adjustmentOut.getRemarks(),
+        		adjustmentOut.isPilferage(),
                 adjustmentOut.isPosted() ? "Y" : "N",
                 adjustmentOut.getPostDate(),
                 adjustmentOut.isPosted() ? adjustmentOut.getPostedBy().getId() : null,
