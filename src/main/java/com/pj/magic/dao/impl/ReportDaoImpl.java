@@ -18,10 +18,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.pj.magic.dao.ReportDao;
+import com.pj.magic.model.BadStockCardInventoryReportItem;
+import com.pj.magic.model.BadStockReturnItem;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PurchasePayment;
+import com.pj.magic.model.PurchaseReturnBadStockItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoiceItem;
@@ -34,6 +37,7 @@ import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReportItem;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.report.StockOfftakeReportItem;
+import com.pj.magic.model.search.BadStockCardInventoryReportCriteria;
 import com.pj.magic.model.search.EwtReportCriteria;
 import com.pj.magic.model.search.InventoryReportCriteria;
 import com.pj.magic.model.search.PilferageReportCriteria;
@@ -47,8 +51,6 @@ import com.pj.magic.util.QueriesUtil;
 @Repository
 public class ReportDaoImpl extends MagicDao implements ReportDao {
 
-	private StockCardInventoryReportItemRowMapper rowMapper = new StockCardInventoryReportItemRowMapper();
-	
 	@Override
 	public List<StockCardInventoryReportItem> getStockCardInventoryReport(
 			StockCardInventoryReportCriteria criteria) {
@@ -83,7 +85,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 		
 		sql.append(" order by POST_DT desc, TRANSACTION_TYPE, TRANSACTION_NO, TRANSACTION_TYPE_KEY");
 		
-		return getNamedParameterJdbcTemplate().query(sql.toString(), params, rowMapper);
+		return getNamedParameterJdbcTemplate().query(sql.toString(), params, new StockCardInventoryReportItemRowMapper());
 	}
 	
 	private class StockCardInventoryReportItemRowMapper implements RowMapper<StockCardInventoryReportItem> {
@@ -344,7 +346,7 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			paramMap.put("unit", criteria.getUnit());
 		}
 		
-		return getNamedParameterJdbcTemplate().query(sql.toString(), paramMap, rowMapper);
+		return getNamedParameterJdbcTemplate().query(sql.toString(), paramMap, new StockCardInventoryReportItemRowMapper());
 	}
 
 	private static final String GET_PRODUCT_QUANTITY_DISCREPANCY_REPORTS_SQL =
@@ -525,5 +527,95 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
             return item;
         });
     }
+
+	@Override
+	public List<BadStockCardInventoryReportItem> getBadStockCardInventoryReport(
+			BadStockCardInventoryReportCriteria criteria) {
+		StringBuilder sql = new StringBuilder(QueriesUtil.getSql("badStockCardInventoryReport"));
+		sql.append(" where 1 = 1");
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("product", criteria.getProduct().getId());
+		
+		if (criteria.getFromDateTime() != null) {
+			sql.append(" and POST_DT >= :fromDate");
+			params.put("fromDate", DbUtil.toMySqlDateTimeString(criteria.getFromDateTime()));
+		} else if (criteria.getFromDate() != null) {
+			sql.append(" and POST_DT >= :fromDate");
+			params.put("fromDate", DbUtil.toMySqlDateString(criteria.getFromDate()));
+		}
+		
+		if (criteria.getToDate() != null) {
+			sql.append(" and POST_DT < date_add(:toDate, interval 1 day)");
+			params.put("toDate", DbUtil.toMySqlDateString(criteria.getToDate()));
+		}
+		
+		if (criteria.getUnit() != null) {
+			sql.append(" and UNIT = :unit");
+			params.put("unit", criteria.getUnit());
+		}
+		
+		if (!criteria.getTransactionTypes().isEmpty()) {
+			sql.append(" and TRANSACTION_TYPE in (")
+				.append(DbUtil.toSqlInValues(criteria.getTransactionTypes())).append(")");
+		}
+		
+		sql.append(" order by POST_DT desc, TRANSACTION_TYPE, TRANSACTION_NO, TRANSACTION_TYPE_KEY");
+		
+		return getNamedParameterJdbcTemplate().query(sql.toString(), params, new BadStockCardInventoryReportItemRowMapper());
+	}
+	
+	private class BadStockCardInventoryReportItemRowMapper implements RowMapper<BadStockCardInventoryReportItem> {
+
+		@Override
+		public BadStockCardInventoryReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+			BadStockCardInventoryReportItem item = new BadStockCardInventoryReportItem();
+			item.setPostDate(rs.getTimestamp("POST_DT"));
+			item.setTransactionNumber(rs.getLong("TRANSACTION_NO"));
+			item.setSupplierOrCustomerName(rs.getString("CUSTOMER_SUPPLIER_NAME"));
+			item.setTransactionType(rs.getString("TRANSACTION_TYPE"));
+			item.setCurrentCost(rs.getBigDecimal("UNIT_COST_OR_PRICE"));
+			item.setReferenceNumber(rs.getString("REFERENCE_NO"));
+			item.setUnit(rs.getString("UNIT"));
+			
+			switch (rs.getString("TRANSACTION_TYPE_KEY")) {
+			case "BAD STOCK RETURN - CANCEL":
+				item.setTransactionType("CANCELLED BAD STOCK RETURN");
+				
+				BadStockReturnItem badStockReturnItem = new BadStockReturnItem();
+				badStockReturnItem.setQuantity(rs.getInt("QUANTITY"));
+				badStockReturnItem.setCost(rs.getBigDecimal("UNIT_COST_OR_PRICE"));
+				item.setAmount(badStockReturnItem.getTotalCost());
+				item.setLessQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "BAD STOCK RETURN":
+				badStockReturnItem = new BadStockReturnItem();
+				badStockReturnItem.setQuantity(rs.getInt("QUANTITY"));
+				badStockReturnItem.setCost(rs.getBigDecimal("UNIT_COST_OR_PRICE"));
+				item.setAmount(badStockReturnItem.getAmount());
+				item.setAddQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "PURCHASE RETURN BAD STOCK":
+				PurchaseReturnBadStockItem purchaseReturnBadStockItem = new PurchaseReturnBadStockItem();
+				purchaseReturnBadStockItem.setQuantity(rs.getInt("QUANTITY"));
+				purchaseReturnBadStockItem.setUnitCost(rs.getBigDecimal("UNIT_COST_OR_PRICE"));
+				item.setAmount(purchaseReturnBadStockItem.getTotalCost());
+				item.setLessQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "BAD STOCK ADJUSTMENT OUT":
+				item.setLessQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "BAD STOCK ADJUSTMENT IN":
+				item.setAddQuantity(rs.getInt("QUANTITY"));
+				break;
+			case "BAD STOCK REPORT":
+				item.setAddQuantity(rs.getInt("QUANTITY"));
+				break;
+			}
+			
+			return item;
+		}
+		
+	}
 
 }

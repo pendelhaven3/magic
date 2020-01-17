@@ -3,6 +3,7 @@ package com.pj.magic.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.pj.magic.model.BadStockCardInventoryReportItem;
 import com.pj.magic.model.StockCardInventoryReportItem;
 import com.pj.magic.model.report.CustomerSalesSummaryReportItem;
 import com.pj.magic.model.report.EwtReportItem;
@@ -11,6 +12,7 @@ import com.pj.magic.model.report.PilferageReportItem;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.report.StockOfftakeReportItem;
+import com.pj.magic.model.search.BadStockCardInventoryReportCriteria;
 import com.pj.magic.model.search.EwtReportCriteria;
 import com.pj.magic.model.search.InventoryReportCriteria;
 import com.pj.magic.model.search.PilferageReportCriteria;
@@ -42,5 +44,7 @@ public interface ReportDao {
 	List<PilferageReportItem> searchPilferageReportItems(PilferageReportCriteria criteria);
 
     List<EwtReportItem> searchEwtReportItems(EwtReportCriteria criteria);
+
+	List<BadStockCardInventoryReportItem> getBadStockCardInventoryReport(BadStockCardInventoryReportCriteria criteria);
 
 }

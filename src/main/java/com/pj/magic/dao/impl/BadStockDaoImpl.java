@@ -33,7 +33,7 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
         public BadStock mapRow(ResultSet rs, int rowNum) throws SQLException {
             BadStock badStock = new BadStock();
             badStock.setProduct(mapProduct(rs));
-            mapUnitQuantities(badStock.getUnitQuantities(), rs);
+            mapUnitQuantities(badStock, rs);
             return badStock;
         }
 
@@ -46,23 +46,27 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
             return product;
         }
         
-        private void mapUnitQuantities(List<UnitQuantity> unitQuantities, ResultSet rs) throws SQLException {
-            mapUnitQuantity(unitQuantities, rs, Unit.CASE, "AVAIL_QTY_CSE");
-            mapUnitQuantity(unitQuantities, rs, Unit.TIE, "AVAIL_QTY_TIE");
-            mapUnitQuantity(unitQuantities, rs, Unit.CARTON, "AVAIL_QTY_CTN");
-            mapUnitQuantity(unitQuantities, rs, Unit.DOZEN, "AVAIL_QTY_DOZ");
-            mapUnitQuantity(unitQuantities, rs, Unit.PIECES, "AVAIL_QTY_PCS");
+        private void mapUnitQuantities(BadStock badStock, ResultSet rs) throws SQLException {
+            mapUnitQuantity(badStock, rs, Unit.CASE, "AVAIL_QTY_CSE");
+            mapUnitQuantity(badStock, rs, Unit.TIE, "AVAIL_QTY_TIE");
+            mapUnitQuantity(badStock, rs, Unit.CARTON, "AVAIL_QTY_CTN");
+            mapUnitQuantity(badStock, rs, Unit.DOZEN, "AVAIL_QTY_DOZ");
+            mapUnitQuantity(badStock, rs, Unit.PIECES, "AVAIL_QTY_PCS");
         }
         
-        private void mapUnitQuantity(List<UnitQuantity> unitQuantities, ResultSet rs, String unit, String columnName) throws SQLException {
-            int quantity = rs.getInt(columnName);
-            if (!rs.wasNull()) {
-                unitQuantities.add(new UnitQuantity(unit, quantity));
-            }
+        private void mapUnitQuantity(BadStock badStock, ResultSet rs, String unit, String columnName) throws SQLException {
+        	if (badStock.getProduct().hasUnit(unit)) {
+                int quantity = !rs.wasNull() ? rs.getInt(columnName) : 0;
+                badStock.getUnitQuantities().add(new UnitQuantity(unit, quantity));
+        	}
         }
         
         private void mapUnits(List<String> units, ResultSet rs) throws SQLException {
             mapUnit(units, rs, Unit.CASE, "UNIT_IND_CSE");
+            mapUnit(units, rs, Unit.TIE, "UNIT_IND_TIE");
+            mapUnit(units, rs, Unit.CARTON, "UNIT_IND_CTN");
+            mapUnit(units, rs, Unit.DOZEN, "UNIT_IND_DOZ");
+            mapUnit(units, rs, Unit.PIECES, "UNIT_IND_PCS");
         }
 
         private void mapUnit(List<String> units, ResultSet rs, String unit, String columnName) throws SQLException {

@@ -25,6 +25,7 @@ public class BadStockMenuPanel extends MenuPanel {
     private static final String ADJUSTMENT_IN = "Bad Stock Adjustment In";
     private static final String ADJUSTMENT_OUT = "Bad Stock Adjustment Out";
     private static final String REPORT_LIST = "Bad Stock Report List";
+    private static final String STOCK_CARD = "Bad Stock Card Inventory Report";
     
     private MagicListTable table;
 	private MainMenuTableModel tableModel;
@@ -81,6 +82,9 @@ public class BadStockMenuPanel extends MenuPanel {
         case REPORT_LIST:
             getMagicFrame().switchPanel(MagicFrame.BAD_STOCK_REPORT_LIST_PANEL);
             break;
+        case STOCK_CARD:
+            getMagicFrame().switchPanel(MagicFrame.BAD_STOCK_CARD_INVENTORY_REPORT_PANEL);
+            break;
 		}
 	}
 
@@ -95,7 +99,8 @@ public class BadStockMenuPanel extends MenuPanel {
                 INVENTORY_LIST,
                 ADJUSTMENT_IN,
                 ADJUSTMENT_OUT,
-                REPORT_LIST
+                REPORT_LIST,
+                STOCK_CARD
         );
         
 		@Override

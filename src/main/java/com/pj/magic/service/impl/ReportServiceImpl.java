@@ -12,6 +12,7 @@ import com.pj.magic.dao.BirForm2307ReportDao;
 import com.pj.magic.dao.InventoryCheckDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
 import com.pj.magic.dao.ReportDao;
+import com.pj.magic.model.BadStockCardInventoryReportItem;
 import com.pj.magic.model.BirForm2307Report;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.StockCardInventoryReportItem;
@@ -23,6 +24,7 @@ import com.pj.magic.model.report.PilferageReport;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.SalesByManufacturerReport;
 import com.pj.magic.model.report.StockOfftakeReport;
+import com.pj.magic.model.search.BadStockCardInventoryReportCriteria;
 import com.pj.magic.model.search.EwtReportCriteria;
 import com.pj.magic.model.search.InventoryReportCriteria;
 import com.pj.magic.model.search.PilferageReportCriteria;
@@ -188,5 +190,11 @@ public class ReportServiceImpl implements ReportService {
         
         return report;
     }
+
+	@Override
+	public List<BadStockCardInventoryReportItem> getBadStockCardInventoryReport(
+			BadStockCardInventoryReportCriteria criteria) {
+		return reportDao.getBadStockCardInventoryReport(criteria);
+	}
 
 }

@@ -92,4 +92,8 @@ public class PurchaseReturnBadStockItem {
 		this.unitCost = unitCost;
 	}
 
+	public BigDecimal getTotalCost() {
+		return unitCost.multiply(new BigDecimal(quantity));
+	}
+
 }

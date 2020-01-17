@@ -238,6 +238,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
     public static final String BAD_STOCK_ADJUSTMENT_OUT_PANEL = "BAD_STOCK_ADJUSTMENT_OUT_PANEL";
     public static final String BAD_STOCK_REPORT_LIST_PANEL = "BAD_STOCK_REPORT_LIST_PANEL";
     public static final String BAD_STOCK_REPORT_PANEL = "BAD_STOCK_REPORT_PANEL";
+    public static final String BAD_STOCK_CARD_INVENTORY_REPORT_PANEL = "BAD_STOCK_CARD_INVENTORY_REPORT_PANEL";
 	
     private static final Map<String, Class<? extends StandardMagicPanel>> panelClasses = new HashMap<>();
     
@@ -246,6 +247,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
     	panelClasses.put(BAD_STOCK_ADJUSTMENT_IN_LIST_PANEL, BadStockAdjustmentInListPanel.class);
     	panelClasses.put(BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL, BadStockAdjustmentOutListPanel.class);
     	panelClasses.put(BAD_STOCK_REPORT_LIST_PANEL, BadStockReportListPanel.class);
+    	panelClasses.put(BAD_STOCK_CARD_INVENTORY_REPORT_PANEL, BadStockCardInventoryReportPanel.class);
     }
     
     private AutowireCapableBeanFactory beanFactory;
