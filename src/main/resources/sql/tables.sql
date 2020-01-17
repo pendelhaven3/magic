@@ -1285,6 +1285,7 @@ create table BAD_STOCK_REPORT_ITEM (
   PRODUCT_ID integer not null,
   UNIT char(3) not null,
   QUANTITY integer not null,
+  FORCE_CONVERSION boolean default false not null,
   constraint BAD_STOCK_REPORT_ITEM$PK primary key (ID),
   constraint BAD_STOCK_REPORT_ITEM$FK foreign key (BAD_STOCK_REPORT_ID) references BAD_STOCK_REPORT (ID),
   constraint BAD_STOCK_REPORT_ITEM$FK2 foreign key (PRODUCT_ID) references PRODUCT (ID)

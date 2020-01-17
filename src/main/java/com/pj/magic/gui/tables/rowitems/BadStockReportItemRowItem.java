@@ -22,6 +22,7 @@ public class BadStockReportItemRowItem {
 	private Product product;
 	private String unit;
 	private Integer quantity;
+	private boolean forceConversion;
 
 	public BadStockReportItemRowItem(BadStockReportItem item) {
 		this.item = item;
@@ -68,6 +69,7 @@ public class BadStockReportItemRowItem {
 			product = item.getProduct();
 			unit = item.getUnit();
 			quantity = item.getQuantity();
+			forceConversion = item.isForceConversion();
 		}
 	}
 

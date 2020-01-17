@@ -19,7 +19,7 @@ import com.pj.magic.model.Unit;
 public class BadStockReportItemDaoImpl extends MagicDao implements BadStockReportItemDao {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, BAD_STOCK_REPORT_ID, PRODUCT_ID, UNIT, QUANTITY,"
+			"select a.ID, BAD_STOCK_REPORT_ID, PRODUCT_ID, UNIT, QUANTITY, a.FORCE_CONVERSION,"
 			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION,"
 			+ " b.UNIT_IND_CSE, b.UNIT_IND_TIE, b.UNIT_IND_CTN, b.UNIT_IND_DOZ, b.UNIT_IND_PCS"
 			+ " from BAD_STOCK_REPORT_ITEM a"
@@ -56,6 +56,7 @@ public class BadStockReportItemDaoImpl extends MagicDao implements BadStockRepor
 		item.setProduct(product);
 		item.setUnit(rs.getString("UNIT"));
 		item.setQuantity(rs.getInt("QUANTITY"));
+		item.setForceConversion(rs.getBoolean("FORCE_CONVERSION"));
 		return item;
 	};
 	
@@ -70,8 +71,8 @@ public class BadStockReportItemDaoImpl extends MagicDao implements BadStockRepor
 
 	private static final String INSERT_SQL =
 			"insert into BAD_STOCK_REPORT_ITEM"
-			+ " (BAD_STOCK_REPORT_ID, PRODUCT_ID, UNIT, QUANTITY)"
-			+ " values (?, ?, ?, ?)";
+			+ " (BAD_STOCK_REPORT_ID, PRODUCT_ID, UNIT, QUANTITY, FORCE_CONVERSION)"
+			+ " values (?, ?, ?, ?, ?)";
 	
 	private void insert(BadStockReportItem item) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -81,6 +82,7 @@ public class BadStockReportItemDaoImpl extends MagicDao implements BadStockRepor
 			ps.setLong(2, item.getProduct().getId());
 			ps.setString(3, item.getUnit());
 			ps.setInt(4, item.getQuantity());
+			ps.setBoolean(5, item.isForceConversion());
 			return ps;
 		}, holder);
 			
@@ -88,13 +90,14 @@ public class BadStockReportItemDaoImpl extends MagicDao implements BadStockRepor
 	}
 
 	private static final String UPDATE_SQL =
-			"update BAD_STOCK_REPORT_ITEM set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ? where ID = ?";
+			"update BAD_STOCK_REPORT_ITEM set PRODUCT_ID = ?, UNIT = ?, QUANTITY = ?, FORCE_CONVERSION = ? where ID = ?";
 	
 	private void update(BadStockReportItem item) {
 		getJdbcTemplate().update(UPDATE_SQL,
 				item.getProduct().getId(),
 				item.getUnit(),
 				item.getQuantity(),
+				item.isForceConversion(),
 				item.getId());
 	}
 

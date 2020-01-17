@@ -15,6 +15,7 @@ public class BadStockReportItem {
 	private Product product;
 	private String unit;
 	private Integer quantity;
+	private boolean forceConversion;
 
 	@Override
 	public int hashCode() {

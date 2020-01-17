@@ -40,6 +40,7 @@ public class BadStockReportItemsTable extends MagicTable {
 	public static final int PRODUCT_DESCRIPTION_COLUMN_INDEX = 1;
 	public static final int UNIT_COLUMN_INDEX = 2;
 	public static final int QUANTITY_COLUMN_INDEX = 3;
+	public static final int FORCE_CONVERSION_COLUMN_INDEX = 4;
 	private static final String SHOW_SELECTION_DIALOG_ACTION_NAME = "showSelectionDialog";
 	private static final String CANCEL_ACTION_NAME = "cancelAddMode";
 	private static final String DELETE_ITEM_ACTION_NAME = "deleteItem";

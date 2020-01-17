@@ -87,17 +87,21 @@ public class BadStockReportServiceImpl implements BadStockReportService {
         List<BadStockReportItem> notEnoughQuantityItems = new ArrayList<>();
         
         for (BadStockReportItem item : updated.getItems()) {
-            Product product = productDao.get(item.getProduct().getId());
-            if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity())) {
+        	if (item.isForceConversion()) {
             	notEnoughQuantityItems.add(item);
-            } else {
-                product.subtractUnitQuantity(item.getUnit(), item.getQuantity());
-                productDao.updateAvailableQuantities(product);
-                
-                BadStock badStock = getOrCreateBadStock(item.getProduct());
-                badStock.addUnitQuantity(item.getUnit(), item.getQuantity());
-                badStockDao.save(badStock);
-            }
+        	} else {
+                Product product = productDao.get(item.getProduct().getId());
+                if (!product.hasAvailableUnitQuantity(item.getUnit(), item.getQuantity())) {
+                	notEnoughQuantityItems.add(item);
+                } else {
+                    product.subtractUnitQuantity(item.getUnit(), item.getQuantity());
+                    productDao.updateAvailableQuantities(product);
+                    
+                    BadStock badStock = getOrCreateBadStock(item.getProduct());
+                    badStock.addUnitQuantity(item.getUnit(), item.getQuantity());
+                    badStockDao.save(badStock);
+                }
+        	}
         }
         
         postNotEnoughQuantityItems(badStockReport, notEnoughQuantityItems);

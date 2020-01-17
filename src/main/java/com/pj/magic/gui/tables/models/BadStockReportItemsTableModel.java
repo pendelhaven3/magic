@@ -19,7 +19,7 @@ import com.pj.magic.service.ProductService;
 @Component
 public class BadStockReportItemsTableModel extends AbstractTableModel {
 	
-	private static final String[] columnNames = {"Code", "Description", "Unit", "Qty"};
+	private static final String[] columnNames = {"Code", "Description", "Unit", "Qty", "Force Conversion"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private BadStockReportService badStockReportService;
@@ -49,6 +49,8 @@ public class BadStockReportItemsTableModel extends AbstractTableModel {
 			return rowItem.getUnit();
 		case BadStockReportItemsTable.QUANTITY_COLUMN_INDEX:
 			return rowItem.getQuantity();
+		case BadStockReportItemsTable.FORCE_CONVERSION_COLUMN_INDEX:
+			return rowItem.isForceConversion();
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
@@ -90,7 +92,7 @@ public class BadStockReportItemsTableModel extends AbstractTableModel {
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		BadStockReportItemRowItem rowItem = rowItems.get(rowIndex);
-		String val = (String)value;
+		String val = (value instanceof Boolean) ? ((Boolean)value).toString() : (String)value;
 		switch (columnIndex) {
 		case BadStockReportItemsTable.PRODUCT_CODE_COLUMN_INDEX:
 			if (rowItem.getProduct() != null && rowItem.getProduct().getCode().equals(val)) {
@@ -107,6 +109,9 @@ public class BadStockReportItemsTableModel extends AbstractTableModel {
 		case BadStockReportItemsTable.QUANTITY_COLUMN_INDEX:
 			rowItem.setQuantity(Integer.valueOf(val));
 			break;
+		case BadStockReportItemsTable.FORCE_CONVERSION_COLUMN_INDEX:
+			rowItem.setForceConversion(Boolean.valueOf(val));
+			break;
 		}
 		// TODO: Save only when there is a change
 		if (rowItem.isValid()) {
@@ -114,6 +119,7 @@ public class BadStockReportItemsTableModel extends AbstractTableModel {
 			item.setProduct(rowItem.getProduct());
 			item.setUnit(rowItem.getUnit());
 			item.setQuantity(Integer.valueOf(rowItem.getQuantity()));
+			item.setForceConversion(rowItem.isForceConversion());
 			
 			boolean newItem = (item.getId() == null);
 			badStockReportService.save(item);
@@ -132,6 +138,7 @@ public class BadStockReportItemsTableModel extends AbstractTableModel {
 			BadStockReportItemRowItem rowItem = rowItems.get(rowIndex);
 			switch (columnIndex) {
 			case BadStockReportItemsTable.PRODUCT_CODE_COLUMN_INDEX:
+			case BadStockReportItemsTable.FORCE_CONVERSION_COLUMN_INDEX:
 				return true;
 			case BadStockReportItemsTable.UNIT_COLUMN_INDEX:
 				return rowItem.getProduct() != null;
@@ -176,9 +183,12 @@ public class BadStockReportItemsTableModel extends AbstractTableModel {
 	}
 
 	public Class<?> getColumnClass(int columnIndex) {
-		if (columnIndex == BadStockReportItemsTable.QUANTITY_COLUMN_INDEX) {
+		switch (columnIndex) {
+		case BadStockReportItemsTable.QUANTITY_COLUMN_INDEX:
 			return Long.class;
-		} else {
+		case BadStockReportItemsTable.FORCE_CONVERSION_COLUMN_INDEX:
+			return Boolean.class;
+		default:
 			return Object.class;
 		}
 	}
