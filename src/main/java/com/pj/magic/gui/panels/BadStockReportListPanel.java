@@ -132,9 +132,10 @@ public class BadStockReportListPanel extends StandardMagicPanel {
     
     private static final int BAD_STOCK_REPORT_NUMBER_COLUMN_INDEX = 0;
 	private static final int LOCATION_COLUMN_INDEX = 1;
-	private static final int POSTED_COLUMN_INDEX = 2;
-	private static final int POST_DATE_COLUMN_INDEX = 3;
-    private static final String[] COLUMN_NAMES = {"Bad Stock Report No.", "Location", "Posted", "Post Date"};
+	private static final int RECEIVED_DATE_COLUMN_INDEX = 2;
+	private static final int POSTED_COLUMN_INDEX = 3;
+	private static final int POST_DATE_COLUMN_INDEX = 4;
+    private static final String[] COLUMN_NAMES = {"Bad Stock Report No.", "Location", "Received Date", "Posted", "Post Date"};
 	
     private void setTableColumnWidths() {
         TableColumnModel columnModel = table.getColumnModel();
@@ -155,6 +156,8 @@ public class BadStockReportListPanel extends StandardMagicPanel {
                 return item.getBadStockReportNumber();
             case LOCATION_COLUMN_INDEX:
                 return item.getLocation();
+            case RECEIVED_DATE_COLUMN_INDEX:
+                return item.getReceivedDate() != null ? FormatterUtil.formatDate(item.getReceivedDate()) : null;
             case POSTED_COLUMN_INDEX:
                 return StringUtil.generateYesNo(item.isPosted());
             case POST_DATE_COLUMN_INDEX:

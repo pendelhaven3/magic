@@ -19,6 +19,7 @@ public class BadStockReport {
     private User postedBy;
     private List<BadStockReportItem> items = new ArrayList<>();
     private String remarks;
+    private Date receivedDate;
 
     public String getStatus() {
         return posted ? "Posted" : "New";

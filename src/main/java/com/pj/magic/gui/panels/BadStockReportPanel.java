@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -16,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -23,6 +26,7 @@ import org.springframework.util.StringUtils;
 import com.pj.magic.exception.AlreadyPostedException;
 import com.pj.magic.exception.NoItemException;
 import com.pj.magic.gui.MagicFrame;
+import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -33,6 +37,9 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 import lombok.extern.slf4j.Slf4j;
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 @Slf4j
@@ -57,6 +64,9 @@ public class BadStockReportPanel extends StandardMagicPanel {
 	private MagicToolBarButton addItemButton;
 	private MagicToolBarButton deleteItemButton;
 	
+	private UtilCalendarModel receivedDateModel = new UtilCalendarModel();
+	private JDatePickerImpl datePicker;
+	
 	public BadStockReportPanel() {
 		setTitle("Bad Stock Report");
 	}
@@ -78,6 +88,18 @@ public class BadStockReportPanel extends StandardMagicPanel {
 			@Override
 			public void focusLost(FocusEvent e) {
 				saveRemarks();
+			}
+		});
+		
+		receivedDateModel.addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("value".equals(evt.getPropertyName()) && evt.getOldValue() != null 
+						&& evt.getNewValue() != null) {
+					badStockReport.setReceivedDate(receivedDateModel.getValue().getTime());
+					badStockReportService.save(badStockReport);
+				}
 			}
 		});
 		
@@ -155,12 +177,14 @@ public class BadStockReportPanel extends StandardMagicPanel {
 		badStockReportNumberLabel.setText(badStockReport.getBadStockReportNumber().toString());
 		locationField.setText(badStockReport.getLocation());
 		locationField.setEnabled(!badStockReport.isPosted());
+		updateReceivedDateField();
 		remarksField.setText(badStockReport.getRemarks());
 		remarksField.setEnabled(!badStockReport.isPosted());
 		statusLabel.setText(badStockReport.isPosted() ? "Yes" : "No");
 		postButton.setEnabled(!badStockReport.isPosted());
 		addItemButton.setEnabled(!badStockReport.isPosted());
 		deleteItemButton.setEnabled(!badStockReport.isPosted());
+		datePicker.getComponents()[1].setVisible(!badStockReport.isPosted());
 		
 		if (badStockReport.isPosted()) {
 			postDateLabel.setText(FormatterUtil.formatDate(badStockReport.getPostDate()));
@@ -170,6 +194,13 @@ public class BadStockReportPanel extends StandardMagicPanel {
 		itemsTable.setBadStockReport(badStockReport);
 	}
 
+	private void updateReceivedDateField() {
+		if (badStockReport.getReceivedDate() != null) {
+			receivedDateModel.setValue(null); // set to null first to prevent property change listener from triggering
+			receivedDateModel.setValue(DateUtils.toCalendar(badStockReport.getReceivedDate()));
+		}
+	}
+	
 	private void clearDisplay() {
 		badStockReportNumberLabel.setText(null);
 		statusLabel.setText(null);
@@ -177,6 +208,8 @@ public class BadStockReportPanel extends StandardMagicPanel {
 		locationField.setEnabled(true);
 		remarksField.setText(null);
 		remarksField.setEnabled(false);
+		receivedDateModel.setValue(null); // set to null first to prevent property change listener from triggering
+		datePicker.getComponents()[1].setVisible(true);
 		postDateLabel.setText(null);
 		postedByLabel.setText(null);
 		
@@ -296,6 +329,22 @@ public class BadStockReportPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(postedByLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Received Date:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		JDatePanelImpl datePanel = new JDatePanelImpl(receivedDateModel);
+		datePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		mainPanel.add(datePicker, c);
 		
 		currentRow++;
 		

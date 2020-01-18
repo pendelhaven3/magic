@@ -24,7 +24,7 @@ public class BadStockReportDaoImpl extends MagicDao implements BadStockReportDao
 	private static final String BAD_STOCK_REPORT_NUMBER_SEQUENCE = "BAD_STOCK_REPORT_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, BAD_STOCK_REPORT_NO, LOCATION, POST_IND, POST_DT, POST_BY, REMARKS,"
+			"select a.ID, BAD_STOCK_REPORT_NO, LOCATION, POST_IND, POST_DT, POST_BY, REMARKS, a.RECEIVED_DT,"
 			+ " b.USERNAME as POST_BY_USERNAME"
 			+ " from BAD_STOCK_REPORT a"
 			+ " left join USER b"
@@ -38,6 +38,7 @@ public class BadStockReportDaoImpl extends MagicDao implements BadStockReportDao
 		report.setRemarks(rs.getString("REMARKS"));
 		report.setPosted("Y".equals(rs.getString("POST_IND")));
 		report.setPostDate(rs.getTimestamp("POST_DT"));
+		report.setReceivedDate(rs.getDate("RECEIVED_DT"));
 		
 		if (!StringUtils.isEmpty(rs.getString("POST_BY"))) {
 			report.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
@@ -67,7 +68,7 @@ public class BadStockReportDaoImpl extends MagicDao implements BadStockReportDao
 	}
 
 	private static final String INSERT_SQL =
-			"insert into BAD_STOCK_REPORT (BAD_STOCK_REPORT_NO, LOCATION, REMARKS) values (?, ?, ?)";
+			"insert into BAD_STOCK_REPORT (BAD_STOCK_REPORT_NO, LOCATION) values (?, ?)";
 	
 	private void insert(BadStockReport badStockReport) {
 		Long badStockReportNumber = getNextBadStockReturnNumber();
@@ -77,7 +78,6 @@ public class BadStockReportDaoImpl extends MagicDao implements BadStockReportDao
 			PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 			ps.setLong(1, badStockReportNumber);
 			ps.setString(2, badStockReport.getLocation());
-			ps.setString(3, badStockReport.getRemarks());
 			return ps;
 		}, holder);
 		
@@ -90,13 +90,14 @@ public class BadStockReportDaoImpl extends MagicDao implements BadStockReportDao
 	}
 	
 	private static final String UPDATE_SQL = 
-			"update BAD_STOCK_REPORT set LOCATION = ?, REMARKS = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?"
+			"update BAD_STOCK_REPORT set LOCATION = ?, REMARKS = ?, RECEIVED_DT = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?"
 			+ " where ID = ?";
 	
 	private void update(BadStockReport badStockReport) {
 		getJdbcTemplate().update(UPDATE_SQL,
 				badStockReport.getLocation(),
 				badStockReport.getRemarks(),
+				badStockReport.getReceivedDate(),
 				badStockReport.isPosted() ? "Y" : "N",
 				badStockReport.getPostDate(),
 				badStockReport.getPostedBy() != null ? badStockReport.getPostedBy().getId() : null,

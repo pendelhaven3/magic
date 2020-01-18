@@ -1271,6 +1271,7 @@ create table BAD_STOCK_REPORT (
   BAD_STOCK_REPORT_NO integer not null,
   POST_IND char(1) default 'N' not null,
   LOCATION varchar(50) not null,
+  RECEIVED_DT date not null,
   REMARKS varchar(100) null,
   POST_DT datetime null,
   POST_BY integer null,
