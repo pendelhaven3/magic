@@ -324,6 +324,16 @@ from (
 	from INVENTORY_CORRECTION a
 	where a.PRODUCT_ID = :product
 	and a.DELETE_IND = 'N'
+	union all
+	select a.POST_DT, a.BAD_STOCK_REPORT_NO as TRANSACTION_NO,
+		null as CUSTOMER_SUPPLIER_NAME,
+		'BAD STOCK REPORT' as TRANSACTION_TYPE, 'BAD STOCK REPORT' as TRANSACTION_TYPE_KEY, b.UNIT, b.QUANTITY,
+		null as UNIT_COST_OR_PRICE, a.LOCATION as REFERENCE_NO
+	from BAD_STOCK_REPORT a
+	join BAD_STOCK_REPORT_ITEM b
+		on b.BAD_STOCK_REPORT_ID = a.ID
+	where b.PRODUCT_ID = :product
+	and a.POST_IND = 'Y'
 ) m
 	]]>
 	</entry>

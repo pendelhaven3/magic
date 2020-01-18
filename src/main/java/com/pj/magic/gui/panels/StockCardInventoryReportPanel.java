@@ -80,6 +80,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	private JCheckBox inventoryCheckTransactionTypeCheckBox;
 	private JCheckBox promoRedemptionTransactionTypeCheckBox;
 	private JCheckBox purchaseReturnTransactionTypeCheckBox;
+	private JCheckBox badStockReportTransactionTypeCheckBox;
 	private JLabel currentQuantityLabel;
 	private JLabel totalLessQuantityLabel;
 	private JLabel totalAddQuantityLabel;
@@ -120,6 +121,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		inventoryCheckTransactionTypeCheckBox = new JCheckBox();
 		promoRedemptionTransactionTypeCheckBox = new JCheckBox();
 		purchaseReturnTransactionTypeCheckBox = new JCheckBox();
+		badStockReportTransactionTypeCheckBox = new JCheckBox();
 		
 		generateButton = new JButton("Generate");
 		generateButton.addActionListener(new ActionListener() {
@@ -244,6 +246,9 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		}
 		if (purchaseReturnTransactionTypeCheckBox.isSelected()) {
 			transactionTypes.add("PURCHASE RETURN");
+		}
+		if (badStockReportTransactionTypeCheckBox.isSelected()) {
+			transactionTypes.add("BAD STOCK REPORT");
 		}
 	}
 
@@ -463,6 +468,8 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		panel.add(purchaseReturnTransactionTypeCheckBox, c);
 		panel.add(new JLabel("Purchase Return"), c);
+		panel.add(badStockReportTransactionTypeCheckBox, c);
+		panel.add(new JLabel("Bad Stock Report"), c);
 		
 		return panel;
 	}
@@ -532,6 +539,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		inventoryCheckTransactionTypeCheckBox.setSelected(false);
 		promoRedemptionTransactionTypeCheckBox.setSelected(false);
 		purchaseReturnTransactionTypeCheckBox.setSelected(false);
+		badStockReportTransactionTypeCheckBox.setSelected(false);
 	}
 
 	@Override

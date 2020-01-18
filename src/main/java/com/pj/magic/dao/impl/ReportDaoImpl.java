@@ -170,6 +170,9 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 					item.setLessQuantity(-quantity);
 				}
 				break;
+			case "BAD STOCK REPORT":
+				item.setLessQuantity(rs.getInt("QUANTITY"));
+				break;
 			}
 			
 			return item;

@@ -28,6 +28,7 @@ public class StockCardInventoryReportCriteria {
 		transactionTypes.add("PROMO REDEMPTION");
 		transactionTypes.add("PURCHASE RETURN");
 		transactionTypes.add("INVENTORY CORRECTION");
+		transactionTypes.add("BAD STOCK REPORT");
 	}
 	
 	public Product getProduct() {
