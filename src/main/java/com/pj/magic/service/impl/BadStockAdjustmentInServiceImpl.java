@@ -16,9 +16,12 @@ import com.pj.magic.model.BadStock;
 import com.pj.magic.model.BadStockAdjustmentIn;
 import com.pj.magic.model.BadStockAdjustmentInItem;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.PurchaseReturnBadStock;
+import com.pj.magic.model.PurchaseReturnBadStockItem;
 import com.pj.magic.model.search.BadStockAdjustmentInSearchCriteria;
 import com.pj.magic.service.BadStockAdjustmentInService;
 import com.pj.magic.service.LoginService;
+import com.pj.magic.service.PurchaseReturnBadStockService;
 
 @Service
 public class BadStockAdjustmentInServiceImpl implements BadStockAdjustmentInService {
@@ -37,6 +40,9 @@ public class BadStockAdjustmentInServiceImpl implements BadStockAdjustmentInServ
     
     @Autowired
     private LoginService loginService;
+    
+    @Autowired
+    private PurchaseReturnBadStockService purchaseReturnBadStockService;
     
     @Override
     public List<BadStockAdjustmentIn> getAllUnpostedBadStockAdjustmentIn() {
@@ -115,5 +121,26 @@ public class BadStockAdjustmentInServiceImpl implements BadStockAdjustmentInServ
     public List<BadStockAdjustmentIn> search(BadStockAdjustmentInSearchCriteria criteria) {
         return badStockAdjustmentInDao.search(criteria);
     }
+
+    @Transactional
+	@Override
+	public void generateAndPost(PurchaseReturnBadStock purchaseReturnBadStock) {
+		purchaseReturnBadStock = purchaseReturnBadStockService.getPurchaseReturnBadStock(purchaseReturnBadStock.getId());
+		
+		BadStockAdjustmentIn adjustmentIn = new BadStockAdjustmentIn();
+		adjustmentIn.setRemarks("FOR PURCHASE RETURN BAD STOCK #" + purchaseReturnBadStock.getPurchaseReturnBadStockNumber().toString());
+		badStockAdjustmentInDao.save(adjustmentIn);
+		
+		for (PurchaseReturnBadStockItem purchaseReturnBadStockItem : purchaseReturnBadStock.getItems()) {
+			BadStockAdjustmentInItem badStockAdjustmentInItem = new BadStockAdjustmentInItem();
+			badStockAdjustmentInItem.setParent(adjustmentIn);
+			badStockAdjustmentInItem.setProduct(purchaseReturnBadStockItem.getProduct());
+			badStockAdjustmentInItem.setUnit(purchaseReturnBadStockItem.getUnit());
+			badStockAdjustmentInItem.setQuantity(purchaseReturnBadStockItem.getQuantity());
+			badStockAdjustmentInItemDao.save(badStockAdjustmentInItem);
+		}
+		
+		post(adjustmentIn);
+	}
     
 }

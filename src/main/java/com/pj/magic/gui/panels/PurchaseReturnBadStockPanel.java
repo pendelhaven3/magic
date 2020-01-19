@@ -46,6 +46,7 @@ import com.pj.magic.gui.dialog.SelectSupplierDialog;
 import com.pj.magic.gui.tables.PurchaseReturnBadStockItemsTable;
 import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.service.BadStockAdjustmentInService;
 import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PurchaseReturnBadStockService;
 import com.pj.magic.service.SupplierService;
@@ -68,6 +69,7 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 	@Autowired private SupplierService supplierService;
 	@Autowired private SelectSupplierDialog selectSupplierDialog;
 	@Autowired private PrintService printService;
+	@Autowired private BadStockAdjustmentInService badStockAdjustmentInService;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	
 	@Autowired
@@ -91,6 +93,7 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 	private JButton printPreviewButton;
 	private JButton printButton;
 	private JButton generateExcelButton;
+	private JButton generateBadStockAdjustmentInButton;
     private MagicFileChooser excelFileChooser;
 	
 	@Override
@@ -571,6 +574,10 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		
         generateExcelButton = new MagicToolBarButton("excel", "Generate Excel", e -> generateExcel());
         toolBar.add(generateExcelButton);
+        
+        generateBadStockAdjustmentInButton = new MagicToolBarButton("adjustment_in", "Generate Bad Stock Adjustment In",
+        		e -> generateAndPostBadStockAdjustmentIn());
+        toolBar.add(generateBadStockAdjustmentInButton);
 	}
 	
     private void allAllSupplierItems() {
@@ -643,6 +650,18 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
             logger.error("Unable to open Excel file", e);
             showMessageForUnexpectedError();
         }
+    }
+    
+    private void generateAndPostBadStockAdjustmentIn() {
+    	try {
+        	badStockAdjustmentInService.generateAndPost(purchaseReturnBadStock);
+    	} catch (Exception e) {
+    		logger.error("Error during generation of Bad Stock Adjustment In", e);
+    		showErrorMessage("Error during generation of Bad Stock Adjustment In");
+    		return;
+    	}
+    	
+    	showMessage("Bad Stock Adjustment In generated");
     }
     
 }
