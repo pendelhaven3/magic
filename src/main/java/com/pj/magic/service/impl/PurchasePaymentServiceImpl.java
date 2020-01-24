@@ -123,7 +123,7 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 						purchaseReturnDao.findByPurchaseReturnNumber(referenceNumber));
 				break;
 			case PurchasePaymentAdjustmentType.PURCHASE_RETURN_BAD_STOCK_CODE:
-				purchaseReturnBadStockService.post(
+				purchaseReturnBadStockService.markAsPaid(
 						purchaseReturnBadStockDao.findByPurchaseReturnBadStockNumber(referenceNumber));
 				break;
 			default:

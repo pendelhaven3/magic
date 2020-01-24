@@ -20,6 +20,9 @@ public class PurchaseReturnBadStock {
 	private boolean posted;
 	private Date postDate;
 	private User postedBy;
+	private boolean paid;
+	private Date paidDate;
+	private User paidBy;
 	private String remarks;
 	
 	private List<PurchaseReturnBadStockItem> items = new ArrayList<>();
@@ -33,7 +36,7 @@ public class PurchaseReturnBadStock {
 	}
 
 	public String getStatus() {
-		return (posted) ? "Posted" : "New";
+		return (paid) ? "Paid" : ((posted) ? "Posted" : "New");
 	}
 
 	public int getTotalItems() {

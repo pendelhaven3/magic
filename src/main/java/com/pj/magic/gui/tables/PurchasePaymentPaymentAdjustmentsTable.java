@@ -313,8 +313,8 @@ public class PurchasePaymentPaymentAdjustmentsTable extends MagicTable {
 			showErrorMessage("Purchase Return Bad Stock does not exist");
 		} else if (!purchaseReturnBadStock.getSupplier().equals(payment.getSupplier())) {
 			showErrorMessage("Purchase Return Bad Stock is for a different supplier");
-		} else if (purchaseReturnBadStock.isPosted()) {
-			showErrorMessage("Purchase Return Bad Stock is already posted");
+		} else if (purchaseReturnBadStock.isPaid()) {
+			showErrorMessage("Purchase Return Bad Stock is already paid");
 		} else {
 			valid = true;
 		}

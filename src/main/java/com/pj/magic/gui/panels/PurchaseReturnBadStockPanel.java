@@ -35,6 +35,7 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.dao.SystemDao;
 import com.pj.magic.excel.PurchaseReturnBadStockExcelGenerator;
+import com.pj.magic.exception.NotEnoughStocksException;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.ExcelFileFilter;
 import com.pj.magic.gui.component.MagicFileChooser;
@@ -90,6 +91,8 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 	private JButton deleteItemButton;
     private JButton addAllSupplierItemsButton;
     private JButton deleteAllItemsButton;
+    private JButton postButton;
+    private JButton markAsPaidButton;
 	private JButton printPreviewButton;
 	private JButton printButton;
 	private JButton generateExcelButton;
@@ -270,7 +273,8 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		totalAmountField.setText(purchaseReturnBadStock.getTotalAmount().toString());
 		
 		ComponentUtil.enableButtons(!purchaseReturnBadStock.isPosted(),
-		        addItemButton, deleteItemButton, addAllSupplierItemsButton, deleteAllItemsButton);
+		        postButton, addItemButton, deleteItemButton, addAllSupplierItemsButton, deleteAllItemsButton);
+		markAsPaidButton.setEnabled(purchaseReturnBadStock.isPosted() && !purchaseReturnBadStock.isPaid());
 		
 		printPreviewButton.setEnabled(true);
 		printButton.setEnabled(true);
@@ -291,6 +295,9 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		remarksField.setEnabled(false);
 		totalItemsField.setText(null);
 		totalAmountField.setText(null);
+		postButton.setEnabled(false);
+		markAsPaidButton.setEnabled(false);
+		
 		itemsTable.setPurchaseReturnBadStock(purchaseReturnBadStock);
 		
         ComponentUtil.enableButtons(false,
@@ -551,6 +558,12 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		postButton = new MagicToolBarButton("post", "Post", e -> postPurchaseReturnBadStock());
+		toolBar.add(postButton);
+		
+		markAsPaidButton = new MagicToolBarButton("coins", "Mark As Paid", e -> markPurchaseReturnBadStockAsPaid());
+		toolBar.add(markAsPaidButton);
+		
 		printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
 		printPreviewButton.addActionListener(new ActionListener() {
 			
@@ -580,7 +593,7 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
         toolBar.add(generateBadStockAdjustmentInButton);
 	}
 	
-    private void allAllSupplierItems() {
+	private void allAllSupplierItems() {
 	    if (confirm("Add all available bad stock for supplier items?")) {
 	        try {
 	            purchaseReturnBadStockService.addAllBadStockForSupplier(purchaseReturnBadStock);
@@ -663,5 +676,48 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
     	
     	showMessage("Bad Stock Adjustment In generated");
     }
+    
+    private void postPurchaseReturnBadStock() {
+		if (itemsTable.isAdding()) {
+			itemsTable.switchToEditMode();
+		}
+		
+		if (!purchaseReturnBadStock.hasItems()) {
+			showErrorMessage("Cannot post a Purchase Return Bad Stock with no items");
+			itemsTable.requestFocusInWindow();
+			return;
+		}
+		
+		if (confirm("Do you want to post this Purchase Return Bad Stock?")) {
+			try {
+				purchaseReturnBadStockService.post(purchaseReturnBadStock);
+			} catch (NotEnoughStocksException e) {
+				showErrorMessage(e.getMessage());
+				return;
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+				return;
+			}
+			
+			showMessage("Purchase Return Bad Stock posted");
+			updateDisplay(purchaseReturnBadStock);
+		}
+	}
+    
+	private void markPurchaseReturnBadStockAsPaid() {
+		if (confirm("Mark Purchase Return Bad Stock as paid?")) {
+			try {
+				purchaseReturnBadStockService.markAsPaid(purchaseReturnBadStock);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				showMessageForUnexpectedError();
+				return;
+			}
+			
+			showMessage("Purchase Return Bad Stock marked as paid");
+			updateDisplay(purchaseReturnBadStock);
+		}
+	}
     
 }

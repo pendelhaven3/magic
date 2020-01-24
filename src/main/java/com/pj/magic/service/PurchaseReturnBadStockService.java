@@ -28,5 +28,7 @@ public interface PurchaseReturnBadStockService {
     void addAllBadStockForSupplier(PurchaseReturnBadStock purchaseReturnBadStock);
 
     void deleteAllItems(PurchaseReturnBadStock purchaseReturnBadStock);
+
+	void markAsPaid(PurchaseReturnBadStock purchaseReturnBadStock);
 	
 }

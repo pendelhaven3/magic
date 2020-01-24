@@ -179,4 +179,19 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
         purchaseReturnBadStockItemDao.deleteAllByPurchaseReturnBadStock(purchaseReturnBadStock);
     }
 
+    @Transactional
+	@Override
+	public void markAsPaid(PurchaseReturnBadStock purchaseReturnBadStock) {
+		PurchaseReturnBadStock updated = getPurchaseReturnBadStock(purchaseReturnBadStock.getId());
+		
+		if (updated.isPaid()) {
+		    throw new AlreadyPostedException("PRBS No. " + updated.getPurchaseReturnBadStockNumber().toString() + " is already paid");
+		}
+		
+		updated.setPaid(true);
+		updated.setPaidDate(systemDao.getCurrentDateTime());
+		updated.setPaidBy(loginService.getLoggedInUser());
+		purchaseReturnBadStockDao.save(updated);
+	}
+
 }

@@ -28,16 +28,19 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 	private static final String PURCHASE_RETURN_BAD_STOCK_NUMBER_SEQUENCE = "PURCHASE_RETURN_BAD_STOCK_NO_SEQ";
 	
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, PURCHASE_RETURN_BAD_STOCK_NO, SUPPLIER_ID, POST_IND, POST_DT, POST_BY,"
+			"select a.ID, PURCHASE_RETURN_BAD_STOCK_NO, SUPPLIER_ID, POST_IND, POST_DT, POST_BY, PAID_IND, PAID_DT, PAID_BY,"
 			+ " a.REMARKS,"
 			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME,"
 			+ " b.FAX_NUMBER as SUPPLIER_FAX_NUMBER, b.CONTACT_NUMBER as SUPPLIER_CONTACT_NUMBER, b.ADDRESS as SUPPLIER_ADDRESS,"
-			+ " c.USERNAME as POST_BY_USERNAME"
+			+ " c.USERNAME as POST_BY_USERNAME,"
+			+ " d.USERNAME as PAID_BY_USERNAME"
 			+ " from PURCHASE_RETURN_BAD_STOCK a"
 			+ " join SUPPLIER b"
 			+ "   on b.ID = a.SUPPLIER_ID"
 			+ " left join USER c"
-			+ "   on c.ID = a.POST_BY";
+			+ "   on c.ID = a.POST_BY"
+			+ " left join USER d"
+			+ "   on d.ID = a.PAID_BY";
 
 	private RowMapper<PurchaseReturnBadStock> rowMapper = new RowMapper<PurchaseReturnBadStock>() {
 
@@ -52,6 +55,12 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
             if (purchaseReturnBadStock.isPosted()) {
                 purchaseReturnBadStock.setPostDate(rs.getDate("POST_DT"));
                 purchaseReturnBadStock.setPostedBy(new User(rs.getLong("POST_BY"), rs.getString("POST_BY_USERNAME")));
+            }
+            
+            purchaseReturnBadStock.setPaid("Y".equals(rs.getString("PAID_IND")));
+            if (purchaseReturnBadStock.isPaid()) {
+                purchaseReturnBadStock.setPaidDate(rs.getDate("PAID_DT"));
+                purchaseReturnBadStock.setPaidBy(new User(rs.getLong("PAID_BY"), rs.getString("PAID_BY_USERNAME")));
             }
             
             purchaseReturnBadStock.setRemarks(rs.getString("REMARKS"));
@@ -94,7 +103,7 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 
 	private static final String UPDATE_SQL = 
 			"update PURCHASE_RETURN_BAD_STOCK set SUPPLIER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
-			+ " REMARKS = ? where ID = ?";
+			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, REMARKS = ? where ID = ?";
 	
 	private void update(PurchaseReturnBadStock purchaseReturnBadStock) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -102,6 +111,9 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 				purchaseReturnBadStock.isPosted() ? "Y" : "N",
 				purchaseReturnBadStock.getPostDate(),
 				purchaseReturnBadStock.isPosted() ? purchaseReturnBadStock.getPostedBy().getId() : null,
+				purchaseReturnBadStock.isPaid() ? "Y" : "N",
+				purchaseReturnBadStock.getPaidDate(),
+				purchaseReturnBadStock.isPaid() ? purchaseReturnBadStock.getPaidBy().getId() : null,
 				purchaseReturnBadStock.getRemarks(),
 				purchaseReturnBadStock.getId());
 	}
@@ -152,6 +164,16 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 		if (criteria.getPostDate() != null) {
 			sql.append(" and a.POST_DT = ?");
 			params.add(DbUtil.toMySqlDateString(criteria.getPostDate()));
+		}
+		
+		if (criteria.getPaid() != null) {
+			sql.append(" and a.PAID_IND = ?");
+			params.add(criteria.getPaid() ? "Y" : "N");
+		}
+
+		if (criteria.getPaidDate() != null) {
+			sql.append(" and a.PAID_DT = ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getPaidDate()));
 		}
 		
 		if (criteria.getSupplier() != null) {

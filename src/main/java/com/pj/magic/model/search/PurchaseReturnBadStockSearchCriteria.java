@@ -15,5 +15,7 @@ public class PurchaseReturnBadStockSearchCriteria {
 	private Boolean posted;
 	private Supplier supplier;
 	private Date postDate;
+	private Boolean paid;
+	private Date paidDate;
 
 }
