@@ -178,7 +178,7 @@ public class BadStockCardInventoryReportPanel extends StandardMagicPanel {
 			transactionTypes.add("BAD STOCK ADJUSTMENT OUT");
 		}
 		if (badStockReportTransactionTypeCheckBox.isSelected()) {
-			transactionTypes.add("BAD STOCK REPORT");
+			transactionTypes.add("INVENTORY BAD STOCK REPORT");
 		}
 	}
 
@@ -371,7 +371,7 @@ public class BadStockCardInventoryReportPanel extends StandardMagicPanel {
 		
 		c.gridy = currentRow;
 		panel.add(badStockReportTransactionTypeCheckBox, c);
-		panel.add(new JLabel("Bad Stock Report"), c);
+		panel.add(new JLabel("Inventory Bad Stock Report"), c);
 		
 		return panel;
 	}

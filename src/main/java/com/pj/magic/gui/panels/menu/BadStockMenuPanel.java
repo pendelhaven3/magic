@@ -24,7 +24,7 @@ public class BadStockMenuPanel extends MenuPanel {
     private static final String INVENTORY_LIST = "Bad Stock Inventory List";
     private static final String ADJUSTMENT_IN = "Bad Stock Adjustment In";
     private static final String ADJUSTMENT_OUT = "Bad Stock Adjustment Out";
-    private static final String REPORT_LIST = "Bad Stock Report List";
+    private static final String REPORT_LIST = "Inventory Bad Stock Report List";
     private static final String STOCK_CARD = "Bad Stock Card Inventory Report";
     
     private MagicListTable table;

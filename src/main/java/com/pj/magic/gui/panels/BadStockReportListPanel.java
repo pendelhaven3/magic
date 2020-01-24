@@ -33,7 +33,7 @@ public class BadStockReportListPanel extends StandardMagicPanel {
 	private RetainCriteriaInfo<BadStockReportSearchCriteria> retainCriteriaInfo = new RetainCriteriaInfo<>();
 	
 	public BadStockReportListPanel() {
-	    setTitle("Bad Stock Report List");
+	    setTitle("Inventory Bad Stock Report List");
 	}
 	
 	@Override
@@ -135,7 +135,7 @@ public class BadStockReportListPanel extends StandardMagicPanel {
 	private static final int RECEIVED_DATE_COLUMN_INDEX = 2;
 	private static final int POSTED_COLUMN_INDEX = 3;
 	private static final int POST_DATE_COLUMN_INDEX = 4;
-    private static final String[] COLUMN_NAMES = {"Bad Stock Report No.", "Location", "Received Date", "Posted", "Post Date"};
+    private static final String[] COLUMN_NAMES = {"Inventory BSR No.", "Location", "Received Date", "Posted", "Post Date"};
 	
     private void setTableColumnWidths() {
         TableColumnModel columnModel = table.getColumnModel();

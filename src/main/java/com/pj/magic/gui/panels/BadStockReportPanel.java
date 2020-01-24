@@ -68,7 +68,7 @@ public class BadStockReportPanel extends StandardMagicPanel {
 	private JDatePickerImpl datePicker;
 	
 	public BadStockReportPanel() {
-		setTitle("Bad Stock Report");
+		setTitle("Inventory Bad Stock Report");
 	}
 	
 	@Override
@@ -119,7 +119,7 @@ public class BadStockReportPanel extends StandardMagicPanel {
 			try {
 				badStockReportService.save(badStockReport);
 			} catch (Exception e) {
-				log.error("Unable to save Bad Stock Report Service", e);
+				log.error("Unable to save Inventory Bad Stock Report Service", e);
 				showMessageForUnexpectedError();
 				return;
 			}
@@ -234,7 +234,7 @@ public class BadStockReportPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(190, "Bad Stock Report No.:"), c);
+		mainPanel.add(ComponentUtil.createLabel(180, "Inventory BSR No.:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
@@ -408,9 +408,9 @@ public class BadStockReportPanel extends StandardMagicPanel {
 			itemsTable.switchToEditMode();
 		}
 		
-		if (confirm("Do you want to post this Bad Stock Report?")) { 
+		if (confirm("Do you want to post this Inventory Bad Stock Report?")) { 
 			if (!badStockReport.hasItems()) {
-				showErrorMessage("Cannot post a Bad Stock Report with no items");
+				showErrorMessage("Cannot post an Inventory Bad Stock Report with no items");
 				itemsTable.requestFocusInWindow();
 				return;
 			}
