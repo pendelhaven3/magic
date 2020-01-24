@@ -20,12 +20,4 @@ public class BadStockCardInventoryReportCriteria {
 	private String unit;
 	private Date fromDateTime;
 
-	public void addAllTransactionTypes() {
-		transactionTypes.add("BAD STOCK RETURN");
-		transactionTypes.add("PURCHASE RETURN BAD STOCK");
-		transactionTypes.add("BAD STOCK ADJUSTMENT OUT");
-		transactionTypes.add("BAD STOCK ADJUSTMENT IN");
-		transactionTypes.add("BAD STOCK REPORT");
-	}
-	
 }
