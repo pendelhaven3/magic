@@ -104,7 +104,6 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton removeBankTransferButton;
 	private MagicToolBarButton addAdjustmentButton;
 	private MagicToolBarButton deleteAdjustmentButton;
-	private MagicToolBarButton cancelButton;
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton unpostButton;
 	private MagicToolBarButton generateEwtButton; // Expanded Withholding Tax
@@ -247,7 +246,6 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		
 		boolean newPayment = !purchasePayment.isPosted();
 		selectSupplierButton.setEnabled(newPayment);
-		cancelButton.setEnabled(newPayment);
 		postButton.setEnabled(newPayment);
 		unpostButton.setEnabled(purchasePayment.isPosted() && loginService.getLoggedInUser().isSupervisor());
 		generateEwtButton.setEnabled(true);
@@ -305,7 +303,6 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		addAdjustmentButton.setEnabled(false);
 		deleteAdjustmentButton.setEnabled(false);
 		
-		cancelButton.setEnabled(false);
 		postButton.setEnabled(false);
 		unpostButton.setEnabled(false);
         generateEwtButton.setEnabled(false);
@@ -501,16 +498,6 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		cancelButton = new MagicToolBarButton("cancel", "Cancel");
-		cancelButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cancelPayment();
-			}
-		});
-//		toolBar.add(cancelButton);
-		
 		postButton = new MagicToolBarButton("post", "Post");
 		postButton.addActionListener(new ActionListener() {
 			
@@ -606,19 +593,6 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 				showErrorMessage("Unexpected error occurred during posting!\n" + e.getMessage());
 			}
 		}
-	}
-
-	private void cancelPayment() {
-//		if (confirm("Cancel Payment?")) {
-//			try {
-//				supplierPaymentService.cancel(supplierPayment);
-//				showMessage("Payment cancelled");
-//				getMagicFrame().switchToSupplierPaymentPanel(supplierPayment);
-//			} catch (Exception e) {
-//				logger.error(e.getMessage(), e);
-//				showMessageForUnexpectedError();
-//			}
-//		}
 	}
 
 	private JPanel createReceivingReceiptsTableToolBar() {
