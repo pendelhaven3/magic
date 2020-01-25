@@ -56,7 +56,7 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
         
         private void mapUnitQuantity(BadStock badStock, ResultSet rs, String unit, String columnName) throws SQLException {
         	if (badStock.getProduct().hasUnit(unit)) {
-                int quantity = !rs.wasNull() ? rs.getInt(columnName) : 0;
+                int quantity = rs.getString(columnName) != null ? rs.getInt(columnName) : 0;
                 badStock.getUnitQuantities().add(new UnitQuantity(unit, quantity));
         	}
         }
