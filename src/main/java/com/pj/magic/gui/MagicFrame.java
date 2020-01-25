@@ -50,6 +50,7 @@ import com.pj.magic.model.Area;
 import com.pj.magic.model.AreaInventoryReport;
 import com.pj.magic.model.BadStockAdjustmentIn;
 import com.pj.magic.model.BadStockAdjustmentOut;
+import com.pj.magic.model.BadStockInventoryCheck;
 import com.pj.magic.model.BadStockReport;
 import com.pj.magic.model.BadStockReturn;
 import com.pj.magic.model.BirForm2307Report;
@@ -239,6 +240,8 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
     public static final String BAD_STOCK_REPORT_LIST_PANEL = "BAD_STOCK_REPORT_LIST_PANEL";
     public static final String BAD_STOCK_REPORT_PANEL = "BAD_STOCK_REPORT_PANEL";
     public static final String BAD_STOCK_CARD_INVENTORY_REPORT_PANEL = "BAD_STOCK_CARD_INVENTORY_REPORT_PANEL";
+    public static final String BAD_STOCK_INVENTORY_CHECK_LIST_PANEL = "BAD_STOCK_INVENTORY_CHECK_LIST_PANEL";
+    public static final String BAD_STOCK_INVENTORY_CHECK_PANEL = "BAD_STOCK_INVENTORY_CHECK_PANEL";
 	
     private static final Map<String, Class<? extends StandardMagicPanel>> panelClasses = new HashMap<>();
     
@@ -248,6 +251,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
     	panelClasses.put(BAD_STOCK_ADJUSTMENT_OUT_LIST_PANEL, BadStockAdjustmentOutListPanel.class);
     	panelClasses.put(BAD_STOCK_REPORT_LIST_PANEL, BadStockReportListPanel.class);
     	panelClasses.put(BAD_STOCK_CARD_INVENTORY_REPORT_PANEL, BadStockCardInventoryReportPanel.class);
+    	panelClasses.put(BAD_STOCK_INVENTORY_CHECK_LIST_PANEL, BadStockInventoryCheckListPanel.class);
     }
     
     private AutowireCapableBeanFactory beanFactory;
@@ -376,6 +380,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
     @Autowired private BadStockAdjustmentInPanel badStockAdjustmentInPanel;
     @Autowired private BadStockAdjustmentOutPanel badStockAdjustmentOutPanel;
     @Autowired private BadStockReportPanel badStockReportPanel;
+    @Autowired private BadStockInventoryCheckPanel badStockInventoryCheckPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -563,6 +568,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
         panelHolder.add(badStockAdjustmentInPanel, BAD_STOCK_ADJUSTMENT_IN_PANEL);
         panelHolder.add(badStockAdjustmentOutPanel, BAD_STOCK_ADJUSTMENT_OUT_PANEL);
         panelHolder.add(badStockReportPanel, BAD_STOCK_REPORT_PANEL);
+        panelHolder.add(badStockInventoryCheckPanel, BAD_STOCK_INVENTORY_CHECK_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1461,6 +1467,12 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_REPORT_PANEL);
 	}
 
+	public void switchToBadStockInventoryCheckPanel(BadStockInventoryCheck badStockInventoryCheck) {
+        addPanelNameToTitle(badStockInventoryCheckPanel.getTitle());
+        badStockInventoryCheckPanel.updateDisplay(badStockInventoryCheck);
+        ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_INVENTORY_CHECK_PANEL);
+	}
+	
     private StandardMagicPanel loadPanel(String panelName) {
     	StandardMagicPanel panel = 
     			(StandardMagicPanel)beanFactory.autowire(panelClasses.get(panelName), AutowireCapableBeanFactory.AUTOWIRE_NO, false);
@@ -1474,5 +1486,5 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		beanFactory = applicationContext.getAutowireCapableBeanFactory();
 	}
-	
+
 }

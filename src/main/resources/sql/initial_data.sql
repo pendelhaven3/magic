@@ -21,6 +21,7 @@ insert into SEQUENCE (NAME) values ('BIR_FORM_2307_REPORT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('BAD_STOCK_ADJUSTMENT_IN_NO_SEQ');
 insert into SEQUENCE (NAME) values ('BAD_STOCK_ADJUSTMENT_OUT_NO_SEQ');
 insert into SEQUENCE (NAME) values ('BAD_STOCK_REPORT_NO_SEQ');
+insert into SEQUENCE (NAME) values ('BAD_STOCK_INVENTORY_CHECK_NO_SEQ');
 
 insert into SYSTEM_PARAMETER (NAME, VALUE) values ('VERSION', '0.17.0');
 
