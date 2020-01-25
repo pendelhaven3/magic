@@ -12,7 +12,7 @@ public interface PurchaseReturnBadStockService {
 	
 	PurchaseReturnBadStock getPurchaseReturnBadStock(long id);
 
-	List<PurchaseReturnBadStock> getAllNewPurchaseReturnBadStocks();
+	List<PurchaseReturnBadStock> getAllUnpaidPurchaseReturnBadStocks();
 
 	void save(PurchaseReturnBadStockItem item);
 

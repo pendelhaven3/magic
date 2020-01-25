@@ -63,9 +63,9 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
 	}
 
 	@Override
-	public List<PurchaseReturnBadStock> getAllNewPurchaseReturnBadStocks() {
+	public List<PurchaseReturnBadStock> getAllUnpaidPurchaseReturnBadStocks() {
 		PurchaseReturnBadStockSearchCriteria criteria = new PurchaseReturnBadStockSearchCriteria();
-		criteria.setPosted(false);
+		criteria.setPaid(false);
 		
 		return search(criteria);
 	}

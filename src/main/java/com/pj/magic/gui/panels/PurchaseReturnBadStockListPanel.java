@@ -56,7 +56,7 @@ public class PurchaseReturnBadStockListPanel extends StandardMagicPanel {
 
 	public void updateDisplay() {
 		List<PurchaseReturnBadStock> purchaseReturnBadStocks = 
-				purchaseReturnBadStockService.getAllNewPurchaseReturnBadStocks();
+				purchaseReturnBadStockService.getAllUnpaidPurchaseReturnBadStocks();
 		tableModel.setPurchaseReturnBadStocks(purchaseReturnBadStocks);
 		if (!purchaseReturnBadStocks.isEmpty()) {
 			table.changeSelection(0, 0);
