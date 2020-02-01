@@ -167,7 +167,7 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
         
         if (criteria.getEmpty() != null) {
             if (!criteria.getEmpty()) {
-                sql.append(" and (a.AVAIL_QTY_CSE > 0 or a.AVAIL_QTY_TIE > 0 or a.AVAIL_QTY_CTN > 0 and a.AVAIL_QTY_DOZ > 0 or a.AVAIL_QTY_PCS > 0)");
+                sql.append(" and (a.AVAIL_QTY_CSE > 0 or a.AVAIL_QTY_TIE > 0 or a.AVAIL_QTY_CTN > 0 or a.AVAIL_QTY_DOZ > 0 or a.AVAIL_QTY_PCS > 0)");
             } else {
                 throw new UnsupportedOperationException("Search empty bad stock not supported");
             }
