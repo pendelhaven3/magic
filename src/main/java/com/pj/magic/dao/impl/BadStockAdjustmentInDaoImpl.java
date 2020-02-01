@@ -111,7 +111,7 @@ public class BadStockAdjustmentInDaoImpl extends MagicDao implements BadStockAdj
     private static final String INSERT_SQL =
             "insert into BAD_STOCK_ADJUSTMENT_IN"
             + " (BAD_STOCK_ADJUSTMENT_IN_NO, REMARKS, PILFERAGE)"
-            + " values (?, ?)";
+            + " values (?, ?, ?)";
     
     private void insert(BadStockAdjustmentIn adjustmentIn) {
         long badStockAdjustmentInNumber = getNextBadStockAdjustmentInNumber();
