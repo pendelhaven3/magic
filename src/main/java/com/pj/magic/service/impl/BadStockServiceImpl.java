@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.pj.magic.dao.BadStockDao;
 import com.pj.magic.model.BadStock;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.BadStockSearchCriteria;
 import com.pj.magic.service.BadStockService;
 
@@ -34,5 +35,10 @@ public class BadStockServiceImpl implements BadStockService {
     public List<BadStock> search(BadStockSearchCriteria criteria) {
         return badStockDao.search(criteria);
     }
+
+	@Override
+	public List<BadStock> searchAllBadStocksBySupplier(Supplier supplier, String codeOrDescription) {
+		return badStockDao.searchAllBySupplier(supplier, codeOrDescription);
+	}
 
 }

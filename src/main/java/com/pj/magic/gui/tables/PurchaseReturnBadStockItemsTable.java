@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.gui.dialog.SelectProductDialog;
+import com.pj.magic.gui.dialog.SelectBadStockDialog;
 import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.gui.tables.models.PurchaseReturnBadStockItemsTableModel;
 import com.pj.magic.gui.tables.rowitems.PurchaseReturnBadStockItemRowItem;
@@ -50,7 +50,7 @@ public class PurchaseReturnBadStockItemsTable extends MagicTable {
 	private static final String F10_ACTION_NAME = "F10";
 	private static final String F4_ACTION_NAME = "F4";
 
-	@Autowired private SelectProductDialog selectProductDialog;
+	@Autowired private SelectBadStockDialog selectProductDialog;
 	@Autowired private SelectUnitDialog selectUnitDialog;
 	@Autowired private ProductService productService;
 	@Autowired private PurchaseReturnBadStockItemsTableModel tableModel;
@@ -342,7 +342,7 @@ public class PurchaseReturnBadStockItemsTable extends MagicTable {
 	private void openSelectProductDialog(String criteria, String currentlySelectedCode) {
 		previousSelectProductCriteria = criteria;
 		
-		selectProductDialog.searchProducts(criteria, currentlySelectedCode, purchaseReturnBadStock.getSupplier());
+		selectProductDialog.searchBadStocks(criteria, currentlySelectedCode, purchaseReturnBadStock.getSupplier());
 		selectProductDialog.setVisible(true);
 		
 		Product product = selectProductDialog.getSelectedProduct();

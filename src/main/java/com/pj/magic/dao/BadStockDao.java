@@ -3,6 +3,7 @@ package com.pj.magic.dao;
 import java.util.List;
 
 import com.pj.magic.model.BadStock;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.model.search.BadStockSearchCriteria;
 
 public interface BadStockDao {
@@ -12,5 +13,7 @@ public interface BadStockDao {
     void save(BadStock badStock);
 
     List<BadStock> search(BadStockSearchCriteria criteria);
+    
+    List<BadStock> searchAllBySupplier(Supplier supplier, String codeOrDescription);
     
 }

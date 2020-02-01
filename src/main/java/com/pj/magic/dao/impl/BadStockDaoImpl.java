@@ -8,11 +8,14 @@ import java.util.List;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.pj.magic.dao.BadStockDao;
 import com.pj.magic.model.BadStock;
 import com.pj.magic.model.Product;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.model.Unit;
+import com.pj.magic.model.UnitCost;
 import com.pj.magic.model.UnitQuantity;
 import com.pj.magic.model.search.BadStockSearchCriteria;
 
@@ -22,10 +25,13 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
     private static final String BASE_SELECT_SQL =
             "select b.ID as PRODUCT_ID, b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION,"
             + " a.AVAIL_QTY_CSE, a.AVAIL_QTY_TIE, a.AVAIL_QTY_CTN, a.AVAIL_QTY_DOZ, a.AVAIL_QTY_PCS,"
-            + " b.UNIT_IND_CSE, b.UNIT_IND_TIE, b.UNIT_IND_CTN, b.UNIT_IND_DOZ, b.UNIT_IND_PCS"
+            + " b.UNIT_IND_CSE, b.UNIT_IND_TIE, b.UNIT_IND_CTN, b.UNIT_IND_DOZ, b.UNIT_IND_PCS,"
+            + " b.GROSS_COST_CSE, b.GROSS_COST_TIE, b.GROSS_COST_CTN, b.GROSS_COST_DOZ, b.GROSS_COST_PCS,"
+            + " b.FINAL_COST_CSE, b.FINAL_COST_TIE, b.FINAL_COST_CTN, b.FINAL_COST_DOZ, b.FINAL_COST_PCS"
             + " from BAD_STOCK a"
             + " join PRODUCT b"
-            + "   on b.ID = a.PRODUCT_ID";
+            + "   on b.ID = a.PRODUCT_ID"
+            + " where 1 = 1";
     
     private RowMapper<BadStock> rowMapper = new RowMapper<BadStock>() {
 
@@ -43,6 +49,7 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
             product.setCode(rs.getString("PRODUCT_CODE"));
             product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
             mapUnits(product.getUnits(), rs);
+            mapUnitCosts(product, rs);
             return product;
         }
         
@@ -75,9 +82,27 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
             }
         }
         
+        private void mapUnitCosts(Product product, ResultSet rs) throws SQLException {
+        	if (product.hasUnit(Unit.CASE)) {
+        		product.getUnitCosts().add(new UnitCost(Unit.CASE, rs.getBigDecimal("GROSS_COST_CSE"), rs.getBigDecimal("FINAL_COST_CSE")));
+        	}
+        	if (product.hasUnit(Unit.TIE)) {
+        		product.getUnitCosts().add(new UnitCost(Unit.TIE, rs.getBigDecimal("GROSS_COST_TIE"), rs.getBigDecimal("FINAL_COST_TIE")));
+        	}
+        	if (product.hasUnit(Unit.CARTON)) {
+        		product.getUnitCosts().add(new UnitCost(Unit.CARTON, rs.getBigDecimal("GROSS_COST_CTN"), rs.getBigDecimal("FINAL_COST_CTN")));
+        	}
+        	if (product.hasUnit(Unit.DOZEN)) {
+        		product.getUnitCosts().add(new UnitCost(Unit.DOZEN, rs.getBigDecimal("GROSS_COST_DOZ"), rs.getBigDecimal("FINAL_COST_DOZ")));
+        	}
+        	if (product.hasUnit(Unit.PIECES)) {
+        		product.getUnitCosts().add(new UnitCost(Unit.PIECES, rs.getBigDecimal("GROSS_COST_PCS"), rs.getBigDecimal("FINAL_COST_PCS")));
+        	}
+		}
+        
     };
     
-    private static final String GET_SQL = BASE_SELECT_SQL + " where a.PRODUCT_ID = ?";
+    private static final String GET_SQL = BASE_SELECT_SQL + " and a.PRODUCT_ID = ?";
     
     @Override
     public BadStock get(Long id) {
@@ -152,5 +177,35 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
         
         return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
     }
+
+    private static final String SEARCH_ALL_BY_SUPPLIER_SQL =
+            "select b.ID as PRODUCT_ID, b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION,"
+            + " a.AVAIL_QTY_CSE, a.AVAIL_QTY_TIE, a.AVAIL_QTY_CTN, a.AVAIL_QTY_DOZ, a.AVAIL_QTY_PCS,"
+            + " b.UNIT_IND_CSE, b.UNIT_IND_TIE, b.UNIT_IND_CTN, b.UNIT_IND_DOZ, b.UNIT_IND_PCS,"
+            + " b.GROSS_COST_CSE, b.GROSS_COST_TIE, b.GROSS_COST_CTN, b.GROSS_COST_DOZ, b.GROSS_COST_PCS,"
+            + " b.FINAL_COST_CSE, b.FINAL_COST_TIE, b.FINAL_COST_CTN, b.FINAL_COST_DOZ, b.FINAL_COST_PCS"
+            + " from PRODUCT b"
+            + " left join BAD_STOCK a"
+            + "   on a.PRODUCT_ID = b.ID"
+            + " where 1 = 1";
+    
+	@Override
+	public List<BadStock> searchAllBySupplier(Supplier supplier, String codeOrDescription) {
+        StringBuilder sql = new StringBuilder(SEARCH_ALL_BY_SUPPLIER_SQL);
+        List<Object> params = new ArrayList<>();
+        
+		if (!StringUtils.isEmpty(codeOrDescription)) {
+			sql.append(" and (b.CODE like ? or b.DESCRIPTION like ?)");
+			params.add(codeOrDescription + "%");
+			params.add("%" + codeOrDescription + "%");
+		}
+        
+        sql.append(" and exists (select 1 from SUPPLIER_PRODUCT sp where sp.PRODUCT_ID = b.ID and sp.SUPPLIER_ID = ?)");
+        params.add(supplier.getId());
+        
+        sql.append(" order by b.DESCRIPTION");
+        
+        return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
+	}
 
 }
