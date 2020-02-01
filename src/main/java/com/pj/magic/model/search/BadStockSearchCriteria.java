@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class BadStockSearchCriteria {
 
+	private String codeOrDescriptionLike;
     private Supplier supplier;
     private Boolean empty;
     

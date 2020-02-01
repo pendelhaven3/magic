@@ -129,6 +129,12 @@ public class BadStockDaoImpl extends MagicDao implements BadStockDao {
         StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
         List<Object> params = new ArrayList<>();
         
+		if (criteria.getCodeOrDescriptionLike() != null) {
+			sql.append(" and (b.CODE like ? or b.DESCRIPTION like ?)");
+			params.add(criteria.getCodeOrDescriptionLike() + "%");
+			params.add("%" + criteria.getCodeOrDescriptionLike() + "%");
+		}
+        
         if (criteria.getSupplier() != null) {
             sql.append(" and exists (select 1 from SUPPLIER_PRODUCT sp where sp.PRODUCT_ID = a.PRODUCT_ID and sp.SUPPLIER_ID = ?)");
             params.add(criteria.getSupplier().getId());
