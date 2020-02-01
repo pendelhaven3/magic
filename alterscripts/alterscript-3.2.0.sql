@@ -1,0 +1,1 @@
+alter table BAD_STOCK_ADJUSTMENT_IN add PILFERAGE boolean default false not null;
