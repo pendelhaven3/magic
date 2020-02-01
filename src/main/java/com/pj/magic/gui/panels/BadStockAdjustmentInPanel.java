@@ -16,8 +16,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,11 +31,12 @@ import com.pj.magic.service.BadStockAdjustmentInService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class BadStockAdjustmentInPanel extends StandardMagicPanel {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(BadStockAdjustmentInPanel.class);
-	
 	@Autowired
 	private BadStockAdjustmentInService badStockAdjustmentInService;
 	
@@ -92,7 +91,7 @@ public class BadStockAdjustmentInPanel extends StandardMagicPanel {
 			try {
 			    badStockAdjustmentInService.save(adjustmentIn);
 			} catch (Exception e) {
-				LOGGER.error(e.getMessage(), e);
+				log.error(e.getMessage(), e);
 				showErrorMessage("Unexpected error on saving");
 				return;
 			}
@@ -111,7 +110,7 @@ public class BadStockAdjustmentInPanel extends StandardMagicPanel {
 		try {
 			badStockAdjustmentInService.save(adjustmentIn);
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 			showErrorMessage("Unexpected error on saving: " + e.getMessage());
 		}
 	}
@@ -371,7 +370,7 @@ public class BadStockAdjustmentInPanel extends StandardMagicPanel {
             } catch (NoItemException e) {
                 showErrorMessage("Cannot post with no items");
 		    } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 showMessageForUnexpectedError();
 		    }
 		}
