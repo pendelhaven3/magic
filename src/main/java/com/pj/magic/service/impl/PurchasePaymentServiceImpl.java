@@ -23,6 +23,7 @@ import com.pj.magic.dao.PurchasePaymentPaymentAdjustmentDao;
 import com.pj.magic.dao.PurchasePaymentReceivingReceiptDao;
 import com.pj.magic.dao.PurchaseReturnBadStockDao;
 import com.pj.magic.dao.PurchaseReturnDao;
+import com.pj.magic.dao.PurchaseReturnItemDao;
 import com.pj.magic.dao.ReceivingReceiptItemDao;
 import com.pj.magic.dao.SystemDao;
 import com.pj.magic.model.PurchasePayment;
@@ -63,6 +64,7 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 	@Autowired private PurchasePaymentPaymentAdjustmentDao purchasePaymentPaymentAdjustmentDao;
 	@Autowired private PurchaseReturnService purchaseReturnService;
 	@Autowired private PurchaseReturnDao purchaseReturnDao;
+	@Autowired private PurchaseReturnItemDao purchaseReturnItemDao;
 	@Autowired private PurchasePaymentAdjustmentService purchasePaymentAdjustmentService;
 	@Autowired private PurchaseReturnBadStockService purchaseReturnBadStockService;
 	@Autowired private PurchaseReturnBadStockDao purchaseReturnBadStockDao;
@@ -304,7 +306,8 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
         
         for (PurchasePaymentPaymentAdjustment paymentAdjustment : purchasePayment.getPaymentAdjustments()) {
             if (paymentAdjustment.isCancelledItemsAdjustment()) {
-                PurchaseReturn purchaseReturn = purchaseReturnDao.findByPurchaseReturnNumber(Long.valueOf(paymentAdjustment.getReferenceNumber()));
+            	Long purchaseReturnNumber = Long.valueOf(paymentAdjustment.getReferenceNumber());
+            	PurchaseReturn purchaseReturn = getPurchaseReturnByPurchaseReturnNumber(purchaseReturnNumber);
                 ReceivingReceipt receivingReceipt = purchaseReturn.getReceivingReceipt();
                 map.put(receivingReceipt, purchaseReturn.getTotalAmount());
             }
@@ -312,5 +315,11 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
         
         return map;
     }
+
+	private PurchaseReturn getPurchaseReturnByPurchaseReturnNumber(Long purchaseReturnNumber) {
+        PurchaseReturn purchaseReturn = purchaseReturnDao.findByPurchaseReturnNumber(purchaseReturnNumber);
+        purchaseReturn.setItems(purchaseReturnItemDao.findAllByPurchaseReturn(purchaseReturn));
+        return purchaseReturn;
+	}
 
 }
