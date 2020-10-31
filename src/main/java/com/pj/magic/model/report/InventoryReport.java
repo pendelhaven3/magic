@@ -5,19 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pj.magic.Constants;
+import com.pj.magic.model.Manufacturer;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class InventoryReport {
-
+	
+	private Manufacturer manufacturer;
 	private List<InventoryReportItem> items = new ArrayList<>();
 
-	public List<InventoryReportItem> getItems() {
-		return items;
-	}
-
-	public void setItems(List<InventoryReportItem> items) {
-		this.items = items;
-	}
-	
 	public BigDecimal getTotalCost() {
 		BigDecimal total = Constants.ZERO;
 		for (InventoryReportItem item : items) {

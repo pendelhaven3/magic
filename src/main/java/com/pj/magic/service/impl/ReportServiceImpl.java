@@ -85,6 +85,7 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public InventoryReport getInventoryReport(InventoryReportCriteria criteria) {
 		InventoryReport report = new InventoryReport();
+		report.setManufacturer(criteria.getManufacturer());
 		report.setItems(reportDao.getInventoryReportItems(criteria));
 		return report;
 	}

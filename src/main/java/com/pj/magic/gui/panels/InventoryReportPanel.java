@@ -3,7 +3,12 @@ package com.pj.magic.gui.panels;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.Box;
@@ -14,11 +19,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.excel.InventoryReportExcelGenerator;
 import com.pj.magic.gui.component.MagicComboBox;
+import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.report.InventoryReport;
@@ -27,6 +36,8 @@ import com.pj.magic.model.search.InventoryReportCriteria;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.ExcelUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 import com.pj.magic.util.ListUtil;
 
@@ -51,7 +62,7 @@ public class InventoryReportPanel extends StandardMagicPanel {
 	
 	public void updateDisplay() {
 		manufacturerComboBox.setSelectedIndex(0);
-		generateReport();
+		generateAndDisplayReport();
 	}
 
 	@Override
@@ -60,7 +71,7 @@ public class InventoryReportPanel extends StandardMagicPanel {
 		manufacturerComboBox.setModel(ListUtil.toDefaultComboBoxModel(manufacturerService.getAllManufacturers(), true));
 		
 		generateButton = new JButton("Generate");
-		generateButton.addActionListener(e -> generateReport());
+		generateButton.addActionListener(e -> generateAndDisplayReport());
 		
 		totalCostLabel = new JLabel();
 		
@@ -68,11 +79,12 @@ public class InventoryReportPanel extends StandardMagicPanel {
 		focusOnComponentWhenThisPanelIsDisplayed(table);
 	}
 
-	private void generateReport() {
-		InventoryReportCriteria criteria = new InventoryReportCriteria();
-		criteria.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
-		
-		InventoryReport report = reportService.getInventoryReport(criteria);
+	private void generateAndDisplayReport() {
+		InventoryReport report = generateReport();
+		displayReport(report);
+	}
+
+	private void displayReport(InventoryReport report) {
 		tableModel.setItems(report.getItems());
 		if (!report.getItems().isEmpty()) {
 			table.changeSelection(0, 0, false, false);
@@ -80,6 +92,13 @@ public class InventoryReportPanel extends StandardMagicPanel {
 		totalCostLabel.setText(FormatterUtil.formatAmount(report.getTotalCost()));
 	}
 
+	private InventoryReport generateReport() {
+		InventoryReportCriteria criteria = new InventoryReportCriteria();
+		criteria.setManufacturer((Manufacturer)manufacturerComboBox.getSelectedItem());
+		
+		return reportService.getInventoryReport(criteria);
+	}
+	
 	private void initializeTable() {
 		tableModel = new InventoryReportItemsTableModel();
 		table = new MagicListTable(tableModel);
@@ -172,6 +191,55 @@ public class InventoryReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton toExcelButton = new MagicToolBarButton("excel", "Generate Excel spreadsheet",
+				e -> generateExcel());
+		toolBar.add(toExcelButton);
+	}
+
+	private void generateExcel() {
+		MagicFileChooser excelFileChooser = FileUtil.createSaveFileChooser(generateDefaultSpreadsheetName());
+
+		if (!excelFileChooser.selectSaveFile(this)) {
+			return;
+		}
+		
+		InventoryReport report = generateReport();
+		
+		try (
+			Workbook workbook = new InventoryReportExcelGenerator().generate(report);
+			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
+		) {
+			workbook.write(out);
+		} catch (IOException e) {
+			showErrorMessage("Unexpected error during excel generation");
+		}
+		
+		displayReport(report);
+		
+        if (confirm("Excel file generated.\nDo you wish to open the file?")) {
+            openExcelFile(excelFileChooser.getSelectedFile());
+        }
+	}
+
+	private String generateDefaultSpreadsheetName() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Inventory Report");
+		
+		if (manufacturerComboBox.getSelectedIndex() > -1) {
+			Manufacturer manufacturer = (Manufacturer)manufacturerComboBox.getSelectedItem();
+			sb.append(" - ").append(manufacturer.getName());
+		}
+		
+		sb.append(" - ").append(new SimpleDateFormat("MMM-dd-yyyy").format(new Date())).append(".xlsx");
+		return sb.toString();
+	}
+	
+	private void openExcelFile(File file) {
+		try {
+			ExcelUtil.openExcelFile(file);
+		} catch (IOException e) {
+			showMessageForUnexpectedError();
+		}
 	}
 
 	private class InventoryReportItemsTableModel extends AbstractTableModel {
