@@ -161,11 +161,15 @@ public class InventoryReportPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
+		c.weightx = c.weighty = 1.0;
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 4;
-		mainPanel.add(new JScrollPane(table), c);
+		JScrollPane itemsTableScrollPanel = new JScrollPane(table);
+		itemsTableScrollPanel.setPreferredSize(new Dimension(600, 100));
+		mainPanel.add(itemsTableScrollPanel, c);
 		
 		currentRow++;
 		
