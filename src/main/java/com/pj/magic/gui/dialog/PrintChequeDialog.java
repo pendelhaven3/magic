@@ -202,9 +202,17 @@ public class PrintChequeDialog extends MagicDialog {
 		}
 	}
 
+	// TODO: Refactor this to not use BigDecimal operations
 	private static String convertToText(BigDecimal amount) {
 		StringBuilder sb = new StringBuilder();
 		
+		int millions = amount.divideToIntegralValue(new BigDecimal("1000000")).intValue();
+		if (millions > 0) {
+			sb.append(convertToDigitText(millions));
+			sb.append(" MILLION ");
+		}
+		
+		amount = amount.subtract(new BigDecimal("1000000").multiply(new BigDecimal(millions)));
 		int hundredThousand = amount.divideToIntegralValue(new BigDecimal("100000")).intValue();
 		if (hundredThousand > 0) {
 			sb.append(convertToDigitText(hundredThousand));
