@@ -70,3 +70,8 @@ $report.field($bankTransfer.transferDate) $report.field($bankTransfer.bank, 16) 
 --------------------------------------------------------
 
 PREPARED BY:   JOY
+
+RECEIVED BY:
+
+                          _____________________
+                          Name, Signature, Date
