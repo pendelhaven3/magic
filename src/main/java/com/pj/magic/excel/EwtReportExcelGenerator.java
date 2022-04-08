@@ -185,6 +185,13 @@ public class EwtReportExcelGenerator {
         cell = row.createCell(0);
         cell.setCellValue("Received by: _________________________");
         
+        currentRow++;
+
+        row = sheet.createRow(currentRow);
+        
+        cell = row.createCell(0);
+        cell.setCellValue("Name, Signature, Date");
+        
         sheet.setColumnWidth(0, 5387);
         sheet.setColumnWidth(1, 2196);
         sheet.setColumnWidth(2, 3190);
