@@ -1,12 +1,16 @@
 package com.pj.magic.gui.panels;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -22,14 +26,18 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.excel.PurchasePaymentExcelGenerator;
 import com.pj.magic.gui.MagicFrame;
 import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.ExcelFileFilter;
+import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -52,6 +60,7 @@ import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PurchasePaymentService;
 import com.pj.magic.service.SupplierService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
@@ -107,6 +116,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton postButton;
 	private MagicToolBarButton unpostButton;
 	private MagicToolBarButton generateEwtButton; // Expanded Withholding Tax
+	private MagicToolBarButton generateExcelButton; // Expanded Withholding Tax
 	private JButton printPreviewButton;
 	private JButton printButton;
 	private JTabbedPane tabbedPane;
@@ -249,6 +259,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		postButton.setEnabled(newPayment);
 		unpostButton.setEnabled(purchasePayment.isPosted() && loginService.getLoggedInUser().isSupervisor());
 		generateEwtButton.setEnabled(true);
+		generateExcelButton.setEnabled(true);
 		addReceivingReceiptButton.setEnabled(newPayment);
 		removeReceivingReceiptButton.setEnabled(newPayment);
 		addCashPaymentButton.setEnabled(newPayment);
@@ -306,6 +317,7 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		postButton.setEnabled(false);
 		unpostButton.setEnabled(false);
         generateEwtButton.setEnabled(false);
+        generateExcelButton.setEnabled(false);
 		printPreviewButton.setEnabled(false);
 		printButton.setEnabled(false);
 	}
@@ -546,6 +558,10 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		generateEwtButton = new MagicToolBarButton("ewt", "Generate EWT Adjustment");
 		generateEwtButton.addActionListener(e -> generateEwtAdjustment());
         toolBar.add(generateEwtButton);
+        
+		generateExcelButton = new MagicToolBarButton("excel", "Generate Excel");
+		generateExcelButton.addActionListener(e -> generateExcel());
+        toolBar.add(generateExcelButton);
 	}
 
 	private void printPaymentSummary() {
@@ -1155,6 +1171,35 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	    } else {
 	        getMagicFrame().switchToPurchasePaymentAdjustmentListPanel();
 	    }
+	}
+	
+	private void generateExcel() {
+		String filename = new StringBuilder()
+				.append(purchasePayment.getSupplier().getName())
+				.append(" - PURCHASE PAYMENT ")
+				.append(String.valueOf(purchasePayment.getPurchasePaymentNumber()))
+				.append(".xlsx")
+				.toString();
+		
+		MagicFileChooser fileChooser = new MagicFileChooser();
+		fileChooser.setCurrentDirectory(FileUtil.getDesktopFolderPathAsFile());
+		fileChooser.setFileFilter(ExcelFileFilter.getInstance());
+		fileChooser.setSelectedFile(new File(filename));
+		
+		if (!fileChooser.selectSaveFile(this)) {
+			return;
+		}
+		
+        try (
+            Workbook workbook = new PurchasePaymentExcelGenerator(printService).generate(purchasePayment);
+            FileOutputStream out = new FileOutputStream(fileChooser.getSelectedFile());
+        ) {
+            workbook.write(out);
+	        Desktop.getDesktop().open(fileChooser.getSelectedFile());
+        } catch (IOException e) {
+        	logger.error(e.getMessage(), e);
+        	showMessageForUnexpectedError(e);
+        }
 	}
 	
 }

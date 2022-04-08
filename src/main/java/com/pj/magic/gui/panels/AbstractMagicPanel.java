@@ -232,6 +232,10 @@ public abstract class AbstractMagicPanel extends JPanel {
 		showErrorMessage(Constants.UNEXPECTED_ERROR_MESSAGE);
 	}
 	
+	protected void showMessageForUnexpectedError(Throwable t) {
+		showErrorMessage(Constants.UNEXPECTED_ERROR_MESSAGE + " - " + t.getMessage());
+	}
+	
     protected void onEscapeKey(Action action) {
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), Constants.ESCAPE_KEY_ACTION_NAME);
