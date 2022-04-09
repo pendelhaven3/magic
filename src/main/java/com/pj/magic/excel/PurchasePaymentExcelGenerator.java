@@ -29,7 +29,7 @@ public class PurchasePaymentExcelGenerator {
         
         XSSFFont font = workbook.createFont();
         font.setFontName("Courier New");
-        font.setFontHeight(7);
+        font.setFontHeight(8);
         
         CellStyle style = CellStyleBuilder.createStyle(workbook).setFont(font).build();
         
