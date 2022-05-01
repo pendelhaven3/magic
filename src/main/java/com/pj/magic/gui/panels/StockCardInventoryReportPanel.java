@@ -1,10 +1,14 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +29,16 @@ import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.excel.StockCardInventoryReportExcelGenerator;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.ExcelFileFilter;
+import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.dialog.SelectProductDialog;
@@ -43,9 +51,13 @@ import com.pj.magic.model.search.StockCardInventoryReportCriteria;
 import com.pj.magic.service.ProductService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class StockCardInventoryReportPanel extends StandardMagicPanel {
 
 	private static final int POST_DATE_COLUMN_INDEX = 0;
@@ -68,6 +80,7 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 	private UtilCalendarModel fromDateModel;
 	private UtilCalendarModel toDateModel;
 	private JButton generateButton;
+	private JButton generateExcelButton;
 	private EllipsisButton selectProductButton;
 	private JComboBox<String> unitComboBox;
 	private JCheckBox fromLastInventoryCheckCheckBox;
@@ -131,6 +144,9 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 				generateStockCardInventoryReport();
 			}
 		});
+		
+		generateExcelButton = new JButton("Generate Excel");
+		generateExcelButton.addActionListener(e -> generateExcel());
 		
 		totalLessQuantityLabel = new JLabel();
 		totalAddQuantityLabel = new JLabel();
@@ -392,8 +408,10 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.gridwidth = 4;
-		generateButton.setPreferredSize(new Dimension(160, 25));
-		mainPanel.add(generateButton, c);
+		generateButton.setPreferredSize(new Dimension(150, 25));
+		generateExcelButton.setPreferredSize(new Dimension(150, 25));
+		mainPanel.add(ComponentUtil.createGenericPanel(
+				generateButton, Box.createHorizontalStrut(5), generateExcelButton), c);
 		
 		currentRow++;
 		
@@ -619,6 +637,35 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		return panel;
 	}
 	
+	private void generateExcel() {
+		generateStockCardInventoryReport();
+		
+		String filename = new StringBuilder()
+				.append(productCodeField.getText())
+				.append(" - STOCK CARD INVENTORY REPORT.xlsx")
+				.toString();
+		
+		MagicFileChooser fileChooser = new MagicFileChooser();
+		fileChooser.setCurrentDirectory(FileUtil.getDesktopFolderPathAsFile());
+		fileChooser.setFileFilter(ExcelFileFilter.getInstance());
+		fileChooser.setSelectedFile(new File(filename));
+		
+		if (!fileChooser.selectSaveFile(this)) {
+			return;
+		}
+		
+        try (
+            Workbook workbook = new StockCardInventoryReportExcelGenerator().generate(tableModel.getItems());
+            FileOutputStream out = new FileOutputStream(fileChooser.getSelectedFile());
+        ) {
+            workbook.write(out);
+	        Desktop.getDesktop().open(fileChooser.getSelectedFile());
+        } catch (IOException e) {
+        	log.error(e.getMessage(), e);
+        	showMessageForUnexpectedError(e);
+        }
+	}
+	
 	private class StockCardInventoryReportTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = 
@@ -692,6 +739,10 @@ public class StockCardInventoryReportPanel extends StandardMagicPanel {
 		@Override
 		public String getColumnName(int column) {
 			return columnNames[column];
+		}
+		
+		public List<StockCardInventoryReportItem> getItems() {
+			return items;
 		}
 		
 	}
