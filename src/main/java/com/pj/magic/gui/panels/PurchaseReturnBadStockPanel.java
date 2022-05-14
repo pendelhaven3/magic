@@ -214,13 +214,8 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 			}
 		});
 		
-		remarksField.onEnterKey(new AbstractAction() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				itemsTable.highlight();
-			}
-		});
+		remarksField.onEnterKey(() -> receivedDateField.requestFocusInWindow());
+		receivedDateField.onEnterKey(() -> itemsTable.highlight());
 	}
 
 	private void saveSupplier() {
