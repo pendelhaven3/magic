@@ -1,6 +1,7 @@
 package com.pj.magic.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -47,6 +48,9 @@ public class PurchaseReturnBadStockServiceImpl implements PurchaseReturnBadStock
 	@Transactional
 	@Override
 	public void save(PurchaseReturnBadStock purchaseReturnBadStock) {
+		if (purchaseReturnBadStock.getId() == null && purchaseReturnBadStock.getReceivedDate() == null) {
+			purchaseReturnBadStock.setReceivedDate(new Date());
+		}
 		purchaseReturnBadStockDao.save(purchaseReturnBadStock);
 	}
 

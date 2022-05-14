@@ -24,6 +24,7 @@ public class PurchaseReturnBadStock {
 	private Date paidDate;
 	private User paidBy;
 	private String remarks;
+	private Date receivedDate;
 	
 	private List<PurchaseReturnBadStockItem> items = new ArrayList<>();
 

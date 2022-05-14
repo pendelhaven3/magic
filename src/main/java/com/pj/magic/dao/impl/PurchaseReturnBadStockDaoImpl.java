@@ -29,7 +29,7 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, PURCHASE_RETURN_BAD_STOCK_NO, SUPPLIER_ID, POST_IND, POST_DT, POST_BY, PAID_IND, PAID_DT, PAID_BY,"
-			+ " a.REMARKS,"
+			+ " a.REMARKS, a.RECEIVE_DT,"
 			+ " b.CODE as SUPPLIER_CODE, b.NAME as SUPPLIER_NAME,"
 			+ " b.FAX_NUMBER as SUPPLIER_FAX_NUMBER, b.CONTACT_NUMBER as SUPPLIER_CONTACT_NUMBER, b.ADDRESS as SUPPLIER_ADDRESS,"
 			+ " c.USERNAME as POST_BY_USERNAME,"
@@ -64,6 +64,7 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
             }
             
             purchaseReturnBadStock.setRemarks(rs.getString("REMARKS"));
+            purchaseReturnBadStock.setReceivedDate(rs.getDate("RECEIVE_DT"));
             
             return purchaseReturnBadStock;
         }
@@ -103,7 +104,7 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 
 	private static final String UPDATE_SQL = 
 			"update PURCHASE_RETURN_BAD_STOCK set SUPPLIER_ID = ?, POST_IND = ?, POST_DT = ?, POST_BY = ?,"
-			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, REMARKS = ? where ID = ?";
+			+ " PAID_IND = ?, PAID_DT = ?, PAID_BY = ?, REMARKS = ?, RECEIVE_DT = ? where ID = ?";
 	
 	private void update(PurchaseReturnBadStock purchaseReturnBadStock) {
 		getJdbcTemplate().update(UPDATE_SQL,
@@ -115,6 +116,7 @@ public class PurchaseReturnBadStockDaoImpl extends MagicDao implements PurchaseR
 				purchaseReturnBadStock.getPaidDate(),
 				purchaseReturnBadStock.isPaid() ? purchaseReturnBadStock.getPaidBy().getId() : null,
 				purchaseReturnBadStock.getRemarks(),
+				purchaseReturnBadStock.getReceivedDate(),
 				purchaseReturnBadStock.getId());
 	}
 

@@ -880,6 +880,7 @@ create table PURCHASE_RETURN_BAD_STOCK (
   PAID_DT date null,
   PAID_BY integer null,
   REMARKS varchar(100) null,
+  RECEIVE_DT date null,
   constraint PURCHASE_RETURN_BAD_STOCK$PK primary key (ID),
   constraint PURCHASE_RETURN_BAD_STOCK$UK unique (PURCHASE_RETURN_BAD_STOCK_NO),
   constraint PURCHASE_RETURN_BAD_STOCK$FK foreign key (SUPPLIER_ID) references SUPPLIER (ID),

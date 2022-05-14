@@ -85,6 +85,7 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 	private JLabel postDateField;
 	private JLabel postedByField;
 	private MagicTextField remarksField;
+	private MagicTextField receivedDateField;
 	private JLabel totalItemsField;
 	private JLabel totalAmountField;
 	private JButton addItemButton;
@@ -124,6 +125,15 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 			}
 		});
 		
+		receivedDateField = new MagicTextField();
+		receivedDateField.addFocusListener(new FocusAdapter() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				saveReceivedDate();
+			}
+		});
+		
         excelFileChooser = new MagicFileChooser();
         excelFileChooser.setCurrentDirectory(new File(FileUtil.getDesktopFolderPath()));
         excelFileChooser.setFileFilter(ExcelFileFilter.getInstance());
@@ -136,6 +146,27 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		if (!remarksField.getText().equals(purchaseReturnBadStock.getRemarks())) {
 			purchaseReturnBadStock.setRemarks(remarksField.getText());
 			purchaseReturnBadStockService.save(purchaseReturnBadStock);
+		}
+	}
+	
+	private void saveReceivedDate() {
+		try {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+			
+			Date currentReceivedDate = purchaseReturnBadStock.getReceivedDate();
+			String currentReceivedDateString = (currentReceivedDate != null) ? 
+					dateFormat.format(currentReceivedDate) : null;
+			
+			if (!receivedDateField.getText().equals(currentReceivedDateString)) {
+				if (!StringUtils.isEmpty(receivedDateField.getText())) {
+					purchaseReturnBadStock.setReceivedDate(dateFormat.parse(receivedDateField.getText()));
+				} else {
+					purchaseReturnBadStock.setReceivedDate(null);
+				}
+				purchaseReturnBadStockService.save(purchaseReturnBadStock);
+			}
+		} catch (Exception e) {
+			showMessageForUnexpectedError(e);
 		}
 	}
 	
@@ -272,6 +303,13 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		totalItemsField.setText(String.valueOf(purchaseReturnBadStock.getTotalItems()));
 		totalAmountField.setText(purchaseReturnBadStock.getTotalAmount().toString());
 		
+		if (purchaseReturnBadStock.getReceivedDate() != null) {
+			receivedDateField.setText(FormatterUtil.formatDate(purchaseReturnBadStock.getReceivedDate()));
+		} else {
+			receivedDateField.setText(null);
+		}
+		receivedDateField.setEnabled(!purchaseReturnBadStock.isPosted());
+		
 		ComponentUtil.enableButtons(!purchaseReturnBadStock.isPosted(),
 		        postButton, addItemButton, deleteItemButton, addAllSupplierItemsButton, deleteAllItemsButton);
 		markAsPaidButton.setEnabled(purchaseReturnBadStock.isPosted() && !purchaseReturnBadStock.isPaid());
@@ -293,6 +331,8 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		postedByField.setText(null);
 		remarksField.setText(null);
 		remarksField.setEnabled(false);
+		receivedDateField.setText(null);
+		receivedDateField.setEnabled(false);
 		totalItemsField.setText(null);
 		totalAmountField.setText(null);
 		postButton.setEnabled(false);
@@ -405,6 +445,21 @@ public class PurchaseReturnBadStockPanel extends StandardMagicPanel {
 		postedByField = ComponentUtil.createLabel(100, "");
 		mainPanel.add(postedByField, c);
 		
+		currentRow++;
+		
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = currentRow;
+        c.anchor = GridBagConstraints.WEST;
+        mainPanel.add(ComponentUtil.createLabel(130, "Received Date:"), c);
+        
+        c = new GridBagConstraints();
+        c.gridx = 2;
+        c.gridy = currentRow;
+        c.anchor = GridBagConstraints.WEST;
+        receivedDateField.setPreferredSize(new Dimension(100, 25));
+        mainPanel.add(receivedDateField, c);
+        
 		currentRow++;
 		
 		c = new GridBagConstraints();
