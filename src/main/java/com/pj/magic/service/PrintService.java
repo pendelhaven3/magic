@@ -14,6 +14,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchasePayment;
+import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.SalesInvoice;
@@ -108,8 +109,11 @@ public interface PrintService {
 
 	void print(PurchasePayment purchasePayment);
 
-	List<String> generateReportAsString(
-			PurchaseReturnBadStock purchaseReturnBadStock);
+	List<String> generateReportAsString(PurchaseReturn purchaseReturn);
+	
+	void print(PurchaseReturn purchaseReturn);
+
+	List<String> generateReportAsString(PurchaseReturnBadStock purchaseReturnBadStock);
 
 	void print(PurchaseReturnBadStock purchaseReturnBadStock);
 

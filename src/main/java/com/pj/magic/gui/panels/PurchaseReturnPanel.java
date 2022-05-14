@@ -29,10 +29,12 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.tables.PurchaseReturnItemsTable;
 import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.Supplier;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.PurchaseReturnService;
 import com.pj.magic.service.ReceivingReceiptService;
 import com.pj.magic.util.ComponentUtil;
@@ -46,6 +48,8 @@ public class PurchaseReturnPanel extends StandardMagicPanel {
 	@Autowired private PurchaseReturnItemsTable itemsTable;
 	@Autowired private ReceivingReceiptService receivingReceiptService;
 	@Autowired private PurchaseReturnService purchaseReturnService;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
+	@Autowired private PrintService printService;
 	
 	private PurchaseReturn purchaseReturn;
 	private JLabel purchaseReturnNumberField;
@@ -441,21 +445,21 @@ public class PurchaseReturnPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				printPreviewDialog.updateDisplay(printService.generateReportAsString(purchaseReturn));
-//				printPreviewDialog.setVisible(true);
+				printPreviewDialog.updateDisplay(printService.generateReportAsString(purchaseReturn));
+				printPreviewDialog.setVisible(true);
 			}
 		});
-//		toolBar.add(printPreviewButton);
+		toolBar.add(printPreviewButton);
 		
 		printButton = new MagicToolBarButton("print", "Print");
 		printButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				printService.print(purchaseReturn);
+				printService.print(purchaseReturn);
 			}
 		});
-//		toolBar.add(printButton);
+		toolBar.add(printButton);
 	}
 
 	private void postPurchaseReturn() {

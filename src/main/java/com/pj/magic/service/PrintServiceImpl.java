@@ -51,8 +51,10 @@ import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchaseOrderItem;
 import com.pj.magic.model.PurchasePayment;
+import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.PurchaseReturnBadStockItem;
+import com.pj.magic.model.PurchaseReturnItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
 import com.pj.magic.model.SalesInvoice;
@@ -104,6 +106,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int CASH_FLOW_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int REMITTANCE_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int PRICE_CHANGES_REPORT_ITEMS_PER_PAGE = 52;
+	private static final int PURCHASE_RETURN_ITEMS_PER_PAGE = 44;
 	private static final int PURCHASE_RETURN_BAD_STOCK_ITEMS_PER_PAGE = 44;
 	
 	public static final int UNPAID_SALES_INVOICE_REPORT_CHARACTERS_PER_LINE = 90;
@@ -1092,5 +1095,36 @@ public class PrintServiceImpl implements PrintService {
 			logger.error(e.getMessage(), e);
 		}
 	}
+
+	@Override
+	public List<String> generateReportAsString(PurchaseReturn purchaseReturn) {
+		String currentDate = FormatterUtil.formatDate(systemDao.getCurrentDateTime());
+		
+		List<List<PurchaseReturnItem>> pageItems = Lists.partition(purchaseReturn.getItems(), PURCHASE_RETURN_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("currentDate", currentDate);
+			reportData.put("purchaseReturn", purchaseReturn);
+			reportData.put("remarks", StringUtils.defaultString(purchaseReturn.getRemarks()));
+			reportData.put("items", pageItems.get(i));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			printPages.add(generateReportAsString("reports/purchaseReturn.vm", reportData));
+		}
+		return printPages;
+	}
 	
+	@Override
+	public void print(PurchaseReturn purchaseReturn) {
+		try {
+			for (String printPage : generateReportAsString(purchaseReturn)) {
+				printerUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
 }
