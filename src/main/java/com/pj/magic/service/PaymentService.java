@@ -6,6 +6,7 @@ import com.pj.magic.model.Customer;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
+import com.pj.magic.model.PaymentEcashPayment;
 import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.search.PaymentCashPaymentSearchCriteria;
@@ -58,5 +59,9 @@ public interface PaymentService {
 	void markAsPaidByPayroll(List<Long> salesInvoiceNumbers);
 
 	void unpost(Payment payment);
+
+	void save(PaymentEcashPayment ecashPayment);
+
+	void delete(PaymentEcashPayment ecashPayment);
 	
 }

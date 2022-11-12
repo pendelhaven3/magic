@@ -46,6 +46,7 @@ import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.dialog.StatusDetailsDialog;
 import com.pj.magic.gui.tables.PaymentCashPaymentsTable;
 import com.pj.magic.gui.tables.PaymentCheckPaymentsTable;
+import com.pj.magic.gui.tables.PaymentEcashPaymentsTable;
 import com.pj.magic.gui.tables.PaymentPaymentAdjustmentsTable;
 import com.pj.magic.gui.tables.PaymentSalesInvoicesTable;
 import com.pj.magic.model.Customer;
@@ -79,6 +80,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	@Autowired private AddSalesInvoicesToPaymentDialog addSalesInvoicesToPaymentDialog;
 	@Autowired private PaymentCheckPaymentsTable checksTable;
 	@Autowired private PaymentCashPaymentsTable cashPaymentsTable;
+	@Autowired private PaymentEcashPaymentsTable ecashPaymentsTable;
 	@Autowired private PaymentPaymentAdjustmentsTable adjustmentsTable;
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
@@ -99,6 +101,7 @@ public class PaymentPanel extends StandardMagicPanel {
 	private JLabel totalAmountDueField;
 	private JLabel totalCashPaymentsField;
 	private JLabel totalCheckPaymentsField;
+	private JLabel totalEcashPaymentsField;
 	private JLabel totalPaymentsField;
 	private JLabel totalAdjustmentsField;
 	private JLabel overOrShortField;
@@ -109,6 +112,8 @@ public class PaymentPanel extends StandardMagicPanel {
 	private MagicToolBarButton deleteCheckPaymentButton;
 	private MagicToolBarButton addCashPaymentButton;
 	private MagicToolBarButton deleteCashPaymentButton;
+	private MagicToolBarButton addEcashPaymentButton;
+	private MagicToolBarButton deleteEcashPaymentButton;
 	private MagicToolBarButton addAdjustmentButton;
 	private MagicToolBarButton deleteAdjustmentButton;
 	private MagicToolBarButton cancelButton;
@@ -256,6 +261,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		totalAmountDueField.setText(FormatterUtil.formatAmount(payment.getTotalAmountDue()));
 		totalCashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCashPayments()));
 		totalCheckPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCheckPayments()));
+		totalEcashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalEcashPayments()));
 		totalPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalPayments()));
 		totalAdjustmentsField.setText(FormatterUtil.formatAmount(payment.getTotalAdjustments()));
 		overOrShortField.setText(FormatterUtil.formatAmount(payment.getOverOrShort()));
@@ -263,6 +269,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		salesInvoicesTable.setPayment(payment);
 		checksTable.setPayment(payment);
 		cashPaymentsTable.setPayment(payment);
+		ecashPaymentsTable.setPayment(payment);
 		adjustmentsTable.setPayment(payment);
 		
 		boolean newPayment = payment.isNew();
@@ -276,6 +283,8 @@ public class PaymentPanel extends StandardMagicPanel {
 		deleteCashPaymentButton.setEnabled(newPayment);
 		addCheckPaymentButton.setEnabled(newPayment);
 		deleteCheckPaymentButton.setEnabled(newPayment);
+		addEcashPaymentButton.setEnabled(newPayment);
+		deleteEcashPaymentButton.setEnabled(newPayment);
 		addAdjustmentButton.setEnabled(newPayment);
 		deleteAdjustmentButton.setEnabled(newPayment);
 		
@@ -304,6 +313,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		totalAmountDueField.setText(null);
 		totalCashPaymentsField.setText(null);
 		totalCheckPaymentsField.setText(null);
+		totalEcashPaymentsField.setText(null);
 		totalPaymentsField.setText(null);
 		totalAdjustmentsField.setText(null);
 		overOrShortField.setText(null);
@@ -314,6 +324,8 @@ public class PaymentPanel extends StandardMagicPanel {
 		deleteCashPaymentButton.setEnabled(false);
 		addCheckPaymentButton.setEnabled(false);
 		deleteCheckPaymentButton.setEnabled(false);
+		addEcashPaymentButton.setEnabled(false);
+		deleteEcashPaymentButton.setEnabled(false);
 		addAdjustmentButton.setEnabled(false);
 		deleteAdjustmentButton.setEnabled(false);
 		
@@ -737,6 +749,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		tabbedPane.addTab("Sales Invoices", createSalesInvoicesPanel());
 		tabbedPane.addTab("Cash Payments", createCashPaymentsPanel());
 		tabbedPane.addTab("Check Payments", createCheckPaymentsPanel());
+		tabbedPane.addTab("E-Cash Payments", createEcashPaymentsPanel());
 		tabbedPane.addTab("Adjustments", createAdjustmentsPanel());
 		return tabbedPane;
 	}
@@ -804,6 +817,19 @@ public class PaymentPanel extends StandardMagicPanel {
 		currentRow++;
 		
 		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(150, "Total Cash Payments:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalCashPaymentsField = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalCashPaymentsField, c);
+		
+		c = new GridBagConstraints();
 		c.gridx = 3;
 		c.gridy = currentRow;
 		mainPanel.add(Box.createHorizontalStrut(50), c);
@@ -855,14 +881,14 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Total Cash Payments:"), c);
+		mainPanel.add(ComponentUtil.createLabel(150, "Total E-Cash Payments:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalCashPaymentsField = ComponentUtil.createRightLabel(120, "");
-		mainPanel.add(totalCashPaymentsField, c);
+		totalEcashPaymentsField = ComponentUtil.createRightLabel(120, "");
+		mainPanel.add(totalEcashPaymentsField, c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 4;
@@ -952,6 +978,63 @@ public class PaymentPanel extends StandardMagicPanel {
 		cashPaymentsTable.addNewRow();
 	}
 
+	private JPanel createEcashPaymentsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(createEcashPaymentsTableToolBar(), c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		JScrollPane scrollPane = new JScrollPane(ecashPaymentsTable);
+		scrollPane.setPreferredSize(new Dimension(600, 150));
+		panel.add(scrollPane, c);
+		
+		return panel;
+	}
+	
+	private JPanel createEcashPaymentsTableToolBar() {
+		JPanel panel = new JPanel();
+		
+		addEcashPaymentButton = new MagicToolBarButton("plus_small", "Add Cash Payment", true);
+		addEcashPaymentButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addEcashPayment();
+			}
+		});
+		panel.add(addEcashPaymentButton, BorderLayout.WEST);
+		
+		deleteEcashPaymentButton = new MagicToolBarButton("minus_small", "Delete E-Cash Payment", true);
+		deleteEcashPaymentButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ecashPaymentsTable.removeCurrentlySelectedItem();
+			}
+		});
+		panel.add(deleteEcashPaymentButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+
+	private void addEcashPayment() {
+		ecashPaymentsTable.addNewRow();
+	}
+
 	private JPanel createAdjustmentsPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
@@ -1019,6 +1102,16 @@ public class PaymentPanel extends StandardMagicPanel {
 			}
 		});
 		
+		cashPaymentsTable.getModel().addTableModelListener(new TableModelListener() {
+			
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				totalCashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCashPayments()));
+				totalPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalPayments()));
+				overOrShortField.setText(FormatterUtil.formatAmount(payment.getOverOrShort()));
+			}
+		});
+
 		checksTable.getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
@@ -1029,11 +1122,11 @@ public class PaymentPanel extends StandardMagicPanel {
 			}
 		});
 
-		cashPaymentsTable.getModel().addTableModelListener(new TableModelListener() {
+		ecashPaymentsTable.getModel().addTableModelListener(new TableModelListener() {
 			
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				totalCashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalCashPayments()));
+				totalEcashPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalEcashPayments()));
 				totalPaymentsField.setText(FormatterUtil.formatAmount(payment.getTotalPayments()));
 				overOrShortField.setText(FormatterUtil.formatAmount(payment.getOverOrShort()));
 			}

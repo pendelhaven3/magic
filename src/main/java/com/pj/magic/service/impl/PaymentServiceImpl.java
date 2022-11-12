@@ -15,6 +15,7 @@ import com.pj.magic.dao.PaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentCashPaymentDao;
 import com.pj.magic.dao.PaymentCheckPaymentDao;
 import com.pj.magic.dao.PaymentDao;
+import com.pj.magic.dao.PaymentEcashPaymentDao;
 import com.pj.magic.dao.PaymentPaymentAdjustmentDao;
 import com.pj.magic.dao.PaymentSalesInvoiceDao;
 import com.pj.magic.dao.PaymentTerminalAssignmentDao;
@@ -37,6 +38,7 @@ import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentAdjustment;
 import com.pj.magic.model.PaymentCashPayment;
 import com.pj.magic.model.PaymentCheckPayment;
+import com.pj.magic.model.PaymentEcashPayment;
 import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.PaymentTerminal;
@@ -62,6 +64,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Autowired private PaymentSalesInvoiceDao paymentSalesInvoiceDao;
 	@Autowired private PaymentCheckPaymentDao paymentCheckPaymentDao;
 	@Autowired private PaymentCashPaymentDao paymentCashPaymentDao;
+	@Autowired private PaymentEcashPaymentDao paymentEcashPaymentDao;
 	@Autowired private PaymentPaymentAdjustmentDao paymentPaymentAdjustmentDao;
 	@Autowired private PaymentTerminalAssignmentDao paymentTerminalAssignmentDao;
 	@Autowired private SalesReturnDao salesReturnDao;
@@ -109,6 +112,7 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 		payment.setCashPayments(paymentCashPaymentDao.findAllByPayment(payment));
 		payment.setCheckPayments(paymentCheckPaymentDao.findAllByPayment(payment));
+		payment.setEcashPayments(paymentEcashPaymentDao.findAllByPayment(payment));
 		payment.setAdjustments(paymentPaymentAdjustmentDao.findAllByPayment(payment));
 	}
 
@@ -513,6 +517,18 @@ public class PaymentServiceImpl implements PaymentService {
 				break;
 			}
 		}
+	}
+
+	@Transactional
+	@Override
+	public void save(PaymentEcashPayment ecashPayment) {
+		paymentEcashPaymentDao.save(ecashPayment);
+	}
+
+	@Transactional
+	@Override
+	public void delete(PaymentEcashPayment ecashPayment) {
+		paymentEcashPaymentDao.delete(ecashPayment);
 	}
 
 }

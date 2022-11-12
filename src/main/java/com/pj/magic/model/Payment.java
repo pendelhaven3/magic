@@ -25,6 +25,7 @@ public class Payment {
 	private List<PaymentSalesInvoice> salesInvoices = new ArrayList<>();
 	private List<PaymentCheckPayment> checkPayments = new ArrayList<>();
 	private List<PaymentCashPayment> cashPayments = new ArrayList<>();
+	private List<PaymentEcashPayment> ecashPayments = new ArrayList<>();
 	private List<PaymentPaymentAdjustment> adjustments = new ArrayList<>();
 
 	public Payment() {
@@ -100,7 +101,7 @@ public class Payment {
 	}
 	
 	public BigDecimal getTotalPayments() {
-		return getTotalCashPayments().add(getTotalCheckPayments());
+		return getTotalCashPayments().add(getTotalCheckPayments()).add(getTotalEcashPayments());
 	}
 	
 	public BigDecimal getOverOrShort() {
@@ -111,6 +112,14 @@ public class Payment {
 		BigDecimal total = Constants.ZERO;
 		for (PaymentCashPayment cashPayment : cashPayments) {
 			total = total.add(cashPayment.getAmount());
+		}
+		return total;
+	}
+
+	public BigDecimal getTotalEcashPayments() {
+		BigDecimal total = Constants.ZERO;
+		for (PaymentEcashPayment ecashPayment : ecashPayments) {
+			total = total.add(ecashPayment.getAmount());
 		}
 		return total;
 	}
@@ -129,6 +138,14 @@ public class Payment {
 
 	public void setCashPayments(List<PaymentCashPayment> cashPayments) {
 		this.cashPayments = cashPayments;
+	}
+
+	public List<PaymentEcashPayment> getEcashPayments() {
+		return ecashPayments;
+	}
+
+	public void setEcashPayments(List<PaymentEcashPayment> ecashPayments) {
+		this.ecashPayments = ecashPayments;
 	}
 
 	public List<PaymentPaymentAdjustment> getAdjustments() {
@@ -250,7 +267,7 @@ public class Payment {
 	}
 	
 	public BigDecimal getTotalAmountDueMinusNonCashPaymentsAndAdjustments() {
-		return getTotalAmountDue().subtract(getTotalCheckPayments().add(getTotalAdjustments()));
+		return getTotalAmountDue().subtract(getTotalCheckPayments().add(getTotalAdjustments()).add(getTotalEcashPayments()));
 	}
 
 	public boolean hasCashPayment() {

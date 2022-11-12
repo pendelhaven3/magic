@@ -57,6 +57,7 @@ import com.pj.magic.model.BirForm2307Report;
 import com.pj.magic.model.CreditCard;
 import com.pj.magic.model.CreditCardStatement;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.EcashReceiver;
 import com.pj.magic.model.InventoryCheck;
 import com.pj.magic.model.InventoryCorrection;
 import com.pj.magic.model.Manufacturer;
@@ -242,6 +243,8 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
     public static final String BAD_STOCK_CARD_INVENTORY_REPORT_PANEL = "BAD_STOCK_CARD_INVENTORY_REPORT_PANEL";
     public static final String BAD_STOCK_INVENTORY_CHECK_LIST_PANEL = "BAD_STOCK_INVENTORY_CHECK_LIST_PANEL";
     public static final String BAD_STOCK_INVENTORY_CHECK_PANEL = "BAD_STOCK_INVENTORY_CHECK_PANEL";
+	public static final String ECASH_RECEIVER_LIST_PANEL = "ECASH_RECEIVER_LIST_PANEL";
+	public static final String MAINTAIN_ECASH_RECEIVER_PANEL = "MAINTAIN_ECASH_RECEIVER_PANEL";
 	
     private static final Map<String, Class<? extends StandardMagicPanel>> panelClasses = new HashMap<>();
     
@@ -381,6 +384,8 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
     @Autowired private BadStockAdjustmentOutPanel badStockAdjustmentOutPanel;
     @Autowired private BadStockReportPanel badStockReportPanel;
     @Autowired private BadStockInventoryCheckPanel badStockInventoryCheckPanel;
+	@Autowired private EcashReceiverListPanel ecashReceiverListPanel;
+	@Autowired private MaintainEcashReceiverPanel maintainEcashReceiverPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -569,6 +574,8 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
         panelHolder.add(badStockAdjustmentOutPanel, BAD_STOCK_ADJUSTMENT_OUT_PANEL);
         panelHolder.add(badStockReportPanel, BAD_STOCK_REPORT_PANEL);
         panelHolder.add(badStockInventoryCheckPanel, BAD_STOCK_INVENTORY_CHECK_PANEL);
+		panelHolder.add(ecashReceiverListPanel, ECASH_RECEIVER_LIST_PANEL);
+		panelHolder.add(maintainEcashReceiverPanel, MAINTAIN_ECASH_RECEIVER_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1471,6 +1478,27 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
         addPanelNameToTitle(badStockInventoryCheckPanel.getTitle());
         badStockInventoryCheckPanel.updateDisplay(badStockInventoryCheck);
         ((CardLayout)panelHolder.getLayout()).show(panelHolder, BAD_STOCK_INVENTORY_CHECK_PANEL);
+	}
+	
+	public void switchToEcashReceiverListPanel() {
+		addPanelNameToTitle("E-Cash Receiver List");
+		ecashReceiverListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ECASH_RECEIVER_LIST_PANEL);
+	}
+
+	public void switchToAddEcashReceiverPanel() {
+		addPanelNameToTitle("Add New E-Cash Receiver");
+		switchToMaintainEcashReceiverPanel(new EcashReceiver());
+	}
+	
+	public void switchToEditEcashReceiverPanel(EcashReceiver ecashReceiver) {
+		addPanelNameToTitle("Edit E-Cash Receiver");
+		switchToMaintainEcashReceiverPanel(ecashReceiver);
+	}
+	
+	public void switchToMaintainEcashReceiverPanel(EcashReceiver ecashReceiver) {
+		maintainEcashReceiverPanel.updateDisplay(ecashReceiver);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_ECASH_RECEIVER_PANEL);
 	}
 	
     private StandardMagicPanel loadPanel(String panelName) {
