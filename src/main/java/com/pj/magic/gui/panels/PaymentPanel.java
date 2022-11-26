@@ -881,7 +881,7 @@ public class PaymentPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(150, "Total E-Cash Payments:"), c);
+		mainPanel.add(ComponentUtil.createLabel(180, "Total E-Cash Payments:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
