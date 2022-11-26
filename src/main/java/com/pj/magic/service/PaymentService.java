@@ -11,6 +11,7 @@ import com.pj.magic.model.PaymentPaymentAdjustment;
 import com.pj.magic.model.PaymentSalesInvoice;
 import com.pj.magic.model.search.PaymentCashPaymentSearchCriteria;
 import com.pj.magic.model.search.PaymentCheckPaymentSearchCriteria;
+import com.pj.magic.model.search.PaymentEcashPaymentSearchCriteria;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 
@@ -63,5 +64,7 @@ public interface PaymentService {
 	void save(PaymentEcashPayment ecashPayment);
 
 	void delete(PaymentEcashPayment ecashPayment);
+
+	List<PaymentEcashPayment> searchPaymentEcashPayments(PaymentEcashPaymentSearchCriteria criteria);
 	
 }

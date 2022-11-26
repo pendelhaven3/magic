@@ -48,6 +48,7 @@ import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PaymentCashPaymentSearchCriteria;
 import com.pj.magic.model.search.PaymentCheckPaymentSearchCriteria;
+import com.pj.magic.model.search.PaymentEcashPaymentSearchCriteria;
 import com.pj.magic.model.search.PaymentSalesInvoiceSearchCriteria;
 import com.pj.magic.model.search.PaymentSearchCriteria;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
@@ -529,6 +530,11 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	public void delete(PaymentEcashPayment ecashPayment) {
 		paymentEcashPaymentDao.delete(ecashPayment);
+	}
+
+	@Override
+	public List<PaymentEcashPayment> searchPaymentEcashPayments(PaymentEcashPaymentSearchCriteria criteria) {
+		return paymentEcashPaymentDao.search(criteria);
 	}
 
 }

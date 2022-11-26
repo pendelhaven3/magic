@@ -17,12 +17,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.pj.magic.dao.PaymentEcashPaymentDao;
+import com.pj.magic.gui.panels.EcashType;
 import com.pj.magic.model.EcashReceiver;
 import com.pj.magic.model.Payment;
 import com.pj.magic.model.PaymentEcashPayment;
 import com.pj.magic.model.User;
 import com.pj.magic.model.search.PaymentEcashPaymentSearchCriteria;
-import com.pj.magic.model.util.TimePeriod;
 import com.pj.magic.util.DbUtil;
 
 @Repository
@@ -31,7 +31,9 @@ public class PaymentEcashPaymentDaoImpl extends MagicDao implements PaymentEcash
 	private static final String BASE_SELECT_SQL = 
 			"select a.ID, PAYMENT_ID, a.AMOUNT, a.REFERENCE_NO, RECEIVED_DT, RECEIVED_BY,"
 			+ " b.USERNAME as RECEIVED_BY_USERNAME,"
-			+ " a.ECASH_RECEIVER_ID, d.NAME as ECASH_RECEIVER_NAME"
+			+ " a.ECASH_RECEIVER_ID, d.NAME as ECASH_RECEIVER_NAME,"
+			+ " d.ECASH_TYPE_ID, e.CODE as ECASH_TYPE_CODE,"
+			+ " c.PAYMENT_NO"
 			+ " from PAYMENT_ECASH_PAYMENT a"
 			+ " join USER b"
 			+ "   on b.ID = a.RECEIVED_BY"
@@ -39,6 +41,8 @@ public class PaymentEcashPaymentDaoImpl extends MagicDao implements PaymentEcash
 			+ "   on c.ID = a.PAYMENT_ID"
 			+ " join ECASH_RECEIVER d"
 			+ "   on d.ID = a.ECASH_RECEIVER_ID"
+			+ " join ECASH_TYPE e"
+			+ "   on e.ID = d.ECASH_TYPE_ID"
 			+ " where 1 = 1";
 	
 	private RowMapper<PaymentEcashPayment> rowMapper = new RowMapper<PaymentEcashPayment>() {
@@ -48,9 +52,12 @@ public class PaymentEcashPaymentDaoImpl extends MagicDao implements PaymentEcash
 			PaymentEcashPayment ecashPayment = new PaymentEcashPayment();
 			ecashPayment.setId(rs.getLong("ID"));
 			ecashPayment.setParent(new Payment(rs.getLong("PAYMENT_ID")));
+			ecashPayment.getParent().setPaymentNumber(rs.getLong("PAYMENT_NO"));
 			ecashPayment.setAmount(rs.getBigDecimal("AMOUNT"));
 			ecashPayment.setEcashReceiver(
 					new EcashReceiver(rs.getLong("ECASH_RECEIVER_ID"), rs.getString("ECASH_RECEIVER_NAME")));
+			ecashPayment.getEcashReceiver().setEcashType(
+					new EcashType(rs.getLong("ECASH_TYPE_ID"), rs.getString("ECASH_TYPE_CODE")));
 			ecashPayment.setReferenceNumber(rs.getString("REFERENCE_NO"));
 			ecashPayment.setReceivedDate(rs.getDate("RECEIVED_DT"));
 			ecashPayment.setReceivedBy(
@@ -136,36 +143,27 @@ public class PaymentEcashPaymentDaoImpl extends MagicDao implements PaymentEcash
 		List<Object> params = new ArrayList<>();
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
 		
-		if (criteria.getPaid() != null) {
-			sql.append(" and c.POST_IND = ?");
-			params.add(criteria.getPaid() ? "Y" : "N");
+		if (criteria.getEcashReceiver() != null) {
+			sql.append(" and a.ECASH_RECEIVER_ID = ?");
+			params.add(criteria.getEcashReceiver().getId());
 		}
 		
-		if (criteria.getPaymentDate() != null) {
-			if (criteria.getTimePeriod() != null) {
-				if (criteria.getTimePeriod() == TimePeriod.MORNING_ONLY) {
-					sql.append(" and c.POST_DT >= ? and c.POST_DT < date_add(?, interval 13 hour)");
-					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
-					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
-				} else if (criteria.getTimePeriod() == TimePeriod.AFTERNOON_ONLY) {
-					sql.append(" and c.POST_DT >= date_add(?, interval 13 hour)"
-							+ " and c.POST_DT < date_add(?, interval 1 day)");
-					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
-					params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
-				}
-			} else {
-				sql.append(" and c.POST_DT >= ? and c.POST_DT < date_add(?, interval 1 day)");
-				params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
-				params.add(DbUtil.toMySqlDateString(criteria.getPaymentDate()));
-			}
+		if (criteria.getDateFrom() != null) {
+			sql.append(" and a.RECEIVED_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getDateFrom()));
 		}
 		
-		if (criteria.getPaymentTerminal() != null) {
-			sql.append(" and c.PAYMENT_TERMINAL_ID = ?");
-			params.add(criteria.getPaymentTerminal().getId());
+		if (criteria.getDateTo() != null) {
+			sql.append(" and a.RECEIVED_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getDateTo()));
 		}
 		
-		sql.append(" order by c.POST_DT");
+		if (criteria.getEcashType() != null) {
+			sql.append(" and d.ECASH_TYPE_ID = ?");
+			params.add(criteria.getEcashType().getId());
+		}
+		
+		sql.append(" order by a.RECEIVED_DT, c.PAYMENT_NO");
 		
 		return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
 	}

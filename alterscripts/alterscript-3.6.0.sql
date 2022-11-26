@@ -30,3 +30,17 @@ create table PAYMENT_ECASH_PAYMENT (
   constraint PAYMENT_ECASH_PAYMENT$FK2 foreign key (ECASH_RECEIVER_ID) references ECASH_RECEIVER (ID),
   constraint PAYMENT_ECASH_PAYMENT$FK3 foreign key (RECEIVED_BY) references USER (ID)
 );
+
+create table PURCHASE_PAYMENT_ECASH_PAYMENT (
+  ID integer auto_increment,
+  PURCHASE_PAYMENT_ID integer not null,
+  AMOUNT numeric(10, 2) not null,
+  ECASH_RECEIVER_ID integer not null,
+  REFERENCE_NO varchar(50) not null,
+  PAID_DT date not null,
+  PAID_BY integer not null,
+  constraint PURCHASE_PAYMENT_ECASH_PAYMENT$PK primary key (ID),
+  constraint PURCHASE_PAYMENT_ECASH_PAYMENT$FK foreign key (PURCHASE_PAYMENT_ID) references PURCHASE_PAYMENT (ID),
+  constraint PURCHASE_PAYMENT_ECASH_PAYMENT$FK2 foreign key (ECASH_RECEIVER_ID) references ECASH_RECEIVER (ID),
+  constraint PURCHASE_PAYMENT_ECASH_PAYMENT$FK3 foreign key (PAID_BY) references USER (ID)
+);
