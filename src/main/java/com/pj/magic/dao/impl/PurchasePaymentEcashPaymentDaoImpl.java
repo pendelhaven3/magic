@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -20,6 +21,8 @@ import com.pj.magic.model.EcashReceiver;
 import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchasePaymentEcashPayment;
 import com.pj.magic.model.User;
+import com.pj.magic.model.search.PurchasePaymentEcashPaymentSearchCriteria;
+import com.pj.magic.util.DbUtil;
 
 @Repository
 public class PurchasePaymentEcashPaymentDaoImpl extends MagicDao implements PurchasePaymentEcashPaymentDao {
@@ -124,6 +127,36 @@ public class PurchasePaymentEcashPaymentDaoImpl extends MagicDao implements Purc
 	@Override
 	public void delete(PurchasePaymentEcashPayment ecashPayment) {
 		getJdbcTemplate().update(DELETE_SQL, ecashPayment.getId());
+	}
+
+	@Override
+	public List<PurchasePaymentEcashPayment> search(PurchasePaymentEcashPaymentSearchCriteria criteria) {
+		List<Object> params = new ArrayList<>();
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		
+		if (criteria.getEcashReceiver() != null) {
+			sql.append(" and a.ECASH_RECEIVER_ID = ?");
+			params.add(criteria.getEcashReceiver().getId());
+		}
+		
+		if (criteria.getDateFrom() != null) {
+			sql.append(" and a.PAID_DT >= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getDateFrom()));
+		}
+		
+		if (criteria.getDateTo() != null) {
+			sql.append(" and a.PAID_DT <= ?");
+			params.add(DbUtil.toMySqlDateString(criteria.getDateTo()));
+		}
+		
+		if (criteria.getEcashType() != null) {
+			sql.append(" and d.ECASH_TYPE_ID = ?");
+			params.add(criteria.getEcashType().getId());
+		}
+		
+		sql.append(" order by a.PAID_DT, c.PURCHASE_PAYMENT_NO");
+		
+		return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
 	}
 
 }

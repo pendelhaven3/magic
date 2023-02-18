@@ -43,6 +43,7 @@ import com.pj.magic.model.search.PurchasePaymentBankTransferSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentCashPaymentSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentCheckPaymentSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentCreditCardPaymentSearchCriteria;
+import com.pj.magic.model.search.PurchasePaymentEcashPaymentSearchCriteria;
 import com.pj.magic.model.search.PurchasePaymentSearchCriteria;
 import com.pj.magic.service.LoginService;
 import com.pj.magic.service.PurchasePaymentAdjustmentService;
@@ -337,9 +338,10 @@ public class PurchasePaymentServiceImpl implements PurchasePaymentService {
 		purchasePaymentEcashPaymentDao.delete(ecashPayment);
 	}
 
-//	@Override
-//	public List<PurchasePaymentEcashPayment> searchPurchasePaymentEcashPayments(PaymentEcashPaymentSearchCriteria criteria) {
-//		return purchasePaymentEcashPaymentDao.search(criteria);
-//	}
+	@Override
+	public List<PurchasePaymentEcashPayment> searchPurchasePaymentEcashPayments(
+			PurchasePaymentEcashPaymentSearchCriteria criteria) {
+		return purchasePaymentEcashPaymentDao.search(criteria);
+	}
 
 }

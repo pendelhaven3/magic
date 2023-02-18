@@ -246,6 +246,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	public static final String ECASH_RECEIVER_LIST_PANEL = "ECASH_RECEIVER_LIST_PANEL";
 	public static final String MAINTAIN_ECASH_RECEIVER_PANEL = "MAINTAIN_ECASH_RECEIVER_PANEL";
     public static final String ECASH_PAYMENTS_REPORT_PANEL = "ECASH_PAYMENTS_REPORT_PANEL";
+    public static final String ECASH_PURCHASE_PAYMENTS_REPORT_PANEL = "ECASH_PURCHASE_PAYMENTS_REPORT_PANEL";
 	
     private static final Map<String, Class<? extends StandardMagicPanel>> panelClasses = new HashMap<>();
     
@@ -388,6 +389,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	@Autowired private EcashReceiverListPanel ecashReceiverListPanel;
 	@Autowired private MaintainEcashReceiverPanel maintainEcashReceiverPanel;
 	@Autowired private EcashPaymentsReportPanel ecashPaymentsReportPanel;
+	@Autowired private EcashPurchasePaymentsReportPanel ecashPurchasePaymentsReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -579,6 +581,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 		panelHolder.add(ecashReceiverListPanel, ECASH_RECEIVER_LIST_PANEL);
 		panelHolder.add(maintainEcashReceiverPanel, MAINTAIN_ECASH_RECEIVER_PANEL);
 		panelHolder.add(ecashPaymentsReportPanel, ECASH_PAYMENTS_REPORT_PANEL);
+		panelHolder.add(ecashPurchasePaymentsReportPanel, ECASH_PURCHASE_PAYMENTS_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
