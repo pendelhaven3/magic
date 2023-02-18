@@ -25,6 +25,7 @@ public class PurchasePayment {
 	private List<PurchasePaymentCreditCardPayment> creditCardPayments = new ArrayList<>();
 	private List<PurchasePaymentCheckPayment> checkPayments = new ArrayList<>();
 	private List<PurchasePaymentBankTransfer> bankTransfers = new ArrayList<>();
+	private List<PurchasePaymentEcashPayment> ecashPayments = new ArrayList<>();
 	private List<PurchasePaymentPaymentAdjustment> paymentAdjustments = new ArrayList<>();
 
 	public PurchasePayment() {
@@ -174,7 +175,7 @@ public class PurchasePayment {
 	
 	public BigDecimal getTotalPayments() {
 		return getTotalCashPayments().add(getTotalCreditCardPayments()).add(getTotalCheckPayments())
-				.add(getTotalBankTransfers());
+				.add(getTotalBankTransfers()).add(getTotalEcashPayments());
 	}
 	
 	public BigDecimal getTotalBankTransfers() {
@@ -193,6 +194,14 @@ public class PurchasePayment {
 		return total;
 	}
 	
+	public BigDecimal getTotalEcashPayments() {
+		BigDecimal total = Constants.ZERO;
+		for (PurchasePaymentEcashPayment ecashPayment: ecashPayments) {
+			total = total.add(ecashPayment.getAmount());
+		}
+		return total;
+	}
+
 	public BigDecimal getOverOrShort() {
 		return getTotalPayments().subtract(getTotalAmount()).add(getTotalAdjustments());
 	}
@@ -237,6 +246,14 @@ public class PurchasePayment {
 		this.bankTransfers = bankTransfers;
 	}
 
+	public void setEcashPayments(List<PurchasePaymentEcashPayment> ecashPayments) {
+		this.ecashPayments = ecashPayments;
+	}
+	
+	public List<PurchasePaymentEcashPayment> getEcashPayments() {
+		return ecashPayments;
+	}
+	
 	public BigDecimal getTotalAmountDue() {
 		return getTotalAmount().subtract(getTotalAdjustments());
 	}
