@@ -1,9 +1,13 @@
 package com.pj.magic.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Promo;
+import com.pj.magic.model.PromoRaffleTicket;
+import com.pj.magic.model.PromoRaffleTicketClaim;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.PromoType3RulePromoProduct;
@@ -64,5 +68,13 @@ public interface PromoService {
     void removeAllPromoProducts(PromoType6Rule promoType6Rule);
 
     void updatePromoStatusBasedOnDuration();
+
+	List<PromoRaffleTicketClaim> getAllJchsRaffleTicketClaims();
+
+	PromoRaffleTicketClaim claimJchsRaffleTickets(Customer customer, Date transactionDate);
+
+	PromoRaffleTicketClaim getJchsRaffleTicketClaim(Long id);
+
+	List<PromoRaffleTicket> getAllJchsRaffleTickets();
 	
 }

@@ -214,7 +214,7 @@ public class MainMenuPanel extends StandardMagicPanel {
 			getMagicFrame().switchToAdminMenuPanel();
 			break;
 		case PROMO:
-			getMagicFrame().switchToPromoListPanel();
+			getMagicFrame().switchToPromoMenuPanel();
 			break;
 		case PROMO_REDEMPTION:
 			getMagicFrame().switchToPromoRedemptionPromoListPanel();

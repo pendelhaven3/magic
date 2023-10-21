@@ -30,6 +30,8 @@ import com.pj.magic.gui.panels.menu.AdminMenuPanel;
 import com.pj.magic.gui.panels.menu.BadStockMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryCheckMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryMenuPanel;
+import com.pj.magic.gui.panels.menu.JchsRaffleMenuPanel;
+import com.pj.magic.gui.panels.menu.PromoMenuPanel;
 import com.pj.magic.gui.panels.menu.PurchasePaymentsMenuPanel;
 import com.pj.magic.gui.panels.menu.PurchasesMenuPanel;
 import com.pj.magic.gui.panels.menu.RecordsMaintenanceMenuPanel;
@@ -70,6 +72,7 @@ import com.pj.magic.model.PricingScheme;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.ProductCategory;
 import com.pj.magic.model.Promo;
+import com.pj.magic.model.PromoRaffleTicketClaim;
 import com.pj.magic.model.PromoRedemption;
 import com.pj.magic.model.PurchaseOrder;
 import com.pj.magic.model.PurchasePayment;
@@ -247,6 +250,11 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	public static final String MAINTAIN_ECASH_RECEIVER_PANEL = "MAINTAIN_ECASH_RECEIVER_PANEL";
     public static final String ECASH_PAYMENTS_REPORT_PANEL = "ECASH_PAYMENTS_REPORT_PANEL";
     public static final String ECASH_PURCHASE_PAYMENTS_REPORT_PANEL = "ECASH_PURCHASE_PAYMENTS_REPORT_PANEL";
+	public static final String PROMO_MENU_PANEL = "PROMO_MENU_PANEL";
+	public static final String JCHS_RAFFLE_MENU_PANEL = "JCHS_RAFFLE_MENU_PANEL";
+	public static final String JCHS_RAFFLE_TICKETS_LIST_PANEL = "JCHS_RAFFLE_TICKETS_LIST_PANEL";
+	public static final String JCHS_RAFFLE_TICKET_CLAIMS_LIST_PANEL = "JCHS_RAFFLE_TICKET_CLAIMS_LIST_PANEL";
+	public static final String JCHS_RAFFLE_TICKET_CLAIM_PANEL = "JCHS_RAFFLE_TICKET_CLAIM_PANEL";
 	
     private static final Map<String, Class<? extends StandardMagicPanel>> panelClasses = new HashMap<>();
     
@@ -390,6 +398,11 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	@Autowired private MaintainEcashReceiverPanel maintainEcashReceiverPanel;
 	@Autowired private EcashPaymentsReportPanel ecashPaymentsReportPanel;
 	@Autowired private EcashPurchasePaymentsReportPanel ecashPurchasePaymentsReportPanel;
+	@Autowired private PromoMenuPanel promoMenuPanel;
+	@Autowired private JchsRaffleMenuPanel jchsRaffleMenuPanel;
+	@Autowired private JchsRaffleTicketsListPanel jchsRaffleTicketsListPanel;
+	@Autowired private JchsRaffleTicketClaimsListPanel jchsRaffleTicketClaimsListPanel;
+	@Autowired private JchsRaffleTicketClaimPanel jchsRaffleTicketClaimPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -582,6 +595,11 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 		panelHolder.add(maintainEcashReceiverPanel, MAINTAIN_ECASH_RECEIVER_PANEL);
 		panelHolder.add(ecashPaymentsReportPanel, ECASH_PAYMENTS_REPORT_PANEL);
 		panelHolder.add(ecashPurchasePaymentsReportPanel, ECASH_PURCHASE_PAYMENTS_REPORT_PANEL);
+		panelHolder.add(promoMenuPanel, PROMO_MENU_PANEL);
+		panelHolder.add(jchsRaffleMenuPanel, JCHS_RAFFLE_MENU_PANEL);
+		panelHolder.add(jchsRaffleTicketsListPanel, JCHS_RAFFLE_TICKETS_LIST_PANEL);
+		panelHolder.add(jchsRaffleTicketClaimsListPanel, JCHS_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
+		panelHolder.add(jchsRaffleTicketClaimPanel, JCHS_RAFFLE_TICKET_CLAIM_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1519,6 +1537,36 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		beanFactory = applicationContext.getAutowireCapableBeanFactory();
+	}
+
+	public void switchToPromoMenuPanel() {
+		addPanelNameToTitle("Promo Menu");
+		promoMenuPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, PROMO_MENU_PANEL);
+	}
+
+	public void switchToJchsRaffleMenuPanel() {
+		addPanelNameToTitle("JCHS Raffle Menu");
+		jchsRaffleMenuPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_RAFFLE_MENU_PANEL);
+	}
+
+	public void switchToJchsRaffleTicketsListPanel() {
+		addPanelNameToTitle("JCHS Raffle Tickets List");
+		jchsRaffleTicketsListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_RAFFLE_TICKETS_LIST_PANEL);
+	}
+
+	public void switchToJchsRaffleTicketClaimsListPanel() {
+		addPanelNameToTitle("JCHS Raffle Ticket Claims List");
+		jchsRaffleTicketClaimsListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
+	}
+
+	public void switchToJchsRaffleTicketClaimPanel(PromoRaffleTicketClaim claim) {
+		addPanelNameToTitle("JCHS Raffle Ticket Claim");
+		jchsRaffleTicketClaimPanel.updateDisplay(claim);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_RAFFLE_TICKET_CLAIM_PANEL);
 	}
 
 }

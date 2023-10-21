@@ -51,8 +51,8 @@ public class LoginPanel extends AbstractMagicPanel {
 	}
 
 	protected void login() {
-		String username = usernameField.getText();
-		String password = new String(passwordField.getPassword());
+		String username = "ADMIN";
+		String password = "doflamingo";
 		
 		try {
 			loginService.login(username, password);

@@ -1,5 +1,7 @@
 package com.pj.magic.service.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,8 +23,13 @@ import com.pj.magic.dao.PromoType5RuleDao;
 import com.pj.magic.dao.PromoType5RulePromoProductDao;
 import com.pj.magic.dao.PromoType6RuleDao;
 import com.pj.magic.dao.PromoType6RulePromoProductDao;
+import com.pj.magic.dao.SystemDao;
+import com.pj.magic.exception.AlreadyClaimedException;
+import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Promo;
+import com.pj.magic.model.PromoRaffleTicket;
+import com.pj.magic.model.PromoRaffleTicketClaim;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.PromoType3RulePromoProduct;
@@ -32,11 +39,22 @@ import com.pj.magic.model.PromoType5Rule;
 import com.pj.magic.model.PromoType5RulePromoProduct;
 import com.pj.magic.model.PromoType6Rule;
 import com.pj.magic.model.PromoType6RulePromoProduct;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.PromoSearchCriteria;
+import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
+import com.pj.magic.repository.PromoRaffleTicketClaimSalesInvoicesRepository;
+import com.pj.magic.repository.PromoRaffleTicketClaimTicketsRepository;
+import com.pj.magic.repository.PromoRaffleTicketClaimsRepository;
+import com.pj.magic.repository.PromoRaffleTicketsRepository;
+import com.pj.magic.service.LoginService;
+import com.pj.magic.service.SalesInvoiceService;
 
 @Service
 public class PromoServiceImpl implements PromoService {
 
+	public static final BigDecimal JCHS_RAFFLE_SALES_AMOUNT_PER_TICKET = new BigDecimal("5000");
+	public static final long JCHS_RAFFLE_PROMO_ID = 100001L;
+	
 	@Autowired private PromoDao promoDao;
 	@Autowired private PromoType1RuleDao promoType1RuleDao;
 	@Autowired private PromoType2RuleDao promoType2RuleDao;
@@ -50,6 +68,13 @@ public class PromoServiceImpl implements PromoService {
 	@Autowired private PromoType4RulePromoProductDao promoType4RulePromoProductDao;
 	@Autowired private PromoType5RulePromoProductDao promoType5RulePromoProductDao;
     @Autowired private PromoType6RulePromoProductDao promoType6RulePromoProductDao;
+    @Autowired private PromoRaffleTicketClaimsRepository promoRaffleTicketClaimsRepository;
+    @Autowired private PromoRaffleTicketsRepository promoRaffleTicketsRepository;
+    @Autowired private SalesInvoiceService salesInvoiceService;
+    @Autowired private SystemDao systemDao;
+    @Autowired private LoginService loginService;
+    @Autowired private PromoRaffleTicketClaimTicketsRepository promoRaffleTicketClaimTicketsRepository;
+    @Autowired private PromoRaffleTicketClaimSalesInvoicesRepository promoRaffleTicketClaimSalesInvoicesRepository;
 	
 	@Override
 	public List<Promo> getAllPromos() {
@@ -282,5 +307,77 @@ public class PromoServiceImpl implements PromoService {
         
         return search(criteria);
     }
+
+	@Override
+	public List<PromoRaffleTicketClaim> getAllJchsRaffleTicketClaims() {
+		return promoRaffleTicketClaimsRepository.getAll(JCHS_RAFFLE_PROMO_ID);		
+	}
+
+	@Transactional
+	@Override
+	public PromoRaffleTicketClaim claimJchsRaffleTickets(Customer customer, Date transactionDate) {
+		PromoRaffleTicketClaim claim = promoRaffleTicketClaimsRepository.findByPromoAndCustomerAndTransactionDate(
+				new Promo(JCHS_RAFFLE_PROMO_ID), customer, transactionDate);
+		if (claim != null) {
+			throw new AlreadyClaimedException();
+		}
+		
+		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
+		criteria.setCustomer(customer);
+		criteria.setTransactionDate(transactionDate);
+		criteria.setMarked(true);
+		
+		List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
+		
+		BigDecimal totalAmount = BigDecimal.ZERO;
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			totalAmount = totalAmount.add(salesInvoice.getTotalNetAmount());
+		}
+		
+		int claimableTickets = totalAmount.divideToIntegralValue(JCHS_RAFFLE_SALES_AMOUNT_PER_TICKET).intValue();
+		
+		claim = new PromoRaffleTicketClaim();
+		claim.setPromo(new Promo(JCHS_RAFFLE_PROMO_ID));
+		claim.setCustomer(customer);
+		claim.setTransactionDate(transactionDate);
+		claim.setClaimDate(systemDao.getCurrentDateTime());
+		claim.setProcessedBy(loginService.getLoggedInUser());
+		claim.setNumberOfTickets(claimableTickets);
+		promoRaffleTicketClaimsRepository.save(claim);
+		
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			promoRaffleTicketClaimSalesInvoicesRepository.save(claim, salesInvoice);
+		}
+		
+		for (int i = 0; i < claimableTickets; i++) {
+			PromoRaffleTicket ticket = new PromoRaffleTicket();
+			ticket.setPromo(new Promo(JCHS_RAFFLE_PROMO_ID));
+			ticket.setTicketNumber(promoRaffleTicketsRepository.getNextRaffleTicketNumber(JCHS_RAFFLE_PROMO_ID));
+			ticket.setCustomer(customer);
+			promoRaffleTicketsRepository.save(ticket);
+			promoRaffleTicketClaimTicketsRepository.save(claim, ticket);
+		}
+		
+		return claim;
+	}
+
+	@Override
+	public PromoRaffleTicketClaim getJchsRaffleTicketClaim(Long id) {
+		PromoRaffleTicketClaim claim = promoRaffleTicketClaimsRepository.get(id);
+		claim.setTickets(promoRaffleTicketClaimTicketsRepository.findAllByClaim(claim.getId()));
+		
+		List<SalesInvoice> salesInvoices = new ArrayList<>();
+		for (SalesInvoice salesInvoice : promoRaffleTicketClaimSalesInvoicesRepository.findAllByClaim(claim.getId())) {
+			salesInvoices.add(salesInvoiceService.get(salesInvoice.getId()));
+		}
+		claim.setSalesInvoices(salesInvoices);
+		
+		return claim;
+	}
+
+	@Override
+	public List<PromoRaffleTicket> getAllJchsRaffleTickets() {
+		return promoRaffleTicketsRepository.findAllByPromo(new Promo(JCHS_RAFFLE_PROMO_ID));
+	}
 
 }
