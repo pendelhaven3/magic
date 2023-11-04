@@ -1,6 +1,7 @@
 package com.pj.magic.excel;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -12,8 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.pj.magic.model.PromoRaffleTicket;
 import com.pj.magic.model.PromoRaffleTicketClaim;
-import com.pj.magic.model.SalesInvoice;
-import com.pj.magic.model.util.CellStyleBuilder;
+import com.pj.magic.model.PromoRaffleTicketClaimSummary;
 import com.pj.magic.util.FormatterUtil;
 
 public class JchsRaffleTicketClaimExcelGenerator {
@@ -23,22 +23,34 @@ public class JchsRaffleTicketClaimExcelGenerator {
 				getClass().getResourceAsStream("/excel/raffleTicketClaim.xlsx"));
 		Sheet sheet = workbook.getSheetAt(0);
 
+		List<PromoRaffleTicket> tickets = new ArrayList<>(claim.getTickets());
+		
 		Row row = sheet.getRow(0);
 		row.createCell(1).setCellValue(claim.getCustomer().getCode());
 		
 		row = sheet.getRow(1);
 		row.createCell(1).setCellValue(claim.getCustomer().getName());
 		
-		row = sheet.getRow(3);
-		row.createCell(1).setCellValue(FormatterUtil.formatDate(claim.getTransactionDate()));
-		
+        CellStyle wrap = workbook.createCellStyle();
+        wrap.setWrapText(true);
+        
+        CellStyle valignTop = workbook.createCellStyle();
+        valignTop.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        
+        CellStyle valignTopAndWrap = workbook.createCellStyle();
+        valignTopAndWrap.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        valignTopAndWrap.setWrapText(true);
+        
 		Cell cell = null;
-		
-		List<SalesInvoice> salesInvoices = claim.getSalesInvoices();
-		for (int i = 0; i < salesInvoices.size(); i++) {
-			row = sheet.getRow(6 + i);
+		int baseRow = 5;
+
+		List<PromoRaffleTicketClaimSummary> summaries = PromoRaffleTicketClaimSummary.toSummaries(claim.getSalesInvoices());
+		for (int i = 0; i < summaries.size(); i++) {
+			PromoRaffleTicketClaimSummary summary = summaries.get(i);
+			
+			row = sheet.getRow(baseRow + i);
 			if (row == null) {
-				row = sheet.createRow(6 + i);
+				row = sheet.createRow(baseRow + i);
 			}
 			
 			cell = row.getCell(0);
@@ -46,25 +58,34 @@ public class JchsRaffleTicketClaimExcelGenerator {
 				cell = row.createCell(0);
 			}
 			
-			cell.setCellValue(salesInvoices.get(i).getSalesInvoiceNumber());
-		}
-		
-        CellStyle rightAlign = CellStyleBuilder.createStyle(workbook).setAlignment(CellStyle.ALIGN_RIGHT).build();
-		
-		List<PromoRaffleTicket> tickets = claim.getTickets();
-		for (int i = 0; i < tickets.size(); i++) {
-			row = sheet.getRow(6 + i);
-			if (row == null) {
-				row = sheet.createRow(6 + i);
-			}
+			cell.setCellValue(FormatterUtil.formatDate(summary.getTransactionDate()));
+			cell.setCellStyle(valignTop);
 			
 			cell = row.getCell(1);
 			if (cell == null) {
 				cell = row.createCell(1);
 			}
 			
-			cell.setCellValue(tickets.get(i).getTicketNumberDisplay());
-			cell.setCellStyle(rightAlign);
+			cell.setCellValue(summary.getSalesInvoicesAsString());
+			cell.setCellStyle(valignTopAndWrap);
+			
+			cell = row.getCell(2);
+			if (cell == null) {
+				cell = row.createCell(2);
+			}
+			
+			StringBuilder sb = new StringBuilder();
+			int summaryTickets = summary.getNumberOfTickets();
+			for (int x = 0; x < summaryTickets; x++) {
+				PromoRaffleTicket ticket = tickets.remove(0);
+				if (sb.length() > 0) {
+					sb.append("\r\n");
+				}
+				sb.append(ticket.getTicketNumberDisplay());
+			}
+			
+			cell.setCellValue(sb.toString());
+			cell.setCellStyle(valignTopAndWrap);
 		}
 		
 		return workbook;

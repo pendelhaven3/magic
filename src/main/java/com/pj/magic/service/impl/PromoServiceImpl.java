@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRaffleTicket;
 import com.pj.magic.model.PromoRaffleTicketClaim;
+import com.pj.magic.model.PromoRaffleTicketClaimSummary;
 import com.pj.magic.model.PromoType2Rule;
 import com.pj.magic.model.PromoType3Rule;
 import com.pj.magic.model.PromoType3RulePromoProduct;
@@ -315,31 +317,29 @@ public class PromoServiceImpl implements PromoService {
 
 	@Transactional
 	@Override
-	public PromoRaffleTicketClaim claimJchsRaffleTickets(Customer customer, Date transactionDate) {
-		PromoRaffleTicketClaim claim = promoRaffleTicketClaimsRepository.findByPromoAndCustomerAndTransactionDate(
-				new Promo(JCHS_RAFFLE_PROMO_ID), customer, transactionDate);
-		if (claim != null) {
-			throw new AlreadyClaimedException();
-		}
+	public PromoRaffleTicketClaim claimJchsRaffleTickets(Customer customer, Date transactionDateFrom, Date transactionDateTo) {
+		validateTransactionDatesNotYetClaimed(customer, transactionDateFrom, transactionDateTo);
 		
 		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
 		criteria.setCustomer(customer);
-		criteria.setTransactionDate(transactionDate);
+		criteria.setTransactionDateFrom(transactionDateFrom);
+		criteria.setTransactionDateTo(transactionDateTo);
 		criteria.setMarked(true);
 		
 		List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
 		
-		BigDecimal totalAmount = BigDecimal.ZERO;
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			totalAmount = totalAmount.add(salesInvoice.getTotalNetAmount());
+		List<PromoRaffleTicketClaimSummary> summaries = PromoRaffleTicketClaimSummary.toSummaries(salesInvoices);
+		
+		int claimableTickets = 0;
+		for (PromoRaffleTicketClaimSummary summary : summaries) {
+			claimableTickets += summary.getNumberOfTickets();
 		}
 		
-		int claimableTickets = totalAmount.divideToIntegralValue(JCHS_RAFFLE_SALES_AMOUNT_PER_TICKET).intValue();
-		
-		claim = new PromoRaffleTicketClaim();
+		PromoRaffleTicketClaim claim = new PromoRaffleTicketClaim();
 		claim.setPromo(new Promo(JCHS_RAFFLE_PROMO_ID));
 		claim.setCustomer(customer);
-		claim.setTransactionDate(transactionDate);
+		claim.setTransactionDateFrom(transactionDateFrom);
+		claim.setTransactionDateTo(transactionDateTo);
 		claim.setClaimDate(systemDao.getCurrentDateTime());
 		claim.setProcessedBy(loginService.getLoggedInUser());
 		claim.setNumberOfTickets(claimableTickets);
@@ -359,6 +359,19 @@ public class PromoServiceImpl implements PromoService {
 		}
 		
 		return claim;
+	}
+
+	private void validateTransactionDatesNotYetClaimed(Customer customer, Date transactionDateFrom, Date transactionDateTo) {
+		Date transactionDate = transactionDateFrom;
+		
+		while (transactionDate.before(transactionDateTo) || transactionDate.equals(transactionDateTo)) {
+			PromoRaffleTicketClaim claim = promoRaffleTicketClaimsRepository.findByPromoAndCustomerAndTransactionDate(
+					new Promo(JCHS_RAFFLE_PROMO_ID), customer, transactionDate);
+			if (claim != null) {
+				throw new AlreadyClaimedException();
+			}
+			transactionDate = DateUtils.addDays(transactionDate, 1);
+		}
 	}
 
 	@Override

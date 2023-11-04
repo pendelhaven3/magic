@@ -9,11 +9,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -21,9 +21,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.TableCellRenderer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -40,18 +42,19 @@ import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.component.MultiLineTableCellRenderer;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.PromoRaffleTicket;
 import com.pj.magic.model.PromoRaffleTicketClaim;
+import com.pj.magic.model.PromoRaffleTicketClaimSummary;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.impl.PromoService;
-import com.pj.magic.service.impl.PromoServiceImpl;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.ExcelUtil;
 import com.pj.magic.util.FileUtil;
@@ -77,9 +80,10 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 	private JLabel customerNameLabel;
 	private JButton selectCustomerButton;
 	private JTabbedPane tabbedPane;
-	private UtilCalendarModel transactionDateModel;
-	private JDatePickerImpl transactionDatePicker;
-	private JTextField totalAmountField = new JTextField();
+	private UtilCalendarModel transactionDateFromModel;
+	private UtilCalendarModel transactionDateToModel;
+	private JDatePickerImpl transactionDateFromPicker;
+	private JDatePickerImpl transactionDateToPicker;
 	private MagicTextField totalTicketsField = new MagicTextField();
 	private JButton checkButton;
 	private JButton claimButton;
@@ -124,8 +128,20 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 			}
 		});;
 		
-		transactionDateModel = new UtilCalendarModel();
-		transactionDateModel.addPropertyChangeListener(new PropertyChangeListener() {
+		transactionDateFromModel = new UtilCalendarModel();
+		transactionDateFromModel.addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if ("value".equals(evt.getPropertyName()) && evt.getOldValue() != null 
+						&& evt.getNewValue() != null && !evt.getOldValue().equals(evt.getNewValue())) {
+					clearClaimComponents();
+				}
+			}
+		});
+		
+		transactionDateToModel = new UtilCalendarModel();
+		transactionDateToModel.addPropertyChangeListener(new PropertyChangeListener() {
 			
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
@@ -154,17 +170,18 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 			}
 		});
 		
-		totalAmountField.setEditable(false);
 		totalTicketsField.setEditable(false);
 		
 		salesInvoicesTable = new MagicListTable(salesInvoicesTableModel);
+		salesInvoicesTable.getColumnModel().getColumn(1).setCellRenderer(new MultiLineTableCellRenderer());
+		salesInvoicesTable.setRowHeight(100);
+		
 		ticketsTable = new MagicListTable(ticketsTableModel);
 		
 		focusOnComponentWhenThisPanelIsDisplayed(customerCodeField);
 	}
 
 	private void clearClaimComponents() {
-		totalAmountField.setText(null);
 		totalTicketsField.setText(null);
 		claimButton.setEnabled(false);
 		salesInvoicesTableModel.clear();
@@ -178,12 +195,19 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 			return;
 		}
 
-		Calendar transactionDateCalendarObject = transactionDateModel.getValue();
-		if (transactionDateCalendarObject == null) {
-			showErrorMessage("Transaction Date must not be empty");
-			return;
+		Calendar transactionDateFromCalendarObject = transactionDateFromModel.getValue();
+		if (transactionDateFromCalendarObject != null) {
+			claim.setTransactionDateFrom(transactionDateFromCalendarObject.getTime());
 		} else {
-			claim.setTransactionDate(transactionDateCalendarObject.getTime());
+			showErrorMessage("Transaction Date From must not be empty");
+			return;
+		}
+		
+		Calendar transactionDateToCalendarObject = transactionDateToModel.getValue();
+		if (transactionDateToCalendarObject != null) {
+			claim.setTransactionDateTo(transactionDateToCalendarObject.getTime());
+		} else {
+			claim.setTransactionDateTo(new Date());
 		}
 		
 		Customer customer = customerService.findCustomerByCode(customerCode);
@@ -195,25 +219,26 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 			claim.setCustomer(customer);
 		}
 		
-		List<SalesInvoice> salesInvoices = getEligibleSalesInvoices(customer, transactionDateCalendarObject.getTime());
+		List<SalesInvoice> salesInvoices = getEligibleSalesInvoices(
+				customer, claim.getTransactionDateFrom(), claim.getTransactionDateTo());
 		
-		BigDecimal totalAmount = BigDecimal.ZERO;
-		for (SalesInvoice salesInvoice : salesInvoices) {
-			totalAmount = totalAmount.add(salesInvoice.getTotalNetAmount());
+		List<PromoRaffleTicketClaimSummary> summaries = PromoRaffleTicketClaimSummary.toSummaries(salesInvoices);
+		
+		int tickets = 0;
+		for (PromoRaffleTicketClaimSummary summary : summaries) {
+			tickets = tickets + summary.getNumberOfTickets();
 		}
 		
-		int claimableTickets = totalAmount.divideToIntegralValue(PromoServiceImpl.JCHS_RAFFLE_SALES_AMOUNT_PER_TICKET).intValue();
-		
-		totalAmountField.setText(FormatterUtil.formatAmount(totalAmount));
-		totalTicketsField.setText(String.valueOf(claimableTickets));
-		salesInvoicesTableModel.setItems(salesInvoices);
+		totalTicketsField.setText(String.valueOf(tickets));
+		salesInvoicesTableModel.setItems(summaries);
 		claimButton.setEnabled(true);
 	}
 
-	private List<SalesInvoice> getEligibleSalesInvoices(Customer customer, Date salesDate) {
+	private List<SalesInvoice> getEligibleSalesInvoices(Customer customer, Date salesDateFrom, Date salesDateTo) {
 		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
 		criteria.setCustomer(customer);
-		criteria.setTransactionDate(salesDate);
+		criteria.setTransactionDateFrom(salesDateFrom);
+		criteria.setTransactionDateTo(salesDateTo);
 		criteria.setMarked(true);
 		
 		return salesInvoiceService.search(criteria);
@@ -227,7 +252,8 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 		}
 		
 		try {
-			claim = promoService.claimJchsRaffleTickets(claim.getCustomer(), claim.getTransactionDate());
+			claim = promoService.claimJchsRaffleTickets(
+					claim.getCustomer(), claim.getTransactionDateFrom(), claim.getTransactionDateTo());
 		} catch (AlreadyClaimedException e) {
 			showErrorMessage("Tickets already claimed for this transaction date");
 			return;
@@ -279,14 +305,15 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 		customerCodeField.setEditable(false);
 		customerNameLabel.setText(claim.getCustomer().getName());
 		selectCustomerButton.setEnabled(false);
-		transactionDateModel.setValue(DateUtils.toCalendar(claim.getTransactionDate()));
-		transactionDatePicker.getComponents()[1].setVisible(false);
-		totalAmountField.setText(FormatterUtil.formatAmount(claim.getTotalAmount()));
+		transactionDateFromModel.setValue(DateUtils.toCalendar(claim.getTransactionDateFrom()));
+		transactionDateToModel.setValue(DateUtils.toCalendar(claim.getTransactionDateTo()));
+		transactionDateFromPicker.getComponents()[1].setVisible(false);
+		transactionDateToPicker.getComponents()[1].setVisible(false);
 		totalTicketsField.setText(String.valueOf(claim.getNumberOfTickets()));
 		checkButton.setEnabled(false);
 		claimButton.setEnabled(false);
 		ticketsTableModel.setItems(claim.getTickets());
-		salesInvoicesTableModel.setItems(claim.getSalesInvoices());
+		salesInvoicesTableModel.setItems(PromoRaffleTicketClaimSummary.toSummaries(claim.getSalesInvoices()));
 		excelButton.setEnabled(true);
 	}
 
@@ -296,9 +323,10 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 		customerCodeField.setText(null);
 		customerNameLabel.setText(null);
 		selectCustomerButton.setEnabled(true);
-		transactionDateModel.setValue(null);
-		transactionDatePicker.getComponents()[1].setVisible(true);
-		totalAmountField.setText(null);
+		transactionDateFromModel.setValue(null);
+		transactionDateToModel.setValue(null);
+		transactionDateFromPicker.getComponents()[1].setVisible(true);
+		transactionDateToPicker.getComponents()[1].setVisible(true);
 		totalTicketsField.setText(null);
 		checkButton.setEnabled(true);
 		claimButton.setEnabled(false);
@@ -402,31 +430,38 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(200, "Transaction Date:"), c);
+		mainPanel.add(ComponentUtil.createLabel(200, "Transaction Date From:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		
-		JDatePanelImpl datePanel = new JDatePanelImpl(transactionDateModel);
-		transactionDatePicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
-		mainPanel.add(transactionDatePicker, c);
+		JDatePanelImpl datePanel = new JDatePanelImpl(transactionDateFromModel);
+		transactionDateFromPicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		mainPanel.add(transactionDateFromPicker, c);
 		
 		currentRow++;
 		
 		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		mainPanel.add(Box.createHorizontalStrut(50), c);
+
+		c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Total Amount:"), c);
+		mainPanel.add(ComponentUtil.createLabel(200, "Transaction Date To:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 2;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		totalAmountField.setPreferredSize(new Dimension(150, 25));
-		mainPanel.add(totalAmountField, c);
+		
+		datePanel = new JDatePanelImpl(transactionDateToModel);
+		transactionDateToPicker = new JDatePickerImpl(datePanel, new DatePickerFormatter());
+		mainPanel.add(transactionDateToPicker, c);
 		
 		currentRow++;
 		
@@ -483,7 +518,7 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 	private void generateExcel() {
 		MagicFileChooser excelFileChooser = FileUtil.createSaveFileChooser(
 				"Christmas Raffle Papremyo 2023 - " + claim.getCustomer().getCode() 
-				+ new SimpleDateFormat("mmmDD").format(claim.getTransactionDate()) + ".xlsx");
+				+ new SimpleDateFormat("mmmDD").format(claim.getTransactionDateFrom()) + ".xlsx");
 		if (!excelFileChooser.selectSaveFile(this)) {
 			return;
 		}
@@ -552,21 +587,27 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 		return panel;
 	}
 	
-	private class SalesInvoicesTableModel extends ListBackedTableModel<SalesInvoice>{
+	private class SalesInvoicesTableModel extends ListBackedTableModel<PromoRaffleTicketClaimSummary> {
 
 		@Override
 		protected String[] getColumnNames() {
-			return new String[] {"Sales Invoice No.", "Amount"};
+			return new String[] {"Transaction Date", "Sales Invoices", "Amount", "Tickets"};
 		}
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			SalesInvoice salesInvoice = getItem(rowIndex);
+			PromoRaffleTicketClaimSummary summary = getItem(rowIndex);
 			switch (columnIndex) {
 			case 0:
-				return String.valueOf(salesInvoice.getSalesInvoiceNumber());
+				return FormatterUtil.formatDate(summary.getTransactionDate());
 			case 1:
-				return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
+				return summary.getSalesInvoices().stream()
+						.map(si -> String.valueOf(si.getSalesInvoiceNumber()))
+						.collect(Collectors.toList());
+			case 2:
+				return FormatterUtil.formatAmount(summary.getTotalAmount());
+			case 3:
+				return summary.getNumberOfTickets();
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}

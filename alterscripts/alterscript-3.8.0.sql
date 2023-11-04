@@ -12,12 +12,13 @@ create table PROMO_RAFFLE_TICKET_CLAIMS (
   ID integer auto_increment,
   PROMO_ID integer not null,
   CUSTOMER_ID integer not null,
-  TRANSACTION_DT date not null,
+  TRANSACTION_DT_FROM date not null,
+  TRANSACTION_DT_TO date not null,
   CLAIM_DT datetime not null,
   PROCESSED_BY integer not null,
   NO_OF_TICKETS integer not null,
   constraint PROMO_RAFFLE_TICKET_CLAIMS$PK primary key (ID),
-  constraint PROMO_RAFFLE_TICKET_CLAIMS$UK unique (PROMO_ID, CUSTOMER_ID, TRANSACTION_DT),
+  constraint PROMO_RAFFLE_TICKET_CLAIMS$UK unique (PROMO_ID, CUSTOMER_ID, TRANSACTION_DT_FROM),
   constraint PROMO_RAFFLE_TICKET_CLAIMS$FK foreign key (CUSTOMER_ID) references CUSTOMER (ID),
   constraint PROMO_RAFFLE_TICKET_CLAIMS$FK2 foreign key (PROCESSED_BY) references USER (ID)
 );

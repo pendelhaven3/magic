@@ -27,7 +27,7 @@ import com.pj.magic.util.DbUtil;
 public class PromoRaffleTicketClaimsRepositoryImpl extends MagicDao implements PromoRaffleTicketClaimsRepository {
 
 	private static final String BASE_SELECT_SQL =
-			"select a.ID, a.TRANSACTION_DT, a.CLAIM_DT, a.NO_OF_TICKETS"
+			"select a.ID, a.TRANSACTION_DT_FROM, a.TRANSACTION_DT_TO, a.CLAIM_DT, a.NO_OF_TICKETS"
 			+ " , a.CUSTOMER_ID, b.CODE as CUSTOMER_CODE, b.NAME as CUSTOMER_NAME"
 			+ " , a.PROCESSED_BY, c.USERNAME as PROCESSED_BY_USERNAME"
 			+ " from PROMO_RAFFLE_TICKET_CLAIMS a"
@@ -46,7 +46,8 @@ public class PromoRaffleTicketClaimsRepositoryImpl extends MagicDao implements P
 		PromoRaffleTicketClaim claim = new PromoRaffleTicketClaim();
 		claim.setId(rs.getLong("ID"));
 		claim.setCustomer(customer);
-		claim.setTransactionDate(rs.getDate("TRANSACTION_DT"));
+		claim.setTransactionDateFrom(rs.getDate("TRANSACTION_DT_FROM"));
+		claim.setTransactionDateTo(rs.getDate("TRANSACTION_DT_TO"));
 		claim.setClaimDate(rs.getTimestamp("CLAIM_DT"));
 		claim.setProcessedBy(new User(rs.getLong("PROCESSED_BY"), rs.getString("PROCESSED_BY_USERNAME")));
 		claim.setNumberOfTickets(rs.getInt("NO_OF_TICKETS"));
@@ -62,8 +63,8 @@ public class PromoRaffleTicketClaimsRepositoryImpl extends MagicDao implements P
 
 	private static final String INSERT_SQL =
 			"insert into PROMO_RAFFLE_TICKET_CLAIMS"
-			+ " (PROMO_ID, CUSTOMER_ID, TRANSACTION_DT, CLAIM_DT, PROCESSED_BY, NO_OF_TICKETS)"
-			+ " values (?, ?, ?, ?, ?, ?)";
+			+ " (PROMO_ID, CUSTOMER_ID, TRANSACTION_DT_FROM, TRANSACTION_DT_TO, CLAIM_DT, PROCESSED_BY, NO_OF_TICKETS)"
+			+ " values (?, ?, ?, ?, ?, ?, ?)";
 	
 	@Override
 	public void save(PromoRaffleTicketClaim claim) {
@@ -76,10 +77,11 @@ public class PromoRaffleTicketClaimsRepositoryImpl extends MagicDao implements P
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, claim.getPromo().getId());
 				ps.setLong(2, claim.getCustomer().getId());
-				ps.setDate(3, DbUtil.toSqlDate(claim.getTransactionDate()));
-				ps.setTimestamp(4, new Timestamp(claim.getClaimDate().getTime()));
-				ps.setLong(5, claim.getProcessedBy().getId());
-				ps.setInt(6, claim.getNumberOfTickets());
+				ps.setDate(3, DbUtil.toSqlDate(claim.getTransactionDateFrom()));
+				ps.setDate(4, DbUtil.toSqlDate(claim.getTransactionDateTo()));
+				ps.setTimestamp(5, new Timestamp(claim.getClaimDate().getTime()));
+				ps.setLong(6, claim.getProcessedBy().getId());
+				ps.setInt(7, claim.getNumberOfTickets());
 				return ps;
 			}
 		}, holder);
@@ -99,13 +101,13 @@ public class PromoRaffleTicketClaimsRepositoryImpl extends MagicDao implements P
 	}
 
 	private static final String FIND_BY_PROMO_AND_CUSTOMER_AND_TRANSACTION_DATE_SQL = BASE_SELECT_SQL
-			+ " and a.PROMO_ID = ? and a.CUSTOMER_ID = ? and a.TRANSACTION_DT = ?";
+			+ " and a.PROMO_ID = ? and a.CUSTOMER_ID = ? and a.TRANSACTION_DT_FROM <= ? and a.TRANSACTION_DT_TO >= ?";
 	
 	@Override
 	public PromoRaffleTicketClaim findByPromoAndCustomerAndTransactionDate(Promo promo, Customer customer, Date transactionDate) {
 		try {
 			return getJdbcTemplate().queryForObject(FIND_BY_PROMO_AND_CUSTOMER_AND_TRANSACTION_DATE_SQL,
-					rowMapper, promo.getId(), customer.getId(), transactionDate);
+					rowMapper, promo.getId(), customer.getId(), transactionDate, transactionDate);
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}

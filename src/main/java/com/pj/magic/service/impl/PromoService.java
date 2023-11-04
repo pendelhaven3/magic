@@ -71,7 +71,7 @@ public interface PromoService {
 
 	List<PromoRaffleTicketClaim> getAllJchsRaffleTicketClaims();
 
-	PromoRaffleTicketClaim claimJchsRaffleTickets(Customer customer, Date transactionDate);
+	PromoRaffleTicketClaim claimJchsRaffleTickets(Customer customer, Date transactionDateFrom, Date transactionDateTo);
 
 	PromoRaffleTicketClaim getJchsRaffleTicketClaim(Long id);
 

@@ -27,10 +27,11 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 
 	private static final int CLAIM_ID_COLUMN_INDEX = 0;
 	private static final int CUSTOMER_COLUMN_INDEX = 1;
-	private static final int TRANSACTION_DATE_COLUMN_INDEX = 2;
-	private static final int NUMBER_OF_TICKETS_COLUMN_INDEX = 3;
-	private static final int CLAIM_DATE_COLUMN_INDEX = 4;
-	private static final int PROCESSED_BY_COLUMN_INDEX = 5;
+	private static final int TRANSACTION_DATE_FROM_COLUMN_INDEX = 2;
+	private static final int TRANSACTION_DATE_TO_COLUMN_INDEX = 3;
+	private static final int NUMBER_OF_TICKETS_COLUMN_INDEX = 4;
+	private static final int CLAIM_DATE_COLUMN_INDEX = 5;
+	private static final int PROCESSED_BY_COLUMN_INDEX = 6;
 	
 	@Autowired
 	private PromoService promoService;
@@ -113,7 +114,7 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 
 	private class TicketClaimsTableModel extends ListBackedTableModel<PromoRaffleTicketClaim>{
 
-		private final String[] columnNames = {"Claim ID", "Customer", "Transaction Date", "No. of Tickets", "Claim Date", "Processed By"};
+		private final String[] columnNames = {"Claim ID", "Customer", "Transaction Date From", "Transaction Date To", "No. of Tickets", "Claim Date", "Processed By"};
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
@@ -123,8 +124,10 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 				return String.valueOf(claim.getId());
 			case CUSTOMER_COLUMN_INDEX:
 				return claim.getCustomer().getName();
-			case TRANSACTION_DATE_COLUMN_INDEX:
-				return FormatterUtil.formatDate(claim.getTransactionDate());
+			case TRANSACTION_DATE_FROM_COLUMN_INDEX:
+				return FormatterUtil.formatDate(claim.getTransactionDateFrom());
+			case TRANSACTION_DATE_TO_COLUMN_INDEX:
+				return FormatterUtil.formatDate(claim.getTransactionDateTo());
 			case NUMBER_OF_TICKETS_COLUMN_INDEX:
 				return claim.getNumberOfTickets();
 			case CLAIM_DATE_COLUMN_INDEX:
