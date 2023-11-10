@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.pj.magic.model.PromoRaffleTicket;
 import com.pj.magic.model.PromoRaffleTicketClaim;
 import com.pj.magic.model.PromoRaffleTicketClaimSummary;
+import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.util.FormatterUtil;
 
 public class JchsRaffleTicketClaimExcelGenerator {
@@ -23,8 +24,6 @@ public class JchsRaffleTicketClaimExcelGenerator {
 				getClass().getResourceAsStream("/excel/raffleTicketClaim.xlsx"));
 		Sheet sheet = workbook.getSheetAt(0);
 
-		List<PromoRaffleTicket> tickets = new ArrayList<>(claim.getTickets());
-		
 		Row row = sheet.getRow(0);
 		row.createCell(1).setCellValue(claim.getCustomer().getCode());
 		
@@ -40,17 +39,23 @@ public class JchsRaffleTicketClaimExcelGenerator {
         CellStyle valignTopAndWrap = workbook.createCellStyle();
         valignTopAndWrap.setVerticalAlignment(CellStyle.VERTICAL_TOP);
         valignTopAndWrap.setWrapText(true);
+
+        List<PromoRaffleTicket> tickets = new ArrayList<>(claim.getTickets());
         
 		Cell cell = null;
-		int baseRow = 5;
+		int startRow = 5;
+		int lastRow = 5;
 
 		List<PromoRaffleTicketClaimSummary> summaries = PromoRaffleTicketClaimSummary.toSummaries(claim.getSalesInvoices());
 		for (int i = 0; i < summaries.size(); i++) {
 			PromoRaffleTicketClaimSummary summary = summaries.get(i);
+			if (summary.getNumberOfTickets() == 0) {
+				continue;
+			}
 			
-			row = sheet.getRow(baseRow + i);
+			row = sheet.getRow(startRow);
 			if (row == null) {
-				row = sheet.createRow(baseRow + i);
+				row = sheet.createRow(startRow);
 			}
 			
 			cell = row.getCell(0);
@@ -59,33 +64,44 @@ public class JchsRaffleTicketClaimExcelGenerator {
 			}
 			
 			cell.setCellValue(FormatterUtil.formatDate(summary.getTransactionDate()));
-			cell.setCellStyle(valignTop);
 			
-			cell = row.getCell(1);
-			if (cell == null) {
-				cell = row.createCell(1);
-			}
-			
-			cell.setCellValue(summary.getSalesInvoicesAsString());
-			cell.setCellStyle(valignTopAndWrap);
-			
-			cell = row.getCell(2);
-			if (cell == null) {
-				cell = row.createCell(2);
-			}
-			
-			StringBuilder sb = new StringBuilder();
-			int summaryTickets = summary.getNumberOfTickets();
-			for (int x = 0; x < summaryTickets; x++) {
-				PromoRaffleTicket ticket = tickets.remove(0);
-				if (sb.length() > 0) {
-					sb.append("\r\n");
+			List<SalesInvoice> salesInvoices = summary.getSalesInvoices();
+			for (int j = 0; j < salesInvoices.size(); j++) {
+				row = sheet.getRow(startRow + j);
+				if (row == null) {
+					row = sheet.createRow(startRow + j);
 				}
-				sb.append(ticket.getTicketNumberDisplay());
+				
+				cell = row.getCell(1);
+				if (cell == null) {
+					cell = row.createCell(1);
+				}
+				cell.setCellValue(String.valueOf(salesInvoices.get(j).getSalesInvoiceNumber()));
+				
+				if (lastRow < startRow + j) {
+					lastRow = startRow + j;
+				}
 			}
 			
-			cell.setCellValue(sb.toString());
-			cell.setCellStyle(valignTopAndWrap);
+			for (int j = 0; j < summary.getNumberOfTickets(); j++) {
+				row = sheet.getRow(startRow + j);
+				if (row == null) {
+					row = sheet.createRow(startRow + j);
+				}
+				
+				cell = row.getCell(2);
+				if (cell == null) {
+					cell = row.createCell(2);
+				}
+				cell.setCellValue(String.valueOf(tickets.remove(0).getTicketNumberDisplay()));
+				
+				if (lastRow < startRow + j) {
+					lastRow = startRow + j;
+				}
+			}
+			
+			lastRow++;
+			startRow = lastRow;
 		}
 		
 		return workbook;
