@@ -43,6 +43,7 @@ import com.pj.magic.model.PromoType6Rule;
 import com.pj.magic.model.PromoType6RulePromoProduct;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.PromoSearchCriteria;
+import com.pj.magic.model.search.RaffleTicketSearchCriteria;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.repository.PromoRaffleTicketClaimSalesInvoicesRepository;
 import com.pj.magic.repository.PromoRaffleTicketClaimTicketsRepository;
@@ -391,6 +392,11 @@ public class PromoServiceImpl implements PromoService {
 	@Override
 	public List<PromoRaffleTicket> getAllJchsRaffleTickets() {
 		return promoRaffleTicketsRepository.findAllByPromo(new Promo(JCHS_RAFFLE_PROMO_ID));
+	}
+
+	@Override
+	public List<PromoRaffleTicket> searchJchsRaffleTickets(RaffleTicketSearchCriteria criteria) {
+		return promoRaffleTicketsRepository.search(criteria);
 	}
 
 }

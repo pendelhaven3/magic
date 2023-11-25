@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -16,6 +17,7 @@ import com.pj.magic.dao.impl.MagicDao;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRaffleTicket;
+import com.pj.magic.model.search.RaffleTicketSearchCriteria;
 import com.pj.magic.repository.PromoRaffleTicketsRepository;
 
 @Repository
@@ -79,6 +81,24 @@ public class PromoRaffleTicketRepositoryImpl extends MagicDao implements PromoRa
 	@Override
 	public List<PromoRaffleTicket> findAllByPromo(Promo promo) {
 		return getJdbcTemplate().query(FIND_ALL_BY_PROMO_SQL, rowMapper, promo.getId());
+	}
+
+	@Override
+	public List<PromoRaffleTicket> search(RaffleTicketSearchCriteria criteria) {
+		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
+		List<Object> params = new ArrayList<>();
+		
+		if (criteria.getCustomer() != null) {
+			sql.append(" and a.CUSTOMER_ID = ?");
+			params.add(criteria.getCustomer().getId());
+		}
+		
+		if (criteria.getTicketNumber() != null) {
+			sql.append(" and a.TICKET_NUMBER = ?");
+			params.add(criteria.getTicketNumber());
+		}
+		
+		return getJdbcTemplate().query(sql.toString(), rowMapper, params.toArray());
 	}
 
 }

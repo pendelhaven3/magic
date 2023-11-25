@@ -18,6 +18,7 @@ import com.pj.magic.model.PromoType5RulePromoProduct;
 import com.pj.magic.model.PromoType6Rule;
 import com.pj.magic.model.PromoType6RulePromoProduct;
 import com.pj.magic.model.search.PromoSearchCriteria;
+import com.pj.magic.model.search.RaffleTicketSearchCriteria;
 
 public interface PromoService {
 
@@ -76,5 +77,7 @@ public interface PromoService {
 	PromoRaffleTicketClaim getJchsRaffleTicketClaim(Long id);
 
 	List<PromoRaffleTicket> getAllJchsRaffleTickets();
+
+	List<PromoRaffleTicket> searchJchsRaffleTickets(RaffleTicketSearchCriteria criteria);
 	
 }
