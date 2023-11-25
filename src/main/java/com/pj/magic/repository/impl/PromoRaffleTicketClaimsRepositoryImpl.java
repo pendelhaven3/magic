@@ -113,4 +113,12 @@ public class PromoRaffleTicketClaimsRepositoryImpl extends MagicDao implements P
 		}
 	}
 
+	private static final String FIND_ALL_BY_PROMO_AND_CUSTOMER_SQL = BASE_SELECT_SQL
+			+ " and a.PROMO_ID = ? and a.CUSTOMER_ID = ? order by a.CLAIM_DT desc";
+	
+	@Override
+	public List<PromoRaffleTicketClaim> findAllByPromoAndCustomer(Promo promo, Customer customer) {
+		return getJdbcTemplate().query(FIND_ALL_BY_PROMO_AND_CUSTOMER_SQL, rowMapper, promo.getId(), customer.getId());
+	}
+
 }

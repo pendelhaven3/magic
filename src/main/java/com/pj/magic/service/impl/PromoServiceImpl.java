@@ -399,4 +399,9 @@ public class PromoServiceImpl implements PromoService {
 		return promoRaffleTicketsRepository.search(criteria);
 	}
 
+	@Override
+	public List<PromoRaffleTicketClaim> findAllJchsRaffleTicketClaimsByCustomer(Customer customer) {
+		return promoRaffleTicketClaimsRepository.findAllByPromoAndCustomer(new Promo(JCHS_RAFFLE_PROMO_ID), customer);
+	}
+
 }

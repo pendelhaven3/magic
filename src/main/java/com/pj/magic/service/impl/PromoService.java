@@ -76,8 +76,10 @@ public interface PromoService {
 
 	PromoRaffleTicketClaim getJchsRaffleTicketClaim(Long id);
 
+	List<PromoRaffleTicketClaim> findAllJchsRaffleTicketClaimsByCustomer(Customer customer);
+	
 	List<PromoRaffleTicket> getAllJchsRaffleTickets();
 
 	List<PromoRaffleTicket> searchJchsRaffleTickets(RaffleTicketSearchCriteria criteria);
-	
+
 }

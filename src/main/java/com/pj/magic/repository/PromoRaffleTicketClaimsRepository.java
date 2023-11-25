@@ -17,4 +17,6 @@ public interface PromoRaffleTicketClaimsRepository {
 
 	PromoRaffleTicketClaim findByPromoAndCustomerAndTransactionDate(Promo promo, Customer customer, Date transactionDate);
 
+	List<PromoRaffleTicketClaim> findAllByPromoAndCustomer(Promo promo, Customer customer);
+
 }
