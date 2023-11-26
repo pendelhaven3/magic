@@ -38,7 +38,7 @@ public class MarkSalesInvoicesTableModel extends AbstractTableModel {
 		case MarkSalesInvoicesTable.CUSTOMER_NAME_COLUMN_INDEX:
 			return salesInvoice.getCustomer().getName();
 		case MarkSalesInvoicesTable.TRANSACTION_DATE_COLUMN_INDEX:
-			return FormatterUtil.formatDate(salesInvoice.getCreateDate());
+			return FormatterUtil.formatDate(salesInvoice.getTransactionDate());
 		case MarkSalesInvoicesTable.ENCODER_COLUMN_INDEX:
 			return salesInvoice.getEncoder().getUsername();
 		case MarkSalesInvoicesTable.NET_AMOUNT_COLUMN_INDEX:
