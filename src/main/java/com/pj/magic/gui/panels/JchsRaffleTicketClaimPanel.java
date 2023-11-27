@@ -21,11 +21,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.TableCellRenderer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -47,6 +45,7 @@ import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRaffleTicket;
 import com.pj.magic.model.PromoRaffleTicketClaim;
 import com.pj.magic.model.PromoRaffleTicketClaimSummary;
@@ -55,6 +54,7 @@ import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.service.impl.PromoService;
+import com.pj.magic.service.impl.PromoServiceImpl;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.ExcelUtil;
 import com.pj.magic.util.FileUtil;
@@ -240,6 +240,7 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 		criteria.setTransactionDateFrom(salesDateFrom);
 		criteria.setTransactionDateTo(salesDateTo);
 		criteria.setMarked(true);
+		criteria.setUnclaimedRafflePromo(new Promo(PromoServiceImpl.JCHS_RAFFLE_PROMO_ID));
 		
 		return salesInvoiceService.search(criteria);
 	}

@@ -217,6 +217,16 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			+ " )"
 			+ " and a.CANCEL_IND = 'N'";
 	
+	private static final String UNCLAIMED_RAFFLE_PROMO_WHERE_CLAUSE_SQL =
+			"   and not exists("
+			+ "   select 1"
+			+ "   from PROMO_RAFFLE_TICKET_CLAIM_SALES_INVOICES prtcsi"
+			+ "   join PROMO_RAFFLE_TICKET_CLAIMS prtc"
+			+ "     on prtc.ID = prtcsi.CLAIM_ID"
+			+ "   where prtcsi.SALES_INVOICE_ID = a.ID"
+			+ "   and prtc.PROMO_ID = ?"
+			+ " )";
+	
 	@Override
 	public List<SalesInvoice> search(SalesInvoiceSearchCriteria criteria) {
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
@@ -273,6 +283,11 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 		if (criteria.getUnredeemedPromo() != null) {
 			sql.append(UNREDEEMED_PROMO_WHERE_CLAUSE_SQL);
 			params.add(criteria.getUnredeemedPromo().getId());
+		}
+		
+		if (criteria.getUnclaimedRafflePromo() != null) {
+			sql.append(UNCLAIMED_RAFFLE_PROMO_WHERE_CLAUSE_SQL);
+			params.add(criteria.getUnclaimedRafflePromo().getId());
 		}
 		
 		if (!StringUtils.isEmpty(criteria.getOrderBy())) {

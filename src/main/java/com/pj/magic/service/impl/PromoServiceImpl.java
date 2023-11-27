@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,6 @@ import com.pj.magic.dao.PromoType5RulePromoProductDao;
 import com.pj.magic.dao.PromoType6RuleDao;
 import com.pj.magic.dao.PromoType6RulePromoProductDao;
 import com.pj.magic.dao.SystemDao;
-import com.pj.magic.exception.AlreadyClaimedException;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Promo;
@@ -319,13 +317,12 @@ public class PromoServiceImpl implements PromoService {
 	@Transactional
 	@Override
 	public PromoRaffleTicketClaim claimJchsRaffleTickets(Customer customer, Date transactionDateFrom, Date transactionDateTo) {
-		validateTransactionDatesNotYetClaimed(customer, transactionDateFrom, transactionDateTo);
-		
 		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
 		criteria.setCustomer(customer);
 		criteria.setTransactionDateFrom(transactionDateFrom);
 		criteria.setTransactionDateTo(transactionDateTo);
 		criteria.setMarked(true);
+		criteria.setUnclaimedRafflePromo(new Promo(JCHS_RAFFLE_PROMO_ID));
 		
 		List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
 		
@@ -360,19 +357,6 @@ public class PromoServiceImpl implements PromoService {
 		}
 		
 		return claim;
-	}
-
-	private void validateTransactionDatesNotYetClaimed(Customer customer, Date transactionDateFrom, Date transactionDateTo) {
-		Date transactionDate = transactionDateFrom;
-		
-		while (transactionDate.before(transactionDateTo) || transactionDate.equals(transactionDateTo)) {
-			PromoRaffleTicketClaim claim = promoRaffleTicketClaimsRepository.findByPromoAndCustomerAndTransactionDate(
-					new Promo(JCHS_RAFFLE_PROMO_ID), customer, transactionDate);
-			if (claim != null) {
-				throw new AlreadyClaimedException();
-			}
-			transactionDate = DateUtils.addDays(transactionDate, 1);
-		}
 	}
 
 	@Override
