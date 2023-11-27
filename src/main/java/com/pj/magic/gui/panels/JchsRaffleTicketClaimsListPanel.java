@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.pj.magic.Constants;
 import com.pj.magic.gui.component.CustomAction;
 import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.MagicButton;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
@@ -52,13 +53,16 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 	
 	private MagicTextField customerCodeField;
 	private JLabel customerNameField;
-	private JButton searchButton;
+	private MagicButton searchButton;
 	private JButton selectCustomerButton;
 	
 	private MagicListTable table;
 	private TicketClaimsTableModel tableModel = new TicketClaimsTableModel();
 	
 	public void updateDisplay() {
+		customerCodeField.setText(null);
+		customerNameField.setText(null);
+		
 		tableModel.setItems(promoService.getAllJchsRaffleTicketClaims());
 		if (tableModel.hasItems()) {
 			table.selectFirstRow();
@@ -75,11 +79,11 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openSelectCustomerDialog();
+				selectCustomer();
 			}
 		});
 		
-		searchButton = new JButton("Search");
+		searchButton = new MagicButton("Search");
 		searchButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -177,6 +181,9 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void registerKeyBindings() {
+		customerCodeField.onF5Key(() -> selectCustomer());
+		searchButton.onEnterKey(() -> searchClaims());
+		
 		table.onEnterKeyAndDoubleClick(new CustomAction() {
 			
 			@Override
@@ -214,7 +221,7 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 		toolBar.add(postButton);
 	}
 
-	private void openSelectCustomerDialog() {
+	private void selectCustomer() {
 		selectCustomerDialog.searchCustomers(customerCodeField.getText());
 		selectCustomerDialog.setVisible(true);
 		
@@ -222,6 +229,7 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 		if (customer != null) {
 			customerCodeField.setText(customer.getCode());
 			customerNameField.setText(customer.getName());
+			searchButton.requestFocusInWindow();
 		}
 	}
 	
@@ -236,11 +244,12 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 		
 		if (customer != null) {
 			tableModel.setItems(promoService.findAllJchsRaffleTicketClaimsByCustomer(customer));
-			if (tableModel.hasItems()) {
-				table.selectFirstRow();
-			}
 		} else {
-			updateDisplay();
+			tableModel.setItems(promoService.getAllJchsRaffleTicketClaims());
+		}
+		
+		if (tableModel.hasItems()) {
+			table.selectFirstRow();
 		}
 	}
 	

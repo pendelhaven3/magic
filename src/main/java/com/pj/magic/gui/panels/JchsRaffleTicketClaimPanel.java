@@ -270,6 +270,7 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 
 	@Override
 	protected void registerKeyBindings() {
+		customerCodeField.onF5Key(() -> selectCustomer());
 	}
 
 	protected void selectCustomer() {

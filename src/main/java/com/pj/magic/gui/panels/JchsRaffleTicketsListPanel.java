@@ -88,7 +88,7 @@ public class JchsRaffleTicketsListPanel extends StandardMagicPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				openSelectCustomerDialog();
+				selectCustomer();
 			}
 		});
 		
@@ -213,6 +213,7 @@ public class JchsRaffleTicketsListPanel extends StandardMagicPanel {
 	
 	@Override
 	protected void registerKeyBindings() {
+		customerCodeField.onF5Key(() -> selectCustomer());
 	}
 
 	@Override
@@ -233,7 +234,7 @@ public class JchsRaffleTicketsListPanel extends StandardMagicPanel {
 		toolBar.add(toExcelButton);
 	}
 	
-	private void openSelectCustomerDialog() {
+	private void selectCustomer() {
 		selectCustomerDialog.searchCustomers(customerCodeField.getText());
 		selectCustomerDialog.setVisible(true);
 		
