@@ -3,6 +3,7 @@ package com.pj.magic.gui.panels.menu;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,26 +14,31 @@ import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
+import com.pj.magic.model.User;
+import com.pj.magic.service.LoginService;
 
 @Component
-public class PromoMenuPanel extends MenuPanel {
+public class AlfonsoRaffleMenuPanel extends MenuPanel {
 
-	private static final String PROMO_LIST = "Promo List";
-	private static final String JCHS_RAFFLE = "JCHS Raffle";
-	private static final String ALFONSO_RAFFLE = "Alfonso Raffle";
+	private static final String TICKETS = "Alfonso Raffle Tickets";
+	private static final String TICKET_CLAIMS = "Alfonso Raffle Ticket Claims";
+	private static final String PARTICIPATING_ITEMS = "Alfonso Raffle Participating Items";
+	
+	@Autowired private LoginService loginService;
 	
 	private MagicListTable table;
-	private MainMenuTableModel tableModel;
+	private MenuTableModel tableModel;
 	
 	@Override
 	protected void initializeComponents() {
-		tableModel = new MainMenuTableModel();
+		tableModel = new MenuTableModel();
 		table = new MagicSubmenuTable(tableModel);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
@@ -80,35 +86,38 @@ public class PromoMenuPanel extends MenuPanel {
 	}
 
 	public void updateDisplay() {
+		tableModel.setUser(loginService.getLoggedInUser());
 		table.changeSelection(0, 0, false, false);
 	}
 	
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-		case PROMO_LIST:
-			getMagicFrame().switchToPromoListPanel();
+		case TICKETS:
+			getMagicFrame().switchToAlfonsoRaffleTicketsListPanel();
 			break;
-		case JCHS_RAFFLE:
-			getMagicFrame().switchToJchsRaffleMenuPanel();
+		case TICKET_CLAIMS:
+			getMagicFrame().switchToAlfonsoRaffleTicketClaimsListPanel();
 			break;
-		case ALFONSO_RAFFLE:
-			getMagicFrame().switchToAlfonsoRaffleMenuPanel();
+		case PARTICIPATING_ITEMS:
+			getMagicFrame().switchToAlfonsoRaffleParticipatingItemsPanel();
 			break;
 		}
 	}
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToPromoMenuPanel();
 	}
 
-	private class MainMenuTableModel extends AbstractTableModel {
+	private class MenuTableModel extends AbstractTableModel {
 
-		private final List<String> menuItems = Arrays.asList(
-				PROMO_LIST,
-				JCHS_RAFFLE,
-				ALFONSO_RAFFLE
-		);
+        private final List<String> allMenuItems = Arrays.asList(
+				TICKETS,
+				TICKET_CLAIMS,
+				PARTICIPATING_ITEMS
+        );
+        
+		private final List<String> menuItems = new ArrayList<>();
 		
 		@Override
 		public int getRowCount() {
@@ -125,6 +134,15 @@ public class PromoMenuPanel extends MenuPanel {
 			return menuItems.get(rowIndex);
 		}
 		
+        public void setUser(User user) {
+            menuItems.clear();
+            menuItems.addAll(allMenuItems);
+            if (!user.isSupervisor()) {
+                menuItems.remove(PARTICIPATING_ITEMS);
+            }
+            fireTableDataChanged();
+        }
+        
 	}
 
 	@Override

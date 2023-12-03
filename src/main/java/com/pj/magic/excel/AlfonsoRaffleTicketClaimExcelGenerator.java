@@ -11,17 +11,19 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.pj.magic.model.Product;
 import com.pj.magic.model.PromoRaffleTicket;
 import com.pj.magic.model.PromoRaffleTicketClaim;
 import com.pj.magic.model.PromoRaffleTicketClaimSummary;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.promo.AlfonsoRaffleTicketClaimSummary;
 import com.pj.magic.util.FormatterUtil;
 
-public class JchsRaffleTicketClaimExcelGenerator {
+public class AlfonsoRaffleTicketClaimExcelGenerator {
 
-    public Workbook generate(PromoRaffleTicketClaim claim) throws IOException {
+    public Workbook generate(PromoRaffleTicketClaim claim, List<Product> participatingItems) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook(
-				getClass().getResourceAsStream("/excel/jchsRaffleTicketClaim.xlsx"));
+				getClass().getResourceAsStream("/excel/alfonsoRaffleTicketClaim.xlsx"));
 		Sheet sheet = workbook.getSheetAt(0);
 
 		Row row = sheet.getRow(0);
@@ -46,7 +48,8 @@ public class JchsRaffleTicketClaimExcelGenerator {
 		int startRow = 5;
 		int lastRow = 5;
 
-		List<PromoRaffleTicketClaimSummary> summaries = PromoRaffleTicketClaimSummary.toSummaries(claim.getSalesInvoices());
+		List<PromoRaffleTicketClaimSummary> summaries = AlfonsoRaffleTicketClaimSummary.toSummaries(
+				claim.getSalesInvoices(), participatingItems);
 		for (int i = 0; i < summaries.size(); i++) {
 			PromoRaffleTicketClaimSummary summary = summaries.get(i);
 			if (summary.getNumberOfTickets() == 0) {

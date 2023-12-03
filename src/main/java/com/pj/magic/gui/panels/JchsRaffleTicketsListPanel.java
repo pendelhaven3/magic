@@ -261,7 +261,7 @@ public class JchsRaffleTicketsListPanel extends StandardMagicPanel {
 			criteria.setTicketNumber(ticketNumberField.getTextAsInteger());
 		}
 		
-		List<PromoRaffleTicket> tickets = promoService.searchJchsRaffleTickets(criteria);
+		List<PromoRaffleTicket> tickets = promoService.searchPromoRaffleTickets(criteria);
 		tableModel.setItems(tickets);
 		if (!tickets.isEmpty()) {
 			table.changeSelection(0, 0, false, false);
@@ -278,7 +278,7 @@ public class JchsRaffleTicketsListPanel extends StandardMagicPanel {
 			criteria.setCustomer(customerService.findCustomerByCode(customerCodeField.getText()));
 		}
 		
-		List<PromoRaffleTicket> tickets = promoService.searchJchsRaffleTickets(criteria);
+		List<PromoRaffleTicket> tickets = promoService.searchPromoRaffleTickets(criteria);
 		
 		excelFileChooser.setSelectedFile(new File("JCHS Raffle 2023 Tickets.xlsx"));
 		

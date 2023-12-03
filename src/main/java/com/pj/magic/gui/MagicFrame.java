@@ -27,6 +27,7 @@ import com.pj.magic.OnStartUp;
 import com.pj.magic.gui.component.CardLayoutPanel;
 import com.pj.magic.gui.panels.*;
 import com.pj.magic.gui.panels.menu.AdminMenuPanel;
+import com.pj.magic.gui.panels.menu.AlfonsoRaffleMenuPanel;
 import com.pj.magic.gui.panels.menu.BadStockMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryCheckMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryMenuPanel;
@@ -39,6 +40,10 @@ import com.pj.magic.gui.panels.menu.ReportsMenuPanel;
 import com.pj.magic.gui.panels.menu.SalesMenuPanel;
 import com.pj.magic.gui.panels.menu.SalesPaymentsMenuPanel;
 import com.pj.magic.gui.panels.menu.StockMovementMenuPanel;
+import com.pj.magic.gui.panels.promo.AlfonsoRaffleParticipatingItemsPanel;
+import com.pj.magic.gui.panels.promo.AlfonsoRaffleTicketClaimPanel;
+import com.pj.magic.gui.panels.promo.AlfonsoRaffleTicketClaimsListPanel;
+import com.pj.magic.gui.panels.promo.AlfonsoRaffleTicketsListPanel;
 import com.pj.magic.gui.panels.promo.PromoListPanel;
 import com.pj.magic.gui.panels.promo.PromoPanel;
 import com.pj.magic.gui.panels.promo.PromoRedemptionListPanel;
@@ -255,6 +260,11 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	public static final String JCHS_RAFFLE_TICKETS_LIST_PANEL = "JCHS_RAFFLE_TICKETS_LIST_PANEL";
 	public static final String JCHS_RAFFLE_TICKET_CLAIMS_LIST_PANEL = "JCHS_RAFFLE_TICKET_CLAIMS_LIST_PANEL";
 	public static final String JCHS_RAFFLE_TICKET_CLAIM_PANEL = "JCHS_RAFFLE_TICKET_CLAIM_PANEL";
+	public static final String ALFONSO_RAFFLE_MENU_PANEL = "ALFONSO_RAFFLE_MENU_PANEL";
+	public static final String ALFONSO_RAFFLE_TICKETS_LIST_PANEL = "ALFONSO_RAFFLE_TICKETS_LIST_PANEL";
+	public static final String ALFONSO_RAFFLE_TICKET_CLAIMS_LIST_PANEL = "ALFONSO_RAFFLE_TICKET_CLAIMS_LIST_PANEL";
+	public static final String ALFONSO_RAFFLE_TICKET_CLAIM_PANEL = "ALFONSO_RAFFLE_TICKET_CLAIM_PANEL";
+	public static final String ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL = "ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL";
 	
     private static final Map<String, Class<? extends StandardMagicPanel>> panelClasses = new HashMap<>();
     
@@ -403,6 +413,11 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	@Autowired private JchsRaffleTicketsListPanel jchsRaffleTicketsListPanel;
 	@Autowired private JchsRaffleTicketClaimsListPanel jchsRaffleTicketClaimsListPanel;
 	@Autowired private JchsRaffleTicketClaimPanel jchsRaffleTicketClaimPanel;
+	@Autowired private AlfonsoRaffleMenuPanel alfonsoRaffleMenuPanel;
+	@Autowired private AlfonsoRaffleTicketsListPanel alfonsoRaffleTicketsListPanel;
+	@Autowired private AlfonsoRaffleTicketClaimsListPanel alfonsoRaffleTicketClaimsListPanel;
+	@Autowired private AlfonsoRaffleTicketClaimPanel alfonsoRaffleTicketClaimPanel;
+	@Autowired private AlfonsoRaffleParticipatingItemsPanel alfonsoRaffleParticipatingItemsPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -600,6 +615,11 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 		panelHolder.add(jchsRaffleTicketsListPanel, JCHS_RAFFLE_TICKETS_LIST_PANEL);
 		panelHolder.add(jchsRaffleTicketClaimsListPanel, JCHS_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
 		panelHolder.add(jchsRaffleTicketClaimPanel, JCHS_RAFFLE_TICKET_CLAIM_PANEL);
+		panelHolder.add(alfonsoRaffleMenuPanel, ALFONSO_RAFFLE_MENU_PANEL);
+		panelHolder.add(alfonsoRaffleTicketsListPanel, ALFONSO_RAFFLE_TICKETS_LIST_PANEL);
+		panelHolder.add(alfonsoRaffleTicketClaimsListPanel, ALFONSO_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
+		panelHolder.add(alfonsoRaffleTicketClaimPanel, ALFONSO_RAFFLE_TICKET_CLAIM_PANEL);
+		panelHolder.add(alfonsoRaffleParticipatingItemsPanel, ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1567,6 +1587,36 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 		addPanelNameToTitle("JCHS Raffle Ticket Claim");
 		jchsRaffleTicketClaimPanel.updateDisplay(claim);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_RAFFLE_TICKET_CLAIM_PANEL);
+	}
+
+	public void switchToAlfonsoRaffleMenuPanel() {
+		addPanelNameToTitle("Alfonso Raffle Menu");
+		alfonsoRaffleMenuPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ALFONSO_RAFFLE_MENU_PANEL);
+	}
+
+	public void switchToAlfonsoRaffleTicketsListPanel() {
+		addPanelNameToTitle("Alfonso Raffle Tickets List");
+		alfonsoRaffleTicketsListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ALFONSO_RAFFLE_TICKETS_LIST_PANEL);
+	}
+
+	public void switchToAlfonsoRaffleTicketClaimsListPanel() {
+		addPanelNameToTitle("Alfonso Raffle Ticket Claims List");
+		alfonsoRaffleTicketClaimsListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ALFONSO_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
+	}
+
+	public void switchToAlfonsoRaffleTicketClaimPanel(PromoRaffleTicketClaim claim) {
+		addPanelNameToTitle("Alfonso Raffle Ticket Claim");
+		alfonsoRaffleTicketClaimPanel.updateDisplay(claim);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ALFONSO_RAFFLE_TICKET_CLAIM_PANEL);
+	}
+
+	public void switchToAlfonsoRaffleParticipatingItemsPanel() {
+		addPanelNameToTitle("Alfonso Raffle Participating Items");
+		alfonsoRaffleParticipatingItemsPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL);
 	}
 
 }

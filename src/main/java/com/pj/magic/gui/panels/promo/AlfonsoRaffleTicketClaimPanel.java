@@ -1,4 +1,4 @@
-package com.pj.magic.gui.panels;
+package com.pj.magic.gui.panels.promo;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -32,7 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
-import com.pj.magic.excel.JchsRaffleTicketClaimExcelGenerator;
+import com.pj.magic.excel.AlfonsoRaffleTicketClaimExcelGenerator;
+import com.pj.magic.exception.NoParticipatingItemsException;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicFileChooser;
@@ -41,14 +42,17 @@ import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.component.MultiLineTableCellRenderer;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
+import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRaffleTicket;
 import com.pj.magic.model.PromoRaffleTicketClaim;
 import com.pj.magic.model.PromoRaffleTicketClaimSummary;
 import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.promo.AlfonsoRaffleTicketClaimSummary;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.SalesInvoiceService;
@@ -66,7 +70,7 @@ import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 @Slf4j
-public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
+public class AlfonsoRaffleTicketClaimPanel extends StandardMagicPanel {
 
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	@Autowired private CustomerService customerService;
@@ -218,10 +222,17 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 			claim.setCustomer(customer);
 		}
 		
+		List<Product> participatingItems = promoService.getAllAlfonsoRaffleParticipatingItems();
+		if (participatingItems.isEmpty()) {
+			showErrorMessage("Please setup participating items");
+			return;
+		}
+		
 		List<SalesInvoice> salesInvoices = getEligibleSalesInvoices(
 				customer, claim.getTransactionDateFrom(), claim.getTransactionDateTo());
 		
-		List<PromoRaffleTicketClaimSummary> summaries = PromoRaffleTicketClaimSummary.toSummaries(salesInvoices);
+		List<PromoRaffleTicketClaimSummary> summaries = AlfonsoRaffleTicketClaimSummary.toSummaries(
+				salesInvoices, participatingItems);
 		
 		int tickets = 0;
 		for (PromoRaffleTicketClaimSummary summary : summaries) {
@@ -239,7 +250,7 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 		criteria.setTransactionDateFrom(salesDateFrom);
 		criteria.setTransactionDateTo(salesDateTo);
 		criteria.setMarked(true);
-		criteria.setUnclaimedRafflePromo(new Promo(PromoServiceImpl.JCHS_RAFFLE_PROMO_ID));
+		criteria.setUnclaimedRafflePromo(new Promo(PromoServiceImpl.ALFONSO_RAFFLE_PROMO_ID));
 		
 		return salesInvoiceService.search(criteria);
 	}
@@ -252,8 +263,11 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 		}
 		
 		try {
-			claim = promoService.claimJchsRaffleTickets(
+			claim = promoService.claimAlfonsoRaffleTickets(
 					claim.getCustomer(), claim.getTransactionDateFrom(), claim.getTransactionDateTo());
+		} catch (NoParticipatingItemsException e) {
+			showErrorMessage("Please setup participating items");
+			return;
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			showErrorMessage("Error claiming raffle tickets: " + e.getMessage());
@@ -284,7 +298,7 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToJchsRaffleTicketClaimsListPanel();
+		getMagicFrame().switchToAlfonsoRaffleTicketClaimsListPanel();
 	}
 	
 	public void updateDisplay(PromoRaffleTicketClaim claim) {
@@ -311,7 +325,8 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 		checkButton.setEnabled(false);
 		claimButton.setEnabled(false);
 		ticketsTableModel.setItems(claim.getTickets());
-		salesInvoicesTableModel.setItems(PromoRaffleTicketClaimSummary.toSummaries(claim.getSalesInvoices()));
+		salesInvoicesTableModel.setItems(AlfonsoRaffleTicketClaimSummary.toSummaries(
+				claim.getSalesInvoices(), promoService.getAllAlfonsoRaffleParticipatingItems()));
 		excelButton.setEnabled(true);
 	}
 
@@ -515,14 +530,15 @@ public class JchsRaffleTicketClaimPanel extends StandardMagicPanel {
 
 	private void generateExcel() {
 		MagicFileChooser excelFileChooser = FileUtil.createSaveFileChooser(
-				"Christmas Raffle Papremyo 2023 - " + claim.getCustomer().getCode() 
+				"Alfonso Raffle 2023 - " + claim.getCustomer().getCode() 
 				+ new SimpleDateFormat("mmmDD").format(claim.getTransactionDateFrom()) + ".xlsx");
 		if (!excelFileChooser.selectSaveFile(this)) {
 			return;
 		}
 		
 		try (
-			Workbook workbook = new JchsRaffleTicketClaimExcelGenerator().generate(claim);
+			Workbook workbook = new AlfonsoRaffleTicketClaimExcelGenerator().generate(
+					claim, promoService.getAllAlfonsoRaffleParticipatingItems());
 			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
 		) {
 			workbook.write(out);

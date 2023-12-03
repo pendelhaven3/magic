@@ -1,4 +1,4 @@
-package com.pj.magic.gui.panels;
+package com.pj.magic.gui.panels.promo;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -24,6 +24,7 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
+import com.pj.magic.gui.panels.StandardMagicPanel;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.Customer;
@@ -37,7 +38,7 @@ import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
 @Component
-public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
+public class AlfonsoRaffleTicketClaimsListPanel extends StandardMagicPanel {
 
 	private static final int CLAIM_ID_COLUMN_INDEX = 0;
 	private static final int CUSTOMER_COLUMN_INDEX = 1;
@@ -63,7 +64,7 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 		customerCodeField.setText(null);
 		customerNameField.setText(null);
 		
-		tableModel.setItems(promoService.getAllJchsRaffleTicketClaims());
+		tableModel.setItems(promoService.getAllAlfonsoRaffleTicketClaims());
 		if (tableModel.hasItems()) {
 			table.selectFirstRow();
 		}
@@ -204,16 +205,16 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 
 	protected void selectTicketClaim() {
 		PromoRaffleTicketClaim claim = tableModel.getItem(table.getSelectedRow());
-		getMagicFrame().switchToJchsRaffleTicketClaimPanel(claim);
+		getMagicFrame().switchToAlfonsoRaffleTicketClaimPanel(claim);
 	}
 
 	private void switchToNewTicketClaimPanel() {
-		getMagicFrame().switchToJchsRaffleTicketClaimPanel(new PromoRaffleTicketClaim());
+		getMagicFrame().switchToAlfonsoRaffleTicketClaimPanel(new PromoRaffleTicketClaim());
 	}
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToJchsRaffleMenuPanel();
+		getMagicFrame().switchToAlfonsoRaffleMenuPanel();
 	}
 
 	@Override
@@ -236,7 +237,7 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 	
 	private void searchClaims() {
 		RaffleTicketSearchCriteria criteria = new RaffleTicketSearchCriteria();
-		criteria.setPromo(new Promo(PromoServiceImpl.JCHS_RAFFLE_PROMO_ID));
+		criteria.setPromo(new Promo(PromoServiceImpl.ALFONSO_RAFFLE_PROMO_ID));
 		
 		Customer customer = null;
 		if (!customerCodeField.isEmpty()) {
@@ -244,9 +245,9 @@ public class JchsRaffleTicketClaimsListPanel extends StandardMagicPanel {
 		}
 		
 		if (customer != null) {
-			tableModel.setItems(promoService.findAllJchsRaffleTicketClaimsByCustomer(customer));
+			tableModel.setItems(promoService.findAllAlfonsoRaffleTicketClaimsByCustomer(customer));
 		} else {
-			tableModel.setItems(promoService.getAllJchsRaffleTicketClaims());
+			tableModel.setItems(promoService.getAllAlfonsoRaffleTicketClaims());
 		}
 		
 		if (tableModel.hasItems()) {

@@ -15,7 +15,7 @@ import lombok.Setter;
 public class PromoRaffleTicketClaimSummary {
 
 	private Date transactionDate;
-	private List<SalesInvoice> salesInvoices = new ArrayList<>();
+	protected List<SalesInvoice> salesInvoices = new ArrayList<>();
 
 	public BigDecimal getTotalAmount() {
 		BigDecimal totalAmount = BigDecimal.ZERO;

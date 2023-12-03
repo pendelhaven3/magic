@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
+import com.pj.magic.model.Product;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRaffleTicket;
 import com.pj.magic.model.PromoRaffleTicketClaim;
@@ -74,12 +75,27 @@ public interface PromoService {
 
 	PromoRaffleTicketClaim claimJchsRaffleTickets(Customer customer, Date transactionDateFrom, Date transactionDateTo);
 
-	PromoRaffleTicketClaim getJchsRaffleTicketClaim(Long id);
+	PromoRaffleTicketClaim getPromoRaffleTicketClaim(Long id);
 
 	List<PromoRaffleTicketClaim> findAllJchsRaffleTicketClaimsByCustomer(Customer customer);
 	
 	List<PromoRaffleTicket> getAllJchsRaffleTickets();
 
-	List<PromoRaffleTicket> searchJchsRaffleTickets(RaffleTicketSearchCriteria criteria);
+	List<PromoRaffleTicket> searchPromoRaffleTickets(RaffleTicketSearchCriteria criteria);
+
+	List<Product> getAllAlfonsoRaffleParticipatingItems();
+
+	void addProductToAlfonsoRaffleParticipatingItems(Product product);
+
+	void deleteAlfonsoPartipatingItem(Product product);
+
+	List<PromoRaffleTicketClaim> getAllAlfonsoRaffleTicketClaims();
+
+	List<PromoRaffleTicketClaim> findAllAlfonsoRaffleTicketClaimsByCustomer(Customer customer);
+
+	PromoRaffleTicketClaim claimAlfonsoRaffleTickets(Customer customer, Date transactionDateFrom,
+			Date transactionDateTo);
+
+	List<PromoRaffleTicket> getAllAlfonsoRaffleTickets();
 
 }

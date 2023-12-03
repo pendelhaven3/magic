@@ -88,6 +88,11 @@ public class PromoRaffleTicketRepositoryImpl extends MagicDao implements PromoRa
 		StringBuilder sql = new StringBuilder(BASE_SELECT_SQL);
 		List<Object> params = new ArrayList<>();
 		
+		if (criteria.getPromo() != null) {
+			sql.append(" and a.PROMO_ID = ?");
+			params.add(criteria.getPromo().getId());
+		}
+		
 		if (criteria.getCustomer() != null) {
 			sql.append(" and a.CUSTOMER_ID = ?");
 			params.add(criteria.getCustomer().getId());
