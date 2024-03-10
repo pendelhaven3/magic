@@ -42,6 +42,7 @@ import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AddReceivingReceiptsToPurchasePaymentDialog;
+import com.pj.magic.gui.dialog.PrintBdoChequeDialog;
 import com.pj.magic.gui.dialog.PrintChequeDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SelectSupplierDialog;
@@ -567,6 +568,10 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 		MagicToolBarButton printChequeButton = new MagicToolBarButton("cheque", "Print Cheque");
 		printChequeButton.addActionListener(e -> printCheque());
 		toolBar.add(printChequeButton);
+		
+		MagicToolBarButton printBdoChequeButton = new MagicToolBarButton("cheque_bdo", "Print BDO Cheque");
+		printBdoChequeButton.addActionListener(e -> printBdoCheque());
+		toolBar.add(printBdoChequeButton);
 		
 		generateEwtButton = new MagicToolBarButton("ewt", "Generate EWT Adjustment");
 		generateEwtButton.addActionListener(e -> generateEwtAdjustment());
@@ -1236,6 +1241,12 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	private void printCheque() {
 		printChequeDialog.updateDisplay(purchasePayment);
 		printChequeDialog.setVisible(true);
+	}
+	
+	private void printBdoCheque() {
+		PrintBdoChequeDialog dialog = new PrintBdoChequeDialog();
+		dialog.updateDisplay(purchasePayment);
+		dialog.setVisible(true);
 	}
 	
 	private void generateEwtAdjustment() {
