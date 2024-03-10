@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 
-import javax.annotation.PostConstruct;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -26,7 +25,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.model.PurchasePayment;
@@ -37,7 +35,6 @@ import com.pj.magic.util.NumberUtil;
 
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
-@Component
 public class PrintChequeDialog extends MagicDialog {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PrintChequeDialog.class);
@@ -52,9 +49,9 @@ public class PrintChequeDialog extends MagicDialog {
 		setLocationRelativeTo(null);
 		setTitle("Print Cheque");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
+		initialize();
 	}
 
-	@PostConstruct
 	public void initialize() {
 		initializeComponents();
 		layoutComponents();

@@ -87,7 +87,6 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	@Autowired private PrintPreviewDialog printPreviewDialog;
 	@Autowired private PrintService printService;
 	@Autowired private LoginService loginService;
-	@Autowired private PrintChequeDialog printChequeDialog;
 	
 	private PurchasePayment purchasePayment;
 	private JLabel purchasePaymentNumberField;
@@ -1239,8 +1238,9 @@ public class PurchasePaymentPanel extends StandardMagicPanel {
 	}
 	
 	private void printCheque() {
-		printChequeDialog.updateDisplay(purchasePayment);
-		printChequeDialog.setVisible(true);
+		PrintChequeDialog dialog = new PrintChequeDialog();
+		dialog.updateDisplay(purchasePayment);
+		dialog.setVisible(true);
 	}
 	
 	private void printBdoCheque() {
