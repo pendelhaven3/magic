@@ -5,8 +5,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -17,15 +21,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
+import com.pj.magic.excel.SalesByManufacturerReportExcelGenerator;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
+import com.pj.magic.gui.component.ExcelFileFilter;
+import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.component.MagicToolBar;
-import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.model.Customer;
@@ -35,6 +42,8 @@ import com.pj.magic.model.search.SalesByManufacturerReportCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.service.ReportService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.ExcelUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
@@ -56,6 +65,7 @@ public class SalesByManufacturerReportPanel extends StandardMagicPanel {
 	private UtilCalendarModel fromDateModel;
 	private UtilCalendarModel toDateModel;
 	private JButton generateButton;
+	private JButton generateExcelButton;
 	private EllipsisButton selectCustomerButton;
 	private MagicListTable table;
 	private SalesByManufacturerReportItemsTableModel tableModel;
@@ -90,6 +100,15 @@ public class SalesByManufacturerReportPanel extends StandardMagicPanel {
 			}
 		});
 		
+		generateExcelButton = new JButton("Generate Excel");
+		generateExcelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				generateExcelReport();
+			}
+		});
+		
 		focusOnComponentWhenThisPanelIsDisplayed(customerCodeField);
 		
 		initializeTable();
@@ -112,12 +131,7 @@ public class SalesByManufacturerReportPanel extends StandardMagicPanel {
 	}
 
 	private void generateReport() {
-		if (fromDateModel.getValue() == null) {
-			showErrorMessage("Tran. Date From must be specified");
-			return;
-		}
-		if (toDateModel.getValue() == null) {
-			showErrorMessage("Tran. Date To must be specified");
+		if (!validateFields()) {
 			return;
 		}
 		
@@ -126,6 +140,20 @@ public class SalesByManufacturerReportPanel extends StandardMagicPanel {
 		if (report.getItems().isEmpty()) {
 			showErrorMessage("No records found");
 		}
+	}
+	
+	private boolean validateFields() {
+		if (fromDateModel.getValue() == null) {
+			showErrorMessage("Tran. Date From must be specified");
+			return false;
+		}
+		
+		if (toDateModel.getValue() == null) {
+			showErrorMessage("Tran. Date To must be specified");
+			return false;
+		}
+		
+		return true;
 	}
 
 	private SalesByManufacturerReport doGenerateReport() {
@@ -142,7 +170,9 @@ public class SalesByManufacturerReportPanel extends StandardMagicPanel {
 			customerNameLabel.setText(customer.getName());
 		}
 		
-		return reportService.getManufacturerSalesReport(criteria);
+		SalesByManufacturerReport report = reportService.getManufacturerSalesReport(criteria);
+		report.setCriteria(criteria);
+		return report;
 	}
 	
 	@Override
@@ -226,7 +256,11 @@ public class SalesByManufacturerReportPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.gridwidth = 4;
 		generateButton.setPreferredSize(new Dimension(160, 25));
-		mainPanel.add(generateButton, c);
+		generateExcelButton.setPreferredSize(new Dimension(160, 25));
+		mainPanel.add(ComponentUtil.createGenericPanel(
+				generateButton,
+				Box.createHorizontalStrut(5),
+				generateExcelButton), c);
 		
 		currentRow++;
 		
@@ -287,40 +321,64 @@ public class SalesByManufacturerReportPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
-		printPreviewButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				printPreviewReport();
-			}
-		});
-		toolBar.add(printPreviewButton);
+	}
+
+	private void generateExcelReport() {
+		if (!validateFields()) {
+			return;
+		}
 		
-		JButton printButton = new MagicToolBarButton("print", "Print");
-		printButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				printReport();
-			}
-		});
-		toolBar.add(printButton);
+		MagicFileChooser saveFileChooser = createSaveFileChooser();
+		if (!saveFileChooser.selectSaveFile(this)) {
+			return;
+		}
+		
+		SalesByManufacturerReport report = doGenerateReport();
+		tableModel.setItems(report.getItems());
+		
+		File file = saveFileChooser.getSelectedFile();
+		
+		try (
+			Workbook workbook = new SalesByManufacturerReportExcelGenerator().generate(report);
+			FileOutputStream out = new FileOutputStream(file);
+		) {
+			workbook.write(out);
+		} catch (IOException e) {
+			showMessageForUnexpectedError();
+			return;
+		}
+		
+		if (confirm("Excel file generated.\nDo you wish to open the file?")) {
+			openExcelFile(file);
+		}
 	}
 
-	private void printPreviewReport() {
-//		SalesByManufacturerReport report = createReport();
-//		printPreviewDialog.updateDisplay(printService.generateReportAsString(report));
-//		printPreviewDialog.setColumnsPerLine(
-//				PrintServiceImpl.POSTED_SALES_AND_PROFIT_REPORT_CHARACTERS_PER_LINE);
-//		printPreviewDialog.setUseCondensedFontForPrinting(true);
-//		printPreviewDialog.setVisible(true);
+	private void openExcelFile(File file) {
+		try {
+			ExcelUtil.openExcelFile(file);
+		} catch (IOException e) {
+			showMessageForUnexpectedError();
+		}
 	}
 
-	private void printReport() {
-//		printService.print(createReport());
+	private MagicFileChooser createSaveFileChooser() {
+		MagicFileChooser fileChooser = new MagicFileChooser();
+		fileChooser.setCurrentDirectory(FileUtil.getDesktopFolderPathAsFile());
+		fileChooser.setFileFilter(ExcelFileFilter.getInstance());
+		fileChooser.setSelectedFile(new File(constructDefaultExcelFileName()));
+		return fileChooser;
 	}
 
+	private String constructDefaultExcelFileName() {
+		Date date = toDateModel.getValue().getTime();
+		
+		return new StringBuilder()
+				.append("SALES BY MANUFACTURER - ")
+				.append(FormatterUtil.formatDateInFilename(date))
+				.append(".xlsx")
+				.toString();
+	}
+	
 	private class SalesByManufacturerReportItemsTableModel extends AbstractTableModel {
 
 		private final String[] columnNames = {"Manufacturer", "Amount"};
