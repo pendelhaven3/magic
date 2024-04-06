@@ -50,6 +50,7 @@ public class ReportsMenuPanel extends MenuPanel {
     private static final String BIR_FORM_2307_REPORT_LIST = "BIR Form 2307 Report List";
     private static final String ECASH_PAYMENTS_REPORT = "E-Cash Payments Report";
     private static final String ECASH_PURCHASE_PAYMENTS_REPORT = "E-Cash Purchase Payments Report";
+	private static final String TOP_SALES_BY_ITEM_REPORT = "Top Sales By Item Report";
 
 	@Autowired private LoginService loginService;
 	
@@ -169,6 +170,9 @@ public class ReportsMenuPanel extends MenuPanel {
         case ECASH_PURCHASE_PAYMENTS_REPORT:
             getMagicFrame().switchPanel(MagicFrame.ECASH_PURCHASE_PAYMENTS_REPORT_PANEL);
             break;
+		case TOP_SALES_BY_ITEM_REPORT:
+			getMagicFrame().switchToTopSalesByItemReportPanel();
+			break;
 		}
 	}
 
@@ -198,7 +202,8 @@ public class ReportsMenuPanel extends MenuPanel {
                 EWT_REPORT,
                 BIR_FORM_2307_REPORT_LIST,
                 ECASH_PAYMENTS_REPORT,
-                ECASH_PURCHASE_PAYMENTS_REPORT
+                ECASH_PURCHASE_PAYMENTS_REPORT,
+				TOP_SALES_BY_ITEM_REPORT
 		);
 		
 		private List<String> menuItems = new ArrayList<>();

@@ -12,6 +12,7 @@ import com.pj.magic.model.report.PilferageReportItem;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.report.StockOfftakeReportItem;
+import com.pj.magic.model.report.TopSalesByItemReportItem;
 import com.pj.magic.model.search.BadStockCardInventoryReportCriteria;
 import com.pj.magic.model.search.EwtReportCriteria;
 import com.pj.magic.model.search.InventoryReportCriteria;
@@ -46,5 +47,7 @@ public interface ReportDao {
     List<EwtReportItem> searchEwtReportItems(EwtReportCriteria criteria);
 
 	List<BadStockCardInventoryReportItem> getBadStockCardInventoryReport(BadStockCardInventoryReportCriteria criteria);
+
+	List<TopSalesByItemReportItem> getTopSalesByItemReport(Date from, Date to);
 
 }

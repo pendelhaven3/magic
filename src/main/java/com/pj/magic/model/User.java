@@ -30,7 +30,7 @@ public class User implements Serializable {
 	}
 	
 	public boolean isManager() {
-	    return "IRENE".equals(username) || "JOY".equals(username);
+	    return "IRENE".equals(username) || "JOY".equals(username) || "ADMIN".equals(username);
 	}
 
 	public Long getId() {

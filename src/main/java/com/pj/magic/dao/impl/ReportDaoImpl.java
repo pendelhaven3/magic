@@ -37,6 +37,8 @@ import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReportItem;
 import com.pj.magic.model.report.SalesByManufacturerReportItem;
 import com.pj.magic.model.report.StockOfftakeReportItem;
+import com.pj.magic.model.report.TopSalesByItemReport;
+import com.pj.magic.model.report.TopSalesByItemReportItem;
 import com.pj.magic.model.search.BadStockCardInventoryReportCriteria;
 import com.pj.magic.model.search.EwtReportCriteria;
 import com.pj.magic.model.search.InventoryReportCriteria;
@@ -619,6 +621,36 @@ public class ReportDaoImpl extends MagicDao implements ReportDao {
 			return item;
 		}
 		
+	}
+
+	@Override
+	public List<TopSalesByItemReportItem> getTopSalesByItemReport(Date from, Date to) {
+		String sql = QueriesUtil.getSql("topSalesByItemReport");
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("fromDate", DbUtil.toMySqlDateString(from));
+		params.put("toDate", DbUtil.toMySqlDateString(to));
+		
+		return getNamedParameterJdbcTemplate().query(sql,
+				params,
+				new RowMapper<TopSalesByItemReportItem>() {
+
+					@Override
+					public TopSalesByItemReportItem mapRow(ResultSet rs, int rowNum) throws SQLException {
+						TopSalesByItemReportItem item = new TopSalesByItemReportItem();
+						
+						Product product = new Product();
+						product.setCode(rs.getString("PRODUCT_CODE"));
+						product.setDescription(rs.getString("DESCRIPTION"));
+						item.setProduct(product);
+						
+						item.setUnit(rs.getString("UNIT"));
+						item.setAmount(rs.getBigDecimal("TOTAL_AMOUNT"));
+						
+						return item;
+					}
+			
+		});
 	}
 
 }

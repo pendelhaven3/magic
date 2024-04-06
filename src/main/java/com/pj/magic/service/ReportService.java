@@ -13,6 +13,7 @@ import com.pj.magic.model.report.PilferageReport;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.SalesByManufacturerReport;
 import com.pj.magic.model.report.StockOfftakeReport;
+import com.pj.magic.model.report.TopSalesByItemReport;
 import com.pj.magic.model.search.BadStockCardInventoryReportCriteria;
 import com.pj.magic.model.search.EwtReportCriteria;
 import com.pj.magic.model.search.InventoryReportCriteria;
@@ -51,5 +52,7 @@ public interface ReportService {
     BirForm2307Report regenerateBirForm2307Report(BirForm2307Report report, EwtReportCriteria criteria);
 
 	List<BadStockCardInventoryReportItem> getBadStockCardInventoryReport(BadStockCardInventoryReportCriteria criteria);
+
+	TopSalesByItemReport getTopSalesByItemReport(Date fromDate, Date toDate);
     
 }

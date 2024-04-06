@@ -776,4 +776,27 @@ from (
 ) m
 	]]>
 	</entry>
+	<entry name="topSalesByItemReport">
+	<![CDATA[
+select z.CODE as PRODUCT_CODE, z.DESCRIPTION, y.UNIT, y.TOTAL_AMOUNT
+from (
+  select x.PRODUCT_ID, x.UNIT, sum(x.NET_AMOUNT) as TOTAL_AMOUNT
+  from (
+    select b.PRODUCT_ID, b.UNIT,
+      b.UNIT_PRICE * b.QUANTITY * (1 - DISCOUNT_1/100 - DISCOUNT_2/100 - DISCOUNT_3/100 + DISCOUNT_1/100 * DISCOUNT_2/100 + DISCOUNT_1/100 * DISCOUNT_3/100 + DISCOUNT_2/100 * DISCOUNT_3/100 - DISCOUNT_1/100 * DISCOUNT_2/100 * DISCOUNT_3/100) - FLAT_RATE_DISCOUNT as NET_AMOUNT
+    from SALES_INVOICE as a
+    join SALES_INVOICE_ITEM as b
+      on b.SALES_INVOICE_ID = a.ID
+    where a.MARK_IND = 'Y'
+    and a.TRANSACTION_DT >= :fromDate
+    and a.TRANSACTION_DT <= :toDate
+  ) x
+  group by x.PRODUCT_ID, x.UNIT
+) y
+join PRODUCT z
+  on z.ID = y.PRODUCT_ID
+order by y.TOTAL_AMOUNT desc, z.DESCRIPTION
+limit 50
+	]]>
+	</entry>
 </root>

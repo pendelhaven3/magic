@@ -24,6 +24,7 @@ import com.pj.magic.model.report.PilferageReport;
 import com.pj.magic.model.report.ProductQuantityDiscrepancyReport;
 import com.pj.magic.model.report.SalesByManufacturerReport;
 import com.pj.magic.model.report.StockOfftakeReport;
+import com.pj.magic.model.report.TopSalesByItemReport;
 import com.pj.magic.model.search.BadStockCardInventoryReportCriteria;
 import com.pj.magic.model.search.EwtReportCriteria;
 import com.pj.magic.model.search.InventoryReportCriteria;
@@ -196,6 +197,15 @@ public class ReportServiceImpl implements ReportService {
 	public List<BadStockCardInventoryReportItem> getBadStockCardInventoryReport(
 			BadStockCardInventoryReportCriteria criteria) {
 		return reportDao.getBadStockCardInventoryReport(criteria);
+	}
+
+	@Override
+	public TopSalesByItemReport getTopSalesByItemReport(Date from, Date to) {
+		TopSalesByItemReport report = new TopSalesByItemReport();
+		report.setFromDate(from);
+		report.setToDate(to);
+		report.setItems(reportDao.getTopSalesByItemReport(from, to));
+		return report;
 	}
 
 }

@@ -265,6 +265,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	public static final String ALFONSO_RAFFLE_TICKET_CLAIMS_LIST_PANEL = "ALFONSO_RAFFLE_TICKET_CLAIMS_LIST_PANEL";
 	public static final String ALFONSO_RAFFLE_TICKET_CLAIM_PANEL = "ALFONSO_RAFFLE_TICKET_CLAIM_PANEL";
 	public static final String ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL = "ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL";
+	public static final String TOP_SALES_BY_ITEM_REPORT_PANEL = "TOP_SALES_BY_ITEM_REPORT_PANEL";
 	
     private static final Map<String, Class<? extends StandardMagicPanel>> panelClasses = new HashMap<>();
     
@@ -418,6 +419,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	@Autowired private AlfonsoRaffleTicketClaimsListPanel alfonsoRaffleTicketClaimsListPanel;
 	@Autowired private AlfonsoRaffleTicketClaimPanel alfonsoRaffleTicketClaimPanel;
 	@Autowired private AlfonsoRaffleParticipatingItemsPanel alfonsoRaffleParticipatingItemsPanel;
+	@Autowired private TopSalesByItemReportPanel topSalesByItemReportPanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -620,6 +622,7 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 		panelHolder.add(alfonsoRaffleTicketClaimsListPanel, ALFONSO_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
 		panelHolder.add(alfonsoRaffleTicketClaimPanel, ALFONSO_RAFFLE_TICKET_CLAIM_PANEL);
 		panelHolder.add(alfonsoRaffleParticipatingItemsPanel, ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL);
+		panelHolder.add(topSalesByItemReportPanel, TOP_SALES_BY_ITEM_REPORT_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1617,6 +1620,12 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 		addPanelNameToTitle("Alfonso Raffle Participating Items");
 		alfonsoRaffleParticipatingItemsPanel.updateDisplay();
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL);
+	}
+
+	public void switchToTopSalesByItemReportPanel() {
+		addPanelNameToTitle("Top Sales By Item Report");
+		topSalesByItemReportPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, TOP_SALES_BY_ITEM_REPORT_PANEL);
 	}
 
 }
