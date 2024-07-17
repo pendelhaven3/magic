@@ -221,6 +221,8 @@ public class PrintChequeDialog extends MagicDialog {
 		if (thousand > 0) {
 			sb.append(convertToTensText(thousand));
 			sb.append(" THOUSAND ");
+		} else if (hundredThousand > 0) {
+			sb.append("THOUSAND ");
 		}
 		
 		amount = amount.subtract(new BigDecimal("1000").multiply(new BigDecimal(thousand)));
