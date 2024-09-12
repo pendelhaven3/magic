@@ -24,8 +24,8 @@ import com.pj.magic.gui.tables.MagicSubmenuTable;
 public class PromoMenuPanel extends MenuPanel {
 
 	private static final String PROMO_LIST = "Promo List";
-	private static final String JCHS_RAFFLE = "JCHS Raffle";
-	private static final String ALFONSO_RAFFLE = "Alfonso Raffle";
+	private static final String JCHS_RAFFLE = "JCHS Raffle (ended)";
+	private static final String ALFONSO_RAFFLE = "Alfonso Raffle (ended)";
 	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
