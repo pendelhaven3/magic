@@ -63,9 +63,11 @@ public class AlfonsoRaffleParticipatingItemsPanel extends StandardMagicPanel {
 	protected void initializeComponents() {
 		productCodeField = new MagicTextField();
 		productCodeField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
+		productCodeField.setEnabled(false);
 		
 		selectProductButton = new SelectProductEllipsisButton(
 				selectProductDialog, productCodeField, productDescriptionField);
+		selectProductButton.setEnabled(false);
 		
 		addButton = new MagicButton("Add");
 		addButton.addActionListener(new ActionListener() {
@@ -75,6 +77,7 @@ public class AlfonsoRaffleParticipatingItemsPanel extends StandardMagicPanel {
 				addProduct();
 			}
 		});
+		addButton.setEnabled(false);
 		
 		table = new MagicListTable(tableModel);
 		table.getColumnModel().getColumn(PRODUCT_CODE_COLUMN_INDEX).setPreferredWidth(100);
@@ -210,6 +213,7 @@ public class AlfonsoRaffleParticipatingItemsPanel extends StandardMagicPanel {
 				}
 			}
 		});
+		deleteItemButton.setEnabled(false);
 		panel.add(deleteItemButton, BorderLayout.WEST);
 		
 		return panel;

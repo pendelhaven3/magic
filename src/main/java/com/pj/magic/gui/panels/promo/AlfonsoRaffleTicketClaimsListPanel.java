@@ -220,6 +220,7 @@ public class AlfonsoRaffleTicketClaimsListPanel extends StandardMagicPanel {
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
 		JButton postButton = new MagicToolBarButton("plus", "New", e -> switchToNewTicketClaimPanel());
+		postButton.setEnabled(false);
 		toolBar.add(postButton);
 	}
 
