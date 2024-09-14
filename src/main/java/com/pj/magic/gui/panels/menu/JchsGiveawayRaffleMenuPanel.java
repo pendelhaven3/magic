@@ -21,12 +21,10 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
 
 @Component
-public class PromoMenuPanel extends MenuPanel {
+public class JchsGiveawayRaffleMenuPanel extends MenuPanel {
 
-	private static final String PROMO_LIST = "Promo List";
-	private static final String JCHS_GIVEAWAY_RAFFLE = "JCHS Giveaway Raffle";
-	private static final String JCHS_RAFFLE = "JCHS Raffle (ended)";
-	private static final String ALFONSO_RAFFLE = "Alfonso Raffle (ended)";
+	private static final String TICKETS = "JCHS Giveaway Raffle Tickets";
+	private static final String TICKET_CLAIMS = "JCHS Giveaway Raffle Ticket Claims";
 	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
@@ -86,33 +84,25 @@ public class PromoMenuPanel extends MenuPanel {
 	
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
-		case PROMO_LIST:
-			getMagicFrame().switchToPromoListPanel();
+		case TICKETS:
+			getMagicFrame().switchToJchsGiveawayRaffleTicketsListPanel();
 			break;
-		case JCHS_GIVEAWAY_RAFFLE:
-			getMagicFrame().switchToJchsGiveawayRaffleMenuPanel();
-			break;
-		case JCHS_RAFFLE:
-			getMagicFrame().switchToJchsRaffleMenuPanel();
-			break;
-		case ALFONSO_RAFFLE:
-			getMagicFrame().switchToAlfonsoRaffleMenuPanel();
+		case TICKET_CLAIMS:
+			getMagicFrame().switchToJchsGiveawayRaffleTicketClaimsListPanel();
 			break;
 		}
 	}
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToMainMenuPanel();
+		getMagicFrame().switchToPromoMenuPanel();
 	}
 
 	private class MainMenuTableModel extends AbstractTableModel {
 
 		private final List<String> menuItems = Arrays.asList(
-				PROMO_LIST,
-				JCHS_GIVEAWAY_RAFFLE,
-				JCHS_RAFFLE,
-				ALFONSO_RAFFLE
+				TICKETS,
+				TICKET_CLAIMS
 		);
 		
 		@Override

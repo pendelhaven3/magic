@@ -98,4 +98,12 @@ public interface PromoService {
 
 	List<PromoRaffleTicket> getAllAlfonsoRaffleTickets();
 
+	List<PromoRaffleTicket> getAllJchsGiveawayRaffleTickets();
+	
+	List<PromoRaffleTicketClaim> getAllJchsGiveawayRaffleTicketClaims();
+
+	List<PromoRaffleTicketClaim> findAllJchsGiveawayRaffleTicketClaimsByCustomer(Customer customer);
+
+	PromoRaffleTicketClaim claimJchsGiveawayRaffleTickets(Customer customer, Date transactionDateFrom, Date transactionDateTo);
+	
 }

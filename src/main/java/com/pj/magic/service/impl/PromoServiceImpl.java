@@ -60,8 +60,10 @@ public class PromoServiceImpl implements PromoService {
 
 	public static final BigDecimal JCHS_RAFFLE_SALES_AMOUNT_PER_TICKET = new BigDecimal("5000");
 	public static final BigDecimal ALFONSO_RAFFLE_SALES_AMOUNT_PER_TICKET = new BigDecimal("5000");
+	public static final BigDecimal JCHS_GIVEAWAY_RAFFLE_SALES_AMOUNT_PER_TICKET = new BigDecimal("5000");
 	public static final long JCHS_RAFFLE_PROMO_ID = 100001L;
 	public static final long ALFONSO_RAFFLE_PROMO_ID = 100002L;
+	public static final long JCHS_GIVEAWAY_RAFFLE_PROMO_ID = 100003L;
 	
 	@Autowired private PromoDao promoDao;
 	@Autowired private PromoType1RuleDao promoType1RuleDao;
@@ -492,6 +494,65 @@ public class PromoServiceImpl implements PromoService {
 	@Override
 	public List<PromoRaffleTicket> getAllAlfonsoRaffleTickets() {
 		return promoRaffleTicketsRepository.findAllByPromo(new Promo(ALFONSO_RAFFLE_PROMO_ID));
+	}
+
+	@Override
+	public List<PromoRaffleTicket> getAllJchsGiveawayRaffleTickets() {
+		return promoRaffleTicketsRepository.findAllByPromo(new Promo(JCHS_GIVEAWAY_RAFFLE_PROMO_ID));
+	}
+
+	@Override
+	public List<PromoRaffleTicketClaim> getAllJchsGiveawayRaffleTicketClaims() {
+		return promoRaffleTicketClaimsRepository.getAll(JCHS_GIVEAWAY_RAFFLE_PROMO_ID);		
+	}
+
+	@Override
+	public List<PromoRaffleTicketClaim> findAllJchsGiveawayRaffleTicketClaimsByCustomer(Customer customer) {
+		return promoRaffleTicketClaimsRepository.findAllByPromoAndCustomer(new Promo(JCHS_GIVEAWAY_RAFFLE_PROMO_ID), customer);
+	}
+
+	@Transactional
+	@Override
+	public PromoRaffleTicketClaim claimJchsGiveawayRaffleTickets(Customer customer, Date transactionDateFrom, Date transactionDateTo) {
+		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
+		criteria.setCustomer(customer);
+		criteria.setTransactionDateFrom(transactionDateFrom);
+		criteria.setTransactionDateTo(transactionDateTo);
+		criteria.setUnclaimedRafflePromo(new Promo(JCHS_GIVEAWAY_RAFFLE_PROMO_ID));
+		
+		List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
+		
+		List<PromoRaffleTicketClaimSummary> summaries = PromoRaffleTicketClaimSummary.toSummaries(salesInvoices);
+		
+		int claimableTickets = 0;
+		for (PromoRaffleTicketClaimSummary summary : summaries) {
+			claimableTickets += summary.getNumberOfTickets();
+		}
+		
+		PromoRaffleTicketClaim claim = new PromoRaffleTicketClaim();
+		claim.setPromo(new Promo(JCHS_GIVEAWAY_RAFFLE_PROMO_ID));
+		claim.setCustomer(customer);
+		claim.setTransactionDateFrom(transactionDateFrom);
+		claim.setTransactionDateTo(transactionDateTo);
+		claim.setClaimDate(systemDao.getCurrentDateTime());
+		claim.setProcessedBy(loginService.getLoggedInUser());
+		claim.setNumberOfTickets(claimableTickets);
+		promoRaffleTicketClaimsRepository.save(claim);
+		
+		for (SalesInvoice salesInvoice : salesInvoices) {
+			promoRaffleTicketClaimSalesInvoicesRepository.save(claim, salesInvoice);
+		}
+		
+		for (int i = 0; i < claimableTickets; i++) {
+			PromoRaffleTicket ticket = new PromoRaffleTicket();
+			ticket.setPromo(new Promo(JCHS_GIVEAWAY_RAFFLE_PROMO_ID));
+			ticket.setTicketNumber(promoRaffleTicketsRepository.getNextRaffleTicketNumber(JCHS_GIVEAWAY_RAFFLE_PROMO_ID));
+			ticket.setCustomer(customer);
+			promoRaffleTicketsRepository.save(ticket);
+			promoRaffleTicketClaimTicketsRepository.save(claim, ticket);
+		}
+		
+		return claim;
 	}
 
 }
