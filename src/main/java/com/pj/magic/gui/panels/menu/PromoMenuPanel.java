@@ -24,7 +24,7 @@ import com.pj.magic.gui.tables.MagicSubmenuTable;
 public class PromoMenuPanel extends MenuPanel {
 
 	private static final String PROMO_LIST = "Promo List";
-	private static final String JCHS_GIVEAWAY_RAFFLE = "JCHS Giveaway Raffle";
+	private static final String JCHS_CELLPHONE_RAFFLE = "JCHS Cellphone Raffle";
 	private static final String JCHS_RAFFLE = "JCHS Raffle (ended)";
 	private static final String ALFONSO_RAFFLE = "Alfonso Raffle (ended)";
 	
@@ -89,8 +89,8 @@ public class PromoMenuPanel extends MenuPanel {
 		case PROMO_LIST:
 			getMagicFrame().switchToPromoListPanel();
 			break;
-		case JCHS_GIVEAWAY_RAFFLE:
-			getMagicFrame().switchToJchsGiveawayRaffleMenuPanel();
+		case JCHS_CELLPHONE_RAFFLE:
+			getMagicFrame().switchToJchsCellphoneRaffleMenuPanel();
 			break;
 		case JCHS_RAFFLE:
 			getMagicFrame().switchToJchsRaffleMenuPanel();
@@ -110,7 +110,7 @@ public class PromoMenuPanel extends MenuPanel {
 
 		private final List<String> menuItems = Arrays.asList(
 				PROMO_LIST,
-				JCHS_GIVEAWAY_RAFFLE,
+				JCHS_CELLPHONE_RAFFLE,
 				JCHS_RAFFLE,
 				ALFONSO_RAFFLE
 		);

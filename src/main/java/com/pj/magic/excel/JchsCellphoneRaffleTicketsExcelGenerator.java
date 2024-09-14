@@ -11,11 +11,11 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.pj.magic.model.PromoRaffleTicket;
 
-public class JchsGiveawayRaffleTicketsExcelGenerator {
+public class JchsCellphoneRaffleTicketsExcelGenerator {
 
     public Workbook generate(List<PromoRaffleTicket> tickets) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook(
-				getClass().getResourceAsStream("/excel/jchsGiveawayRaffleTickets.xlsx"));
+				getClass().getResourceAsStream("/excel/jchsCellphoneRaffleTickets.xlsx"));
 		Sheet sheet = workbook.getSheetAt(0);
 
 		Cell cell = null;

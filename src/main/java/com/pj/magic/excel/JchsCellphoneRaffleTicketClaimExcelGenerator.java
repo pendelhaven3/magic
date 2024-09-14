@@ -17,11 +17,11 @@ import com.pj.magic.model.PromoRaffleTicketClaimSummary;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.util.FormatterUtil;
 
-public class JchsGiveawayRaffleTicketClaimExcelGenerator {
+public class JchsCellphoneRaffleTicketClaimExcelGenerator {
 
     public Workbook generate(PromoRaffleTicketClaim claim) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook(
-				getClass().getResourceAsStream("/excel/jchsGiveawayRaffleTicketClaim.xlsx"));
+				getClass().getResourceAsStream("/excel/jchsCellphoneRaffleTicketClaim.xlsx"));
 		Sheet sheet = workbook.getSheetAt(0);
 
 		Row row = sheet.getRow(0);

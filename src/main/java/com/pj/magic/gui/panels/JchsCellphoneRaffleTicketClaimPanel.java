@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.Constants;
-import com.pj.magic.excel.JchsGiveawayRaffleTicketClaimExcelGenerator;
+import com.pj.magic.excel.JchsCellphoneRaffleTicketClaimExcelGenerator;
 import com.pj.magic.gui.component.DatePickerFormatter;
 import com.pj.magic.gui.component.EllipsisButton;
 import com.pj.magic.gui.component.MagicFileChooser;
@@ -66,7 +66,7 @@ import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
 @Component
 @Slf4j
-public class JchsGiveawayRaffleTicketClaimPanel extends StandardMagicPanel {
+public class JchsCellphoneRaffleTicketClaimPanel extends StandardMagicPanel {
 
 	@Autowired private SelectCustomerDialog selectCustomerDialog;
 	@Autowired private CustomerService customerService;
@@ -238,7 +238,7 @@ public class JchsGiveawayRaffleTicketClaimPanel extends StandardMagicPanel {
 		criteria.setCustomer(customer);
 		criteria.setTransactionDateFrom(salesDateFrom);
 		criteria.setTransactionDateTo(salesDateTo);
-		criteria.setUnclaimedRafflePromo(new Promo(PromoServiceImpl.JCHS_GIVEAWAY_RAFFLE_PROMO_ID));
+		criteria.setUnclaimedRafflePromo(new Promo(PromoServiceImpl.JCHS_CELLPHONE_RAFFLE_PROMO_ID));
 		
 		return salesInvoiceService.search(criteria);
 	}
@@ -251,7 +251,7 @@ public class JchsGiveawayRaffleTicketClaimPanel extends StandardMagicPanel {
 		}
 		
 		try {
-			claim = promoService.claimJchsGiveawayRaffleTickets(
+			claim = promoService.claimJchsCellphoneRaffleTickets(
 					claim.getCustomer(), claim.getTransactionDateFrom(), claim.getTransactionDateTo());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -283,7 +283,7 @@ public class JchsGiveawayRaffleTicketClaimPanel extends StandardMagicPanel {
 
 	@Override
 	protected void doOnBack() {
-		getMagicFrame().switchToJchsGiveawayRaffleTicketClaimsListPanel();
+		getMagicFrame().switchToJchsCellphoneRaffleTicketClaimsListPanel();
 	}
 	
 	public void updateDisplay(PromoRaffleTicketClaim claim) {
@@ -514,14 +514,14 @@ public class JchsGiveawayRaffleTicketClaimPanel extends StandardMagicPanel {
 
 	private void generateExcel() {
 		MagicFileChooser excelFileChooser = FileUtil.createSaveFileChooser(
-				"JCHS Giveaway Raffle 2024 - " + claim.getCustomer().getCode() 
+				"JCHS Cellphone Raffle - " + claim.getCustomer().getCode() 
 				+ new SimpleDateFormat("mmmDD").format(claim.getTransactionDateFrom()) + ".xlsx");
 		if (!excelFileChooser.selectSaveFile(this)) {
 			return;
 		}
 		
 		try (
-			Workbook workbook = new JchsGiveawayRaffleTicketClaimExcelGenerator().generate(claim);
+			Workbook workbook = new JchsCellphoneRaffleTicketClaimExcelGenerator().generate(claim);
 			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
 		) {
 			workbook.write(out);

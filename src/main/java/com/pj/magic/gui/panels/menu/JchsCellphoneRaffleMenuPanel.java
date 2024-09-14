@@ -21,10 +21,10 @@ import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.MagicSubmenuTable;
 
 @Component
-public class JchsGiveawayRaffleMenuPanel extends MenuPanel {
+public class JchsCellphoneRaffleMenuPanel extends MenuPanel {
 
-	private static final String TICKETS = "JCHS Giveaway Raffle Tickets";
-	private static final String TICKET_CLAIMS = "JCHS Giveaway Raffle Ticket Claims";
+	private static final String TICKETS = "JCHS Cellphone Raffle Tickets";
+	private static final String TICKET_CLAIMS = "JCHS Cellphone Raffle Ticket Claims";
 	
 	private MagicListTable table;
 	private MainMenuTableModel tableModel;
@@ -85,10 +85,10 @@ public class JchsGiveawayRaffleMenuPanel extends MenuPanel {
 	private void selectMenuItem() {
 		switch ((String)table.getValueAt(table.getSelectedRow(), 0)) {
 		case TICKETS:
-			getMagicFrame().switchToJchsGiveawayRaffleTicketsListPanel();
+			getMagicFrame().switchToJchsCellphoneRaffleTicketsListPanel();
 			break;
 		case TICKET_CLAIMS:
-			getMagicFrame().switchToJchsGiveawayRaffleTicketClaimsListPanel();
+			getMagicFrame().switchToJchsCellphoneRaffleTicketClaimsListPanel();
 			break;
 		}
 	}

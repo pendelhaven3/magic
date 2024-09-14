@@ -31,7 +31,7 @@ import com.pj.magic.gui.panels.menu.AlfonsoRaffleMenuPanel;
 import com.pj.magic.gui.panels.menu.BadStockMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryCheckMenuPanel;
 import com.pj.magic.gui.panels.menu.InventoryMenuPanel;
-import com.pj.magic.gui.panels.menu.JchsGiveawayRaffleMenuPanel;
+import com.pj.magic.gui.panels.menu.JchsCellphoneRaffleMenuPanel;
 import com.pj.magic.gui.panels.menu.JchsRaffleMenuPanel;
 import com.pj.magic.gui.panels.menu.PromoMenuPanel;
 import com.pj.magic.gui.panels.menu.PurchasePaymentsMenuPanel;
@@ -261,10 +261,10 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	public static final String JCHS_RAFFLE_TICKETS_LIST_PANEL = "JCHS_RAFFLE_TICKETS_LIST_PANEL";
 	public static final String JCHS_RAFFLE_TICKET_CLAIMS_LIST_PANEL = "JCHS_RAFFLE_TICKET_CLAIMS_LIST_PANEL";
 	public static final String JCHS_RAFFLE_TICKET_CLAIM_PANEL = "JCHS_RAFFLE_TICKET_CLAIM_PANEL";
-	public static final String JCHS_GIVEAWAY_RAFFLE_MENU_PANEL = "JCHS_GIVEAWAY_RAFFLE_MENU_PANEL";
-	public static final String JCHS_GIVEAWAY_RAFFLE_TICKETS_LIST_PANEL = "JCHS_GIVEAWAY_RAFFLE_TICKETS_LIST_PANEL";
-	public static final String JCHS_GIVEAWAY_RAFFLE_TICKET_CLAIMS_LIST_PANEL = "JCHS_GIVEAWAY_RAFFLE_TICKET_CLAIMS_LIST_PANEL";
-	public static final String JCHS_GIVEAWAY_RAFFLE_TICKET_CLAIM_PANEL = "JCHS_GIVEAWAY_RAFFLE_TICKET_CLAIM_PANEL";
+	public static final String JCHS_CELLPHONE_RAFFLE_MENU_PANEL = "JCHS_CELLPHONE_RAFFLE_MENU_PANEL";
+	public static final String JCHS_CELLPHONE_RAFFLE_TICKETS_LIST_PANEL = "JCHS_CELLPHONE_RAFFLE_TICKETS_LIST_PANEL";
+	public static final String JCHS_CELLPHONE_RAFFLE_TICKET_CLAIMS_LIST_PANEL = "JCHS_CELLPHONE_RAFFLE_TICKET_CLAIMS_LIST_PANEL";
+	public static final String JCHS_CELLPHONE_RAFFLE_TICKET_CLAIM_PANEL = "JCHS_CELLPHONE_RAFFLE_TICKET_CLAIM_PANEL";
 	public static final String ALFONSO_RAFFLE_MENU_PANEL = "ALFONSO_RAFFLE_MENU_PANEL";
 	public static final String ALFONSO_RAFFLE_TICKETS_LIST_PANEL = "ALFONSO_RAFFLE_TICKETS_LIST_PANEL";
 	public static final String ALFONSO_RAFFLE_TICKET_CLAIMS_LIST_PANEL = "ALFONSO_RAFFLE_TICKET_CLAIMS_LIST_PANEL";
@@ -415,10 +415,10 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	@Autowired private EcashPaymentsReportPanel ecashPaymentsReportPanel;
 	@Autowired private EcashPurchasePaymentsReportPanel ecashPurchasePaymentsReportPanel;
 	@Autowired private PromoMenuPanel promoMenuPanel;
-	@Autowired private JchsGiveawayRaffleMenuPanel jchsGiveawayRaffleMenuPanel;
-	@Autowired private JchsGiveawayRaffleTicketsListPanel jchsGiveawayRaffleTicketsListPanel;
-	@Autowired private JchsGiveawayRaffleTicketClaimsListPanel jchsGiveawayRaffleTicketClaimsListPanel;
-	@Autowired private JchsGiveawayRaffleTicketClaimPanel jchsGiveawayRaffleTicketClaimPanel;
+	@Autowired private JchsCellphoneRaffleMenuPanel jchsCellphoneRaffleMenuPanel;
+	@Autowired private JchsCellphoneRaffleTicketsListPanel jchsCellphoneRaffleTicketsListPanel;
+	@Autowired private JchsCellphoneRaffleTicketClaimsListPanel jchsCellphoneRaffleTicketClaimsListPanel;
+	@Autowired private JchsCellphoneRaffleTicketClaimPanel jchsCellphoneRaffleTicketClaimPanel;
 	@Autowired private JchsRaffleMenuPanel jchsRaffleMenuPanel;
 	@Autowired private JchsRaffleTicketsListPanel jchsRaffleTicketsListPanel;
 	@Autowired private JchsRaffleTicketClaimsListPanel jchsRaffleTicketClaimsListPanel;
@@ -622,10 +622,10 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 		panelHolder.add(ecashPaymentsReportPanel, ECASH_PAYMENTS_REPORT_PANEL);
 		panelHolder.add(ecashPurchasePaymentsReportPanel, ECASH_PURCHASE_PAYMENTS_REPORT_PANEL);
 		panelHolder.add(promoMenuPanel, PROMO_MENU_PANEL);
-		panelHolder.add(jchsGiveawayRaffleMenuPanel, JCHS_GIVEAWAY_RAFFLE_MENU_PANEL);
-		panelHolder.add(jchsGiveawayRaffleTicketsListPanel, JCHS_GIVEAWAY_RAFFLE_TICKETS_LIST_PANEL);
-		panelHolder.add(jchsGiveawayRaffleTicketClaimsListPanel, JCHS_GIVEAWAY_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
-		panelHolder.add(jchsGiveawayRaffleTicketClaimPanel, JCHS_GIVEAWAY_RAFFLE_TICKET_CLAIM_PANEL);
+		panelHolder.add(jchsCellphoneRaffleMenuPanel, JCHS_CELLPHONE_RAFFLE_MENU_PANEL);
+		panelHolder.add(jchsCellphoneRaffleTicketsListPanel, JCHS_CELLPHONE_RAFFLE_TICKETS_LIST_PANEL);
+		panelHolder.add(jchsCellphoneRaffleTicketClaimsListPanel, JCHS_CELLPHONE_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
+		panelHolder.add(jchsCellphoneRaffleTicketClaimPanel, JCHS_CELLPHONE_RAFFLE_TICKET_CLAIM_PANEL);
 		panelHolder.add(jchsRaffleMenuPanel, JCHS_RAFFLE_MENU_PANEL);
 		panelHolder.add(jchsRaffleTicketsListPanel, JCHS_RAFFLE_TICKETS_LIST_PANEL);
 		panelHolder.add(jchsRaffleTicketClaimsListPanel, JCHS_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
@@ -1641,28 +1641,28 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, TOP_SALES_BY_ITEM_REPORT_PANEL);
 	}
 
-	public void switchToJchsGiveawayRaffleMenuPanel() {
-		addPanelNameToTitle("JCHS Giveaway Raffle Menu");
-		jchsGiveawayRaffleMenuPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_GIVEAWAY_RAFFLE_MENU_PANEL);
+	public void switchToJchsCellphoneRaffleMenuPanel() {
+		addPanelNameToTitle("JCHS Cellphone Raffle Menu");
+		jchsCellphoneRaffleMenuPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_CELLPHONE_RAFFLE_MENU_PANEL);
 	}
 
-	public void switchToJchsGiveawayRaffleTicketsListPanel() {
-		addPanelNameToTitle("JCHS Giveaway Raffle Tickets List");
-		jchsGiveawayRaffleTicketsListPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_GIVEAWAY_RAFFLE_TICKETS_LIST_PANEL);
+	public void switchToJchsCellphoneRaffleTicketsListPanel() {
+		addPanelNameToTitle("JCHS Cellphone Raffle Tickets List");
+		jchsCellphoneRaffleTicketsListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_CELLPHONE_RAFFLE_TICKETS_LIST_PANEL);
 	}
 
-	public void switchToJchsGiveawayRaffleTicketClaimsListPanel() {
-		addPanelNameToTitle("JCHS Giveaway Raffle Ticket Claims List");
-		jchsGiveawayRaffleTicketClaimsListPanel.updateDisplay();
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_GIVEAWAY_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
+	public void switchToJchsCellphoneRaffleTicketClaimsListPanel() {
+		addPanelNameToTitle("JCHS Cellphone Raffle Ticket Claims List");
+		jchsCellphoneRaffleTicketClaimsListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_CELLPHONE_RAFFLE_TICKET_CLAIMS_LIST_PANEL);
 	}
 
-	public void switchToJchsGiveawayRaffleTicketClaimPanel(PromoRaffleTicketClaim claim) {
-		addPanelNameToTitle("JCHS Giveaway Raffle Ticket Claim");
-		jchsGiveawayRaffleTicketClaimPanel.updateDisplay(claim);
-		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_GIVEAWAY_RAFFLE_TICKET_CLAIM_PANEL);
+	public void switchToJchsCellphoneRaffleTicketClaimPanel(PromoRaffleTicketClaim claim) {
+		addPanelNameToTitle("JCHS Cellphone Raffle Ticket Claim");
+		jchsCellphoneRaffleTicketClaimPanel.updateDisplay(claim);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_CELLPHONE_RAFFLE_TICKET_CLAIM_PANEL);
 	}
 
 }
