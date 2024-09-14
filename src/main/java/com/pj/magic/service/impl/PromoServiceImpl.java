@@ -63,7 +63,8 @@ public class PromoServiceImpl implements PromoService {
 	public static final BigDecimal JCHS_GIVEAWAY_RAFFLE_SALES_AMOUNT_PER_TICKET = new BigDecimal("3000");
 	public static final long JCHS_RAFFLE_PROMO_ID = 100001L;
 	public static final long ALFONSO_RAFFLE_PROMO_ID = 100002L;
-	public static final long JCHS_GIVEAWAY_RAFFLE_PROMO_ID = 100003L;
+	// TODO: Need to mark Promo ID 10003 as aborted
+	public static final long JCHS_GIVEAWAY_RAFFLE_PROMO_ID = 100004L;
 	
 	@Autowired private PromoDao promoDao;
 	@Autowired private PromoType1RuleDao promoType1RuleDao;
