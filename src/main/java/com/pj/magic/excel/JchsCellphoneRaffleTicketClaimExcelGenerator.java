@@ -81,22 +81,23 @@ public class JchsCellphoneRaffleTicketClaimExcelGenerator {
 				if (lastRow < startRow + j) {
 					lastRow = startRow + j;
 				}
-			}
-			
-			for (int j = 0; j < summary.getNumberOfTickets(); j++) {
-				row = sheet.getRow(startRow + j);
-				if (row == null) {
-					row = sheet.createRow(startRow + j);
-				}
 				
-				cell = row.getCell(2);
-				if (cell == null) {
-					cell = row.createCell(2);
-				}
-				cell.setCellValue(String.valueOf(tickets.remove(0).getTicketNumberDisplay()));
-				
-				if (lastRow < startRow + j) {
-					lastRow = startRow + j;
+				if (j == 0) {
+					cell = row.getCell(2);
+					if (cell == null) {
+						cell = row.createCell(2);
+					}
+					
+					if (summary.getNumberOfTickets() == 1) {
+						cell.setCellValue(tickets.remove(0).getTicketNumberDisplay());
+					} else if (summary.getNumberOfTickets() > 1) {
+						String firstTicket = tickets.remove(0).getTicketNumberDisplay();
+						String lastTicket = null;
+						for (int k = 1; k < summary.getNumberOfTickets(); k++) {
+							lastTicket = tickets.remove(0).getTicketNumberDisplay();
+						}
+						cell.setCellValue(firstTicket + " - " + lastTicket);
+					}
 				}
 			}
 			
