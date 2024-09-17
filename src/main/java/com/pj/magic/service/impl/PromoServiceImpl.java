@@ -26,6 +26,7 @@ import com.pj.magic.dao.PromoType6RulePromoProductDao;
 import com.pj.magic.dao.SystemDao;
 import com.pj.magic.exception.NoParticipatingItemsException;
 import com.pj.magic.exception.ProductAlreadyExistsException;
+import com.pj.magic.model.CellphonePromoRaffleTicketClaimSummary;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Manufacturer;
 import com.pj.magic.model.Product;
@@ -523,10 +524,10 @@ public class PromoServiceImpl implements PromoService {
 		
 		List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);
 		
-		List<PromoRaffleTicketClaimSummary> summaries = PromoRaffleTicketClaimSummary.toSummaries(salesInvoices);
+		List<CellphonePromoRaffleTicketClaimSummary> summaries = CellphonePromoRaffleTicketClaimSummary.toSummaries(salesInvoices);
 		
 		int claimableTickets = 0;
-		for (PromoRaffleTicketClaimSummary summary : summaries) {
+		for (CellphonePromoRaffleTicketClaimSummary summary : summaries) {
 			claimableTickets += summary.getNumberOfTickets();
 		}
 		

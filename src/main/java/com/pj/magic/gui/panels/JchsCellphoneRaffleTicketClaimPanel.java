@@ -43,11 +43,11 @@ import com.pj.magic.gui.component.MultiLineTableCellRenderer;
 import com.pj.magic.gui.dialog.SelectCustomerDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
+import com.pj.magic.model.CellphonePromoRaffleTicketClaimSummary;
 import com.pj.magic.model.Customer;
 import com.pj.magic.model.Promo;
 import com.pj.magic.model.PromoRaffleTicket;
 import com.pj.magic.model.PromoRaffleTicketClaim;
-import com.pj.magic.model.PromoRaffleTicketClaimSummary;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.search.SalesInvoiceSearchCriteria;
 import com.pj.magic.service.CustomerService;
@@ -221,10 +221,10 @@ public class JchsCellphoneRaffleTicketClaimPanel extends StandardMagicPanel {
 		List<SalesInvoice> salesInvoices = getEligibleSalesInvoices(
 				customer, claim.getTransactionDateFrom(), claim.getTransactionDateTo());
 		
-		List<PromoRaffleTicketClaimSummary> summaries = PromoRaffleTicketClaimSummary.toSummaries(salesInvoices);
+		List<CellphonePromoRaffleTicketClaimSummary> summaries = CellphonePromoRaffleTicketClaimSummary.toSummaries(salesInvoices);
 		
 		int tickets = 0;
-		for (PromoRaffleTicketClaimSummary summary : summaries) {
+		for (CellphonePromoRaffleTicketClaimSummary summary : summaries) {
 			tickets = tickets + summary.getNumberOfTickets();
 		}
 		
@@ -310,7 +310,7 @@ public class JchsCellphoneRaffleTicketClaimPanel extends StandardMagicPanel {
 		checkButton.setEnabled(false);
 		claimButton.setEnabled(false);
 		ticketsTableModel.setItems(claim.getTickets());
-		salesInvoicesTableModel.setItems(PromoRaffleTicketClaimSummary.toSummaries(claim.getSalesInvoices()));
+		salesInvoicesTableModel.setItems(CellphonePromoRaffleTicketClaimSummary.toSummaries(claim.getSalesInvoices()));
 		excelButton.setEnabled(true);
 	}
 
@@ -584,7 +584,7 @@ public class JchsCellphoneRaffleTicketClaimPanel extends StandardMagicPanel {
 		return panel;
 	}
 	
-	private class SalesInvoicesTableModel extends ListBackedTableModel<PromoRaffleTicketClaimSummary> {
+	private class SalesInvoicesTableModel extends ListBackedTableModel<CellphonePromoRaffleTicketClaimSummary> {
 
 		@Override
 		protected String[] getColumnNames() {
@@ -593,7 +593,7 @@ public class JchsCellphoneRaffleTicketClaimPanel extends StandardMagicPanel {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			PromoRaffleTicketClaimSummary summary = getItem(rowIndex);
+			CellphonePromoRaffleTicketClaimSummary summary = getItem(rowIndex);
 			switch (columnIndex) {
 			case 0:
 				return FormatterUtil.formatDate(summary.getTransactionDate());

@@ -11,9 +11,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.pj.magic.model.CellphonePromoRaffleTicketClaimSummary;
 import com.pj.magic.model.PromoRaffleTicket;
 import com.pj.magic.model.PromoRaffleTicketClaim;
-import com.pj.magic.model.PromoRaffleTicketClaimSummary;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.util.FormatterUtil;
 
@@ -46,9 +46,9 @@ public class JchsCellphoneRaffleTicketClaimExcelGenerator {
 		int startRow = 5;
 		int lastRow = 5;
 
-		List<PromoRaffleTicketClaimSummary> summaries = PromoRaffleTicketClaimSummary.toSummaries(claim.getSalesInvoices());
+		List<CellphonePromoRaffleTicketClaimSummary> summaries = CellphonePromoRaffleTicketClaimSummary.toSummaries(claim.getSalesInvoices());
 		for (int i = 0; i < summaries.size(); i++) {
-			PromoRaffleTicketClaimSummary summary = summaries.get(i);
+			CellphonePromoRaffleTicketClaimSummary summary = summaries.get(i);
 			if (summary.getNumberOfTickets() == 0) {
 				continue;
 			}
