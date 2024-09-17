@@ -29,6 +29,9 @@ public class JchsCellphoneRaffleTicketClaimExcelGenerator {
 		
 		row = sheet.getRow(1);
 		row.createCell(1).setCellValue(claim.getCustomer().getName());
+
+		row = sheet.getRow(3);
+		row.createCell(1).setCellValue(claim.getId().toString());
 		
         CellStyle wrap = workbook.createCellStyle();
         wrap.setWrapText(true);
@@ -43,8 +46,8 @@ public class JchsCellphoneRaffleTicketClaimExcelGenerator {
         List<PromoRaffleTicket> tickets = new ArrayList<>(claim.getTickets());
         
 		Cell cell = null;
-		int startRow = 5;
-		int lastRow = 5;
+		int startRow = 6;
+		int lastRow = 6;
 
 		List<CellphonePromoRaffleTicketClaimSummary> summaries = CellphonePromoRaffleTicketClaimSummary.toSummaries(claim.getSalesInvoices());
 		for (int i = 0; i < summaries.size(); i++) {
