@@ -61,7 +61,7 @@ public class PromoServiceImpl implements PromoService {
 
 	public static final BigDecimal JCHS_RAFFLE_SALES_AMOUNT_PER_TICKET = new BigDecimal("5000");
 	public static final BigDecimal ALFONSO_RAFFLE_SALES_AMOUNT_PER_TICKET = new BigDecimal("5000");
-	public static final BigDecimal JCHS_CELLPHONE_RAFFLE_SALES_AMOUNT_PER_TICKET = new BigDecimal("3000");
+	public static final BigDecimal JCHS_CELLPHONE_RAFFLE_SALES_AMOUNT_PER_TICKET = new BigDecimal("5000");
 	public static final long JCHS_RAFFLE_PROMO_ID = 100001L;
 	public static final long ALFONSO_RAFFLE_PROMO_ID = 100002L;
 	// TODO: Need to mark Promo ID 10003 as aborted
