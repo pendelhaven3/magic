@@ -520,6 +520,7 @@ public class PromoServiceImpl implements PromoService {
 		criteria.setCustomer(customer);
 		criteria.setTransactionDateFrom(transactionDateFrom);
 		criteria.setTransactionDateTo(transactionDateTo);
+		criteria.setCancelled(false);
 		criteria.setUnclaimedRafflePromo(new Promo(JCHS_CELLPHONE_RAFFLE_PROMO_ID));
 		
 		List<SalesInvoice> salesInvoices = salesInvoiceService.search(criteria);

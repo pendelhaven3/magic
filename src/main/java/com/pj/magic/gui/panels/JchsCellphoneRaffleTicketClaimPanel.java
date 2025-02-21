@@ -238,6 +238,7 @@ public class JchsCellphoneRaffleTicketClaimPanel extends StandardMagicPanel {
 		criteria.setCustomer(customer);
 		criteria.setTransactionDateFrom(salesDateFrom);
 		criteria.setTransactionDateTo(salesDateTo);
+		criteria.setCancelled(false);
 		criteria.setUnclaimedRafflePromo(new Promo(PromoServiceImpl.JCHS_CELLPHONE_RAFFLE_PROMO_ID));
 		
 		return salesInvoiceService.search(criteria);
