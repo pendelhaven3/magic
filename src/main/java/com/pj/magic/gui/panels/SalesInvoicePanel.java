@@ -416,6 +416,17 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		});
 		toolBar.add(printBirFormChargeButton);
 		
+		JButton printBirFormCharge2Button = 
+				new MagicToolBarButton("print_bir_form_charge2", "Print BIR form (Charge) 2");
+		printBirFormCharge2Button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printService.printBirChargeForm2(salesInvoice);
+			}
+		});
+		toolBar.add(printBirFormCharge2Button);
+		
 		JButton copyButton = new MagicToolBarButton("copy", "Create New Sales Requisition Based On Sales Invoice");
 		copyButton.addActionListener(new ActionListener() {
 			

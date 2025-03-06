@@ -61,6 +61,8 @@ public interface PrintService {
 	
 	void printBirChargeForm(SalesInvoice salesInvoice);
 	
+	void printBirChargeForm2(SalesInvoice salesInvoice);
+	
 	List<String> generateReportAsString(AreaInventoryReport areaInventoryReport);
 
 	void print(AreaInventoryReport areaInventoryReport);
@@ -124,5 +126,5 @@ public interface PrintService {
 	List<String> generateReportAsString(NoMoreStockAdjustment noMoreStockAdjustment);
 
 	void print(NoMoreStockAdjustment noMoreStockAdjustment);
-	
+
 }
