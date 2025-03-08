@@ -1144,28 +1144,6 @@ public class PrintServiceImpl implements PrintService {
 		
 		Collections.sort(salesInvoice.getItems());
 		
-//		int size = salesInvoice.getItems().size();
-//		for (int i = size; i > 1; i--) {
-//			salesInvoice.getItems().remove(i - 1);
-//		}
-		
-		List<SalesInvoiceItem> items = salesInvoice.getItems();
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		items.add(items.get(items.size() - 1));
-		
 		List<PromoRedemption> promoRedemptions = promoRedemptionService.findAllAvailedPromoRedemptions(salesInvoice);
 		
 		List<String> itemLines = new ArrayList<>();
