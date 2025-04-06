@@ -1,4 +1,4 @@
-$report.center("JC HARMONY SELLING", $charsPerLine)
+
 
 $report.center("PRICE CHANGES REPORT", $charsPerLine)
 $report.center("as of $report.field($priceChangesReport.fromDate) - $report.field($priceChangesReport.toDate)", $charsPerLine)

@@ -1,7 +1,7 @@
 #set( $charsPerLine = 70 )
-$report.center("JC HARMONY SELLING INC.", $charsPerLine)
-$report.center("251 GEN.P.ALVAREZ ST.CALOOCAN CITY", $charsPerLine)
-$report.center("TEL.NO.83621785 853195946", $charsPerLine)
+
+
+
 
 $report.center("PAYMENT SUMMARY", $charsPerLine)
 

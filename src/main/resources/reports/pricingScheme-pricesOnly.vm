@@ -1,5 +1,5 @@
 #set( $charsPerLine = 84 )
-$report.center("JC HARMONY SELLING", $charsPerLine)
+
 
 $report.center("${pricingScheme.name} PRICE LIST REPORT", $charsPerLine)
 $report.center("as of ${currentDate}", $charsPerLine)

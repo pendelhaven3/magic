@@ -1,4 +1,4 @@
-$report.center("JC HARMONY SELLING INC.", $charsPerLine)
+
 
 $report.center("POSTED SALES AND PROFIT REPORT", $charsPerLine)
                                                                                                                     Page: $currentPage x $totalPages

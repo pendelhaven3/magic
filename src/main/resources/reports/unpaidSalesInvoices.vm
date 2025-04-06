@@ -1,4 +1,4 @@
-$report.center("JC HARMONY SELLING INC.", $charsPerLine)
+
 
 $report.center("UNPAID SALES INVOICE REPORT", $charsPerLine)
 $report.center("As of ${currentDate}", $charsPerLine)

@@ -1,4 +1,4 @@
-$report.center("JC HARMONY SELLING INC.", $charsPerLine)
+
 
 $report.center("REMITTANCE REPORT", $charsPerLine)
 $report.center("As of ${report.field($remittanceReport.reportDate)}", $charsPerLine)

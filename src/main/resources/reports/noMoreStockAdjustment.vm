@@ -1,5 +1,5 @@
 #set( $charsPerLine = 72 )
-$report.center("JC HARMONY SELLING INC.", $charsPerLine)
+
 
 $report.center("NO MORE STOCK ADJUSTMENT", $charsPerLine)
 

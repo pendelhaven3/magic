@@ -1,4 +1,4 @@
-$report.center("JC HARMONY SELLING")
+
 
 $report.center("PRODUCT PRICE ${pricingScheme.name}, COST & PROFIT")
 $report.center("as of ${currentDate}")

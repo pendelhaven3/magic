@@ -1,4 +1,4 @@
-$report.center("JC HARMONY SELLING", 96)
+
 
 $report.center("PRODUCT QTY & VALUE REPORT", 96)
 $report.center("${reportType} as of ${inventoryDate}", 96)
