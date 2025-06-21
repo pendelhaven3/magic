@@ -127,4 +127,6 @@ public interface PrintService {
 
 	void print(NoMoreStockAdjustment noMoreStockAdjustment);
 
+	void printBirChargeForm3(SalesInvoice salesInvoice);
+
 }
