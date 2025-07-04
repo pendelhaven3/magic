@@ -87,6 +87,8 @@ import com.pj.magic.model.PurchasePaymentAdjustmentType;
 import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.model.SalesComplianceProject;
+import com.pj.magic.model.SalesComplianceProjectSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesRequisition;
 import com.pj.magic.model.SalesReturn;
@@ -271,6 +273,10 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	public static final String ALFONSO_RAFFLE_TICKET_CLAIM_PANEL = "ALFONSO_RAFFLE_TICKET_CLAIM_PANEL";
 	public static final String ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL = "ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL";
 	public static final String TOP_SALES_BY_ITEM_REPORT_PANEL = "TOP_SALES_BY_ITEM_REPORT_PANEL";
+	public static final String SALES_COMPLIANCE_PROJECTS_LIST_PANEL = "SALES_COMPLIANCE_PROJECTS_LIST_PANEL";
+	public static final String MAINTAIN_SALES_COMPLIANCE_PROJECT_PANEL = "MAINTAIN_SALES_COMPLIANCE_PROJECT_PANEL";
+	public static final String SALES_COMPLIANCE_PROJECT_PANEL = "SALES_COMPLIANCE_PROJECT_PANEL";
+	public static final String SALES_COMPLIANCE_PROJECT_SALES_INVOICE_PANEL = "SALES_COMPLIANCE_PROJECT_SALES_INVOICE_PANEL";
 	
     private static final Map<String, Class<? extends StandardMagicPanel>> panelClasses = new HashMap<>();
     
@@ -429,6 +435,10 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 	@Autowired private AlfonsoRaffleTicketClaimPanel alfonsoRaffleTicketClaimPanel;
 	@Autowired private AlfonsoRaffleParticipatingItemsPanel alfonsoRaffleParticipatingItemsPanel;
 	@Autowired private TopSalesByItemReportPanel topSalesByItemReportPanel;
+	@Autowired private SalesComplianceProjectsListPanel salesComplianceProjectsListPanel;
+	@Autowired private MaintainSalesComplianceProjectPanel maintainSalesComplianceProjectPanel;
+	@Autowired private SalesComplianceProjectPanel salesComplianceProjectPanel;
+	@Autowired private SalesComplianceProjectSalesInvoicePanel salesComplianceProjectSalesInvoicePanel;
 	
 	@Autowired private SystemService systemParameterService;
 	@Autowired private DataSource dataSource;
@@ -636,6 +646,10 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 		panelHolder.add(alfonsoRaffleTicketClaimPanel, ALFONSO_RAFFLE_TICKET_CLAIM_PANEL);
 		panelHolder.add(alfonsoRaffleParticipatingItemsPanel, ALFONSO_RAFFLE_PARTICIPATING_ITEMS_PANEL);
 		panelHolder.add(topSalesByItemReportPanel, TOP_SALES_BY_ITEM_REPORT_PANEL);
+		panelHolder.add(salesComplianceProjectsListPanel, SALES_COMPLIANCE_PROJECTS_LIST_PANEL);
+		panelHolder.add(maintainSalesComplianceProjectPanel, MAINTAIN_SALES_COMPLIANCE_PROJECT_PANEL);
+		panelHolder.add(salesComplianceProjectPanel, SALES_COMPLIANCE_PROJECT_PANEL);
+		panelHolder.add(salesComplianceProjectSalesInvoicePanel, SALES_COMPLIANCE_PROJECT_SALES_INVOICE_PANEL);
         getContentPane().add(panelHolder);
 
         switchToLoginPanel();
@@ -1663,6 +1677,36 @@ public class MagicFrame extends JFrame implements ApplicationContextAware {
 		addPanelNameToTitle("JCHS Cellphone Raffle Ticket Claim");
 		jchsCellphoneRaffleTicketClaimPanel.updateDisplay(claim);
 		((CardLayout)panelHolder.getLayout()).show(panelHolder, JCHS_CELLPHONE_RAFFLE_TICKET_CLAIM_PANEL);
+	}
+
+	public void switchToSalesComplianceProjectsListPanel() {
+		addPanelNameToTitle("Sales Compliance Projects List");
+		salesComplianceProjectsListPanel.updateDisplay();
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_COMPLIANCE_PROJECTS_LIST_PANEL);
+	}
+
+	public void switchToCreateNewSalesComplianceProjectPanel() {
+		addPanelNameToTitle("Create New Sales Compliance Project");
+		maintainSalesComplianceProjectPanel.updateDisplay(new SalesComplianceProject());
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_SALES_COMPLIANCE_PROJECT_PANEL);
+	}
+
+	public void switchToSalesComplianceProjectPanel(SalesComplianceProject salesComplianceProject) {
+		addPanelNameToTitle("Sales Compliance Project");
+		salesComplianceProjectPanel.updateDisplay(salesComplianceProject);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_COMPLIANCE_PROJECT_PANEL);
+	}
+
+	public void switchToUpdateSalesComplianceProject(SalesComplianceProject salesComplianceProject) {
+		addPanelNameToTitle("Update Sales Compliance Project");
+		maintainSalesComplianceProjectPanel.updateDisplay(salesComplianceProject);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, MAINTAIN_SALES_COMPLIANCE_PROJECT_PANEL);
+	}
+
+	public void switchToSalesComplianceProjectSalesInvoicePanel(SalesComplianceProjectSalesInvoice projectSalesInvoice) {
+		addPanelNameToTitle("Sales Compliance Project Sales Invoice");
+		salesComplianceProjectSalesInvoicePanel.updateDisplay(projectSalesInvoice);
+		((CardLayout)panelHolder.getLayout()).show(panelHolder, SALES_COMPLIANCE_PROJECT_SALES_INVOICE_PANEL);
 	}
 
 }

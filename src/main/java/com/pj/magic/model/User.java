@@ -79,6 +79,7 @@ public class User implements Serializable {
 	}
 
 	public boolean isSupervisor() {
+//		return supervisor || "ADMIN".equals(username);
 		return supervisor;
 	}
 

@@ -31,6 +31,7 @@ public class AdminMenuPanel extends MenuPanel {
     private static final String RESET_PASSWORD = "Reset Password";
 	private static final String PAYMENT_TERMINAL_ASSIGNMENTS = "Payment Terminal Assignments";
     private static final String CHANGE_PASSWORD = "Change Password";
+    private static final String SALES_COMPLIANCE = "Sales Compliance";
     
     @Autowired
     private LoginService loginService;
@@ -106,6 +107,9 @@ public class AdminMenuPanel extends MenuPanel {
         case CHANGE_PASSWORD:
             getMagicFrame().switchToChangePasswordPanel();
             break;
+        case SALES_COMPLIANCE:
+            getMagicFrame().switchToSalesComplianceProjectsListPanel();
+            break;
 		}
 	}
 
@@ -120,7 +124,8 @@ public class AdminMenuPanel extends MenuPanel {
                 USER_LIST,
                 RESET_PASSWORD,
                 PAYMENT_TERMINAL_ASSIGNMENTS,
-                CHANGE_PASSWORD
+                CHANGE_PASSWORD,
+                SALES_COMPLIANCE
         );
         
 		private final List<String> menuItems = new ArrayList<>();
@@ -147,6 +152,7 @@ public class AdminMenuPanel extends MenuPanel {
                 menuItems.remove(USER_LIST);
                 menuItems.remove(RESET_PASSWORD);
                 menuItems.remove(PAYMENT_TERMINAL_ASSIGNMENTS);
+                menuItems.remove(SALES_COMPLIANCE);
             }
             fireTableDataChanged();
         }

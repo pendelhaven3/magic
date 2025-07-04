@@ -57,6 +57,8 @@ import com.pj.magic.model.PurchaseReturnBadStockItem;
 import com.pj.magic.model.PurchaseReturnItem;
 import com.pj.magic.model.ReceivingReceipt;
 import com.pj.magic.model.ReceivingReceiptItem;
+import com.pj.magic.model.SalesComplianceProjectSalesInvoice;
+import com.pj.magic.model.SalesComplianceProjectSalesInvoiceItem;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesInvoiceItem;
 import com.pj.magic.model.SalesReturn;
@@ -132,6 +134,7 @@ public class PrintServiceImpl implements PrintService {
 	@Autowired private PromoRedemptionService promoRedemptionService;
 	@Autowired private PrinterUtil printerUtil;
 	@Autowired private LoginService loginService;
+	@Autowired private SalesComplianceService salesComplianceService;
 	
 	public PrintServiceImpl() {
 		Velocity.setProperty("file.resource.loader.class", 
@@ -1297,4 +1300,78 @@ public class PrintServiceImpl implements PrintService {
 		}
 	}
 
+	public void print(SalesComplianceProjectSalesInvoice projectSalesInvoice) {
+		projectSalesInvoice = salesComplianceService.getSalesInvoice(projectSalesInvoice.getId());
+		
+		Collections.sort(projectSalesInvoice.getItems());
+		
+		List<PromoRedemption> promoRedemptions = promoRedemptionService.findAllAvailedPromoRedemptions(projectSalesInvoice.getSalesInvoice());
+		
+		List<String> itemLines = new ArrayList<>();
+		for (SalesComplianceProjectSalesInvoiceItem item : projectSalesInvoice.getItems()) {
+			itemLines.add(
+					generateReportAsString("reports/salesInvoiceBirForm-item3.vm", 
+							createSingletonMap("item", item)));
+
+			for (PromoRedemption promoRedemption : promoRedemptions) {
+				if (promoRedemption.getPromo().isPromoType2()) {
+					for (PromoType2Rule rule : promoRedemption.getPromo().getPromoType2Rules()) {
+						if (rule.getPromoProduct().equals(item.getProduct())) {
+							for (PromoRedemptionReward reward : promoRedemption.getRewards()) {
+								if (reward.getProduct().equals(rule.getFreeProduct())) {
+									SalesInvoiceItem rewardItem = new SalesInvoiceItem();
+									rewardItem.setProduct(reward.getProduct());
+									rewardItem.setUnit(reward.getUnit());
+									rewardItem.setQuantity(reward.getQuantity());
+									rewardItem.setUnitPrice(BigDecimal.ZERO);
+									itemLines.add(
+											generateReportAsString("reports/salesInvoiceBirForm-freeItem3.vm", 
+													createSingletonMap("item", (Object)rewardItem)));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		for (PromoRedemption promoRedemption : promoRedemptions) {
+			if (promoRedemption.getPromo().isPromoType6()) {
+				for (PromoRedemptionReward reward : promoRedemption.getRewards()) {
+					SalesInvoiceItem rewardItem = new SalesInvoiceItem();
+					rewardItem.setProduct(reward.getProduct());
+					rewardItem.setUnit(reward.getUnit());
+					rewardItem.setQuantity(reward.getQuantity());
+					itemLines.add(
+							generateReportAsString("reports/salesInvoiceBirForm-freeItem3.vm", 
+									createSingletonMap("item", (Object)rewardItem)));
+				}
+			}
+		}
+		
+		List<List<String>> pageItems = Lists.partition(itemLines, SALES_INVOICE_BIR_FORM3_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("salesInvoice", projectSalesInvoice.getSalesInvoice());
+			reportData.put("projectSalesInvoice", projectSalesInvoice);
+			reportData.put("items", StringUtils.join(pageItems.get(i), "\r\n"));
+			reportData.put("fillerLines", createFillerLines3(pageItems.get(i).size()));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			reportData.put("totalItems", projectSalesInvoice.getItems().size() + getTotalRewards(promoRedemptions));
+			reportData.put("totalQuantity", projectSalesInvoice.getTotalQuantity() + 
+					getTotalRewardQuantity(promoRedemptions));
+			printPages.add(generateReportAsString("reports/projectSalesInvoice.vm", reportData));
+		}
+		
+		try {
+			for (String printPage : printPages) {
+				printerUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
 }

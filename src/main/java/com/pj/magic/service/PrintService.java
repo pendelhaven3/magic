@@ -17,6 +17,7 @@ import com.pj.magic.model.PurchasePayment;
 import com.pj.magic.model.PurchaseReturn;
 import com.pj.magic.model.PurchaseReturnBadStock;
 import com.pj.magic.model.ReceivingReceipt;
+import com.pj.magic.model.SalesComplianceProjectSalesInvoice;
 import com.pj.magic.model.SalesInvoice;
 import com.pj.magic.model.SalesReturn;
 import com.pj.magic.model.StockQuantityConversion;
@@ -128,5 +129,7 @@ public interface PrintService {
 	void print(NoMoreStockAdjustment noMoreStockAdjustment);
 
 	void printBirChargeForm3(SalesInvoice salesInvoice);
+
+	void print(SalesComplianceProjectSalesInvoice projectSalesInvoice);
 
 }
