@@ -43,4 +43,6 @@ public interface SalesInvoiceService {
 
 	void markAsPrinted(SalesInvoice salesInvoice);
 
+	void savePrintInvoiceNumber(SalesInvoice salesInvoice, String printInvoiceNumber);
+
 }

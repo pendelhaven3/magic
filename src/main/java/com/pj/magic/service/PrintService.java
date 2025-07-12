@@ -132,4 +132,8 @@ public interface PrintService {
 
 	void print(SalesComplianceProjectSalesInvoice projectSalesInvoice);
 
+	void printBirChargeForm4(SalesInvoice salesInvoice);
+
+	List<String> generateBirChargeForm4Text(SalesInvoice salesInvoice);
+
 }

@@ -34,7 +34,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, SALES_INVOICE_NO, CREATE_DT, RELATED_SALES_REQUISITION_NO, MODE, a.REMARKS, CUSTOMER_ID,"
-			+ " POST_DT, MARK_IND, MARK_DT, CANCEL_DT, CANCEL_IND, TRANSACTION_DT, VAT_AMOUNT, PRINT_IND,"
+			+ " POST_DT, MARK_IND, MARK_DT, CANCEL_DT, CANCEL_IND, TRANSACTION_DT, VAT_AMOUNT, PRINT_IND, PRINT_INVOICE_NO,"
 			+ " PRICING_SCHEME_ID, d.NAME as PRICING_SCHEME_NAME,"
 			+ " ENCODER, b.USERNAME as ENCODER_USERNAME,"
 			+ " a.PAYMENT_TERM_ID, e.NAME as PAYMENT_TERM_NAME, e.NUMBER_OF_DAYS as PAYMENT_TERM_NUMBER_OF_DAYS,"
@@ -162,6 +162,7 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			}
 			salesInvoice.setVatAmount(rs.getBigDecimal("VAT_AMOUNT"));
 			salesInvoice.setPrinted("Y".equals(rs.getString("PRINT_IND")));
+			salesInvoice.setPrintInvoiceNumber(rs.getString("PRINT_INVOICE_NO"));
 			return salesInvoice;
 		}
 		
@@ -352,6 +353,13 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			return null;
 		}
 		return get(id);
+	}
+
+	private static final String SAVE_PRINT_INVOICE_NUMBER_SQL = "update SALES_INVOICE set PRINT_INVOICE_NO = ? where ID = ?";
+	
+	@Override
+	public void savePrintInvoiceNumber(SalesInvoice salesInvoice) {
+		getJdbcTemplate().update(SAVE_PRINT_INVOICE_NUMBER_SQL, salesInvoice.getPrintInvoiceNumber(), salesInvoice.getId());
 	}
 
 }

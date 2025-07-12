@@ -14,6 +14,11 @@ import org.apache.commons.lang.time.DateUtils;
 import com.pj.magic.Constants;
 import com.pj.magic.util.ListUtil;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class SalesInvoice implements Serializable {
 
     private static final long serialVersionUID = -6766882154444060022L;
@@ -40,6 +45,7 @@ public class SalesInvoice implements Serializable {
 	private User markedBy;
 	private BigDecimal vatAmount;
 	private boolean printed;
+	private String printInvoiceNumber;
 	
 	private List<SalesReturn> salesReturns = new ArrayList<>(); // transient
 	private List<NoMoreStockAdjustment> noMoreStockAdjustments = new ArrayList<>(); // transient

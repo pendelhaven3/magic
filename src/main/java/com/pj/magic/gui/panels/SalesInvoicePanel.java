@@ -34,6 +34,7 @@ import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.AvailedPromoRewardsDialog;
 import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.PromoQualifyingAmountsDialog;
+import com.pj.magic.gui.dialog.SalesInvoicePrintInvoiceDialog;
 import com.pj.magic.gui.dialog.SalesInvoiceStatusDialog;
 import com.pj.magic.gui.dialog.SetDiscountsForAllItemsDialog;
 import com.pj.magic.gui.tables.SalesInvoiceItemsTable;
@@ -61,6 +62,7 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 	@Autowired private PromoQualifyingAmountsDialog promoQualifyingAmountsDialog;
 	@Autowired private AvailedPromoRewardsDialog availedPromoRewardsDialog;
 	@Autowired private SetDiscountsForAllItemsDialog setDiscountsForAllItemsDialog;
+	@Autowired private SalesInvoicePrintInvoiceDialog salesInvoicePrintInvoiceDialog;
 	
 	private SalesInvoice salesInvoice;
 	private JLabel salesInvoiceNumberField;
@@ -438,6 +440,17 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 		});
 		toolBar.add(printBirFormCharge3Button);
 		
+		JButton printBirFormCharge4Button = 
+				new MagicToolBarButton("print_bir_form_charge4", "Print BIR form (Charge) 4");
+		printBirFormCharge4Button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printBirChargeForm4(salesInvoice);
+			}
+		});
+		toolBar.add(printBirFormCharge4Button);
+		
 		JButton copyButton = new MagicToolBarButton("copy", "Create New Sales Requisition Based On Sales Invoice");
 		copyButton.addActionListener(new ActionListener() {
 			
@@ -647,6 +660,11 @@ public class SalesInvoicePanel extends StandardMagicPanel {
 				}
 			}
 		});
+	}
+	
+	protected void printBirChargeForm4(SalesInvoice salesInvoice) {
+		salesInvoicePrintInvoiceDialog.updateDisplay(salesInvoice);
+		salesInvoicePrintInvoiceDialog.setVisible(true);
 	}
 	
 }

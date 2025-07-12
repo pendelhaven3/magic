@@ -98,6 +98,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE = 13;
 	private static final int SALES_INVOICE_BIR_FORM2_ITEMS_PER_PAGE = 12;
 	private static final int SALES_INVOICE_BIR_FORM3_ITEMS_PER_PAGE = 23;
+	private static final int SALES_INVOICE_BIR_FORM4_ITEMS_PER_PAGE = 23;
 	private static final int AREA_INVENTORY_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_OUT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_IN_ITEMS_PER_PAGE = 44;
@@ -1372,6 +1373,86 @@ public class PrintServiceImpl implements PrintService {
 		} catch (PrintException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+
+	@Override
+	public void printBirChargeForm4(SalesInvoice salesInvoice) {
+		salesInvoice.setPrinted(true);
+		salesInvoiceDao.save(salesInvoice);
+		
+		try {
+			for (String printPage : generateBirChargeForm4Text(salesInvoice)) {
+				printerUtil.print(printPage);
+			}
+		} catch (PrintException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public List<String> generateBirChargeForm4Text(SalesInvoice salesInvoice) {
+		Collections.sort(salesInvoice.getItems());
+		
+		List<PromoRedemption> promoRedemptions = promoRedemptionService.findAllAvailedPromoRedemptions(salesInvoice);
+		
+		List<String> itemLines = new ArrayList<>();
+		for (SalesInvoiceItem item : salesInvoice.getItems()) {
+			itemLines.add(
+					generateReportAsString("reports/salesInvoiceBirForm-item4.vm", 
+							createSingletonMap("item", item)));
+
+			for (PromoRedemption promoRedemption : promoRedemptions) {
+				if (promoRedemption.getPromo().isPromoType2()) {
+					for (PromoType2Rule rule : promoRedemption.getPromo().getPromoType2Rules()) {
+						if (rule.getPromoProduct().equals(item.getProduct())) {
+							for (PromoRedemptionReward reward : promoRedemption.getRewards()) {
+								if (reward.getProduct().equals(rule.getFreeProduct())) {
+									SalesInvoiceItem rewardItem = new SalesInvoiceItem();
+									rewardItem.setProduct(reward.getProduct());
+									rewardItem.setUnit(reward.getUnit());
+									rewardItem.setQuantity(reward.getQuantity());
+									rewardItem.setUnitPrice(BigDecimal.ZERO);
+									itemLines.add(
+											generateReportAsString("reports/salesInvoiceBirForm-freeItem4.vm", 
+													createSingletonMap("item", (Object)rewardItem)));
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		for (PromoRedemption promoRedemption : promoRedemptions) {
+			if (promoRedemption.getPromo().isPromoType6()) {
+				for (PromoRedemptionReward reward : promoRedemption.getRewards()) {
+					SalesInvoiceItem rewardItem = new SalesInvoiceItem();
+					rewardItem.setProduct(reward.getProduct());
+					rewardItem.setUnit(reward.getUnit());
+					rewardItem.setQuantity(reward.getQuantity());
+					itemLines.add(
+							generateReportAsString("reports/salesInvoiceBirForm-freeItem4.vm", 
+									createSingletonMap("item", (Object)rewardItem)));
+				}
+			}
+		}
+		
+		List<List<String>> pageItems = Lists.partition(itemLines, SALES_INVOICE_BIR_FORM4_ITEMS_PER_PAGE);
+		List<String> printPages = new ArrayList<>();
+		for (int i = 0; i < pageItems.size(); i++) {
+			Map<String, Object> reportData = new HashMap<>();
+			reportData.put("salesInvoice", salesInvoice);
+			reportData.put("items", StringUtils.join(pageItems.get(i), "\r\n"));
+			reportData.put("fillerLines", createFillerLines3(pageItems.get(i).size()));
+			reportData.put("currentPage", i + 1);
+			reportData.put("totalPages", pageItems.size());
+			reportData.put("isLastPage", (i + 1) == pageItems.size());
+			reportData.put("totalItems", salesInvoice.getItems().size() + getTotalRewards(promoRedemptions));
+			reportData.put("totalQuantity", salesInvoice.getTotalQuantity() + 
+					getTotalRewardQuantity(promoRedemptions));
+			printPages.add(generateReportAsString("reports/salesInvoiceBirForm-charge4.vm", reportData));
+		}
+		
+		return printPages;
 	}
 	
 }

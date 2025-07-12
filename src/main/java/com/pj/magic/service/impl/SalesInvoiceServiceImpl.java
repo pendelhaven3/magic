@@ -241,4 +241,10 @@ public class SalesInvoiceServiceImpl implements SalesInvoiceService {
 		salesInvoiceDao.save(salesInvoice);
 	}
 
+	@Override
+	public void savePrintInvoiceNumber(SalesInvoice salesInvoice, String printInvoiceNumber) {
+		salesInvoice.setPrintInvoiceNumber(printInvoiceNumber);
+		salesInvoiceDao.savePrintInvoiceNumber(salesInvoice);
+	}
+
 }

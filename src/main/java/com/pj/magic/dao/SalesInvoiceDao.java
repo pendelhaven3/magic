@@ -21,4 +21,6 @@ public interface SalesInvoiceDao {
 
 	SalesInvoice findMostRecentByCustomerAndProduct(Customer customer, Product product);
 
+	void savePrintInvoiceNumber(SalesInvoice salesInvoice);
+
 }
