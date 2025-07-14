@@ -2,14 +2,18 @@
 
 
 
-
                                                                          $currentPage x $totalPages
 
-                                                               $report.field($salesInvoice.transactionDate)
                                                                $report.field($salesInvoice.salesInvoiceNumber, 7) PS: $salesInvoice.pricingScheme.id
 
-             $salesInvoice.customer.name
 
+
+
+                                                               $report.field($salesInvoice.transactionDate)
+
+
+             $salesInvoice.customer.name
+             $salesInvoice.customer.tin
              $report.field($salesInvoice.customer.businessAddress, 64)
 
 
@@ -32,5 +36,9 @@ $items
 
 
 
-                                                                $report.field($salesInvoice.totalNetAmount, 12, "right")
+  Prepared by : ____________________                            $report.field($salesInvoice.totalNetAmount, 12, "right")
+
+  Checked by  : ____________________
+
+  Received by : ____________________
 #end

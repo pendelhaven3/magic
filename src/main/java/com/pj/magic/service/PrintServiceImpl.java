@@ -98,7 +98,7 @@ public class PrintServiceImpl implements PrintService {
 	private static final int SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE = 13;
 	private static final int SALES_INVOICE_BIR_FORM2_ITEMS_PER_PAGE = 12;
 	private static final int SALES_INVOICE_BIR_FORM3_ITEMS_PER_PAGE = 23;
-	private static final int SALES_INVOICE_BIR_FORM4_ITEMS_PER_PAGE = 23;
+	private static final int SALES_INVOICE_BIR_FORM4_ITEMS_PER_PAGE = 21;
 	private static final int AREA_INVENTORY_REPORT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_OUT_ITEMS_PER_PAGE = 44;
 	private static final int ADJUSTMENT_IN_ITEMS_PER_PAGE = 44;
@@ -592,7 +592,16 @@ public class PrintServiceImpl implements PrintService {
 
 	private List<String> createFillerLines3(int referenceSize) {
 		List<String> fillerLines = new ArrayList<>();
-		int numberOfLines = SALES_INVOICE_BIR_FORM3_ITEMS_PER_PAGE - referenceSize;
+		int numberOfLines = SALES_INVOICE_BIR_FORM_ITEMS_PER_PAGE - referenceSize;
+		for (int i = 0; i < numberOfLines; i++) {
+			fillerLines.add("");
+		}
+		return fillerLines;
+	}
+
+	private List<String> createFillerLines4(int referenceSize) {
+		List<String> fillerLines = new ArrayList<>();
+		int numberOfLines = SALES_INVOICE_BIR_FORM4_ITEMS_PER_PAGE - referenceSize;
 		for (int i = 0; i < numberOfLines; i++) {
 			fillerLines.add("");
 		}
@@ -1442,7 +1451,7 @@ public class PrintServiceImpl implements PrintService {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("salesInvoice", salesInvoice);
 			reportData.put("items", StringUtils.join(pageItems.get(i), "\r\n"));
-			reportData.put("fillerLines", createFillerLines3(pageItems.get(i).size()));
+			reportData.put("fillerLines", createFillerLines4(pageItems.get(i).size()));
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());
