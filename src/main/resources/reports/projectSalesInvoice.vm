@@ -2,14 +2,18 @@
 
 
 
+                                                                       $currentPage x $totalPages
 
-                                                                         $currentPage x $totalPages
-
-                                                               $report.field($salesInvoice.transactionDate)
                                                                $report.field($salesInvoice.salesInvoiceNumber, 7) PS: $salesInvoice.pricingScheme.id
 
-             $salesInvoice.customer.name
 
+
+
+                                                               $report.field($salesInvoice.transactionDate)
+
+
+             $salesInvoice.customer.name
+             $salesInvoice.customer.tin
              $report.field($salesInvoice.customer.businessAddress, 64)
 
 
@@ -17,20 +21,24 @@
 $items
 #if($isLastPage == true)
 
-     Total Items - $report.field($totalItems, 3, "right")   Total Qty - $report.field($totalQuantity, 3, "right")             GROSS AMT  $report.field($salesInvoice.totalAmount, 12, "right")
-                                                     DISC     ( $report.field($salesInvoice.totalDiscounts, 12, "right") )
-                                                     NET AMOUNT $report.field($salesInvoice.totalNetAmount, 12, "right")
+     Total Items - $report.field($totalItems, 3, "right")   Total Qty - $report.field($totalQuantity, 3, "right")             GROSS AMT  $report.field($projectSalesInvoice.totalAmount, 12, "right")
+                                                     DISC     ( $report.field($projectSalesInvoice.totalDiscounts, 12, "right") )
+                                                     NET AMOUNT $report.field($projectSalesInvoice.totalNetAmount, 12, "right")
 #foreach($fillerLine in $fillerLines)
 
 #end
 
-              $report.field($salesInvoice.vatableSales, 12, "right")                                      $report.field($salesInvoice.totalNetAmount, 12, "right")
-              $report.field($salesInvoice.vatAmount, 12, "right")                                      $report.field($salesInvoice.vatAmount, 12, "right")
-                                                                $report.field($salesInvoice.vatableSales, 12, "right")
+              $report.field($projectSalesInvoice.vatableSales, 12, "right")                                      $report.field($projectSalesInvoice.totalNetAmount, 12, "right")
+              $report.field($projectSalesInvoice.vatAmount, 12, "right")                                      $report.field($projectSalesInvoice.vatAmount, 12, "right")
+                                                                $report.field($projectSalesInvoice.vatableSales, 12, "right")
 
 
 
 
 
-                                                                $report.field($salesInvoice.totalNetAmount, 12, "right")
+  Prepared by : ____________________                            $report.field($projectSalesInvoice.totalNetAmount, 12, "right")
+
+  Checked by  : ____________________
+
+  Received by : ____________________
 #end

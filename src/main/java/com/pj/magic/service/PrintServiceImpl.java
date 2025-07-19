@@ -1320,7 +1320,7 @@ public class PrintServiceImpl implements PrintService {
 		List<String> itemLines = new ArrayList<>();
 		for (SalesComplianceProjectSalesInvoiceItem item : projectSalesInvoice.getItems()) {
 			itemLines.add(
-					generateReportAsString("reports/salesInvoiceBirForm-item3.vm", 
+					generateReportAsString("reports/salesInvoiceBirForm-item4.vm", 
 							createSingletonMap("item", item)));
 
 			for (PromoRedemption promoRedemption : promoRedemptions) {
@@ -1335,7 +1335,7 @@ public class PrintServiceImpl implements PrintService {
 									rewardItem.setQuantity(reward.getQuantity());
 									rewardItem.setUnitPrice(BigDecimal.ZERO);
 									itemLines.add(
-											generateReportAsString("reports/salesInvoiceBirForm-freeItem3.vm", 
+											generateReportAsString("reports/salesInvoiceBirForm-freeItem4.vm", 
 													createSingletonMap("item", (Object)rewardItem)));
 								}
 							}
@@ -1352,20 +1352,20 @@ public class PrintServiceImpl implements PrintService {
 					rewardItem.setUnit(reward.getUnit());
 					rewardItem.setQuantity(reward.getQuantity());
 					itemLines.add(
-							generateReportAsString("reports/salesInvoiceBirForm-freeItem3.vm", 
+							generateReportAsString("reports/salesInvoiceBirForm-freeItem4.vm", 
 									createSingletonMap("item", (Object)rewardItem)));
 				}
 			}
 		}
 		
-		List<List<String>> pageItems = Lists.partition(itemLines, SALES_INVOICE_BIR_FORM3_ITEMS_PER_PAGE);
+		List<List<String>> pageItems = Lists.partition(itemLines, SALES_INVOICE_BIR_FORM4_ITEMS_PER_PAGE);
 		List<String> printPages = new ArrayList<>();
 		for (int i = 0; i < pageItems.size(); i++) {
 			Map<String, Object> reportData = new HashMap<>();
 			reportData.put("salesInvoice", projectSalesInvoice.getSalesInvoice());
 			reportData.put("projectSalesInvoice", projectSalesInvoice);
 			reportData.put("items", StringUtils.join(pageItems.get(i), "\r\n"));
-			reportData.put("fillerLines", createFillerLines3(pageItems.get(i).size()));
+			reportData.put("fillerLines", createFillerLines4(pageItems.get(i).size()));
 			reportData.put("currentPage", i + 1);
 			reportData.put("totalPages", pageItems.size());
 			reportData.put("isLastPage", (i + 1) == pageItems.size());

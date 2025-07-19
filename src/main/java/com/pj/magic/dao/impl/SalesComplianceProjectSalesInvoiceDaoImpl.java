@@ -25,7 +25,7 @@ public class SalesComplianceProjectSalesInvoiceDaoImpl extends MagicDao implemen
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, a.SALES_COMPLIANCE_PROJECT_ID, a.SALES_INVOICE_ID, b.SALES_INVOICE_NO, b.TRANSACTION_DT, b.PRICING_SCHEME_ID"
-			+ " , b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME"
+			+ " , b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME, c.TIN, c.BUSINESS_ADDRESS"
 			+ " , d.SALES_COMPLIANCE_PROJECT_NO, d.NAME as SALES_COMPLIANCE_PROJECT_NAME"
 			+ " from SALES_COMPLIANCE_PROJECT_SALES_INVOICE a"
 			+ " join SALES_INVOICE b"
@@ -46,10 +46,16 @@ public class SalesComplianceProjectSalesInvoiceDaoImpl extends MagicDao implemen
 		projectSalesInvoice.setId(rs.getLong("ID"));
 		projectSalesInvoice.setSalesComplianceProject(project);
 		
+		Customer customer = new Customer();
+		customer.setId(rs.getLong("CUSTOMER_ID"));
+		customer.setName(rs.getString("CUSTOMER_NAME"));
+		customer.setTin(rs.getString("TIN"));
+		customer.setBusinessAddress(rs.getString("BUSINESS_ADDRESS"));
+		
 		SalesInvoice salesInvoice = new SalesInvoice(rs.getLong("SALES_INVOICE_ID"));
 		salesInvoice.setSalesInvoiceNumber(rs.getLong("SALES_INVOICE_NO"));
 		salesInvoice.setTransactionDate(rs.getDate("TRANSACTION_DT"));
-		salesInvoice.setCustomer(new Customer(rs.getLong("CUSTOMER_ID"), rs.getString("CUSTOMER_NAME")));
+		salesInvoice.setCustomer(customer);
 		salesInvoice.setPricingScheme(new PricingScheme(rs.getLong("PRICING_SCHEME_ID")));
 		projectSalesInvoice.setSalesInvoice(salesInvoice);
 		
