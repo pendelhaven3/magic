@@ -24,7 +24,7 @@ import com.pj.magic.model.Product;
 import com.pj.magic.model.Unit;
 import com.pj.magic.service.ProductService;
 
-public class Bootstrap {
+public abstract class Bootstrap {
 
 	@Autowired private DataSource dataSource;
 	@Autowired private ProductService productService;
