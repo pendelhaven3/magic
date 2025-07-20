@@ -130,10 +130,12 @@ public interface PrintService {
 
 	void printBirChargeForm3(SalesInvoice salesInvoice);
 
-	void print(SalesComplianceProjectSalesInvoice projectSalesInvoice);
-
 	void printBirChargeForm4(SalesInvoice salesInvoice);
 
 	List<String> generateBirChargeForm4Text(SalesInvoice salesInvoice);
+
+	void print(SalesComplianceProjectSalesInvoice projectSalesInvoice);
+
+	List<String> generateText(SalesComplianceProjectSalesInvoice projectSalesInvoice);
 
 }

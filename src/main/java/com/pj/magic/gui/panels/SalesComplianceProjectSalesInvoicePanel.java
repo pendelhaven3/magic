@@ -3,8 +3,6 @@ package com.pj.magic.gui.panels;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -21,9 +19,9 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.SalesComplianceProjectSalesInvoicePrintInvoiceDialog;
 import com.pj.magic.gui.tables.SalesComplianceProjectSalesInvoiceItemsTable;
 import com.pj.magic.model.SalesComplianceProjectSalesInvoice;
-import com.pj.magic.service.PrintService;
 import com.pj.magic.service.SalesComplianceService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -32,7 +30,7 @@ import com.pj.magic.util.FormatterUtil;
 public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel {
 
 	@Autowired private SalesComplianceService salesComplianceService;
-	@Autowired private PrintService printService;
+	@Autowired private SalesComplianceProjectSalesInvoicePrintInvoiceDialog printInvoiceDialog;
 
 	@Autowired private SalesComplianceProjectSalesInvoiceItemsTable itemsTable;
 	
@@ -43,6 +41,7 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 	private JLabel salesInvoiceNumberLabel;
 	private JLabel transactionDateLabel;
 	private JLabel customerLabel;
+	private JLabel totalItemsLabel;
 	private JLabel totalNetAmountLabel;
 	
 	@Override
@@ -93,6 +92,7 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		salesInvoiceNumberLabel.setText(projectSalesInvoice.getSalesInvoice().getSalesInvoiceNumber().toString());
 		customerLabel.setText(projectSalesInvoice.getSalesInvoice().getCustomer().getName());
 		transactionDateLabel.setText(FormatterUtil.formatDate(projectSalesInvoice.getSalesInvoice().getTransactionDate()));
+		totalItemsLabel.setText(String.valueOf(projectSalesInvoice.getItems().size()));
 		totalNetAmountLabel.setText(FormatterUtil.formatAmount(projectSalesInvoice.getTotalNetAmount()));
 		
 		itemsTable.setSalesInvoice(projectSalesInvoice);
@@ -198,20 +198,19 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createFiller(50, 10), c);
+		mainPanel.add(Box.createHorizontalStrut(50), c);
 		
 		currentRow++;
 		
 		c = new GridBagConstraints();
 		c.weightx = c.weighty = 1.0;
+		c.insets.top = 10;
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.gridwidth = 7;
 		c.anchor = GridBagConstraints.CENTER;
-		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
-		itemsTableScrollPane.setPreferredSize(new Dimension(600, 100));
-		mainPanel.add(itemsTableScrollPane, c);
+		mainPanel.add(createItemsPanel(), c);
 
 		currentRow++;
 		
@@ -232,10 +231,24 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		c.gridx = 0;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		panel.add(ComponentUtil.createLabel(150, "Total Net Amount:"), c);
+		panel.add(ComponentUtil.createLabel(100, "Total Items:"), c);
 		
 		c = new GridBagConstraints();
 		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalItemsLabel = ComponentUtil.createRightLabel(120, "");
+		panel.add(totalItemsLabel, c);
+		
+		c = new GridBagConstraints();
+		c.insets.left = 100;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Total Net Amount:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		totalNetAmountLabel = ComponentUtil.createRightLabel(120, "");
@@ -246,12 +259,31 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
-		JButton printButton = new MagicToolBarButton("print_bir_form_charge", "Print BIR form (Charge)", e -> printSalesInvoice());
+		JButton printButton = new MagicToolBarButton("print_bir_form_charge4", "Print BIR form (Charge) 4", e -> printSalesInvoice());
 		toolBar.add(printButton);
 	}
 
 	private void printSalesInvoice() {
-		printService.print(projectSalesInvoice);
+		printInvoiceDialog.updateDisplay(projectSalesInvoice);
+		printInvoiceDialog.setVisible(true);
+	}
+	
+	private JPanel createItemsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		
+		int currentRow = 0;
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = c.weighty = 1.0;
+		c.gridx = 0;
+		c.gridy = currentRow;
+		JScrollPane itemsTableScrollPane = new JScrollPane(itemsTable);
+		itemsTableScrollPane.setPreferredSize(new Dimension(600, 150));
+		panel.add(itemsTableScrollPane, c);
+		
+		return panel;
 	}
 	
 }

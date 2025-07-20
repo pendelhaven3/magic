@@ -15,8 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicTextField;
-import com.pj.magic.model.SalesInvoice;
+import com.pj.magic.model.SalesComplianceProjectSalesInvoice;
 import com.pj.magic.service.PrintService;
+import com.pj.magic.service.SalesComplianceService;
 import com.pj.magic.service.SalesInvoiceService;
 import com.pj.magic.util.ComponentUtil;
 
@@ -24,8 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class SalesInvoicePrintInvoiceDialog extends MagicDialog {
+public class SalesComplianceProjectSalesInvoicePrintInvoiceDialog extends MagicDialog {
 
+	@Autowired private SalesComplianceService salesComplianceService;
 	@Autowired private SalesInvoiceService salesInvoiceService;
 	@Autowired private PrintService printService;
 	
@@ -36,9 +38,9 @@ public class SalesInvoicePrintInvoiceDialog extends MagicDialog {
 	private JButton saveButton;
 	private JButton printButton;
 	
-    private SalesInvoice salesInvoice;
+    private SalesComplianceProjectSalesInvoice salesComplianceInvoice;
     
-	public SalesInvoicePrintInvoiceDialog() {
+	public SalesComplianceProjectSalesInvoicePrintInvoiceDialog() {
 		setSize(500, 250);
 		setLocationRelativeTo(null);
 		setTitle("Print Invoice");
@@ -149,20 +151,20 @@ public class SalesInvoicePrintInvoiceDialog extends MagicDialog {
 		add(Box.createGlue(), c);
 	}
 	
-	public void updateDisplay(SalesInvoice salesInvoice) {
-		this.salesInvoice = salesInvoice = salesInvoiceService.get(salesInvoice.getId());
+	public void updateDisplay(SalesComplianceProjectSalesInvoice salesComplianceInvoice) {
+		this.salesComplianceInvoice = salesComplianceInvoice = salesComplianceService.getSalesInvoice(salesComplianceInvoice.getId());
 		
-		salesInvoiceNumberLabel.setText(String.valueOf(salesInvoice.getSalesInvoiceNumber()));
+		salesInvoiceNumberLabel.setText(String.valueOf(salesComplianceInvoice.getSalesInvoice().getSalesInvoiceNumber()));
 		
-		List<String> printPages = printService.generateBirChargeForm4Text(salesInvoice);
+		List<String> printPages = printService.generateText(salesComplianceInvoice);
 		numberOfPagesLabel.setText(String.valueOf(printPages.size()));
 		
-		printInvoiceNumberField.setText(salesInvoice.getPrintInvoiceNumber());
+		printInvoiceNumberField.setText(salesComplianceInvoice.getSalesInvoice().getPrintInvoiceNumber());
 	}
 
 	private void saveAndPrint() {
 		try {
-			salesInvoiceService.savePrintInvoiceNumber(salesInvoice, printInvoiceNumberField.getText());
+			salesInvoiceService.savePrintInvoiceNumber(salesComplianceInvoice.getSalesInvoice(), printInvoiceNumberField.getText());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			showUnexpectedErrorMessage();
@@ -174,7 +176,7 @@ public class SalesInvoicePrintInvoiceDialog extends MagicDialog {
 	
 	private void save() {
 		try {
-			salesInvoiceService.savePrintInvoiceNumber(salesInvoice, printInvoiceNumberField.getText());
+			salesInvoiceService.savePrintInvoiceNumber(salesComplianceInvoice.getSalesInvoice(), printInvoiceNumberField.getText());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			showUnexpectedErrorMessage();
@@ -185,7 +187,7 @@ public class SalesInvoicePrintInvoiceDialog extends MagicDialog {
 	}
 	
 	private void print() {
-		printService.printBirChargeForm4(salesInvoice);
+		printService.print(salesComplianceInvoice);
 	}
 	
 }

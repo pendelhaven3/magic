@@ -25,6 +25,7 @@ public class SalesComplianceProjectSalesInvoiceDaoImpl extends MagicDao implemen
 	
 	private static final String BASE_SELECT_SQL =
 			"select a.ID, a.SALES_COMPLIANCE_PROJECT_ID, a.SALES_INVOICE_ID, b.SALES_INVOICE_NO, b.TRANSACTION_DT, b.PRICING_SCHEME_ID"
+			+ " , b.PRINT_INVOICE_NO"
 			+ " , b.CUSTOMER_ID, c.NAME as CUSTOMER_NAME, c.TIN, c.BUSINESS_ADDRESS"
 			+ " , d.SALES_COMPLIANCE_PROJECT_NO, d.NAME as SALES_COMPLIANCE_PROJECT_NAME"
 			+ " from SALES_COMPLIANCE_PROJECT_SALES_INVOICE a"
@@ -57,6 +58,7 @@ public class SalesComplianceProjectSalesInvoiceDaoImpl extends MagicDao implemen
 		salesInvoice.setTransactionDate(rs.getDate("TRANSACTION_DT"));
 		salesInvoice.setCustomer(customer);
 		salesInvoice.setPricingScheme(new PricingScheme(rs.getLong("PRICING_SCHEME_ID")));
+		salesInvoice.setPrintInvoiceNumber(rs.getString("PRINT_INVOICE_NO"));
 		projectSalesInvoice.setSalesInvoice(salesInvoice);
 		
 		return projectSalesInvoice;
