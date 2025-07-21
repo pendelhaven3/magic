@@ -13,4 +13,6 @@ public interface SalesComplianceProjectSalesInvoiceDao {
 
 	SalesComplianceProjectSalesInvoice get(Long id);
 
+	void remove(SalesComplianceProjectSalesInvoice salesInvoice);
+
 }

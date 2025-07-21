@@ -1,8 +1,11 @@
 package com.pj.magic.gui.panels;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 
 import javax.swing.Box;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
+import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.SalesComplianceProject;
@@ -23,7 +27,10 @@ import com.pj.magic.service.SalesComplianceService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class SalesComplianceProjectPanel extends StandardMagicPanel {
 
 	private static final int SALES_INVOICE_NUMBER_COLUMN_INDEX = 0;
@@ -47,6 +54,8 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 	private JLabel remainingAmountLabel;
 	
 	private JButton updateButton;
+	private MagicToolBarButton addSalesInvoiceButton;
+	private MagicToolBarButton deleteSalesInvoiceButton;
 	
 	private MagicListTable table;
 	private SalesComplianceProjectSalesInvoicesTableModel tableModel = new SalesComplianceProjectSalesInvoicesTableModel();
@@ -57,7 +66,6 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 		updateButton.addActionListener(e -> updateSalesComplianceProject());
 		
 		table = new MagicListTable(tableModel);
-		focusOnComponentWhenThisPanelIsDisplayed(table);
 		initializeTable();
 	}
 
@@ -185,6 +193,15 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 		
 		currentRow++;
 		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridwidth = 4;
+		mainPanel.add(createSalesInvoicesTableToolBar(), c);
+
+		currentRow++;
+		
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = c.weighty = 1.0;
 		c.gridx = 0;
@@ -273,6 +290,50 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 		return panel;
 	}
 	
+	private JPanel createSalesInvoicesTableToolBar() {
+		JPanel panel = new JPanel();
+		
+//		addSalesInvoiceButton = new MagicToolBarButton("plus_small", "Add Item (F10)", true);
+//		addSalesInvoiceButton.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+////				addSalesInvoice();
+//			}
+//		});
+//		panel.add(addSalesInvoiceButton, BorderLayout.WEST);
+		
+		deleteSalesInvoiceButton = new MagicToolBarButton("minus_small", "Delete Item (Delete)", true);
+		deleteSalesInvoiceButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeCurrentlySelectedItem();
+			}
+		});
+		panel.add(deleteSalesInvoiceButton, BorderLayout.WEST);
+		
+		return panel;
+	}
+
+	protected void removeCurrentlySelectedItem() {
+		int selectedRowIndex = table.getSelectedRow();
+		if (selectedRowIndex != -1) {
+			if (confirm("Do you wish to delete the selected item?")) {
+				try {
+					tableModel.removeItem(selectedRowIndex);
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+					showMessageForUnexpectedError();
+					return;
+				}
+				
+				showMessage("Sales Invoice removed");
+				updateDisplay(salesComplianceProject);
+			}
+		}
+	}
+
 	public void updateDisplay(SalesComplianceProject salesComplianceProject) {
 		this.salesComplianceProject = salesComplianceProject = salesComplianceService.getProject(salesComplianceProject.getId());
 		
@@ -287,6 +348,7 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 		remainingAmountLabel.setText(FormatterUtil.formatAmount(salesComplianceProject.getRemainingAmount()));
 		
 		tableModel.setItems(salesComplianceProject.getSalesInvoices());
+		table.selectFirstRowThenFocus();
 	}
 
 	@Override
@@ -342,6 +404,10 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 			} else {
 				return super.getColumnClass(columnIndex);
 			}
+		}
+
+		public void removeItem(int rowIndex) {
+			salesComplianceService.remove(getItem(rowIndex));
 		}
 
 	}

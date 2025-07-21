@@ -90,4 +90,12 @@ public class SalesComplianceProjectSalesInvoiceItemDaoImpl extends MagicDao impl
 				item.getId());
 	}
 
+	private static final String REMOVE_ALL_BY_SALES_INVOICE_SQL =
+			"delete from SALES_COMPLIANCE_PROJECT_SALES_INVOICE_ITEM where SALES_COMPLIANCE_PROJECT_SALES_INVOICE_ID = ?";
+	
+	@Override
+	public void removeAllBySalesInvoice(SalesComplianceProjectSalesInvoice salesInvoice) {
+		getJdbcTemplate().update(REMOVE_ALL_BY_SALES_INVOICE_SQL, salesInvoice.getId());
+	}
+
 }

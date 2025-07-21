@@ -17,5 +17,7 @@ public interface SalesComplianceService {
 	SalesComplianceProjectSalesInvoice getSalesInvoice(Long id);
 
 	void save(SalesComplianceProjectSalesInvoiceItem item);
+
+	void remove(SalesComplianceProjectSalesInvoice salesInvoice);
 	
 }

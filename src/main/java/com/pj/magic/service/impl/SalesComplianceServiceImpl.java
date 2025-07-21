@@ -94,4 +94,11 @@ public class SalesComplianceServiceImpl implements SalesComplianceService {
 		salesComplianceProjectSalesInvoiceItemDao.save(item);
 	}
 
+	@Override
+	@Transactional
+	public void remove(SalesComplianceProjectSalesInvoice salesInvoice) {
+		salesComplianceProjectSalesInvoiceItemDao.removeAllBySalesInvoice(salesInvoice);
+		salesComplianceProjectSalesInvoiceDao.remove(salesInvoice);
+	}
+
 }

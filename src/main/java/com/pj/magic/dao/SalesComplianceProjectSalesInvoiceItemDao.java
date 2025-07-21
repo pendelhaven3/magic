@@ -11,4 +11,6 @@ public interface SalesComplianceProjectSalesInvoiceItemDao {
 
 	void save(SalesComplianceProjectSalesInvoiceItem item);
 
+	void removeAllBySalesInvoice(SalesComplianceProjectSalesInvoice salesInvoice);
+
 }
