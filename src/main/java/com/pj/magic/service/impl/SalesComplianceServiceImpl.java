@@ -45,7 +45,7 @@ public class SalesComplianceServiceImpl implements SalesComplianceService {
 		salesComplianceProjectDao.save(project);
 		
 		if (isNew) {
-			for (SalesInvoice salesInvoice : findAllSalesInvoicesByTransactionDate(project.getStartDate(), project.getEndDate())) {
+			for (SalesInvoice salesInvoice : findAllSalesInvoicesWithPrintInvoiceNumberByTransactionDate(project.getStartDate(), project.getEndDate())) {
 				SalesComplianceProjectSalesInvoice projectSalesInvoice = new SalesComplianceProjectSalesInvoice();
 				projectSalesInvoice.setSalesComplianceProject(project);
 				projectSalesInvoice.setSalesInvoice(salesInvoice);
@@ -60,8 +60,9 @@ public class SalesComplianceServiceImpl implements SalesComplianceService {
 		}
 	}
 
-	private List<SalesInvoice> findAllSalesInvoicesByTransactionDate(Date startDate, Date endDate) {
+	private List<SalesInvoice> findAllSalesInvoicesWithPrintInvoiceNumberByTransactionDate(Date startDate, Date endDate) {
 		SalesInvoiceSearchCriteria criteria = new SalesInvoiceSearchCriteria();
+		criteria.setHasPrintInvoiceNumber(true);
 		criteria.setTransactionDateFrom(startDate);
 		criteria.setTransactionDateTo(endDate);
 		return salesInvoiceService.search(criteria);

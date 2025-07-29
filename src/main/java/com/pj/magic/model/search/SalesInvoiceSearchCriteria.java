@@ -25,6 +25,7 @@ public class SalesInvoiceSearchCriteria {
 	private Promo unredeemedPromo;
 	private PricingScheme pricingScheme;
 	private Promo unclaimedRafflePromo;
+	private Boolean hasPrintInvoiceNumber;
 
 	public Boolean isMarked() {
 		return marked;
@@ -33,7 +34,5 @@ public class SalesInvoiceSearchCriteria {
 	public Boolean isCancelled() {
 		return cancelled;
 	}
-	
-	
 	
 }

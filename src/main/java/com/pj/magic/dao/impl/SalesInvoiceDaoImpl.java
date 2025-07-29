@@ -291,6 +291,12 @@ public class SalesInvoiceDaoImpl extends MagicDao implements SalesInvoiceDao {
 			params.add(criteria.getUnclaimedRafflePromo().getId());
 		}
 		
+		if (criteria.getHasPrintInvoiceNumber() != null) {
+			if (criteria.getHasPrintInvoiceNumber()) {
+				sql.append(" and a.PRINT_INVOICE_NO is not null");
+			}
+		}
+		
 		if (!StringUtils.isEmpty(criteria.getOrderBy())) {
 			sql.append(" order by ").append(criteria.getOrderBy());
 		} else {
