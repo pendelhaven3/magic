@@ -19,5 +19,7 @@ public interface SalesComplianceService {
 	void save(SalesComplianceProjectSalesInvoiceItem item);
 
 	void remove(SalesComplianceProjectSalesInvoice salesInvoice);
+
+	void recreate(SalesComplianceProject salesComplianceProject);
 	
 }

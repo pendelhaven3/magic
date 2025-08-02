@@ -45,17 +45,21 @@ public class SalesComplianceServiceImpl implements SalesComplianceService {
 		salesComplianceProjectDao.save(project);
 		
 		if (isNew) {
-			for (SalesInvoice salesInvoice : findAllSalesInvoicesWithPrintInvoiceNumberByTransactionDate(project.getStartDate(), project.getEndDate())) {
-				SalesComplianceProjectSalesInvoice projectSalesInvoice = new SalesComplianceProjectSalesInvoice();
-				projectSalesInvoice.setSalesComplianceProject(project);
-				projectSalesInvoice.setSalesInvoice(salesInvoice);
-				salesComplianceProjectSalesInvoiceDao.save(projectSalesInvoice);
-				
-				for (SalesInvoiceItem item : salesInvoice.getItems()) {
-					SalesComplianceProjectSalesInvoiceItem projectSalesInvoiceItem = new SalesComplianceProjectSalesInvoiceItem(item);
-					projectSalesInvoiceItem.setParent(projectSalesInvoice);
-					salesComplianceProjectSalesInvoiceItemDao.save(projectSalesInvoiceItem);
-				}
+			createProjectSalesInvoices(project);
+		}
+	}
+
+	private void createProjectSalesInvoices(SalesComplianceProject project) {
+		for (SalesInvoice salesInvoice : findAllSalesInvoicesWithPrintInvoiceNumberByTransactionDate(project.getStartDate(), project.getEndDate())) {
+			SalesComplianceProjectSalesInvoice projectSalesInvoice = new SalesComplianceProjectSalesInvoice();
+			projectSalesInvoice.setSalesComplianceProject(project);
+			projectSalesInvoice.setSalesInvoice(salesInvoice);
+			salesComplianceProjectSalesInvoiceDao.save(projectSalesInvoice);
+			
+			for (SalesInvoiceItem item : salesInvoice.getItems()) {
+				SalesComplianceProjectSalesInvoiceItem projectSalesInvoiceItem = new SalesComplianceProjectSalesInvoiceItem(item);
+				projectSalesInvoiceItem.setParent(projectSalesInvoice);
+				salesComplianceProjectSalesInvoiceItemDao.save(projectSalesInvoiceItem);
 			}
 		}
 	}
@@ -100,6 +104,15 @@ public class SalesComplianceServiceImpl implements SalesComplianceService {
 	public void remove(SalesComplianceProjectSalesInvoice salesInvoice) {
 		salesComplianceProjectSalesInvoiceItemDao.removeAllBySalesInvoice(salesInvoice);
 		salesComplianceProjectSalesInvoiceDao.remove(salesInvoice);
+	}
+
+	@Override
+	@Transactional
+	public void recreate(SalesComplianceProject salesComplianceProject) {
+		for (SalesComplianceProjectSalesInvoice projectSalesInvoice : salesComplianceProjectSalesInvoiceDao.findAllBySalesComplianceProject(salesComplianceProject)) {
+			remove(projectSalesInvoice);
+		}
+		createProjectSalesInvoices(salesComplianceProject);
 	}
 
 }

@@ -54,7 +54,7 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 	private JLabel remainingAmountLabel;
 	
 	private JButton updateButton;
-	private MagicToolBarButton addSalesInvoiceButton;
+	private JButton recreateButton;
 	private MagicToolBarButton deleteSalesInvoiceButton;
 	
 	private MagicListTable table;
@@ -64,6 +64,9 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 	protected void initializeComponents() {
 		updateButton = new JButton("Update");
 		updateButton.addActionListener(e -> updateSalesComplianceProject());
+		
+		recreateButton = new JButton("Recreate");
+		recreateButton.addActionListener(e -> recreateSalesComplianceProject());
 		
 		table = new MagicListTable(tableModel);
 		initializeTable();
@@ -179,7 +182,8 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
 		updateButton.setPreferredSize(new Dimension(100, 25));
-		mainPanel.add(updateButton, c);
+		recreateButton.setPreferredSize(new Dimension(100, 25));
+		mainPanel.add(ComponentUtil.createGenericPanel(updateButton, Box.createHorizontalStrut(5), recreateButton), c);
 		
 		currentRow++;
 		
@@ -293,16 +297,6 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 	private JPanel createSalesInvoicesTableToolBar() {
 		JPanel panel = new JPanel();
 		
-//		addSalesInvoiceButton = new MagicToolBarButton("plus_small", "Add Item (F10)", true);
-//		addSalesInvoiceButton.addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-////				addSalesInvoice();
-//			}
-//		});
-//		panel.add(addSalesInvoiceButton, BorderLayout.WEST);
-		
 		deleteSalesInvoiceButton = new MagicToolBarButton("minus_small", "Delete Item (Delete)", true);
 		deleteSalesInvoiceButton.addActionListener(new ActionListener() {
 			
@@ -369,6 +363,23 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 		getMagicFrame().switchToSalesComplianceProjectSalesInvoicePanel(salesInvoice);
 	}
 
+	private void recreateSalesComplianceProject() {
+		if (!confirm("Quantity changes to sales invoices will be discarded. Proceed?")) {
+			return;
+		}
+		
+		try {
+			salesComplianceService.recreate(salesComplianceProject);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			showMessageForUnexpectedError(e);
+			return;
+		}
+		
+		showMessage("Sales Compliance Project recreated");
+		updateDisplay(salesComplianceProject);
+	}
+	
 	private class SalesComplianceProjectSalesInvoicesTableModel extends ListBackedTableModel<SalesComplianceProjectSalesInvoice> {
 
 		private final String[] columnNames = {"Sales Invoice No.", "Transaction Date", "Customer", "Orig. Amount", "Amount"};
