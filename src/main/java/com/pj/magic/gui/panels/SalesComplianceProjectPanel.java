@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,6 +39,7 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 	private static final int CUSTOMER_COLUMN_INDEX = 2;
 	private static final int ORIGINAL_AMOUNT_COLUMN_INDEX = 3;
 	private static final int AMOUNT_COLUMN_INDEX = 4;
+	private static final int PRINT_INVOICE_NUMBER_COLUMN_INDEX = 5;
 	
 	@Autowired private SalesComplianceService salesComplianceService;
 	
@@ -78,6 +80,11 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 		table.getColumnModel().getColumn(CUSTOMER_COLUMN_INDEX).setPreferredWidth(200);
 		table.getColumnModel().getColumn(ORIGINAL_AMOUNT_COLUMN_INDEX).setPreferredWidth(50);
 		table.getColumnModel().getColumn(AMOUNT_COLUMN_INDEX).setPreferredWidth(50);
+		
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		
+		table.getColumnModel().getColumn(PRINT_INVOICE_NUMBER_COLUMN_INDEX).setCellRenderer(centerRenderer);
 	}
 
 	private void updateSalesComplianceProject() {
@@ -382,7 +389,7 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 	
 	private class SalesComplianceProjectSalesInvoicesTableModel extends ListBackedTableModel<SalesComplianceProjectSalesInvoice> {
 
-		private final String[] columnNames = {"Sales Invoice No.", "Transaction Date", "Customer", "Orig. Amount", "Amount"};
+		private final String[] columnNames = {"Sales Invoice No.", "Transaction Date", "Customer", "Orig. Amount", "Amount", "Print Invoice No."};
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
@@ -398,6 +405,8 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 				return FormatterUtil.formatAmount(salesInvoice.getTotalOriginalNetAmount());
 			case AMOUNT_COLUMN_INDEX:
 				return FormatterUtil.formatAmount(salesInvoice.getTotalNetAmount());
+			case PRINT_INVOICE_NUMBER_COLUMN_INDEX:
+				return salesInvoice.getSalesInvoice().getPrintInvoiceNumber();
 			default:
 				throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 			}
