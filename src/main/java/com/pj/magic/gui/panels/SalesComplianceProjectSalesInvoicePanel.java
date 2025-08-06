@@ -43,6 +43,11 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 	private JLabel customerLabel;
 	private JLabel totalItemsLabel;
 	private JLabel totalNetAmountLabel;
+	private JLabel totalVatableSalesLabel;
+	private JLabel totalSalesVatInclusiveLabel;
+	private JLabel lessVatLabel;
+	private JLabel amountNetOfVatLabel;
+	private JLabel totalAmountDueLabel;
 	
 	@Override
 	protected void initializeComponents() {
@@ -96,6 +101,12 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		totalNetAmountLabel.setText(FormatterUtil.formatAmount(projectSalesInvoice.getTotalNetAmount()));
 		
 		itemsTable.setSalesInvoice(projectSalesInvoice);
+		
+		totalVatableSalesLabel.setText(FormatterUtil.formatAmount(projectSalesInvoice.getVatableSales()));
+		totalSalesVatInclusiveLabel.setText(FormatterUtil.formatAmount(projectSalesInvoice.getTotalNetAmount()));
+		lessVatLabel.setText(FormatterUtil.formatAmount(projectSalesInvoice.getVatAmount()));
+		amountNetOfVatLabel.setText(FormatterUtil.formatAmount(projectSalesInvoice.getVatableSales()));
+		totalAmountDueLabel.setText(FormatterUtil.formatAmount(projectSalesInvoice.getTotalNetAmount()));
 	}
 	
 	@Override
@@ -253,6 +264,83 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		c.anchor = GridBagConstraints.WEST;
 		totalNetAmountLabel = ComponentUtil.createRightLabel(120, "");
 		panel.add(totalNetAmountLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Total VATable Sales:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalVatableSalesLabel = ComponentUtil.createRightLabel(120, "");
+		panel.add(totalVatableSalesLabel, c);
+		
+		c = new GridBagConstraints();
+		c.insets.left = 100;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(200, "Total Sales (VAT inclusive):"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalSalesVatInclusiveLabel = ComponentUtil.createRightLabel(120, "");
+		panel.add(totalSalesVatInclusiveLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.insets.left = 100;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Less: VAT"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		lessVatLabel = ComponentUtil.createRightLabel(120, "");
+		panel.add(lessVatLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.insets.left = 100;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "Amount Net of VAT"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		amountNetOfVatLabel = ComponentUtil.createRightLabel(120, "");
+		panel.add(amountNetOfVatLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.insets.left = 100;
+		c.gridx = 2;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		panel.add(ComponentUtil.createLabel(150, "TOTAL AMOUNT DUE"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 3;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		totalAmountDueLabel = ComponentUtil.createRightLabel(120, "");
+		panel.add(totalAmountDueLabel, c);
 		
 		return panel;
 	}
