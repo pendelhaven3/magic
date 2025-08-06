@@ -1,5 +1,6 @@
 package com.pj.magic.gui.tables.models;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import com.pj.magic.util.FormatterUtil;
 public class SalesComplianceProjectSalesInvoiceItemsTableModel extends AbstractTableModel {
 	
 	private static final String[] columnNames = 
-		{"Code", "Description", "Unit", "Orig. Qty", "Quantity", "Cost", "Amount", "Disc. 1", "Disc. 2", "Disc. 3",
+		{"Code", "Description", "Unit", "Orig. Qty", "Quantity", "Cost w/ VAT", "Amount", "Disc. 1", "Disc. 2", "Disc. 3",
 				"Flat Rate", "Disc. Amount", "Net Amount"};
 	
 	@Autowired private SalesComplianceService salesComplianceService;
@@ -51,8 +52,8 @@ public class SalesComplianceProjectSalesInvoiceItemsTableModel extends AbstractT
 			return item.getOriginalQuantity().toString();
 		case SalesComplianceProjectSalesInvoiceItemsTable.QUANTITY_COLUMN_INDEX:
 			return item.getQuantity().toString();
-		case SalesComplianceProjectSalesInvoiceItemsTable.COST_COLUMN_INDEX:
-			return FormatterUtil.formatAmount(item.getCost());
+		case SalesComplianceProjectSalesInvoiceItemsTable.COST_WITH_VAT_COLUMN_INDEX:
+			return FormatterUtil.formatAmount(item.getCost().multiply(new BigDecimal("1.12")));
 		case SalesComplianceProjectSalesInvoiceItemsTable.AMOUNT_COLUMN_INDEX:
 			return FormatterUtil.formatAmount(item.getAmount());
 		case SalesComplianceProjectSalesInvoiceItemsTable.DISCOUNT_1_COLUMN_INDEX:
