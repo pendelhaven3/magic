@@ -6,7 +6,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -15,9 +18,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.excel.SalesComplianceProjectExcelGenerator;
+import com.pj.magic.gui.Icons;
+import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.tables.MagicListTable;
@@ -26,6 +33,8 @@ import com.pj.magic.model.SalesComplianceProject;
 import com.pj.magic.model.SalesComplianceProjectSalesInvoice;
 import com.pj.magic.service.SalesComplianceService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.ExcelUtil;
+import com.pj.magic.util.FileUtil;
 import com.pj.magic.util.FormatterUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -358,7 +367,49 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 	}
 
 	@Override
-	protected void addToolBarButtons(MagicToolBar toolBar) { }
+	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton toExcelButton = new MagicToolBarButton(Icons.EXCEL, "Generate Excel spreadsheet");
+		toExcelButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				generateExcel();
+			}
+		});
+		toolBar.add(toExcelButton);
+	}
+
+	protected void generateExcel() {
+		MagicFileChooser excelFileChooser = FileUtil.createSaveFileChooser(generateFilename());
+		if (!excelFileChooser.selectSaveFile(this)) {
+			return;
+		}
+		
+		salesComplianceProject = salesComplianceService.getProject(salesComplianceProject.getId());
+		
+		try (
+			Workbook workbook = new SalesComplianceProjectExcelGenerator().generate(salesComplianceService.getProject(salesComplianceProject.getId()));
+			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
+		) {
+			workbook.write(out);
+			showMessage("Excel generated successfully");
+		} catch (IOException e) {
+			log.error(e.getMessage(), e);
+			showErrorMessage("Unexpected error during excel generation");
+		}
+		
+		try {
+			ExcelUtil.openExcelFile(excelFileChooser.getSelectedFile());
+		} catch (IOException e) {
+			log.error(e.getMessage(), e);
+			showMessageForUnexpectedError();
+		}
+	}
+
+	private String generateFilename() {
+		return new SimpleDateFormat("(LLLL yyyy)").format(salesComplianceProject.getStartDate()).toUpperCase()
+				+ " - VAT Sales - Kapitbahay Grocery OPC.xlsx";
+	}
 
 	@Override
 	protected void registerKeyBindings() {

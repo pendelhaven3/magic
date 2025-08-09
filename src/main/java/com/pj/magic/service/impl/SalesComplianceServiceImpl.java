@@ -79,17 +79,22 @@ public class SalesComplianceServiceImpl implements SalesComplianceService {
 		
 		for (SalesComplianceProjectSalesInvoice salesInvoice : project.getSalesInvoices()) {
 			salesInvoice.setItems(salesComplianceProjectSalesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
+			loadVatAmount(salesInvoice);
 		}
 		
 		return project;
+	}
+
+	private void loadVatAmount(SalesComplianceProjectSalesInvoice projectSalesInvoice) {
+        projectSalesInvoice.setVatAmount(projectSalesInvoice.getTotalNetAmount().divide(new BigDecimal("1.12"), RoundingMode.HALF_UP).multiply(systemService.getVatRate())
+                .setScale(2, RoundingMode.HALF_UP));
 	}
 
 	@Override
 	public SalesComplianceProjectSalesInvoice getSalesInvoice(Long id) {
 		SalesComplianceProjectSalesInvoice salesInvoice = salesComplianceProjectSalesInvoiceDao.get(id);
 		salesInvoice.setItems(salesComplianceProjectSalesInvoiceItemDao.findAllBySalesInvoice(salesInvoice));
-        salesInvoice.setVatAmount(salesInvoice.getTotalNetAmount().divide(new BigDecimal("1.12"), RoundingMode.HALF_UP).multiply(systemService.getVatRate())
-                .setScale(2, RoundingMode.HALF_UP));
+		loadVatAmount(salesInvoice);
 		return salesInvoice;
 	}
 
