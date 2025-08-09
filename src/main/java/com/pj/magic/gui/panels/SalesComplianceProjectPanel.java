@@ -80,6 +80,7 @@ public class SalesComplianceProjectPanel extends StandardMagicPanel {
 		recreateButton.addActionListener(e -> recreateSalesComplianceProject());
 		
 		table = new MagicListTable(tableModel);
+		focusOnComponentWhenThisPanelIsDisplayed(table);
 		initializeTable();
 	}
 
