@@ -1,5 +1,4 @@
 
-
                                                                        $currentPage x $totalPages
 
                                                                $report.field($salesInvoice.salesInvoiceNumber, 7) PS: $salesInvoice.pricingScheme.id
@@ -30,6 +29,8 @@ $items
 
 
 
+
+
               $report.field($salesInvoice.vatableSales, 12, "right")                                      $report.field($salesInvoice.totalNetAmount, 12, "right")
               $report.field($salesInvoice.vatAmount, 12, "right")                                      $report.field($salesInvoice.vatAmount, 12, "right")
                                                                 $report.field($salesInvoice.vatableSales, 12, "right")
@@ -38,9 +39,9 @@ $items
 
 
 
-  Prepared by : ____________________                            $report.field($salesInvoice.totalNetAmount, 12, "right")
+  Prepared By : ____________________                            $report.field($salesInvoice.totalNetAmount, 12, "right")
 
-  Checked by  : ____________________
+  Checked By  : ____________________
 
-  Received by : ____________________
+  Received By : ____________________
 #end
