@@ -37,9 +37,9 @@ $items
 
 
 
-  Prepared By : ____________________                            $report.field($salesInvoice.totalNetAmount, 12, "right")
+  Prepared by : ____________________                            $report.field($salesInvoice.totalNetAmount, 12, "right")
 
-  Checked By  : ____________________
+  Checked by  : ____________________
 
-  Received By : ____________________
+  Received by : ____________________
 #end
