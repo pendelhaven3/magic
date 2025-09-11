@@ -1,6 +1,5 @@
 
 
-
                                                                        $currentPage x $totalPages
 
                                                                $report.field($salesInvoice.salesInvoiceNumber, 7) PS: $salesInvoice.pricingScheme.id
@@ -11,9 +10,11 @@
                                                                $report.field($salesInvoice.transactionDate)
 
 
+
              $salesInvoice.customer.name
              $salesInvoice.customer.tin
              $report.field($salesInvoice.customer.businessAddress, 64)
+
 
 
 
