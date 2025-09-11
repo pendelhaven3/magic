@@ -29,7 +29,6 @@ $items
 #end
 
 
-
               $report.field($salesInvoice.vatableSales, 12, "right")                                      $report.field($salesInvoice.totalNetAmount, 12, "right")
               $report.field($salesInvoice.vatAmount, 12, "right")                                      $report.field($salesInvoice.vatAmount, 12, "right")
                                                                 $report.field($salesInvoice.vatableSales, 12, "right")
