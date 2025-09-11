@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pj</groupId>
 	<artifactId>magic</artifactId>
-	<version>4.3.4</version>
+	<version>4.3.5</version>
 	
 	<parent>
 	    <groupId>org.springframework.boot</groupId>
