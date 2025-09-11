@@ -1,7 +1,6 @@
 
 
 
-
                                                                        $currentPage x $totalPages
 
                                                                $report.field($salesInvoice.salesInvoiceNumber, 7) PS: $salesInvoice.pricingScheme.id
@@ -27,6 +26,8 @@ $items
 #foreach($fillerLine in $fillerLines)
 
 #end
+
+
 
               $report.field($projectSalesInvoice.vatableSales, 12, "right")                                      $report.field($projectSalesInvoice.totalNetAmount, 12, "right")
               $report.field($projectSalesInvoice.vatAmount, 12, "right")                                      $report.field($projectSalesInvoice.vatAmount, 12, "right")
