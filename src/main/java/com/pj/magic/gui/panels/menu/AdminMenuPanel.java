@@ -152,7 +152,6 @@ public class AdminMenuPanel extends MenuPanel {
                 menuItems.remove(USER_LIST);
                 menuItems.remove(RESET_PASSWORD);
                 menuItems.remove(PAYMENT_TERMINAL_ASSIGNMENTS);
-                menuItems.remove(SALES_COMPLIANCE);
             }
             fireTableDataChanged();
         }
