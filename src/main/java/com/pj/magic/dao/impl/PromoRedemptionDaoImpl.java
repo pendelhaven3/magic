@@ -257,5 +257,13 @@ public class PromoRedemptionDaoImpl extends MagicDao implements PromoRedemptionD
 		
 		return getJdbcTemplate().query(sql.toString(), promoRedemptionRowMapper, params.toArray());
 	}
+
+	private static final String DELETE_PROMO_REDEMPTION_SEQUENCE_BY_PROMO_SQL =
+			"delete from PROMO_REDEMPTION_SEQUENCE where PROMO_ID = ?";
+	
+	@Override
+	public void deletePromoRedemptionSequenceByPromo(Promo promo) {
+		getJdbcTemplate().update(DELETE_PROMO_REDEMPTION_SEQUENCE_BY_PROMO_SQL, promo.getId());
+	}
 	
 }

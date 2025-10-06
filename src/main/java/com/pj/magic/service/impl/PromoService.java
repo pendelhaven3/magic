@@ -105,5 +105,7 @@ public interface PromoService {
 	List<PromoRaffleTicketClaim> findAllJchsCellphoneRaffleTicketClaimsByCustomer(Customer customer);
 
 	PromoRaffleTicketClaim claimJchsCellphoneRaffleTickets(Customer customer, Date transactionDateFrom, Date transactionDateTo);
+
+	void delete(Promo promo);
 	
 }

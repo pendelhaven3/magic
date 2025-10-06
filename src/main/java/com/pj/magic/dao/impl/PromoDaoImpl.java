@@ -217,4 +217,11 @@ public class PromoDaoImpl extends MagicDao implements PromoDao {
 		return getJdbcTemplate().query(sql.toString(), promoRowMapper, params.toArray());
 	}
 
+	private static final String DELETE_SQL = "delete from PROMO where ID = ?";
+	
+	@Override
+	public void delete(Promo promo) {
+		getJdbcTemplate().update(DELETE_SQL, promo.getId());
+	}
+
 }

@@ -60,6 +60,7 @@ import com.pj.magic.model.Unit;
 import com.pj.magic.service.ManufacturerService;
 import com.pj.magic.service.PricingSchemeService;
 import com.pj.magic.service.ProductService;
+import com.pj.magic.service.PromoRedemptionService;
 import com.pj.magic.service.impl.PromoService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -82,6 +83,7 @@ public class PromoPanel extends StandardMagicPanel {
 	@Autowired private ProductService productService;
 	@Autowired private ManufacturerService manufacturerService;
 	@Autowired private PricingSchemeService pricingSchemeService;
+	@Autowired private PromoRedemptionService promoRedemptionService;
 	@Autowired private SelectProductDialog selectProductDialog;
 	@Autowired private SelectManufacturerDialog selectManufacturerDialog;
 	@Autowired private PromoType2RulesTable promoType2RulesTable;
@@ -129,6 +131,8 @@ public class PromoPanel extends StandardMagicPanel {
     private JButton removeType6PromoProductButton;
     private JButton removeAllType6PromoProductButton;
 	
+	private MagicToolBarButton deleteButton;
+    
 	@Override
 	protected void initializeComponents() {
 		promoNumberLabel = new JLabel();
@@ -1155,6 +1159,8 @@ public class PromoPanel extends StandardMagicPanel {
 		activeCheckBox.setSelected(promo.isActive());
 		
 		updatePromoDetailsPanel();
+		
+		deleteButton.setEnabled(promo.isPromoType6());
 	}
 
 	private void updatePromoDetailsPanel() {
@@ -1627,9 +1633,18 @@ public class PromoPanel extends StandardMagicPanel {
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		deleteButton = new MagicToolBarButton("trash", "Delete Promo - Buy X quantity of selected products, get Y product free");
+		deleteButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				deletePromo();
+			}
+		});
+		toolBar.add(deleteButton);
 	}
 
-    private void updateDisplayForPromoType6() {
+	private void updateDisplayForPromoType6() {
         updateToPromoType6Panel(promoDetailsPanel);
         
         PromoType6Rule rule = promo.getPromoType6Rule();
@@ -1827,5 +1842,26 @@ public class PromoPanel extends StandardMagicPanel {
         
         return true;
     }
+
+	private boolean hasPromoRedemptions(Promo promo) {
+		return !promoRedemptionService.getPromoRedemptionsByPromo(promo).isEmpty();
+	}
+    
+    protected void deletePromo() {
+    	if (hasPromoRedemptions(promo)) {
+    		showErrorMessage("Cannot delete promo with redemptions");
+    		return;
+    	}
+    	
+    	if (confirm("Delete promo?")) {
+    		try {
+        		promoService.delete(promo);
+        		showMessage("Promo deleted");
+        		getMagicFrame().switchToPromoListPanel();
+    		} catch (Exception e) {
+    			showMessageForUnexpectedError(e);
+    		}
+    	}
+	}
 
 }

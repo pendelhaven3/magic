@@ -119,4 +119,11 @@ public class PromoType6RuleDaoImpl implements PromoType6RuleDao {
 		}
 	}
 
+	private static final String DELETE_SQL = "delete from PROMO_TYPE_6_RULE where ID = ?";
+	
+	@Override
+	public void delete(PromoType6Rule rule) {
+		jdbcTemplate.update(DELETE_SQL, rule.getId());
+	}
+
 }

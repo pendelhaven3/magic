@@ -16,5 +16,7 @@ public interface PromoDao {
 	List<Promo> findAllByActive(boolean active);
 
 	List<Promo> search(PromoSearchCriteria criteria);
+
+	void delete(Promo promo);
 	
 }

@@ -20,5 +20,7 @@ public interface PromoRedemptionDao {
 	List<PromoRedemption> findAllBySalesInvoice(SalesInvoice salesInvoice);
 
 	List<PromoRedemption> search(PromoRedemptionSearchCriteria criteria);
+
+	void deletePromoRedemptionSequenceByPromo(Promo promo);
 	
 }

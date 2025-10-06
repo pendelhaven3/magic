@@ -9,4 +9,6 @@ public interface PromoType6RuleDao {
 
 	PromoType6Rule findByPromo(Promo promo);
 
+	void delete(PromoType6Rule rule);
+
 }
