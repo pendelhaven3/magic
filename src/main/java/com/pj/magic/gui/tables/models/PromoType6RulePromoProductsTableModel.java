@@ -19,7 +19,7 @@ public class PromoType6RulePromoProductsTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = -7530577672290071490L;
 
-    private static final String[] COLUMN_NAMES = {"Code", "Description"};
+    private static final String[] COLUMN_NAMES = {"Code", "Description", "Unit"};
 	
 	@Autowired private ProductService productService;
 	@Autowired private PromoService promoService;
@@ -52,6 +52,8 @@ public class PromoType6RulePromoProductsTableModel extends AbstractTableModel {
 			} else {
 				return null;
 			}
+		case PromoType6RulePromoProductsTable.UNIT_COLUMN_INDEX:
+			return promoProduct.getUnit();
 		default:
 			throw new RuntimeException("Fetching invalid column index: " + columnIndex);
 		}
@@ -69,6 +71,16 @@ public class PromoType6RulePromoProductsTableModel extends AbstractTableModel {
 			}
 			
 			promoProduct.setProduct(productService.findProductByCode(code));
+			promoProduct.setUnit(null);
+			break;
+		case PromoType6RulePromoProductsTable.UNIT_COLUMN_INDEX:
+			String unit = (String)aValue;
+			
+			if (unit.equals(promoProduct.getUnit())) {
+				return;
+			}
+			
+			promoProduct.setUnit(unit);
 			
 			boolean isNew = promoProduct.isNew();
 			promoService.save(promoProduct);
@@ -80,11 +92,14 @@ public class PromoType6RulePromoProductsTableModel extends AbstractTableModel {
 		default:
 			throw new RuntimeException("Updating invalid column index: " + columnIndex);
 		}
+		
+		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == PromoType6RulePromoProductsTable.CODE_COLUMN_INDEX;
+		return columnIndex == PromoType6RulePromoProductsTable.CODE_COLUMN_INDEX ||
+				columnIndex == PromoType6RulePromoProductsTable.UNIT_COLUMN_INDEX;
 	}
 	
 	public void setRule(PromoType6Rule rule) {

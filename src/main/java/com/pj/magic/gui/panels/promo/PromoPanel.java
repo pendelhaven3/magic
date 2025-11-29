@@ -1771,7 +1771,7 @@ public class PromoPanel extends StandardMagicPanel {
         panel.add(addType6PromoProductButton, BorderLayout.WEST);
         
         removeType6PromoProductButton = new MagicToolBarButton("minus_small", "Remove Promo Product", true);
-        removeType6PromoProductButton.addActionListener(e -> promoType5RulePromoProductsTable.removeCurrentlySelectedPromoProduct());
+        removeType6PromoProductButton.addActionListener(e -> promoType6RulePromoProductsTable.removeCurrentlySelectedPromoProduct());
         panel.add(removeType6PromoProductButton, BorderLayout.WEST);
         
         removeAllType6PromoProductButton = new MagicToolBarButton("delete_all_small", "Remove All Promo Products", true);
@@ -1859,6 +1859,7 @@ public class PromoPanel extends StandardMagicPanel {
         		showMessage("Promo deleted");
         		getMagicFrame().switchToPromoListPanel();
     		} catch (Exception e) {
+    			e.printStackTrace();
     			showMessageForUnexpectedError(e);
     		}
     	}

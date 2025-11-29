@@ -562,8 +562,10 @@ public class PromoServiceImpl implements PromoService {
 	@Transactional
 	public void delete(Promo promo) {
 		PromoType6Rule rule = promoType6RuleDao.findByPromo(promo);
-		promoType6RulePromoProductDao.deleteAllByRule(rule);
-		promoType6RuleDao.delete(rule);
+		if (rule != null) {
+			promoType6RulePromoProductDao.deleteAllByRule(rule);
+			promoType6RuleDao.delete(rule);
+		}
 		promoRedemptionDao.deletePromoRedemptionSequenceByPromo(promo);		
 		promoDao.delete(promo);
 	}

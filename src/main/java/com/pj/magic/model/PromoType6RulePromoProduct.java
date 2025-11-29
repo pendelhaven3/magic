@@ -3,11 +3,17 @@ package com.pj.magic.model;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class PromoType6RulePromoProduct {
 
 	private Long id;
 	private PromoType6Rule parent;
 	private Product product;
+	private String unit;
 
     public boolean isNew() {
         return id == null;
@@ -34,28 +40,4 @@ public class PromoType6RulePromoProduct {
             .toHashCode();
     }
 	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public PromoType6Rule getParent() {
-		return parent;
-	}
-
-	public void setParent(PromoType6Rule parent) {
-		this.parent = parent;
-	}
-
-	public Product getProduct() {
-		return product;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
 }

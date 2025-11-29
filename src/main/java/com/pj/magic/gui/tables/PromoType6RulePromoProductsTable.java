@@ -20,6 +20,7 @@ import com.pj.magic.Constants;
 import com.pj.magic.gui.component.MagicCellEditor;
 import com.pj.magic.gui.component.MagicTextField;
 import com.pj.magic.gui.dialog.SelectProductDialog;
+import com.pj.magic.gui.dialog.SelectUnitDialog;
 import com.pj.magic.gui.tables.models.PromoType6RulePromoProductsTableModel;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PromoType6Rule;
@@ -34,10 +35,12 @@ public class PromoType6RulePromoProductsTable extends MagicTable {
     
     public static final int CODE_COLUMN_INDEX = 0;
 	public static final int DESCRIPTION_COLUMN_INDEX = 1;
+	public static final int UNIT_COLUMN_INDEX = 2;
 	
 	@Autowired private PromoType6RulePromoProductsTableModel tableModel;
 	@Autowired private ProductService productService;
 	@Autowired private SelectProductDialog selectProductDialog;
+	@Autowired private SelectUnitDialog selectUnitDialog;
 	
 	private PromoType6Rule rule;
 	
@@ -56,6 +59,8 @@ public class PromoType6RulePromoProductsTable extends MagicTable {
 			public void actionPerformed(ActionEvent e) {
 				if (isProductCodeFieldSelected()) {
 					openSelectProductDialog();
+				} else if (isUnitFieldSelected()) {
+					openSelectUnitDialog();
 				}
 			}
 			
@@ -102,6 +107,10 @@ public class PromoType6RulePromoProductsTable extends MagicTable {
 		return getSelectedColumn() == CODE_COLUMN_INDEX;
 	}
 
+	private boolean isUnitFieldSelected() {
+		return getSelectedColumn() == UNIT_COLUMN_INDEX;
+	}
+
 	private void initializeColumns() {
 		MagicTextField codeField = new MagicTextField()	;		
 		codeField.setMaximumLength(Constants.PRODUCT_CODE_MAXIMUM_LENGTH);
@@ -118,6 +127,23 @@ public class PromoType6RulePromoProductsTable extends MagicTable {
 			}
 		});
 		columnModel.getColumn(CODE_COLUMN_INDEX).setCellEditor(new ProductCodeCellEditor(codeField));
+		
+		MagicTextField unitTextField = new MagicTextField();
+		unitTextField.setMaximumLength(Constants.UNIT_MAXIMUM_LENGTH);
+		unitTextField.addKeyListener(new KeyAdapter() {
+			
+			@Override
+			public void keyReleased(KeyEvent event) {
+				if (KeyUtil.isAlphaNumericKeyCode(event.getKeyCode())) {
+					JTextField textField = (JTextField)event.getComponent();
+					if (textField.getText().length() == Constants.UNIT_MAXIMUM_LENGTH) {
+						getCellEditor().stopCellEditing();
+					}
+				}
+			}
+		});
+		columnModel.getColumn(UNIT_COLUMN_INDEX).setCellEditor(
+				new UnitCellEditor(unitTextField, true));
 		
 		columnModel.getColumn(CODE_COLUMN_INDEX).setPreferredWidth(100);
 		columnModel.getColumn(DESCRIPTION_COLUMN_INDEX).setPreferredWidth(500);
@@ -155,7 +181,9 @@ public class PromoType6RulePromoProductsTable extends MagicTable {
 						switch (column) {
 						case CODE_COLUMN_INDEX:
 							model.fireTableCellUpdated(row, DESCRIPTION_COLUMN_INDEX);
-							
+							selectAndEditCellAt(row, UNIT_COLUMN_INDEX);
+							break;
+						case UNIT_COLUMN_INDEX:
 							if (isLastRowSelected() && !getCurrentlySelectedPromoProduct().isNew()) {
 								addNewRow();
 							}
@@ -240,6 +268,52 @@ public class PromoType6RulePromoProductsTable extends MagicTable {
 	public void clear() {
 		rule = null;
 		tableModel.clear();
+	}
+	
+	private void openSelectUnitDialog() {
+		int column = getSelectedColumn();
+		if (!isEditing()) {
+			editCellAt(getSelectedRow(), column);
+		}
+		
+		selectUnitDialog.setUnits(getCurrentlySelectedPromoProduct().getProduct().getUnits());
+		
+		selectUnitDialog.searchUnits((String)getCellEditor().getCellEditorValue());
+		selectUnitDialog.setVisible(true);
+		
+		String unit = selectUnitDialog.getSelectedUnit();
+		if (unit != null) {
+			((JTextField)getEditorComponent()).setText(unit);
+			getCellEditor().stopCellEditing();
+		}
+	}
+	
+	private class UnitCellEditor extends MagicCellEditor {
+		
+		private boolean promo;
+		
+		public UnitCellEditor(JTextField textField, boolean promo) {
+			super(textField);
+			this.promo = promo;
+		}
+		
+		@Override
+		public boolean stopCellEditing() {
+			String unit = ((JTextField)getComponent()).getText();
+			boolean valid = false;
+			if (StringUtils.isEmpty(unit)) {
+				showErrorMessage("Unit must be specified");
+			} else {
+				PromoType6RulePromoProduct promoProduct = getCurrentlySelectedPromoProduct();
+				if (promo && !promoProduct.getProduct().hasUnit(unit)) {
+					showErrorMessage("Product does not have unit specified");
+				} else {
+					valid = true;
+				}
+			}
+			return (valid) ? super.stopCellEditing() : false;
+		}
+		
 	}
 	
 }

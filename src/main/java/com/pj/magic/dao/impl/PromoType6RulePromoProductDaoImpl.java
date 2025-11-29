@@ -19,6 +19,7 @@ import com.pj.magic.dao.PromoType6RulePromoProductDao;
 import com.pj.magic.model.Product;
 import com.pj.magic.model.PromoType6Rule;
 import com.pj.magic.model.PromoType6RulePromoProduct;
+import com.pj.magic.model.Unit;
 
 @Repository
 public class PromoType6RulePromoProductDaoImpl implements PromoType6RulePromoProductDao {
@@ -35,14 +36,17 @@ public class PromoType6RulePromoProductDaoImpl implements PromoType6RulePromoPro
 		}
 	}
 
-	private static final String UPDATE_SQL = "update PROMO_TYPE_6_RULE_PROMO set PRODUCT_ID = ? where ID = ?";
+	private static final String UPDATE_SQL = "update PROMO_TYPE_6_RULE_PROMO_PRODUCT set PRODUCT_ID = ?, UNIT = ? where ID = ?";
 	
 	private void update(PromoType6RulePromoProduct promoProduct) {
-		jdbcTemplate.update(UPDATE_SQL, promoProduct.getProduct().getId(), promoProduct.getId());
+		jdbcTemplate.update(UPDATE_SQL,
+				promoProduct.getProduct().getId(),
+				promoProduct.getUnit(),
+				promoProduct.getId());
 	}
 
 	private static final String INSERT_SQL =
-			"insert into PROMO_TYPE_6_RULE_PROMO_PRODUCT (PROMO_TYPE_6_RULE_ID, PRODUCT_ID) values (?, ?)";
+			"insert into PROMO_TYPE_6_RULE_PROMO_PRODUCT (PROMO_TYPE_6_RULE_ID, PRODUCT_ID, UNIT) values (?, ?, ?)";
 	
 	private void insert(final PromoType6RulePromoProduct promoProduct) {
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -54,6 +58,7 @@ public class PromoType6RulePromoProductDaoImpl implements PromoType6RulePromoPro
 				PreparedStatement ps = con.prepareStatement(INSERT_SQL, Statement.RETURN_GENERATED_KEYS);
 				ps.setLong(1, promoProduct.getParent().getId());
 				ps.setLong(2, promoProduct.getProduct().getId());
+				ps.setString(3, promoProduct.getUnit());
 				return ps;
 			}
 
@@ -63,8 +68,9 @@ public class PromoType6RulePromoProductDaoImpl implements PromoType6RulePromoPro
 	}
 
 	private static final String FIND_ALL_BY_RULE_SQL =
-			"select a.ID, PROMO_TYPE_6_RULE_ID, PRODUCT_ID,"
-			+ " b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
+			"select a.ID, PROMO_TYPE_6_RULE_ID, PRODUCT_ID, UNIT"
+			+ " , b.CODE as PRODUCT_CODE, b.DESCRIPTION as PRODUCT_DESCRIPTION"
+			+ " , b.UNIT_IND_CSE, b.UNIT_IND_TIE, b.UNIT_IND_CTN, b.UNIT_IND_DOZ, b.UNIT_IND_PCS"
 			+ " from PROMO_TYPE_6_RULE_PROMO_PRODUCT a"
 			+ " join PRODUCT b"
 			+ "   on b.ID = a.PRODUCT_ID"
@@ -80,14 +86,35 @@ public class PromoType6RulePromoProductDaoImpl implements PromoType6RulePromoPro
 				PromoType6RulePromoProduct promoProduct = new PromoType6RulePromoProduct();
 				promoProduct.setId(rs.getLong("ID"));
 				promoProduct.setParent(new PromoType6Rule(rs.getLong("PROMO_TYPE_6_RULE_ID")));
+				promoProduct.setProduct(mapProduct(rs));
+				promoProduct.setUnit(rs.getString("UNIT"));
 				
+				return promoProduct;
+			}
+			
+			private Product mapProduct(ResultSet rs) throws SQLException {
 				Product product = new Product();
 				product.setId(rs.getLong("PRODUCT_ID"));
 				product.setCode(rs.getString("PRODUCT_CODE"));
 				product.setDescription(rs.getString("PRODUCT_DESCRIPTION"));
-				promoProduct.setProduct(product);
 				
-				return promoProduct;
+				if ("Y".equals(rs.getString("UNIT_IND_CSE"))) {
+					product.getUnits().add(Unit.CASE);
+				}
+				if ("Y".equals(rs.getString("UNIT_IND_TIE"))) {
+					product.getUnits().add(Unit.TIE);
+				}
+				if ("Y".equals(rs.getString("UNIT_IND_CTN"))) {
+					product.getUnits().add(Unit.CARTON);
+				}
+				if ("Y".equals(rs.getString("UNIT_IND_DOZ"))) {
+					product.getUnits().add(Unit.DOZEN);
+				}
+				if ("Y".equals(rs.getString("UNIT_IND_PCS"))) {
+					product.getUnits().add(Unit.PIECES);
+				}
+				
+				return product;
 			}
 			
 		}, rule.getId());

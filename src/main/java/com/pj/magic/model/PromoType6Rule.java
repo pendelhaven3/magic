@@ -32,7 +32,7 @@ public class PromoType6Rule {
     public PromoRedemptionReward evaluate(SalesInvoice salesInvoice) {
         int promoQuantity = 0;
         for (PromoType6RulePromoProduct promoProduct : promoProducts) {
-            SalesInvoiceItem item = salesInvoice.findItemByProductAndUnit(promoProduct.getProduct(), Unit.CASE);
+            SalesInvoiceItem item = salesInvoice.findItemByProductAndUnit(promoProduct.getProduct(), promoProduct.getUnit());
             if (item != null) {
                 promoQuantity += item.getQuantity();
             }
