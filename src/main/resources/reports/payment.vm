@@ -51,7 +51,7 @@ Check Payments
 
     Bank    Check Date  Check No.      Amount   
  ---------- ---------- ------------ ------------
- UnionBank  11/24/2014     51003734    26,958.35
+## UnionBank  11/24/2014     51003734    26,958.35
 #foreach($checkPayment in $payment.checkPayments)
  $report.field($checkPayment.bank, 10) $report.field($checkPayment.checkDate) $report.field($checkPayment.checkNumber, 12, "right") $report.field($checkPayment.amount, 12, "right")
 #end
