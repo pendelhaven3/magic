@@ -35,11 +35,23 @@ Cash Payments
                              TOTAL => $report.field($payment.totalCashPayments, 10, "right")   
                                       ==========
           
+E-Cash Payments
+
+    E-cash Receiver       Ref No.      Amount   
+ --------------------- ------------ ------------
+## PJ MAYA 09215989791   51003734        26,958.35
+#foreach($ecashPayment in $payment.ecashPayments)
+ $report.field($ecashPayment.ecashReceiver.name, 21) $report.field($ecashPayment.referenceNumber, 12, "right") $report.field($ecashPayment.amount, 12, "right")
+#end
+ --------------------- ------------ ------------
+                             TOTAL => $report.field($payment.totalEcashPayments, 10, "right")   
+                                      ==========
+          
 Check Payments
 
     Bank    Check Date  Check No.      Amount   
  ---------- ---------- ------------ ------------
-## UnionBank  11/24/2014     51003734    26,958.35
+ UnionBank  11/24/2014     51003734    26,958.35
 #foreach($checkPayment in $payment.checkPayments)
  $report.field($checkPayment.bank, 10) $report.field($checkPayment.checkDate) $report.field($checkPayment.checkNumber, 12, "right") $report.field($checkPayment.amount, 12, "right")
 #end
