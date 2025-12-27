@@ -3,6 +3,8 @@ package com.pj.magic.gui.panels;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -19,9 +21,11 @@ import org.springframework.stereotype.Component;
 
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
+import com.pj.magic.gui.dialog.PrintPreviewDialog;
 import com.pj.magic.gui.dialog.SalesComplianceProjectSalesInvoicePrintInvoiceDialog;
 import com.pj.magic.gui.tables.SalesComplianceProjectSalesInvoiceItemsTable;
 import com.pj.magic.model.SalesComplianceProjectSalesInvoice;
+import com.pj.magic.service.PrintService;
 import com.pj.magic.service.SalesComplianceService;
 import com.pj.magic.util.ComponentUtil;
 import com.pj.magic.util.FormatterUtil;
@@ -30,7 +34,9 @@ import com.pj.magic.util.FormatterUtil;
 public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel {
 
 	@Autowired private SalesComplianceService salesComplianceService;
+	@Autowired private PrintService printService;
 	@Autowired private SalesComplianceProjectSalesInvoicePrintInvoiceDialog printInvoiceDialog;
+	@Autowired private PrintPreviewDialog printPreviewDialog;
 
 	@Autowired private SalesComplianceProjectSalesInvoiceItemsTable itemsTable;
 	
@@ -212,21 +218,6 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		c.gridx = 4;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		mainPanel.add(ComponentUtil.createLabel(120, "Address:"), c);
-		
-		c = new GridBagConstraints();
-		c.gridx = 5;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
-		customerAddressLabel.setPreferredSize(new Dimension(600, 20));
-		mainPanel.add(customerAddressLabel, c);
-		
-		currentRow++;
-		
-		c = new GridBagConstraints();
-		c.gridx = 4;
-		c.gridy = currentRow;
-		c.anchor = GridBagConstraints.WEST;
 		mainPanel.add(ComponentUtil.createLabel(120, "TIN:"), c);
 		
 		c = new GridBagConstraints();
@@ -235,6 +226,21 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		c.anchor = GridBagConstraints.WEST;
 		customerTinLabel.setPreferredSize(new Dimension(100, 20));
 		mainPanel.add(customerTinLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Address:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		customerAddressLabel.setPreferredSize(new Dimension(600, 20));
+		mainPanel.add(customerAddressLabel, c);
 		
 		currentRow++;
 
@@ -380,6 +386,17 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
+		JButton printPreviewButton = new MagicToolBarButton("print_preview", "Print Preview");
+		printPreviewButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				printPreviewDialog.updateDisplay(printService.generateText(projectSalesInvoice));
+				printPreviewDialog.setVisible(true);
+			}
+		});
+		toolBar.add(printPreviewButton);
+		
 		JButton printButton = new MagicToolBarButton("print_bir_form_charge4", "Print BIR form (Charge) 4", e -> printSalesInvoice());
 		toolBar.add(printButton);
 	}
