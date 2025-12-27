@@ -5,7 +5,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
@@ -28,7 +27,7 @@ public class SalesComplianceProjectSalesInvoiceItemsTable extends MagicTable {
 	public static final int UNIT_COLUMN_INDEX = 2;
 	public static final int ORIGINAL_QUANTITY_COLUMN_INDEX = 3;
 	public static final int QUANTITY_COLUMN_INDEX = 4;
-	public static final int COST_WITH_VAT_COLUMN_INDEX = 5;
+	public static final int UNIT_PRICE_COLUMN_INDEX = 5;
 	public static final int AMOUNT_COLUMN_INDEX = 6;
 	public static final int DISCOUNT_1_COLUMN_INDEX = 7;
 	public static final int DISCOUNT_2_COLUMN_INDEX = 8;
@@ -61,7 +60,7 @@ public class SalesComplianceProjectSalesInvoiceItemsTable extends MagicTable {
 		
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
-		getColumnModel().getColumn(COST_WITH_VAT_COLUMN_INDEX).setCellRenderer(rightRenderer);
+		getColumnModel().getColumn(UNIT_PRICE_COLUMN_INDEX).setCellRenderer(rightRenderer);
 		getColumnModel().getColumn(AMOUNT_COLUMN_INDEX).setCellRenderer(rightRenderer);
 		getColumnModel().getColumn(DISCOUNT_1_COLUMN_INDEX).setCellRenderer(rightRenderer);
 		getColumnModel().getColumn(DISCOUNT_2_COLUMN_INDEX).setCellRenderer(rightRenderer);
