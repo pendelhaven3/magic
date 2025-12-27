@@ -41,6 +41,8 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 	private JLabel salesInvoiceNumberLabel;
 	private JLabel transactionDateLabel;
 	private JLabel customerLabel;
+	private JLabel customerAddressLabel;
+	private JLabel customerTinLabel;
 	private JLabel totalItemsLabel;
 	private JLabel totalNetAmountLabel;
 	private JLabel totalVatableSalesLabel;
@@ -53,6 +55,8 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 	protected void initializeComponents() {
 		transactionDateLabel = new JLabel();
 		customerLabel = new JLabel();
+		customerAddressLabel = new JLabel();
+		customerTinLabel = new JLabel();
 		
 		focusOnItemsTableWhenThisPanelIsDisplayed();
 		updateTotalAmountFieldWhenItemsTableChanges();
@@ -96,6 +100,8 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		salesComplianceProjectNameLabel.setText(projectSalesInvoice.getSalesComplianceProject().getName());
 		salesInvoiceNumberLabel.setText(projectSalesInvoice.getSalesInvoice().getSalesInvoiceNumber().toString());
 		customerLabel.setText(projectSalesInvoice.getSalesInvoice().getCustomer().getName());
+		customerAddressLabel.setText(projectSalesInvoice.getSalesInvoice().getCustomer().getBusinessAddress());
+		customerTinLabel.setText(projectSalesInvoice.getSalesInvoice().getCustomer().getTin());
 		transactionDateLabel.setText(FormatterUtil.formatDate(projectSalesInvoice.getSalesInvoice().getTransactionDate()));
 		totalItemsLabel.setText(String.valueOf(projectSalesInvoice.getItems().size()));
 		totalNetAmountLabel.setText(FormatterUtil.formatAmount(projectSalesInvoice.getTotalNetAmount()));
@@ -181,11 +187,10 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		mainPanel.add(ComponentUtil.createLabel(120, "Customer:"), c);
 		
 		c = new GridBagConstraints();
-		c.weightx = 1.0;
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		customerLabel.setPreferredSize(new Dimension(200, 20));
+		customerLabel.setPreferredSize(new Dimension(300, 20));
 		mainPanel.add(customerLabel, c);
 		
 		currentRow++;
@@ -203,6 +208,34 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		transactionDateLabel = ComponentUtil.createLabel(150, "");
 		mainPanel.add(transactionDateLabel, c);
 
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "Address:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		customerAddressLabel.setPreferredSize(new Dimension(600, 20));
+		mainPanel.add(customerAddressLabel, c);
+		
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 4;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		mainPanel.add(ComponentUtil.createLabel(120, "TIN:"), c);
+		
+		c = new GridBagConstraints();
+		c.gridx = 5;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		customerTinLabel.setPreferredSize(new Dimension(100, 20));
+		mainPanel.add(customerTinLabel, c);
+		
 		currentRow++;
 
 		c = new GridBagConstraints();
