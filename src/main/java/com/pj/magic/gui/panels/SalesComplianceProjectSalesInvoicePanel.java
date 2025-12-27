@@ -218,7 +218,7 @@ public class SalesComplianceProjectSalesInvoicePanel extends StandardMagicPanel 
 		c.gridx = 5;
 		c.gridy = currentRow;
 		c.anchor = GridBagConstraints.WEST;
-		customerTinLabel.setPreferredSize(new Dimension(100, 20));
+		customerTinLabel.setPreferredSize(new Dimension(200, 20));
 		mainPanel.add(customerTinLabel, c);
 		
 		currentRow++;
