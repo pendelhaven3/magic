@@ -1,6 +1,7 @@
-
-
-
+$report.center("KAPITBAHAY GROCERY", 80)
+$report.center("FB Messenger: KapitBahay GrocEry", 80)
+$report.center("Telephone Number: 5-319-5946 / 8-426-5563", 80)
+$report.center("Mobile Number: 0916-537-1199 / 0949-402-6756", 80)
 	
                                   DELIVERY RECEIPT
 	
