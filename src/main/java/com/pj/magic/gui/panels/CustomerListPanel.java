@@ -5,6 +5,8 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -14,19 +16,26 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.pj.magic.excel.CustomerListExcelGenerator;
+import com.pj.magic.excel.EcashPaymentsReportExcelGenerator;
 import com.pj.magic.gui.component.DoubleClickMouseAdapter;
+import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SearchCustomersDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.CustomersTableModel;
 import com.pj.magic.model.Customer;
+import com.pj.magic.model.report.EcashPaymentsReport;
 import com.pj.magic.model.search.CustomerSearchCriteria;
 import com.pj.magic.service.CustomerService;
 import com.pj.magic.util.ComponentUtil;
+import com.pj.magic.util.ExcelUtil;
+import com.pj.magic.util.FileUtil;
 
 @Component
 public class CustomerListPanel extends StandardMagicPanel {
@@ -141,6 +150,9 @@ public class CustomerListPanel extends StandardMagicPanel {
 			}
 		});
 		
+		JButton excelButton = new MagicToolBarButton("excel", "Generate Excel", e -> generateExcel());
+		toolBar.add(excelButton);
+		
 		toolBar.add(searchButton);
 	}
 
@@ -167,6 +179,29 @@ public class CustomerListPanel extends StandardMagicPanel {
 			} else {
 				showMessage("No matching records");
 			}
+		}
+	}
+	
+	private void generateExcel() {
+		MagicFileChooser excelFileChooser = FileUtil.createSaveFileChooser("Customer List.xlsx");
+		if (!excelFileChooser.selectSaveFile(this)) {
+			return;
+		}
+		
+		try (
+			Workbook workbook = new CustomerListExcelGenerator().generate(tableModel.getCustomers());
+			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
+		) {
+			workbook.write(out);
+			showMessage("Excel spreadsheet generated successfully");
+		} catch (IOException e) {
+			showErrorMessage("Unexpected error during excel generation");
+		}
+		
+		try {
+			ExcelUtil.openExcelFile(excelFileChooser.getSelectedFile());
+		} catch (IOException e) {
+			showMessageForUnexpectedError();
 		}
 	}
 	

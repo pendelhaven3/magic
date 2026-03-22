@@ -55,4 +55,8 @@ public class CustomersTableModel extends AbstractTableModel {
 		return customers.get(rowIndex);
 	}
 	
+	public List<Customer> getCustomers() {
+		return customers;
+	}
+	
 }
