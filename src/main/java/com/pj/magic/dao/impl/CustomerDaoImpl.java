@@ -131,6 +131,11 @@ public class CustomerDaoImpl extends MagicDao implements CustomerDao {
 			params.add(criteria.getActive() ? "Y" : "N");
 		}
 		
+		if (!StringUtils.isEmpty(criteria.getAddressLike())) {
+			sql.append(" and a.BUSINESS_ADDRESS like ?");
+			params.add("%" + criteria.getAddressLike() + "%");
+		}
+		
 		sql.append(" order by a.NAME");
 		
 		return getJdbcTemplate().query(sql.toString(), customerRowMapper, params.toArray());

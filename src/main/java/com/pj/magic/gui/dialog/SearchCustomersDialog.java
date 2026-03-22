@@ -23,11 +23,12 @@ import com.pj.magic.util.KeyUtil;
 public class SearchCustomersDialog extends MagicDialog {
 
 	private MagicTextField nameField;
+	private MagicTextField addressField;
 	private JButton searchButton;
 	private CustomerSearchCriteria searchCriteria;
 	
 	public SearchCustomersDialog() {
-		setSize(350, 150);
+		setSize(350, 180);
 		setLocationRelativeTo(null);
 		setTitle("Search Customers");
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 5));
@@ -44,6 +45,9 @@ public class SearchCustomersDialog extends MagicDialog {
 		nameField = new MagicTextField();
 		nameField.setMaximumLength(50);
 		
+		addressField = new MagicTextField();
+		addressField.setMaximumLength(50);
+		
 		searchButton = new JButton("Search");
 		searchButton.addActionListener(new ActionListener() {
 			
@@ -59,11 +63,20 @@ public class SearchCustomersDialog extends MagicDialog {
 	private void saveCustomerSearchCriteria() {
 		searchCriteria = new CustomerSearchCriteria();
 		searchCriteria.setNameLike(nameField.getText());
+		searchCriteria.setAddressLike(addressField.getText());
 		setVisible(false);
 	}
 
 	private void registerKeyBindings() {
 		nameField.onEnterKey(new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addressField.requestFocusInWindow();
+			}
+		});
+		
+		addressField.onEnterKey(new AbstractAction() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -110,6 +123,22 @@ public class SearchCustomersDialog extends MagicDialog {
 		c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		add(ComponentUtil.createLabel(100, "Address:"), c);
+
+		c = new GridBagConstraints();
+		c.weightx = 1.0;
+		c.gridx = 1;
+		c.gridy = currentRow;
+		c.anchor = GridBagConstraints.WEST;
+		addressField.setPreferredSize(new Dimension(150, 25));
+		add(addressField, c);
+
+		currentRow++;
+		
+		c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = currentRow;
 		add(Box.createVerticalStrut(5), c);
 		
 		currentRow++;
@@ -140,6 +169,7 @@ public class SearchCustomersDialog extends MagicDialog {
 	public void updateDisplay() {
 		searchCriteria = null;
 		nameField.setText(null);
+		addressField.setText(null);
 	}
 	
 }
