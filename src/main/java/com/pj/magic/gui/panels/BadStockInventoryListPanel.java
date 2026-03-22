@@ -2,24 +2,33 @@ package com.pj.magic.gui.panels;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.pj.magic.excel.BadStockInventoryListExcelGenerator;
+import com.pj.magic.gui.component.MagicFileChooser;
 import com.pj.magic.gui.component.MagicToolBar;
 import com.pj.magic.gui.component.MagicToolBarButton;
 import com.pj.magic.gui.dialog.SearchBadStocksDialog;
 import com.pj.magic.gui.tables.MagicListTable;
 import com.pj.magic.gui.tables.models.ListBackedTableModel;
 import com.pj.magic.model.BadStock;
+import com.pj.magic.model.Supplier;
 import com.pj.magic.model.Unit;
 import com.pj.magic.model.search.BadStockSearchCriteria;
 import com.pj.magic.service.BadStockService;
 import com.pj.magic.service.SupplierService;
+import com.pj.magic.util.ExcelUtil;
+import com.pj.magic.util.FileUtil;
 
 public class BadStockInventoryListPanel extends StandardMagicPanel {
 
@@ -32,6 +41,8 @@ public class BadStockInventoryListPanel extends StandardMagicPanel {
 	private MagicListTable table;
 	private BadStockTableModel tableModel = new BadStockTableModel();
     private SearchBadStocksDialog searchBadStocksDialog;
+    
+    private Supplier supplierCriteria;
 	
 	public BadStockInventoryListPanel() {
 	    setTitle("Bad Stock Inventory List");
@@ -65,6 +76,7 @@ public class BadStockInventoryListPanel extends StandardMagicPanel {
         if (searchBadStocksDialog != null) {
             searchBadStocksDialog.resetDisplay();
         }
+        supplierCriteria = null;        
 	}
 
 	@Override
@@ -91,6 +103,9 @@ public class BadStockInventoryListPanel extends StandardMagicPanel {
 	@Override
 	protected void addToolBarButtons(MagicToolBar toolBar) {
         toolBar.add(new MagicToolBarButton("search", "Search", e -> searchBadStocks()));
+        
+		JButton excelButton = new MagicToolBarButton("excel", "Generate Excel", e -> generateExcel());
+		toolBar.add(excelButton);
 	}
 
 	private void searchBadStocks() {
@@ -109,7 +124,31 @@ public class BadStockInventoryListPanel extends StandardMagicPanel {
             } else {
                 showMessage("No matching records");
             }
+            supplierCriteria = criteria.getSupplier();
         }
+	}
+	
+	private void generateExcel() {
+		MagicFileChooser excelFileChooser = FileUtil.createSaveFileChooser("Bad Stock Inventory Report.xlsx");
+		if (!excelFileChooser.selectSaveFile(this)) {
+			return;
+		}
+		
+		try (
+			Workbook workbook = new BadStockInventoryListExcelGenerator().generate(tableModel.getItems(), supplierCriteria);
+			FileOutputStream out = new FileOutputStream(excelFileChooser.getSelectedFile());
+		) {
+			workbook.write(out);
+			showMessage("Excel spreadsheet generated successfully");
+		} catch (IOException e) {
+			showErrorMessage("Unexpected error during excel generation");
+		}
+		
+		try {
+			ExcelUtil.openExcelFile(excelFileChooser.getSelectedFile());
+		} catch (IOException e) {
+			showMessageForUnexpectedError();
+		}
 	}
 	
 	private static final int PRODUCT_CODE_COLUMN_INDEX = 0;
